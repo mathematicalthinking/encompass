@@ -21,6 +21,7 @@ const { clearAccessCookie, clearRefreshCookie } = require('../../middleware/mtAu
 
 const { extractBearerToken, setSsoCookie, setSsoRefreshCookie } = require('../../middleware/mtAuth');
 const { areObjectIdsEqual } = require('../../utils/mongoose');
+const { isNil } = require('../../utils/objects');
 
 const ssoService = require('../../services/sso');
 
@@ -256,6 +257,14 @@ const confirmEmail = async function(req, res, next) {
   try {
       let results = await ssoService.confirmEmail(req.params.token);
 
+      // do not send user object back if user was not already logged in
+      let reqUser = userAuth.getUser(req);
+      let isNotLoggedIn = isNil(reqUser);
+
+      if (isNotLoggedIn) {
+        delete results.user;
+      }
+
       return utils.sendResponse(res, results);
   }catch(err) {
     console.log('err conf em: ', err.message);
@@ -297,8 +306,8 @@ const ssoUpdateUser = async(req, res, next) => {
      authToken,
      process.env.MT_USER_JWT_SECRET
    );
-   await User.findByIdAndUpdate(req.params.id, {$set: req.body});
-   return res.json({isSuccess: true});
+   let user = await User.findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true});
+   return res.json(user);
   }catch(err) {
     utils.handleError(err, res);
   }
