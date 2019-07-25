@@ -216,7 +216,7 @@ describe('Users', function() {
 
       it('should have a list of users waiting for authorization', async function () {
         expect(await helpers.getWebElements(driver, 'ul.waiting-auth>li')).to.have.lengthOf.at.least(2);
-        expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('g_laforge');
+        expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('unconfirmed');
       });
 
       it('should have a list of admins', async function () {
