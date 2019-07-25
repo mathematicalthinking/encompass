@@ -16,12 +16,22 @@
       </td>
     </tr>
     <tr>
-      <td>Name</td>
+      <td>First Name</td>
       <td>
         {{#if isEditing}}
-          {{input value=user.name classNames='user-name'}}
+          {{input value=user.firstName classNames='user-first-name'}}
         {{else}}
-          {{user.name}}
+          {{user.firstName}}
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Last Name</td>
+      <td>
+        {{#if isEditing}}
+          {{input value=user.lastName classNames='user-last-name'}}
+        {{else}}
+          {{user.lastName}}
         {{/if}}
       </td>
     </tr>

@@ -68,8 +68,12 @@
           </div>
 
           <div class="create-student-input">
-            <label for="name">Name (Optional)</label>
-            {{input id="name" type="text" value=name placeholder="name" action="checkError" on="key-down"}}
+            <label for="first-name">First Name (Optional)</label>
+            {{input id="first-name" type="text" value=firstName placeholder="first name" action="checkError" on="key-down"}}
+          </div>
+          <div class="create-student-input">
+            <label for="last-name">Last Name (Optional)</label>
+            {{input id="last-name" type="text" value=lastName placeholder="last name" action="checkError" on="key-down"}}
           </div>
 
           {{#unless isUsingDefaultPassword}}

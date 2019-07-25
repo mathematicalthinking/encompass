@@ -7,7 +7,7 @@
   * @since 1.0.0
   * @todo Manage the current user without setting on the Encompass object itself.
   */
-Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't require authentication since it's getting the user
+Encompass.ApplicationRoute = Ember.Route.extend(Encompass.MtAuthMixin, { //the application route can't require authentication since it's getting the user
   userNtfs: Ember.inject.service('user-ntfs'),
 
   beforeModel: function() {
@@ -40,6 +40,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
     //Do we need this check for isAuthenticated here? All routes that should be authenticated
     // should be extending AuthenticatedRoute.
     if(!user.get('isAuthenticated')) {
+      this.get('store').unloadAll();
       this.transitionTo('auth.login');
     }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');

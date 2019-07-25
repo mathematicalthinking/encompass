@@ -8,6 +8,7 @@
 //REQUIRE MODULES
 const crypto = require('crypto');
 const _ = require('underscore');
+const { isNonEmptyObject } = require('../utils/objects');
 
 //REQUIRE FILES
 
@@ -157,8 +158,8 @@ function buildCriteria(req) {
       ]
     },
   ];
-  if(req.mf.auth.workspaces) {
-    criteria.$and.push({ workspace: { $in: req.mf.auth.workspaces } });
+  if(req.mt.auth.workspaces) {
+    criteria.$and.push({ workspace: { $in: req.mt.auth.workspaces } });
   }
 
   if(req.params.id) {
@@ -303,6 +304,38 @@ const asyncWrapper = function(promise) {
   });
 };
 
+const handleError = (err, res) => {
+  let status;
+  let message;
+
+  let jwtErrorNames = ['TokenExpiredError', 'JsonWebTokenError', 'NotBeforeError'];
+
+
+  let isJwtError = typeof err.name === 'string' && jwtErrorNames.includes(err.name);
+  let isAxiosError = isNonEmptyObject(err.response);
+
+  if (isJwtError) {
+    status = 401;
+    message = 'Invalid or expired credentials';
+  } else if (isAxiosError) {
+    status = err.response.status || 500;
+    message = err.response.message || 'Internal Error';
+  } else {
+    status = 500;
+    message = 'Internal Error';
+  }
+
+  return res.status(status).json({
+    "errors": [
+      {
+        "detail": message,
+        "status": status
+      }
+    ]
+  });
+
+};
+
 module.exports.sendResponse = sendResponse;
 module.exports.sendError = sendError;
 module.exports.buildCriteria = buildCriteria;
@@ -311,3 +344,4 @@ module.exports.generateApiSecret = generateApiSecret;
 module.exports.generateApiKey = generateApiKey;
 module.exports.isValidApiKey = isValidApiKey;
 module.exports.asyncWrapper = asyncWrapper;
+module.exports.handleError = handleError;

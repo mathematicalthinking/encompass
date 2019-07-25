@@ -46,27 +46,19 @@ var UserSchema = new Schema({
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   /* + The username is the mfapps username */
-  username: { type: String, unique: true, required: true , trim: true},
+  username: { type: String, unique: true, required: true },
   accountType: { type: String, enum: ['A', 'P', 'T', 'S'], required: true },
   isAdmin: Boolean, // depricated - needed to convert to new accountType field
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: { type: Boolean, default: false },
   authorizedBy: { type: ObjectId, ref: 'User' },
-  // isStudent: Boolean,
 
   // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
   actingRole: { type: String, enum: ['teacher', 'student'] },
   name: { type: String },
-  email: { type: String, trim: true },
+  email: { type: String },
   avatar: { type: String },
   googleId: { type: String },
-  // key: { type: String },
-  password: { type: String, trim: true },
-  // forcePwdChg: { type: Boolean },
-  resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Date },
-  confirmEmailToken: { type: String },
-  confirmEmailExpires: { type: Date },
   isEmailConfirmed: { type: Boolean, default: false },
   organization: { type: ObjectId, ref: 'Organization' },
   organizationRequest: { type: String },
@@ -75,7 +67,6 @@ var UserSchema = new Schema({
   // We only use google for external auth, we can use these fields if we use more OAuths
   // authSource: String,
   // authUserId: String,
-  sessionId: String,
   sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
   answers: [{ type: ObjectId, ref: 'Answer' }],
   // Migrating from assignments to answers, keeping this in for tests - change apiTest for assinment to answer
@@ -89,8 +80,11 @@ var UserSchema = new Schema({
   socketId: { type: String },
   seenTour: { type: Date },
   lastSeen: { type: Date },
-  history: [Log] // currently not working
-  //sessions: [{key: String, starts: Number, ends: Number}]
+  firstName: {type: String },
+  lastName: {type: String },
+  history: [Log], // currently not working,
+  ssoId: {type: ObjectId},
+  doForcePasswordChange: { type: Boolean, default: false },
 },
 {
   versionKey: false,

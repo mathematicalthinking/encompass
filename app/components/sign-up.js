@@ -67,7 +67,11 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     if (Ember.isEmpty(this.get('password'))) {
       return false;
     }
-    return this.get('password').length > 3;
+    let length = this.get('password').length;
+    let min = 10;
+    let max = 72;
+
+    return length >= min &&  length <= max;
   }.property('password'),
 
   isPasswordInvalid: Ember.computed('isPasswordValid', 'isPasswordDirty', function() {
@@ -151,7 +155,8 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
   actions: {
     signup: function () {
       var that = this;
-      var name = that.get('name');
+      var firstName = that.get('firstName');
+      var lastName = that.get('lastName');
       var email = that.get('email');
       var confirmEmail = that.get('confirmEmail');
       var organization = that.get('org');
@@ -172,7 +177,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
 
 
-      if (!name || !email || (!organization && !orgRequest) || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
+      if (!firstName || !lastName || !email || (!organization && !orgRequest) || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
         that.set('missingCredentials', true);
         return;
       }
@@ -191,14 +196,14 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       }
 
       var createUserData = {
-        name: name,
-        email: email,
-        location: location,
+        firstName,
+        lastName,
+        email,
+        location,
         username: usernameTrim,
         password: password,
         requestReason: requestReason,
         accountType: 'T',
-        isAuthorized: false,
       };
 
       // make sure user did not type in existing org
@@ -219,12 +224,12 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
         return that.createUser(createUserData)
         .then((res) => {
-          if (res.message === 'Username already exists') {
+          if (res.message === 'There already exists a user with that username') {
             that.set('usernameExists', true);
-          } else if (res.message === 'There already exists a user with that email address.') {
+          } else if (res.message === 'There already exists a user with that email address') {
             that.set('emailExistsError', res.message);
           } else {
-            that.sendAction('toHome');
+            window.location.href= '/';
           }
         })
         .catch((err) => {
@@ -234,12 +239,12 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         createUserData.organization = organization.id;
         return that.createUser(createUserData)
         .then((res) => {
-          if (res.message === 'Username already exists') {
+          if (res.message === 'There already exists a user with that username') {
             that.set('usernameExists', true);
-          } else if (res.message === 'There already exists a user with that email address.') {
+          } else if (res.message === 'There already exists a user with that email address') {
             that.set('emailExistsError', res.message);
           } else {
-            that.sendAction('toHome');
+            window.location.href = '/';
           }
         })
         .catch((err) => {
@@ -261,7 +266,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     usernameValidate() {
       var username = this.get('username');
       if (username) {
-        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
+        var usernamePattern = new RegExp(/^[a-z0-9_]{3,30}$/);
         var usernameTest = usernamePattern.test(username);
 
         if (usernameTest === false) {

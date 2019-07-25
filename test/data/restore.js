@@ -1,26 +1,37 @@
 const exec = require('child_process').exec;
 
-const dropAndRestoreDb = function () {
+let commands = {
+  enc: 'npm run seed',
+  vmt: 'npm run restore-vmt',
+  mt: 'npm run restore-mt'
+};
+
+const dropAndRestoreDb = function(app) {
   return new Promise((resolve, reject) => {
-    exec(`md-seed run --dropdb`, (err, stdout, stderr) => {
+    let command = commands[app];
+    if (command === undefined) {
+      return reject('Invalid app name');
+    }
+    exec(command, (err, stdout, stderr) => {
       if (err) {
-        console.log("ERROR FROM RESTORE: ", err);
+        console.log('ERROR FROM RESTORE: ', err);
         reject(err);
       }
       console.log('db drop results: ', stdout);
-      //console.log('db drop errors: ', stderr);
-      resolve('Dropped encompass_test database successfully!');
+      resolve(`Dropped ${app} database successfully!`);
     });
   });
 };
 
-const prepTestDb = async function () {
+const prepTestDb = function() {
   try {
-    //let restored = await restoreDb(testDb, pathToBackup);
-    let restored = await dropAndRestoreDb();
-    console.log(restored);
+    return Promise.all([
+      dropAndRestoreDb('enc'),
+      dropAndRestoreDb('mt'),
+      dropAndRestoreDb('vmt')
+    ]);
   } catch (err) {
-    console.log(err);
+    throw(err);
   }
 };
 

@@ -38,14 +38,15 @@ const pdAdmin = {
 };
 
 const newUser = {
-  name: 'John Doe',
+  firstName: 'John',
+  lastName: 'Doe',
   email: 'encompass21pstem@gmail.com',
   confirmEmail: 'encompass21pstem@gmail.com',
   organization: 'Mathematical Thinking',
   location: 'Philadelphia, PA',
   username: 'johndoe111',
-  password: 'noone11',
-  confirmPassword: 'noone11',
+  password: 'noone11111',
+  confirmPassword: 'noone11111',
   requestReason: 'professional development'
 };
 

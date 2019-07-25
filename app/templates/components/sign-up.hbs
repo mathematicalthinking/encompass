@@ -4,8 +4,12 @@
 
   <form class="form-signup">
     <div class="auth-form-input">
-      <label for="name">Full Name:</label>
-        {{input class="form-control" type="text" name="name" id="name" value=name action="resetErrors" on="key-down"}}
+      <label for="first-name">First Name:</label>
+        {{input class="form-control" type="text" name="first-name" id="first-name" value=firstName action="resetErrors" on="key-down"}}
+    </div>
+    <div class="auth-form-input">
+      <label for="last-name">Last Name:</label>
+        {{input class="form-control" type="text" name="last-name" id="last-name" value=lastName action="resetErrors" on="key-down"}}
     </div>
     <div class="auth-form-input">
       <label for="email">Email:</label>
@@ -54,7 +58,7 @@
          <p class="error-message">Sorry, that username already exisits. Please try again.</p>
        {{/if}}
        {{#if incorrectUsername}}
-         <p class="error-message">Username must be all lowercase, at least 3 characters and can only contain the following special characters .-_@</p>
+         <p class="error-message">Username must be all lowercase, at least 3 characters and can only contain the following special characters _</p>
        {{/if}}
     </div>
     <div class="auth-form-input">

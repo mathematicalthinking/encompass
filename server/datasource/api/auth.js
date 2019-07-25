@@ -6,82 +6,124 @@
 
 //REQUIRE MODULES
 
-const passport = require('passport');
-const utils = require('../../middleware/requestHandler');
 const crypto = require('crypto');
-const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+
 const models = require('../../datasource/schemas');
 const User = models.User;
-const nodemailer = require('nodemailer');
 const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
+const utils = require('../../middleware/requestHandler');
+const { verifyJwt } = require('../../utils/jwt');
 
-const localLogin = (req, res, next) => {
-  passport.authenticate('local-login', {
-      // failureRedirect: '/#/auth/login',
-      // failureFlash: true,
-      // passReqToCallback: true,
-      //failwithError: true,
-  },
-function(err, user, info) {
-  if (err) {
-    return next(err);
-  }
+const { clearAccessCookie, clearRefreshCookie } = require('../../middleware/mtAuth');
 
-  if (!user) {return utils.sendResponse(res, info);}
-  req.logIn(user, function(err) {
-    if (err) { return next(err); }
-    return utils.sendResponse(res, user);
-  });
-}
-)(req, res, next);
-};
 
-const localSignup = (req, res, next) => {
-  passport.authenticate('local-signup', {
-      // successRedirect: '/',
-      // failureRedirect: '/#/auth/signup',
-  },
-  function (err, user, info) {
-    if (err) {
-      console.error('localSignup error: ', err);
-      console.trace();
-      return next(err);
+const { extractBearerToken, setSsoCookie, setSsoRefreshCookie } = require('../../middleware/mtAuth');
+const { areObjectIdsEqual } = require('../../utils/mongoose');
+const { isNil } = require('../../utils/objects');
+
+const ssoService = require('../../services/sso');
+
+const localLogin = async (req, res, next) => {
+  try {
+    let { message, accessToken, refreshToken } = await ssoService.login(req.body);
+    if (message) {
+      return res.json({message});
     }
 
-    if (!user) {
-      if (info.message && info.user && info.message === 'Can add existing user') {
-        return utils.sendResponse(res, info);
+    // do we need to verify the accessToken
+    // should always be valid coming from the sso server
+    // await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
+
+    setSsoCookie(res, accessToken);
+    setSsoRefreshCookie(res, refreshToken);
+    // send back user?
+
+    return res.json({message: 'success'});
+  }catch(err) {
+    utils.handleError(err, res);
+  }
+};
+
+const localSignup = async (req, res, next) => {
+try {
+  let reqUser = userAuth.getUser(req);
+  let isFromSignupForm = !reqUser;
+
+  let allowedAccountTypes = [];
+  let requestedAccountType = req.body.accountType;
+
+  if (isFromSignupForm) {
+    allowedAccountTypes = ['T'];
+  } else {
+    let creatorAccountType = reqUser.accountType;
+
+    if (creatorAccountType === 'S') {
+      // students cannot create other users;
+      return utils.sendError.NotAuthorizedError('Your account type is not authorized to create other users');
+    }
+    if (creatorAccountType === 'T' || creatorAccountType === 'P') {
+      allowedAccountTypes = ['S', 'T'];
+    } else if (creatorAccountType === 'A') {
+      allowedAccountTypes = ['S', 'T', 'P', 'A'];
+    }
+
+    let isValidAccountType = allowedAccountTypes.includes(requestedAccountType);
+
+    if (!isValidAccountType) {
+      // default to teacher if not valid account type
+      // should this return error instead?
+      req.body.accountType = 'T';
+    }
+  }
+
+  let {message, accessToken, refreshToken, encUser, existingUser } = await ssoService.signup(req.body, reqUser);
+
+  if (message) {
+    if (existingUser && !isFromSignupForm) {
+      // check if can add existing User
+      let existingEncId = existingUser.encUserId;
+
+      let existingEncUser = await User.findById(existingEncId).lean();
+
+      if (existingEncUser === null) {
+        // should never happen
+        return utils.sendError.InternalError(null, res);
       }
-      return utils.sendResponse(res, info);
+
+      let canAdd = reqUser.accountType === 'A' || areObjectIdsEqual(reqUser.organization, existingEncUser.organization);
+
+        return res.json({
+          message,
+          user: existingEncUser,
+          canAddExistingUser: canAdd
+        });
+
     }
-    if(!req.user) {
-      req.logIn(user, function(err) {
-        if (err) { return next(err); }
-        //return utils.sendResponse(res, user);
-        return next(null, user);
-      });
-    }
-    return utils.sendResponse(res, user);
+    return res.json({message});
   }
-)(req, res, next);
+
+  if (typeof accessToken === 'string') {
+    // accessToken will be undefined if user was created by an already logged in user
+    // await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
+
+    setSsoCookie(res, accessToken);
+    setSsoRefreshCookie(res, refreshToken);
+  }
+  return res.json(encUser);
+}catch(err) {
+  console.log('err signup', err);
+  utils.handleError(err, res);
+
+}
+
 };
 
-const googleAuth = (req, res, next) => {
-  passport.authenticate('google', {
-     scope:['profile', 'email'],
-  })(req,res,next);
-};
-
-const googleReturn = (req, res, next) => {
-  passport.authenticate('google', {
-    failureRedirect: "/#/login",
-    successRedirect: "/"
-  })(req, res, next);
-};
 
 const logout = (req, res, next) => {
-  req.logout();
+  clearAccessCookie(res);
+  clearRefreshCookie(res);
   res.redirect('/');
 };
 
@@ -148,73 +190,23 @@ const sendEmailsToAdmins = async function(host, template, relatedUser) {
 };
 
 const forgot = async function(req, res, next) {
-  let token;
-  let user;
-
   try {
-    token = await getResetToken(20);
-    let { email, username } = req.body;
-
-    if (email) {
-      user = await User.findOne({ email });
-      if (!user) {
-        const msg = {
-          info: 'There is no account associated with that email address',
-          isSuccess: false
-        };
-        return utils.sendResponse(res, msg);
-      }
-    } else if (username) {
-      user = await User.findOne({ username });
-      if (!user) {
-        const msg = {
-          info: 'There is no account associated with that username',
-          isSuccess: false
-        };
-        return utils.sendResponse(res, msg);
-      }
-    }
-
-
-      user.resetPasswordToken = token;
-      user.resetPasswordExpires = Date.now() + 3600000;
-
-      await user.save();
-      // should we assume all users have emails?
-      if (!email) {
-        if (user.email) {
-          email = user.email;
-        } else {
-          const msg = {
-            info: 'You must have an email address associated with your EnCoMPASS account in order to reset your password',
-            isSuccess: false
-          };
-          return utils.sendResponse(res, msg);
-        }
-
-      }
-
-      await sendEmailSMTP(email, req.headers.host, 'resetTokenEmail', token, user);
-
-      return utils.sendResponse(res, {'info': `Password reset email sent to ${email}`, isSuccess: true});
+    let results = await ssoService.forgotPassword(req.body);
+    return utils.sendResponse(res, results);
   }catch(err) {
     console.error(`Error auth/forgot: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    utils.handleError(err, res);
   }
 };
 
 const validateResetToken = async function(req, res, next) {
   try {
-    const user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}});
-
-    if (!user) {
-      return utils.sendResponse(res, {info: 'Password reset token is invalid or has expired', isValid: false});
-    }
-    return utils.sendResponse(res, { info: 'valid token', isValid: true });
+    let results = await ssoService.validateResetPasswordToken(req.params.token);
+    return utils.sendResponse(res, results);
 
   }catch(err) {
-    return utils.sendError.InternalError(err, res);
+    utils.handleError(err, res);
   }
 };
 
@@ -230,130 +222,101 @@ const resetPasswordById = async function(req, res, next) {
       return utils.sendError.NotAuthorizedError('You are not authorized.', res);
     }
 
-    const { id, password } = req.body;
-
-    if (!id || !password) {
-      const err = {
-        info: 'Invalid user id or password'
-      };
-      return utils.sendError.InvalidArgumentError(err, res);
-    }
-
-    const user = await User.findOne({ _id: id });
-    if (!user) {
-      return utils.sendResponse(res, {
-        info: 'Cannot find user'
-      });
-    }
-
-    const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
-    user.password = hashPass;
-    user.lastModifiedBy = reqUser.id;
-    user.lastModifiedDate = Date.now();
-
-    let actingRole = user.actingRole;
-    let accountType = user.accountType;
-
-    if (!actingRole && accountType !== 'S') {
-      user.actingRole = 'teacher';
-    }
-
-    // should we store most recent password and block that password in future? or all past passwords and block all of them?
-
-    await user.save();
-
-    return utils.sendResponse(res, user);
+    let results = await ssoService.resetPasswordById(req.body, reqUser);
+    return utils.sendResponse(res, results);
 
     }catch(err) {
-      return utils.sendError.InternalError(err, res);
+      utils.handleError(err, res);
     }
   };
 
 const resetPassword = async function(req, res, next) {
   try {
-    const user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } });
-    if (!user) {
-      return utils.sendResponse(res, {
-        info: 'Password reset token is invalid or has expired.'
-      });
+
+
+    let { user, accessToken, refreshToken, message } = await ssoService.resetPassword(req.body, req.params.token);
+
+    if (message) {
+      res.json(message);
+      return;
     }
+    // await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
-    const hashPass = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(12), null);
-    user.password = hashPass;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    setSsoCookie(res, accessToken);
+    setSsoRefreshCookie(res, refreshToken );
 
-    await user.save();
-
-    req.logIn(user, (err) => {
-      if (err) {
-        return utils.sendError.InternalError(err, res);
-      }
-      return utils.sendResponse(res, user);
-    });
-
+    return utils.sendResponse(res, user);
   }catch(err) {
     console.error(`Error resetPassword: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    utils.handleError(err, res);
   }
 };
 
 const confirmEmail = async function(req, res, next) {
   try {
-    const user = await User.findOne({ confirmEmailToken: req.params.token, confirmEmailExpires: { $gt: Date.now() } });
-    if (!user) {
-      return utils.sendResponse(res, {
-        isValid: false,
-        info: 'Confirm email token is invalid or has expired.'
-      });
-    }
+      let results = await ssoService.confirmEmail(req.params.token);
 
-      user.isEmailConfirmed = true;
-      user.confirmEmailToken = undefined;
-      user.confirmEmailExpires = undefined;
+      // do not send user object back if user was not already logged in
+      let reqUser = userAuth.getUser(req);
+      let isNotLoggedIn = isNil(reqUser);
 
-      const savedUser = await user.save();
+      if (isNotLoggedIn) {
+        delete results.user;
+      }
 
-      const data = {
-        isValid: true,
-        isEmailConfirmed: savedUser.isEmailConfirmed
-      };
-      return utils.sendResponse(res, data);
+      return utils.sendResponse(res, results);
   }catch(err) {
-    return utils.sendError.InternalError(err, res);
+    console.log('err conf em: ', err.message);
+    utils.handleError(err, res);
   }
 };
 
 const resendConfirmationEmail = async function(req, res, next) {
-  const user = userAuth.getUser(req);
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError(null, res);
-  }
-
   try {
-    let userRec = await models.User.findById(user._id);
-    const token = await getResetToken(20);
-
-    userRec.confirmEmailToken = token;
-    userRec.confirmEmailExpires = Date.now() + 86400000; // 1 day
-    let savedUser = await userRec.save();
-    await sendEmailSMTP(savedUser.email, req.headers.host, 'confirmEmailAddress', token, savedUser);
-    return utils.sendResponse(res, {
-     isSuccess: true,
-     info: `Email has been sent to ${userRec.email} with instructions for email confirmation.`
-   });
+    let reqUser = userAuth.getUser(req);
+    let results = await ssoService.resendConfirmEmail(reqUser);
+    return utils.sendResponse(res, results);
 
   }catch(err) {
-    return utils.sendError.InternalError(err, res);
+    console.log('err resend conf: ', err.message);
+    utils.handleError(err, res);
   }
+};
+
+const insertNewMtUser = async (req, res, next) => {
+  try {
+    let authToken = extractBearerToken(req);
+
+    await verifyJwt(authToken, process.env.MT_USER_JWT_SECRET);
+
+    // valid token
+    let newUser = await User.create(req.body);
+    return utils.sendResponse(res, newUser);
+  }catch(err) {
+    console.log('Error insertNewMtUser: ', err);
+    utils.handleError(err, res);
+  }
+};
+
+const ssoUpdateUser = async(req, res, next) => {
+  try {
+    let authToken = extractBearerToken(req);
+    await verifyJwt(
+     authToken,
+     process.env.MT_USER_JWT_SECRET
+   );
+   let user = await User.findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true});
+   return res.json(user);
+  }catch(err) {
+    utils.handleError(err, res);
+  }
+
 };
 
 module.exports.logout = logout;
 module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
-module.exports.googleAuth = googleAuth;
-module.exports.googleReturn = googleReturn;
 module.exports.forgot = forgot;
 module.exports.validateResetToken = validateResetToken;
 module.exports.resetPassword = resetPassword;
@@ -363,3 +326,5 @@ module.exports.getResetToken = getResetToken;
 module.exports.sendEmailSMTP = sendEmailSMTP;
 module.exports.resendConfirmationEmail = resendConfirmationEmail;
 module.exports.sendEmailsToAdmins = sendEmailsToAdmins;
+module.exports.insertNewMtUser = insertNewMtUser;
+module.exports.ssoUpdateUser = ssoUpdateUser;

@@ -1,6 +1,6 @@
 var _ = require('underscore');
-var Seeder = require('mongoose-data-seed').Seeder;
-var Category = require('../server/datasource/schemas').Category;
+// var Seeder = require('mongoose-data-seed').Seeder;
+// var Category = require('../server/datasource/schemas').Category;
 
 var gradek = [{
     _id: '5bb650e1fefbf3cf9e88f673',
@@ -4938,14 +4938,15 @@ var data = gradek.concat(gradek, grade1, grade2, grade3, grade4, grade5, grade6,
 var nonDuplicated = _.uniq(data, 'identifier');
 
 let list = nonDuplicated.concat(mathPractice);
+module.exports = list;
+// var CategoriesSeeder = Seeder.extend({
+//   shouldRun: function () {
+//     return Category.count().exec().then(count => count === 0);
+//   },
+//   run: function () {
+//     return Category.create(list);
+//   }
+// });
 
-var CategoriesSeeder = Seeder.extend({
-  shouldRun: function () {
-    return Category.count().exec().then(count => count === 0);
-  },
-  run: function () {
-    return Category.create(list);
-  }
-});
 
-module.exports = CategoriesSeeder;
+// module.exports = CategoriesSeeder;

@@ -6,7 +6,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   errorMessage: null,
   username: '',
   password: '',
-  name: '',
+  firstName: '',
+  lastName: '',
   email: '',
   org: null,
   location: '',
@@ -106,7 +107,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     newUser: function () {
       var username = this.get('username');
       var password = this.get('password');
-      var name = this.get('name');
+      var firstName = this.get('firstName');
+      var lastName = this.get('lastName');
       var email = this.get('email');
       var organization = this.get('org');
       var location = this.get('location');
@@ -140,17 +142,16 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
       if (isAuthorized) {
         let userData = {
-          username: username,
-          password: password,
-          name: name,
-          email: email,
-          location: location,
+          username,
+          password,
+          firstName,
+          lastName,
+          email,
+          location,
           accountType: accountTypeLetter,
           isAuthorized: true,
           authorizedBy: currentUserId,
           createdBy: currentUserId,
-          createDate: new Date(),
-          actingRole: this.get('actingRole'),
         };
         this.set('authorizedBy', currentUserId);
         this.set('newUserData', userData);
@@ -158,14 +159,13 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         let userData = {
           username: username,
           password: password,
-          name: name,
+          firstName,
+          lastName,
           email: email,
           location: location,
           accountType: accountTypeLetter,
           isAuthorized: false,
           createdBy: currentUserId,
-          createDate: new Date(),
-          actingRole: this.get('actingRole'),
         };
         this.set('newUserData', userData);
       }
@@ -180,10 +180,10 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           newUserData.organization = org;
           return this.createNewUser(newUserData)
             .then((res) => {
-              if (res.message === 'Can add existing user') {
+              if (res.message === 'There already exists a user with that username') {
                 this.set('usernameExists', true);
                 return;
-              } else if (res.message === 'There already exists a user with that email address.') {
+              } else if (res.message === 'There already exists a user with that email address') {
                 this.set('emailExistsError', res.message);
                 return;
               } else {

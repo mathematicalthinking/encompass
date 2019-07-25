@@ -24,6 +24,10 @@
         {{error-box error="Incorrect Password" showDismiss=true}}
       {{/if}}
 
+      {{#if oauthErrorMsg}}
+        {{error-box error=oauthErrorMsg showDismiss=true}}
+      {{/if}}
+
     </div>
 
     <button class="auth-button" type="submit" {{action 'login'}}>Log In</button>

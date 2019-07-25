@@ -5,9 +5,6 @@ const config = require('./config');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const http = require('http');
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
-const passport = require('passport');
 const multer = require('multer');
 const expressPath = require('path');
 const paginate = require('express-paginate');
@@ -22,10 +19,10 @@ const api = require('./datasource/api');
 const auth = require('./datasource/api/auth');
 
 //REQUIRE MIDDLEWARE
-const configure = require('./middleware/passport');
 const userAuth = require('./middleware/userAuth');
 const path = require('./middleware/path');
 const multerMw = require('./middleware/multer');
+const mtAuth = require('./middleware/mtAuth');
 
 //REQUIRE MODELS
 
@@ -111,22 +108,6 @@ db.on('error', function (err) {
   throw new Error(err);
 });
 
-server.use(session({
-  secret: 'encompass-app',
-  resave: true,
-  saveUninitialized: true,
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection,
-    stringify: false
-    })
-}));
-
-
-//PASSPORT
-configure(passport);
-server.use(passport.initialize());
-server.use(passport.session());
-
 
 //MIDDLEWARE
 server.use(logger('dev'));
@@ -138,9 +119,9 @@ server.use(cookieParser());
 server.use(express.static(expressPath.join(__dirname, 'public')));
 server.use(path.prep());
 server.use(path.processPath());
-server.use(userAuth.fetchUser());
+server.use(mtAuth.prepareMtUser);
+server.use(mtAuth.prepareEncUser);
 server.use(userAuth.protect());
-server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 const upload = multer({
@@ -163,7 +144,7 @@ server.post('/pdf', PDFUpload.array('photo', 50), api.post.images);
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);
 server.post('/auth/signup', auth.localSignup);
-server.get('/logout', auth.logout);
+server.get('/auth/logout', auth.logout);
 server.post('/auth/forgot', auth.forgot);
 server.get('/auth/reset/:token', auth.validateResetToken);
 server.post('/auth/reset/:token', auth.resetPassword);
@@ -171,9 +152,8 @@ server.post('/auth/resetuser', auth.resetPasswordById);
 server.get('/auth/confirm/:token', auth.confirmEmail);
 server.get('/auth/resend/confirm', auth.resendConfirmationEmail);
 
-//  GOOGLE AUTHENTICATION CALLS
-server.get('/auth/google', auth.googleAuth);
-server.get('/auth/google/callback', auth.googleReturn);
+server.post('/auth/newMtUser', auth.insertNewMtUser);
+server.put('/auth/sso/user/:id', auth.ssoUpdateUser);
 
 //API CALLS
 //ALL GET REQUESTS

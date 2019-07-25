@@ -25,7 +25,7 @@ let workspaceInfo = {
 };
 
 let mentorInfo = {
-  displayName: 'Kerry Davis',
+  displayName: 'mtgstudent1',
   username: 'mtgstudent1',
 };
 
