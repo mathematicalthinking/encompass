@@ -46,7 +46,7 @@ var UserSchema = new Schema({
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   /* + The username is the mfapps username */
-  username: { type: String, unique: true, required: true , trim: true},
+  username: { type: String, unique: true, required: true },
   accountType: { type: String, enum: ['A', 'P', 'T', 'S'], required: true },
   isAdmin: Boolean, // depricated - needed to convert to new accountType field
   /* + Are they otherwise authorized for EnCoMPASS */
@@ -56,14 +56,9 @@ var UserSchema = new Schema({
   // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
   actingRole: { type: String, enum: ['teacher', 'student'] },
   name: { type: String },
-  email: { type: String, trim: true },
+  email: { type: String },
   avatar: { type: String },
   googleId: { type: String },
-  password: { type: String, trim: true },
-  // resetPasswordToken: { type: String },
-  // resetPasswordExpires: { type: Date },
-  // confirmEmailToken: { type: String },
-  // confirmEmailExpires: { type: Date },
   isEmailConfirmed: { type: Boolean, default: false },
   organization: { type: ObjectId, ref: 'Organization' },
   organizationRequest: { type: String },
@@ -85,8 +80,8 @@ var UserSchema = new Schema({
   socketId: { type: String },
   seenTour: { type: Date },
   lastSeen: { type: Date },
-  firstName: {type: String, trim: true},
-  lastName: {type: String, trim: true},
+  firstName: {type: String },
+  lastName: {type: String },
   history: [Log], // currently not working,
   ssoId: {type: ObjectId},
   doForcePasswordChange: { type: Boolean, default: false },
