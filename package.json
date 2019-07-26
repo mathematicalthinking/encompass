@@ -37,7 +37,6 @@
   "dependencies": {
     "@passport-next/passport-google-oauth2": "^1.0.0",
     "axios": "^0.19.0",
-    "bcrypt": "^1.0.3",
     "connect-mongo": "^2.0.1",
     "cookie": "^0.3.1",
     "cookie-parser": "^1.4.3",
