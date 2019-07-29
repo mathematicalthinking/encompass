@@ -35,9 +35,7 @@
   },
   "homepage": "https://github.com/mathematicalthinking/encompass#readme",
   "dependencies": {
-    "@passport-next/passport-google-oauth2": "^1.0.0",
     "axios": "^0.19.0",
-    "connect-mongo": "^2.0.1",
     "cookie": "^0.3.1",
     "cookie-parser": "^1.4.3",
     "debug": "^3.1.0",
@@ -61,8 +59,6 @@
     "nconf": "^0.10.0",
     "nodemailer": "^4.6.7",
     "nodemon": "^1.17.5",
-    "passport": "^0.4.0",
-    "passport-local": "^1.0.0",
     "pdf-parse": "^1.1.1",
     "pdf-poppler": "^0.2.1",
     "pdf2pic": "^1.2.6",
