@@ -12,15 +12,15 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
     { value: 1 },
     { value: 2 },
     { value: 3 },
-    { value: 4 },
+    // { value: 4 },
   ],
 
   currentStep: { value: 1 },
 
   showProvideCredentials: Ember.computed.equal('currentStep.value', 1),
-  showSelectRooms: Ember.computed.equal('currentStep.value', 2),
-  showCreateWs: Ember.computed.equal('currentStep.value', 3),
-  showReview: Ember.computed.equal('currentStep.value', 4),
+  showSelectRooms: Ember.computed.equal('currentStep.value', 1),
+  showCreateWs: Ember.computed.equal('currentStep.value', 2),
+  showReview: Ember.computed.equal('currentStep.value', 3),
 
   selectedRooms: null,
   mostRecentSearchResults: null,
@@ -31,30 +31,30 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
 
   detailsItems: function() {
     return [
-      {
-        label: 'VMT Username',
-        displayValue: this.get('currentUser.vmtUserInfo.username'),
-        emptyValue: 'Unverified',
-        propName: 'currentUser.vmtUserInfo.username',
-        associatedStep: 1
-      },
+      // {
+      //   label: 'VMT Username',
+      //   displayValue: this.get('currentUser.vmtUserInfo.username'),
+      //   emptyValue: 'Unverified',
+      //   propName: 'currentUser.vmtUserInfo.username',
+      //   associatedStep: 1
+      // },
       {
         label: 'Selected Rooms',
         displayValue: this.get('selectedRooms.length'),
         emptyValue: 'No Rooms',
         propName: 'selectedRooms.length',
-        associatedStep: 2
+        associatedStep: 1
       },
       {
         label: 'Created Workspace',
         displayValue: this.get('workspaceName'),
         emptyValue: 'No Workspace',
         propName: 'workspaceName',
-        associatedStep: 3
+        associatedStep: 2
       },
     ];
   }.property(
-    'currentUser.vmtUserInfo.username',
+    // 'currentUser.vmtUserInfo.username',
     'selectedRooms.[]',
     'workspaceName',
   ),
@@ -93,7 +93,7 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
     setSelectedRooms(rooms, searchResults) {
       this.set('selectedRooms', rooms);
       this.set('mostRecentSearchResults', searchResults);
-      this.set('currentStep', this.get('steps')[3]);
+      this.set('currentStep', this.get('steps')[2]);
     },
 
     handleInvalidToken() {

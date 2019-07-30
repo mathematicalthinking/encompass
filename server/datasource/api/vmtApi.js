@@ -7,7 +7,7 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const axios = require('axios');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 
 //REQUIRE FILES
 // const userAuth = require('../../middleware/userAuth');
@@ -57,15 +57,12 @@ const getVmtRoom = async (req, res, next) => {
     //   return utils.sendResponse(res, null);
     // }
 
-    let secret = getVmtSecret();
-    const SALT_ROUNDS = 12;
-    let hash = await bcrypt.hash(secret, SALT_ROUNDS);
 
     let url = `${getVmtUrl()}/api/rooms/${roomId}/populated?events=true`;
-    let headers = {
-      'Authorization': hash
-    };
-    let result = await axios.get(url, {headers});
+    // let headers = {
+    //   'Authorization': hash
+    // };
+    let result = await axios.get(url);
 
     let room = _.propertyOf(result)(['data', 'result']);
     if (!room) {

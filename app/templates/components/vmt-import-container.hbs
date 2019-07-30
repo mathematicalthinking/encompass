@@ -28,10 +28,10 @@
       <div class="step-display">
         <div class="container">
           <ul class="progressbar">
-            <li class="step-1 active-step">
+            {{!-- <li class="step-1 active-step">
               <span>Provide VMT Credentials</span>
-            </li>
-            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
+            </li> --}}
+            <li class="step-1 active-step">
               <span>Select Rooms</span>
             </li>
             {{!-- <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
@@ -40,10 +40,10 @@
             <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
               <span>Match Students</span>
             </li> --}}
-            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
+            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
               <span>Create Workspace</span>
             </li>
-            <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
+            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
               <span>Review</span>
             </li>
           </ul>
@@ -51,9 +51,9 @@
       </div>
 
       <div class="step-content">
-        {{#if showProvideCredentials}}
+        {{!-- {{#if showProvideCredentials}}
           {{vmt-import-step1 store=store onProceed=(action "setVmtUserInfo") tokenError=tokenError}}
-        {{/if}}
+        {{/if}} --}}
 
         {{#if showSelectRooms}}
           {{vmt-import-step2
