@@ -1,4 +1,8 @@
-Encompass.AuthResetRoute = Ember.Route.extend({
+Encompass.AuthResetRoute = Encompass.LoggedOutRoute.extend({
+  beforeModel() {
+    this._super(...arguments);
+  },
+
   model: function(params) {
     return params.token;
   },
