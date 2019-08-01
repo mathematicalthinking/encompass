@@ -85,6 +85,7 @@ var UserSchema = new Schema({
   history: [Log], // currently not working,
   ssoId: {type: ObjectId},
   doForcePasswordChange: { type: Boolean, default: false },
+  confirmEmailDate: { type: Date },
 },
 {
   versionKey: false,

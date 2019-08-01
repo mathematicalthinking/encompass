@@ -8,7 +8,6 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   organizationRequest: DS.attr('string'),
   location: DS.attr('string'),
   username: DS.attr('string'),
-  // password: DS.attr('string'),
   googleId: DS.attr('string'),
   requestReason: DS.attr('string'),
   isGuest: DS.attr('boolean'),
@@ -19,7 +18,6 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   seenTour: DS.attr('date'),
   lastImported: DS.attr('date'),
   lastLogin: DS.attr('date'),
-  // key: DS.attr('string'),
   history: DS.attr(),
   sections: DS.attr(),
   assignments: DS.hasMany('assignment', {async: true, inverse: null}),
@@ -87,4 +85,5 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   socketId: DS.attr('string'),
   ssoId: DS.attr('string'),
   doForcePasswordChange: DS.attr('boolean', {defaultValue: false}),
+  confirmEmailDate: DS.attr('date'),
 });
