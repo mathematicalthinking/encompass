@@ -114,7 +114,7 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
       this.set('mostRecentSearchResults', results);
     },
     prepareReview() {
-      this.set('currentStep', this.get('steps')[4]);
+      this.set('currentStep', this.get('steps')[3]);
     },
     uploadAnswers() {
       this.set('isUploadingAnswer', true);
