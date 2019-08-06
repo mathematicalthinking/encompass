@@ -31,7 +31,7 @@ var VmtImportRequestSchema = new Schema({
   },
 
   createdWorkspace: { type: ObjectId, ref: 'Workspace' },
-  createdAnswers: { type: ObjectId, ref: 'Answer'},
+  createdAnswers: [{ type: ObjectId, ref: 'Answer'}],
   createdSubmissions: { type: ObjectId, ref: 'Submission' },
   createWorkspaceError: { type: String },
 }, { versionKey: false });
