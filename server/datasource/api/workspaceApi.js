@@ -1726,9 +1726,8 @@ async function answersToSubmissions(answers) {
 
 
       const student = ans.createdBy;
-      const studentNames = ans.studentNames;
-      const section = ans.section;
-      const problem = ans.problem;
+
+      const { studentNames, section, problem, vmtRoomInfo } = ans;
 
       if (problem) {
         publication.puzzle.title = problem.title;
@@ -1775,7 +1774,8 @@ async function answersToSubmissions(answers) {
         teacher: teacher,
         publication: publication,
         imageId: ans.uploadedFileId,
-        answer: ans._id
+        answer: ans._id,
+        vmtRoomInfo: vmtRoomInfo
       };
       return sub;
     });
