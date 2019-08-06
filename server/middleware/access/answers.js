@@ -27,7 +27,6 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
       return;
     }
     let doIncludeOldPows = false;
-    let oldPowsWorkIds = [];
 
     const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -37,12 +36,13 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
       ]
     };
 
-    if (filterBy.isVmtOnly) {
+    if (filterBy.isVmtOnly === 'true' || filterBy.isVmtOnly === true) {
       filter.$and.push({
         'vmtRoomInfo.roomId': {$ne: null}
       });
-      delete filterBy.isVmtOnly;
     }
+    delete filterBy.isVmtOnly;
+
     if (isNonEmptyString(filterBy.vmtSearchText)) {
       let $or = [];
       let $and = [{
