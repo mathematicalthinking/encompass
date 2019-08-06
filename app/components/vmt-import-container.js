@@ -1,5 +1,4 @@
-/*global _:false */
-Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'vmt-import-container',
 
   alert: Ember.inject.service('sweet-alert'),
@@ -8,16 +7,14 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
   vmtUserId: null,
 
   steps: [
-    { value: 0 },
-    { value: 1 },
-    { value: 2 },
-    { value: 3 },
-    // { value: 4 },
+    { value: 0 }, // placeholder
+    { value: 1 }, // search for rooms / activities
+    { value: 2 }, // Create workspace details if creating workspace
+    { value: 3 }, // review
   ],
 
   currentStep: { value: 1 },
 
-  showProvideCredentials: Ember.computed.equal('currentStep.value', 1),
   showSelectRooms: Ember.computed.equal('currentStep.value', 1),
   showCreateWs: Ember.computed.equal('currentStep.value', 2),
   showReview: Ember.computed.equal('currentStep.value', 3),
@@ -31,13 +28,6 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
 
   detailsItems: function() {
     return [
-      // {
-      //   label: 'VMT Username',
-      //   displayValue: this.get('currentUser.vmtUserInfo.username'),
-      //   emptyValue: 'Unverified',
-      //   propName: 'currentUser.vmtUserInfo.username',
-      //   associatedStep: 1
-      // },
       {
         label: 'Selected Rooms',
         displayValue: this.get('selectedRooms.length'),
@@ -54,7 +44,6 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
       },
     ];
   }.property(
-    // 'currentUser.vmtUserInfo.username',
     'selectedRooms.[]',
     'workspaceName',
   ),
@@ -85,24 +74,10 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
       }
     },
 
-    setVmtUserInfo() {
-      this.set('vmtUserInfo', this.get('currentUser.vmtUserInfo'));
-      this.set('currentStep', this.get('steps')[2]);
-    },
-
     setSelectedRooms(rooms, searchResults) {
       this.set('selectedRooms', rooms);
       this.set('mostRecentSearchResults', searchResults);
       this.set('currentStep', this.get('steps')[2]);
-    },
-
-    handleInvalidToken() {
-      this.get('currentUser').set('vmtUserInfo', {});
-      this.get('currentUser').save()
-        .then(() => {
-          this.set('tokenError', 'Please reenter your VMT credentials');
-          this.set('currentStep', this.get('steps')[1]);
-        });
     },
 
     toggleMenu: function() {
@@ -134,20 +109,19 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
       });
       importRequest.save()
         .then((results) => {
-
           this.set('isUploadingAnswer', false);
-          if (results.get('createdWorkspace')) {
-            this.set('createdWorkspace', results.get('createWorkspace'));
+          if (results.get('createdWorkspace.content')) {
+            this.set('createdWorkspace', results.get('createdWorkspace'));
             this.sendAction('toWorkspaces', results.get('createdWorkspace'));
 
             this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 4000, false, null);
             return;
           }
-          this.set('uploadedAnswers', results.createdAnswers);
+          this.set('uploadedAnswers', results.get('createdAnswers'));
         })
       .catch((err) => {
         this.set('isUploadingAnswer', false);
-        console.log('error post vmt import: ', err);
+        this.handleErrors(err, 'postErrors');
       });
     },
 

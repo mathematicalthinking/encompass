@@ -29,7 +29,6 @@ Encompass.VmtImportStep2Component = Ember.Component.extend(Encompass.CurrentUser
 
   willDestroyComponent() {
     // store previous results on import-vmt-container for when user hits back
-
     if (this.get('searchResults')) {
       this.get('setPreviousSearchResults')(this.get('searchResults'));
     }
@@ -55,15 +54,7 @@ Encompass.VmtImportStep2Component = Ember.Component.extend(Encompass.CurrentUser
 
   actions: {
     handleSearchResults(results) {
-      let { isInvalidToken } = results;
-
-      if (isInvalidToken) {
-        this.get('handleInvalidToken')();
-        return;
-      }
-
       this.set('searchResults', results);
-
     },
     onRoomSelect(room) {
       let isAlreadySelected = this.get('selectedRoomIds').includes(room._id);

@@ -5,7 +5,7 @@
     {{/if}}
   {{else}}
     <p class="input-label">Import Summary</p>
-    {{#if uploadedAnswers}}
+    {{#if uploadedAnswers.length}}
       <p class="success-info animated fadeIn"><b>{{uploadedAnswers.length}} submissions</b> have successfully been created.</p>
       <p class="info  animated fadeIn">You can create a workspace from these submissions {{#link-to 'workspaces.new'}}here{{/link-to}}</p>
     {{else}}
