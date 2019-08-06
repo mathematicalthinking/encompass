@@ -361,7 +361,7 @@ const postVmtImportRequests = async (req, res, next) => {
     let importRecord = new models.VmtImportRequest(importRequest);
 
     if (!doCreateWorkspace) {
-      importRecord.createdAnswers = answerRecords;
+      importRecord.createdAnswers = answerRecords.map(a => a._id);
       return utils.sendResponse(res, {
         vmtImportRequest: importRecord
       });
