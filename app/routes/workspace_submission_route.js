@@ -7,7 +7,7 @@
   * @see workspace_submissions_route
   */
 /*global _:false */
-Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
+Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, Encompass.VmtHostMixin, {
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
 
@@ -77,28 +77,31 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
     if (cachedRoom) {
       return Ember.RSVP.resolve(cachedRoom);
     }
+    let vmtHost = this.getVmtHost();
+    let url = `${vmtHost}/api/rooms/${roomId}/populated?events=true`;
 
       return Ember.$.get({
-        url: `/api/vmt/rooms/${roomId}`
+        url,
+        xhrFields: {
+          withCredentials: true
+        }
       })
       .then((data) => {
-
-        if (!data || !data.room) {
+        if (!data || !data.result) {
           return null;
         }
-        // put room on window if necessary
+        // put result on window if necessary
 
-        this.handleRoomForVmt(data.room);
-        this.combineVmtRoomEvents(data.room);
+        this.handleRoomForVmt(data.result);
+        this.combineVmtRoomEvents(data.result);
 
-        return data.room;
+        return data.result;
       });
 
   },
 
   handleRoomForVmt(room) {
     let utils = this.get('utils');
-    console.log('handingling for vmt', window.vmtRooms);
     if (!utils.isNonEmptyObject(window.vmtRooms)) {
       window.vmtRooms = {};
     }
@@ -106,7 +109,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       // room is already on
       return;
     }
-    console.log('setting room', room._id);
     window.vmtRooms[room._id] = room;
   },
 
