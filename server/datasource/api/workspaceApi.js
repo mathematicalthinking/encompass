@@ -778,7 +778,7 @@ async function putWorkspace(req, res, next) {
   const savedWorkspace = await ws.save();
 
   if (doUpdateLinkedAssignment) {
-    models.Assignment.updateMany({linkedWorkspace: ws._id}, {$set: {linkedWorkspace: null}}).exec();
+    models.Assignment.updateMany({linkedWorkspaces: {$elemMatch: ws._id}}, {$pull: {linkedWorkspaces: ws._id}}).exec();
   }
     const wsPermissions = savedWorkspace.permissions;
 
@@ -2934,17 +2934,12 @@ async function cloneWorkspace(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 
-async function addAnswerToWorkspace(user, answer) {
+async function addAnswerToWorkspace(user, answer, workspaceId) {
   try {
-    if (!isNonEmptyObject(user) || !isNonEmptyObject(answer)) {
+    if (!isNonEmptyObject(user) || !isNonEmptyObject(answer) || !isValidMongoId(workspaceId)) {
       return;
     }
-    // make sure it is valid workspace
-    let workspaceId = answer.workspaceToUpdate;
 
-    if (!isValidMongoId(workspaceId)) {
-      return;
-    }
     let workspaceToUpdate = await models.Workspace.findById(workspaceId)
     .populate('submissions')
     .populate({path: 'linkedAssignment', populate: 'section'})
@@ -3009,6 +3004,24 @@ async function addAnswerToWorkspace(user, answer) {
     console.trace();
 
   }
+
+}
+
+function addAnswerToWorkspaces(user, answer) {
+  if (!isNonEmptyObject(user) || !isNonEmptyObject(answer)) {
+    return;
+  }
+
+  let workspaceIds = answer.workspacesToUpdate;
+  console.log('wsIds', workspaceIds);
+  if (!isNonEmptyArray(workspaceIds)) {
+    return;
+  }
+
+  return Promise.all(workspaceIds.map((id) => {
+    return addAnswerToWorkspace(user, answer, id);
+  }));
+
 
 }
 
@@ -3145,3 +3158,4 @@ module.exports.newFolderStructure = newFolderStructure;
 module.exports.getRestrictedDataMap = getRestrictedDataMap;
 module.exports.addAnswerToWorkspace = addAnswerToWorkspace;
 module.exports.post.updateWorkspaceRequest = updateWorkspaceRequest;
+module.exports.addAnswerToWorkspaces = addAnswerToWorkspaces;

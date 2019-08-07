@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 const _ = require('underscore');
 const ObjectId = Schema.ObjectId;
 
+const { isNonEmptyArray} = require('../../utils/objects');
+
 /**
   * @public
   * @class Assignment
@@ -118,14 +120,14 @@ AssignmentSchema.post('save', function (assignment) {
       });
     }
 
-    if (assignment.linkedWorkspace) {
+    if (isNonEmptyArray(assignment.linkedWorkspaces)) {
       let updateHash = { $set: {linkedAssignment: assignment._id} };
 
       if (assignment.isTrashed) {
-        updateHash = { $set: {linkedAssignment: null } };
+        updateHash = { $set: {linkedAssignment: undefined } };
       }
 
-      mongoose.models.Workspace.findByIdAndUpdate(assignment.linkedWorkspace, updateHash, function (err, affected, result) {
+      mongoose.models.Workspace.updateMany({_id: {$in: assignment.linkedWorkspaces } }, updateHash, function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
         }

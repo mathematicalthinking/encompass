@@ -237,12 +237,12 @@ const getAnswer = (req, res, next) => {
     answer.explanation = convertedExplanation;
     answer.createDate = Date.now();
     let savedAnswer = await answer.save();
-    let updatedWorkspaceInfo;
+    let updatedWorkspacesInfo;
 
     if (savedAnswer) {
       // check if should update workspace
-      if (savedAnswer.workspaceToUpdate) {
-      updatedWorkspaceInfo =  await wsApi.addAnswerToWorkspace(user, savedAnswer);
+      if (isNonEmptyArray(savedAnswer.workspacesToUpdate)) {
+      updatedWorkspacesInfo =  await wsApi.addAnswerToWorkspaces(user, savedAnswer);
       }
     }
     // savedAnswer createdBy, problem, section were populated
@@ -264,8 +264,13 @@ const getAnswer = (req, res, next) => {
       savedAnswer.createdBy = savedAnswer.createdBy._id;
     }
     let data = { 'answer': savedAnswer };
-    if (updatedWorkspaceInfo) {
-      data.meta = updatedWorkspaceInfo;
+    // updatedWorkspaceInfo is array of workspaceUpdate objects
+    /*
+    workspaceId,
+    submissionId
+    */
+    if (isNonEmptyArray(updatedWorkspacesInfo)) {
+      data.meta = { updatedWorkspacesInfo };
     }
     utils.sendResponse(res, data);
    }catch(err) {

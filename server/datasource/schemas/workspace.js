@@ -125,10 +125,10 @@ WorkspaceSchema.post('save', function (workspace) {
     }
 
     if (workspace.linkedAssignment) {
-      let updateHash = { $set: { linkedWorkspace: workspace._id } };
+      let updateHash = { $addToSet: { linkedWorkspaces: workspace._id } };
 
       if (workspace.isTrashed) {
-        updateHash = { $set: { linkedWorkspace: null } };
+        updateHash = { $pull: { linkedWorkspaces: workspace._id } };
       }
       mongoose.models.Assignment.findByIdAndUpdate(workspace.linkedAssignment, updateHash, function (err, affected, result) {
         if (err) {
