@@ -718,7 +718,7 @@ const studentMT = {
       "students" : [
           "5b914a102ecaf7c30dd47492"
       ],
-      "workspaceToUpdate":"5bec36958c73047613e2f34e"
+      "workspacesToUpdate":["5bec36958c73047613e2f34e"]
     }
   },
   selections: {

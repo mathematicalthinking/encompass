@@ -117,7 +117,7 @@ describe('Answer CRUD operations by account type', function() {
           });
 
           let newAnswerId;
-          let { workspaceToUpdate } = firstRevision;
+          let  workspaceToUpdate  = firstRevision.workspacesToUpdate[0];
           let newSubmission;
 
           it('should post the revision successfully', function(done) {
@@ -126,12 +126,21 @@ describe('Answer CRUD operations by account type', function() {
               .send({answer: firstRevision})
               .end((err, res) => {
                 if (err) {
-                  console.error(err);
+                  throw(err);
                 }
                 expect(res).to.have.status(200);
-                expect(res.body.answer).to.have.any.keys('problem', 'answer', 'priorAnswer');
-                expect(res.body.meta.updatedWorkspaceInfo.workspaceId).to.eql(workspaceToUpdate);
-                expect(res.body.meta.updatedWorkspaceInfo.submissionId).to.exist;
+
+                let { answer, meta } = res.body;
+                expect(answer).to.have.any.keys('problem', 'answer', 'priorAnswer');
+                expect(meta.updatedWorkspacesInfo).to.be.an('array');
+
+                let { updatedWorkspaceInfo } = meta.updatedWorkspacesInfo[0];
+
+                let updatedWorkspaceId = updatedWorkspaceInfo.workspaceId;
+                let newSubmissionId = updatedWorkspaceInfo.submissionId;
+
+                expect(updatedWorkspaceId).to.eql(workspaceToUpdate);
+                expect(newSubmissionId).to.exist;
                 newAnswerId = res.body.answer._id;
                 done();
               });

@@ -35,7 +35,7 @@ module.exports = [
   "section" : ObjectId("5c6eb4d49852e5710311d637"),
   "problem" : ObjectId("5bac07fcea4c0a230b2c7ab0"),
   "taskWorkspace" : null,
-  "linkedWorkspace" : null,
+  "linkedWorkspaces" : [],
   "answers" : [
       ObjectId("5c6eb7f89852e5710311d639"),
       ObjectId("5c6eb8319852e5710311d63c"),
@@ -74,7 +74,7 @@ module.exports = [
   "section" : ObjectId("5b9149a32ecaf7c30dd4748f"),
   "problem" : ObjectId("5b9173e23da5efca74705772"),
   "assignmentType" : "problem",
-  "linkedWorkspace" : ObjectId("5bec36958c73047613e2f34e"),
+  "linkedWorkspaces" : [ObjectId("5bec36958c73047613e2f34e")],
   "answers" : [
       ObjectId("5bb813fc9885323f6d894972"),
       ObjectId("5bec35898c73047613e2f34b")
