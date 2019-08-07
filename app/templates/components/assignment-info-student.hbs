@@ -41,14 +41,14 @@
   {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
   section=section problem=problem
   handleCreatedAnswer=(action "handleCreatedAnswer")
-  workspaceToUpdateId=workspaceToUpdateId
+  workspacesToUpdateIds=workspacesToUpdateIds
   }}
   {{/if}}
 
 {{#if isRevising}}
   {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer
   section=section problem=problem toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
-  handleCreatedAnswer=(action "handleCreatedAnswer") workspaceToUpdateId=workspaceToUpdateId
+  handleCreatedAnswer=(action "handleCreatedAnswer") workspacesToUpdateIds=workspacesToUpdateIds
   }}
 {{/if}}
 {{#if showReviseButton}}

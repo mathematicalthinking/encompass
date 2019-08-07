@@ -31,9 +31,9 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
     this._super(...arguments);
   },
 
-  workspaceToUpdateId: function() {
-    return this.get('utils').getBelongsToId(this.get('assignment'), 'linkedWorkspace');
-  }.property('assignment'),
+  workspacesToUpdateIds: function() {
+    return this.get('utils').getHasManyIds(this.get('assignment'), 'linkedWorkspaces');
+  }.property('assignment.linkedWorkspaces.[]'),
 
   isComposing: function() {
     return this.get('isRevising') || this.get('isResponding');
