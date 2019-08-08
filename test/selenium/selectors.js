@@ -387,6 +387,7 @@ module.exports = {
     studentsSelect: '.submission-row-item.students > .selectize-comp',
     studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
     dropdownContent: '.selectize-dropdown-content',
+    container: '#workspace-container',
   },
   wsInfo: {
     container: '#workspace-info',
@@ -426,6 +427,15 @@ module.exports = {
     confirmTrash: 'body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled',
     sideList: {
       yours: 'ul.your-assignments'
+    },
+    linkedWorkspaces: {
+      link: 'ul.assignment-info > li > a',
+    },
+    report: {
+      table: 'table.report.rows.values',
+      counts: 'td.count',
+      usernames: 'td.username',
+      dates: 'td.latest-date',
     }
   },
   wsComments: {
