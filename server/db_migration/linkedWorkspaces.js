@@ -1,21 +1,24 @@
 const mongoose = require('mongoose');
-const _ = require('underscore');
 
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost:27017/encompass_seed');
+mongoose.connect('mongodb://localhost:27017/encompass_stage');
 
 const { isValidMongoId } = require('../utils/mongoose');
 
 // Answer - convert workspaceToUpdate (objectId) to workspacesToUpdate (array)
 // Assignment - convert linkedWorkspace (objectId) to linkedWorkspaces (array)
 
-async function updateAnswers() {
-  try {
-    let answers = await models.Answer.find({});
+function addWorkspacesToUpdate() {
+  return models.Answer.updateMany({}, {$set: {workspacesToUpdate: []}});
+}
+async function updateAnswers(){
+  let updatedCount = 0;
 
-    let updatedAnswers = answers.map((ans) => {
+  try {
+    let answers = await models.Answer.find({workspaceToUpdate: {$exists: true}}, {workspaceToUpdate: 1}).lean();
+    let updatedAnswers = answers.map(async (ans) => {
       let { workspaceToUpdate } = ans;
 
       let docUpdate = {$unset: {'workspaceToUpdate': ''} };
@@ -24,7 +27,12 @@ async function updateAnswers() {
       } else {
         docUpdate.$set = { workspacesToUpdate: []};
       }
-      return models.Answer.findByIdAndUpdate(ans._id, docUpdate, {strict: false});
+      await models.Answer.findByIdAndUpdate(ans._id, docUpdate, {strict: false});
+      updatedCount++;
+      if (updatedCount % 10 === 0) {
+        console.log('Answers updated: ', updatedCount);
+      }
+      return true;
     });
     return Promise.all(updatedAnswers);
   }catch(err) {
@@ -35,7 +43,7 @@ async function updateAnswers() {
 
 async function updateAssignments() {
   try {
-    let assignments = await models.Assignment.find({});
+    let assignments = await models.Assignment.find({linkedWorkspace: 1}).lean();
 
     let updatedAssignments = assignments.map((assn) => {
       let { linkedWorkspace } = assn;
@@ -57,6 +65,8 @@ async function updateAssignments() {
 }
 async function migrate() {
   try {
+    await addWorkspacesToUpdate();
+    console.log('done adding default workspacesToUpdate to all answers');
     await updateAnswers();
     console.log('done updating answers');
     await updateAssignments();
@@ -69,4 +79,4 @@ async function migrate() {
   }
 }
 
-migrate();
+//  migrate();
