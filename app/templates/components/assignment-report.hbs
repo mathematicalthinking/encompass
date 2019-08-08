@@ -1,17 +1,46 @@
 <section class="assignmentReport">
-    <h2>Assignment Report</h2>
+    <h2>Assignment Report </h2>
+    <p class="info-summary">{{summaryMessage}}</p>
     <table class="report rows values">
     <tr>
-      <th>Student Username</th>
-      <th>Number of Submissions</th>
-      <th>Most Recent Revision</th>
+      <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.student
+            label="Student"
+            parentProp=sortCriterion
+            type="username"
+            activeType=sortCriterion.type}}
+      </th>
+      <th>
+        {{toggle-control
+            classToAdd="sort-bar-item revisions"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.revisionCount
+            label="Submission Count"
+            type="count"
+            activeType=sortCriterion.type
+            }}
+      </th>
+      <th>{{toggle-control
+            classToAdd="sort-bar-item date"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.latestRevisionDate
+            label="Latest Revision"
+            type="latestRevision"
+            activeType=sortCriterion.type
+            }}
+        </th>
     </tr>
     {{#each sortedReportItems as |item| }}
     <tr>
-        <td>{{item.username}}</td>
-        <td>{{item.count}}</td>
+        <td class="username">{{item.username}}</td>
+        <td class="count">{{item.count}}</td>
         {{#if item.count}}
-          <td>{{format-date item.latestRevision "MMM Do YYYY h:mm A"}}</td>
+          <td class="latest-date">{{format-date item.latestRevision "MMM Do YYYY h:mm A"}}</td>
         {{else}}
         <td> N/A</td>
         {{/if}}
