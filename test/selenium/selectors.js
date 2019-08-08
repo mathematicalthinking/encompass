@@ -217,7 +217,8 @@ module.exports = {
     heading: 'h2#swal2-title',
     confirmBtn: 'button.swal2-confirm',
     cancelBtn: 'button.swal2-cancel',
-    select: 'select.swal2-select'
+    select: 'select.swal2-select',
+    container: '.swal2-container'
   },
 
   problemNew: {

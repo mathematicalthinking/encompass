@@ -102,7 +102,12 @@ const isElementVisible = async function (webDriver, selector) {
       isVisible = await webElements[0].isDisplayed();
     }
   } catch (err) {
-    console.log(err);
+    if (err.name === 'StaleElementReferenceError' ) {
+      // element is no longer in dom
+      return false;
+    }
+    console.log({isElementVisibleError: err});
+
   }
   return isVisible;
 };
@@ -227,7 +232,11 @@ const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
       return await isElementVisible(webDriver, selector) === false;
     }, timeout);
   } catch (err) {
-    console.log(err);
+    if (err.name === 'StaleElementReferenceError' ) {
+      // element we are waiting to be removed has already been removed
+      return;
+    }
+    console.log('error wait for removal: ', err);
   }
 };
 

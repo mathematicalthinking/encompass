@@ -110,6 +110,8 @@ describe('Problems New', async function () {
               });
 
               it('should let you continue without selecting categories or keywords', async function () {
+                // modal was blocking the next button
+                await helpers.waitForRemoval(driver, css.sweetAlert.container);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'additional', true)).to.contain('additional information');
               });
