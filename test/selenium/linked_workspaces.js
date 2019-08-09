@@ -158,7 +158,7 @@ describe('Linking multiple workspaces to one assignment', function() {
           await helpers.findAndClickElement(driver, answerNewCss.createBtn);
 
           await helpers.waitForTextInDom(driver, toastMsg);
-          await driver.sleep(1000);
+          await helpers.waitForRemoval(driver, css.sweetAlert.container);
           let revItems = await helpers.getWebElements(driver, submitterCss.revIndexItem);
           expect(revItems).to.have.lengthOf(student.originalRevisionCount + 1);
         });
@@ -168,7 +168,6 @@ describe('Linking multiple workspaces to one assignment', function() {
           await driver.get(`${host}/#/workspaces/${workspace._id}/work`);
           await helpers.waitForSelector(driver, 'span.submission_count');
 
-          await driver.sleep(1000);
           // click x button on tour box
           await helpers.findAndClickElement(driver, 'div.guiders_x_button');
 
@@ -212,7 +211,8 @@ describe('Linking multiple workspaces to one assignment', function() {
           await helpers.findAndClickElement(driver, answerNewCss.createBtn);
 
           await helpers.waitForTextInDom(driver, toastMsg);
-          await driver.sleep(1000);
+          await helpers.waitForRemoval(driver, css.sweetAlert.container);
+
           let revItems = await helpers.getWebElements(driver, submitterCss.revIndexItem);
           expect(revItems).to.have.lengthOf(student.originalRevisionCount + 1);
         });
@@ -222,7 +222,6 @@ describe('Linking multiple workspaces to one assignment', function() {
           await driver.get(`${host}/#/workspaces/${workspace._id}/work`);
           await helpers.waitForSelector(driver, 'span.submission_count');
 
-          await driver.sleep(1000);
           // click x button on tour box
           await helpers.findAndClickElement(driver, 'div.guiders_x_button');
 
@@ -243,8 +242,8 @@ describe('Linking multiple workspaces to one assignment', function() {
 
         it('should have automatically updated assignment revision counts', async function() {
           let updatedCount = 4;
-
-          expect(await helpers.isTextInDom(driver, `for a total of ${updatedCount} submissions.`)).to.eql(true);
+          let summary = await helpers.findAndGetText(driver, '.info-summary');
+          expect(summary).to.include(`for a total of ${updatedCount} submissions`);
         });
       });
     });
