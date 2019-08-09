@@ -7,7 +7,6 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const axios = require('axios');
-// const bcrypt = require('bcrypt');
 
 //REQUIRE FILES
 // const userAuth = require('../../middleware/userAuth');
@@ -33,19 +32,6 @@ function getVmtUrl() {
   return 'http://localhost:3001';
 }
 
-function getVmtSecret() {
-  let nodeEnv = process.env.NODE_ENV;
-
-  if (nodeEnv === 'production') {
-    return process.env.VMT_ENC_SECRET_PROD;
-  }
-
-  if (nodeEnv === 'staging') {
-    return process.env.VMT_ENC_SECRET_STAGING;
-  }
-  return process.env.VMT_ENC_SECRET_DEV;
-}
-
 const getVmtRoom = async (req, res, next) => {
   try {
     // let user = userAuth.requireUser(req);
@@ -59,9 +45,6 @@ const getVmtRoom = async (req, res, next) => {
 
 
     let url = `${getVmtUrl()}/api/rooms/${roomId}/populated?events=true`;
-    // let headers = {
-    //   'Authorization': hash
-    // };
     let result = await axios.get(url);
 
     let room = _.propertyOf(result)(['data', 'result']);

@@ -1,4 +1,4 @@
-Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.VmtHostMixin, {
+Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.VmtHostMixin, Encompass.ErrorHandlingMixin, {
   classNames: ['vmt-search'],
 
   searchConstraints: {
@@ -9,6 +9,7 @@ Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       }
     }
   },
+  searchErrors: [],
 
   actions: {
     submitSearch() {
@@ -20,15 +21,9 @@ Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return;
       }
       let vmtHost = this.getVmtHost();
-      // let token = this.get('token');
 
       let url = `${vmtHost}/enc/search?resourceName=${trimmed}`;
-      // let url = `${vmtHost}/api/searchPaginated/rooms?criteria=${trimmed}`;
-      // let activitiesUrl = `${vmtHost}/api/searchPaginated/activities?criteria=${trimmed}`;
 
-      // let headers = {
-      //   "Authorization" : token
-      // };
       Ember.$.get({
         url,
         xhrFields: {
@@ -43,13 +38,12 @@ Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           rooms: [],
         }
         */
-       console.log('rsults', results);
         if (this.get('handleSearchResults')) {
           this.get('handleSearchResults')(results);
         }
       })
       .catch((err) => {
-        console.log('vmt search error', err);
+        this.handleErrors(err, 'searchErrors');
       });
     }
   }

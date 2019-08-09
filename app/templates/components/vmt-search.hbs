@@ -8,3 +8,7 @@
   doDebounce=true
   constraints=searchConstraints
 }}
+
+{{#each searchErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut searchErrors) null)}}
+{{/each}}

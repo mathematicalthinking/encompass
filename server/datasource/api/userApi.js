@@ -262,7 +262,6 @@ function postUser(req, res, next) {
       updateHash = requestBody;
     }
     updateHash.socketId = requestBody.socketId;
-    updateHash.vmtToken = requestBody.vmtToken;
 
     if (isSelf) {
       if (Array.isArray(requestBody.notifications)) {

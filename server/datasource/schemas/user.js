@@ -86,11 +86,6 @@ var UserSchema = new Schema({
   ssoId: {type: ObjectId},
   doForcePasswordChange: { type: Boolean, default: false },
   confirmEmailDate: { type: Date },
-  vmtUserInfo: {
-    token: { type: String },
-    username: { type: String },
-    userId: { type: String }
-  },
 },
 {
   versionKey: false,

@@ -86,5 +86,4 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   ssoId: DS.attr('string'),
   doForcePasswordChange: DS.attr('boolean', {defaultValue: false}),
   confirmEmailDate: DS.attr('date'),
-  vmtUserInfo: DS.attr({ defaultValue: {} }),
 });

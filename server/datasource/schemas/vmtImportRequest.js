@@ -25,10 +25,6 @@ var VmtImportRequestSchema = new Schema({
   permissionObjects: [ WorkspacePermissionObject ],
 
   vmtRooms: { type: Object }, // populated vmt Rooms that will be converted to answers and then submissions
-  vmtUserInfo: {
-    username: { type: String },
-    userId: { type: String },
-  },
 
   createdWorkspace: { type: ObjectId, ref: 'Workspace' },
   createdAnswers: [{ type: ObjectId, ref: 'Answer'}],
