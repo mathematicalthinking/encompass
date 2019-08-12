@@ -166,7 +166,7 @@ describe('Assignments as Student', async function () {
             expect(pastAnswers).to.have.lengthOf(assignments.answers.count + 1);
 
             if (submitDetails.isRevision) {
-              await driver.get(`${host}/#/workspaces/${submitDetails.newAnswer.workspaceToUpdate}/work`);
+              await driver.get(`${host}/#/workspaces/${submitDetails.newAnswer.workspacesToUpdate[0]}/work`);
               await helpers.waitForSelector(driver, 'span.submission_count');
 
               // click x button on tour box

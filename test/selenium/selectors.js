@@ -217,7 +217,8 @@ module.exports = {
     heading: 'h2#swal2-title',
     confirmBtn: 'button.swal2-confirm',
     cancelBtn: 'button.swal2-cancel',
-    select: 'select.swal2-select'
+    select: 'select.swal2-select',
+    container: '.swal2-container'
   },
 
   problemNew: {
@@ -387,6 +388,7 @@ module.exports = {
     studentsSelect: '.submission-row-item.students > .selectize-comp',
     studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
     dropdownContent: '.selectize-dropdown-content',
+    container: '#workspace-container',
   },
   wsInfo: {
     container: '#workspace-info',
@@ -426,6 +428,15 @@ module.exports = {
     confirmTrash: 'body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled',
     sideList: {
       yours: 'ul.your-assignments'
+    },
+    linkedWorkspaces: {
+      link: 'ul.assignment-info > li > a',
+    },
+    report: {
+      table: 'table.report.rows.values',
+      counts: 'td.count',
+      usernames: 'td.username',
+      dates: 'td.latest-date',
     }
   },
   wsComments: {

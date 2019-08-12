@@ -13,7 +13,7 @@ Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
   priorAnswer: DS.belongsTo('answer'),
   assignment: DS.belongsTo('assignment', { async: true }),
   additionalImage: DS.belongsTo('image', { inverse: null }),
-  workspaceToUpdate: DS.attr(''),
+  workspacesToUpdate: DS.attr(''),
 
   student: function() {
     const creatorUsername = this.get('createdBy.username');

@@ -386,6 +386,9 @@ const getProblemsByCategory = async function(query) {
 const getAllChildCategories = async function(categoryId, isIdOnly, asStrings) {
   try {
     let category = await models.Category.findById(categoryId);
+    if (!category) {
+      return [];
+    }
     let identifier = category.identifier;
     let regex = new RegExp(`^${identifier}`, 'i');
 

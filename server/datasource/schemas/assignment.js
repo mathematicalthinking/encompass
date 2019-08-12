@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 const _ = require('underscore');
 const ObjectId = Schema.ObjectId;
 
+const { isNonEmptyArray} = require('../../utils/objects');
+
 /**
   * @public
   * @class Assignment
@@ -26,7 +28,7 @@ var AssignmentSchema = new Schema({
   answers: [{ type: ObjectId, ref: 'Answer'}],
   dueDate: { type: Date },
   assignmentType: { type: String },
-  linkedWorkspace: { type: ObjectId, ref: 'Workspace' }, // for auto updatingtype problem assignments
+  linkedWorkspaces: [{ type: ObjectId, ref: 'Workspace' }], // for auto updatingtype problem assignments
 }, { versionKey: false });
 
 /* + The Problem exists */
@@ -118,14 +120,14 @@ AssignmentSchema.post('save', function (assignment) {
       });
     }
 
-    if (assignment.linkedWorkspace) {
+    if (isNonEmptyArray(assignment.linkedWorkspaces)) {
       let updateHash = { $set: {linkedAssignment: assignment._id} };
 
       if (assignment.isTrashed) {
-        updateHash = { $set: {linkedAssignment: null } };
+        updateHash = { $set: {linkedAssignment: undefined } };
       }
 
-      mongoose.models.Workspace.findByIdAndUpdate(assignment.linkedWorkspace, updateHash, function (err, affected, result) {
+      mongoose.models.Workspace.updateMany({_id: {$in: assignment.linkedWorkspaces } }, updateHash, function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
         }

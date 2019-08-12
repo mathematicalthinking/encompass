@@ -75,14 +75,16 @@
             <p class="assignment-info">{{format-date assignment.dueDate displayDateFormat}}</p>
           </li>
           <li>
-            <label for="dueDate">Linked Workspace</label>
-            <p class="assignment-info">
-              {{#if linkedWorkspace}}
-                {{#link-to 'workspace.work' linkedWorkspace.id}}{{linkedWorkspace.name}}{{/link-to}}
+            <label for="linkedWorkspaces">Linked Workspaces</label>
+            <ul class="assignment-info">
+              {{#each linkedWorkspaces as |workspace|}}
+              <li>
+                {{#link-to 'workspace.work' workspace.id}}{{workspace.name}}{{/link-to}}
+              </li>
                 {{else}}
-                  N/A
-                {{/if}}
-              </p>
+                <li>N/A</li>
+                {{/each}}
+              </ul>
           </li>
         </ol>
       </fieldset>

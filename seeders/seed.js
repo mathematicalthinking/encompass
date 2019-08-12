@@ -3,10 +3,16 @@ const mongoose = require('mongoose');
 
 const dbURI = `mongodb://localhost:27017/encompass_seed`;
 
+const removeAllDocs = () => {
+  let collections = Object.keys(data);
+  return Promise.all(collections.map((collection) => {
+    return mongoose.connection.db.collection(collection).remove({});
+  }));
+};
 const clearDB = () => {
   return mongoose
     .connect(dbURI, { useNewUrlParser: true })
-    .then(() => mongoose.connection.db.dropDatabase());
+    .then(removeAllDocs);
 };
 
 const seedCollection = (db, collectionName, data) => {

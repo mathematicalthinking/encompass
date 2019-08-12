@@ -1,15 +1,17 @@
 var _ = require('underscore');
+const { ObjectId } = require('./utils');
+
 // var Seeder = require('mongoose-data-seed').Seeder;
 // var Category = require('../server/datasource/schemas').Category;
 
 var gradek = [{
-    _id: '5bb650e1fefbf3cf9e88f673',
+    _id: ObjectId('5bb650e1fefbf3cf9e88f673'),
     identifier: 'CCSS.Math.Content.K',
     description: 'Grade K',
     url: 'http://corestandards.org/Math/Content/K'
   },
   {
-    _id: '5bb650e1fefbf3cf9e88f677',
+    _id: ObjectId('5bb650e1fefbf3cf9e88f677'),
     identifier: 'CCSS.Math.Content.K.G.B.6',
     description: 'Compose simple shapes to form larger shapes.',
     url: 'http://corestandards.org/Math/Content/K/G/B/6'
@@ -207,7 +209,7 @@ var gradek = [{
 ];
 
 var grade1 = [{
-    _id: '5be48d3b9f4e39142bd3f0d2',
+    _id: ObjectId('5be48d3b9f4e39142bd3f0d2'),
     identifier: 'CCSS.Math.Content.1',
     description: 'Grade 1',
     url: 'http://corestandards.org/Math/Content/1'
@@ -258,7 +260,7 @@ var grade1 = [{
     url: 'http://corestandards.org/Math/Content/1/MD/B'
   },
   {
-    _id: '5bb650e1fefbf3cf9e88f832',
+    _id: ObjectId('5bb650e1fefbf3cf9e88f832'),
     identifier: 'CCSS.Math.Content.1.MD.A.2',
     description: 'Express the length of an object as a whole number of length units, by laying multiple copies of a shorter object (the length unit) end to end; understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps.',
     url: 'http://corestandards.org/Math/Content/1/MD/A/2'
@@ -1255,7 +1257,7 @@ var grade5 = [
     url: 'http://corestandards.org/Math/Content/5/G/A/1'
   },
   {
-    _id: '5bb650e1fefbf3cf9e88f904',
+    _id: ObjectId('5bb650e1fefbf3cf9e88f904'),
     identifier: 'CCSS.Math.Content.5.G.A',
     description: 'Graph points on the coordinate plane to solve real-world and mathematical problems.',
     url: 'http://corestandards.org/Math/Content/5/G/A'
@@ -2195,7 +2197,7 @@ var grade8 = [
     url: 'http://corestandards.org/Math/Content/8/EE/A'
   },
   {
-    _id: '5bb650e1fefbf3cf9e88f675',
+    _id: ObjectId('5bb650e1fefbf3cf9e88f675'),
     identifier: 'CCSS.Math.Content.8.EE',
     description: 'Expressions and Equations',
     url: 'http://corestandards.org/Math/Content/8/EE'
@@ -2241,7 +2243,7 @@ var grade8 = [
     url: 'http://corestandards.org/Math/Content/8/G/B/7'
   },
   {
-    _id: '5bb650e1fefbf3cf9e88f8f6',
+    _id: ObjectId('5bb650e1fefbf3cf9e88f8f6'),
     identifier: 'CCSS.Math.Content.8.G.B.6',
     description: 'Explain a proof of the Pythagorean Theorem and its converse.',
     url: 'http://corestandards.org/Math/Content/8/G/B/6'
@@ -2765,7 +2767,7 @@ var gradeHSS = [
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/3'
   },
   {
-    _id: '5bb650e1fefbf3cf9e88f680',
+    _id: ObjectId('5bb650e1fefbf3cf9e88f680'),
     identifier: 'CCSS.Math.Content.HSG.SRT.A.2',
     description: 'Given two figures, use the definition of similarity in terms of similarity transformations to decide if they are similar; explain using similarity transformations the meaning of similarity for triangles as the equality of all corresponding pairs of angles and the proportionality of all corresponding pairs of sides.',
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/2'
@@ -4927,7 +4929,7 @@ var mathPractice = [
     "url": "http://corestandards.org/Math/Practice/MP8"
   },
   {
-    "_id" : "5bbdfc46ecd6e597fd8d7aa3",
+    "_id" : ObjectId("5bbdfc46ecd6e597fd8d7aa3"),
     "isTrashed" : true,
     "identifier": 'CCSS.Math.Practice.MP2'
 }

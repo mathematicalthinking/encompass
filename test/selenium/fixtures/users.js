@@ -342,7 +342,7 @@ module.exports = {
           explanation: 'This is my second explanation.',
           briefSummary: 'This is a brief summary of my thoughts.',
           contributors: ['tracyc'],
-          workspaceToUpdate: '5bec36958c73047613e2f34e',
+          workspacesToUpdate: ['5bec36958c73047613e2f34e'],
         }
       },
     }

@@ -48,7 +48,7 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
     { createdBy: user._id },
   ];
   if (isNonEmptyArray(accessibleWorkspaceIds)) {
-    filter.$or.push({linkedWorkspace: {$in: accessibleWorkspaceIds}});
+    filter.$or.push({linkedWorkspaces: { $elemMatch: {$in: accessibleWorkspaceIds } } } );
   }
   // students can get any assignment that has been assigned to them
   if (accountType === 'S' || actingRole === 'student') {

@@ -28,7 +28,7 @@ var AnswerSchema = new Schema({
   isSubmitted: { type: Boolean, default: true },
   notes: { type: String },
   powsSubmId: { type: Number }, // old POWs submission ID,
-  workspaceToUpdate: { type: ObjectId, ref: 'Workspace' },
+  workspacesToUpdate: [{ type: ObjectId, ref: 'Workspace' }],
 }, { versionKey: false });
 
 /**

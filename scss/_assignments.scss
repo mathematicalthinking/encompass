@@ -225,3 +225,21 @@ section.assignment-info-teacher {
       }
     }
 }
+
+#assignment-report {
+ h2 {
+   margin-bottom: 10px;
+ }
+ .info-summary {
+   margin-bottom: 10px;
+   margin-left: 5px;
+ }
+
+ table {
+   margin-left: 5px;
+   td.count {
+     text-align: center;
+   }
+ }
+
+}
