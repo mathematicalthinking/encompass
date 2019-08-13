@@ -5,6 +5,7 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
 
   vmtUsername: null,
   vmtUserId: null,
+  selectedMode: 'private',
 
   steps: [
     { value: 0 }, // placeholder
