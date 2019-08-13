@@ -80,7 +80,7 @@ Encompass.VmtImportStep2Component = Ember.Component.extend(Encompass.CurrentUser
         return;
       }
 
-      if (!areRooms) {
+      if (!areRooms && !isAlreadySelected) {
         return this.get('alert').showToast('error', 'This activity does not have any rooms', 'bottom-end', 3000, false, null);
       }
       this.get('selectedActivities').pushObject(activity);

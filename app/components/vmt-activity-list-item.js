@@ -6,8 +6,8 @@ Encompass.VmtActivityListItemComponent = Ember.Component.extend({
 
   isSelected: function() {
     let ids = this.get('selectedActivityIds') || [];
-    return ids.includes(this.get('activity.id'));
-  }.property('activity.id', 'selectedActivityIds.[]'),
+    return ids.includes(this.get('activity._id'));
+  }.property('activity._id', 'selectedActivityIds.[]'),
 
   encodedImageUri: function() {
    if (!this.get('activity.image')) {
