@@ -1,0 +1,83 @@
+<div class="flex-container-full">
+  <div class="flex-item-full filter-options collapse" id="filter-list-side">
+    <div class="filter-items">
+      <h2>Summary</h2>
+      <ul class="primary-filter-list">
+        {{#each detailsItems as |item|}}
+          {{details-list-item
+          label = item.label
+          displayValue = item.displayValue
+          emptyValue = item.emptyValue
+          propName = item.propName
+          children = item.children
+          isArray = item.isArray
+          editValue = (action "goToStep")
+          associatedStep=item.associatedStep
+          currentStep=currentStep.value
+          }}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+  <div class="flex-item-full list-view">
+    <div class="results-list">
+      <div class="header">
+        <h1>Import VMT Work</h1>
+      </div>
+
+      <div class="step-display">
+        <div class="container">
+          <ul class="progressbar">
+            <li class="step-1 active-step">
+              <span>Select Rooms</span>
+            </li>
+            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
+              <span>Create Workspace</span>
+            </li>
+            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
+              <span>Review</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-content">
+        {{#if showSelectRooms}}
+          {{vmt-import-step2
+            store=store
+            onBack=(action "changeStep")
+            onProceed=(action "setSelectedRooms")
+            existingSelectedRooms=selectedRooms
+            previousResults=mostRecentSearchResults
+            existingSelectedActivities=selectedActivities
+          }}
+        {{/if}}
+
+        {{#if showCreateWs}}
+          {{import-work-step5 users=users selectedOwner=selectedOwner selectedFolderSet=selectedFolderSet doCreateWs=doCreateWs selectedMode=selectedMode folderSets=folderSets store=store answers=selectedRooms workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet onBack=(action "changeStep") onProceed=(action "prepareReview")}}
+        {{/if}}
+
+        {{#if showReview}}
+          {{vmt-import-step4 store=store answers=selectedRooms workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers createdWorkspace=createdWorkspace onBack=(action "changeStep") onProceed=(action "importWork")}}
+        {{/if}}
+      </div>
+
+    {{#each findRecordErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    {{#each postErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    {{#each createAnswerErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    </div>
+  </div>
+</div>
+
+<div class="toggle-filter-menu">
+  <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+</div>
+
+
+

@@ -415,6 +415,12 @@ span.meta.response-count.existing {
     padding: 20px;
     border-radius: 3px;
     font-size: .9em;
+
+    &.vmt-summary {
+      ul {
+        margin-left: 15px;
+      }
+    }
   }
   .submission.long, .submission-long {
     background-color: $background-body;

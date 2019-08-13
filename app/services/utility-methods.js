@@ -102,5 +102,70 @@ findByBelongsToId(records, relationshipName, targetId) {
 
     return id === targetId;
   });
-}
+},
+
+extractHoursMinsSecondsFromMs(ms) {
+  // takes ms as Number and returns [hours, mins, seconds]
+  // seconds are rounded down
+  if (!ms > 0) {
+    return [0,0,0];
+  }
+  let fullHours = ms * (0.001) * (1/60) * (1/60);
+
+  let hourStr = fullHours.toString();
+  let decimalIx = hourStr.indexOf('.');
+
+  if (decimalIx === -1) {
+    // integer
+    return [fullHours, 0, 0];
+  }
+
+  let minStr = hourStr.slice(decimalIx);
+  let fullMinutes = Number(minStr) * 60;
+
+  let fullMinStr = fullMinutes.toString();
+  decimalIx = fullMinStr.indexOf('.');
+
+  if (decimalIx === -1) {
+    // integer minutes
+    return [Math.floor(fullHours), fullMinutes, 0];
+  }
+
+  let fullSeconds = Number(fullMinStr.slice(decimalIx));
+
+  return [Math.floor(fullHours), Math.floor(fullMinutes), Math.floor(fullSeconds * 60)];
+
+},
+extractMsFromTimeString(timeString) {
+  // expect format of hh:mm:ss
+  if (typeof timeString !== 'string') {
+    return null;
+  }
+
+  let split = timeString.split(':');
+
+  if (split.length !== 3) {
+    return null;
+  }
+
+  let hours = parseInt(split[0], 10);
+  let minutes = parseInt(split[1], 10);
+  let seconds = parseInt(split[2], 10);
+
+  if (hours >= 0 && minutes >= 0 && seconds >= 0) {
+    return (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000);
+  }
+
+  return null;
+
+},
+getTimeStringFromMs(ms) {
+  let [hours, minutes, seconds] = this.extractHoursMinsSecondsFromMs(ms);
+  let displayHours = hours < 10 ? `0${hours}`: `${hours}`;
+  let displayMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  let displaySeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+
+  return `${displayHours}:${displayMinutes}:${displaySeconds}`;
+
+},
 });

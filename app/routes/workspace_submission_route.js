@@ -7,12 +7,37 @@
   * @see workspace_submissions_route
   */
 /*global _:false */
-Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
+Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, Encompass.VmtHostMixin, {
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
+
+  queryParams: 'vmtRoomId',
 
   model(params) {
+
+    let { submission_id} = params;
+
+
     let submissions = this.modelFor('workspace.submissions');
-    return submissions.findBy('id', params.submission_id);
+    let submission = submissions.findBy('id', submission_id);
+
+    return submission;
+  },
+
+  afterModel(submission, transition) {
+
+    return this.resolveVmtRoom(submission)
+    .then((room) => {
+      if (!room) {
+        return;
+      }
+      let vmtRoomId = room._id;
+
+      // so links to selections still work
+      if (transition.intent.name === 'workspace.submission') {
+        this.transitionTo('workspace.submission', submission, {queryParams: {vmtRoomId}});
+      }
+    });
   },
 
   setupController: function(controller, model) {
@@ -37,6 +62,61 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         this.controller.send('startTour', 'workspace');
       }
     });
+  },
+
+  resolveVmtRoom(submission) {
+    let roomId = submission.get('vmtRoomInfo.roomId');
+    let utils = this.get('utils');
+
+    if (!utils.isValidMongoId(roomId)) {
+      return Ember.RSVP.resolve(null);
+    }
+
+    let cachedRoom = this.extractVmtRoom(roomId);
+
+    if (cachedRoom) {
+      return Ember.RSVP.resolve(cachedRoom);
+    }
+    let vmtHost = this.getVmtHost();
+    let url = `${vmtHost}/api/rooms/${roomId}/populated?events=true`;
+
+      return Ember.$.get({
+        url,
+        xhrFields: {
+          withCredentials: true
+        }
+      })
+      .then((data) => {
+        if (!data || !data.result) {
+          return null;
+        }
+        // put result on window if necessary
+
+        this.handleRoomForVmt(data.result);
+
+        return data.result;
+      });
+
+  },
+
+  handleRoomForVmt(room) {
+    let utils = this.get('utils');
+    if (!utils.isNonEmptyObject(window.vmtRooms)) {
+      window.vmtRooms = {};
+    }
+    if (window.vmtRooms[room._id]) {
+      // room is already on
+      return;
+    }
+    window.vmtRooms[room._id] = room;
+  },
+
+  extractVmtRoom(roomId) {
+    if (!this.get('utils').isNonEmptyObject(window.vmtRooms)) {
+      return null;
+    }
+
+    return window.vmtRooms[roomId];
   },
 
   actions: {
@@ -82,6 +162,16 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         .catch((err) => {
           console.log('err save tagging', err);
         });
+    },
+    willTransition(transition) {
+      let currentUrl = window.location.hash;
+      let wasVmt = currentUrl.indexOf('?vmtRoomId=') !== -1;
+      let willBeVmt = this.get('utils').isValidMongoId(transition.queryParams.vmtRoomId);
+      if (wasVmt && !willBeVmt) {
+        window.postMessage({
+          messageType: 'DESTROY_REPLAYER',
+        });
+      }
     }
   }
 });

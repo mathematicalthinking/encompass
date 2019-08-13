@@ -1,4 +1,8 @@
-Encompass.AuthSignupRoute = Ember.Route.extend({
+Encompass.AuthSignupRoute = Encompass.LoggedOutRoute.extend({
+  beforeModel() {
+    this._super(...arguments);
+  },
+
   model: function() {
     return this.store.query('organization', {
       sortBy: 'members'

@@ -642,14 +642,9 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
         this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 3000, false, null);
         //Get the created workspaceId from the res
         let workspaceId = res.get('createdWorkspace').get('id');
-        //Then find the first SubmissionID, this is sent to route in order to redirect
-        this.store.findRecord('workspace', workspaceId).then((workspace) => {
-          let submission = workspace.get('submissions').get('firstObject');
-          let submissionId = submission.get('id');
-          this.sendAction('toWorkspaces', workspaceId, submissionId);
-        }).catch((err) => {
-          this.handleErrors(err, 'findRecordErrors');
-        });
+
+        this.sendAction('toWorkspaces', workspaceId);
+
 
       })
       .catch((err) => {

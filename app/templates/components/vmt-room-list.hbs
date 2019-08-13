@@ -1,0 +1,16 @@
+<p class="sub-input-label">{{labelText}}</p>
+
+<ul>
+  {{#each rooms as |room|}}
+    <li>
+      {{vmt-room-list-item
+        room=room
+        selectedRoomIds=selectedRoomIds
+        showCheckbox=showCheckbox
+        onSelect=(action "onItemSelect")
+      }}
+    </li>
+  {{else}}
+    <li> No rooms</li>
+  {{/each}}
+</ul>

@@ -9,7 +9,7 @@ const mongooseUtils = require('../../utils/mongoose');
 const submissionsAccess = require('./submissions');
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+const { isNonEmptyObject, isNonEmptyArray, isNonEmptyString } = objectUtils;
 
 module.exports.get = {};
 
@@ -27,7 +27,6 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
       return;
     }
     let doIncludeOldPows = false;
-    let oldPowsWorkIds = [];
 
     const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -36,6 +35,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
         { isTrashed: false }
       ]
     };
+
     if (isNonEmptyArray(ids)) {
       filter.$and.push({ _id: { $in : ids } });
     } else if(mongooseUtils.isValidMongoId(ids)) {
@@ -43,6 +43,32 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
     }
 
     if (isNonEmptyObject(filterBy)) {
+      if (filterBy.isVmtOnly === 'true' || filterBy.isVmtOnly === true) {
+        filter.$and.push({
+          'vmtRoomInfo.roomId': {$ne: null}
+        });
+      }
+      delete filterBy.isVmtOnly;
+
+      if (isNonEmptyString(filterBy.vmtSearchText)) {
+        let $or = [];
+        let $and = [{
+          'vmtRoomInfo.roomId': {$ne: null}
+        }];
+        let replaced = filterBy.vmtSearchText.replace(/\s+/g, "");
+        let regex = new RegExp(replaced, 'i');
+
+        $or.push({'vmtRoomInfo.roomName': regex});
+        $or.push({'vmtRoomInfo.activityName': regex});
+        $or.push({'vmtRoomInfo.participants': regex});
+        $or.push({'vmtRoomInfo.facilitators': regex});
+
+        $and.push({$or});
+        filter.$and.push({$and});
+        delete filterBy.vmtSearchText;
+
+      }
+
       if (filterBy.teacher && accountType !== 'T') {
         let [assignments, sections] = await Promise.all([
           utils.getTeacherAssignments(filterBy.teacher),

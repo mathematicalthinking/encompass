@@ -82,6 +82,9 @@
     h2 {
       margin-bottom: 30px;
     }
+    .vmt-header {
+      margin-left: 0;
+    }
   }
   .primary-filter-list {
     padding: 0 20px;
@@ -111,6 +114,9 @@
         padding-left: 10px;
         font-weight: $light-font-weight;
         max-width: 115px;
+        &.vmt-search {
+          max-width: 90%;
+        }
       }
       .selectize-comp {
         .selectize-control.single {
@@ -131,6 +137,20 @@
         }
       }
     }
+  }
+  .vmt-filter-list {
+    li {
+      &.vmt-only-input {
+        label {
+          display: inline-block;
+          width: 80%;
+        }
+        input[type=checkbox] {
+          margin-left: 0;
+        }
+      }
+    }
+
   }
 }
 

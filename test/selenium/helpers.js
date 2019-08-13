@@ -197,13 +197,17 @@ const findAndClickElement = async function (webDriver, selector) {
   return;
 };
 
-const waitForAndClickElement = async function (webDriver, selector, timeout = timeoutMs) {
-  try {
-    let element = await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
-    await element.click();
-  } catch (err) {
-    console.log(err);
-  }
+const waitForAndClickElement = function (webDriver, selector, timeout = timeoutMs) {
+      return webDriver.wait(until.elementLocated(By.css(selector)), timeout, `Unable to locate element by selector: ${selector}`)
+      .then((locatedEl) => {
+        return webDriver.wait(until.elementIsVisible(locatedEl), timeout, `Element ${selector} not visible`)
+        .then((visibleEl) => {
+          return visibleEl.click();
+        });
+      })
+      .catch((err) => {
+        throw(err);
+      });
 };
 
 const waitForTextInDom = async function (webDriver, text, timeout=timeoutMs) {
@@ -398,6 +402,19 @@ const saveScreenshot = function(webdriver) {
   });
 };
 
+const waitForNElements = function(webDriver, selector, num, timeout=timeoutMs) {
+  let conditionFn = () => {
+    return getWebElements(webDriver, selector)
+    .then((els) => {
+      return els.length === num;
+    });
+  };
+  return webDriver.wait(conditionFn, timeout)
+  .catch((err) => {
+    throw(err);
+  });
+};
+
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -463,3 +480,4 @@ module.exports.newSection = newSection;
 module.exports.timeoutTestMsStr = timeoutTestMsStr;
 module.exports.waitForUrlMatch = waitForUrlMatch;
 module.exports.saveScreenshot = saveScreenshot;
+module.exports.waitForNElements = waitForNElements;

@@ -15,7 +15,7 @@ var AnswerSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  problem: { type: ObjectId, ref: 'Problem', required: true },
+  problem: { type: ObjectId, ref: 'Problem' },
   assignment: { type: ObjectId, ref: 'Assignment' },
   answer: { type: String }, // this is the brief summary (short answer)
   explanation: { type: String }, // HTML answer, possibly with images embedded
@@ -29,6 +29,14 @@ var AnswerSchema = new Schema({
   notes: { type: String },
   powsSubmId: { type: Number }, // old POWs submission ID,
   workspacesToUpdate: [{ type: ObjectId, ref: 'Workspace' }],
+  vmtRoomInfo: {
+    roomId: { type: ObjectId }, // object id from vmt
+    imageUrl: { type: String }, //
+    roomName: { type: String },
+    activityName: { type: String },
+    facilitators: [ { type: String } ], // just usernames for now,
+    participants: [ { type: String } ] // just usernames for now,
+  }
 }, { versionKey: false });
 
 /**

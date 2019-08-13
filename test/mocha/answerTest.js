@@ -15,6 +15,7 @@ const expect = chai.expect;
 const host = helpers.host;
 const baseUrl = "/api/answers/";
 
+mongoose.Promise = global.Promise;
 
 chai.use(chaiHttp);
 
@@ -109,7 +110,7 @@ describe('Answer CRUD operations by account type', function() {
       if (accountType === 'S') {
         describe('/POST revised answer to assignment with a linked workspace', function() {
           before(async function() {
-            await mongoose.connect('mongodb://localhost:27017/encompass_seed');
+            await mongoose.connect('mongodb://localhost:27017/encompass_seed', {useMongoClient: true});
 
           });
           after( function() {

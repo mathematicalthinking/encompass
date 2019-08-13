@@ -2,6 +2,7 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   elementId: ['submission-viewer-list-item'],
   alert: Ember.inject.service('sweet-alert'),
   student: Ember.computed.alias('answer.student'),
+  isVmt: Ember.computed.alias('answer.isVmt'),
 
   didReceiveAttrs() {
     this._super(...arguments);

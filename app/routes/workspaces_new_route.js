@@ -21,9 +21,9 @@ Encompass.WorkspacesNewRoute = Encompass.AuthenticatedRoute.extend({
   },
 
   actions: {
-    // Created workspaceId and the firstSubmission are passed from component to redirect
-    toWorkspaces: function (workspaceId, submissionId) {
-      window.location.href = `#/workspaces/${workspaceId}/submissions/${submissionId}`;
+    // Created workspaceId and is passed from component to redirect
+    toWorkspaces: function (workspaceId,) {
+      this.transitionTo('workspace.work', workspaceId);
     },
 
     toWorkspace: function(id) {

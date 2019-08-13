@@ -1386,7 +1386,7 @@ module.exports = [
     "createDate" : ISODate("2019-06-21T17:08:26.423Z"),
     "lastModifiedDate" : ISODate("2019-06-21T17:08:26.667Z"),
     "isTrashed" : false,
-    "isEmailConfirmed" : false,
+    "isEmailConfirmed" : true,
     "doForcePasswordChange" : false,
     "googleId" : null,
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c8c"),
@@ -1399,6 +1399,7 @@ module.exports = [
     "collabWorkspaces": [],
     "hiddenWorkspaces": [],
     "history": [],
+    "isAuthorized": true,
 },
 
 /* 47 */

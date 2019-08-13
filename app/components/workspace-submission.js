@@ -4,9 +4,9 @@
  *
  * selections come from this.currentSubmission.selections
  */
-Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.VmtHostMixin, {
   elementId: 'workspace-submission-comp',
-  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden'],
+  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden', 'isMakingVmtSelection:vmt-selecting','makingSelection:is-selecting'],
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 
@@ -17,6 +17,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   wsSaveErrors: [],
   wasShowingBeforeResizing: false,
   isSelectionsBoxExpanded: false,
+  isMessageListenerAttached: false,
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     let making = this.get('makingSelection');
@@ -39,14 +40,27 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     }
   },
 
+  didReceiveAttrs() {
+    let listener = this.onVmtMessage.bind(this);
+
+    if (this.get('isVmt')) {
+      this.set('vmtListener', listener);
+      window.addEventListener('message', listener);
+    }
+    this._super(...arguments);
+  },
+
   didInsertElement() {
     // height should be 100% - the height of the revisions nav
     this.setOwnHeight();
-
     this._super(...arguments);
   },
 
   willDestroyElement: function() {
+    if (this.get('vmtListener')) {
+      window.removeEventListener('message', this.get('vmtListener'));
+    }
+
     let workspace = this.get('currentWorkspace');
 
     let doOnlyUpdateLastViewed = true;
@@ -164,10 +178,161 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   handleNavChanges: function() {
     this.setOwnHeight();
   }.observes('isNavMultiLine', 'parentHeight'),
+  isVmt: function() {
+    return this.get('utils').isValidMongoId(this.get('currentSubmission.vmtRoomInfo.roomId'));
+  }.property('currentSubmission.vmtRoomInfo.roomId'),
+
+  takeVmtScreenshot() {
+    // Need to pause replayer if playing
+    let messageData = {
+      messageType: 'VMT_PAUSE_REPLAYER',
+    };
+
+    window.postMessage(messageData);
+
+    let canvases = this.$('canvas');
+    let canvas;
+
+    if (canvases.length > 1) {
+      // geogebra
+      canvas = canvases.filter('.cursor_hit')[0];
+    } else {
+      // desmos
+      canvas = canvases[0];
+    }
+    let imgSrc = canvas.toDataURL();
+    return imgSrc;
+  },
+
+  isMakingVmtSelection: function() {
+    return this.get('isVmt') && this.get('makingSelection');
+  },
+
+  currentReplayerTime: function() {
+    let ms = this.get('vmtReplayerInfo.timeElapsed');
+
+    return this.get('utils').getTimeStringFromMs(ms);
+  }.property('vmtReplayerInfo.timeElapsed'),
+
+  maxReplayerTime: function() {
+    let ms = this.get('vmtReplayerInfo.totalDuration');
+    return ms > 0 ? ms : 0;
+  }.property('vmtReplayerInfo.totalDuration'),
+
+  setVmtReplayerTime(vmtStartTime, doAutoPlay, stopTime) {
+    let messageData = {
+      messageType: 'VMT_GO_TO_TIME',
+      timeElapsed: vmtStartTime,
+      doAutoPlay,
+      stopTime,
+    };
+
+    window.postMessage(messageData);
+  },
+
+  onVmtMessage(event) {
+    let allowedOrigin = window.location.origin;
+
+    let { origin, data } = event;
+
+    if (allowedOrigin !== origin) {
+      return;
+    }
+
+    let canSet = !this.get('isDestroying') && !this.get('isDestroyed');
+
+    let { messageType, vmtReplayerInfo } = data;
+
+    if (messageType === "VMT_ON_REPLAYER_LOAD") {
+      // set replayer to current selection start time if applicable
+      let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
+      if (vmtStartTime >= 0 && canSet) {
+
+        this.set('vmtReplayerInfo', vmtReplayerInfo);
+        // set replayer to start point but do not auto play
+        this.setVmtReplayerTime(vmtStartTime, false, null);
+
+      }
+    }
+
+    if (messageType === 'VMT_UPDATE_REPLAYER' && canSet) {
+      this.set('vmtReplayerInfo', vmtReplayerInfo );
+    }
+  },
+
+  isOnVmtSelection: function() {
+    return this.get('currentSelection.vmtInfo.startTime') >= 0 &&
+    this.get('currentSelection.vmtInfo.endTime') >= 0;
+  }.property('currentSelection.vmtInfo.{startTime,endTime}'),
+
+  currentClipStartTime: function() {
+    return this.get('currentSelection.vmtInfo.startTime');
+  }.property('currentSelection.vmtInfo.startTime'),
+  currentClipEndTime: function() {
+    return this.get('currentSelection.vmtInfo.endTime');
+  }.property('currentSelection.vmtInfo.endTime'),
 
   actions: {
     addSelection: function( selection, isUpdateOnly ){
       this.set('isDirty', true);
+
+      let currentReplayerTime = this.get('currentReplayerTime');
+      let maxReplayerTime = this.get('maxReplayerTime');
+
+      let placeholder = 'hh:mm:ss';
+
+      if (this.get('isVmt')) {
+        return window.swal({
+          title: 'Provide a start and end time for this selection.',
+          html:
+          `
+          <input id="swal-input-vmt-start" value=${currentReplayerTime} placeholder=${placeholder} name="vmt-selection-start" class="swal2-input vmt-selection">
+          To
+          <input id="swal-input-vmt-end" value=${currentReplayerTime} class="swal2-input vmt-selection" placeholder=${placeholder} name="vmt-selection-end">`,
+          focusConfirm : false,
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          preConfirm: () => {
+            let [start, end ] = [
+              document.getElementById('swal-input-vmt-start').value,
+              document.getElementById('swal-input-vmt-end').value
+            ];
+
+            let startNum = this.get('utils').extractMsFromTimeString(start);
+            let endNum = this.get('utils').extractMsFromTimeString(end);
+
+            let areValidNums = (startNum >= 0 && endNum >= 0);
+            if (!areValidNums) {
+               return window.swal.showValidationMessage('Please enter timestamps in format of hh:mm:ss');
+            }
+
+            let isInvalidRange = startNum > endNum;
+
+            if (isInvalidRange) {
+              return window.swal.showValidationMessage('Start time cannot be after end time.');
+            }
+
+            if (endNum > maxReplayerTime) {
+              endNum = maxReplayerTime;
+            }
+
+            return [startNum, endNum];
+          }
+        })
+        .then((result) => {
+          if (result.value) {
+            // startTime, endTime in ms
+            let [ startTime, endTime ] = result.value;
+            selection.vmtInfo =  {
+              startTime : startTime,
+              endTime: endTime,
+            };
+
+            return this.sendAction( 'addSelection', selection, isUpdateOnly );
+
+          }
+        });
+      }
       this.sendAction( 'addSelection', selection, isUpdateOnly );
     },
 
@@ -187,8 +352,17 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       this.toggleProperty('showingSelections');
     },
     toggleSelecting: function() {
-      let selecting = this.get('makingSelection');
-      this.set('makingSelection', !selecting);
+      if (this.get('isVmt') && !this.get('makingSelection')) {
+        // take screen shot of current replayer first
+        let imgSrc = this.takeVmtScreenshot();
+
+        this.set('vmtScreenshot', imgSrc);
+
+        this.toggleProperty('makingSelection');
+
+      } else {
+        this.toggleProperty('makingSelection');
+      }
     },
     handleTransition: function(isBeginning) {
       this.get('showSelectableView');
@@ -254,6 +428,17 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     hideShowSelections() {
       this.toggleProperty('areSelectionsHidden');
     },
+
+    onSelectionSelect() {
+      if (this.get('isVmt')) {
+        let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
+        if (vmtStartTime >= 0) {
+          let endTime = this.get('currentSelection.vmtInfo.endTime');
+          this.setVmtReplayerTime(vmtStartTime, true, endTime);
+          this.set('makingSelections', false);
+      }
+    }
   }
+}
 });
 

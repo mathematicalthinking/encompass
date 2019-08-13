@@ -20,6 +20,7 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   comments: DS.hasMany('comment', { async: true }),
   workspaces: DS.hasMany('workspace', { async: true }),
   responses: DS.hasMany('response', { async: true }),
+  vmtRoomInfo: DS.attr(''),
 
   folders: function () {
     var folders = [];
@@ -52,9 +53,13 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   }.property(),
 
   student: function () {
-    var safeName = this.get('creator.safeName');
-    var fullName = this.get('creator.fullName');
-    var username = this.get('creator.username');
+    let safeName = this.get('creator.safeName');
+    let fullName = this.get('creator.fullName');
+    let username = this.get('creator.username');
+
+    if (this.get('vmtRoomInfo.roomId')) {
+      return this.get('vmtDisplayName');
+    }
 
     if (fullName) {
       return fullName;
@@ -63,17 +68,21 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
       return safeName;
     }
     return username;
-  }.property('creator.safeName', 'creator.username', 'creator.fullName'),
+  }.property('creator.safeName', 'creator.username', 'creator.fullName', 'vmtDisplayName'),
 
   studentDisplayName: function() {
-    var safeName = this.get('creator.safeName');
-    var username = this.get('creator.username');
+    if (this.get('vmtRoomInfo.roomId')) {
+      return this.get('vmtDisplayName');
+    }
 
-    var name = safeName ? safeName : username;
+    let safeName = this.get('creator.safeName');
+    let username = this.get('creator.username');
+
+    let name = safeName ? safeName : username;
 
     return name;
 
-  }.property('creator.safeName', 'creator.username'),
+  }.property('creator.safeName', 'creator.username', 'vmtDisplayName'),
 
   label: function () {
     var label = this.get('student');
@@ -89,6 +98,11 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
     return !this.get('powId');
   }.property('powId'),
   uniqueIdentifier: function() {
+
+    // vmt room
+    if (this.get('isVmt')) {
+      return this.get('vmtRoomInfo.roomId');
+    }
     // encompass user
     if (this.get('creator.studentId')) {
       return this.get('creator.studentId');
@@ -101,4 +115,22 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
     return this.get('creator.safeName');
 
   }.property('creator.username', 'creator.studentId'),
+
+  isVmt: function() {
+    let id = this.get('vmtRoomInfo.roomId');
+    let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+
+    return checkForHexRegExp.test(id);
+  }.property('vmtRoomInfo.roomId'),
+
+  firstVmtParticipant: function() {
+    return this.get('vmtRoomInfo.participants.firstObject');
+  }.property('vmtRoomInfo.participants.[]'),
+  firstVmtFacilitator: function() {
+    return this.get('vmtRoomInfo.facilitators.firstObject');
+  }.property('vmtRoomInfo.facilitators.firstObject'),
+  vmtDisplayName: function() {
+    return `VMT Room: ${this.get('vmtRoomInfo.roomName')}`;
+  }.property('vmtRoomInfo.roomName'),
+
 });

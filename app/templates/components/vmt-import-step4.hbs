@@ -1,0 +1,130 @@
+<div class="import-review summary">
+  {{#if isUploadingAnswer}}
+    {{#if showLoadingMessage}}
+      <p>Please wait, creating {{answers.length}} submissions</p>
+    {{/if}}
+  {{else}}
+    <p class="input-label">Import Summary</p>
+    {{#if uploadedAnswers.length}}
+      <p class="success-info animated fadeIn"><b>{{uploadedAnswers.length}} submissions</b> have successfully been created.</p>
+      <p class="info  animated fadeIn">You can create a workspace from these submissions {{#link-to 'workspaces.new'}}here{{/link-to}}</p>
+    {{else}}
+      <p class="info"><b>{{answers.length}} submissions</b> will be created in EnCoMPASS</p>
+      <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
+    {{/if}}
+  {{/if}}
+</div>
+
+{{#if isCreatingWorkspace}}
+  {{#if showLoadingMessage}}
+    <p>Please wait, creating workspace</p>
+  {{/if}}
+{{/if}}
+
+{{#if workspaceName}}
+  <div class="import-review workspace">
+    {{#if createdWorkspace}}
+      <p class="input-label">Created Workspace</p>
+      <p class="success-info animated fadeIn"><b>{{workspaceName}}</b> was successfully created.
+        View it <a href={{workspaceLink}}>here</a>
+      </p>
+    {{else}}
+      <p class="input-label">Workspace to be created</p>
+    {{/if}}
+    <div class="workspace-import-card">
+      <div class="item-card-container">
+        <div class="item-card row-1">
+          <div class="item-card privacy">
+            <span class="privacy-icon">
+              <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip={{workspaceMode}}>
+                {{{public-private workspaceMode}}}
+              </span>
+            </span>
+            <span class="date">{{format-date createDate 'L'}}</span>
+          </div>
+        </div>
+        <div class="item-card row-2">
+          <div class="item-card name">
+            <span>{{workspaceName}}</span>
+          </div>
+        </div>
+        <div class="item-card row-3">
+          <div class="item-card description">
+            {{workspaceOwner.username}}
+          </div>
+        </div>
+        <div class="item-card row-4">
+          <div class="item-card status">
+            <ul class="workspace-stats">
+              <li>
+                <p class="stat-header">Submissions</p>
+                <p class="stat-number">{{answers.length}}</p>
+              </li>
+              <li>
+                <p class="stat-header">Selections</p>
+                <p class="stat-number">0</p>
+              </li>
+              <li>
+                <p class="stat-header">Comments</p>
+                <p class="stat-number">0</p>
+              </li>
+              <li>
+                <p class="stat-header">Responses</p>
+                <p class="stat-number">0</p>
+              </li>
+              <li>
+                <p class="stat-header">Folders</p>
+                <p class="stat-number">
+                  {{#if folderSet}}
+                    {{folderSet.folders.length}}
+                  {{else}}
+                    0
+                  {{/if}}
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+
+{{#if savingAssignment}}
+  {{#if showLoadingMessage}}
+  <p>Please wait, creating assignment</p>
+  {{/if}}
+{{/if}}
+
+
+{{#if assignmentName}}
+  <div class="import-review assignment">
+    {{#if createdAssignment}}
+      <p class="input-label">Created Assignment</p>
+      <p class="success-info animated fadeIn"><b>{{createdAssignment.name}}</b> was successfully created.
+        View it {{#link-to 'assignment' createdAssignment}}here{{/link-to}}
+      </p>
+    {{else}}
+      <p class="input-label">Assignment to be created</p>
+    {{/if}}
+    <div class="content-box">
+      <p class="content-line">
+        <span class="content-label">Name</span><span class="content-value">{{assignmentName}}</span>
+      </p>
+      <p class="content-line">
+        <span class="content-label">Problem</span><span class="content-value">{{selectedProblem.title}}</span>
+      </p>
+      <p class="content-line">
+        <span class="content-label">Class</span><span class="content-value">{{selectedSection.name}}</span>
+      </p>
+    </div>
+  </div>
+{{/if}}
+
+{{#unless shouldHideButtons}}
+  <div class="nav-btn-container">
+    <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+    <button class="primary-button" data-test="create" {{action "next"}}>Create</button>
+  </div>
+{{/unless}}

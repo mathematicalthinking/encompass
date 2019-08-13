@@ -155,6 +155,9 @@ server.get('/auth/resend/confirm', auth.resendConfirmationEmail);
 server.post('/auth/newMtUser', auth.insertNewMtUser);
 server.put('/auth/sso/user/:id', auth.ssoUpdateUser);
 
+// VMT
+server.get('/api/vmt/rooms/:id', path.validateId(), api.get.vmtRoom);
+
 //API CALLS
 //ALL GET REQUESTS
 server.get('/api/users', api.get.users);
@@ -265,6 +268,7 @@ server.post({
 
 server.post('/api/import', api.post.import);
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
+server.post('/api/vmtImportRequests', api.post.vmtImportRequests);
 
 // error handler
 server.use(function (err, req, res, next) {

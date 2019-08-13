@@ -20,4 +20,5 @@ Encompass.Selection = DS.Model.extend(Encompass.Auditable, {
   }.property('workspace', 'submission', 'id'),
   imageSrc: DS.attr('string'),
   imageTagLink: DS.attr('string'),
+  vmtInfo: DS.attr(''),
 });

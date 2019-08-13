@@ -1,0 +1,25 @@
+{{vmt-search handleSearchResults=(action "handleSearchResults")}}
+
+ {{#if showList}}
+      {{vmt-room-list
+        showCheckbox=true
+        selectedRoomIds=selectedRoomIds
+        rooms=displayResults.rooms
+        onItemSelect=(action "onRoomSelect")
+      }}
+      <p class="sub-input-label">VMT Activities</p>
+      <ul>
+        {{vmt-activity-list
+          showCheckbox=true
+          selectedRoomIds=selectedRoomIds
+          selectedActivityIds=selectedActivityIds
+          activities=displayResults.activities
+          onItemSelect=(action "onActivitySelect")
+          onSubItemSelect=(action "onRoomSelect")
+        }}
+      </ul>
+{{/if}}
+
+<div class="nav-btn-container">
+  <button data-test="next" class="primary-button" {{action "next"}}>Next</button>
+</div>

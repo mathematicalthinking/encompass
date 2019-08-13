@@ -39,7 +39,11 @@
   </div>
 
 	<div class="al_controller submission-row-item arrows">
-		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow"><i class="fas fa-arrow-left"></i></span>{{/link-to}}
+    {{#if prevThread.vmtRoomInfo.roomId}}
+      {{#link-to 'workspace.submission' prevThread (query-params vmtRoomId=prevThread.vmtRoomInfo.roomId)}}<span id="leftArrow"><i class="fas fa-arrow-left"></i></span>{{/link-to}}
+    {{else}}
+		  {{#link-to 'workspace.submission' prevThread}}<span id="leftArrow"><i class="fas fa-arrow-left"></i></span>{{/link-to}}
+    {{/if}}
 		<span class="al_number">
       <span class="submission_index">
         {{currentSubmissionIndex}}
@@ -49,7 +53,11 @@
         {{submissions.length}}
       </span>
     </span>
-		{{#link-to 'workspace.submission' nextThread}}<span id="rightArrow"> <i class="fas fa-arrow-right"></i></span>{{/link-to}}
+    {{#if nextThread.vmtRoomInfo.roomId}}
+      {{#link-to 'workspace.submission' nextThread (query-params vmtRoomId=nextThread.vmtRoomInfo.roomId)}}<span id="rightArrow"><i class="fas fa-arrow-right"></i></span>{{/link-to}}
+    {{else}}
+		  {{#link-to 'workspace.submission' nextThread}}<span id="rightArrow"> <i class="fas fa-arrow-right"></i></span>{{/link-to}}
+    {{/if}}
 	</div>
 </header>
 

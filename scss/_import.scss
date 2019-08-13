@@ -2,11 +2,6 @@
 @import "mixins";
 @import "responsive-font-size";
 
-
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
-
 @media screen and (min-width: $screen-xs-min) and (max-width: 460px) {
   #import-work-container {
     .results-list {

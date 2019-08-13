@@ -1,0 +1,34 @@
+
+{{#if showCheckbox}}
+  <input type="checkbox" checked={{isSelected}} name="selectedActivities" value={{activity._id}} onclick={{action "onSelect"}}>
+{{/if}}
+<i {{action "toggleRooms"}} title={{expandHideRoomsIcon.title}} class={{expandHideRoomsIcon.className}}></i>
+
+<div class="card-container">
+  <div class="card-title">
+    <p class="card-heading">{{activity.name}}</p>
+  </div>
+  <div class="card-image" style="background: url({{encodedImageUri}}) no-repeat scroll center">
+    <div class="overlay">
+      <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+    </div>
+  </div>
+</div>
+
+{{#if areRoomsExpanded}}
+  {{vmt-room-list
+    rooms=activity.rooms
+    showCheckbox=showCheckbox
+    selectedRoomIds=selectedRoomIds
+    onItemSelect=(action "onRoomSelect")
+    isSubList=true
+    parentActivity=activity
+  }}
+{{/if}}
+
+{{#if isExpanded}}
+  <div class="full-image">
+    <i class="fas fa-times" {{action 'expandImage'}}></i>
+    <img src="{{{activity.image}}}" alt={{activity.name}}>
+  </div>
+{{/if}}

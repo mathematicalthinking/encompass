@@ -14,9 +14,9 @@ const utils    = require('../../middleware/requestHandler');
 const workspaceApi = require('./workspaceApi');
 
 const objectUtils = require('../../utils/objects');
-const { isNil, isNonEmptyArray, } = objectUtils;
+const { isNil, isNonEmptyArray, isNonEmptyObject } = objectUtils;
 
-const { isValidMongoId } = require('../../utils/mongoose');
+const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -230,5 +230,208 @@ return utils.sendResponse(res, data);
   }
 };
 
+const convertVmtRoomsToAnswers = function(rooms, currentUser) {
+  if(!isNonEmptyArray(rooms)) {
+    return [];
+  }
+
+  let answerPromises = rooms.map((room) => {
+    // set brief summary to 'See VMT Replayer'
+    // explanation is null
+    // add each member of room to studentNames
+
+    // activity? not currentl receiving from vpt api
+    // facilitator?
+    /*
+    {
+      _id,
+      image: string url,
+      name: string,
+      members: array of populated users
+    }
+    */
+
+   let members = room.members || [];
+    let facilitators = members
+      .filter(m => m.role === 'facilitator')
+      .map(f => _.propertyOf(f)(['user', 'username'] || 'Unknown User'));
+
+    let participants = members
+      .filter(m => m.role === 'participant')
+      .map(p => _.propertyOf(p)(['user', 'username'] || 'Unknown User'));
+
+    let activityName = _.propertyOf(room)(['activity', 'name']) || null;
+
+    let partialRoom = {
+      roomId: room._id,
+      imageUrl: room.image,
+      roomName: room.name,
+      facilitators: facilitators,
+      participants: participants,
+      activityName,
+    };
+    let description = `VMT Replayer for room "${room.name}"`;
+
+    if (activityName) {
+      description += ` from activity "${activityName}"`;
+    }
+
+    let answer = new models.Answer({
+      createdBy: currentUser,
+      createDate: Date.now(), // or vmt date of activity or creation?
+      answer: description,
+      explanation: '',
+      vmtRoomInfo: partialRoom, // currently only contains _id, image, members
+      studentNames: participants,
+      problem: room.problem._id,
+    });
+
+    return answer.save();
+  });
+
+  return Promise.all(answerPromises);
+};
+
+const convertVmtAnswersToSubmissions = function(answers, roomsWithProblems) {
+  if (!isNonEmptyArray(answers)) {
+    return [];
+  }
+  let submissionPromises = answers.map((answer) => {
+
+      //const teachers = {};
+      const clazz = {};
+      const publication = {
+        publicationId: null,
+        puzzle: {}
+      };
+      const creator = {};
+      const teacher = {};
+
+
+      // const student = answer.createdBy;
+
+      // const studentNames = answer.studentNames;
+      const section = answer.section;
+
+      const problem = _.find(roomsWithProblems, (room) => {
+        return areObjectIdsEqual(room.problem._id, answer.problem);
+      });
+
+      if (problem) {
+        publication.puzzle.title = problem.title;
+        publication.puzzle.problemId = problem._id;
+
+      }
+      // answers should always have createdBy...
+
+      let teachers;
+      let primaryTeacher;
+
+      if (section) {
+        clazz.sectionId = section._id;
+        clazz.name = section.name;
+        teachers = section.teachers;
+        if (isNonEmptyArray(teachers)) {
+          primaryTeacher = teachers[0];
+          teacher.id = primaryTeacher;
+        }
+      }
+      let sub = new models.Submission({
+        clazz: clazz,
+        creator: creator,
+        teacher: teacher,
+        publication: publication,
+        answer: answer._id,
+        vmtRoomInfo: answer.vmtRoomInfo,
+        createDate: Date.now(),
+        createdBy: answer.createdBy,
+      });
+
+      return sub.save();
+
+  });
+
+  return Promise.all(submissionPromises);
+};
+
+const createDefaultProblemsFromVmtRooms = function(user, rooms) {
+  if (!isNonEmptyArray(rooms) || !isNonEmptyObject(user)) {
+    return [];
+  }
+  let roomsWithProblem = rooms.map(async (room) => {
+
+    let { image, instructions, name } = room;
+
+    let text = instructions || 'Unedited VMT import';
+
+    let problem = await models.Problem.create({
+      createdBy: user._id,
+      lastModifiedBy: user._id,
+      lastModifiedDate: Date.now(),
+      createDate: Date.now(),
+      title: name,
+      text,
+      privacySetting: 'M',
+      organization: user.organization || undefined,
+      status: 'approved',
+      contexts: ['VMT'],
+    });
+
+    room.problem = problem;
+    return room;
+  });
+  return Promise.all(roomsWithProblem);
+};
+
+const postVmtImportRequests = async (req, res, next) => {
+  try {
+    const user = userAuth.requireUser(req);
+    let importRequest = req.body.vmtImportRequest;
+
+    let { vmtRooms, doCreateWorkspace, workspaceMode, workspaceOwner, workspaceName, folderSet } = req.body.vmtImportRequest;
+
+
+    let roomsWithProblems = await createDefaultProblemsFromVmtRooms(user, vmtRooms);
+
+
+
+    let answerRecords = await convertVmtRoomsToAnswers(vmtRooms, user);
+    let importRecord = new models.VmtImportRequest(importRequest);
+
+    if (!doCreateWorkspace) {
+      importRecord.createdAnswers = answerRecords.map(a => a._id);
+      return utils.sendResponse(res, {
+        vmtImportRequest: importRecord
+      });
+    }
+
+    let submissions = await convertVmtAnswersToSubmissions(answerRecords, roomsWithProblems);
+    let workspace = new models.Workspace({
+      mode: workspaceMode,
+      owner: workspaceOwner,
+      name: workspaceName,
+      submissions: submissions.map(s => s._id),
+      createdBy: user,
+      organization: user.organization,
+      lastModifiedBy: user,
+      folderSet,
+    });
+
+    let savedWorkspace = await workspace.save();
+    importRecord.createdWorkspace = savedWorkspace._id;
+
+    let data = {
+      vmtImportRequest: importRecord,
+      workspaces: [savedWorkspace]
+    };
+    return utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error postVmtImportRequests: ${err}`);
+    return utils.sendError.InternalError(null, res);
+  }
+
+};
+
 module.exports.post.import = postImport;
+module.exports.post.vmtImportRequests = postVmtImportRequests;
 module.exports.buildSubmissionSet = buildSubmissionSet;

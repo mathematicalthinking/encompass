@@ -5,6 +5,8 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
   findRecordErrors: [],
   wsRequestErrors: [],
   utils: Ember.inject.service('utility-methods'),
+  isVmtOnly: false,
+  showVmtFilters: false,
 
   init: function() {
     this._super(...arguments);
@@ -525,7 +527,7 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
 
   isAnswerCriteriaValid: function() {
     const utils = this.get('utils');
-    const params = ['selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'];
+    const params = ['selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection', 'vmtSearchText'];
     for (let param of params) {
       if (this.get(param)) {
         return true;
@@ -580,6 +582,8 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         endDate: endDate,
         students: studentIds,
         doIncludeOldPows: this.get('doIncludeOldPows'),
+        isVmtOnly: this.get('isVmtOnly'),
+        vmtSearchText: this.get('vmtSearchText'),
       };
       _.each(criteria, (val, key) => {
         if (utils.isNullOrUndefined(val)|| val === '') {
@@ -656,6 +660,9 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
       }
         prop.pushObject(record);
       }
-    }
+    },
+    toggleVmtFilters() {
+      this.toggleProperty('showVmtFilters');
+    },
   }
 });

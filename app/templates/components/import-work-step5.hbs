@@ -1,6 +1,6 @@
 <p class="input-label">
   Would you like to create a new workspace?
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Do you want to use a class of encompass users? If not you can match by just username or enter a plain text name">
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="You can always create a workspace at a later date from your imported submissions via the Create Workspace page">
     <i class="fas fa-info-circle info-icon"></i>
   </span>
 </p>
@@ -11,6 +11,7 @@
   <div class="ws-new name">
     <p class="input-label">
       Workspace Name
+      <span class="required-star">*</span>
       <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this workspace">
         <i class="fas fa-info-circle info-icon"></i>
       </span>
@@ -29,6 +30,8 @@
   <div class="ws-new owner">
     <p class="input-label">
       Workspace Owner
+      <span class="required-star">*</span>
+
       <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="The owner of the workspace has the ability to edit every aspect of this workspace. You can make it yourself">
         <i class="fas fa-info-circle info-icon"></i>
       </span>
@@ -131,5 +134,5 @@
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" {{action "next"}}>Next</button>
+  <button class="primary-button" data-test="next" {{action "next"}}>Next</button>
 </div>

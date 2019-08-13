@@ -75,7 +75,11 @@ Encompass.Router.map(function() {
   });
   // IMPORT ROUTE
   this.route("import", function() {
+  });
 
+  // VMT
+  this.route("vmt", function() {
+    this.route("import");
   });
 
   // ASSIGNMENTS ROUTE

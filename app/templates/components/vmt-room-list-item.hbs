@@ -1,0 +1,20 @@
+{{#if showCheckbox}}
+  <input type="checkbox" checked={{isSelected}} name="selectedRooms" value={{room._id}} onclick={{action "onSelect"}}>
+{{/if}}
+<div class="card-container">
+  <div class="card-title">
+    <p class="card-heading">{{room.name}}</p>
+  </div>
+  <div class="card-image" style="background: url({{encodedImageUri}}) no-repeat scroll center">
+    <div class="overlay">
+      <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+    </div>
+  </div>
+</div>
+
+{{#if isExpanded}}
+  <div class="full-image">
+    <i class="fas fa-times" {{action 'expandImage'}}></i>
+    <img src="{{{room.image}}}" alt={{room.name}}>
+  </div>
+{{/if}}

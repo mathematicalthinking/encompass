@@ -38,7 +38,10 @@ var ProblemSchema = new Schema({
     flaggedBy: { type: ObjectId, ref: 'User' },
     reason: { type: String },
     flaggedDate: { type: Date, default: Date.now() },
-  }
+  },
+  contexts: [{type: String, enum: [
+    'PoW', 'VMT'
+  ]}],
 }, { versionKey: false });
 
 

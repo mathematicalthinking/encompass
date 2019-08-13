@@ -19,6 +19,8 @@ const expect = chai.expect;
 const host = helpers.host;
 const baseUrl = "/api/sections/";
 
+mongoose.Promise = global.Promise;
+
 chai.use(chaiHttp);
 
 describe('Section CRUD operations by account type', function() {
@@ -34,7 +36,7 @@ describe('Section CRUD operations by account type', function() {
       before(async function(){
         try {
           await helpers.setup(agent, username, password);
-          mongoose.connect('mongodb://localhost:27017/encompass_seed');
+          mongoose.connect('mongodb://localhost:27017/encompass_seed', { useMongoClient: true });
         }catch(err) {
           console.log(err);
         }

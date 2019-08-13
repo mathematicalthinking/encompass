@@ -348,14 +348,14 @@ module.exports = function (grunt) {
       dev: {
         script: 'server/server.js',
         options: {
-          watch: ['server/server.js', 'config.json', 'server/config.js', 'server/datasource', 'build/common_bundle.js', 'Gruntfile.js']
+          watch: ['server/server.js', 'config.json', 'server/config.js', 'server/datasource', 'Gruntfile.js']
         }
       },
       debug: {
         script: 'server/server.js',
         options: {
           nodeArgs: ['--debug'],
-          watch: ['server/server.js', 'config.json', 'server/config.js', 'server/datasource', 'build/common_bundle.js', 'Gruntfile.js']
+          watch: ['server/server.js', 'config.json', 'server/config.js', 'server/datasource', 'Gruntfile.js']
         }
       }
     },
