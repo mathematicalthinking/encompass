@@ -93,7 +93,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         // put result on window if necessary
 
         this.handleRoomForVmt(data.result);
-        this.combineVmtRoomEvents(data.result);
 
         return data.result;
       });
@@ -118,31 +117,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
     }
 
     return window.vmtRooms[roomId];
-  },
-
-  combineVmtRoomEvents(room) {
-    if (!Array.isArray(room.tabs)) {
-      return;
-    }
-    let allEvents = [];
-
-    room.tabs.forEach(tab => {
-      allEvents = allEvents.concat(tab.events);
-    });
-    allEvents = allEvents
-      .concat(room.chat)
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .filter((entry, i, arr) => {
-        if (arr[i - 1]) {
-          if (entry.description) {
-            return entry.description !== arr[i - 1].description;
-          } else {
-            return true;
-          }
-        }
-        return true;
-      });
-    room.log = allEvents;
   },
 
   actions: {
