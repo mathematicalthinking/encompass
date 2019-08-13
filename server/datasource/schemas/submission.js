@@ -81,7 +81,7 @@ var encompassSubmission = _.extend({}, baseSubmission, {
   workspaces: [{type: ObjectId, ref: 'Workspace'}],
   responses:  [{type: ObjectId, ref: 'Response'}],
   vmtRoomInfo: {
-    roomId: { type: String }, // object id from vmt
+    roomId: { type: ObjectId }, // object id from vmt
     imageUrl: { type: String }, //
     roomName: {type: String },
     facilitators: [ { type: String } ], // just usernames for now

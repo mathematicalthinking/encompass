@@ -30,7 +30,7 @@ var AnswerSchema = new Schema({
   powsSubmId: { type: Number }, // old POWs submission ID,
   workspacesToUpdate: [{ type: ObjectId, ref: 'Workspace' }],
   vmtRoomInfo: {
-    roomId: { type: String }, // object id from vmt
+    roomId: { type: ObjectId }, // object id from vmt
     imageUrl: { type: String }, //
     roomName: { type: String },
     activityName: { type: String },
