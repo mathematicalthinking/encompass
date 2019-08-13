@@ -14,7 +14,7 @@ const utils    = require('../../middleware/requestHandler');
 const workspaceApi = require('./workspaceApi');
 
 const objectUtils = require('../../utils/objects');
-const { isNil, isNonEmptyArray, } = objectUtils;
+const { isNil, isNonEmptyArray, isNonEmptyObject } = objectUtils;
 
 const { isValidMongoId } = require('../../utils/mongoose');
 
@@ -230,10 +230,12 @@ return utils.sendResponse(res, data);
   }
 };
 
-const convertVmtRoomsToAnswers = function(rooms, currentUser) {
+const convertVmtRoomsToAnswers = async function(rooms, currentUser) {
   if(!isNonEmptyArray(rooms)) {
     return [];
   }
+  let answerProblemMap = {};
+
   let answerPromises = rooms.map((room) => {
     // set brief summary to 'See VMT Replayer'
     // explanation is null
@@ -262,12 +264,12 @@ const convertVmtRoomsToAnswers = function(rooms, currentUser) {
     let activityName = _.propertyOf(room)(['activity', 'name']) || null;
 
     let partialRoom = {
-      roomId: room._id.toString(),
+      roomId: room._id,
       imageUrl: room.image,
       roomName: room.name,
       facilitators: facilitators,
       participants: participants,
-      activityName
+      activityName,
     };
 
     let description = `VMT Replayer for room "${room.name}"`;
@@ -283,14 +285,18 @@ const convertVmtRoomsToAnswers = function(rooms, currentUser) {
       explanation: '',
       vmtRoomInfo: partialRoom, // currently only contains _id, image, members
       studentNames: participants,
+      problem: room.problem._id,
     });
 
+    answerProblemMap[answer._id] = room.problem; // store problem record for later use when converting answers to submissions
     return answer.save();
   });
-  return Promise.all(answerPromises);
+
+  await Promise.all(answerPromises);
+  return [answerPromises, answerProblemMap];
 };
 
-const convertVmtAnswersToSubmissions = function(answers) {
+const convertVmtAnswersToSubmissions = function(answers, answerProblemMap) {
   if (!isNonEmptyArray(answers)) {
     return [];
   }
@@ -310,8 +316,8 @@ const convertVmtAnswersToSubmissions = function(answers) {
 
       // const studentNames = answer.studentNames;
       const section = answer.section;
-      const problem = answer.problem;
-
+      const problem = answerProblemMap[answer.problem];
+      console.log('problem in convert', problem);
       if (problem) {
         publication.puzzle.title = problem.title;
         publication.puzzle.problemId = problem._id;
@@ -349,6 +355,35 @@ const convertVmtAnswersToSubmissions = function(answers) {
   return Promise.all(submissionPromises);
 };
 
+const createDefaultProblemsFromVmtRooms = function(user, rooms) {
+  if (!isNonEmptyArray(rooms) || !isNonEmptyObject(user)) {
+    return [];
+  }
+  let roomsWithProblem = rooms.map(async (room) => {
+
+    let { image, instructions, name } = room;
+
+    let text = instructions || 'Unedited VMT import';
+
+    let problem = await models.Problem.create({
+      createdBy: user._id,
+      lastModifiedBy: user._id,
+      lastModifiedDate: Date.now(),
+      createDate: Date.now(),
+      title: name,
+      text,
+      privacySetting: 'M',
+      organization: user.organization || undefined,
+      status: 'approved',
+      contexts: ['VMT'],
+    });
+
+    room.problem = problem;
+    return room;
+  });
+  return Promise.all(roomsWithProblem);
+};
+
 const postVmtImportRequests = async (req, res, next) => {
   try {
     const user = userAuth.requireUser(req);
@@ -356,8 +391,16 @@ const postVmtImportRequests = async (req, res, next) => {
 
     let { vmtRooms, doCreateWorkspace, workspaceMode, workspaceOwner, workspaceName, folderSet } = req.body.vmtImportRequest;
 
-    let answerRecords = await convertVmtRoomsToAnswers(vmtRooms, user);
+    console.log('import request: ', JSON.stringify(vmtRooms, null, 2));
 
+    let roomsWithProblems = await createDefaultProblemsFromVmtRooms(user, vmtRooms);
+
+    console.log('roomsWithProblems', JSON.stringify(roomsWithProblems, null, 2));
+
+    let [ answerRecords, answerProblemMap ] = await convertVmtRoomsToAnswers(vmtRooms, user);
+
+    console.log('answer Records', JSON.stringify(answerRecords, null, 2));
+    console.log('apmap', answerProblemMap);
     let importRecord = new models.VmtImportRequest(importRequest);
 
     if (!doCreateWorkspace) {
@@ -367,7 +410,7 @@ const postVmtImportRequests = async (req, res, next) => {
       });
     }
 
-    let submissions = await convertVmtAnswersToSubmissions(answerRecords);
+    let submissions = await convertVmtAnswersToSubmissions(answerRecords, answerProblemMap);
 
     let workspace = new models.Workspace({
       mode: workspaceMode,
