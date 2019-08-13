@@ -6,6 +6,8 @@ module.exports = {
     boldFontWeight: '700',
     unreadReplyFill: 'rgb(57, 151, 238)',
     pendingFill: 'rgb(255, 210, 4)',
+    errorBox: '.error-box',
+    selectizeActiveEl : 'div.option.active',
   },
   topBar: {
     login: "a.menu.login",
@@ -23,6 +25,7 @@ module.exports = {
     usersNew: "a.menu.users-new",
     assignments: "a.menu.assignments",
     responseNtf: 'li[data-test="topbar-responses"] .circle-ntf span',
+    vmtImport: 'a.menu.vmt-import',
   },
   login: {
     username: "input[name=username]",
@@ -443,5 +446,35 @@ module.exports = {
     save: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.save',
     cancel: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.cancel-button',
     commentText: 'div.comment-flex-item.text > p:nth-child(1) > a'
+  },
+  vmtImport: {
+    search: {
+      container: '.vmt-search',
+      input: '.search-field',
+    },
+    wsOptions: {
+      container: '#import-work-step5',
+      createWsRadio: 'input[name=createWs][value=true]',
+      doNotCreateWsRadio: 'input[name=createWs][value=false]',
+      wsSettings: {
+        container: '.create-ws-content',
+        nameInput: '#ws-new-name',
+        ownerInput: '#owner-select-selectized',
+        folderSetInput: '#folderset-select-selectized'
+      }
+
+    },
+    next: 'button[data-test="next"]',
+    cancel: '.cancel-button',
+    noRoomsError: 'Please select at least one room or activity to proceed',
+    noRoomsResult: 'No rooms',
+    noActivitiesResult: 'No activities',
+    activityListItem: '.vmt-activity-list-item',
+    roomListItem: '.vmt-room-list-item',
+    activityNoRoomsError: 'This activity does not have any rooms',
+    selectedRoomsDisplay: 'p.display-info',
+    reviewStep: {
+      container: '#vmt-import-step4'
+    }
   }
 };

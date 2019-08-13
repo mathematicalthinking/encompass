@@ -11,6 +11,7 @@
   <div class="ws-new name">
     <p class="input-label">
       Workspace Name
+      <span class="required-star">*</span>
       <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this workspace">
         <i class="fas fa-info-circle info-icon"></i>
       </span>
@@ -29,6 +30,8 @@
   <div class="ws-new owner">
     <p class="input-label">
       Workspace Owner
+      <span class="required-star">*</span>
+
       <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="The owner of the workspace has the ability to edit every aspect of this workspace. You can make it yourself">
         <i class="fas fa-info-circle info-icon"></i>
       </span>
@@ -131,5 +134,5 @@
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" {{action "next"}}>Next</button>
+  <button class="primary-button" data-test="next" {{action "next"}}>Next</button>
 </div>
