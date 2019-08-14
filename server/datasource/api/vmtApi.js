@@ -9,8 +9,11 @@ const _ = require('underscore');
 const axios = require('axios');
 
 //REQUIRE FILES
-// const userAuth = require('../../middleware/userAuth');
+const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
+const { signJwt } = require('../../utils/jwt');
+const { getEncIssuerId, getVmtIssuerId } = require('../../middleware/appUrls');
+const { accessCookie, refreshCookie } = require('../../constants/sso');
 
 // const objectUtils = require('../../utils/objects');
 // const { isNonEmptyArray, } = objectUtils;
@@ -32,9 +35,30 @@ function getVmtUrl() {
   return 'http://localhost:3001';
 }
 
+const generateVmtToken = (user) => {
+let payload = {
+  ssoId: user.ssoId,
+  encUserId: user._id,
+  vmtUserId: user.vmtUserId
+};
+let options = {
+  expiresIn: '5m',
+  issuer: getEncIssuerId(),
+  audience: getVmtIssuerId(),
+  subject: 'room',
+};
+
+return signJwt(payload, process.env.MT_USER_JWT_SECRET, options);
+};
 const getVmtRoom = async (req, res, next) => {
   try {
-    // let user = userAuth.requireUser(req);
+    let user = userAuth.requireUser(req);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in', res);
+    }
+
+    let mtAccessCookie = req.cookies[accessCookie.name];
+    let mtRefreshCookie = req.cookies[refreshCookie.name];
     let roomId = req.params.id;
     // let accessibleWorkspaceIds = await accessUtils.getAccessibleWorkspaceIds(user, {vmtRoomIds: roomId });
 
@@ -43,15 +67,23 @@ const getVmtRoom = async (req, res, next) => {
     //   return utils.sendResponse(res, null);
     // }
 
+    let vmtToken = await generateVmtToken(user);
+
 
     let url = `${getVmtUrl()}/api/rooms/${roomId}/populated?events=true`;
-    let result = await axios.get(url);
+
+    let headers = {
+      Authorization: `Bearer ${vmtToken}`,
+      Cookie: `${accessCookie.name}=${mtAccessCookie}; ${refreshCookie.name}=${mtRefreshCookie};`
+    };
+    let result = await axios.get(url, {headers});
 
     let room = _.propertyOf(result)(['data', 'result']);
+
     if (!room) {
       return utils.sendResponse(res, null);
     }
-    let data = { 'room': room };
+    let data = { room };
     return utils.sendResponse(res, data);
 
   }catch(err) {

@@ -312,11 +312,15 @@ const convertVmtAnswersToSubmissions = function(answers, roomsWithProblems) {
 
       // const studentNames = answer.studentNames;
       const section = answer.section;
+      let problem;
 
-      const problem = _.find(roomsWithProblems, (room) => {
+      const roomWithProb = _.find(roomsWithProblems, (room) => {
         return areObjectIdsEqual(room.problem._id, answer.problem);
       });
 
+      if (roomWithProb) {
+        problem = roomWithProb.problem;
+      }
       if (problem) {
         publication.puzzle.title = problem.title;
         publication.puzzle.problemId = problem._id;
