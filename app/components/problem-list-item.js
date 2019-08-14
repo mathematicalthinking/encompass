@@ -51,13 +51,13 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
 
   isRecommended: function () {
     let problem = this.get('problem');
-    let recommendedProblems = this.get('recommendedProblems');
+    let recommendedProblems = this.get('recommendedProblems') || [];
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
       return false;
     }
-  }.property('problem.id', 'recommendedProblems'),
+  }.property('problem.id', 'recommendedProblems.[]'),
 
 
 
