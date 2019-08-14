@@ -77,24 +77,19 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
     if (cachedRoom) {
       return Ember.RSVP.resolve(cachedRoom);
     }
-    let vmtHost = this.getVmtHost();
-    let url = `${vmtHost}/api/rooms/${roomId}/populated?events=true`;
-
+    let url = `api/vmt/rooms/${roomId}`;
       return Ember.$.get({
         url,
-        xhrFields: {
-          withCredentials: true
-        }
       })
       .then((data) => {
-        if (!data || !data.result) {
+        if (!data || !data.room) {
           return null;
         }
         // put result on window if necessary
 
-        this.handleRoomForVmt(data.result);
+        this.handleRoomForVmt(data.room);
 
-        return data.result;
+        return data.room;
       });
 
   },

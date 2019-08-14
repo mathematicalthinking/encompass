@@ -358,7 +358,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     filter.$or = [];
 
     if (includeRecommended) {
-      let recommendedProblems = this.get('currentUser.organization.recommendedProblems');
+      let recommendedProblems = this.get('currentUser.organization.recommendedProblems') || [];
       let ids = recommendedProblems.mapBy('id');
 
       if (!_.isEmpty(ids)) {

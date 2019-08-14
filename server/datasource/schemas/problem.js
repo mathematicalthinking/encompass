@@ -37,7 +37,7 @@ var ProblemSchema = new Schema({
   flagReason: {
     flaggedBy: { type: ObjectId, ref: 'User' },
     reason: { type: String },
-    flaggedDate: { type: Date, default: Date.now() },
+    flaggedDate: { type: Date, },
   },
   contexts: [{type: String, enum: [
     'PoW', 'VMT'

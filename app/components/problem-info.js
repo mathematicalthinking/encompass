@@ -164,13 +164,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   isRecommended: function () {
     let problem = this.get('problem');
-    let recommendedProblems = this.get('recommendedProblems');
+    let recommendedProblems = this.get('recommendedProblems') || [];
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
       return false;
     }
-  }.property('problem.id', 'recommendedProblems'),
+  }.property('problem.id', 'recommendedProblems.[]'),
 
   createKeywordFilter(keyword) {
     if (!keyword) {

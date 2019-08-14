@@ -63,3 +63,21 @@ module.exports.getMtIssuerId = () => {
 
   return process.env.MT_SSO_JWT_ISSUER_ID_DEV;
 };
+
+module.exports.getVmtIssuerId = () => {
+  let envName = process.env.NODE_ENV;
+
+  if (envName === 'production') {
+    return process.env.VMT_JWT_ISSUER_ID_PROD;
+  }
+
+  if (envName === 'staging') {
+    return process.env.VMT_JWT_ISSUER_ID_STAGING;
+  }
+
+  if (envName === 'seed') {
+    return process.env.VMT_JWT_ISSUER_ID_TEST;
+  }
+
+  return process.env.VMT_JWT_ISSUER_ID_DEV;
+};
