@@ -67,11 +67,12 @@ describe('Importing VMT Work', function() {
         expect(await helpers.isTextInDom(driver, css.vmtImport.noActivitiesResult)).to.eql(true);
       });
 
-      describe('should return both own and public activities', function() {
+      xdescribe('should return both own and public activities', function() {
+        // currently no test activities with rooms
         let info = {
           query: 'activity',
           numRooms: 0,
-          numActivities: 5,
+          numActivities: 0,
           activityNoRoomsId: '5bd1da254b2d4b2a6c45def7',
 
         };
@@ -96,7 +97,9 @@ describe('Importing VMT Work', function() {
           expect(roomResults).to.have.lengthOf(info.numRooms);
         });
 
-        it('Should display error message clicking checkbox for activity with no rooms', async function() {
+        // default behavior is now to not return activities with no rooms
+        // restore if test is added for selecting "return all activities"
+        xit('Should display error message clicking checkbox for activity with no rooms', async function() {
           let sel = `input[value="${info.activityNoRoomsId}"]`;
           await helpers.findAndClickElement(driver, sel);
 
@@ -142,15 +145,8 @@ describe('Importing VMT Work', function() {
       });
 
       describe('Selecting 2 rooms ', function() {
+        let { room1, room2 } = newWs;
 
-        let room1 = {
-          name: 'room 1',
-          id: '5ba289c57223b9429888b9b5',
-        };
-        let room2 = {
-          name: 'room 2',
-          id: '5ba289c57223b9429888b9b6',
-        };
         before(async function() {
           await helpers.findAndClickElement(driver, `input[value="${room1.id}"]`);
           await helpers.findAndClickElement(driver,`input[value="${room2.id}"]`);
@@ -220,10 +216,28 @@ describe('Importing VMT Work', function() {
             await helpers.waitForSelector(driver, css.vmtImport.reviewStep.container);
             expect(await helpers.isElementVisible(driver, css.vmtImport.reviewStep.container)).to.eql(true);
           });
+
+          // TODO: test that review summary details are accurate
         });
         // TODO: test going back between steps and making sure the progress is preserved
         describe('Clicking Create', function() {
+          before(async function() {
+            await helpers.findAndClickElement(driver, css.vmtImport.reviewStep.create);
+            await helpers.waitForSelector(driver, css.workspace.name);
+          });
 
+          it('Should successfully create and redirect to new workspace', async function() {
+            let wsName = await helpers.getWebElements(driver, css.workspace.name);
+            expect(await wsName[0].getText()).to.equal(newWs.name);
+          });
+
+          it(`Should have ${newWs.submissionsCount} submissions`, async function() {
+            expect(await helpers.findAndGetText(driver, css.workspace.submissionNav.count)).to.eql(newWs.submissionsCount.toString());
+          });
+        });
+
+        xdescribe('Associated Problem', function() {
+          let problemLink;
         });
 
       });

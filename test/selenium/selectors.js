@@ -392,6 +392,14 @@ module.exports = {
     studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
     dropdownContent: '.selectize-dropdown-content',
     container: '#workspace-container',
+    name: '.ws-meta .workspace-name',
+    submissionNav: {
+      count: '.submission_count',
+      index: '.submission_index',
+      rightArrow: '#rightArrow',
+      leftArrow: '#leftArrow'
+    }
+
   },
   wsInfo: {
     container: '#workspace-info',
@@ -474,7 +482,8 @@ module.exports = {
     activityNoRoomsError: 'This activity does not have any rooms',
     selectedRoomsDisplay: 'p.display-info',
     reviewStep: {
-      container: '#vmt-import-step4'
+      container: '#vmt-import-step4',
+      create: 'button[data-test=create]'
     }
   }
 };
