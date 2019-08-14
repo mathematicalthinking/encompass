@@ -22,6 +22,7 @@ async function convertToFirstNameLastName() {
       if (typeof name !== 'string' || name.trim().length === 0) {
         user.firstName = undefined;
         user.lastName = undefined;
+        user.name = undefined;
         return user.save();
       }
       let trimmed = name.trim();
@@ -54,3 +55,65 @@ async function convertToFirstNameLastName() {
 }
 
 convertToFirstNameLastName();
+
+async function updateMissingNames() {
+  let ssoDb;
+  let vmtDb;
+
+  let updatedSsoCount = 0;
+  let updatedVmtCount = 0;
+
+  try {
+    ssoDb = await mongoose.createConnection('mongodb://localhost:27017/mtlogin');
+    vmtDb = await mongoose.createConnection('mongodb://localhost:27017/vmt');
+    let encUsers = await models.User.find({});
+
+    let updated = encUsers.map(async (user) => {
+      let { ssoId, firstName, lastName } = user;
+
+      // there were numerous old enc users with no name
+      if (typeof firstName !== 'string' && typeof lastName !== 'string') {
+        return;
+      }
+      if (ssoId) {
+        let ssoUserUpdateFilter = {_id: ssoId, firstName: null, lastName: null};
+        let ssoUserUpdate = {$set: {firstName, lastName}};
+
+        let ssoUserUpdateResults = await ssoDb.collection('users').findOneAndUpdate(ssoUserUpdateFilter, ssoUserUpdate);
+
+        let vmtUserUpdateFilter = {ssoId: ssoId, firstName: null, lastName: null};
+        let vmtUserUpdate = {$set: {firstName, lastName}};
+
+        let vmtUserUpdateResults = await vmtDb.collection('users').findOneAndUpdate(vmtUserUpdateFilter, vmtUserUpdate);
+
+
+         if (ssoUserUpdateResults.lastErrorObject.updatedExisting) {
+           updatedSsoCount++;
+         }
+
+         if (vmtUserUpdateResults.lastErrorObject.updatedExisting) {
+           updatedVmtCount++;
+         }
+
+      }
+      return user;
+    });
+    await Promise.all(updated);
+    console.log({numSsoUpdate: updatedSsoCount});
+    console.log({numVmtUpdated: updatedVmtCount});
+
+    ssoDb.close();
+    vmtDb.close();
+    mongoose.connection.close();
+  }catch(err) {
+    console.log({err});
+    ssoDb.close();
+    vmtDb.close();
+    mongoose.connection.close();
+
+  }
+
+}
+
+
+// updateMissingNames();
