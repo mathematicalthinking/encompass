@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost:27017/encompass_stage');
+mongoose.connect('mongodb://localhost:27017/encompass');
 
 const { isValidMongoId } = require('../utils/mongoose');
 
@@ -43,14 +43,19 @@ async function updateAnswers(){
 
 async function updateAssignments() {
   try {
-    let assignments = await models.Assignment.find({linkedWorkspace: 1}).lean();
+    let assignments = await models.Assignment.find({}, {linkedWorkspace: 1}).lean();
 
     let updatedAssignments = assignments.map((assn) => {
-      let { linkedWorkspace } = assn;
+      let { linkedWorkspace, linkedWorkspaces } = assn;
 
       let docUpdate = {$unset: {'linkedWorkspace': ''} };
+
       if (isValidMongoId(linkedWorkspace)) {
-        docUpdate.$set = { linkedWorkspaces: [linkedWorkspace]};
+        if (Array.isArray(linkedWorkspaces)) {
+          docUpdate.$set = { linkedWorkspaces: {$addToSet: {linkedWorkspace}}};
+        } else {
+          docUpdate.$set = { linkedWorkspaces: [linkedWorkspace]};
+        }
       } else {
         docUpdate.$set = { linkedWorkspaces: []};
       }
@@ -63,6 +68,28 @@ async function updateAssignments() {
     throw(err);
   }
 }
+
+async function addMissingLinkedWorkspaces() {
+  try {
+    // find workspaces with a linkedAssignment
+    // check if that assignment has the workspace in
+    // its linkedWorkspaces array. if not add it
+    let workspaces = await models.Workspace.find({linkedAssignment: {$type: 'objectId'}}).lean();
+
+    console.log(`There are ${workspaces.length} workspaces linked to an assignment`);
+
+    let updateResults = workspaces.map((ws) => {
+      let assignmentId = ws.linkedAssignment;
+      let filter = { _id: assignmentId, linkedWorkspaces: {$ne: ws._id}};
+      let update = { $addToSet: {linkedWorkspaces: ws._id}};
+
+      return models.Assignment.update(filter, update);
+    });
+    await Promise.all(updateResults);
+  }catch(err) {
+    console.log({addMissingLinkedWorkspacesErr: err});
+  }
+}
 async function migrate() {
   try {
     await addWorkspacesToUpdate();
@@ -71,6 +98,9 @@ async function migrate() {
     console.log('done updating answers');
     await updateAssignments();
     console.log('done updating assignments');
+
+    await addMissingLinkedWorkspaces();
+    console.log('done!');
     mongoose.connection.close();
   }catch(err) {
     console.log('migrate err: ', err);
@@ -79,4 +109,4 @@ async function migrate() {
   }
 }
 
-//  migrate();
+ migrate();
