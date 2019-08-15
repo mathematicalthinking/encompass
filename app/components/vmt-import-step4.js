@@ -10,8 +10,9 @@ Encompass.VmtImportStep4Component = Ember.Component.extend({
   }.property('isUploadingAnswer', 'isCreatingWorkspace', 'savingAssignment', 'uploadedAnswers'),
 
   workspaceLink: function () {
-    let createdWorkspace = this.get('createdWorkspace');
-    return `/#/workspaces/${createdWorkspace._id}/submissions/${createdWorkspace.submissions[0]}`;
+    let submission = this.get('createdWorkspace.submissions.firstObject');
+    let wsId = this.get('createdWorkspace.id');
+    return `/#/workspaces/${wsId}/submissions/${submission}`;
   }.property('isCreatingWorkspace', 'createdWorkspace'),
 
   handleLoadingMessage: function() {
