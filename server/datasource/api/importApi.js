@@ -394,10 +394,7 @@ const postVmtImportRequests = async (req, res, next) => {
 
     let { vmtRooms, doCreateWorkspace, workspaceMode, workspaceOwner, workspaceName, folderSet } = req.body.vmtImportRequest;
 
-
     let roomsWithProblems = await createDefaultProblemsFromVmtRooms(user, vmtRooms);
-
-
 
     let answerRecords = await convertVmtRoomsToAnswers(vmtRooms, user);
     let importRecord = new models.VmtImportRequest(importRequest);
@@ -422,7 +419,18 @@ const postVmtImportRequests = async (req, res, next) => {
     });
 
     let savedWorkspace = await workspace.save();
-    importRecord.createdWorkspace = savedWorkspace._id;
+
+    if (isValidMongoId(folderSet)) {
+      // folder set is id
+      let folderHash = { folderSetId: folderSet };
+      let wsInfo = { newWsId: savedWorkspace._id, newWsOwner: savedWorkspace._owner };
+      await workspaceApi.newFolderStructure(user, wsInfo, folderHash);
+      importRecord.createdWorkspace = savedWorkspace._id;
+
+      // need updated workspace with folder structure
+
+      savedWorkspace = await models.Workspace.findById(savedWorkspace._id).lean();
+    }
 
     let data = {
       vmtImportRequest: importRecord,
