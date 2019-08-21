@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /**
   * # Assignment API
   * @description This is the API for assignment based requests
@@ -15,6 +16,8 @@ const access = require('../../middleware/access/assignments');
 const { areObjectIdsEqual, isValidMongoId } = require('../../utils/mongoose');
 
 const { isNonEmptyArray, } = require('../../utils/objects');
+
+const { answersToSubmissions} = require('./workspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -190,20 +193,46 @@ const getAssignment = async function(req, res, next) {
   * @throws {RestError} Something? went wrong
 */
 
-const postAssignment = (req, res, next) => {
-  const user = userAuth.requireUser(req);
-  // do we want to check if the user is allowed to create assignments?
-  const assignment = new models.Assignment(req.body.assignment);
-  assignment.createdBy = user;
-  assignment.createDate = Date.now();
-  assignment.save((err, doc) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+const postAssignment = async (req, res, next) => {
+  try {
+    const user = userAuth.requireUser(req);
+    // do we want to check if the user is allowed to create assignments?
+
+    const assignment = new models.Assignment(req.body.assignment);
+    assignment.createdBy = user;
+    assignment.createDate = Date.now();
+
+    await assignment.save();
+
+    let { doCreateLinkedWorkspaces, linkedWorkspaceCreationOptions } = req.body.assignment;
+    let linkedWorkspaces;
+
+    if (doCreateLinkedWorkspaces) {
+      await assignment.populate('students').populate({ path: 'section', select: 'name'}).execPopulate();
+      linkedWorkspaces = await generateLinkedWorkspacesFromAssignment(assignment, user, linkedWorkspaceCreationOptions);
+
+      console.log({linkedWorkspaces});
+      assignment.linkedWorkspaces = linkedWorkspaces.map(ws => ws._id);
+      console.log({assignment});
+      assignment.depopulate('students').depopulate('section');
+      await assignment.save();
     }
-    const data = {'assignment': doc};
+
+
+
+    let data = { assignment };
+
+    if (isNonEmptyArray(linkedWorkspaces)) {
+      data.workspaces = linkedWorkspaces;
+    }
     utils.sendResponse(res, data);
-  });
+
+  }catch(err) {
+    console.log({postAssignmentErr: err});
+    return utils.sendError.InternalError(err, res);
+
+  }
+
 };
 
 /**
@@ -454,6 +483,74 @@ const removeProblem = (req, res, next) => {
       utils.sendResponse(res, data);
     });
   });
+};
+
+
+const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOptions = {}, parentWsOptions = {}) => {
+  try {
+    if (!assignment) {
+      return [];
+    }
+    // assignment will have students, section populated
+    let { students, answers, section } = assignment;
+
+    let { mode } = wsOptions;
+
+    // if answers convert answers to submissions
+
+    let submissionObjects = await answersToSubmissions(answers);
+
+    // create a workspace for each student in assignment
+    let workspaces = await Promise.all(students.map(async (student) => {
+      // create submission record copies
+      let submissionRecords = await Promise.all( submissionObjects.map((obj) => {
+        let sub = new models.Submission(obj);
+        let creatorId;
+
+        let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+        // set creator of submission as the enc user who created it if applicable
+        // else set as importer
+
+        if (isValidMongoId(encUserId)) {
+          creatorId = encUserId;
+        } else {
+          creatorId = reqUser._id;
+        }
+        sub.createdBy = creatorId;
+        sub.createDate = Date.now();
+        sub.lastModifiedDate = Date.now();
+        sub.lastModifiedBy = creatorId;
+      }));
+
+      let wsName = `${student.username}: ${assignment.name} (${section.name})`;
+
+      return models.Workspace.create({
+        name: wsName,
+        owner: student._id,
+        createdBy: reqUser._id,
+        lastModifiedBy: reqUser._id,
+        lastModifiedDate: Date.now(),
+        mode: mode || 'private',
+        submissions: submissionRecords,
+        linkedAssignment: assignment._id,
+        organization: reqUser.organization,
+
+      });
+    }));
+
+    let { doCreateParentWs } = parentWsOptions;
+
+    if ( doCreateParentWs ) {
+      // create parent ws from linked workspaces
+
+    }
+
+    return workspaces;
+
+  }catch(err) {
+    console.log({generateLinkedWorkspacesFromAssignmentErr: err});
+  }
 };
 
 module.exports.get.assignments = getAssignments;
