@@ -71,7 +71,10 @@ var WorkspaceSchema = new Schema({
   sourceWorkspace: { type: ObjectId, ref: 'Workspace' },
   linkedAssignment: { type: ObjectId, ref: 'Assignment' },
   doAllowSubmissionUpdates: { type: Boolean, default: true },
-  doOnlyUpdateLastViewed: { type: Boolean, default: false }
+  doOnlyUpdateLastViewed: { type: Boolean, default: false },
+  workspaceType: { type: String, enum: ['markup', 'parent', 'response'], default: 'markup'},
+  parentWorkspace: {type: ObjectId, ref: 'Workspace'},
+  childWorkspaces: [{type: ObjectId, ref: 'Workspace'}],
 }, {versionKey: false});
 
 /**

@@ -26,7 +26,8 @@ var FolderSchema = new Schema({
   /* Weight is used in the frontend for sort and dragNdrop functionality */
   weight: Number,
   taggings: [{type: ObjectId, ref:'Tagging'}],
-  workspace: { type:ObjectId, ref:'Workspace' }
+  workspace: { type:ObjectId, ref:'Workspace' },
+  originalFolder: { type: ObjectId, ref: 'Folder' }, // when in a parent workspace to ref original
 }, {versionKey: false});
 
 /**

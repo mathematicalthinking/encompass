@@ -36,7 +36,8 @@ var SelectionSchema = new Schema({
     vmtInfo: {
       startTime: { type: Number },
       endTime: { type: Number }
-    }
+    },
+    originalSelection: { type: ObjectId, ref: 'Selection' }, // when in a parent workspace to ref original
   }, {versionKey: false});
 
 

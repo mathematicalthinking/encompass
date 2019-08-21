@@ -48,6 +48,7 @@ var ResponseSchema = new Schema({
     isNewlyRead: { type: Boolean, default: false},
     wasUnapproved: {type: Boolean, default: false},
     powsRecipient: { type: String },
+    originalResponse: { type: ObjectId, ref: 'Response' } // when response is in a parent workspace to ref original
   }, {versionKey: false});
 
 /**

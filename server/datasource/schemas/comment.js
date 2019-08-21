@@ -54,7 +54,8 @@ var CommentSchema = new Schema({
     submission: {type: ObjectId, ref:'Submission', required: true},
     workspace: {type: ObjectId, ref:'Workspace', required: true},
     /* Not to be confused with label, type depends on the object this comment is for */
-    type: {type: String, enum: ['selection', 'submission', 'workspace']}
+    type: {type: String, enum: ['selection', 'submission', 'workspace']},
+    originalComment: { type: ObjectId, ref: 'Comment' }, // when in a parent workspace to ref original
   }, {versionKey: false});
 
 /**

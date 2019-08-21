@@ -18,7 +18,8 @@ var TaggingSchema = new Schema({
 //==
     workspace: { type: ObjectId, ref: 'Workspace' },
     selection: { type: ObjectId, ref: 'Selection' },
-    folder: { type: ObjectId, ref: 'Folder' }
+    folder: { type: ObjectId, ref: 'Folder' },
+    originalTagging: { type: ObjectId, ref: 'Tagging' }, // when in a parent workspace to ref original
   }, {
     versionKey: false,
     toObject: { virtuals: true },
