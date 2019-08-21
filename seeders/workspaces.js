@@ -691,7 +691,7 @@ module.exports = [
     "organization" : ObjectId("5b4e4d5f808c7eebc9f9e82c"),
     "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
     "lastModifiedBy" : ObjectId("5b7321ee59a672806ec903d5"),
-    "lastViewed" : ISODate("2019-03-12T16:27:47.826Z"),
+    "lastViewed" : ISODate("2019-08-21T15:17:57.265Z"),
     "linkedAssignment" : ObjectId("5b91743a3da5efca74705773"),
     "doOnlyUpdateLastViewed" : false,
     "doAllowSubmissionUpdates" : true,
@@ -823,6 +823,84 @@ module.exports = [
     "editors" : [],
     "lastModifiedDate" : ISODate("2019-03-12T16:27:47.826Z"),
     "isTrashed" : false,
-    "createDate" : ISODate("2018-11-14T14:30:46.526Z")
+    "createDate" : ISODate("2018-11-14T14:30:46.526Z"),
+    "childWorkspaces" : [],
+    "workspaceType" : "markup"
+},
+
+/* 8 */
+{
+    "_id" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+    "sourceWorkspace" : ObjectId("5bec36958c73047613e2f34e"),
+    "name" : "tracyc: Summer's Test Workspace 1",
+    "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+    "mode" : "private",
+    "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+    "organization" : ObjectId("5b4e4d5f808c7eebc9f9e82c"),
+    "childWorkspaces" : [],
+    "workspaceType" : "markup",
+    "doOnlyUpdateLastViewed" : false,
+    "doAllowSubmissionUpdates" : true,
+    "permissions" : [],
+    "taggings" : [
+        ObjectId("5d5d63054f217a59dfbbdefa"),
+        ObjectId("5d5d634c4f217a59dfbbdefd")
+    ],
+    "comments" : [
+        ObjectId("5d5d62f84f217a59dfbbdef9"),
+        ObjectId("5d5d63384f217a59dfbbdefc")
+    ],
+    "selections" : [
+        ObjectId("5d5d62e64f217a59dfbbdef7"),
+        ObjectId("5d5d62e94f217a59dfbbdef8"),
+        ObjectId("5d5d631c4f217a59dfbbdefb")
+    ],
+    "responses" : [
+        ObjectId("5d5d635b4f217a59dfbbdefe")
+    ],
+    "submissions" : [
+        ObjectId("5d5d60ef4f217a59dfbbdeec"),
+        ObjectId("5d5d60ef4f217a59dfbbdeed")
+    ],
+    "submissionSet" : {
+        "description" : {
+            "group" : {
+                "name" : "Summer's Algebra 2 1st Period"
+            },
+            "puzzle" : {
+                "title" : "Summer's Private Problem"
+            },
+            "lastSubmissionDate" : ISODate("2019-08-21T15:19:11.856Z"),
+            "firstSubmissionDate" : ISODate("2019-08-21T15:19:11.854Z"),
+            "pdSource" : "default"
+        },
+        "criteria" : {
+            "puzzle" : {
+                "puzzleId" : "5b9173e23da5efca74705772"
+            },
+            "group" : {
+                "groupId" : "5b9149a32ecaf7c30dd4748f"
+            },
+            "pdSet" : "default"
+        },
+    },
+    "folders" : [
+        ObjectId("5d5d60ef4f217a59dfbbdef0"),
+        ObjectId("5d5d60ef4f217a59dfbbdef1"),
+        ObjectId("5d5d60ef4f217a59dfbbdef6"),
+        ObjectId("5d5d60ef4f217a59dfbbdef5"),
+        ObjectId("5d5d60ef4f217a59dfbbdef4"),
+        ObjectId("5d5d60ef4f217a59dfbbdeef"),
+        ObjectId("5d5d60ef4f217a59dfbbdef3"),
+        ObjectId("5d5d60ef4f217a59dfbbdeee"),
+        ObjectId("5d5d60ef4f217a59dfbbdef2")
+    ],
+    "editors" : [],
+    "lastModifiedDate" : ISODate("2019-08-21T15:35:49.971Z"),
+    "isTrashed" : false,
+    "createDate" : ISODate("2019-08-21T15:17:11.562Z"),
+    "lastViewed" : ISODate("2019-08-21T15:29:26.693Z"),
+    "lastModifiedBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+    "linkedAssignment" : ObjectId("5b91743a3da5efca74705773")
 },
 ];

@@ -74,7 +74,7 @@ module.exports = [
   "section" : ObjectId("5b9149a32ecaf7c30dd4748f"),
   "problem" : ObjectId("5b9173e23da5efca74705772"),
   "assignmentType" : "problem",
-  "linkedWorkspaces" : [ObjectId("5bec36958c73047613e2f34e")],
+  "linkedWorkspaces" : [ObjectId("5bec36958c73047613e2f34e"), ObjectId("5d5d60ef4f217a59dfbbdeeb")],
   "answers" : [
       ObjectId("5bb813fc9885323f6d894972"),
       ObjectId("5bec35898c73047613e2f34b")

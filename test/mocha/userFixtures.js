@@ -29,13 +29,13 @@ const admin = {
     accessibleUserCount: 53,
   },
   submissions: {
-    accessibleSubmissionCount: 62,
+    accessibleSubmissionCount: 64,
     accessibleSubmission: {
       _id: "5bb814d19885323f6d894973"
     },
   },
   comments: {
-    accessibleCommentCount: 11,
+    accessibleCommentCount: 13,
     accessibleComment: {
       _id: "53e12507b48b12793f000b91"
     },
@@ -63,7 +63,7 @@ const admin = {
     accessibleAnswerCount: 7,
   },
   selections: {
-    accessibleSelectionCount: 79,
+    accessibleSelectionCount: 82,
     accessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -75,7 +75,7 @@ const admin = {
     },
   },
   folders: {
-    accessibleFolderCount: 45,
+    accessibleFolderCount: 54,
     accessibleFolder: {
       _id: '5bb814d19885323f6d894975'
     },
@@ -153,7 +153,7 @@ const admin = {
     },
   },
   workspaces: {
-    accessibleWorkspacesCount: 6,
+    accessibleWorkspacesCount: 7,
     accessibleWorkspace:
       {
         _id: "53e1156db48b12793f000442" ,
@@ -169,7 +169,7 @@ const admin = {
       }
   },
   responses: {
-    accessibleResponsesCount: 7,
+    accessibleResponsesCount: 8,
     accessibleResponse: {
       _id: "5bec64f7aa4a927d50cd5ba0",
     },
@@ -458,7 +458,7 @@ const teacherMT = {
     accessibleUserCount: 22,
   },
   submissions: {
-    accessibleSubmissionCount: 20,
+    accessibleSubmissionCount: 22,
     unaccessibleSubmission: {
       _id: "53e1156db48b12793f000417"
     },
@@ -467,7 +467,7 @@ const teacherMT = {
     },
   },
   comments: {
-    accessibleCommentCount: 6,
+    accessibleCommentCount: 8,
     accessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -498,7 +498,7 @@ const teacherMT = {
     accessibleAnswerCount: 2,
   },
   selections: {
-    accessibleSelectionCount: 66,
+    accessibleSelectionCount: 69,
     inaccessibleSelection: {
       _id: '53e12211b48b12793f000b7e'
     },
@@ -516,7 +516,7 @@ const teacherMT = {
     },
   },
   folders: {
-    accessibleFolderCount: 40,
+    accessibleFolderCount: 49,
     inaccessibleFolder: {
       _id: '53e11b0ab48b12793f000ab1'
     },
@@ -604,7 +604,7 @@ const teacherMT = {
     }
   },
   workspaces: {
-    accessibleWorkspacesCount: 3,
+    accessibleWorkspacesCount: 4,
     accessibleWorkspace:
       {
         _id: '5bb814d19885323f6d894974' ,
@@ -626,7 +626,7 @@ const teacherMT = {
       },
   },
   responses: {
-    accessibleResponsesCount: 4,
+    accessibleResponsesCount: 5,
     accessibleResponse: {
       _id: "5bec6497aa4a927d50cd5b9b",
     },
@@ -682,13 +682,13 @@ const studentMT = {
     },
   },
   submissions: {
-    accessibleSubmissionCount: 2,
+    accessibleSubmissionCount: 4,
     unaccessibleSubmission: {
       _id: "53e36522729e9ef59ba7f4df"
     },
   },
   comments: {
-    accessibleCommentCount: 3,
+    accessibleCommentCount: 5,
     inaccessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -704,7 +704,7 @@ const studentMT = {
     },
   },
   answers: {
-    accessibleAnswerCount: 1,
+    accessibleAnswerCount: 2,
     firstRevision: {
       "answer" : "This is my 2nd try",
       "explanation" : "<p>This is my 2nd explanation.</p>",
@@ -722,7 +722,7 @@ const studentMT = {
     }
   },
   selections: {
-    accessibleSelectionCount: 3,
+    accessibleSelectionCount: 6,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -737,7 +737,7 @@ const studentMT = {
     },
   },
   folders: {
-    accessibleFolderCount: 4,
+    accessibleFolderCount: 13,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
@@ -809,7 +809,7 @@ const studentMT = {
     }
   },
   workspaces: {
-    accessibleWorkspacesCount: 2,
+    accessibleWorkspacesCount: 3,
     accessibleWorkspace:
       {
         _id: '5bec36958c73047613e2f34e/' ,
@@ -830,7 +830,7 @@ const studentMT = {
       } ,
   },
   responses: {
-    accessibleResponsesCount: 2,
+    accessibleResponsesCount: 3,
     accessibleResponse: {
       _id: "5bec64f7aa4a927d50cd5ba0",
     },

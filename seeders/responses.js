@@ -269,4 +269,42 @@ module.exports = [
   "isTrashed" : false,
   "createDate" : ISODate("2019-03-12T16:27:29.288Z")
 },
+/* 1 */
+{
+  "_id" : ObjectId("5d5d635b4f217a59dfbbdefe"),
+  "text" : "<p>Hello ashleyc,</p><p><br></p><p>You wrote:</p><p><br></p><blockquote class='pf-response-text'>undefined</blockquote><p><br></p><p>...and I thought...</p><p><br></p><p class='pf-response-text'>I'm not sure about this</p><p><br></p>",
+  "original" : "<p>Hello ashleyc,</p><br><p>You wrote:</p><br><blockquote class=\"pf-response-text\">undefined</blockquote><br><p>...and I thought...</p><br><p class=\"pf-response-text\">I'm not sure about this</p><br>",
+  "source" : "submission",
+  "responseType" : "mentor",
+  "note" : null,
+  "status" : "approved",
+  "createdBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "lastModifiedBy" : null,
+  "recipient" : ObjectId("5b9149c22ecaf7c30dd47490"),
+  "submission" : ObjectId("5d5d60ef4f217a59dfbbdeed"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "priorRevision" : null,
+  "reviewedResponse" : null,
+  "approvedBy" : null,
+  "unapprovedBy" : null,
+  "wasUnapproved" : false,
+  "isNewlyRead" : false,
+  "isNewlySuperceded" : false,
+  "isNewlyNeedsRevisions" : false,
+  "isNewPending" : false,
+  "isNewApproved" : true,
+  "isNewlyApproved" : false,
+  "isApproverNoteOnly" : false,
+  "wasReadByApprover" : false,
+  "wasReadByRecipient" : false,
+  "comments" : [
+      ObjectId("5d5d63384f217a59dfbbdefc")
+  ],
+  "selections" : [
+      ObjectId("5d5d631c4f217a59dfbbdefb")
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:29:31.265Z")
+},
 ];

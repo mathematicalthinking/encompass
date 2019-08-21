@@ -1075,7 +1075,8 @@ module.exports = [
     "history" : [],
     "notifications" : [
         ObjectId("5d08fe0261d1f2a863c33ad4"),
-        ObjectId("5d1a4190a9ca1828c9f02b3e")
+        ObjectId("5d1a4190a9ca1828c9f02b3e"),
+        ObjectId("5d5d635b4f217a59dfbbdeff")
     ],
     "hiddenWorkspaces" : [],
     "collabWorkspaces" : [
@@ -1221,7 +1222,10 @@ module.exports = [
     "lastModifiedDate" : ISODate("2018-09-06T15:30:21.278Z"),
     "isTrashed" : false,
     "createDate" : ISODate("2018-09-06T15:30:21.278Z"),
-    "ssoId" : ObjectId("5d1a59d79c78ad48c0480c6d")
+    "ssoId" : ObjectId("5d1a59d79c78ad48c0480c6d"),
+    "lastSeen" : ISODate("2019-08-21T15:35:51.089Z"),
+    "seenTour" : ISODate("2019-08-21T15:27:15.910Z"),
+    "socketId" : "aCHFPzb71DoTytcWAAAF"
 },
 
 /* 42 */
@@ -1236,7 +1240,7 @@ module.exports = [
     "requestReason" : "Professional Development",
     "accountType" : "T",
     "actingRole" : "teacher",
-    "lastSeen" : ISODate("2018-09-06T15:41:14.918Z"),
+    "lastSeen" : ISODate("2019-08-21T15:27:06.913Z"),
     "authorizedBy" : null,
     "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
     "lastModifiedBy" : ObjectId("5b245760ac75842be3189525"),
@@ -1260,7 +1264,13 @@ module.exports = [
     "lastModifiedDate" : ISODate("2018-09-06T15:36:31.451Z"),
     "isTrashed" : false,
     "createDate" : ISODate("2018-09-06T15:30:21.278Z"),
-    "ssoId" : ObjectId("5d1a59d79c78ad48c0480c8b")
+    "ssoId" : ObjectId("5d1a59d79c78ad48c0480c8b"),
+    "avatar" : null,
+    "organizationRequest" : null,
+    "googleId" : null,
+    "socketId" : "Z-ho55jBVkAB3j9YAAAA",
+    "doForcePasswordChange" : false,
+    "confirmEmailDate" : null
 },
 
 /* 43 */
@@ -1392,14 +1402,14 @@ module.exports = [
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c8c"),
     "password" : "$2b$12$xI0a6mVLlVoFYeVsmU2XrOVowVVphu9ORSD9EVHG6lzWMvfP8cgES",
     "accountType" : "T",
-    "sections": [],
-    "answers": [],
-    "assignments": [],
-    "notifications": [],
-    "collabWorkspaces": [],
-    "hiddenWorkspaces": [],
-    "history": [],
-    "isAuthorized": true,
+    "sections" : [],
+    "answers" : [],
+    "assignments" : [],
+    "notifications" : [],
+    "collabWorkspaces" : [],
+    "hiddenWorkspaces" : [],
+    "history" : [],
+    "isAuthorized" : true
 },
 
 /* 47 */
@@ -1418,12 +1428,12 @@ module.exports = [
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c8d"),
     "password" : "$2b$12$jNGkh.0hKAN1BRPUjScjCOE17yO9SkOV6rLdIO6DhAMsHQM28nfJi",
     "accountType" : "T",
-    "answers": [],
-    "assignments": [],
-    "notifications": [],
-    "collabWorkspaces": [],
-    "hiddenWorkspaces": [],
-    "history": [],
+    "answers" : [],
+    "assignments" : [],
+    "notifications" : [],
+    "collabWorkspaces" : [],
+    "hiddenWorkspaces" : [],
+    "history" : []
 },
 
 /* 48 */
@@ -1442,12 +1452,12 @@ module.exports = [
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c8e"),
     "password" : "$2b$12$PltCtaDCtpD.WakNZ8GUmOfX7kcisuA.PbGLM6HKGAdrkhuIQMzAy",
     "accountType" : "T",
-    "answers": [],
-    "assignments": [],
-    "notifications": [],
-    "collabWorkspaces": [],
-    "hiddenWorkspaces": [],
-    "history": [],
+    "answers" : [],
+    "assignments" : [],
+    "notifications" : [],
+    "collabWorkspaces" : [],
+    "hiddenWorkspaces" : [],
+    "history" : []
 },
 
 /* 49 */
@@ -1466,12 +1476,12 @@ module.exports = [
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c8f"),
     "password" : "$2b$12$Kzr5WEtkOzsCG9LS5fd8G.HVjUk4xp3p/wdzDNB/B5CEWB.oBKEji",
     "accountType" : "S",
-    "answers": [],
-    "assignments": [],
-    "notifications": [],
-    "collabWorkspaces": [],
-    "hiddenWorkspaces": [],
-    "history": [],
+    "answers" : [],
+    "assignments" : [],
+    "notifications" : [],
+    "collabWorkspaces" : [],
+    "hiddenWorkspaces" : [],
+    "history" : []
 },
 
 /* 50 */
@@ -1490,12 +1500,12 @@ module.exports = [
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c90"),
     "password" : "$2b$12$Ptcu.r3bhFyE/mrtxAbqO.jGVm7MsoNQLv5XmSC/hXSt.oWPHdXha",
     "accountType" : "S",
-    "answers": [],
-    "assignments": [],
-    "notifications": [],
-    "collabWorkspaces": [],
-    "hiddenWorkspaces": [],
-    "history": [],
+    "answers" : [],
+    "assignments" : [],
+    "notifications" : [],
+    "collabWorkspaces" : [],
+    "hiddenWorkspaces" : [],
+    "history" : []
 },
 
 /* 51 */
@@ -1514,12 +1524,12 @@ module.exports = [
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c91"),
     "password" : "$2b$12$Luk2olr1mzTSwpTeQdMZZuGmLK5ymiIzjUzaf/qFICvixv7h.eoEi",
     "accountType" : "S",
-    "answers": [],
-    "assignments": [],
-    "notifications": [],
-    "collabWorkspaces": [],
-    "hiddenWorkspaces": [],
-    "history": [],
+    "answers" : [],
+    "assignments" : [],
+    "notifications" : [],
+    "collabWorkspaces" : [],
+    "hiddenWorkspaces" : [],
+    "history" : []
 },
 
 /* 52 */
@@ -1538,13 +1548,15 @@ module.exports = [
     "ssoId" : ObjectId("5d1a59d79c78ad48c0480c92"),
     "password" : "$2b$12$GMfHvZySEkCTfV0UwRg3EeLFW6ZnonV6UnM7YIhqnNH8ZkjGcU.Ae",
     "accountType" : "T",
-    "answers": [],
-    "assignments": [],
-    "notifications": [],
-    "collabWorkspaces": [],
-    "hiddenWorkspaces": [],
-    "history": [],
+    "answers" : [],
+    "assignments" : [],
+    "notifications" : [],
+    "collabWorkspaces" : [],
+    "hiddenWorkspaces" : [],
+    "history" : []
 },
+
+/* 53 */
 {
     "_id" : ObjectId("5d1a7926ae04126da6edda75"),
     "firstName" : "Geordi",
@@ -1567,6 +1579,8 @@ module.exports = [
     "isTrashed" : false,
     "createDate" : ISODate("2019-07-01T21:20:38.406Z")
 },
+
+/* 54 */
 {
     "_id" : ObjectId("5d321ad77aa1a6479d22e8e9"),
     "firstName" : "no",
@@ -1588,5 +1602,5 @@ module.exports = [
     "lastModifiedDate" : ISODate("2019-07-19T19:32:38.990Z"),
     "isTrashed" : false,
     "createDate" : ISODate("2019-07-19T19:32:38.990Z")
-}
+},
 ];
