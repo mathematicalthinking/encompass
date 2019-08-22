@@ -4,6 +4,10 @@ Encompass.UndraggableSelectionComponent = Ember.Component.extend(Encompass.Curre
   classNames: ['undraggable-selection'],
   isExpanded: false,
 
+  workspaceType: Ember.computed.alias('selection.workspace.workspaceType'),
+
+  isParentWorkspace: Ember.computed.equal('workspaceType', 'parent'),
+
   isImage: function() {
     return this.get('selection.imageTagLink.length') > 0;
   }.property('selection.imageTagLink'),

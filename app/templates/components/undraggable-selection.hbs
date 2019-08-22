@@ -1,4 +1,4 @@
-<div title={{titleText}} class="{{linkToClassName}} selectionLink {{selection.id}} {{if isImage 'image-tag'}} {{if isSelected 'is-selected'}}">
+<div class="selectionLink {{if isImage "image-tag"}} {{if isSelected 'is-selected'}}" title="{{titleText}} {{if isParentWorkspace " by "}} {{if isParentWorkspace selection.createdBy.username}}">
   {{#if selection.imageTagLink}}
     <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
     <div class="overlay">
