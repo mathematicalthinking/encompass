@@ -81,4 +81,5 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
   },
 
   sortedChildren: Ember.computed.sort('cleanChildren', 'sortProperties'),
+  originalFolder: DS.belongsTo('folder', {inverse: null}),
 });

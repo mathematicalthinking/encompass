@@ -21,4 +21,5 @@ Encompass.Selection = DS.Model.extend(Encompass.Auditable, {
   imageSrc: DS.attr('string'),
   imageTagLink: DS.attr('string'),
   vmtInfo: DS.attr(''),
+  originalSelection: DS.belongsTo('selection', {inverse: null}),
 });
