@@ -12,6 +12,8 @@ Encompass.UndraggableSelectionComponent = Ember.Component.extend(Encompass.Curre
     return this.get('selection.imageTagLink.length') > 0;
   }.property('selection.imageTagLink'),
 
+  isText: Ember.computed.not('isImage'),
+
   isVmtClip: function() {
     return this.get('selection.vmtInfo.startTime') >= 0 &&
     this.get('selection.vmtInfo.endTime') >= 0;
