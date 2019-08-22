@@ -211,6 +211,7 @@ server.post('/api/copyWorkspaceRequests', api.post.cloneWorkspace);
 server.post('/api/folderSets', api.post.folderSet);
 server.post('/api/updateWorkspaceRequests', api.post.updateWorkspaceRequest);
 server.post('/api/notifications', api.post.notification);
+server.post('/api/parentWorkspaces', api.post.parentWorkspace);
 
 
 //ALL PUT REQUESTS
