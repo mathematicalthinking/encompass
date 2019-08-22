@@ -71,6 +71,10 @@ const runTest = function(config, expectedResults, description, compareOptions = 
         expect(results.parentWorkspace.workspaceType).to.eql(expectedResults.parentWorkspace.workspaceType);
       });
 
+      it('Should have correct childWorkspaces', function() {
+        expect(results.parentWorkspace.childWorkspaces.map(id => id.toString())).to.have.members(expectedResults.parentWorkspace.childWorkspaces);
+      });
+
     }
 
   });

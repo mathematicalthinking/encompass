@@ -21,6 +21,7 @@ module.exports = {
         },
         mode: 'private',
         workspaceType: 'parent',
+        childWorkspaces: ['5bec36958c73047613e2f34e', '5d5d60ef4f217a59dfbbdeeb'],
       }
     }
   },
