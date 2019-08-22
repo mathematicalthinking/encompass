@@ -13,9 +13,15 @@
   {{#if canComment}}
       {{textarea tabindex=1 id="commentTextarea" classBinding="onSelection" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
     {{else}}
+    {{#if isParentWorkspace}}
+      <p class="info">Parent / Combined Workspaces do not support the creation of new comments. Instead, you can reply to a selection or reply to an existing reply. To create a new reply or bring up the existing replies, click on the selection in the selections container.
+      </p>
+    {{else}}
       <p class="error-message">You do not have permisssion to make comments for this workspace</p>
     {{/if}}
-    {{#if onSelection}}
+
+    {{/if}}
+    {{#if showComposeButtons}}
       <div class="submit-buttons">
         <button class="primary-button cancel-button" {{action "cancelComment"}}>Cancel</button>
         <button class="primary-button save" {{action "madeSelection"}}>Save</button>
@@ -31,7 +37,7 @@
           {{#each-in filterOptions as  |option values|}}
             <li>
               <label>
-                <input type="checkbox" checked={{values.isChecked}} name={{option}} onclick={{action "updateFilter" option}}>
+                <input type="checkbox" checked={{values.isChecked}} name={{option}} onclick={{action "updateFilter" option}} disabled={{values.isDisabled}}>
                 <span>
                   <span class="radio-text">{{values.label}}</span>
                 </span>
@@ -99,6 +105,7 @@
           reuseComment=(action "reuseComment")
           deleteComment=(action "deleteComment")
           currentSelection=currentSelection
+          isParentWorkspace=isParentWorkspace
           }}
         {{else}}
         <p class="info">{{emptyResultsMessage}}</p>
