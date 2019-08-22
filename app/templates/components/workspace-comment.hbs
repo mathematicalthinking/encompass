@@ -10,7 +10,14 @@
   </p>
     <p class="meta">
       by <span class="creator">{{comment.createdBy.username}}</span>
-      in <span class="workspace">{{comment.workspace.name}}</span>
+      in <span class="workspace">
+        {{#if isParentWorkspace }}
+          {{comment.originalComment.workspace.name}}
+        {{else}}
+          {{comment.workspace.name}}
+        {{/if}}
+        </span>
+      {{metaText}}
     </p>
 </div>
 <div class="comment-flex-item actions">

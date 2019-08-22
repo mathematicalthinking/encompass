@@ -8,6 +8,12 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
   classNames: ['ws-comment-comp'],
   classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse', 'isFromCurrentSelection:is-for-cs',],
 
+  workspaceType: Ember.computed.alias('comment.workspace.workspaceType'),
+
+  originalWorkspace: Ember.computed.alias('comment.originalComment.workspace'),
+
+  isParentWorkspace: Ember.computed.equal('workspaceType', 'parent'),
+
   isForCurrentWorkspace: function() {
     let workspaceId = this.get('utils').getBelongsToId(this.get('comment'), 'workspace');
     return workspaceId === this.get('currentWorkspace.id');
@@ -41,6 +47,15 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
     return this.get('utils').getBelongsToId(this.get('comment'), 'selection') === this.get('currentSelection.id');
   }.property('currentSelection', 'comment.selection'),
 
+  // metaText: function() {
+  //   let creatorUsername = this.get('comment.createdBy.username');
+
+  //   let workspaceType = this.get('workspaceType');
+
+  //   let workspaceName = workspaceType === 'parent' ?
+  //   this.get('originalWorkspace.name') : this.get('comment.workspace.name');
+  //   return `by ${creatorUsername} in ${workspaceName}`;
+  // }.property('workspaceType', 'comment.createdBy', 'comment.workspace.name', 'originalWorkspace.name'),
   actions: {
     deleteComment: function( comment ){
       this.sendAction('action', comment);
