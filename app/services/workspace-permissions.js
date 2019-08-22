@@ -79,6 +79,10 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       if (requiredPermissionLevel > 1) {
         return false;
       }
+
+      if (requiredPermissionLevel === 1 && recordType === 'feedback') {
+        return false;
+      }
     }
 
     if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {
