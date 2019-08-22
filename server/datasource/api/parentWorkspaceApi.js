@@ -1,7 +1,15 @@
 /* eslint-disable no-use-before-define */
+const _ = require('underscore');
+
 const models = require('../schemas');
 const { isNonEmptyArray } = require('../../utils/objects');
 const { isValidMongoId, } = require('../../utils/mongoose');
+
+const { requireUser } = require('../../middleware/userAuth');
+
+const { sendError, sendResponse } = require('../../middleware/requestHandler');
+
+module.exports.post = {};
 
 const generateParentWorkspace = async function(config) {
   try {
@@ -35,7 +43,8 @@ const generateParentWorkspace = async function(config) {
       lastModifiedBy: createdBy,
       organization,
       workspaceType: 'parent',
-      linkedAssignment
+      linkedAssignment,
+      childWorkspaces,
     });
 
     let popChildWorkspaces = await populateChildWorkspaces(childWorkspaces);
@@ -54,7 +63,6 @@ const generateParentWorkspace = async function(config) {
     );
 
     combinedWorkspace.submissions = combinedSubmissions;
-
     let withUpdatedRelationships = updateRelationships(
       combinedWorkspace,
       oldToNewMap,
@@ -63,6 +71,9 @@ const generateParentWorkspace = async function(config) {
     );
 
     await saveAllCombinedDocs(withUpdatedRelationships);
+
+    // create taggings in top level folder for any
+    // selections that were not tagged
 
     parentWorkspace.selections = withUpdatedRelationships.selections.map(
       s => s._id
@@ -141,19 +152,44 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
   try {
     return workspaces.reduce((acc, workspace) => {
       // copy selections
+      let newParentFolder = new models.Folder({
+        name: workspace.name,
+        owner: parentOwner,
+        createdBy: parentCreator,
+        lastModifiedBy: parentCreator,
+        workspace: parentId
+      });
+
+      let defaultTaggings = [];
+
       acc.combinedWorkspace.selections = acc.combinedWorkspace.selections.concat(
         workspace.selections.map(oldSelection => {
-          let oldId = oldSelection._id;
-          delete oldSelection._id;
+          let copyOldSelection = {...oldSelection };
+          let oldId = copyOldSelection._id;
+          delete copyOldSelection._id;
 
-          oldSelection.originalSelection = oldId;
-          let newSelection = new models.Selection(oldSelection);
+          copyOldSelection.originalSelection = oldId;
+          let newSelection = new models.Selection(copyOldSelection);
 
           acc.oldToNewMap.selection[oldId] = newSelection._id;
+
+          let isNotTagged = !isNonEmptyArray(newSelection.taggings);
+
+          if (isNotTagged) {
+            let defTagging = new models.Tagging({
+              selection: newSelection._id,
+              folder: newParentFolder._id,
+              workspace: parentId,
+              createdBy: newSelection.createdBy,
+              createDate: newSelection.createDate,
+            });
+            defaultTaggings.push(defTagging);
+          }
           return newSelection;
         })
       );
 
+      newParentFolder.taggings = defaultTaggings.map(t => t._id);
       // copy comments
       acc.combinedWorkspace.comments = acc.combinedWorkspace.comments.concat(
         workspace.comments.map(oldComment => {
@@ -169,14 +205,6 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
       );
 
       // copy folders
-
-      let newParentFolder = new models.Folder({
-        name: workspace.name,
-        owner: parentOwner,
-        createdBy: parentCreator,
-        lastModifiedBy: parentCreator,
-        workspace: parentId
-      });
 
       acc.combinedWorkspace.folders.push(newParentFolder);
 
@@ -202,6 +230,8 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
       );
 
       // copy taggings
+      acc.combinedWorkspace.taggings = acc.combinedWorkspace.taggings.concat(defaultTaggings);
+
       acc.combinedWorkspace.taggings = acc.combinedWorkspace.taggings.concat(
         workspace.taggings.map(oldTagging => {
           let oldId = oldTagging._id;
@@ -345,19 +375,23 @@ const updateRelationships = (
       // we do not want to update the parent of folders that were previously top level
 
       folder.parent = oldToNewMap.folder[folder.parent];
+      folder.taggings = folder.taggings.map(tagging => {
+        return oldToNewMap.tagging[tagging];
+      });
+      folder.workspace = parentWs._id;
     }
-    folder.taggings = folder.taggings.map(tagging => {
-      return oldToNewMap.tagging[tagging];
-    });
 
-    folder.workspace = parentWs._id;
     return folder;
   });
 
   combinedWorkspace.taggings = combinedWorkspace.taggings.map(tagging => {
-    tagging.folder = oldToNewMap.folder[tagging.folder];
-    tagging.selection = oldToNewMap.selection[tagging.selection];
-    tagging.workspace = parentWs._id;
+    if (isValidMongoId(tagging.originalTagging)) {
+      // do not want to update default taggings that were creating
+      // during the combining process
+      tagging.folder = oldToNewMap.folder[tagging.folder];
+      tagging.selection = oldToNewMap.selection[tagging.selection];
+      tagging.workspace = parentWs._id;
+    }
     return tagging;
   });
 
@@ -428,4 +462,20 @@ const saveAllCombinedDocs = combinedWorkspace => {
   ]);
 };
 
+const postParentWorkspace = async (req, res, next) => {
+  try {
+    let user = requireUser(req);
+    let { config } = req.body;
+    let results = await generateParentWorkspace(config);
+
+    let data = { results };
+
+    return sendResponse(res, data);
+  }catch(err) {
+    console.log(`postParentWorkspace err: ${err}`);
+    return sendError.InternalError(null, res);
+  }
+};
+
 module.exports.generateParentWorkspace = generateParentWorkspace;
+module.exports.post.parentWorkspace = postParentWorkspace;
