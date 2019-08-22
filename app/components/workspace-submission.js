@@ -438,7 +438,14 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
           this.set('makingSelections', false);
       }
     }
-  }
+  },
+  viewResponses() {
+    let getUrl = window.location;
+    let baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+
+    window.open(`${baseUrl}#/responses/submission/${this.get('currentSubmission.id')}`, 'newwindow', 'width=1200, height=700');
+
+  },
 }
 });
 

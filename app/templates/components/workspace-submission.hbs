@@ -35,6 +35,18 @@
           </span>
         {{/if}}
       </div>
+      {{else}}
+        {{#if isParentWorkspace}}
+        {{#if submissionResponses.length}}
+        <div class="submission-row-item  new-response">
+          <button class="action_button new-response" {{action "viewResponses"}}>View Responses</button>
+          <span class="meta response-count existing" title="existing response count">
+            ({{submissionResponses.length}})
+          </span>
+        </div>
+        {{/if}}
+
+        {{/if}}
       {{/if}}
 </aside>
 

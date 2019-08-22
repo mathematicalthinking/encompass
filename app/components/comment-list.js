@@ -61,9 +61,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   },
 
-  workspaceType: Ember.computed.alias('currentWorkspace.workspaceType'),
-
-  isParentWorkspace: Ember.computed.equal('workspaceType', 'parent'),
 
   showComposeButtons: Ember.computed.and('canComment', 'onSelection'),
 
