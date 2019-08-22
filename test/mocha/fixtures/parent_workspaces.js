@@ -17,7 +17,7 @@ module.exports = {
           length: 20
         },
         taggings: {
-          length: 6
+          length: 7
         },
         mode: 'private',
         workspaceType: 'parent',
