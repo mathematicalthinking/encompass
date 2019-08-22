@@ -1,7 +1,7 @@
 const _ = require('underscore');
 const mongoose = require('mongoose');
 
-const { isNonEmptyArray } = require('../utils/objects');
+const { isNonEmptyArray, isNil } = require('../utils/objects');
 /**
  * Returns true if passed in value matches format for mongoose objectId else false
  * @param {any} val
@@ -76,6 +76,31 @@ function cleanObjectIdArray(arr, doConvert=false) {
   return _.map(filtered, val => mongoose.Types.ObjectId(val));
 }
 
+const doesObjectIdSetContainObjectId = (objectIds, objectIdToAdd) => {
+  if (!Array.isArray(objectIds) || !isValidMongoId(objectIdToAdd)) {
+    return false;
+  }
+  let existingId = _.find(objectIds, id => {
+    return areObjectIdsEqual(id, objectIdToAdd);
+  });
+
+  return !isNil(existingId);
+};
+
+const addToObjectIdSet = (objectIds, objectIdToAdd) => {
+  if (!Array.isArray(objectIds) || !isValidMongoId(objectIdToAdd)) {
+    return false;
+  }
+
+  if (doesObjectIdSetContainObjectId(objectIds, objectIdToAdd)) {
+    return false;
+  }
+  objectIds.push(objectIdToAdd);
+  return true;
+};
+
   module.exports.isValidMongoId = isValidMongoId;
   module.exports.areObjectIdsEqual = areObjectIdsEqual;
   module.exports.cleanObjectIdArray = cleanObjectIdArray;
+  module.exports.addToObjectIdSet = addToObjectIdSet;
+  module.exports.doesObjectIdSetContainObjectId = doesObjectIdSetContainObjectId;
