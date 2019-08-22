@@ -5,9 +5,11 @@ const dbURI = `mongodb://localhost:27017/encompass_seed`;
 
 const indexes = require('./indexes');
 
+mongoose.Promise = Promise;
+
 const clearDB = () => {
   return mongoose
-    .connect(dbURI, { useNewUrlParser: true })
+    .connect(dbURI, { useMongoClient: true })
     .then(() => {
       mongoose.connection.db.dropDatabase();
     })
