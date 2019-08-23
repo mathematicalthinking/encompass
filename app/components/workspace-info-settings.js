@@ -229,11 +229,5 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
           this.handleErrors(err, 'serverErrors');
         });
     },
-    removeErrorFromArray(prop, err) {
-      if (!this.get(prop)) {
-        return;
-      }
-      this.get(prop).removeObject(err);
-    }
   }
 });
