@@ -35,6 +35,9 @@ form#newassignmentform {
   .flex-input {
     width: 70%;
   }
+  .selectize-comp {
+    width: 70%;
+  }
 
   input[type=text]  {
     width: 70%;
@@ -93,6 +96,14 @@ form#newassignmentform {
     padding: 12px 10px 20px 10px;
     font-size: 1em;
     color: $dark-font-color;
+  }
+
+  .error-box {
+    width: 70%;
+    box-sizing: border-box;
+    p {
+      margin: 0;
+    }
   }
 
 }

@@ -1,109 +1,204 @@
 <header id="assignmentnewheader">
-  <h2>Create New Assignment</h2>
+  <h2>
+    Create New Assignment
+  </h2>
   <div class="clear"></div>
 </header>
-
-
-  <section class="third submissions">
-    <form id='newassignmentform' class='properForm'>
-      <fieldset>
-        <ol>
-          <li>
-            <label for="section">
-              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.class}}>Class </span> <span class="required-star">*</span>
-            </label>
-            <div class="flex-input">
-              {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a class." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
-            {{input required=true type="hidden" value=selectedSection}}
-            {{#each sectionFormErrors as |error|}}
-              <p class="error-message">{{error}}</p>
-            {{/each}}
-            </div>
-
-          </li>
-          <li class="problem">
-            <label for="text">
-              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.problem}}>Problem </span> <span class="required-star">*</span>
-            </label>
-            {{#if selectedProblem}}
-              {{#if fromProblemInfo}}
-                <p>{{selectedProblem.title}}</p>
-              {{else}}
-                <p>{{selectedProblem.title}}<i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
-              {{/if}}
-
+<section class="third submissions">
+  <form id="newassignmentform" class="properForm">
+    <fieldset>
+      <ol>
+        <li>
+          <label for="section">
+            <span
+              class="label-text simptip-position-right simptip-multiline simptip-smooth"
+              data-tooltip={{tooltips.class}}
+            >
+              Class
+            </span>
+            <span class="required-star">
+              *
+            </span>
+          </label>
+          <div class="flex-input">
+            {{#if fromSectionInfo}}
+              <p>
+                {{selectedSection.name}}
+              </p>
             {{else}}
-              {{#if addProblemTypeahead}}
-                <div class="flex-input">
-                  {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
-                  {{#each problemFormErrors as |error|}}
-                    <p class="error-message">{{error}}</p>
-                  {{/each}}
-                </div>
-
-              {{/if}}
+              {{selectize-input
+                inputId="assn-new-section-select"
+                initialOptions=sectionOptions
+                onItemAdd=(action "updateSelectizeSingle")
+                onItemRemove=(action "updateSelectizeSingle")
+                maxItems=1
+                labelField="name"
+                valueField="id"
+                searchField="name"
+                propToUpdate="selectedSection"
+                placeholder="Search for a section by name"
+                model="section"
+                store=store
+              }}
+              {{input required=true type="hidden" value=selectedSection}}
+              {{#each sectionFormErrors as |error|}}
+                {{error-box
+                  error=error
+                  showDismiss=true
+                  resetError=(action
+                    "removeErrorFromArray" "sectionFormErrors" error
+                  )
+                }}
+              {{/each}}
             {{/if}}
-
-          </li>
-          <li>
-            <label for="assignedDate">
-              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.dateAssigned}}>Date Assigned </span> <span class="required-star">*</span>
-            </label>
+          </div>
+        </li>
+        <li class="problem">
+          <label for="text">
+            <span
+              class="label-text simptip-position-right simptip-multiline simptip-smooth"
+              data-tooltip={{tooltips.problem}}
+            >
+              Problem
+            </span>
+            <span class="required-star">
+              *
+            </span>
+          </label>
+          {{#if fromProblemInfo}}
+            <p>
+              {{selectedProblem.title}}
+            </p>
+          {{else}}
             <div class="flex-input">
-              {{input id="assignedDate" name="daterange" type="text" value=assignedDate required=true}}
+              {{selectize-input
+                store=store
+                inputId="assn-new-problem-select"
+                initialOptions=problemOptions
+                onItemAdd=(action "updateSelectizeSingle")
+                onItemRemove=(action "updateSelectizeSingle")
+                maxItems=1
+                labelField="title"
+                valueField="id"
+                searchField="title"
+                propToUpdate="selectedProblem"
+                placeholder="Search for a problem by title"
+                isAsync=true
+                model="problem"
+                queryParamsKey="query"
+                searchCriterion="title"
+                topLevelQueryParams="searchBy"
+                preload=problemsPreloadValue
+              }}
+              {{#each problemFormErrors as |error|}}
+                {{error-box
+                  error=error
+                  showDismiss=true
+                  resetError=(action
+                    "removeErrorFromArray" "problemFormErrors" error
+                  )
+                }}
+              {{/each}}
+            </div>
+          {{/if}}
+        </li>
+        <li>
+          <label for="assignedDate">
+            <span
+              class="label-text simptip-position-right simptip-multiline simptip-smooth"
+              data-tooltip={{tooltips.dateAssigned}}
+            >
+              Date Assigned
+            </span>
+          </label>
+          <div class="flex-input">
+            {{input
+              id="assignedDate"
+              name="daterange"
+              type="text"
+              value=assignedDate
+              required=true
+            }}
             {{#each assignedDateFormErrors as |error|}}
-              <p class="error-message">{{error}}</p>
+              <p class="error-message">
+                {{error}}
+              </p>
             {{/each}}
-            </div>
-
-          </li>
-
-          <li>
-            <label for="dueDate">
-              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.dueDate}}>Due Date </span> <span class="required-star">*</span>
-            </label>
-            <div class="flex-input">
-              {{input id="dueDate" name="daterange" type="text" value=dueDate required=true}}
+          </div>
+        </li>
+        <li>
+          <label for="dueDate">
+            <span
+              class="label-text simptip-position-right simptip-multiline simptip-smooth"
+              data-tooltip={{tooltips.dueDate}}
+            >
+              Due Date
+            </span>
+          </label>
+          <div class="flex-input">
+            {{input
+              id="dueDate"
+              name="daterange"
+              type="text"
+              value=dueDate
+              required=true
+            }}
             {{#each dueDateFormErrors as |error|}}
-              <p class="error-message">{{error}}</p>
+              <p class="error-message">
+                {{error}}
+              </p>
             {{/each}}
-            </div>
-
-          </li>
-          <li>
-            <label for="name">
-              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.name}}>Assignment Name</span>
-            </label>
-            <div class="flex-input">
-              {{input type="text" placeholder="Give your assignment a name (optional)" value=name}}
+            {{#if invalidDateRange}}
+              {{error-box
+                error="Invalid Date Range"
+                showDismiss=true
+                resetError=(action (mut invalidDateRange) null)
+              }}
+            {{/if}}
+          </div>
+        </li>
+        <li>
+          <label for="name">
+            <span
+              class="label-text simptip-position-right simptip-multiline simptip-smooth"
+              data-tooltip={{tooltips.name}}
+            >
+              Assignment Name
+            </span>
+          </label>
+          <div class="flex-input">
+            {{input
+              type="text"
+              placeholder="Give your assignment a name (optional)"
+              value=name
+            }}
             {{#each nameFormErrors as |error|}}
-              <p class="error-message">{{error}}</p>
+              <p class="error-message">
+                {{error}}
+              </p>
             {{/each}}
-            </div>
-
-          </li>
-        </ol>
-      </fieldset>
-      {{#if isMissingRequiredFields}}
-        <p class="error-message">Please provide all required fields.</p>
-      {{/if}}
-      {{#if invalidDateRange}}
-        <p class="error-message">Invalid Date Range</p>
-      {{/if}}
-    </form>
-  </section>
-  <div style="clear: left"></div>
-  <section class="submit">
-    <button class="action_button" {{action 'validate'}}>
-      Create Assignment
-    </button>
-    <button class="action_button cancel-button" {{action 'cancel'}}>
-      Cancel
-    </button>
-  </section>
-
-  {{#each createRecordErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}}
-
-
+          </div>
+        </li>
+      </ol>
+    </fieldset>
+    {{#if isMissingRequiredFields}}
+      <p class="error-message">
+        Please provide all required fields.
+      </p>
+    {{/if}}
+  </form>
+</section>
+<div style="clear: left"></div>
+<section class="submit">
+  <button class="action_button" {{action "validate"}}>
+    Create Assignment
+  </button>
+  <button class="action_button cancel-button" {{action "cancel"}}>
+    Cancel
+  </button>
+</section>
+{{#each createRecordErrors as |error|}}
+  <p class="error-message">
+    {{error}}
+  </p>
+{{/each}}

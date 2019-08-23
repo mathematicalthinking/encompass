@@ -17,25 +17,26 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     problem: {
       presence: { allowEmpty: false },
     },
-    assignedDate: {
-      presence: { allowEmpty: false }
-    },
-    dueDate: {
-      presence: { allowEmpty: false }
-    },
     name: {
       presence: false
     }
   },
+
+  problemsPreloadValue: function() {
+    // if there is at least one problem in the store
+    // do not auto fetch problems on focus
+    let length = this.get('cachedProblems.length');
+    return length > 0 ? undefined : 'focus';
+  }.property('cachedProblems.[]'),
 
   init: function() {
     this._super(...arguments);
     let tooltips = {
       class: 'Select which class you want to assign the problem',
       problem: 'Select which problem you want to assign',
-      dateAssigned: 'This is when students will be able to respond the the assignment',
-      dueDate: 'This is when students will no longer be able to respond',
-      name: 'Give your assignment a specific name if not assignment names are the name of the problem followed by the assign date',
+      dateAssigned: 'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
+      dueDate: 'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
+      name: 'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
     };
     this.set('tooltips', tooltips);
     $(function () {
@@ -57,6 +58,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
       $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
     });
+    this.set('cachedProblems', this.get('store').peekAll('problem'));
   },
 
   didReceiveAttrs: function() {
@@ -86,33 +88,29 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
 
   createAssignment: function(formValues) {
-    const that = this;
-
-    let {section, problem, assignedDate, dueDate, name } = formValues;
-    const createdBy = that.get('currentUser');
+    let { section, problem, assignedDate, dueDate, name } = formValues;
+    const createdBy = this.get('currentUser');
 
     if (!name) {
       let nameDate= $('#assignedDate').data('daterangepicker').startDate.format('MMM Do YYYY');
       let problemTitle = problem.get('title');
       name = problemTitle + ' / ' + nameDate;
     }
-
-    if (assignedDate > dueDate) {
+    if ((assignedDate && dueDate) && assignedDate > dueDate) {
       this.set('invalidDateRange', true);
       return;
     }
     // need to get all students from section
     const students = section.get('students');
 
-
-    const createAssignmentData = that.store.createRecord('assignment', {
-      createdBy: createdBy,
+    const createAssignmentData = this.store.createRecord('assignment', {
+      createdBy,
       createDate: new Date(),
-      section: section,
-      problem: problem,
-      assignedDate: assignedDate,
-      dueDate: dueDate,
-      name: name,
+      section,
+      problem,
+      assignedDate,
+      dueDate,
+      name,
     });
 
     students.forEach((student) => {
@@ -121,11 +119,11 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     createAssignmentData.save()
     .then((assignment) => {
-      that.sendAction('toAssignmentInfo', assignment);
+      this.sendAction('toAssignmentInfo', assignment);
       this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
     })
     .catch((err) => {
-       that.handleErrors(err, 'createRecordErrors', createAssignmentData);
+       this.handleErrors(err, 'createRecordErrors', createAssignmentData);
     });
   },
 
@@ -148,6 +146,29 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       date.setHours(23, 59, 59);
       return date;
     },
+    problemOptions: function() {
+      let cachedProblems = this.get('cachedProblems');
+      let toArray = cachedProblems.toArray();
+      return toArray.map((cachedProblem) => {
+        return {
+          id: cachedProblem.id,
+          title: cachedProblem.get('title')
+        };
+
+      });
+    }.property('cachedProblems.[]'),
+    sectionOptions: function() {
+      let sectionList = this.get('sectionList') || [];
+      let toArray = sectionList.toArray();
+      return toArray.map((section) => {
+        return {
+          id: section.id,
+          name: section.get('name')
+        };
+
+      });
+    }.property('sectionList.[]'),
+
 
   actions: {
     validate: function() {
@@ -175,11 +196,25 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
         }
         return;
       }
-      const startDate = $('#assignedDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
-      values.assignedDate = this.getMongoDate(startDate);
 
-      const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
-      values.dueDate = this.getEndDate(endDate);
+      let startDate;
+      let endDate;
+
+      if (!assignedDate) {
+        delete values.assignedDate;
+      } else {
+        startDate = $('#assignedDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+        values.assignedDate = this.getMongoDate(startDate);
+
+      }
+      if (!dueDate) {
+        delete values.dueDate;
+      } else {
+        endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+        values.dueDate = this.getEndDate(endDate);
+
+      }
+
 
       this.createAssignment(values);
 
@@ -192,7 +227,21 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
         this.sendAction('toAssignmentsHome');
       }
 
-    }
+    },
+    updateSelectizeSingle(val, $item, propToUpdate, model) {
+      let errorProp = `${model}FormErrors`;
+      this.set(errorProp, []);
+
+      if ($item === null) {
+        this.set(propToUpdate, null);
+        return;
+      }
+      let record = this.get('store').peekRecord(model, val);
+      if (!record) {
+        return;
+      }
+      this.set(propToUpdate, record);
+    },
   }
 });
 
