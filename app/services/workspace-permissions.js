@@ -58,7 +58,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   canApproveFeedback(ws) {
-    if (!ws) {
+    if (!ws || ws.workspaceType === 'parent') {
       return false;
     }
     return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isFeedbackApprover(ws) || this.isInPdAdminDomain(ws);
