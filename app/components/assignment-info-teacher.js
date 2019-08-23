@@ -1,4 +1,4 @@
-Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
+Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   formattedDueDate: null,
   formattedAssignedDate: null,
   isEditing: false,
@@ -20,6 +20,9 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     this._super(...arguments);
     // get all sections and problems
     // only need to get these on init because user won't be creating new sections or problems from this component
+
+    this.set('cachedProblems', this.get('store').peekAll('problem'));
+
     return this.store.findAll('section')
       .then((sections) => {
         if (this.get('isDestroying') || this.get('isDestroyed')) {
@@ -42,8 +45,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       this.set('currentAssignment', assignment);
 
       this.set('isEditing', false);
-      this.setAddProblemFunction('addProblemTypeahead');
-
 
       let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
@@ -154,6 +155,44 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     return !this.get('isEditing') && this.get('hasBasicEditPrivileges');
   }.property('hasBasicEditPrivileges', 'isEditing'),
 
+  problemOptions: function() {
+    let cachedProblems = this.get('cachedProblems');
+    let toArray = cachedProblems.toArray();
+    return toArray.map((cachedProblem) => {
+      return {
+        id: cachedProblem.id,
+        title: cachedProblem.get('title')
+      };
+
+    });
+  }.property('cachedProblems.[]'),
+  sectionOptions: function() {
+    let sections = this.get('sections') || [];
+    let toArray = sections.toArray();
+    return toArray.map((section) => {
+      return {
+        id: section.id,
+        name: section.get('name')
+      };
+
+    });
+  }.property('sections.[]'),
+
+  initialProblemItem: function() {
+    if (this.get('selectedProblem.id')) {
+      return [ this.get('selectedProblem.id')];
+    }
+    return [];
+  }.property('selectedProblem'),
+
+  initialSectionItem: function() {
+    if (this.get('selectedSection.id')) {
+      return [ this.get('selectedSection.id')];
+    }
+    return [];
+  }.property('selectedSection'),
+
+
   actions: {
     editAssignment: function() {
       this.set('isEditing', true);
@@ -197,6 +236,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
       let selectedProblem = this.get('selectedProblem');
       let selectedSection = this.get('selectedSection');
+
+      if (!selectedProblem || !selectedSection) {
+        return this.get('alert').showToast('error', 'Class and Problem are required', 'bottom-end', 3000, false, null);
+      }
 
       let currentProblem = this.get('problem');
       let currentSection = this.get('section');
@@ -263,6 +306,20 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     stopEditing: function() {
       this.set('isEditing', false);
       $(".daterangepicker").remove();
+    },
+    updateSelectizeSingle(val, $item, propToUpdate, model) {
+      let errorProp = `${model}FormErrors`;
+      this.set(errorProp, []);
+
+      if ($item === null) {
+        this.set(propToUpdate, null);
+        return;
+      }
+      let record = this.get('store').peekRecord(model, val);
+      if (!record) {
+        return;
+      }
+      this.set(propToUpdate, record);
     },
   }
 });

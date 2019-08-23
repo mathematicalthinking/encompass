@@ -10,16 +10,50 @@
           <li>
             <label for="problem">Problem</label>
               {{#if canEditProblem}}
-                {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+                {{selectize-input
+                store=store
+                inputId="assn-new-problem-select"
+                initialOptions=problemOptions
+                initialItems=initialProblemItem
+                onItemAdd=(action "updateSelectizeSingle")
+                onItemRemove=(action "updateSelectizeSingle")
+                maxItems=1
+                labelField="title"
+                valueField="id"
+                searchField="title"
+                propToUpdate="selectedProblem"
+                placeholder="Search for a problem by title"
+                isAsync=true
+                model="problem"
+                queryParamsKey="query"
+                searchCriterion="title"
+                topLevelQueryParams="searchBy"
+                preload=problemsPreloadValue
+              }}
               {{else}}
                 <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
               {{/if}}
             </li>
           <li>
-            <label for="section">Section</label>
+            <label for="section">Class</label>
             {{#if canEditProblem}}
-              {{my-select cannotBeNull=true selectedValue=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut select)) isDisabled=isReadOnly}}
+              {{selectize-input
+                inputId="assn-new-section-select"
+                initialOptions=sectionOptions
+                initialItems=initialSectionItem
+                onItemAdd=(action "updateSelectizeSingle")
+                onItemRemove=(action "updateSelectizeSingle")
+                maxItems=1
+                labelField="name"
+                valueField="id"
+                searchField="name"
+                propToUpdate="selectedSection"
+                placeholder="Search for a section by name"
+                model="section"
+                store=store
+              }}
               {{input required=true type="hidden" value=selectedSection}}
+
             {{else}}
               <p class="assignment-info">{{#link-to 'section' assignment.section.id}}{{assignment.section.name}}{{/link-to}}</p>
 
@@ -44,8 +78,10 @@
         </ol>
       </fieldset>
     </form>
-    <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
-    <button class="action_button cancel-button" {{action 'stopEditing'}}>Cancel</button>
+    <div class="button-row">
+      <button class="primary-button" {{action 'updateAssignment'}}>Save Assignment</button>
+      <button class="primary-button cancel-button" {{action 'stopEditing'}}>Cancel</button>
+    </div>
     <button data-test="trash-assn" class="right" {{action 'showDeleteModal'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
   {{/if}}
   {{#if isDisplaying}}
@@ -98,7 +134,7 @@
       </fieldset>
     </section>
     {{#if showEditButton}}
-      <button data-test="edit-assignment" class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
+      <button data-test="edit-assignment" class="primary-button" {{action 'editAssignment'}}>Edit Assignment</button>
     {{/if}}
   {{/if}}
   </section>

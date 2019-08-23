@@ -1,4 +1,4 @@
-Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
+Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'assignment-new',
   createAssignmentError: null,
   isMissingRequiredFields: null,
@@ -72,7 +72,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     if (selectedProblem && selectedProblem.get('isForAssignment')) {
       this.set('FromProblemInfo', true);
     }
-    this.setAddProblemFunction('addProblemTypeahead');
 
   },
 

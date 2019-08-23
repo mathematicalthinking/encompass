@@ -177,10 +177,11 @@ section.assignment-info-teacher {
           border: none;
         }
       }
-      // #assignedDate {
-      //   border: none;
-      //   color: black;
-      // }
+
+      .selectize-comp {
+        width: 70%;
+        display: inline-block;
+      }
     }
     #assignment-info {
       .assignment-info {
