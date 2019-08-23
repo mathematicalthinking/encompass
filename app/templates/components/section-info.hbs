@@ -166,9 +166,8 @@
   {{/each}}
   </form>
   {{#unless cantEdit}}
-    <button class="action_button" id="deleteSection" {{action 'confirmDelete'}} style="margin-right: 30px">
-      Delete Section
-    </button>
+    <button id="deleteSection" class="right" {{action 'confirmDelete'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+
   {{/unless}}
 
 
