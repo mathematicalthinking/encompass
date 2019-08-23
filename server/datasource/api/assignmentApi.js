@@ -4,6 +4,7 @@
   * @description This is the API for assignment based requests
   * @author Daniel Kelly
 */
+const moment = require('moment');
 
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
@@ -15,7 +16,7 @@ const access = require('../../middleware/access/assignments');
 
 const { areObjectIdsEqual, isValidMongoId } = require('../../utils/mongoose');
 
-const { isNonEmptyArray, } = require('../../utils/objects');
+const { isNonEmptyArray, isNonEmptyString } = require('../../utils/objects');
 
 const { answersToSubmissions} = require('./workspaceApi');
 
@@ -198,27 +199,84 @@ const postAssignment = async (req, res, next) => {
     const user = userAuth.requireUser(req);
     // do we want to check if the user is allowed to create assignments?
 
+    let { assignedDate, dueDate, name, problem } = req.body.assignment;
+
+    // assignedDate, dueDate should be isoDate strings
+
+    let assignedMoment = moment(assignedDate);
+
+    if (!assignedMoment.isValid()) {
+      // invalid assigned Date
+      // not required to have assigned date on creation
+      delete req.body.assignment.assignedDate;
+      delete req.body.assignment.dueDate;
+    }
+
+    let dueMoment = moment(dueDate);
+
+    if (!dueMoment.isValid()) {
+      delete req.body.assignment.dueDate;
+    }
+
+    if (dueMoment < assignedMoment) {
+      // due date before assigned date
+      // set due data as undefined
+      // can be edited later
+      delete req.body.assignment.dueDate;
+    }
+
+    if (!isNonEmptyString(name)) {
+      // generate default name from problem  and assigned date
+      if (!isValidMongoId(problem)) {
+        // missing problem, return error
+        return utils.sendError.InvalidContentError(
+          'You must provide a valid problemId to create an assignment',
+          res
+        );
+      }
+      let foundProblem = await models.Problem.findById(problem, {
+        title: 1
+      }).lean();
+      if (!foundProblem || foundProblem.isTrashed) {
+        return utils.sendError.InvalidContentError(
+          'Could not find the provided problem',
+          res
+        );
+      }
+      let formattedDate =
+        typeof assignedDate === 'string' ?
+          moment(assignedDate).format('MMM Do YYYY') :
+          moment(new Date()).format('MMM Do YYYY');
+      req.body.assignment.name = `${foundProblem.title} / ${formattedDate} `;
+    }
+
     const assignment = new models.Assignment(req.body.assignment);
     assignment.createdBy = user;
     assignment.createDate = Date.now();
 
     await assignment.save();
 
-    let { doCreateLinkedWorkspaces, linkedWorkspaceCreationOptions } = req.body.assignment;
+    let {
+      doCreateLinkedWorkspaces,
+      linkedWorkspaceCreationOptions
+    } = req.body.assignment;
     let linkedWorkspaces;
 
     if (doCreateLinkedWorkspaces) {
-      await assignment.populate('students').populate({ path: 'section', select: 'name'}).execPopulate();
-      linkedWorkspaces = await generateLinkedWorkspacesFromAssignment(assignment, user, linkedWorkspaceCreationOptions);
+      await assignment
+        .populate('students')
+        .populate({ path: 'section', select: 'name' })
+        .execPopulate();
+      linkedWorkspaces = await generateLinkedWorkspacesFromAssignment(
+        assignment,
+        user,
+        linkedWorkspaceCreationOptions
+      );
 
-      console.log({linkedWorkspaces});
       assignment.linkedWorkspaces = linkedWorkspaces.map(ws => ws._id);
-      console.log({assignment});
       assignment.depopulate('students').depopulate('section');
       await assignment.save();
     }
-
-
 
     let data = { assignment };
 
@@ -226,13 +284,10 @@ const postAssignment = async (req, res, next) => {
       data.workspaces = linkedWorkspaces;
     }
     utils.sendResponse(res, data);
-
-  }catch(err) {
-    console.log({postAssignmentErr: err});
+  } catch (err) {
+    console.log({ postAssignmentErr: err });
     return utils.sendError.InternalError(err, res);
-
   }
-
 };
 
 /**
