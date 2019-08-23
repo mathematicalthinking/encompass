@@ -3159,3 +3159,4 @@ module.exports.getRestrictedDataMap = getRestrictedDataMap;
 module.exports.addAnswerToWorkspace = addAnswerToWorkspace;
 module.exports.post.updateWorkspaceRequest = updateWorkspaceRequest;
 module.exports.addAnswerToWorkspaces = addAnswerToWorkspaces;
+module.exports.answersToSubmissions = answersToSubmissions;
