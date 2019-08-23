@@ -28,7 +28,7 @@
         <li class="assignment-info">
           <label for="assignedDate">Assigned Date</label>
           {{#if canEditAssignedDate}}
-            {{input name="assignedDate" id="assignedDate" type="text" value=formattedAssignedDate disabled=true}}
+            {{input name="daterange" id="assignedDate" type="text" value=formattedAssignedDate}}
           {{else}}
             <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
           {{/if}}
@@ -68,11 +68,19 @@
           </li>
           <li>
             <label for="assignedDate">Assigned Date</label>
-            <p class="assignment-info">{{format-date assignment.assignedDate displayDateFormat}}</p>
+            {{#if assignment.assignedDate}}
+              <p class="assignment-info">{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
+            {{else}}
+              <p class="assignment-info">N/A</p>
+            {{/if}}
           </li>
           <li>
             <label for="dueDate">Due Date</label>
-            <p class="assignment-info">{{format-date assignment.dueDate displayDateFormat}}</p>
+          {{#if assignment.dueDate}}
+          <p class="assignment-info">{{format-date assignment.dueDate 'MMM Do YYYY'}}</p>
+          {{else}}
+            <p class="assignment-info">N/A</p>
+          {{/if}}
           </li>
           <li>
             <label for="linkedWorkspaces">Linked Workspaces</label>

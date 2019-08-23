@@ -16,12 +16,20 @@
 
   <div class="info-detail">
     <label>Assigned Date:</label>
-    <p>{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
+    {{#if assignment.assignedDate}}
+      <p>{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
+    {{else}}
+      <p>N/A</p>
+    {{/if}}
   </div>
 
   <div class="info-detail">
     <label>Due Date:</label>
+    {{#if assignment.dueDate}}
     <p>{{format-date assignment.dueDate 'MMM Do YYYY'}}</p>
+    {{else}}
+      <p>N/A</p>
+    {{/if}}
   </div>
   <div class="info-detail">
     <label>Problem Statement:</label>

@@ -24,8 +24,12 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
       let dueDate = assignment.get('dueDate');
       let assignedDate = assignment.get('assignedDate');
 
-      this.set('formattedDueDate', moment(dueDate).format(dateTime));
-      this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
+      if (dueDate) {
+        this.set('formattedDueDate', moment(dueDate).format(dateTime));
+      }
+      if (assignedDate) {
+        this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
+      }
     }
 
     this._super(...arguments);

@@ -52,9 +52,21 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       this.set('selectedSection', this.get('section'));
 
       this.set('assignmentName', assignment.get('name'));
-      this.set('formattedDueDate', moment(dueDate).format(dateFormat));
-      this.set('formattedAssignedDate', moment(assignedDate).format(dateFormat));
 
+      if (dueDate) {
+        this.set('formattedDueDate', moment(dueDate).format(dateFormat));
+      } else {
+        // for editing
+        this.set('formattedDueDate', moment(new Date()).format(dateFormat));
+
+      }
+
+      if (assignedDate) {
+        this.set('formattedAssignedDate', moment(assignedDate).format(dateFormat));
+      } else {
+        // for editing
+        this.set('formattedAssignedDate', moment(new Date()).format(dateFormat));
+      }
     }
   },
 
@@ -209,8 +221,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
       const dueDate = this.getEndDate(endDate);
 
-      const assignedDate = assignment.get('assignedDate');
-      if (assignedDate > dueDate) {
+      const startDate = $('#assignedDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+      const assignedDate = this.getEndDate(startDate);
+
+      if ((assignedDate && endDate) && assignedDate > dueDate) {
         this.set('invalidDateRange', true);
         return;
       } else {
@@ -222,6 +236,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
       if (JSON.stringify(dueDate) !== JSON.stringify(assignment.get('dueDate'))) {
         assignment.set('dueDate', dueDate);
+      }
+
+      if (JSON.stringify(assignedDate) !== JSON.stringify(assignment.get('assignedDate'))) {
+        assignment.set('assignedDate', assignedDate);
       }
 
       if (assignment.get('hasDirtyAttributes') || didRelationshipsChange) {
@@ -236,6 +254,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
           this.handleErrors(err, 'updateRecordErrors', assignment);
         });
       } else {
+        this.get('alert').showToast('info', 'No changes to save', 'bottom-end', 3000, false, null);
+
         this.set('isEditing', false);
         $(".daterangepicker").remove();
       }
