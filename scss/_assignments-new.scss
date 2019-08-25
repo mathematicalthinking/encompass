@@ -59,10 +59,15 @@ form#newassignmentform {
     display:flex;
     align-items: center;
     flex-wrap: wrap;
+
   }
   i {
     margin-left: 3px;
     font-size: 1em;
+  }
+
+  .radio-group {
+    display: flex;
   }
 
   div.twitter-typeahead {

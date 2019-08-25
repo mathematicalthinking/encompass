@@ -22,6 +22,38 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
   },
 
+  doCreateLinkedWorkspaces: false,
+  doCreateParentWorkspace: false,
+
+  linkedWsOptions: {
+    groupName: "linkedWorkspaces",
+    required: false,
+    inputs: [
+      {
+        value: true,
+        label: "Yes"
+      },
+      {
+        value: false,
+        label: "No"
+      }
+    ]
+  },
+  parentWsOptions: {
+    groupName: "parentWorkspace",
+    required: false,
+    inputs: [
+      {
+        value: true,
+        label: "Yes"
+      },
+      {
+        value: false,
+        label: "No"
+      }
+    ]
+  },
+
   problemsPreloadValue: function() {
     // if there is at least one problem in the store
     // do not auto fetch problems on focus
@@ -37,6 +69,8 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       dateAssigned: 'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
       dueDate: 'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
       name: 'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
+      linkedWorkspaces: 'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
+      parentWorkspace: 'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
     };
     this.set('tooltips', tooltips);
     $(function () {
@@ -111,6 +145,17 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       dueDate,
       name,
     });
+
+    const doCreateLinkedWorkspaces = this.get('doCreateLinkedWorkspaces');
+    const doCreateParentWorkspace = this.get('doCreateParentWorkspace');
+
+      createAssignmentData.linkedWorkspaceCreationOptions = {
+        doCreate: doCreateLinkedWorkspaces
+      };
+
+      createAssignmentData.parentWorkspaceCreationOptions = {
+        doCreate : doCreateLinkedWorkspaces ? doCreateParentWorkspace: false,
+      };
 
     students.forEach((student) => {
       createAssignmentData.get('students').pushObject(student);

@@ -18,7 +18,8 @@ const { areObjectIdsEqual, isValidMongoId } = require('../../utils/mongoose');
 
 const { isNonEmptyArray, isNonEmptyString } = require('../../utils/objects');
 
-const { answersToSubmissions} = require('./workspaceApi');
+const { answersToSubmissions } = require('./workspaceApi');
+const { generateParentWorkspace } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -253,16 +254,20 @@ const postAssignment = async (req, res, next) => {
     const assignment = new models.Assignment(req.body.assignment);
     assignment.createdBy = user;
     assignment.createDate = Date.now();
+    assignment.lastModifiedDate = Date.now();
+    assignment.lastModifiedBy = user;
 
     await assignment.save();
 
     let {
-      doCreateLinkedWorkspaces,
-      linkedWorkspaceCreationOptions
+      linkedWorkspaceCreationOptions,
+      parentWorkspaceCreationOptions
     } = req.body.assignment;
     let linkedWorkspaces;
 
-    if (doCreateLinkedWorkspaces) {
+    console.log({assignment: req.body.assignment});
+
+    if (linkedWorkspaceCreationOptions.doCreate) {
       await assignment
         .populate('students')
         .populate({ path: 'section', select: 'name' })
@@ -273,8 +278,29 @@ const postAssignment = async (req, res, next) => {
         linkedWorkspaceCreationOptions
       );
 
-      assignment.linkedWorkspaces = linkedWorkspaces.map(ws => ws._id);
+      let linkedWorkspacesIds = linkedWorkspaces.map(ws => ws._id);
+
+      assignment.linkedWorkspaces = linkedWorkspacesIds;
       assignment.depopulate('students').depopulate('section');
+
+      if (parentWorkspaceCreationOptions.doCreate) {
+        let { name, mode, owner, organization } = parentWorkspaceCreationOptions;
+
+        // linked assignment?
+
+        let parentWsConfig = {
+          childWorkspaces: linkedWorkspacesIds,
+          createdBy: user,
+          owner: owner || user,
+          organization: organization || user.organization,
+          name: name || `Parent Workspace: ${assignment.name}`,
+          mode: mode || 'private',
+        };
+
+        let { parentWorkspace, errorMsg } = await generateParentWorkspace(parentWsConfig);
+
+        // if error send back as metadata?
+      }
       await assignment.save();
     }
 
@@ -318,6 +344,9 @@ const putAssignment = (req, res, next) => {
         doc[field] = req.body.assignment[field];
       }
     }
+    doc.lastModifiedBy = user;
+    doc.lastModifiedDate = Date.now();
+
     doc.save((err, assignment) => {
       if (err) {
         logger.error(err);
