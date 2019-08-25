@@ -75,6 +75,7 @@ var WorkspaceSchema = new Schema({
   workspaceType: { type: String, enum: ['markup', 'parent', 'response'], default: 'markup'},
   parentWorkspace: {type: ObjectId, ref: 'Workspace'},
   childWorkspaces: [{type: ObjectId, ref: 'Workspace'}],
+  doAutoUpdateFromChildren: { type: Boolean, default: false },
 }, {versionKey: false});
 
 /**
