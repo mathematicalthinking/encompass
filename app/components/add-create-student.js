@@ -1,4 +1,3 @@
-/*global _:false */
 Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   elementId: 'add-create-student',
   isUsingDefaultPassword: false,
@@ -81,9 +80,12 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       })
       .then((res) => {
         that.removeMessages('createUserErrors');
-        if (res.message === 'There already exists a user with that username') {
-          that.set('usernameAlreadyExists', true);
-          return;
+        if (res.message) {
+          if (res.message === 'There already exists a user with that username') {
+            that.set('usernameAlreadyExists', true);
+          } else {
+            this.set('createUserErrors', [res.message]);
+          }
         } else if (res.user && res.canAddExistingUser === true) {
           this.set('canAddExistingUser', true);
           this.set('existingUser', res.user);
@@ -143,12 +145,16 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       }
       let students = this.get('students');
       this.store.findRecord('user', student._id).then((user) => {
-        this.removeMessags('findUserErrors');
+        this.removeMessages('findUserErrors');
         if (!students.includes(user)) {
           students.pushObject(user);
 
           this.clearAddExistingUser();
           this.clearCreateInputs();
+          this.get('section').save()
+          .then(() => {
+            this.get('alert').showToast('success', 'Student added', 'bottom-end', 3000, false, null);
+          });
         } else {
           this.set('userAlreadyInSection', true);
         }
@@ -206,7 +212,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     usernameValidate() {
       var username = this.get('username');
       if (username) {
-        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
+        var usernamePattern = new RegExp(/^[a-z0-9_]{3,30}$/);
         var usernameTest = usernamePattern.test(username);
 
         if (usernameTest === false) {
