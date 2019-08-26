@@ -216,7 +216,7 @@
     @include auth-button;
     margin-top: 20px;
   }
-  .terms-error {
+  .terms-error, .post-error {
     margin: 0 auto;
     padding-top: 10px;
     width: 350px;

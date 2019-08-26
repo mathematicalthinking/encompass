@@ -15,20 +15,17 @@
       <label for="email">Email:</label>
         {{input class="form-control" type="text" name="email" id="email" value=email action="resetErrors" on="key-down"}}
         {{#if isEmailInvalid}}
-          <p class="error-message">Invalid email address.</p>
+          <p class="error-message">{{emailErrors.invalid}}</p>
         {{/if}}
-        {{#if emailExistsError}}
-         <p class="error-message">{{emailExistsError}}</p>
-       {{/if}}
     </div>
     {{#if isEmailValid}}
       <div class="auth-form-input">
         <label for="confirmEmail">Confirm Email:</label>
-          {{input class="form-control" type="text" name="confirmEmail" id="confirmEmail" value=confirmEmail action="emailValidate" on="key-down"}}
+          {{input class="form-control" type="text" name="confirmEmail" id="confirmEmail" value=confirmEmail }}
 
-          {{#unless doEmailsMatch}}
-            <p class="error-message">Emails do not match.</p>
-          {{/unless}}
+        {{#unless doEmailsMatch}}
+          <p class="error-message">{{emailErrors.mismatch}}</p>
+        {{/unless}}
       </div>
     {{/if}}
     <div class="auth-form-input">
@@ -54,11 +51,8 @@
     <div class="auth-form-input">
       <label for="username">Username:</label>
        {{input class="form-control" type="text" name="username" id="username" value=username action="usernameValidate" on="key-down"}}
-       {{#if usernameExists}}
-         <p class="error-message">Sorry, that username already exisits. Please try again.</p>
-       {{/if}}
-       {{#if incorrectUsername}}
-         <p class="error-message">Username must be all lowercase, at least 3 characters and can only contain the following special characters _</p>
+       {{#if usernameError}}
+         <p class="error-message">{{usernameError}}</p>
        {{/if}}
     </div>
     <div class="auth-form-input">
@@ -66,7 +60,7 @@
         {{input class="form-control" type="password" name="password" id="password" value=password action="resetErrors" on="key-down"}}
 
         {{#if isPasswordInvalid}}
-          <p class="error-message">Invalid password</p>
+          <p class="error-message">{{passwordErrors.invalid}}</p>
         {{/if}}
     </div>
     {{#if isPasswordValid}}
@@ -74,9 +68,9 @@
         <label for="confirmPassword">Confirm Password:</label>
           {{input class="form-control" type="password" name="confirmPassword" id="confirmPassword" value=confirmPassword action="resetErrors" on="key-down"}}
 
-          {{#unless doPasswordsMatch}}
-            <p class="error-message">Passwords do not match.</p>
-          {{/unless}}
+        {{#unless doPasswordsMatch}}
+          <p class="error-message">{{passwordErrors.mismatch}}</p>
+        {{/unless}}
       </div>
     {{/if}}
     <div class="auth-form-input">
@@ -98,13 +92,15 @@
       {{/if}}
     </div>
 
-
+    {{#each postErrors as |error|}}
+    <div class="post-error">
+      <p class="error-message post-error">{{error}}</p>
+    </div>
+    {{/each}}
     <button class="auth-button" type="submit" {{action 'signup'}}>Sign Up</button>
   </form>
 
-    {{#each postErrors as |error|}}
-      <p class="error-message">{{error}}</p>
-    {{/each}}
+
 
     <div class="bottom-info">
       {{social-signin}}

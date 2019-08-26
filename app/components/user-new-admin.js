@@ -1,8 +1,6 @@
-Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
   elementId: 'user-new-admin',
   alert: Ember.inject.service('sweet-alert'),
-  usernameExists: null,
-  emailExistsError: null,
   errorMessage: null,
   username: '',
   password: '',
@@ -180,15 +178,17 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           newUserData.organization = org;
           return this.createNewUser(newUserData)
             .then((res) => {
+              if (res.username) {
+                this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
+                return this.sendAction('toUserInfo', res.username);
+              }
               if (res.message === 'There already exists a user with that username') {
-                this.set('usernameExists', true);
-                return;
+                this.set('usernameError', this.get('usernameErrors.taken'));
               } else if (res.message === 'There already exists a user with that email address') {
-                this.set('emailExistsError', res.message);
-                return;
+                this.set('emailError', this.get('emailErrors.taken'));
+
               } else {
-                this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, false, null);
-                this.sendAction('toUserInfo', res.username);
+                this.set('createUserErrors', [res.message]);
               }
             })
             .catch((err) => {
@@ -199,63 +199,6 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           // err should be handled within handleOrg function
           console.log('err', err);
         });
-    },
-
-    usernameValidate(username) {
-      if (username) {
-        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
-        var usernameTest = usernamePattern.test(username);
-
-        if (usernameTest === false) {
-          this.set('incorrectUsername', true);
-          return;
-        }
-
-        if (usernameTest === true) {
-          this.set('incorrectUsername', false);
-          this.set('username', username);
-          return;
-        }
-      }
-    },
-
-    emailValidate: function (email) {
-      if (!email) {
-        return false;
-      }
-      var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
-      var emailTest = emailPattern.test(email);
-
-      if (emailTest === false) {
-        this.set('incorrectEmail', true);
-        return false;
-      }
-
-      if (emailTest === true) {
-        this.set('incorrectEmail', false);
-        this.set('email', email);
-        return true;
-      }
-    },
-
-    passwordValidate: function (password) {
-      function hasWhiteSpace(string) {
-        return /\s/g.test(string);
-      }
-
-      if (password.length < 3) {
-        this.set('invalidPassword', true);
-      } else {
-        this.set('invalidPassword', false);
-        this.set('password', password);
-      }
-
-      if (hasWhiteSpace(password)) {
-        this.set('noSpacesError', true);
-      } else {
-        this.set('noSpacesError', false);
-        this.set('password', password);
-      }
     },
 
     cancelNew: function () {
@@ -276,16 +219,6 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         $(`.${error}`).removeClass('fadeOutRight');
         $(`.${error}`).hide();
       }, 500);
-    },
-
-    resetErrors(e) {
-      const errors = ['usernameExists', 'emailExistsError', 'errorMessage'];
-
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
-        }
-      }
     },
   }
 });

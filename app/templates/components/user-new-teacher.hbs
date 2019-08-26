@@ -31,16 +31,16 @@
     </tr>
   </table>
 
-  {{#if usernameExists}}
-    <p class="error-message">Username already exists</p>
+  {{#if usernameError}}
+    <p class="error-message">{{usernameError}}</p>
   {{/if}}
 
-  {{#if incorrectUsername}}
-    <p class="error-message">Invalid username</p>
+  {{#if emailError}}
+    <p class="error-message">{{emailError}}</p>
   {{/if}}
 
-  {{#if invalidPassword}}
-    <p class="error-message">Password is too short</p>
+  {{#if passwordError}}
+    <p class="error-message">{{passwordError}}</p>
   {{/if}}
 
   {{#if noSpacesError}}

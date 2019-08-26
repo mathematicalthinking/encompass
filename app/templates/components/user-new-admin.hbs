@@ -30,7 +30,11 @@
       </td>
     </tr>
     <tr>
-      <td>Email</td>
+      <td>Email
+          {{#if isEmailRequired}}
+            <span class="required-star">*</span>
+          {{/if}}
+      </td>
       <td>
         <input type="text" class="user-email" value={{email}} onblur={{action 'emailValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
       </td>
@@ -61,43 +65,35 @@
     </tr>
   </table>
 
-  {{#if usernameExists}}
-    {{error-box error="Username already exists" showDismiss=true}}
+  {{#if usernameError}}
+    {{error-box error=usernameError showDismiss=true resetError=(action (mut usernameError) null)}}
   {{/if}}
 
-  {{#if emailExistsError}}
-    {{error-box error="Email address has already been used" showDismiss=true}}
+  {{#if emailError}}
+    {{error-box error=emailError showDismiss=true resetError=(action (mut emailError) null)}}
   {{/if}}
 
-  {{#if incorrectEmail}}
-    {{error-box error="Invalid email address" showDismiss=true}}
-  {{/if}}
-
-  {{#if incorrectUsername}}
-    {{error-box error="Invalid username" showDismiss=true}}
-  {{/if}}
-
-  {{#if invalidPassword}}
-    {{error-box error="Password is too short" showDismiss=true}}
+  {{#if passwordError}}
+    {{error-box error=passwordError showDismiss=true resetError=(action (mut passwordError) null)}}
   {{/if}}
 
   {{#if noSpacesError}}
-    {{error-box error="Passwords cannot contain spaces" showDismiss=true}}
+    {{error-box error="Passwords cannot contain spaces" showDismiss=true resetError=(action (mut noSpacesError) null)}}
   {{/if}}
 
   {{#if missingAccountType}}
-    {{error-box error="Missing account type" showDismiss=true}}
+    {{error-box error="Missing account type" showDismiss=true resetError=(action (mut missingAccountType) null)}}
   {{/if}}
 
   {{#if errorMessage}}
-    {{error-box error="Missing required fields" showDismiss=true}}
+    {{error-box error="Missing required fields" showDismiss=true resetError=(action (mut errorMessage) null)}}
   {{/if}}
 
   {{#each createOrgErrors as |error|}}
-    {{error-box error=error showDismiss=true}}
+    {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" "createOrgErrors" error )}}
   {{/each}}
   {{#each createUserErrors as |error|}}
-    {{error-box error=error showDismiss=true}}
+    {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" "createUserErrors" error)}}
   {{/each}}
 
 

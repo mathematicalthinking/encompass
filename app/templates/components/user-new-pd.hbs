@@ -30,8 +30,12 @@
       </td>
     </tr>
     <tr>
-      <td>Email</td>
-      <td>
+        <td>Email
+          {{#if isEmailRequired}}
+            <span class="required-star">*</span>
+          {{/if}}
+        </td>
+        <td>
         <input type="text" class="user-email" value={{email}} onblur={{action 'emailValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
       </td>
     </tr>
@@ -61,23 +65,16 @@
     </tr>
   </table>
 
-  {{#if usernameExists}}
-    <p class="error-message">Username already exists</p>
-  {{/if}}
-  {{#if emailExistsError}}
-    <p class="error-message">Email address has already been used</p>
+  {{#if usernameError}}
+    <p class="error-message">{{usernameError}}</p>
   {{/if}}
 
-  {{#if incorrectEmail}}
-    <p class="error-message">Invalid email address</p>
+  {{#if emailError}}
+    <p class="error-message">{{emailError}}</p>
   {{/if}}
 
-  {{#if incorrectUsername}}
-    <p class="error-message">Invalid username</p>
-  {{/if}}
-
-  {{#if invalidPassword}}
-    <p class="error-message">Password is too short</p>
+  {{#if passwordError}}
+    <p class="error-message">{{passwordError}}</p>
   {{/if}}
 
   {{#if noSpacesError}}
