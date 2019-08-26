@@ -103,6 +103,15 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
 
     this.get('alert').showToast('error', msg, 'bottom-end', 5000, false, null);
 
-  }
+  },
+
+  actions: {
+    removeErrorFromArray(prop, err) {
+      if (!this.get(prop)) {
+        return;
+      }
+      this.get(prop).removeObject(err);
+    }
+  },
 
 });

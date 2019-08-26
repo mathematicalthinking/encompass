@@ -50,6 +50,9 @@ const localSignup = async (req, res, next) => {
 try {
   let reqUser = userAuth.getUser(req);
   let isFromSignupForm = !reqUser;
+  let { isFromSectionPage } = req.body;
+
+  delete req.body.isFromSectionPage;
 
   let allowedAccountTypes = [];
   let requestedAccountType = req.body.accountType;
@@ -76,12 +79,23 @@ try {
       // should this return error instead?
       req.body.accountType = 'T';
     }
+    let userSections = [];
+    if (req.body.sectionId) {
+      let section = {
+        sectionId: req.body.sectionId,
+        role: req.body.sectionRole
+      };
+      userSections.push(section);
+      req.body.sections = userSections;
+      delete req.body.sectionId;
+      delete req.body.sectionRole;
+    }
   }
 
   let {message, accessToken, refreshToken, encUser, existingUser } = await ssoService.signup(req.body, reqUser);
 
   if (message) {
-    if (existingUser && !isFromSignupForm) {
+    if (existingUser && isFromSectionPage) {
       // check if can add existing User
       let existingEncId = existingUser.encUserId;
 
@@ -94,11 +108,12 @@ try {
 
       let canAdd = reqUser.accountType === 'A' || areObjectIdsEqual(reqUser.organization, existingEncUser.organization);
 
+      if (canAdd) {
         return res.json({
-          message,
           user: existingEncUser,
-          canAddExistingUser: canAdd
+          canAddExistingUser: true
         });
+      }
 
     }
     return res.json({message});

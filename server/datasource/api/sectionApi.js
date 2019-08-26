@@ -187,10 +187,11 @@ const putSection = async (req, res, next) => {
 
       if (isNonEmptyArray(sectionAssignments)) {
         // remove assignments from user's assignments array
-        updateHash = { $pull: { sections: { sectionId: savedSection._id, role: 'student'}, assignments: { $each: { sectionAssignments } } } };
+        updateHash.$pullAll = {
+          assignments: sectionAssignments
+        };
       }
       models.User.updateMany({_id: {$in: removedStudents}}, updateHash).exec();
-
     }
 
     if (isNonEmptyArray(addedStudents)) {

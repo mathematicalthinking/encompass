@@ -1,7 +1,6 @@
-Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
   elementId: 'user-new-teacher',
   alert: Ember.inject.service('sweet-alert'),
-  usernameExists: null,
   errorMessage: null,
   username: '',
   password: '',
@@ -45,7 +44,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
         return;
       }
 
-      if (!username) {
+      if (this.get('passwordError') || this.get('usernameError')) {
         return;
       }
 
@@ -63,15 +62,19 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
       return this.createNewUser(newUserData)
         .then((res) => {
-          if (res.message === 'Username already exists') {
-            this.set('usernameExists', true);
+
+          if (res.username) {
+            this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
+            return this.sendAction('toUserInfo', res.username);
+          }
+          if (res.message === 'There already exists a user with that username') {
+            this.set('usernameError', this.get('usernameErrors.taken'));
             return;
-          } else if (res.message === 'There already exists a user with this email address') {
-            this.set('emailExistsError', res.message);
+          } else if (res.message === 'There already exists a user with that email address') {
+            this.set('emailError', this.get('emailErrors.taken'));
             return;
           } else {
-            this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
-            this.sendAction('toUserInfo', res.username);
+            this.set('createUserErrors', [res.message]);
           }
         })
         .catch((err) => {
@@ -80,57 +83,10 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
     },
 
-    usernameValidate(username) {
-      if (username) {
-        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
-        var usernameTest = usernamePattern.test(username);
-
-        if (usernameTest === false) {
-          this.set('incorrectUsername', true);
-          return;
-        }
-
-        if (usernameTest === true) {
-          this.set('incorrectUsername', false);
-          this.set('username', username);
-          return;
-        }
-      }
-    },
-
-    passwordValidate: function (password) {
-      function hasWhiteSpace(string) {
-        return /\s/g.test(string);
-      }
-
-      if (password.length < 3) {
-        this.set('invalidPassword', true);
-      } else {
-        this.set('invalidPassword', false);
-        this.set('password', password);
-      }
-
-      if (hasWhiteSpace(password)) {
-        this.set('noSpacesError', true);
-      } else {
-        this.set('noSpacesError', false);
-        this.set('password', password);
-      }
-    },
-
     cancelNew: function () {
       this.sendAction('toUserHome');
     },
 
-    resetErrors(e) {
-      const errors = ['usernameExists', 'errorMessage'];
-
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
-        }
-      }
-    },
   }
 });
 

@@ -1,14 +1,9 @@
 /*global _:false */
-Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
+Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
   classNames: ['signup-page'],
-  usernameExists: false,
   missingCredentials: false,
   noTermsAndConditions: false,
-  incorrectEmail: false,
-  incorrectUsername: false,
-  incorrectPassword: false,
   agreedToTerms: false,
-  emailExistsError: null,
   org: null,
   postErrors: [],
   similarity: Ember.inject.service('string-similarity'),
@@ -20,67 +15,6 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
     this.set('orgRequestFilter', this.createOrgRequestFilter.bind(this));
   },
-
-  emailRegEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
-
-  validateEmail: function() {
-    var email = this.get('email');
-    if (!email) {
-      return false;
-    }
-    var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
-    var emailTest = emailPattern.test(email);
-
-    if (emailTest === false) {
-      this.set('incorrectEmail', true);
-      return false;
-    }
-
-    if (emailTest === true) {
-      this.set('incorrectEmail', false);
-      return true;
-    }
-
-  },
-
-  isEmailValid: function() {
-    if (!this.get('isEmailDirty') && !Ember.isEmpty(this.get('email'))) {
-      this.set('isEmailDirty', true);
-    }
-    return this.validateEmail();
-  }.property('email'),
-
-  // We don't want error being displayed when form loads initially
-  isEmailInvalid: Ember.computed('isEmailValid', 'isEmailDirty', function() {
-    return this.get('isEmailDirty') && !this.get('isEmailValid');
-  }),
-
-  doEmailsMatch: function() {
-    return this.get('email') === this.get('confirmEmail');
-  }.property('email', 'confirmEmail'),
-
-  isPasswordValid: function() {
-    if (!this.get('isPasswordDirty') && !Ember.isEmpty(this.get('password'))) {
-      this.set('isPasswordDirty', true);
-    }
-    //TODO: stricter password req
-    if (Ember.isEmpty(this.get('password'))) {
-      return false;
-    }
-    let length = this.get('password').length;
-    let min = 10;
-    let max = 72;
-
-    return length >= min &&  length <= max;
-  }.property('password'),
-
-  isPasswordInvalid: Ember.computed('isPasswordValid', 'isPasswordDirty', function() {
-    return this.get('isPasswordDirty') && !this.get('isPasswordValid');
-  }),
-
-  doPasswordsMatch: function() {
-    return this.get('password') === this.get('confirmPassword');
-  }.property('password', 'confirmPassword'),
 
   createUser: function(data) {
     return new Promise((resolve, reject) => {
@@ -187,7 +121,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         return;
       }
 
-      if (this.get('incorrectUsername')) {
+      if (this.get('usernameError')) {
         return;
       }
 
@@ -224,79 +158,40 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
         return that.createUser(createUserData)
         .then((res) => {
-          if (res.message === 'There already exists a user with that username') {
-            that.set('usernameExists', true);
+          if (res.username) {
+            that.get('alert').showToast('success', `Signup successful`, 'bottom-end', 3000, null, false);
+            window.location.href = '/';
+          } else if (res.message === 'There already exists a user with that username') {
+            that.set('usernameError', that.get('usernameErrors.taken'));
+
           } else if (res.message === 'There already exists a user with that email address') {
-            that.set('emailExistsError', res.message);
+            that.set('emailError', that.get('emailErrors.taken'));
           } else {
-            window.location.href= '/';
+            that.set('postErrors', [res.message]);
           }
         })
         .catch((err) => {
-          this.handleErrors(err, 'postErrors');
+          that.handleErrors(err, 'postErrors');
         });
       } else {
         createUserData.organization = organization.id;
         return that.createUser(createUserData)
         .then((res) => {
-          if (res.message === 'There already exists a user with that username') {
-            that.set('usernameExists', true);
-          } else if (res.message === 'There already exists a user with that email address') {
-            that.set('emailExistsError', res.message);
-          } else {
+          if (res.username) {
+            that.get('alert').showToast('success', `Signup successful`, 'bottom-end', 3000, null, false);
             window.location.href = '/';
+          } else if (res.message === 'There already exists a user with that username') {
+            that.set('usernameError', that.get('usernameErrors.taken'));
+
+          } else if (res.message === 'There already exists a user with that email address') {
+            that.set('emailError', that.get('emailErrors.taken'));
+          } else {
+            that.set('postErrors', [res.message]);
           }
         })
         .catch((err) => {
           this.handleErrors(err, 'postErrors');
         });
-      }
-    },
-
-    resetErrors(e) {
-      const errors = ['usernameExists', 'missingCredentials', 'noTermsAndConditions'];
-
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
-        }
-      }
-    },
-
-    usernameValidate() {
-      var username = this.get('username');
-      if (username) {
-        var usernamePattern = new RegExp(/^[a-z0-9_]{3,30}$/);
-        var usernameTest = usernamePattern.test(username);
-
-        if (usernameTest === false) {
-          this.set('incorrectUsername', true);
-          return;
-        }
-
-        if (usernameTest === true) {
-          this.set('incorrectUsername', false);
-          this.set('missingCredentials', false);
-          return;
-        }
-      }
-    },
-
-    emailValidate() {
-      var email = this.get('email');
-      if (email) {
-        var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
-        var emailTest = emailPattern.test(email);
-
-        if (emailTest === false) {
-          this.set('incorrectEmail', true);
-          return;
-        }
-
-        if (emailTest === true) {
-          this.set('incorrectEmail', false);
-          return;
-        }
       }
     },
 

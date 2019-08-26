@@ -52,7 +52,10 @@ const newUser = {
 
 const signupErrors = {
   incomplete : 'You must complete all of the fields in order to signup.',
-  terms: 'You must accept our Terms and Conditions'
+  terms: 'You must accept our Terms and Conditions',
+  username: 'Username must be all lowercase, at least 3 characters and can only contain the following special characters _',
+  password: 'Password must be between 10 and 72 characters',
+  blackListed: 'contains an invalid value',
 };
 
 const signinErrors = {
@@ -415,6 +418,19 @@ const waitForNElements = function(webDriver, selector, num, timeout=timeoutMs) {
   });
 };
 
+const dismissErrorBox = function(webDriver) {
+  let xBtn = css.general.errorBoxDismiss;
+
+  return findAndClickElement(webDriver, xBtn)
+    .then(() => {
+      return waitForRemoval(webDriver, css.general.errorBox);
+    });
+};
+
+const waitForAndGetErrorBoxText = function(webDriver) {
+  return findAndGetText(webDriver, css.general.errorBoxText);
+};
+
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -481,3 +497,5 @@ module.exports.timeoutTestMsStr = timeoutTestMsStr;
 module.exports.waitForUrlMatch = waitForUrlMatch;
 module.exports.saveScreenshot = saveScreenshot;
 module.exports.waitForNElements = waitForNElements;
+module.exports.dismissErrorBox = dismissErrorBox;
+module.exports.waitForAndGetErrorBoxText = waitForAndGetErrorBoxText;

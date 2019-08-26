@@ -6,6 +6,7 @@ const expect = require('chai').expect;
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
+const messages = require('./fixtures/messages');
 
 const host = helpers.host;
 
@@ -24,10 +25,31 @@ describe('Users', function() {
     driver.quit();
   });
 
+  function clearUsername (driver) {
+    return helpers.clearElement(driver, 'input.user-username');
+  }
+
+  function clearPassword(driver) {
+    return helpers.clearElement(driver, 'input.user-password');
+  }
+
+  function typePassword(driver, text) {
+    return helpers.findInputAndType(driver, 'input.user-password', text);
+  }
+
+  function clearInput(driver, inputType) {
+    return helpers.clearElement(driver, `input.user-${inputType}`);
+  }
+
+  function clearAndTypeInput(driver, inputType, text) {
+    return clearInput(driver, inputType)
+      .then(() => {
+        return helpers.findInputAndType(driver, `input.user-${inputType}`, text);
+      });
+  }
+
   describe('Logged in as an admin user', function () {
     before(async function () {
-      // await helpers.findAndClickElement(driver, css.topBar.logout);
-      // await helpers.waitForSelector(driver, css.topBar.login);
       await helpers.login(driver, host);
       await helpers.waitForSelector(driver, css.topBar.users);
     });
@@ -74,26 +96,69 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
         await helpers.waitForTextInDom(driver, 'Missing required fields');
+
         expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Missing required fields');
+
+        await helpers.dismissErrorBox(driver);
       });
 
-      it('should let you create a new unauthorized pdadmin', async function () {
+      it('should not let you submit form with invalid password', async function() {
+        let tooShortPass = 'tooshort';
+        let expectedMsg = messages.signup.errors.passwordTooShort;
+        await helpers.findInputAndType(driver, 'input.user-password', tooShortPass);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-box');
+        await helpers.waitForTextInDom(driver, expectedMsg);
+        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(expectedMsg);
+        await helpers.dismissErrorBox(driver);
+
+      });
+
+      it('should not let you submit form with invalid username', async function() {
         let password = 'test45678!';
+        let badUsername = 'bad@bad.com';
+        let expectedMsg = helpers.signupErrors.username;
+
+        await clearAndTypeInput(driver, 'password', password);
+        await clearAndTypeInput(driver, 'username', badUsername);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-box');
+        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
+        await helpers.dismissErrorBox(driver);
+
+      });
+
+      it('should not let you submit form with black-listed username', async function () {
         let firstName = `Muzzy`;
         let lastName = 'Doe';
         let email = `mdoe@gmail.com`;
         let organization = `Drexel University`;
         let location = `Philadelphia, PA`;
+        let badUsername = 'admin';
+        let expectedMsg = `"username" ${helpers.signupErrors.blackListed}`;
+
+        await clearAndTypeInput(driver, 'username', badUsername);
         await helpers.selectOption(driver, 'my-select', 'Pd Admin');
-        await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
         await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.user-email', email);
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-box');
+        await helpers.waitForTextInDom(driver, expectedMsg);
+        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
+        await helpers.dismissErrorBox(driver);
+      });
+
+      it('should let you create a new unauthorized pdadmin', async function () {
+        let username = `muzzy`;
+        await clearAndTypeInput(driver, 'username', username);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info', 10000);
+        await helpers.waitForRemoval(driver, css.sweetAlert.container);
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('muzzy');
+
       });
 
       it('should let you create a new authorized teacher', async function () {
@@ -107,7 +172,7 @@ describe('Users', function() {
         let location = `Philadelphia, PA`;
         await helpers.findAndClickElement(driver, '#new-user-link');
         await helpers.waitForSelector(driver, 'div#user-new-admin');
-        await helpers.findInputAndType(driver, 'input.user-username', username);
+        await clearAndTypeInput(driver, 'username', username);
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
         await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
@@ -117,9 +182,10 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(300);
-        await helpers.waitForSelector(driver, '.error-box');
-        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Email address has already been used');
+        await driver.sleep(1000);
+        await helpers.waitForTextInDom(driver, 'Email address has already been used');
+        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain('Email address has already been used');
+        await helpers.dismissErrorBox(driver);
         await helpers.clearElement(driver, 'input.user-email');
         await helpers.findInputAndType(driver, 'input.user-email', newEmail);
         await helpers.findAndClickElement(driver, '#new-user-btn');
@@ -146,10 +212,11 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(600);
+        await driver.sleep(1000);
         await helpers.waitForSelector(driver, '.error-text');
+        await helpers.waitForTextInDom(driver, 'Username already exists');
         expect(await helpers.findAndGetText(driver, '.error-text')).to.contain('Username already exists');
-        await helpers.clearElement(driver, 'input.user-username');
+        await clearUsername(driver);
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
         await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
@@ -231,12 +298,11 @@ describe('Users', function() {
 
       it('should have a list of teachers', async function () {
         expect(await helpers.getWebElements(driver, 'ul.teacher-users>li')).to.have.lengthOf.at.least(11);
-        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('mentort2');
+        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('jl_picard');
       });
 
       it('should have a list of students', async function () {
         expect(await helpers.getWebElements(driver, 'ul.student-users>li')).to.have.lengthOf(12);
-        // expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('tracyc');
       });
 
       describe('clicking on your own account', function () {
@@ -303,6 +369,7 @@ describe('Users', function() {
     }
 
     function validateNewUserPage() {
+      let signupMessages = messages.signup;
       it('should display the page title and form', async function () {
         expect(await helpers.isTextInDom(driver, 'Create New User')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'article.user')).to.be.true;
@@ -329,18 +396,58 @@ describe('Users', function() {
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
       });
 
-      it('should let you create a new unauthorized teacher', async function () {
+      it('should not let you submit form with invalid password', async function() {
+        let tooShortPass = 'tooshort';
+        let expectedMsg = signupMessages.errors.passwordTooShort;
+        await helpers.findInputAndType(driver, 'input.user-password', tooShortPass);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-message');
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain(expectedMsg);
+      });
+
+      it('should not let you submit form with invalid username', async function() {
         let password = 'test45678!';
+
+        await clearPassword(driver);
+        await typePassword(driver, password);
+        await clearUsername(driver);
+
+        let badUsername = 'bad@bad.com';
+        let expectedMsg = helpers.signupErrors.username;
+        await helpers.findInputAndType(driver, 'input.user-username', badUsername);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-message');
+        await helpers.waitForTextInDom(driver, expectedMsg);
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain(expectedMsg);
+        await clearUsername(driver);
+      });
+
+      it('should not let you submit form with black-listed username', async function () {
         let firstName = `Bunny`;
         let lastName = 'Doe';
         let email = `bdoe@gmail.com`;
         let location = `Philadelphia, PA`;
+        let badUsername = 'admin';
+        let expectedMsg = `"username" ${helpers.signupErrors.blackListed}`;
+
+        await helpers.findInputAndType(driver, 'input.user-username', badUsername);
+
         await helpers.selectOption(driver, 'my-select', 'Teacher');
-        await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
         await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.user-email', email);
         await helpers.findInputAndType(driver, 'input.user-location', location);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-message');
+        await helpers.waitForTextInDom(driver, expectedMsg);
+
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain(expectedMsg);
+        await clearUsername(driver);
+      });
+
+      it('should let you create a new unauthorized teacher', async function () {
+        let username = `bunny`;
+        await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
         await driver.sleep(1000);
@@ -362,8 +469,9 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, '#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username already exists');
-        await helpers.clearElement(driver, 'input.user-username');
+        await clearUsername(driver);
         await helpers.findInputAndType(driver, 'input.user-username', username);
+        await helpers.findInputAndType(driver, 'input.user-last-name', '');
         await helpers.findAndClickElement(driver, '#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('beyonce');
@@ -499,6 +607,7 @@ describe('Users', function() {
     }
 
     function validateNewUserPage() {
+      let signupMessages = messages.signup;
       it('should display the page title and form', async function () {
         expect(await helpers.isTextInDom(driver, 'Create a New Student')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'article.user')).to.be.true;
@@ -520,9 +629,43 @@ describe('Users', function() {
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username & Password are required');
       });
 
+      it('should not let you submit form with invalid password', async function() {
+        let tooShortPass = 'tooshort';
+        let expectedMsg = signupMessages.errors.passwordTooShort;
+        await helpers.findInputAndType(driver, 'input.user-password', tooShortPass);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-message');
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain(expectedMsg);
+      });
+
+      it('should not let you submit form with invalid username', async function() {
+        let badUsername = 'bad@bad.com';
+        let password = 'test45678!';
+
+        let expectedMsg = helpers.signupErrors.username;
+
+        await clearAndTypeInput(driver, 'password', password);
+        await clearAndTypeInput(driver, 'username', badUsername);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-message');
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain(expectedMsg);
+      });
+
+      it('should not let you submit form with black-listed username', async function() {
+        let badUsername = 'admin';
+        let expectedMsg = `"username" ${helpers.signupErrors.blackListed}`;
+        await clearAndTypeInput(driver, 'username', badUsername);
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
+        await helpers.waitForSelector(driver, '.error-message');
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain(expectedMsg);
+      });
+
       it('should let you create a new student', async function () {
         let password = 'test45678!';
+        let username = 'mystudent';
         let name = `mystudent`;
+
+        await clearAndTypeInput(driver, 'username', username);
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-first-name', name);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
@@ -561,7 +704,6 @@ describe('Users', function() {
 
       it('should have a list of users you have created', async function () {
         expect(await helpers.getWebElements(driver, 'ul.your-users>li')).to.have.lengthOf.at.least(1);
-        // expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('jamie4');
       });
 
       it('should have a list of users in your org', async function () {
