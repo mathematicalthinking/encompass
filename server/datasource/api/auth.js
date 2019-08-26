@@ -50,6 +50,9 @@ const localSignup = async (req, res, next) => {
 try {
   let reqUser = userAuth.getUser(req);
   let isFromSignupForm = !reqUser;
+  let { isFromSectionPage } = req.body;
+
+  delete req.body.isFromSectionPage;
 
   let allowedAccountTypes = [];
   let requestedAccountType = req.body.accountType;
@@ -92,7 +95,7 @@ try {
   let {message, accessToken, refreshToken, encUser, existingUser } = await ssoService.signup(req.body, reqUser);
 
   if (message) {
-    if (existingUser && !isFromSignupForm) {
+    if (existingUser && isFromSectionPage) {
       // check if can add existing User
       let existingEncId = existingUser.encUserId;
 

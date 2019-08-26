@@ -65,7 +65,8 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       createdBy: currentUser.id,
       isAuthorized: true,
       accountType: 'S',
-      authorizedBy: currentUser.id
+      authorizedBy: currentUser.id,
+      isFromSectionPage: true,
     };
 
     if (organization) {
