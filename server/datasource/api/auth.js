@@ -105,11 +105,12 @@ try {
 
       let canAdd = reqUser.accountType === 'A' || areObjectIdsEqual(reqUser.organization, existingEncUser.organization);
 
+      if (canAdd) {
         return res.json({
-          message,
           user: existingEncUser,
-          canAddExistingUser: canAdd
+          canAddExistingUser: true
         });
+      }
 
     }
     return res.json({message});
