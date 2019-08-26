@@ -9,6 +9,7 @@ module.exports = {
     errorBox: '.error-box',
     selectizeActiveEl : 'div.option.active',
     errorBoxDismiss: '.error-box p button i.fa-times',
+    errorBoxText: 'div.error-box p span.error-text'
   },
   topBar: {
     login: "a.menu.login",

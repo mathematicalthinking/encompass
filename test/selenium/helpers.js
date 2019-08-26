@@ -427,6 +427,10 @@ const dismissErrorBox = function(webDriver) {
     });
 };
 
+const waitForAndGetErrorBoxText = function(webDriver) {
+  return findAndGetText(webDriver, css.general.errorBoxText);
+};
+
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -494,3 +498,4 @@ module.exports.waitForUrlMatch = waitForUrlMatch;
 module.exports.saveScreenshot = saveScreenshot;
 module.exports.waitForNElements = waitForNElements;
 module.exports.dismissErrorBox = dismissErrorBox;
+module.exports.waitForAndGetErrorBoxText = waitForAndGetErrorBoxText;

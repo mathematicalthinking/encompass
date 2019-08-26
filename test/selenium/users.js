@@ -123,7 +123,7 @@ describe('Users', function() {
         await clearAndTypeInput(driver, 'username', badUsername);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
-        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(expectedMsg);
+        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
         await helpers.dismissErrorBox(driver);
 
       });
@@ -147,7 +147,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
         await helpers.waitForTextInDom(driver, expectedMsg);
-        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(expectedMsg);
+        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
         await helpers.dismissErrorBox(driver);
       });
 
@@ -156,7 +156,9 @@ describe('Users', function() {
         await clearAndTypeInput(driver, 'username', username);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info', 10000);
+        await helpers.waitForRemoval(driver, css.sweetAlert.container);
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('muzzy');
+
       });
 
       it('should let you create a new authorized teacher', async function () {
@@ -180,9 +182,11 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(300);
-        await helpers.waitForSelector(driver, '.error-box');
-        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Email address has already been used');
+        await driver.sleep(1000);
+        await helpers.saveScreenshot(driver);
+        await helpers.waitForTextInDom(driver, 'Email address has already been used');
+        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain('Email address has already been used');
+        await helpers.dismissErrorBox(driver);
         await helpers.clearElement(driver, 'input.user-email');
         await helpers.findInputAndType(driver, 'input.user-email', newEmail);
         await helpers.findAndClickElement(driver, '#new-user-btn');
@@ -209,8 +213,9 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(600);
+        await driver.sleep(1000);
         await helpers.waitForSelector(driver, '.error-text');
+        await helpers.waitForTextInDom(driver, 'Username already exists');
         expect(await helpers.findAndGetText(driver, '.error-text')).to.contain('Username already exists');
         await clearUsername(driver);
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
