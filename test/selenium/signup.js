@@ -50,6 +50,8 @@ describe('Signup form', function () {
   });
 
   describe('Submitting form', function () {
+    let invalidUsername = 'bad@username.com';
+    let invalidPassword = 'tooshort';
 
     it('should display missing fields error when omitting username', async function () {
       await helpers.signup(driver, ['username']);
@@ -61,11 +63,59 @@ describe('Signup form', function () {
       let usernameInput;
       try {
         usernameInput = await driver.findElement(By.css(css.signup.inputs.username));
-        await usernameInput.sendKeys(helpers.newUser.username);
+        await usernameInput.sendKeys(invalidUsername);
       } catch (err) {
         console.log(err);
       }
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete)).to.be.false;
+    });
+
+    it('should not allow submitting with invalid username', async function() {
+      let blackListed = 'admin';
+
+      await helpers.findAndClickElement(driver, css.signup.submit);
+      await driver.sleep(1000);
+      expect(await helpers.isTextInDom(driver, helpers.signupErrors.username)).to.eql(true);
+
+      let url = await driver.getCurrentUrl();
+      expect(url).to.eql(`${host}/#/auth/signup`);
+      let usernameInput = await driver.findElement(By.css(css.signup.inputs.username));
+
+      await usernameInput.clear();
+      await usernameInput.sendKeys(blackListed);
+
+    });
+
+    it('should not allow submitting with blacklisted username', async function() {
+      let expectedMsg = '"username" ' + helpers.signupErrors.blackListed;
+      await helpers.findAndClickElement(driver, css.signup.submit);
+      await helpers.waitForTextInDom(driver, expectedMsg );
+      expect(await helpers.isTextInDom(driver, expectedMsg)).to.eql(true);
+
+      let url = await driver.getCurrentUrl();
+      expect(url).to.eql(`${host}/#/auth/signup`);
+      let usernameInput = await driver.findElement(By.css(css.signup.inputs.username));
+
+      await usernameInput.clear();
+      await usernameInput.sendKeys(helpers.newUser.username);
+
+    });
+
+    it('should not allow submitting with invalid password', async function() {
+      let passwordInput = await driver.findElement(By.css(css.signup.inputs.password));
+      passwordInput.clear();
+      passwordInput.sendKeys(invalidPassword);
+
+      await helpers.findAndClickElement(driver, css.signup.submit);
+      await driver.sleep(1000);
+      expect(await helpers.isTextInDom(driver, helpers.signupErrors.password)).to.eql(true);
+
+      let url = await driver.getCurrentUrl();
+      expect(url).to.eql(`${host}/#/auth/signup`);
+
+      await passwordInput.clear();
+      await passwordInput.sendKeys(helpers.newUser.password);
+
     });
 
     it('should display terms error if submitted without checking agree to terms',
@@ -89,12 +139,10 @@ describe('Signup form', function () {
     it('should redirect to unconfirmed after successful signup', async function () {
       await driver.sleep(1000);
       await helpers.findAndClickElement(driver, css.signup.submit);
-      // await driver.wait(until.urlIs(`${host}/#/unconfirmed`), 10000);
       await helpers.waitForUrlMatch(driver, /unconfirmed/,10000);
       await helpers.waitForSelector(driver, css.topBar.logout);
 
       expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/#/unconfirmed`);
-      // expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(`${helpers.newUser.name}`);
     });
   });
 });

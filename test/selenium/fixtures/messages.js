@@ -1,7 +1,7 @@
 module.exports = {
   signup: {
     errors: {
-      passwordTooShort: `"password length must be at least 10 characters long`
+      passwordTooShort: 'Password must be between 10 and 72 characters long',
     }
   }
 };

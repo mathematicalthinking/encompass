@@ -8,6 +8,7 @@ module.exports = {
     pendingFill: 'rgb(255, 210, 4)',
     errorBox: '.error-box',
     selectizeActiveEl : 'div.option.active',
+    errorBoxDismiss: '.error-box p button i.fa-times',
   },
   topBar: {
     login: "a.menu.login",
