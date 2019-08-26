@@ -76,6 +76,17 @@ try {
       // should this return error instead?
       req.body.accountType = 'T';
     }
+    let userSections = [];
+    if (req.body.sectionId) {
+      let section = {
+        sectionId: req.body.sectionId,
+        role: req.body.sectionRole
+      };
+      userSections.push(section);
+      req.body.sections = userSections;
+      delete req.body.sectionId;
+      delete req.body.sectionRole;
+    }
   }
 
   let {message, accessToken, refreshToken, encUser, existingUser } = await ssoService.signup(req.body, reqUser);
