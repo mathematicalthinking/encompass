@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 // REQUIRE MODULES
 const { By, until, Key } = require('selenium-webdriver');
 const sharp = require('sharp');
@@ -385,9 +386,11 @@ const clearElement = async function(webDriver, element) {
 const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
   try {
     await webDriver.wait(until.urlMatches(regex), timeout);
+    return true;
   }catch(err) {
     console.error(`Error waitForUrlMatch: ${err}`);
     console.trace();
+    return false;
   }
 };
 
@@ -396,9 +399,6 @@ const saveScreenshot = function(webdriver) {
   then((base64Data) => {
     let buffer = Buffer.from(base64Data, 'base64');
     return sharp(buffer).toFile(path.join(__dirname, 'screenshots', `${Date.now()}.png`))
-    .then((val) => {
-      console.log('screenshot saved: ', val);
-    })
     .catch((err) => {
       console.log(`Error saving screenshot: ${err}`);
     });
@@ -431,6 +431,92 @@ const waitForAndGetErrorBoxText = function(webDriver) {
   return findAndGetText(webDriver, css.general.errorBoxText);
 };
 
+const selectSingleSelectizeItem = function(webDriver, inputSelector, text, itemValue ) {
+
+  return getWebElementByCss(webDriver, inputSelector)
+    .then((selectizeInput) => {
+      return selectizeInput.sendKeys(text)
+      .then(() => {
+        let dataValSelector = `div[data-value="${itemValue}"]`;
+        return waitForAndClickElement(webDriver, dataValSelector )
+        .then(() => {
+          return getParentElement(selectizeInput)
+            .then((parentNode) => {
+              return waitForElementToHaveText(webDriver, { webElement: parentNode, expectedText: text });
+            });
+
+        });
+      });
+    })
+    .catch((err) => {
+      throw(err);
+    });
+};
+
+const getWebElementByCss = function(webDriver, selector ) {
+  // not for testing existence or visibility
+  return webDriver.findElement(By.css(selector))
+    .catch((err) => {
+      throw(err);
+    });
+};
+
+const waitForElementToHaveText = function(webDriver, config){
+  let { selector, webElement, expectedText, timeout } = config;
+  let conditionFn;
+
+  if (selector) {
+    conditionFn = () => {
+      return findAndGetText(webDriver, selector)
+        .then((text) => {
+          return text === expectedText;
+        });
+    };
+  } else {
+    conditionFn = () => {
+      return webElement.getText()
+        .then((val) => {
+          return val === expectedText;
+        });
+    };
+  }
+
+  return webDriver.wait(conditionFn, timeout || timeoutMs)
+    .catch((err) => {
+      throw(err);
+    });
+};
+
+const getParentElement = function(webElement) {
+  return webElement.findElement(By.xpath('./..'))
+    .catch((err) => {
+      throw err;
+    });
+};
+
+const waitForAttributeToEql = function(webDriver, webElement, attributeName, expectedValue, timeout=timeoutMs) {
+  let conditionFn = () => {
+    return webElement.getAttribute(attributeName)
+      .then((attributeVal) => {
+        return attributeVal === expectedValue;
+      });
+  };
+  return webDriver.wait(conditionFn, timeout)
+    .catch((err) => {
+      throw(err);
+    });
+};
+
+const logout = function(webDriver) {
+  let loginRegex = new RegExp('/#/auth/login');
+  return findAndClickElement(webDriver, css.topBar.logout)
+    .then(() => {
+      return waitForUrlMatch(webDriver, loginRegex);
+    })
+    .catch((err) => {
+      throw(err);
+  });
+};
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -499,3 +585,8 @@ module.exports.saveScreenshot = saveScreenshot;
 module.exports.waitForNElements = waitForNElements;
 module.exports.dismissErrorBox = dismissErrorBox;
 module.exports.waitForAndGetErrorBoxText = waitForAndGetErrorBoxText;
+module.exports.selectSingleSelectizeItem =selectSingleSelectizeItem;
+module.exports.getWebWelementByCss = getWebElementByCss;
+module.exports.waitForElementToHaveText = waitForElementToHaveText;
+module.exports.waitForAttributeToEql = waitForAttributeToEql;
+module.exports.logout = logout;
