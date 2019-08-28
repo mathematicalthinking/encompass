@@ -162,7 +162,8 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
         owner: parentOwner,
         createdBy: parentCreator,
         lastModifiedBy: parentCreator,
-        workspace: parentId
+        workspace: parentId,
+        srcChildWs: workspace._id
       });
 
       let defaultTaggings = [];

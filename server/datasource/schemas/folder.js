@@ -28,6 +28,7 @@ var FolderSchema = new Schema({
   taggings: [{type: ObjectId, ref:'Tagging'}],
   workspace: { type:ObjectId, ref:'Workspace' },
   originalFolder: { type: ObjectId, ref: 'Folder' }, // when in a parent workspace to ref original
+  srcChildWs: { type: ObjectId, ref: 'Workspace' }, // for "workspace" folders create to contain a child workspaces folders in a parent workspace
 }, {versionKey: false});
 
 /**
