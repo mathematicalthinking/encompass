@@ -400,6 +400,10 @@ module.exports = {
       index: '.submission_index',
       rightArrow: '#rightArrow',
       leftArrow: '#leftArrow'
+    },
+    tour: {
+      xBtn: 'div.guiders_x_button',
+      overlay: '#guiders_overlay',
     }
 
   },

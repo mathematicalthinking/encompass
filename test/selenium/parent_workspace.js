@@ -38,7 +38,7 @@ describe('Assignment Info as Teacher', function() {
     try {
       await helpers.login(driver, host, teacher);
     }catch(err) {
-      console.log(err);
+      throw(err);
     }
   });
 
@@ -90,7 +90,6 @@ describe('Assignment Info as Teacher', function() {
           if (options.doUseHref) {
             await driver.get(parentWorkspaceHref);
             await helpers.waitForUrlMatch(driver, new RegExp(parentWorkspaceHref));
-            await helpers.waitForSelector(driver, 'div.guiders_x_button');
 
           } else {
             await helpers.navigateAndWait(driver, workspacesUrl, '.results-list');
@@ -100,9 +99,7 @@ describe('Assignment Info as Teacher', function() {
           await helpers.waitForSelector(driver, '.info-link');
 
           }
-          await helpers.findAndClickElement(driver, 'div.guiders_x_button');
-          await helpers.waitForRemoval(driver, 'div#guiders_overlay');
-
+          await helpers.dismissWorkspaceTour(driver);
           await helpers.findAndClickElement(driver, '.info-link > a');
           await helpers.waitForSelector(driver, '#workspace-info-stats');
 

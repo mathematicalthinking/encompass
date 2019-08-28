@@ -169,17 +169,14 @@ const findAndGetText = async function (webDriver, selector, caseInsenstive=false
   return text;
 };
 
-const isTextInDom = async function (webDriver, text) {
-  let isInDom;
-  try {
-    let pageSource = await webDriver.getPageSource();
-    if (typeof pageSource === 'string') {
-      isInDom = pageSource.includes(text);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-  return isInDom;
+const isTextInDom = function (webDriver, text) {
+  return webDriver.getPageSource()
+    .then((source) => {
+      return typeof source === 'string' && source.includes(text);
+    })
+    .catch((err) => {
+      throw(err);
+    });
 };
 
 const hasTooltipValue = async function (webDriver, selector, value) {
@@ -214,24 +211,21 @@ const waitForAndClickElement = function (webDriver, selector, timeout = timeoutM
       });
 };
 
-const waitForTextInDom = async function (webDriver, text, timeout=timeoutMs) {
-  try {
-    return await webDriver.wait(async function () {
-      let result = await isTextInDom(webDriver, text);
-      return result;
-    }, timeout);
-  } catch (err) {
-    console.log(err);
-  }
+const waitForTextInDom = function (webDriver, text, timeout=timeoutMs) {
+    return webDriver.wait(function () {
+      return isTextInDom(webDriver, text);
+    }, timeout)
+    .catch((err) => {
+      throw(err);
+    });
 };
 
 
-const waitForSelector = async function (webDriver, selector, timeout = timeoutMs) {
-  try {
-    return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
-  } catch (err) {
-    console.log(err);
-  }
+const waitForSelector = function (webDriver, selector, timeout = timeoutMs) {
+    return webDriver.wait(until.elementLocated(By.css(selector)), timeout)
+    .catch((err) => {
+      throw(err);
+    });
 };
 
 const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
@@ -517,6 +511,25 @@ const logout = function(webDriver) {
       throw(err);
   });
 };
+
+const dismissWorkspaceTour = function(webDriver) {
+  let xBtnSel = css.workspace.tour.xBtn;
+  let overlaySel = css.workspace.tour.overlay;
+  return waitForSelector(webDriver, xBtnSel)
+    .then((xBtn) => {
+      return xBtn.click()
+      .then(() => {
+        return waitForRemoval(webDriver, overlaySel);
+      });
+    })
+    .catch((err) => {
+      if (err.name === 'TimeoutError') {
+        // tour box didnt pop up
+        return true;
+      }
+      throw (err);
+    });
+};
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -590,3 +603,4 @@ module.exports.getWebWelementByCss = getWebElementByCss;
 module.exports.waitForElementToHaveText = waitForElementToHaveText;
 module.exports.waitForAttributeToEql = waitForAttributeToEql;
 module.exports.logout = logout;
+module.exports.dismissWorkspaceTour = dismissWorkspaceTour;
