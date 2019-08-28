@@ -443,7 +443,10 @@ module.exports = {
       yours: 'ul.your-assignments'
     },
     linkedWorkspaces: {
-      link: 'ul.assignment-info > li > a',
+      link: 'ul.linked-workspaces > li > a',
+    },
+    parentWorkspaces: {
+      link: 'ul.parent-workspaces > li > a',
     },
     report: {
       table: 'table.report.rows.values',
@@ -487,5 +490,36 @@ module.exports = {
       container: '#vmt-import-step4',
       create: 'button[data-test=create]'
     }
+  },
+  assignmentsNew: {
+    container: '#assignment-new',
+    inputs: {
+      section: {
+        input: '#assn-new-section-select-selectized',
+      },
+      problem: {
+        input: '#assn-new-problem-select-selectized',
+      },
+      linkedWorkspaces: {
+        groupName: 'linkedWorkspaces',
+        yes: {
+          value: "true"
+        },
+        no: {
+          value: "false"
+        }
+      },
+      parentWorkspace: {
+        groupName: 'parentWorkspace',
+        yes: {
+          value: 'true',
+        },
+        no: {
+          value: 'false'
+        }
+      }
+
+    },
+    submitBtn: 'button[data-test=create]',
   }
 };
