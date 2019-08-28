@@ -192,6 +192,14 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     return [];
   }.property('selectedSection'),
 
+  parentWorkspaces: function() {
+    let ids = this.get('assignment.parentWorkspaceIds') || [];
+
+    return ids.map((id) => {
+      return this.get('store').peekRecord('workspace', id);
+    }).compact();
+  }.property('assignment.parentWorkspaceIds.[]'),
+
 
   actions: {
     editAssignment: function() {

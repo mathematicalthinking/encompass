@@ -120,8 +120,20 @@
           </li>
           <li>
             <label for="linkedWorkspaces">Linked Workspaces</label>
-            <ul class="assignment-info">
+            <ul class="assignment-info linked-workspaces">
               {{#each linkedWorkspaces as |workspace|}}
+              <li>
+                {{#link-to 'workspace.work' workspace.id}}{{workspace.name}}{{/link-to}}
+              </li>
+                {{else}}
+                <li>N/A</li>
+                {{/each}}
+              </ul>
+          </li>
+          <li>
+            <label for="parentWorkspaces">Parent Workspaces</label>
+            <ul class="assignment-info parent-workspaces">
+              {{#each parentWorkspaces as |workspace|}}
               <li>
                 {{#link-to 'workspace.work' workspace.id}}{{workspace.name}}{{/link-to}}
               </li>
