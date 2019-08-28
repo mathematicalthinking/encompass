@@ -17,8 +17,8 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/folders');
 const fsAccess = require('../../middleware/access/foldersets');
 
-const objectUtils = require('../../utils/objects');
-const { isNil, } = objectUtils;
+const { isNil, isNonEmptyArray } = require('../../utils/objects');
+const {  areObjectIdsEqual } = require('../../utils/mongoose');
 
 
 module.exports.get = {};
@@ -144,32 +144,80 @@ async function getFolders(req, res, next) {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-function postFolder(req, res, next) {
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.folder.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if(wsAccess.canModify(user, ws, 'folders', 2)) {
-      var folder = new models.Folder(req.body.folder);
-      folder.createdBy = user;
-      folder.createDate = Date.now();
-      folder.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
+async function postFolder(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.folder.workspace;
 
-        var data = {'folder': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
+    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
+
+    let canCreateFolderInWs = wsAccess.canModify(user, workspace, 'folders', 2);
+
+    if (!canCreateFolderInWs) {
       logger.info("permission denied");
       return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
     }
-  });
+
+    let folder = new models.Folder(req.body.folder);
+    folder.createdBy = user;
+    folder.createDate = Date.now();
+    folder.lastModifiedDate = Date.now();
+    folder.lastModifiedBy = user;
+
+    await folder.save();
+
+    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true}).populate('folders');
+
+    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
+      await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
+        let folderCopy = { ...folder.toObject() };
+        let oldId = folderCopy._id;
+        delete folderCopy._id;
+
+        folderCopy.originalFolder = oldId;
+        folderCopy.workspace = parentWs._id;
+        // should folder owner be original owner or owner of parent ws?
+        folderCopy.owner = parentWs.owner;
+
+        let isTopLevel = isNil(folder.parent);
+
+        if (isTopLevel) {
+          // need to set parent as the 'workspace' folder
+          let childWsFolder = _.find(parentWs.folders, (f) => {
+            return areObjectIdsEqual(f.srcChildWs, workspaceId);
+          });
+
+          if (!childWsFolder) {
+            // should never happen
+            logger.info('missing child ws folder');
+            return;
+          }
+          folderCopy.parent = childWsFolder;
+        } else {
+          // find corresponding parent folder in parent ws
+          let parentWsParent = _.find(parentWs.folders, (f) => {
+            return areObjectIdsEqual(f.originalFolder, folder.parent);
+          });
+
+          if (!parentWsParent) {
+            // should never happen
+            logger.info('missing parentws parent');
+            return;
+          }
+          folderCopy.parent = parentWsParent;
+        }
+        logger.info('creating copy in parent');
+        return models.Folder.create(folderCopy);
+      }));
+
+    }
+    let data = { folder };
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    logger.error('error postFolder: ', err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 /**
