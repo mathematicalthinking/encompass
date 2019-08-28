@@ -98,8 +98,8 @@
         </div>
       </div>
     {{/selectable-area}}
-    {{/if}}
-    <div class="non-selectable-sub">
+    {{else}}
+        <div class="non-selectable-sub">
       <h5 class="submission-header summary">Brief Summary</h5>
       <div class="submission short {{if isVmt "vmt-summary"}}">
         {{#if isVmt}}
@@ -146,6 +146,8 @@
         {{/if}}
       </div>
     </div>
+
+    {{/if}}
 
   {{#if currentSubmission.uploadedFile.savedFileName}}
   <div id="submission_images">
