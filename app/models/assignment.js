@@ -15,4 +15,5 @@ Encompass.Assignment = DS.Model.extend(Encompass.Auditable, {
   linkedWorkspaceCreationOptions: DS.attr(),
   parentWorkspaceCreationOptions: DS.attr(),
   parentWorkspaceIds: DS.attr(),
+  parentWorkspaceError: DS.attr('string'), // if parent workspace creation fails on assignment creation
 });

@@ -2934,27 +2934,44 @@ async function cloneWorkspace(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 
-async function addAnswerToWorkspace(user, answer, workspaceId) {
+async function addAnswerToWorkspace(user, answer, workspaceId, options = {}) {
   try {
     if (!isNonEmptyObject(user) || !isNonEmptyObject(answer) || !isValidMongoId(workspaceId)) {
       return;
     }
+    let workspaceToUpdate = await (
+      models.Workspace.findById(workspaceId)
+      .populate('submissions')
+      .populate({path: 'linkedAssignment', populate: 'section'})
+      .populate('owner')
+      .populate('createdBy')
+      .exec());
 
-    let workspaceToUpdate = await models.Workspace.findById(workspaceId)
-    .populate('submissions')
-    .populate({path: 'linkedAssignment', populate: 'section'})
-    .populate('owner')
-    .populate('createdBy')
-    .exec();
+    console.log(`Beginning update of workspace: ${workspaceToUpdate.name} with answerId: ${answer._id}`);
 
     if (isNil(workspaceToUpdate)) {
       return;
     }
-    // do we need to check for submissions already containing this answer?
+
+    let existingSubWithAnswer = _.find(workspaceToUpdate.submissions, (sub) => {
+      return areObjectIdsEqual(sub.answer, answer._id);
+    });
+
+    if (existingSubWithAnswer) {
+      console.log('existing sub: ', existingSubWithAnswer);
+      // answer has already been added to workspace
+      return;
+    }
+
+    let { isParentWsUpdate } = options;
 
     // create JSON submission obj from answer
     if (!access.canUpdateSubmissions(user, workspaceToUpdate, 'add')) {
-      return;
+      // isParentWsUpdate flag is only set to true after an authorized workspace update
+      // has been made to an existing child workspace
+      if (!isParentWsUpdate) {
+        return;
+      }
     }
     // returns array
     let submissionJSON = await answersToSubmissions([answer]);
@@ -2988,7 +3005,7 @@ async function addAnswerToWorkspace(user, answer, workspaceId) {
 
     let savedSub = await newSubmission.save();
     workspaceToUpdate.submissions = workspaceToUpdate.submissions.map(sub => sub._id);
-    workspaceToUpdate.submissions.push(savedSub._id);
+    workspaceToUpdate.submissions = workspaceToUpdate.submissions.concat([savedSub._id]);
 
     await workspaceToUpdate.save();
 
@@ -3013,14 +3030,28 @@ function addAnswerToWorkspaces(user, answer) {
   }
 
   let workspaceIds = answer.workspacesToUpdate;
-  console.log('wsIds', workspaceIds);
   if (!isNonEmptyArray(workspaceIds)) {
     return;
   }
 
   return Promise.all(workspaceIds.map((id) => {
     return addAnswerToWorkspace(user, answer, id);
-  }));
+  }))
+  .then(async (addAnswerResults) => {
+    let updatedWorkspaceIds = addAnswerResults.map((result) => {
+      return result.updatedWorkspaceInfo.workspaceId;
+    });
+    // get list of the updated workspace ids so we can check if any of them
+    // are a child workspace of a parent workspace
+    if (isNonEmptyArray(updatedWorkspaceIds)) {
+      let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: {$elemMatch: {$in: updatedWorkspaceIds}}, doAutoUpdateFromChildren: true}).populate('submissions').exec();
+
+      // create a new submission from answer and add to any parent workspaces
+      return Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
+        return addAnswerToWorkspace(user, answer, parentWs._id, {isParentWsUpdate: true});
+      }));
+    }
+  });
 
 
 }

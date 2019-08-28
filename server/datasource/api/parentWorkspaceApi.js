@@ -20,9 +20,13 @@ const generateParentWorkspace = async function(config) {
       createdBy,
       childWorkspaces,
       mode,
-      organization
+      organization,
+      doAutoUpdateFromChildren
     } = config;
 
+    if (typeof doAutoUpdateFromChildren !== 'boolean') {
+      doAutoUpdateFromChildren = false;
+    }
     // if linkedAssignment is provided
     // need to
 
@@ -45,6 +49,7 @@ const generateParentWorkspace = async function(config) {
       workspaceType: 'parent',
       linkedAssignment,
       childWorkspaces,
+      doAutoUpdateFromChildren,
     });
 
     let popChildWorkspaces = await populateChildWorkspaces(childWorkspaces);
@@ -277,7 +282,7 @@ const combineSubmissions = workspaces => {
         delete submission._id;
 
         submission.answer = answer._id;
-
+        submission.originalSubmission = oldId;
         let newSubmission = new models.Submission(submission);
         oldToNewMap[oldId] = newSubmission._id;
         acc[answer._id] = newSubmission;

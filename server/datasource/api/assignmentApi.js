@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable no-use-before-define */
 /**
   * # Assignment API
@@ -180,7 +181,18 @@ const getAssignment = async function(req, res, next) {
   if (!isStudent && metadata) {
     jsonAssn.reportDetails = metadata;
   }
+
+  // check if any parent workspaces related to linked workspaces
+
+  let parentWorkspaces = [];
+
+  if (isNonEmptyArray(assignment.linkedWorkspaces)) {
+    parentWorkspaces = await models.Workspace.find({isTrashed: false, childWorkspaces: {$elemMatch: {$in: assignment.linkedWorkspaces}}}).lean().exec();
+  }
+
+  jsonAssn.parentWorkspaceIds = parentWorkspaces.map(ws => ws._id);
   data.assignment = jsonAssn;
+  data.workspace = parentWorkspaces;
 
   return utils.sendResponse(res, data);
 
@@ -259,15 +271,16 @@ const postAssignment = async (req, res, next) => {
 
     await assignment.save();
 
-    let {
-      linkedWorkspaceCreationOptions,
-      parentWorkspaceCreationOptions
-    } = req.body.assignment;
-    let linkedWorkspaces;
+    let linkedWorkspaceCreationOptions = req.body.assignment.linkedWorkspaceCreationOptions || {};
 
-    console.log({assignment: req.body.assignment});
+    let parentWorkspaceCreationOptions = req.body.assignment.parentWorkspaceCreationOptions || {};
+
+    let linkedWorkspaces;
+    let parentWorkspace;
+    let parentWorkspaceError;
 
     if (linkedWorkspaceCreationOptions.doCreate) {
+      // create a linked workspace for each student in assignment
       await assignment
         .populate('students')
         .populate({ path: 'section', select: 'name' })
@@ -284,8 +297,11 @@ const postAssignment = async (req, res, next) => {
       assignment.depopulate('students').depopulate('section');
 
       if (parentWorkspaceCreationOptions.doCreate) {
-        let { name, mode, owner, organization } = parentWorkspaceCreationOptions;
-
+        let { name, mode, owner, organization, doAutoUpdateFromChildren } = parentWorkspaceCreationOptions;
+        console.log('doupdate children: ', doAutoUpdateFromChildren, 'type of do update paren: ', typeof doAutoUpdateFromChildren);
+        if (typeof doAutoUpdateFromChildren !== 'boolean') {
+          doAutoUpdateFromChildren = true;
+        }
         // linked assignment?
 
         let parentWsConfig = {
@@ -295,19 +311,32 @@ const postAssignment = async (req, res, next) => {
           organization: organization || user.organization,
           name: name || `Parent Workspace: ${assignment.name}`,
           mode: mode || 'private',
+          doAutoUpdateFromChildren,
         };
-
-        let { parentWorkspace, errorMsg } = await generateParentWorkspace(parentWsConfig);
-
+        let parentWsResults = await generateParentWorkspace(parentWsConfig);
+        parentWorkspace = parentWsResults.parentWorkspace;
+        parentWorkspaceError = parentWsResults.errorMsg;
         // if error send back as metadata?
       }
       await assignment.save();
     }
 
-    let data = { assignment };
+    let assignmentJson = assignment.toObject();
+    assignmentJson.parentWorkspaceIds =  parentWorkspace ? [parentWorkspace._id] : [];
+    assignmentJson.parentWorkspaceError = parentWorkspaceError;
+
+    let data = { assignment: assignmentJson };
+
 
     if (isNonEmptyArray(linkedWorkspaces)) {
       data.workspaces = linkedWorkspaces;
+    }
+    if (parentWorkspace) {
+      if (data.workspaces) {
+        data.workspaces.push(parentWorkspace);
+      } else {
+        data.workspaces = [ parentWorkspace ];
+      }
     }
     utils.sendResponse(res, data);
   } catch (err) {
