@@ -9,6 +9,7 @@
 const logger   = require('log4js').getLogger('server');
 const sharp = require('sharp');
 const axios = require('axios');
+const _ = require('underscore');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -17,7 +18,8 @@ const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/selections');
 
-const { isValidMongoId } = require('../../utils/mongoose');
+const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
+const { isNonEmptyArray } = require('../../utils/objects');
 
 
 module.exports.get = {};
@@ -176,7 +178,7 @@ async function postSelection(req, res, next) {
     let user = userAuth.requireUser(req);
     let workspaceId = req.body.selection.workspace;
 
-    let ws = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').lean().exec();
+    let ws = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').lean().populate('submissions').exec();
 
     if (!wsAccess.canModify(user, ws, 'selections', 2)) {
       return utils.sendError.NotAuthorizedError('You don\'t have permission for this workspace', res);
@@ -258,6 +260,38 @@ async function postSelection(req, res, next) {
     let savedSelection = await selection.save();
 
     let data = {'selection': savedSelection};
+
+    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true})
+    .populate('submissions')
+    .exec();
+
+    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
+      await savedSelection.populate('submission').execPopulate();
+    }
+
+    let selectionAnswerId = savedSelection.submission.answer;
+    savedSelection.depopulate('submission');
+
+    await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
+      let selectionCopy = { ...savedSelection.toObject()};
+      let oldId = selectionCopy._id;
+      delete selectionCopy._id;
+
+      selectionCopy.originalSelection = oldId;
+      selectionCopy.workspace = parentWs._id;
+      selectionCopy.originalSelection = savedSelection._id;
+
+      let parentSubmission = _.find(parentWs.submissions, (sub) => {
+        return areObjectIdsEqual(sub.answer, selectionAnswerId);
+      });
+
+      if (!parentSubmission) {
+        // should never happen
+        return;
+      }
+      selectionCopy.submission = parentSubmission._id;
+      return models.Selection.create(selectionCopy);
+    }));
 
     return utils.sendResponse(res, data);
 
