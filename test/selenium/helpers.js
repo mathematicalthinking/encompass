@@ -436,7 +436,7 @@ const selectSingleSelectizeItem = function(webDriver, inputSelector, text, itemV
         .then(() => {
           return getParentElement(selectizeInput)
             .then((parentNode) => {
-              return waitForElementToHaveText(webDriver, { webElement: parentNode, expectedText: text });
+              return waitForElementToHaveText(webDriver, parentNode, text );
             });
 
         });
@@ -455,20 +455,20 @@ const getWebElementByCss = function(webDriver, selector ) {
     });
 };
 
-const waitForElementToHaveText = function(webDriver, config){
-  let { selector, webElement, expectedText, timeout } = config;
+const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedText, timeout){
   let conditionFn;
+  let isSelector = typeof webElOrSelector === 'string';
 
-  if (selector) {
+  if (isSelector) {
     conditionFn = () => {
-      return findAndGetText(webDriver, selector)
+      return findAndGetText(webDriver, webElOrSelector)
         .then((text) => {
           return text === expectedText;
         });
     };
   } else {
     conditionFn = () => {
-      return webElement.getText()
+      return webElOrSelector.getText()
         .then((val) => {
           return val === expectedText;
         });
@@ -515,7 +515,7 @@ const logout = function(webDriver) {
 const dismissWorkspaceTour = function(webDriver) {
   let xBtnSel = css.workspace.tour.xBtn;
   let overlaySel = css.workspace.tour.overlay;
-  return waitForSelector(webDriver, xBtnSel)
+  return waitForSelector(webDriver, xBtnSel, 1000)
     .then((xBtn) => {
       return xBtn.click()
       .then(() => {

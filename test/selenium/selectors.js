@@ -223,7 +223,8 @@ module.exports = {
     confirmBtn: 'button.swal2-confirm',
     cancelBtn: 'button.swal2-cancel',
     select: 'select.swal2-select',
-    container: '.swal2-container'
+    container: '.swal2-container',
+    textInput: 'input.swal2-input[type=text]',
   },
 
   problemNew: {
@@ -404,6 +405,21 @@ module.exports = {
     tour: {
       xBtn: 'div.guiders_x_button',
       overlay: '#guiders_overlay',
+    },
+    toggleSelectingInput: 'input[type=checkbox][name=is-selecting]',
+    selectableArea: {
+      container: '#selectable-area',
+    },
+    selections: {
+      container: '#submission_selections',
+      selectionLink: '.selectionLink > a',
+      currentSelectionLink: '.selectionLink > a.active',
+      draggable: 'draggable-selection',
+      selectedDraggable: '.draggable-selection.is-selected',
+    },
+    folders: {
+      add: '.folders-modify-item.add > span',
+      showFolderCircle: ''
     }
 
   },

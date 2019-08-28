@@ -1,7 +1,8 @@
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
-const expect = require('chai').expect;
 
+const expect = require('chai').expect;
+require('geckodriver');
 // REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
@@ -12,7 +13,7 @@ const host = helpers.host;
 
 const RadioButtonSelector = require('./utilities/radio_group');
 
-describe('Assignment Info as Teacher', function() {
+describe('Parent Workspace creation and updating', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
 
@@ -28,10 +29,13 @@ describe('Assignment Info as Teacher', function() {
   let workspacesUrl = `${host}/#/workspaces`;
 
   let parentWorkspaceHref;
+  let student1WorkspaceHref;
+  let student2WorkspaceHref;
+  let student3WorkspaceHref;
 
   before(async function() {
     driver = new Builder()
-      .forBrowser('chrome')
+      .forBrowser('firefox')
       .build();
     await dbSetup.prepTestDb();
     radioButtonSelector = new RadioButtonSelector(driver);
@@ -99,7 +103,7 @@ describe('Assignment Info as Teacher', function() {
           await helpers.waitForSelector(driver, '.info-link');
 
           }
-          await helpers.dismissWorkspaceTour(driver);
+            await helpers.dismissWorkspaceTour(driver);
           await helpers.findAndClickElement(driver, '.info-link > a');
           await helpers.waitForSelector(driver, '#workspace-info-stats');
 
@@ -165,6 +169,25 @@ describe('Assignment Info as Teacher', function() {
         .then((links) => {
           linkedWorkspacesLinks = links;
           expect(links).to.have.lengthOf(expectedCount);
+          return Promise.all(links.map(async (link) => {
+            let name = await link.getAttribute('innerText');
+            let href = await link.getAttribute('href');
+            return {
+              name,
+              href
+            };
+          }))
+          .then((hrefs) => {
+            hrefs.forEach((obj) => {
+              if (obj.name === student1.linkedWs.name) {
+                student1WorkspaceHref = obj.href;
+              } else if (obj.name === student2.linkedWs.name) {
+                student2WorkspaceHref = obj.href;
+              } else {
+                student3WorkspaceHref = obj.href;
+              }
+            });
+          });
         });
     });
 
@@ -295,6 +318,121 @@ describe('Assignment Info as Teacher', function() {
     });
     checkWorkspaceStats(teacher.parentWorkspace.name, {submissions: 2, folders: teacher.parentWorkspace.initialFolders}, {doUseHref: true} );
 
+  });
+
+  describe('Creating markup in child workspaces', function()
+   {
+     let wsSelectors = css.workspace;
+    describe('Marking up as student1', function() {
+      let student = student1;
+      let selectionsCount = 0;
+      let taggingsCount = 0;
+      let foldersCount = 0;
+
+      let selectionLinkSel = wsSelectors.selections.selectionLink;
+      let studentToMarkup = student2;
+
+      let createdSelection;
+      let createdFolder;
+
+      before(async function() {
+        try {
+          let studentWsUrl = student1WorkspaceHref;
+
+          await helpers.logout(driver);
+          await helpers.login(driver, host, student);
+          let toggleSelectingInput = await helpers.navigateAndWait(driver, studentWsUrl, wsSelectors.toggleSelectingInput);
+
+          await helpers.findAndClickElement(driver, wsSelectors.submissionNav.rightArrow);
+          await helpers.waitForElementToHaveText(driver, wsSelectors.studentItem, studentToMarkup.username);
+          await toggleSelectingInput.click();
+
+          let selectableArea = await helpers.waitForSelector(driver, wsSelectors.selectableArea.container);
+        }catch(err) {
+          throw(err);
+        }
+      });
+
+      it('Should not create selection just clicking on text', async function() {
+        let nodeSel = '#node-1';
+        let initialCount = selectionsCount;
+
+        let node = await helpers.getWebWelementByCss(driver, nodeSel );
+        await node.click();
+
+
+        let selectionLinks = await helpers.getWebElements(driver, selectionLinkSel);
+
+        expect(selectionLinks).to.have.lengthOf(initialCount);
+      });
+
+      it('Creating a selection', async function() {
+        let nodeSel = '#node-1';
+        let node2Sel = '#node-2';
+        let initialCount = selectionsCount;
+
+        // let node = await helpers.getWebWelementByCss(driver, nodeSel );
+        let [node1, node2] = await Promise.all([
+          helpers.getWebWelementByCss(driver, nodeSel ),
+          helpers.getWebWelementByCss(driver, node2Sel )
+        ]);
+        const actions = driver.actions({bridge: true});
+
+        await actions
+          .dragAndDrop(node1, node2)
+          .perform();
+
+        await helpers.waitForTextInDom(driver, 'Selection Created');
+        await helpers.waitForRemoval(driver, css.sweetAlert.container);
+        let selectionLinks = await helpers.getWebElements(driver, selectionLinkSel);
+        expect(selectionLinks).to.have.lengthOf(initialCount + 1);
+
+        createdSelection = await helpers.getWebWelementByCss(driver, wsSelectors.selections.selectedDraggable);
+      });
+
+      it('Creating a folder', async function() {
+        let folderName = student.linkedWs.newFolder.name;
+        await helpers.findAndClickElement(driver, wsSelectors.folders.add);
+        let swalInput = await helpers.waitForSelector(driver, css.sweetAlert.textInput);
+        await swalInput.sendKeys(folderName);
+        await helpers.findAndClickElement(driver, css.sweetAlert.confirmBtn);
+
+        await helpers.waitForTextInDom(driver, `${folderName} created`);
+        await helpers.waitForRemoval(driver, css.sweetAlert.container);
+
+        createdFolder = await helpers.getWebWelementByCss(driver, '.dropZone');
+        expect(createdFolder).to.exist;
+      });
+
+      xit('Filing a selection', async function() {
+        const actions = driver.actions({bridge: true});
+        let successText = 'Selection Filed';
+
+        await actions
+          .dragAndDrop(createdSelection, createdFolder)
+          .perform();
+          await helpers.waitForTextInDom(driver, successText);
+
+      let showFolderCircle = await helpers.getWebWelementByCss(driver, wsSelectors.folders.showFolderCircle);
+      expect(await showFolderCircle.getText()).to.eql((taggingsCount + 1).toString());
+
+      });
+    });
+  });
+
+  describe('Checking parent workspace for updates', function()
+  {
+    let expectedStats = {
+      submissions: 2,
+      folders: 4,
+      selections: 1
+    };
+
+    before(async function() {
+      await helpers.logout(driver);
+      await helpers.login(driver, host, teacher);
+    });
+    checkWorkspaceStats(teacher.parentWorkspace.name, expectedStats, { doUseHref: true } );
   });
 
 });
