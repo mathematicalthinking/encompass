@@ -13,7 +13,8 @@ const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/taggings');
 
-const { areObjectIdsEqual, } = require('../../utils/mongoose');
+const { areObjectIdsEqual, isValidMongoId } = require('../../utils/mongoose');
+const { isNonEmptyArray } = require('../../utils/objects');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -102,6 +103,39 @@ async function getTagging(req, res, next) {
   }
 }
 
+
+// function postTagging(req, res, next) {
+
+//   var user = userAuth.requireUser(req);
+//   var workspaceId = req.body.tagging.workspace;
+//   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
+//     if (err) {
+//       logger.error(err);
+//       return utils.sendError.InternalError(err, res);
+//     }
+//     // if you can select, you can tag
+//     if(wsAccess.canModify(user, ws, 'selections', 2)) {
+
+//       var tagging = new models.Tagging(req.body.tagging);
+//       tagging.createdBy = user;
+//       tagging.createDate = Date.now();
+
+//       tagging.save(function(err, doc) {
+//         if(err) {
+//           logger.error(err);
+//           return utils.sendError.InternalError(err, res);
+//         }
+
+//         var data = {'tagging': doc};
+//         utils.sendResponse(res, data);
+//       });
+//     } else {
+//       logger.info("permission denied");
+//       res.send(403, "You don't have permission for this workspace");
+//     }
+//   });
+
+// }
 /**
   * @public
   * @method postTagging
@@ -110,37 +144,86 @@ async function getTagging(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function postTagging(req, res, next) {
+async function postTagging(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.tagging.workspace;
 
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.tagging.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
+
+    let canCreateTaggingInWs = wsAccess.canModify(user, workspace, 'selections', 2);
+
+    if (!canCreateTaggingInWs) {
+      logger.info("permission denied");
+      return utils.sendError.NotAuthorizedError( `You don't have permission for this workspace`, res);
     }
-    // if you can select, you can tag
-    if(wsAccess.canModify(user, ws, 'selections', 2)) {
 
-      var tagging = new models.Tagging(req.body.tagging);
-      tagging.createdBy = user;
-      tagging.createDate = Date.now();
+    let tagging = new models.Tagging(req.body.tagging);
+    tagging.createdBy = user;
+    tagging.lastModifiedBy = user;
+    tagging.createDate = Date.now();
+    tagging.lastModifiedDate = Date.now();
 
-      tagging.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
+    await tagging.save();
+
+    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true, workspaceType: 'parent'})
+    .populate('folders')
+    .populate('submissions')
+    .populate('selections')
+    .exec();
+
+    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
+      await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
+        let taggingCopy = { ...tagging.toObject() };
+        let oldId = taggingCopy._id;
+        delete taggingCopy._id;
+
+        taggingCopy.originalTagging = oldId;
+        taggingCopy.workspace = parentWs._id;
+
+        if (isValidMongoId(tagging.folder)) {
+          // find corresponding parent folder in parent ws
+          let parentWsFolder = _.find(parentWs.folders, (f) => {
+            return areObjectIdsEqual(f.originalFolder, tagging.folder);
+          });
+
+          if (!parentWsFolder) {
+            // should never happen
+            logger.info('missing parentws parent');
+            return;
+          }
+          taggingCopy.folder = parentWsFolder._id;
+
         }
 
-        var data = {'tagging': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
-      logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
-    }
-  });
+        // find corresponding selection in parentWs
 
+        let parentSelection = _.find(parentWs.selections, (s) => {
+          return areObjectIdsEqual(s.originalSelection, tagging.selection);
+        });
+
+        if (!parentSelection) {
+          // should never happen
+          logger.info('missing parent selection');
+          return;
+        }
+        taggingCopy.selection = parentSelection._id;
+
+        logger.info('creating copy in parent', taggingCopy);
+
+        return models.Tagging.create(taggingCopy);
+      }));
+    }
+
+      let data = { tagging };
+      utils.sendResponse(res, data);
+
+
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+
+  }
 }
 
 /**
