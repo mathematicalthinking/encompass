@@ -6,7 +6,9 @@
 
 <div class="workspace-info-container">
   {{#unless isShowingCustomViewer}}
-    {{workspace-info-settings store=store workspace=workspace canEdit=canEdit isEditing=isEditing users=users linkedAssignment=workspace.linkedAssignment.content}}
+    {{workspace-info-settings store=store workspace=workspace canEdit=canEdit isEditing=isEditing users=users linkedAssignment=workspace.linkedAssignment.content
+    childWorkspaces=workspace.childWorkspaces.content
+    }}
   {{/unless}}
 
   {{workspace-info-collaborators store=store workspace=workspace originalCollaborators=originalCollaborators isShowingCustomViewer=isShowingCustomViewer customSubmissionIds=customSubmissionIds globalItems=globalItems initialCollabOptions=initialCollabOptions selectedCollaborators=selectedCollaborators

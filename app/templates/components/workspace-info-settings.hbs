@@ -126,6 +126,71 @@
       {{/unless}}
     {{/if}}
 
+     {{#if doShowChildWorkspaces}}
+      <div class="card-row">
+        <div class="row-label">
+         Child Workspaces
+        </div>
+        <div data-test="child-workspaces" class="row-value">
+          {{#if isEditing}}
+            {{!-- {{selectize-input
+            store=store
+            inputId="linked-assignment-select"
+            maxItems=1
+            initialItems=initialLinkedAssignmentItem
+            onItemAdd=(action "setLinkedAssignment")
+            onItemRemove=(action "setLinkedAssignment")
+            labelField="name"
+            valueField="id"
+            searchField="name"
+            model="assignment"
+            topLevelQueryParams="filterBy"
+            queryParamsKey="name"
+            isAsync=true
+            placeholder="Search for an assignment by name"
+            preload="focus"
+            }} --}}
+          {{else}}
+          {{#each childWorkspaces as |ws|}}
+              {{#link-to 'workspace.work' ws.id}}{{ws.name}}{{/link-to}}
+            {{else}}
+            N/A
+          {{/each}}
+
+          {{/if}}
+        </div>
+      </div>
+      <div class="card-row">
+      <div class="row-label">
+        Allow Automatic Updates From Children
+      </div>
+      <div data-test="allow-updates" class="row-value">
+        {{#if isEditing}}
+          {{my-select cannotBeNull=true selectedValue=selectedAutoUpdateSetting content=yesNoMySelect action=(action (mut selectedAutoUpdateSetting))}}
+        {{else}}
+          {{yes-no workspace.doAutoUpdateFromChildren}}
+        {{/if}}
+      </div>
+      </div>
+      {{#unless isEditing}}
+        <div class="update-submissions">
+          <button {{action "updateParentWs"}} class="primary-button">Update Parent Workspace</button>
+          <div class="update-results">
+            {{#if missingChildWorkspaces}}
+              {{error-box error="No child workspaces to update from" showDismiss=true resetError=(action (mut missingChildWorkspaces) null)}}
+            {{/if}}
+            {{#each updateErrors as |error|}}
+              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'updateErrors' error)}}
+            {{/each}}
+            {{#each serverErrors as |error|}}
+              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'serverErrors' error)}}
+            {{/each}}
+          </div>
+
+        </div>
+      {{/unless}}
+    {{/if}}
+
     {{#if isEditing}}
       <div class="card-row button-row">
         <button class="primary-button cancel-button" {{action "stopEditing"}}>Cancel</button>

@@ -10,13 +10,15 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
   selectedAutoUpdateSetting: null,
   didLinkedAssignmentChange: false,
 
+  isParentWs: Ember.computed.equal('workspace.workspaceType', 'parent'),
+
   didReceiveAttrs() {
     this._super(...arguments);
   },
 
   doShowLinkedAssignment: function() {
-    return this.get('permissions').hasOwnerPrivileges(this.get('workspace'));
-  }.property('currentUser', 'workspace'),
+    return this.get('permissions').hasOwnerPrivileges(this.get('workspace')) && !this.get('isParentWs');
+  }.property('currentUser', 'isParentWs'),
 
   initialOwnerItem: function () {
     const owner = this.get('workspace.owner');
@@ -34,6 +36,10 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
     }
     return [];
   }.property('linkedAssignment'),
+
+  doShowChildWorkspaces: function() {
+    return this.get('permissions').hasOwnerPrivileges(this.get('workspace')) && this.get('isParentWs');
+  }.property('currentUser', 'isParentWs'),
 
   modes: function () {
     const basic = ['private', 'org', 'public'];
