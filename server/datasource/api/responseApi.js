@@ -7,6 +7,7 @@
 
 //REQUIRE MODULES
 const _ = require('underscore');
+const logger = require('log4js').getLogger('server');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -145,6 +146,112 @@ async function postResponse(req, res, next) {
     response.createDate = Date.now();
 
     let savedResponse = await response.save();
+
+    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true, workspaceType: 'parent'})
+    .populate('comments')
+    .populate('submissions')
+    .populate('selections')
+    .exec();
+
+    logger.info('pws2update: ', parentWorkspacesToUpdate);
+
+    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
+      await savedResponse.populate('submission').execPopulate();
+      let commentAnswerId = savedResponse.submission.answer;
+
+      savedResponse.depopulate('submission');
+
+      await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
+        let responseCopy = { ...savedResponse.toObject() };
+        let oldId = responseCopy._id;
+        delete responseCopy._id;
+
+        responseCopy.originalResponse = oldId;
+        responseCopy.workspace = parentWs._id;
+        // should folder owner be original owner or owner of parent ws?
+
+        if (isValidMongoId(savedResponse.priorRevision)) {
+          // find corresponding revision in parent ws
+          let parentWsRevision = _.find(parentWs.responses, (r) => {
+            return areObjectIdsEqual(r.originalResponse, savedResponse.priorRevision);
+          });
+
+          if (!parentWsRevision) {
+            // should never happen
+            logger.info('missing parentws parent');
+            return;
+          }
+          responseCopy.priorRevision = parentWsRevision._id;
+
+        }
+
+        if (isValidMongoId(savedResponse.reviewedResponse)) {
+          // find corresponding revision in parent ws
+          let parentWsRevision = _.find(parentWs.responses, (r) => {
+            return areObjectIdsEqual(r.originalResponse, savedResponse.reviewedResponse);
+          });
+
+          if (!parentWsRevision) {
+            // should never happen
+            logger.info('missing parentws parent');
+            return;
+          }
+          responseCopy.reviewedResponse = parentWsRevision._id;
+        }
+
+        if (isNonEmptyArray(savedResponse.selections)) {
+          responseCopy.selections = savedResponse.selections.map((selection) => {
+            // find this selection in parent ws
+            let parentWsSelection = _.find(parentWs.selections, (s) => {
+              return areObjectIdsEqual(s.originalSelection, selection);
+            });
+
+            if (!parentWsSelection) {
+              // should never happen
+              logger.info('missing parentws parent');
+              return;
+            }
+            return selection;
+          });
+
+          responseCopy.selections = _.compact(responseCopy.selections);
+        }
+        if (isNonEmptyArray(savedResponse.comments)) {
+          responseCopy.comments = savedResponse.comments.map((comment) => {
+            // find this comment in parent ws
+            let parentWsComment = _.find(parentWs.comments, (c) => {
+              return areObjectIdsEqual(c.originalComment, comment);
+            });
+
+            if (!parentWsComment) {
+              // should never happen
+              logger.info('missing parentws parent');
+              return;
+            }
+            return comment;
+          });
+
+          responseCopy.selections = _.compact(responseCopy.selections);
+        }
+
+        // find corresponding submission in parentWs
+
+        let parentSubmission = _.find(parentWs.submissions, (s) => {
+          return areObjectIdsEqual(s.answer, commentAnswerId);
+        });
+
+        if (!parentSubmission) {
+          // should never happen
+          logger.info('missing parent submission');
+          return;
+        }
+        responseCopy.submission = parentSubmission._id;
+
+        logger.info('creating copy in parent', responseCopy);
+        return models.Response.create(responseCopy);
+      }));
+    }
+
 
     let data = { response: savedResponse };
     return utils.sendResponse(res, data);

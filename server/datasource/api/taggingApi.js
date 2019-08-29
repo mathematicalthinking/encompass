@@ -103,39 +103,6 @@ async function getTagging(req, res, next) {
   }
 }
 
-
-// function postTagging(req, res, next) {
-
-//   var user = userAuth.requireUser(req);
-//   var workspaceId = req.body.tagging.workspace;
-//   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-//     if (err) {
-//       logger.error(err);
-//       return utils.sendError.InternalError(err, res);
-//     }
-//     // if you can select, you can tag
-//     if(wsAccess.canModify(user, ws, 'selections', 2)) {
-
-//       var tagging = new models.Tagging(req.body.tagging);
-//       tagging.createdBy = user;
-//       tagging.createDate = Date.now();
-
-//       tagging.save(function(err, doc) {
-//         if(err) {
-//           logger.error(err);
-//           return utils.sendError.InternalError(err, res);
-//         }
-
-//         var data = {'tagging': doc};
-//         utils.sendResponse(res, data);
-//       });
-//     } else {
-//       logger.info("permission denied");
-//       res.send(403, "You don't have permission for this workspace");
-//     }
-//   });
-
-// }
 /**
   * @public
   * @method postTagging
