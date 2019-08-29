@@ -11,7 +11,7 @@ const { sendError, sendResponse } = require('../../middleware/requestHandler');
 
 module.exports.post = {};
 
-const generateParentWorkspace = async function(config) {
+const generateParentWorkspace = async function(config, user) {
   try {
     let {
       name,
@@ -39,6 +39,10 @@ const generateParentWorkspace = async function(config) {
       };
     }
 
+    if (!name) {
+      name = `Parent Workspace by ${user.username} (${Date.now})`;
+    }
+
     let parentWorkspace = new models.Workspace({
       name,
       owner,
@@ -50,6 +54,7 @@ const generateParentWorkspace = async function(config) {
       linkedAssignment,
       childWorkspaces,
       doAutoUpdateFromChildren,
+      doAllowSubmissionUpdates: false,
     });
 
     let popChildWorkspaces = await populateChildWorkspaces(childWorkspaces);
@@ -471,16 +476,30 @@ const saveAllCombinedDocs = combinedWorkspace => {
 const postParentWorkspace = async (req, res, next) => {
   try {
     let user = requireUser(req);
-    let { config } = req.body;
-    let results = await generateParentWorkspace(config);
+    let { parentWorkspaceRequest }  = req.body;
 
-    let data = { results };
+    let results = await generateParentWorkspace(parentWorkspaceRequest, user);
+
+    let { parentWorkspace, errorMsg } = results;
+
+    let data = { parentWorkspaceRequest };
+
+    if (parentWorkspace) {
+      parentWorkspaceRequest.createdWorkspace = parentWorkspace._id;
+      data.workspace = [ parentWorkspace ];
+    }
+
+    parentWorkspaceRequest.createWorkspaceError = errorMsg;
 
     return sendResponse(res, data);
   }catch(err) {
     console.log(`postParentWorkspace err: ${err}`);
     return sendError.InternalError(null, res);
   }
+};
+
+const updateParentWorkspace = async (user, details) => {
+
 };
 
 module.exports.generateParentWorkspace = generateParentWorkspace;
