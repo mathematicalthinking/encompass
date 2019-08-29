@@ -1,10 +1,9 @@
 /**
   * # Comment API
   * @description This is the API for comment based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
-  * @since 1.0.0
+  * @author Damola Mabogunje, Daniel Kelly
+  * @since 1.0.1
   */
-/* jshint ignore:start */
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
@@ -18,7 +17,8 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/comments');
 const asyncWrapper = utils.asyncWrapper;
 
-const { isValidMongoId } = require('../../utils/mongoose');
+const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
+const { isNonEmptyArray } = require('../../utils/objects');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -238,31 +238,118 @@ async function getComment(req, res, next) {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-function postComment(req, res, next) {
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.comment.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if(wsAccess.canModify(user, ws, 'comments', 2)) {
-      var comment = new models.Comment(req.body.comment);
-      comment.createdBy = user;
-      comment.createDate = Date.now();
-      comment.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-        var data = {'comment': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
+async function postComment(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.comment.workspace;
+    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
+
+    let canCreateCommentInWs = wsAccess.canModify(user, workspace, 'comments', 2);
+
+    if (!canCreateCommentInWs) {
       logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
     }
-  });
+    let comment = new models.Comment(req.body.comment);
+    comment.createdBy = user;
+    comment.lastModifiedBy = user;
+    comment.createDate = Date.now();
+    comment.lastModifiedDate = Date.now();
+
+    await comment.save();
+
+    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true, workspaceType: 'parent'})
+    .populate('comments')
+    .populate('submissions')
+    .populate('selections')
+    .exec();
+
+    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
+      await comment.populate('submission').execPopulate();
+      let commentAnswerId = comment.submission.answer;
+
+      comment.depopulate('submission');
+
+      await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
+        let commentCopy = { ...comment.toObject() };
+        let oldId = commentCopy._id;
+        delete commentCopy._id;
+
+        commentCopy.originalComment = oldId;
+        commentCopy.workspace = parentWs._id;
+        // should folder owner be original owner or owner of parent ws?
+
+        if (isValidMongoId(comment.parent)) {
+          // find corresponding parent comment in parent ws
+          let parentWsParent = _.find(parentWs.comments, (c) => {
+            return areObjectIdsEqual(c.originalComment, comment.parent);
+          });
+
+          if (!parentWsParent) {
+            // should never happen
+            logger.info('missing parentws parent');
+            return;
+          }
+          commentCopy.parent = parentWsParent._id;
+
+        }
+
+        if (isNonEmptyArray(comment.ancestors)) {
+          commentCopy.ancestors = comment.ancestors.map((ancestor) => {
+            // find this ancestor comment in parent ws
+            let parentWsAncestor = _.find(parentWs.comments, (c) => {
+              return areObjectIdsEqual(c.originalComment, ancestor);
+            });
+
+            if (!parentWsAncestor) {
+              // should never happen
+              logger.info('missing parentws parent');
+              return;
+            }
+            return ancestor;
+          });
+
+          commentCopy.ancestors = _.compact(commentCopy.ancestors);
+        }
+
+        // find corresponding selection in parentWs
+
+        let parentSelection = _.find(parentWs.selections, (s) => {
+          return areObjectIdsEqual(s.originalSelection, comment.selection);
+        });
+
+        if (!parentSelection) {
+          // should never happen
+          logger.info('missing parent selection');
+          return;
+        }
+        commentCopy.selection = parentSelection._id;
+
+        // find corresponding submission in parentWs
+
+        let parentSubmission = _.find(parentWs.submissions, (s) => {
+          return areObjectIdsEqual(s.answer, commentAnswerId);
+        });
+
+        if (!parentSubmission) {
+          // should never happen
+          logger.info('missing parent submission');
+          return;
+        }
+        commentCopy.submission = parentSubmission._id;
+
+        logger.info('creating copy in parent', commentCopy);
+        return models.Comment.create(commentCopy);
+      }));
+    }
+
+    let data = { comment };
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 /**
@@ -318,4 +405,3 @@ module.exports.get.comments = getComments;
 module.exports.get.comment = getComment;
 module.exports.post.comment = postComment;
 module.exports.put.comment = putComment;
-/* jshint ignore:end */
