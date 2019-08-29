@@ -3,7 +3,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   formattedAssignedDate: null,
   isEditing: false,
   isDisplaying: Ember.computed.not('isEditing'),
-  showReport: false,
+  // showReport: false,
   isPreparingReport: false,
   htmlDateFormat: 'MM/DD/YYYY',
   displayDateFormat: "MMM Do YYYY",
@@ -15,6 +15,9 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   alert: Ember.inject.service('sweet-alert'),
   permissions: Ember.inject.service('assignment-permissions'),
   utils: Ember.inject.service('utility-methods'),
+
+  hasLinkedWorkspaces: Ember.computed.gt('assignment.linkedWorkspaces.length', 0),
+  hasParentWorkspaces: Ember.computed.gt('assignment.parentWorkspaceIds.length', 0),
 
   init: function() {
     this._super(...arguments);
@@ -152,8 +155,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   },
 
   showEditButton: function() {
-    return !this.get('isEditing') && this.get('hasBasicEditPrivileges');
-  }.property('hasBasicEditPrivileges', 'isEditing'),
+    return !this.get('isEditing') && this.get('hasBasicEditPrivileges') && !this.get('showParentWsForm');
+  }.property('hasBasicEditPrivileges', 'isEditing', 'showParentWsForm'),
 
   problemOptions: function() {
     let cachedProblems = this.get('cachedProblems');
@@ -194,12 +197,17 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
   parentWorkspaces: function() {
     let ids = this.get('assignment.parentWorkspaceIds') || [];
-
     return ids.map((id) => {
       return this.get('store').peekRecord('workspace', id);
     }).compact();
   }.property('assignment.parentWorkspaceIds.[]'),
+  showCreateParentWsBtn: function() {
+    return this.get('hasBasicEditPrivileges') && !this.get('isEditing') && !this.get('showParentWsForm') && !this.get('assignment.parentWorkspaceIds.length') > 0;
+  }.property('hasBasicEditPrivileges', 'isEditing', 'showParentWsForm', 'assignment.parentWorkspaceIds.[]'),
 
+  showReport: function() {
+    return !this.get('showParentWsForm');
+  }.property('showParentWsForm'),
 
   actions: {
     editAssignment: function() {
@@ -329,5 +337,11 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       }
       this.set(propToUpdate, record);
     },
+    handleCreatedParentWs(parentWorkspace) {
+      if (parentWorkspace) {
+        this.get('assignment.parentWorkspaceIds').addObject(parentWorkspace.get('id'));
+        this.get('alert').showToast('success', 'Parent Workspace Created', 'bottom-end', 3000, false, null);
+      }
+    }
   }
 });

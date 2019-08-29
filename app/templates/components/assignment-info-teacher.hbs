@@ -148,6 +148,9 @@
     {{#if showEditButton}}
       <button data-test="edit-assignment" class="primary-button" {{action 'editAssignment'}}>Edit Assignment</button>
     {{/if}}
+    {{#if showCreateParentWsBtn}}
+      <button data-test="create-parent-ws" class="primary-button" {{action (mut showParentWsForm) true}}>Generate Parent Workspace</button>
+    {{/if}}
   {{/if}}
   </section>
 
@@ -167,7 +170,16 @@
     <p class="error-message">Invalid Date Range</p>
   {{/if}}
 
-  {{assignment-report details=assignment.reportDetails assignment=assignment students=studentList }}
+  {{#if showParentWsForm}}
+    {{parent-workspace-new childWorkspaces=assignment.linkedWorkspaces assignment=assignment section=assignment.section problem=assignment.problem
+    onCancel=(action (mut showParentWsForm) false)
+    store=store
+    handleResults=(action "handleCreatedParentWs")
+    }}
+  {{/if}}
+  {{#if showReport}}
+    {{assignment-report details=assignment.reportDetails assignment=assignment students=studentList }}
+  {{/if}}
 
 {{#if isEditing}}
 <script>
