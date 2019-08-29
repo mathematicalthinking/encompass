@@ -214,7 +214,7 @@ const waitForAndClickElement = function (webDriver, selector, timeout = timeoutM
 const waitForTextInDom = function (webDriver, text, timeout=timeoutMs) {
     return webDriver.wait(function () {
       return isTextInDom(webDriver, text);
-    }, timeout)
+    }, timeout, `Could not find ${text} in DOM`)
     .catch((err) => {
       throw(err);
     });

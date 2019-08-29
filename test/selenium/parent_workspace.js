@@ -435,6 +435,25 @@ describe('Parent Workspace creation and updating', function() {
       expect(await showFolderCircle.getText()).to.eql((taggingsCount + 1).toString());
 
       });
+
+      it('Creating a response', async function() {
+        try {
+          let successText = 'Response Sent';
+          await helpers.findAndClickElement(driver, wsSelectors.newResponse);
+
+          await helpers.waitForAndClickElement(driver, css.responsesNew.saveBtn);
+
+          await helpers.waitForTextInDom(driver, successText);
+          expect(await helpers.isElementVisible(driver, css.responseInfo.mentorReplyView.unreadIcon)).to.eql(true);
+        }catch(err) {
+          throw(err);
+        }
+
+      });
+
+      xit('Updating a response', async function() {
+
+      });
     });
   });
 
@@ -445,6 +464,7 @@ describe('Parent Workspace creation and updating', function() {
       folders: 4,
       selections: 1,
       comments: 1,
+      responses: 1,
     };
 
     before(async function() {

@@ -386,11 +386,12 @@ module.exports = {
       sender: 'div.response-users > p:nth-child(2) > span.response-value',
       saveButton: 'button.primary-button.save-response',
       saveAsDraft: 'button.primary-button.save-draft',
-      statusText: '.status-text.mentor-reply'
+      statusText: '.status-text.mentor-reply',
+      unreadIcon: 'span.response-read-unread i.far.fa-envelope'
     }
   },
   workspace: {
-    newResponse: 'button.action_button:nth-child(1)',
+    newResponse: '.submission-row-item.new-response > button.new-response',
     studentsSelect: '.submission-row-item.students > .selectize-comp',
     studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
     dropdownContent: '.selectize-dropdown-content',
@@ -542,5 +543,8 @@ module.exports = {
 
     },
     submitBtn: 'button[data-test=create]',
+  },
+  responsesNew: {
+    saveBtn: 'button.save-response'
   }
 };
