@@ -478,7 +478,8 @@ module.exports = {
   wsComments: {
     save: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.save',
     cancel: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.cancel-button',
-    commentText: 'div.comment-flex-item.text > p:nth-child(1) > a'
+    commentText: 'div.comment-flex-item.text > p:nth-child(1) > a',
+    textArea: '#commentTextarea',
   },
   vmtImport: {
     search: {

@@ -390,6 +390,24 @@ describe('Parent Workspace creation and updating', function() {
         createdSelection = await helpers.getWebWelementByCss(driver, wsSelectors.selections.selectedDraggable);
       });
 
+      it('Creating a comment', async function() {
+        let text = student.linkedWs.newComment.text;
+
+        await helpers.findInputAndType(driver, css.wsComments.textArea, text);
+
+        await helpers.saveScreenshot(driver);
+
+        await helpers.findAndClickElement(driver, css.wsComments.save);
+        await helpers.waitForTextInDom(driver, 'Comment Created');
+
+        let commentLinkItems = await helpers.getWebElements(driver, css.wsComments.commentText);
+        expect(commentLinkItems).to.have.lengthOf(1);
+      });
+
+      xit('Reusing a comment', async function() {
+
+      });
+
       it('Creating a folder', async function() {
         let folderName = student.linkedWs.newFolder.name;
         await helpers.findAndClickElement(driver, wsSelectors.folders.add);
@@ -425,7 +443,8 @@ describe('Parent Workspace creation and updating', function() {
     let expectedStats = {
       submissions: 2,
       folders: 4,
-      selections: 1
+      selections: 1,
+      comments: 1,
     };
 
     before(async function() {

@@ -21,6 +21,9 @@ module.exports = {
       name: `mtgstudent1: Morty's Public / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
       newFolder: {
         name: 'curious',
+      },
+      newComment: {
+        text: 'I notice you did it this way...'
       }
     }
   },
