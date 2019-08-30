@@ -466,8 +466,8 @@ module.exports = {
     linkedWorkspaces: {
       link: 'ul.linked-workspaces > li > a',
     },
-    parentWorkspaces: {
-      link: 'ul.parent-workspaces > li > a',
+    parentWorkspace: {
+      link: 'ul.parent-workspace > li > a',
     },
     report: {
       table: 'table.report.rows.values',

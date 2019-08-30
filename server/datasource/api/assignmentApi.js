@@ -182,17 +182,7 @@ const getAssignment = async function(req, res, next) {
     jsonAssn.reportDetails = metadata;
   }
 
-  // check if any parent workspaces related to linked workspaces
-
-  let parentWorkspaces = [];
-
-  if (isNonEmptyArray(assignment.linkedWorkspaces)) {
-    parentWorkspaces = await models.Workspace.find({isTrashed: false, childWorkspaces: {$elemMatch: {$in: assignment.linkedWorkspaces}}}).lean().exec();
-  }
-
-  jsonAssn.parentWorkspaceIds = parentWorkspaces.map(ws => ws._id);
   data.assignment = jsonAssn;
-  data.workspace = parentWorkspaces;
 
   return utils.sendResponse(res, data);
 
@@ -298,7 +288,7 @@ const postAssignment = async (req, res, next) => {
 
       if (parentWorkspaceCreationOptions.doCreate) {
         let { name, mode, owner, organization, doAutoUpdateFromChildren } = parentWorkspaceCreationOptions;
-        console.log('doupdate children: ', doAutoUpdateFromChildren, 'type of do update paren: ', typeof doAutoUpdateFromChildren);
+
         if (typeof doAutoUpdateFromChildren !== 'boolean') {
           doAutoUpdateFromChildren = true;
         }
@@ -312,17 +302,21 @@ const postAssignment = async (req, res, next) => {
           name: name || `Parent Workspace: ${assignment.name}`,
           mode: mode || 'private',
           doAutoUpdateFromChildren,
+          linkedAssignment: assignment._id,
         };
         let parentWsResults = await generateParentWorkspace(parentWsConfig);
         parentWorkspace = parentWsResults.parentWorkspace;
         parentWorkspaceError = parentWsResults.errorMsg;
         // if error send back as metadata?
+
+        if (parentWorkspace) {
+          assignment.parentWorkspace = parentWorkspace._id;
+        }
       }
       await assignment.save();
     }
 
     let assignmentJson = assignment.toObject();
-    assignmentJson.parentWorkspaceIds =  parentWorkspace ? [parentWorkspace._id] : [];
     assignmentJson.parentWorkspaceError = parentWorkspaceError;
 
     let data = { assignment: assignmentJson };

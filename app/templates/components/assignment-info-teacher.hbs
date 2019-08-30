@@ -131,15 +131,16 @@
               </ul>
           </li>
           <li>
-            <label for="parentWorkspaces">Parent Workspaces</label>
-            <ul class="assignment-info parent-workspaces">
-              {{#each parentWorkspaces as |workspace|}}
+            <label for="parentWorkspace">Parent Workspace</label>
+            <ul class="assignment-info parent-workspace">
               <li>
-                {{#link-to 'workspace.work' workspace.id}}{{workspace.name}}{{/link-to}}
+                {{#if parentWorkspace}}
+                  {{#link-to 'workspace.work' parentWorkspace.id}}{{parentWorkspace.name}}{{/link-to}}
+                  {{else}}
+                  N/A
+                {{/if}}
               </li>
-                {{else}}
-                <li>N/A</li>
-                {{/each}}
+
               </ul>
           </li>
         </ol>

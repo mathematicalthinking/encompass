@@ -29,6 +29,7 @@ var AssignmentSchema = new Schema({
   dueDate: { type: Date },
   assignmentType: { type: String },
   linkedWorkspaces: [{ type: ObjectId, ref: 'Workspace' }], // for auto updatingtype problem assignments
+  parentWorkspace: { type: ObjectId, ref: 'Workspace' },
 }, { versionKey: false });
 
 /* + The Problem exists */
