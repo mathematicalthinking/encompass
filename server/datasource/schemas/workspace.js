@@ -70,12 +70,12 @@ var WorkspaceSchema = new Schema({
   permissions: [ WorkspacePermissionObjectSchema ],
   sourceWorkspace: { type: ObjectId, ref: 'Workspace' },
   linkedAssignment: { type: ObjectId, ref: 'Assignment' },
-  doAllowSubmissionUpdates: { type: Boolean, default: true },
+  doAllowSubmissionUpdates: { type: Boolean, default: true }, // for markup workspaces with a linked assignment
   doOnlyUpdateLastViewed: { type: Boolean, default: false },
   workspaceType: { type: String, enum: ['markup', 'parent', 'response'], default: 'markup'},
-  parentWorkspace: {type: ObjectId, ref: 'Workspace'},
+  parentWorkspaces: [ {type: ObjectId, ref: 'Workspace'} ],
   childWorkspaces: [{type: ObjectId, ref: 'Workspace'}],
-  doAutoUpdateFromChildren: { type: Boolean, default: false },
+  doAutoUpdateFromChildren: { type: Boolean, default: false }, // for parent workspaces
 }, {versionKey: false});
 
 /**

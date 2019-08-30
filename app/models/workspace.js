@@ -27,7 +27,8 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
     }
   }),
   workspaceType: DS.attr('string'),
-  childWorkspaces: DS.attr(),
+  childWorkspaces: DS.hasMany('workspace', { inverse: 'parentWorkspaces'}),
+  parentWorkspaces: DS.hasMany('workspace', { inverse: 'childWorkspaces' }),
 
   _collectionLength: function(collection) {
     // https://stackoverflow.com/questions/35405360/ember-data-show-length-of-a-hasmany-relationship-in-a-template-without-downloadi
@@ -121,27 +122,10 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
     }
     return [];
   }.property('permissions.@each.feedback'),
-  sourceWorkspace: DS.attr(),
+  sourceWorkspace: DS.attr(), // if workspace is copy
   linkedAssignment: DS.belongsTo('assignment'),
   doAllowSubmissionUpdates: DS.attr('boolean', { defaultValue: true }),
   doOnlyUpdateLastViewed: DS.attr('boolean', {defaultValue: false}),
+  doAutoUpdateFromChildren: DS.attr('boolean', {defaultValue: false}),
 
-//  comments: function() {
-//    var allComments = [];
-//    this.get('submissions').forEach(function(submission){
-//      submission.get('selections').forEach(function(selection){
-//        selection.get('comments').forEach(function(comment){
-//          allComments.push(comment);
-//        });
-//      });
-//    });
-//    return allComments;
-//  }.property('submissions.@each.selections.@each.comments.@each')
-
-  /*
-    Observer that will react on item change and will update the storage.
-  */
-  //todoChanged: function() {
-  //  store.update( this );
-  //}.observes( 'title', 'completed' )
 });
