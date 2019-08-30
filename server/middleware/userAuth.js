@@ -18,7 +18,6 @@ const utils = require('./requestHandler');
 const models = require('../datasource/schemas');
 
 function getUser(req) {
-  // return req.user;
   return req.mt.auth.encUser;
 }
 
