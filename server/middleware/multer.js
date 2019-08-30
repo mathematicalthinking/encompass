@@ -10,16 +10,16 @@
  */
 
 const path = require('path');
-// const imageFolder = path.resolve(__dirname, 'image_upload');
-const utils = require('../middleware/requestHandler');
 const fs = require('fs');
 require('dotenv').config();
 
+const {  requireUser } = require('./userAuth');
 
-const buildDestination = function (req, res, next) {
+const buildDestination = function (req, fileInfo, next) {
   console.log('build destination is running');
-  if (!req.user) {
-    return utils.sendError.InvalidCredentialsError('Unauthenticated request', res);
+  let user = requireUser(req);
+  if (!user) {
+    return next(new Error('No user logged in'));
   }
     // Generate error if the destination folder does not exist.
     let buildDir = 'build';
@@ -31,9 +31,6 @@ const buildDestination = function (req, res, next) {
       if (err) {
         let errResp = `ERROR - PDF Images directory ${dest} does not exist - ${err}`;
         console.error(errResp);
-        // attempt to send error to UI
-        //
-        // return utils.sendError.InternalError(errResp, res);
         next(err);
       }
     });

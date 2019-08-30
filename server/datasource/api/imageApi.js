@@ -15,7 +15,7 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
-const PDF2Pic = require('pdf2pic').default;
+const PDF2Pic = require('pdf2pic');
 
 const pdfParse = require('pdf-parse');
 
@@ -158,160 +158,165 @@ const readFilePromise = function(file) {
 };
 
 const postImages = async function(req, res, next) {
-  const user = userAuth.requireUser(req);
-
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-  let docs;
-  // who can create images - add permission here
-  if (!req.files) {
-    return utils.sendError.InvalidContentError('No files to upload!', res);
-  }
-
-  let sizeThreshold = 614400; // 600kb
-  let widthThreshold = 1000; // 1000 pixels wide max
-
-  const files = await Promise.all(req.files.map(async (f) => {
-    let data = f.buffer;
-    let mimeType = f.mimetype;
-    let isPDF = mimeType === 'application/pdf';
-
-    let buildDir = 'build';
-    if (process.env.BUILD_DIR) {
-      buildDir = process.env.BUILD_DIR;
-    }
-    const saveDir = `./${buildDir}/image_uploads/tmp_pngs`;
-    fs.access(saveDir, fs.constants.F_OK, (err) => {
-      if (err) {
-        console.error(`ERROR - PNG Images directory ${saveDir} does not exist`);
-      }
-    });
-
-    if (isPDF) {
-      let converter = new PDF2Pic({
-        density: 100, // output pixels per inch
-        savename: f.name, // output file name
-        savedir: saveDir, // output file location
-        format: 'png', // output file format
-        size: 500 // output size in pixels
-      });
-      let file = f.path;
-
-      let pdfBuffer = await readFilePromise(file);
-      let pdfParsed = await pdfParse(pdfBuffer);
-
-      let pageCount = pdfParsed.numpages;
-
-      let pageOptionsArr = [];
-      let maxPages = 50;
-      for (let i = 1; i <= maxPages; i++) {
-        pageOptionsArr.push(i);
-      }
-
-      let pageOptions = pageCount > maxPages ? pageOptionsArr : -1;
-
-      return converter.convertBulk(file, pageOptions)
-        .then(results => {
-          return Promise.all(results.map((fileObj) => {
-            let file = fileObj.path;
-            let pageNum = fileObj.page;
-
-            let newFile = {
-              createdBy: user,
-              createDate: Date.now(),
-              originalname: f.originalname,
-              pdfPageNum: pageNum,
-              mimetype: 'image/png',
-            };
-
-            return readFilePromise(file).then((data) => {
-              let newImage = new models.Image(newFile);
-
-              let buffer = Buffer.from(data).toString('base64');
-              let format = `data:image/png;base64,`;
-              let imgData = `${format}${buffer}`;
-              newImage.imageData = imgData;
-              return newImage;
-
-            })
-            .catch((err) => {
-              console.error('error converting', err);
-            });
-          }));
-        })
-        .catch((err) => {
-          console.error(`Pdf conversion error: ${err}`);
-          console.trace();
-          return utils.sendError.InternalError(err, res);
-        });
-    } else {
-      // not PDF
-      let originalSharp = sharp(data);
-      let metadata = await originalSharp.metadata();
-
-      let { width, height, size, format } = metadata;
-
-
-      let img = new models.Image({
-        createdBy: user,
-        createDate: Date.now(),
-        originalname: f.originalname,
-        originalSize: size,
-        originalWidth: width,
-        originalHeight: height,
-        originalMimetype: `image/${format}`,
-      });
-
-      let isOverSizeLimit = size > sizeThreshold;
-      let isOverWidthLimit = width > widthThreshold;
-
-      if (!isOverSizeLimit && !isOverWidthLimit) {
-        img.size = size;
-        img.width = width;
-        img.height = height;
-        img.mimetype = `image/${format}`;
-
-        let imgString = data.toString('base64');
-
-        img.imageData = `data:image/${format};base64,${imgString}`;
-
-        return Promise.resolve(img);
-
-        } else {
-          // resize
-
-          let resizedBuffer = await originalSharp.resize(500).toBuffer();
-          let newMetadata = await sharp(resizedBuffer).metadata();
-
-          img.size = newMetadata.size;
-          img.width = newMetadata.width;
-          img.height = newMetadata.height;
-          img.mimetype = `image/${newMetadata.format}`;
-
-          let imgDataStr = resizedBuffer.toString('base64');
-
-          img.imageData = `data:image/${format};base64,${imgDataStr}`;
-
-          return Promise.resolve(img);
-        }
-    }
-
-  }));
-  let flattened = _.flatten(files);
-
   try {
-    docs = await Promise.all(flattened.map((f) => {
-      return f.save();
-    }));
-    const data = {'images': docs};
+    const user = userAuth.requireUser(req);
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
+    let docs;
+    // who can create images - add permission here
+    if (!req.files) {
+      return utils.sendError.InvalidContentError('No files to upload!', res);
+    }
+
+    let sizeThreshold = 614400; // 600kb
+    let widthThreshold = 1000; // 1000 pixels wide max
+
+    const files = await Promise.all(
+      req.files.map(async f => {
+        let data = f.buffer;
+        let mimeType = f.mimetype;
+        let isPDF = mimeType === 'application/pdf';
+
+        let buildDir = 'build';
+        if (process.env.BUILD_DIR) {
+          buildDir = process.env.BUILD_DIR;
+        }
+        const saveDir = `./${buildDir}/image_uploads/tmp_pngs`;
+        fs.access(saveDir, fs.constants.F_OK, err => {
+          if (err) {
+            console.error(
+              `ERROR - PNG Images directory ${saveDir} does not exist`
+            );
+          }
+        });
+
+        if (isPDF) {
+          let converter = new PDF2Pic({
+            density: 100, // output pixels per inch
+            savename: f.name, // output file name
+            savedir: saveDir, // output file location
+            format: 'png', // output file format
+            size: 500 // output size in pixels
+          });
+          let file = f.path;
+
+          let pdfBuffer = await readFilePromise(file);
+          let pdfParsed = await pdfParse(pdfBuffer);
+
+          let pageCount = pdfParsed.numpages;
+
+          let pageOptionsArr = [];
+          let maxPages = 50;
+          for (let i = 1; i <= maxPages; i++) {
+            pageOptionsArr.push(i);
+          }
+
+          let pageOptions = pageCount > maxPages ? pageOptionsArr : -1;
+
+          return converter
+            .convertBulk(file, pageOptions)
+            .then(results => {
+              return Promise.all(
+                results.map(fileObj => {
+                  let file = fileObj.path;
+                  let pageNum = fileObj.page;
+
+                  let newFile = {
+                    createdBy: user,
+                    createDate: Date.now(),
+                    originalname: f.originalname,
+                    pdfPageNum: pageNum,
+                    mimetype: 'image/png'
+                  };
+
+                  return readFilePromise(file)
+                    .then(data => {
+                      let newImage = new models.Image(newFile);
+
+                      let buffer = Buffer.from(data).toString('base64');
+                      let format = `data:image/png;base64,`;
+                      let imgData = `${format}${buffer}`;
+                      newImage.imageData = imgData;
+                      return newImage;
+                    })
+                    .catch(err => {
+                      console.error('error converting', err);
+                    });
+                })
+              );
+            })
+            .catch(err => {
+              console.error(`Pdf conversion error: ${err}`);
+              console.trace();
+              return utils.sendError.InternalError(err, res);
+            });
+        } else {
+          // not PDF
+          let originalSharp = sharp(data);
+          let metadata = await originalSharp.metadata();
+
+          let { width, height, size, format } = metadata;
+
+          let img = new models.Image({
+            createdBy: user,
+            createDate: Date.now(),
+            originalname: f.originalname,
+            originalSize: size,
+            originalWidth: width,
+            originalHeight: height,
+            originalMimetype: `image/${format}`
+          });
+
+          let isOverSizeLimit = size > sizeThreshold;
+          let isOverWidthLimit = width > widthThreshold;
+
+          if (!isOverSizeLimit && !isOverWidthLimit) {
+            img.size = size;
+            img.width = width;
+            img.height = height;
+            img.mimetype = `image/${format}`;
+
+            let imgString = data.toString('base64');
+
+            img.imageData = `data:image/${format};base64,${imgString}`;
+
+            return Promise.resolve(img);
+          } else {
+            // resize
+
+            let resizedBuffer = await originalSharp.resize(500).toBuffer();
+            let newMetadata = await sharp(resizedBuffer).metadata();
+
+            img.size = newMetadata.size;
+            img.width = newMetadata.width;
+            img.height = newMetadata.height;
+            img.mimetype = `image/${newMetadata.format}`;
+
+            let imgDataStr = resizedBuffer.toString('base64');
+
+            img.imageData = `data:image/${format};base64,${imgDataStr}`;
+
+            return Promise.resolve(img);
+          }
+        }
+      })
+    );
+    let flattened = _.flatten(files);
+
+    docs = await Promise.all(
+      flattened.map(f => {
+        return f.save();
+      })
+    );
+    const data = { images: docs };
     return utils.sendResponse(res, data);
-  } catch(err) {
+  } catch (err) {
     console.error(`Error postImages: ${err}`);
     console.trace();
     return utils.sendError.InternalError(err, res);
   }
-
 };
 
 /**
