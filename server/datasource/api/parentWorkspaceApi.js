@@ -487,6 +487,11 @@ const postParentWorkspace = async (req, res, next) => {
     if (parentWorkspace) {
       parentWorkspaceRequest.createdWorkspace = parentWorkspace._id;
       data.workspace = [ parentWorkspace ];
+
+      // update childWorkspaces with id of parent Workspace
+      if (isNonEmptyArray(parentWorkspace.childWorkspaces)) {
+        models.Workspace.updateMany({_id: {$in: parentWorkspace.childWorkspaces}}, {$addToSet: {parentWorkspaces: parentWorkspace._id}});
+      }
     }
 
     parentWorkspaceRequest.createWorkspaceError = errorMsg;

@@ -193,7 +193,7 @@ describe('Parent Workspace creation and updating', function() {
 
     it('should have created a parent workspace', function() {
       let expectedCount = 1;
-      let linkSel = css.assignmentsTeacher.parentWorkspaces.link;
+      let linkSel = css.assignmentsTeacher.parentWorkspace.link;
       return helpers.waitForNElements(driver, linkSel, 1)
       .then(() => {
         return helpers.getWebElements(driver, linkSel)
