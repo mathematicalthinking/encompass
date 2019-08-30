@@ -128,7 +128,7 @@ WorkspaceSchema.post('save', function (workspace) {
       }
     }
 
-    if (workspace.linkedAssignment) {
+    if (workspace.linkedAssignment && workspace.workspaceType !== 'parent') {
       let updateHash = { $addToSet: { linkedWorkspaces: workspace._id } };
 
       if (workspace.isTrashed) {
