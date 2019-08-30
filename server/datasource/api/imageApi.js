@@ -15,7 +15,7 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
-const PDF2Pic = require('pdf2pic').default;
+const PDF2Pic = require('pdf2pic');
 
 const pdfParse = require('pdf-parse');
 
