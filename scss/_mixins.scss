@@ -11,6 +11,14 @@
   }
 }
 
+@mixin accent-link {
+  color: $accent-color;
+  font-weight: $light-font-weight;
+  &:hover {
+      font-weight: $main-font-weight;
+  }
+}
+
 @mixin action-button {
   margin: 10px;
   border-radius: 3px;
