@@ -1,9 +1,10 @@
 /* eslint-disable no-use-before-define */
 const _ = require('underscore');
+const logger = require('log4js').getLogger('server');
 
 const models = require('../schemas');
-const { isNonEmptyArray } = require('../../utils/objects');
-const { isValidMongoId, } = require('../../utils/mongoose');
+const { isNonEmptyArray, isNil } = require('../../utils/objects');
+const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 
 const { requireUser } = require('../../middleware/userAuth');
 
@@ -501,9 +502,639 @@ const postParentWorkspace = async (req, res, next) => {
   }
 };
 
-const updateParentWorkspace = async (user, details) => {
+const updateSubmissions = async (userId, parentWs, childWorkspaces) => {
+  // check if childWorkspaces have any answers that parentWs doesn't
 
+  let parentWsAnswerIds = parentWs.submissions.map(submission => {
+    return submission.answer;
+  });
+
+  let subFilter = {
+    workspaces: { $elemMatch: { $in: childWorkspaces } }
+  };
+
+  if (isNonEmptyArray(parentWsAnswerIds)) {
+    subFilter.answer = { $nin: parentWsAnswerIds };
+  }
+
+  let childSubmissions = await models.Submission.find(subFilter).populate(
+    'answer'
+  );
+
+  return Promise.all(
+    childSubmissions.map(childSubmission => {
+      return createParentSubmissionCopy(userId, childSubmission, parentWs._id);
+    })
+  );
+};
+
+const createParentSubmissionCopy = (
+  userId,
+  childSubmission,
+  parentWorkspaceId
+) => {
+  // expect childSubmission to be a mongoose document
+  // expect parentWorkspaceId to be objectId
+
+  let childPlain = childSubmission.toObject();
+
+  let fieldsToOmit = [
+    '_id',
+    'createDate',
+    'lastModifiedDate',
+    'lastModifiedBy',
+    'createdBy',
+    'responses',
+    'workspaces',
+    'comments',
+    'selections'
+  ];
+
+  let childCopy = _.omit(childPlain, fieldsToOmit);
+
+  childCopy.lastModifiedBy = userId;
+  childCopy.lastModifiedDate = new Date();
+  childCopy.createdBy = userId;
+  childCopy.workspaces = [parentWorkspaceId];
+  childCopy.originalSubmission = childSubmission._id;
+
+  return models.Submission.create(childCopy);
+};
+
+const createParentSelectionCopy = (userId, childSelection, parentWorkspace) => {
+  // expect childSelection to be a mongoose document
+  // expect parentWorkspaceId to be populated workspace
+
+  let childPlain = childSelection.toObject();
+
+  let fieldsToOmit = [
+    '_id',
+    'createDate',
+    'lastModifiedDate',
+    'lastModifiedBy',
+    'createdBy',
+    'workspace',
+    'comments'
+  ];
+
+  let childCopy = _.omit(childPlain, fieldsToOmit);
+
+  childCopy.lastModifiedBy = userId;
+  childCopy.lastModifiedDate = new Date();
+  childCopy.createdBy = userId;
+  childCopy.workspace = parentWorkspace._id;
+  childCopy.originalSelection = childSelection._id;
+
+  let childAnswerId = childCopy.submission.answer;
+
+  let parentSub = _.find(parentWorkspace.submissions, popSubmission => {
+    return areObjectIdsEqual(popSubmission.answer, childAnswerId);
+  });
+
+  if (!parentSub) {
+    // should never happen
+    logger.error('selection missing submission');
+    return;
+  }
+  childCopy.submission = parentSub._id;
+
+  return models.Selection.create(childCopy);
+};
+
+const updateSelections = async (userId, parentWs, childWorkspaces) => {
+  // check if childWorkspaces have any selections that parent ws doesnt have
+  //
+
+  let parentWsSelectionIds = parentWs.selections.map(selection => {
+    return selection.originalSelection;
+  });
+
+  let selectionFilter = {
+    workspace: { $in: childWorkspaces }
+  };
+
+  if (isNonEmptyArray(parentWsSelectionIds)) {
+    selectionFilter._id = { $nin: parentWsSelectionIds };
+  }
+
+  let childSelections = await models.Selection.find(selectionFilter).populate(
+    'submission'
+  );
+
+  return Promise.all(
+    childSelections.map(childSelection => {
+      return createParentSelectionCopy(userId, childSelection, parentWs);
+    })
+  );
+};
+
+const createParentCommentCopy = (userId, childComment, parentWorkspace) => {
+  // expect childComment to be a mongoose document
+  // expect parentWorkspaceId to be populated workspace
+
+  let childPlain = childComment.toObject();
+
+  let fieldsToOmit = [
+    '_id',
+    'createDate',
+    'lastModifiedDate',
+    'lastModifiedBy',
+    'createdBy',
+    'workspace'
+  ];
+
+  let childCopy = _.omit(childPlain, fieldsToOmit);
+
+  childCopy.lastModifiedBy = userId;
+  childCopy.lastModifiedDate = new Date();
+  childCopy.createdBy = userId;
+  childCopy.workspace = parentWorkspace._id;
+  childCopy.originalComment = childComment._id;
+
+  let childAnswerId = childCopy.submission.answer;
+
+  let parentSub = _.find(parentWorkspace.submissions, popSubmission => {
+    return areObjectIdsEqual(popSubmission.answer, childAnswerId);
+  });
+
+  if (!parentSub) {
+    // should never happen
+    logger.error('comment missing submission');
+    return;
+  }
+  childCopy.submission = parentSub._id;
+
+  if (isValidMongoId(childCopy.parent)) {
+    // find corresponding parent comment in parent ws
+    let parentWsParent = _.find(parentWorkspace.comments, c => {
+      return areObjectIdsEqual(c.originalComment, childCopy.parent);
+    });
+
+    if (!parentWsParent) {
+      // should never happen
+      logger.info('comment missing parentws parent');
+      return;
+    }
+    childCopy.parent = parentWsParent._id;
+  }
+
+  if (isNonEmptyArray(childCopy.ancestors)) {
+    childCopy.ancestors = childCopy.ancestors.map(ancestor => {
+      // find this ancestor comment in parent ws
+      let parentWsAncestor = _.find(parentWorkspace.comments, c => {
+        return areObjectIdsEqual(c.originalComment, ancestor);
+      });
+
+      if (!parentWsAncestor) {
+        // should never happen
+        logger.info('comment missing parentws ancestor');
+        return;
+      }
+      return ancestor;
+    });
+
+    childCopy.ancestors = _.compact(childCopy.ancestors);
+  }
+
+  // find corresponding selection in parentWs
+
+  let parentSelection = _.find(parentWorkspace.selections, s => {
+    return areObjectIdsEqual(s.originalSelection, childCopy.selection);
+  });
+
+  if (!parentSelection) {
+    // should never happen
+    logger.info('missing parent selection');
+    return;
+  }
+  childCopy.selection = parentSelection._id;
+
+  return models.Comment.create(childCopy);
+};
+
+const updateComments = async (userId, parentWs, childWorkspaces) => {
+  // check if childWorkspaces have any comments that parent ws doesnt have
+
+  let parentWsCommentIds = parentWs.comments.map(comment => {
+    return comment.originalComment;
+  });
+
+  let commentFilter = {
+    workspace: { $in: childWorkspaces }
+  };
+
+  if (isNonEmptyArray(parentWsCommentIds)) {
+    commentFilter._id = { $nin: parentWsCommentIds };
+  }
+
+  let childComments = await models.Comment.find(commentFilter).populate(
+    'submission'
+  );
+
+  return Promise.all(
+    childComments.map(childComment => {
+      return createParentCommentCopy(userId, childComment, parentWs);
+    })
+  );
+};
+
+const updateResponses = async (userId, parentWs, childWorkspaces) => {
+  // check if childWorkspaces have any comments that parent ws doesnt have
+
+  let parentWsResponseIds = parentWs.responses.map(response => {
+    return response.originalResponse;
+  });
+
+  let responseFilter = {
+    workspace: { $in: childWorkspaces }
+  };
+
+  if (isNonEmptyArray(parentWsResponseIds)) {
+    responseFilter._id = { $nin: parentWsResponseIds };
+  }
+
+  let childResponses = await models.Response.find(responseFilter).populate(
+    'submission'
+  );
+
+  return Promise.all(
+    childResponses.map(childResponse => {
+      return createParentResponseCopy(userId, childResponse, parentWs);
+    })
+  );
+};
+
+const createParentResponseCopy = (userId, childResponse, parentWorkspace) => {
+  // expect childResponse to be a mongoose document
+  // expect parentWorkspace to be populated workspace
+
+  let childPlain = childResponse.toObject();
+
+  let fieldsToOmit = [
+    '_id',
+    'createDate',
+    'lastModifiedDate',
+    'lastModifiedBy',
+    'createdBy',
+    'workspace'
+  ];
+
+  let childCopy = _.omit(childPlain, fieldsToOmit);
+
+  childCopy.lastModifiedBy = userId;
+  childCopy.lastModifiedDate = new Date();
+  childCopy.createdBy = userId;
+  childCopy.workspace = parentWorkspace._id;
+  childCopy.originalResponse = childResponse._id;
+
+  let childAnswerId = childCopy.submission.answer;
+
+  let parentSub = _.find(parentWorkspace.submissions, popSubmission => {
+    return areObjectIdsEqual(popSubmission.answer, childAnswerId);
+  });
+
+  if (!parentSub) {
+    // should never happen
+    logger.error('response missing submission');
+    return;
+  }
+  childCopy.submission = parentSub._id;
+
+  if (isValidMongoId(childCopy.priorRevision)) {
+    // find corresponding revision in parent ws
+    let parentWsRevision = _.find(parentWorkspace.responses, r => {
+      return areObjectIdsEqual(r.originalResponse, childCopy.priorRevision);
+    });
+
+    if (!parentWsRevision) {
+      // should never happen
+      logger.info('missing parentws response priorRevision');
+      return;
+    }
+    childCopy.priorRevision = parentWsRevision._id;
+  }
+
+  if (isValidMongoId(childCopy.reviewedResponse)) {
+    // find corresponding revision in parent ws
+    let parentWsRevision = _.find(parentWorkspace.responses, r => {
+      return areObjectIdsEqual(r.originalResponse, childCopy.reviewedResponse);
+    });
+
+    if (!parentWsRevision) {
+      // should never happen
+      logger.info('missing parentws response reviewedResponse');
+      return;
+    }
+    childCopy.reviewedResponse = parentWsRevision._id;
+  }
+
+  if (isNonEmptyArray(childCopy.selections)) {
+    childCopy.selections = childCopy.selections.map(selection => {
+      // find this selection in parent ws
+      let parentWsSelection = _.find(parentWorkspace.selections, s => {
+        return areObjectIdsEqual(s.originalSelection, selection);
+      });
+
+      if (!parentWsSelection) {
+        // should never happen
+        logger.info('missing parentws  response selections');
+        return;
+      }
+      return selection;
+    });
+
+    childCopy.selections = _.compact(childCopy.selections);
+  }
+  if (isNonEmptyArray(childCopy.comments)) {
+    childCopy.comments = childCopy.comments.map(comment => {
+      // find this comment in parent ws
+      let parentWsComment = _.find(parentWorkspace.comments, c => {
+        return areObjectIdsEqual(c.originalComment, comment);
+      });
+
+      if (!parentWsComment) {
+        // should never happen
+        logger.info('missing parentws response comments');
+        return;
+      }
+      return comment;
+    });
+
+    childCopy.selections = _.compact(childCopy.selections);
+  }
+
+  return models.Response.create(childCopy);
+};
+
+const updateFolders = async (userId, parentWs, childWorkspaces) => {
+  // check if childWorkspaces have any folders that parent ws doesnt have
+
+  let parentWsFolderIds = parentWs.folders.map(folder => {
+    return folder.originalFolder;
+  });
+
+  let folderFilter = {
+    workspace: { $in: childWorkspaces }
+  };
+
+  if (isNonEmptyArray(parentWsFolderIds)) {
+    folderFilter._id = { $nin: parentWsFolderIds };
+  }
+
+  let childFolders = await models.Folder.find(folderFilter);
+
+  return Promise.all(
+    childFolders.map(childFolder => {
+      return createParentFolderCopy(userId, childFolder, parentWs);
+    })
+  );
+};
+
+const createParentFolderCopy = (userId, childFolder, parentWorkspace) => {
+  // expect childFolder to be a mongoose document
+  // expect parentWorkspace to be populated workspace
+
+  let childWsId = childFolder.workspace;
+
+  let childPlain = childFolder.toObject();
+
+  let fieldsToOmit = [
+    '_id',
+    'createDate',
+    'lastModifiedDate',
+    'lastModifiedBy',
+    'createdBy',
+    'workspace'
+  ];
+
+  let childCopy = _.omit(childPlain, fieldsToOmit);
+
+  childCopy.lastModifiedBy = userId;
+  childCopy.lastModifiedDate = new Date();
+  childCopy.createdBy = userId;
+  childCopy.workspace = parentWorkspace._id;
+  childCopy.originalFolder = childFolder._id;
+  childCopy.owner = userId;
+
+  let isTopLevel = isNil(childCopy.parent);
+
+  if (isTopLevel) {
+    // need to set parent as the 'workspace' folder
+    let childWsFolder = _.find(parentWorkspace.folders, f => {
+      return areObjectIdsEqual(f.srcChildWs, childWsId);
+    });
+
+    if (!childWsFolder) {
+      // should never happen
+      logger.info('missing child ws folder');
+      return;
+    }
+    childCopy.parent = childWsFolder;
+  } else {
+    // find corresponding parent folder in parent ws
+    let parentWsParent = _.find(parentWorkspace.folders, f => {
+      return areObjectIdsEqual(f.originalFolder, childCopy.parent);
+    });
+
+    if (!parentWsParent) {
+      // should never happen
+      logger.info('missing parentws parent');
+      return;
+    }
+    childCopy.parent = parentWsParent;
+  }
+
+  return models.Folder.create(childCopy);
+};
+
+const updateTaggings = async (userId, parentWs, childWorkspaces) => {
+  // check if childWorkspaces have any taggings that parent ws doesnt have
+
+  let parentWsTaggingIds = parentWs.taggings.map(tagging => {
+    return tagging.originalTagging;
+  });
+
+  let taggingFilter = {
+    workspace: { $in: childWorkspaces }
+  };
+
+  if (isNonEmptyArray(parentWsTaggingIds)) {
+    taggingFilter._id = { $nin: parentWsTaggingIds };
+  }
+
+  let childTaggings = await models.Tagging.find(taggingFilter);
+
+  return Promise.all(
+    childTaggings.map(childTagging => {
+      return createParentTaggingCopy(userId, childTagging, parentWs);
+    })
+  );
+};
+
+const createParentTaggingCopy = (userId, childTagging, parentWorkspace) => {
+  // expect childTagging to be a mongoose document
+  // expect parentWorkspace to be populated workspace
+
+  let childPlain = childTagging.toObject();
+
+  let fieldsToOmit = [
+    '_id',
+    'createDate',
+    'lastModifiedDate',
+    'lastModifiedBy',
+    'createdBy',
+    'workspace'
+  ];
+
+  let childCopy = _.omit(childPlain, fieldsToOmit);
+
+  childCopy.lastModifiedBy = userId;
+  childCopy.lastModifiedDate = new Date();
+  childCopy.createdBy = userId;
+  childCopy.workspace = parentWorkspace._id;
+  childCopy.originalTagging = childTagging._id;
+
+  if (isValidMongoId(childCopy.folder)) {
+    // find corresponding folder in parent ws
+    let parentWsFolder = _.find(parentWorkspace.folders, f => {
+      return areObjectIdsEqual(f.originalFolder, childCopy.folder);
+    });
+
+    if (!parentWsFolder) {
+      // should never happen
+      logger.info('missing parentws parent');
+      return;
+    }
+    childCopy.folder = parentWsFolder._id;
+  }
+
+  // find corresponding selection in parentWs
+
+  let parentSelection = _.find(parentWorkspace.selections, s => {
+    return areObjectIdsEqual(s.originalSelection, childCopy.selection);
+  });
+
+  if (!parentSelection) {
+    // should never happen
+    logger.info('missing parent selection');
+    return;
+  }
+  childCopy.selection = parentSelection._id;
+
+  return models.Tagging.create(childCopy);
+};
+
+const updateParentWorkspace = async (
+  user,
+  popWorkspace,
+  updateWorkspaceRequest
+) => {
+  try {
+    // update submissions
+    let { childWorkspaces } = popWorkspace;
+
+    let didUpdate = false;
+
+    let createdSubmissions = await updateSubmissions(
+      user._id,
+      popWorkspace,
+      childWorkspaces
+    );
+
+    popWorkspace.submissions = popWorkspace.submissions.concat(
+      createdSubmissions
+    );
+
+    let createdSelections = await updateSelections(
+      user._id,
+      popWorkspace,
+      childWorkspaces
+    );
+
+    popWorkspace.selections = popWorkspace.selections.concat(createdSelections);
+
+    let createdComments = await updateComments(
+      user._id,
+      popWorkspace,
+      childWorkspaces
+    );
+
+    popWorkspace.comments = popWorkspace.comments.concat(createdComments);
+
+    let createdResponses = await updateResponses(
+      user._id,
+      popWorkspace,
+      childWorkspaces
+    );
+
+    popWorkspace.responses = popWorkspace.responses.concat(createdResponses);
+
+    let createdFolders = await updateFolders(
+      user._id,
+      popWorkspace,
+      childWorkspaces
+    );
+
+    popWorkspace.folders = popWorkspace.folders.concat(createdFolders);
+
+    let createdTaggings = await updateTaggings(
+      user._id,
+      popWorkspace,
+      childWorkspaces
+    );
+
+    popWorkspace.taggings = popWorkspace.taggings.concat(createdTaggings);
+
+    if (isNonEmptyArray(createdSubmissions)) {
+      didUpdate = true;
+      updateWorkspaceRequest.updatedParentData.submissions = createdSubmissions.map(
+        submission => submission._id
+      );
+    }
+
+    if (isNonEmptyArray(createdSelections)) {
+      didUpdate = true;
+      updateWorkspaceRequest.updatedParentData.selections = createdSelections.map(
+        selection => selection._id
+      );
+    }
+
+    if (isNonEmptyArray(createdComments)) {
+      didUpdate = true;
+      updateWorkspaceRequest.updatedParentData.comments = createdComments.map(
+        comment => comment._id
+      );
+    }
+
+    if (isNonEmptyArray(createdResponses)) {
+      didUpdate = true;
+      updateWorkspaceRequest.updatedParentData.responses = createdResponses.map(
+        response => response._id
+      );
+    }
+
+    if (isNonEmptyArray(createdFolders)) {
+      didUpdate = true;
+      updateWorkspaceRequest.updatedParentData.folders = createdFolders.map(
+        folder => folder._id
+      );
+    }
+
+    if (isNonEmptyArray(createdTaggings)) {
+      didUpdate = true;
+      updateWorkspaceRequest.updatedParentData.taggings = createdTaggings.map(
+        tagging => tagging._id
+      );
+    }
+
+    updateWorkspaceRequest.wasNoDataToUpdate = !didUpdate;
+
+    return updateWorkspaceRequest;
+  } catch (err) {
+    logger.error('updateParentWorkspace error: ', err);
+  }
 };
 
 module.exports.generateParentWorkspace = generateParentWorkspace;
 module.exports.post.parentWorkspace = postParentWorkspace;
+module.exports.updateParentWorkspace = updateParentWorkspace;
