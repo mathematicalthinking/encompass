@@ -149,11 +149,11 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     const doCreateLinkedWorkspaces = this.get('doCreateLinkedWorkspaces');
     const doCreateParentWorkspace = this.get('doCreateParentWorkspace');
 
-      createAssignmentData.linkedWorkspaceCreationOptions = {
+      createAssignmentData.linkedWorkspacesRequest = {
         doCreate: doCreateLinkedWorkspaces
       };
 
-      createAssignmentData.parentWorkspaceCreationOptions = {
+      createAssignmentData.parentWorkspaceRequest = {
         doCreate : doCreateLinkedWorkspaces ? doCreateParentWorkspace: false,
       };
 

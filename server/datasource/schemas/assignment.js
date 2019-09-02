@@ -30,6 +30,23 @@ var AssignmentSchema = new Schema({
   assignmentType: { type: String },
   linkedWorkspaces: [{ type: ObjectId, ref: 'Workspace' }], // for auto updatingtype problem assignments
   parentWorkspace: { type: ObjectId, ref: 'Workspace' },
+  linkedWorkspacesRequest: {
+    doCreate: { type: Boolean, default: false },
+    error: { type: String },
+    createdWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
+    doAllowSubmissionUpdates: { type: Boolean, default: true},
+    name: { type: String },
+    createDate: {type: Date }
+  },
+  parentWorkspaceRequest: {
+    doCreate: { type: Boolean, default: false },
+    error: { type: String },
+    createdWorkspace: { type: ObjectId, ref: 'Workspace' },
+    childWorkspaces: [ {type: ObjectId, ref: 'Workspace'}],
+    doAutoUpdateFromChildren: { type: Boolean, default: true},
+    name: { type: String },
+    createDate:  {type: Date }
+  }
 }, { versionKey: false });
 
 /* + The Problem exists */
