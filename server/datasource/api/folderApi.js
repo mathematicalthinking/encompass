@@ -206,7 +206,6 @@ async function postFolder(req, res, next) {
           }
           folderCopy.parent = parentWsParent;
         }
-        logger.info('creating copy in parent');
         return models.Folder.create(folderCopy);
       }));
 

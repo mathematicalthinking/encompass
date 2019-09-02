@@ -157,7 +157,7 @@ async function postResponse(req, res, next) {
 
     if (isNonEmptyArray(parentWorkspacesToUpdate)) {
       await savedResponse.populate('submission').execPopulate();
-      let commentAnswerId = savedResponse.submission.answer;
+      let responseAnswerId = savedResponse.submission.answer;
 
       savedResponse.depopulate('submission');
 
@@ -237,7 +237,7 @@ async function postResponse(req, res, next) {
         // find corresponding submission in parentWs
 
         let parentSubmission = _.find(parentWs.submissions, (s) => {
-          return areObjectIdsEqual(s.answer, commentAnswerId);
+          return areObjectIdsEqual(s.answer, responseAnswerId);
         });
 
         if (!parentSubmission) {
@@ -247,7 +247,6 @@ async function postResponse(req, res, next) {
         }
         responseCopy.submission = parentSubmission._id;
 
-        logger.info('creating copy in parent', responseCopy);
         return models.Response.create(responseCopy);
       }));
     }

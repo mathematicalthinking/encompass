@@ -338,7 +338,6 @@ async function postComment(req, res, next) {
         }
         commentCopy.submission = parentSubmission._id;
 
-        logger.info('creating copy in parent', commentCopy);
         return models.Comment.create(commentCopy);
       }));
     }
