@@ -15,10 +15,10 @@ module.exports = {
     ],
     answers: [],
     problem: '53a447ae32f286324000033b',
-    linkedWorkspaceCreationOptions: {
+    linkedWorkspacesRequest: {
       doCreate: true,
     },
-    parentWorkspceCreationOptions: {
+    parentWorkspceRequest: {
     },
     }
   },
@@ -39,7 +39,7 @@ module.exports = {
       problem: '53a447ae32f286324000033b',
       doCreateLinkedWorkspaces: false,
       },
-      linkedWorkspaceCreationOptions: {
+      linkedWorkspaceRequest: {
         doCreate: false,
       },
       expectedResultName: `Summer's Org Problem / ${moment(new Date()).format('MMM Do YYYY')}`

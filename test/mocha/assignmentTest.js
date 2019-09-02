@@ -103,8 +103,10 @@ describe('Assignment CRUD operations by account type', function() {
               expect(res).to.have.status(200);
               expect(res.body.assignment).to.have.any.keys('problem', 'assignment');
               expect(res.body.assignment.name).to.eql(body.name);
-              expect(res.body.workspaces).to.be.an('array');
-              expect(res.body.workspaces).to.have.lengthOf(body.students.length);
+              let createdWorkspaces = res.body.assignment.linkedWorkspacesRequest.createdWorkspaces;
+
+              expect(createdWorkspaces).to.be.an('array');
+              expect(createdWorkspaces).to.have.lengthOf(body.students.length);
               done();
             });
           });
