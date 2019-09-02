@@ -176,6 +176,26 @@ const getAssignment = async function(req, res, next) {
   assignment.depopulate('section');
   assignment.depopulate('students');
 
+  if (!isStudent) {
+    data.workspaces = [];
+    if (isNonEmptyArray(assignment.linkedWorkspaces)) {
+      await assignment.populate('linkedWorkspaces').execPopulate();
+      data.workspaces = assignment.linkedWorkspaces;
+
+      assignment.depopulate('linkedWorkspaces');
+    }
+    if (assignment.parentWorkspace) {
+      await assignment.populate('parentWorkspace').execPopulate();
+      if (isNonEmptyArray(data.workspaces)) {
+        data.workspaces.push(assignment.parentWorkspace);
+      } else {
+        data.workspaces = assignment.parentWorkspace;
+      }
+      assignment.depopulate('parentWorkspace');
+    }
+
+  }
+
   let jsonAssn = assignment.toObject();
 
   if (!isStudent && metadata) {
@@ -202,7 +222,7 @@ const postAssignment = async (req, res, next) => {
     const user = userAuth.requireUser(req);
     // do we want to check if the user is allowed to create assignments?
 
-    let { assignedDate, dueDate, name, problem } = req.body.assignment;
+    let { assignedDate, dueDate, name, problem, linkedWorkspacesRequest, parentWorkspaceRequest  } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
 
@@ -261,63 +281,73 @@ const postAssignment = async (req, res, next) => {
 
     await assignment.save();
 
-    let linkedWorkspaceCreationOptions = req.body.assignment.linkedWorkspaceCreationOptions || {};
-
-    let parentWorkspaceCreationOptions = req.body.assignment.parentWorkspaceCreationOptions || {};
+    let doCreateLinkedWorkspaces = _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
 
     let linkedWorkspaces;
     let parentWorkspace;
     let parentWorkspaceError;
 
-    if (linkedWorkspaceCreationOptions.doCreate) {
+    if (doCreateLinkedWorkspaces) {
       // create a linked workspace for each student in assignment
       await assignment
         .populate('students')
+        .populate('answers')
         .populate({ path: 'section', select: 'name' })
         .execPopulate();
-      linkedWorkspaces = await generateLinkedWorkspacesFromAssignment(
+
+        let [ err, linkedWorkspaces ] = await generateLinkedWorkspacesFromAssignment(
         assignment,
         user,
-        linkedWorkspaceCreationOptions
+        linkedWorkspacesRequest
       );
 
-      let linkedWorkspacesIds = linkedWorkspaces.map(ws => ws._id);
+      if (err) {
+        assignment.linkedWorkspacesRequest.error = err;
+      } else {
+        if (isNonEmptyArray(linkedWorkspaces)) {
+          let linkedWorkspacesIds = linkedWorkspaces.map(ws => ws._id);
 
-      assignment.linkedWorkspaces = linkedWorkspacesIds;
-      assignment.depopulate('students').depopulate('section');
+          assignment.linkedWorkspaces = linkedWorkspacesIds;
+          assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
+          assignment.depopulate('students').depopulate('section').depopulate('answers');
 
-      if (parentWorkspaceCreationOptions.doCreate) {
-        let { name, mode, owner, organization, doAutoUpdateFromChildren } = parentWorkspaceCreationOptions;
+          let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
 
-        if (typeof doAutoUpdateFromChildren !== 'boolean') {
-          doAutoUpdateFromChildren = true;
-        }
-        // linked assignment?
+          if (doCreateParentWorkspace) {
+            let { name, doAutoUpdateFromChildren } = parentWorkspaceRequest;
 
-        let parentWsConfig = {
-          childWorkspaces: linkedWorkspacesIds,
-          createdBy: user,
-          owner: owner || user,
-          organization: organization || user.organization,
-          name: name || `Parent Workspace: ${assignment.name}`,
-          mode: mode || 'private',
-          doAutoUpdateFromChildren,
-          linkedAssignment: assignment._id,
-        };
-        let parentWsResults = await generateParentWorkspace(parentWsConfig);
-        parentWorkspace = parentWsResults.parentWorkspace;
-        parentWorkspaceError = parentWsResults.errorMsg;
-        // if error send back as metadata?
+            if (typeof doAutoUpdateFromChildren !== 'boolean') {
+              doAutoUpdateFromChildren = true;
+            }
+            // linked assignment?
 
-        if (parentWorkspace) {
-          assignment.parentWorkspace = parentWorkspace._id;
+            let parentWsConfig = {
+              childWorkspaces: linkedWorkspacesIds,
+              createdBy: user,
+              owner: user,
+              organization: user.organization,
+              name: name || `Parent Workspace: ${assignment.name}`,
+              mode: 'private',
+              doAutoUpdateFromChildren,
+              linkedAssignment: assignment._id,
+            };
+            [ parentWorkspaceError, parentWorkspace ] = await generateParentWorkspace(parentWsConfig);
+
+            if (parentWorkspaceError) {
+              assignment.parentWorkspaceRequest.error = parentWorkspaceError;
+            }
+
+            if (parentWorkspace) {
+              assignment.parentWorkspace = parentWorkspace._id;
+              assignment.parentWorkspaceRequest.createdWorkspace = parentWorkspace._id;
+            }
+          }
         }
       }
       await assignment.save();
     }
 
     let assignmentJson = assignment.toObject();
-    assignmentJson.parentWorkspaceError = parentWorkspaceError;
 
     let data = { assignment: assignmentJson };
 
@@ -334,7 +364,7 @@ const postAssignment = async (req, res, next) => {
     }
     utils.sendResponse(res, data);
   } catch (err) {
-    console.log({ postAssignmentErr: err });
+    logger.error('postAssnErr: ', err);
     return utils.sendError.InternalError(err, res);
   }
 };
@@ -347,38 +377,140 @@ const postAssignment = async (req, res, next) => {
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
 */
-
-const putAssignment = (req, res, next) => {
-  const user = userAuth.requireUser(req);
-
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-  // what check do we want to perform if the user can edit
-  // if they created the assignment?
-  models.Assignment.findById(req.params.id, (err, doc) => {
-    if(err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+const putAssignment = async (req, res, next) => {
+  try {
+    const user = userAuth.requireUser(req);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
+
+    let assignment = await models.Assignment.findById(req.params.id).exec();
+
+    if (!assignment || assignment.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
+
+    // currently only support 1 request at a time for already existing assn
+    let { linkedWorkspacesRequest, parentWorkspaceRequest } = req.body.assignment;
+
+    let doCreateLinkedWorkspaces = _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
+
+    let linkedWorkspacesErr;
+    let linkedWorkspaces;
+    if (doCreateLinkedWorkspaces) {
+      // create a linked workspace for each student in assignment
+      assignment.linkedWorkspacesRequest = {};
+      let data = {};
+
+      await assignment
+        .populate('students')
+        .populate({ path: 'section', select: 'name' })
+        .populate('answers')
+        .execPopulate();
+      [
+        linkedWorkspacesErr,
+        linkedWorkspaces
+      ] = await generateLinkedWorkspacesFromAssignment(
+        assignment,
+        user,
+        linkedWorkspacesRequest
+      );
+
+      if (linkedWorkspacesErr) {
+        assignment.linkedWorkspacesRequest.error = linkedWorkspacesErr;
+      } else if (isNonEmptyArray(linkedWorkspaces)) {
+        data.workspaces = linkedWorkspaces;
+
+        let linkedWorkspacesIds = linkedWorkspaces.map(ws => ws._id);
+        assignment.linkedWorkspaces = assignment.linkedWorkspaces.concat(
+          linkedWorkspacesIds
+        );
+        assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
+        assignment
+          .depopulate('students')
+          .depopulate('section')
+          .depopulate('answers');
+      }
+
+      await assignment.save();
+
+      data.assignment = assignment;
+
+      return utils.sendResponse(res, data);
+    }
+
+    let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
+
+    if (doCreateParentWorkspace) {
+      let data = {};
+      assignment.parentWorkspaceRequest = {};
+      if (assignment.parentWorkspace) {
+        assignment.parentWorkspaceRequest.error = 'Assignment already has a parent workspace';
+        assignment.lastModifiedBy = user;
+        assignment.lastModifiedDate = Date.now();
+
+        await assignment.save();
+
+        data.assignment = assignment;
+        return utils.sendResponse(res, data);
+      }
+      let { name, doAutoUpdateFromChildren, childWorkspaces } = parentWorkspaceRequest;
+
+      if (typeof doAutoUpdateFromChildren !== 'boolean') {
+        doAutoUpdateFromChildren = true;
+      }
+      // linked assignment?
+
+      let parentWsConfig = {
+        childWorkspaces, // ids
+        createdBy: user,
+        owner: user,
+        organization: user.organization,
+        name: name || `Parent Workspace: ${assignment.name}`,
+        mode: 'private',
+        doAutoUpdateFromChildren,
+        linkedAssignment: assignment._id,
+      };
+      let [ parentWorkspaceError, parentWorkspace ] = await generateParentWorkspace(parentWsConfig);
+
+      if (parentWorkspaceError) {
+        assignment.parentWorkspaceRequest.error = parentWorkspaceError;
+      }
+
+      if (parentWorkspace) {
+        assignment.parentWorkspace = parentWorkspace._id;
+        assignment.parentWorkspaceRequest.createdWorkspace = parentWorkspace._id;
+        data.workspaces = [ parentWorkspace ];
+      }
+
+      assignment.lastModifiedBy = user;
+      assignment.lastModifiedDate = Date.now();
+
+      await assignment.save();
+      data.assignment = assignment;
+
+      return utils.sendResponse(res, data);
+
+    }
+
     // make the updates
     for(let field in req.body.assignment) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.assignment[field];
+        assignment[field] = req.body.assignment[field];
       }
     }
-    doc.lastModifiedBy = user;
-    doc.lastModifiedDate = Date.now();
+    assignment.lastModifiedBy = user;
+    assignment.lastModifiedDate = Date.now();
 
-    doc.save((err, assignment) => {
-      if (err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      const data = {'assignment': assignment};
-      utils.sendResponse(res, data);
-    });
-  });
+    await assignment.save();
+
+    const data = { assignment };
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+}
 };
 
 /**
@@ -594,15 +726,36 @@ const removeProblem = (req, res, next) => {
 
 
 const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOptions = {}, parentWsOptions = {}) => {
+  let results = {
+    createdWorkspaces: [],
+    error: null,
+  };
+
   try {
     if (!assignment) {
-      return [];
+      return ['Missing assignment', null];
     }
     // assignment will have students, section populated
     let { students, answers, section } = assignment;
 
-    let { mode } = wsOptions;
+    let { mode, name, doAllowSubmissionUpdates } = wsOptions;
 
+    await assignment.populate({path: 'linkedWorkspaces', select: 'owner'}).execPopulate();
+
+    let studentsWithoutWorkspaces = _.reject(students, (student) => {
+      return _.find(assignment.linkedWorkspaces, (ws) => {
+        return areObjectIdsEqual(ws.owner, student._id);
+      });
+    });
+
+    await assignment.depopulate('linkedWorkspaces');
+
+    logger.info('students without workspaces', studentsWithoutWorkspaces.map(s => s.username));
+    if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
+      // should send message detailing this
+      logger.info('No students without a linked workspace');
+      return ['All students already own a linked workspace', null ];
+    }
     // if answers convert answers to submissions
 
     let submissionObjects = await answersToSubmissions(answers);
@@ -628,9 +781,12 @@ const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOpt
         sub.createDate = Date.now();
         sub.lastModifiedDate = Date.now();
         sub.lastModifiedBy = creatorId;
+        return sub.save();
       }));
 
-      let wsName = `${student.username}: ${assignment.name} (${section.name})`;
+      let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
+
+      let wsName = `${student.username}: ${nameSuffix}`;
 
       return models.Workspace.create({
         name: wsName,
@@ -639,9 +795,10 @@ const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOpt
         lastModifiedBy: reqUser._id,
         lastModifiedDate: Date.now(),
         mode: mode || 'private',
-        submissions: submissionRecords,
+        submissions: submissionRecords.map(s => s._id),
         linkedAssignment: assignment._id,
         organization: reqUser.organization,
+        doAllowSubmissionUpdates: typeof doAllowSubmissionUpdates === 'boolean' ? doAllowSubmissionUpdates : true,
 
       });
     }));
@@ -653,10 +810,12 @@ const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOpt
 
     }
 
-    return workspaces;
+    results.createdWorkspaces = workspaces;
+    return [ null, workspaces ];
 
   }catch(err) {
     console.log({generateLinkedWorkspacesFromAssignmentErr: err});
+    return [ err, null ];
   }
 };
 
