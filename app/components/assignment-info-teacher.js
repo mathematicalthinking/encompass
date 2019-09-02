@@ -2,6 +2,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
   Encompass.CurrentUserMixin,
   Encompass.ErrorHandlingMixin,
   {
+    elementId: 'assignment-info-teacher',
+    classNameBindings: ['isEditing:is-editing'],
     formattedDueDate: null,
     formattedAssignedDate: null,
     isEditing: false,
@@ -14,6 +16,25 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
     dataFetchErrors: [],
     findRecordErrors: [],
     updateRecordErrors: [],
+    areLinkedWsExpanded: true,
+    showParentWsForm: false,
+    showLinkedWsForm: false,
+    areLinkedWsHidden: Ember.computed.not('areLinkedWsExpanded'),
+    areSubmissionsExpanded: true,
+    areSubmissionsHidden: Ember.computed.not('areSubmissionsExpanded'),
+    showProblemInput: Ember.computed.and('isEditing', 'canEditProblem'),
+    showSectionInput: Ember.computed.and('isEditing', 'canEditProblem'),
+    showAssignedDateInput: Ember.computed.and(
+      'isEditing',
+      'canEditAssignedDate'
+    ),
+    showDueDateInput: Ember.computed.and('isEditing', 'canEditDueDate'),
+    hideParentWsForm: Ember.computed.not('showParentWsForm'),
+    hideLinkedWsForm: Ember.computed.not('showLinkedWsForm'),
+    allStudentsHaveWs: Ember.computed.equal(
+      'studentsWithoutWorkspaces.length',
+      0
+    ),
 
     alert: Ember.inject.service('sweet-alert'),
     permissions: Ember.inject.service('assignment-permissions'),
@@ -23,6 +44,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
       'assignment.linkedWorkspaces.length',
       0
     ),
+    doesNotHaveLinkedWs: Ember.computed.not('hasLinkedWorkspaces'),
+
+    showFullLinkedWsMsg: Ember.computed.and('isEditing', 'allStudentsHaveWs'),
+    showNoParentWsMsg: Ember.computed.and('isEditing', 'doesNotHaveLinkedWs'),
 
     init: function() {
       this._super(...arguments);
@@ -126,15 +151,9 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
     }.property('assignment.assignedDate'),
 
     canEditProblem: function() {
-      if (
-        this.get('currentUser.isAdmin') &&
-        !this.get('currentUser.isStudent')
-      ) {
-        return true;
-      }
-      return (
-        this.get('sortedAnswers.length') === 0 &&
-        this.get('hasBasicEditPrivileges')
+      return this.get('permissions').canEditProblem(
+        this.get('assignment'),
+        this.get('section')
       );
     }.property(
       'sortedAnswers.[]',
@@ -230,20 +249,33 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
       return [];
     }.property('selectedSection'),
 
-    showCreateParentWsBtn: function() {
+    showAddParentWsBtn: function() {
       return (
+        this.get('isEditing') &&
         this.get('hasBasicEditPrivileges') &&
-        !this.get('isEditing') &&
-        !this.get('showParentWsForm') &&
+        this.get('hideParentWsForm') &&
         this.get('hasLinkedWorkspaces') &&
         !this.get('hasParentWorkspace')
       );
     }.property(
       'hasBasicEditPrivileges',
       'isEditing',
-      'showParentWsForm',
+      'hideParentWsForm',
       'hasParentWorkspace',
       'hasLinkedWorkspaces'
+    ),
+    showAddLinkedWsBtn: function() {
+      return (
+        this.get('isEditing') &&
+        this.get('hasBasicEditPrivileges') &&
+        this.get('hideLinkedWsForm') &&
+        !this.get('allStudentsHaveWs')
+      );
+    }.property(
+      'isEditing',
+      'hasBasicEditPrivileges',
+      'hideLinkedWsForm',
+      'allStudentsHaveWs'
     ),
 
     showReport: function() {
@@ -257,6 +289,34 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
       );
       return this.get('utils').isValidMongoId(workspaceId);
     }.property('assignment.parentWorkspace'),
+
+    displayListsOptions: function() {
+      let areLinkedWsExpanded = this.get('areLinkedWsExpanded');
+      let areSubmissionsExpanded = this.get('areSubmissionsExpanded');
+
+      let toHide = 'fas fa-chevron-down';
+      let toShow = 'fas fa-chevron-left';
+      return {
+        linkedWs: {
+          icon: areLinkedWsExpanded ? toHide : toShow
+        },
+        submissions: {
+          icon: areSubmissionsExpanded ? toHide : toShow
+        }
+      };
+    }.property('areLinkedWsExpanded'),
+
+    studentsWithoutWorkspaces: function() {
+      let students = this.get('studentList') || [];
+      let existingWorkspaces = this.get('linkedWorkspaces') || [];
+
+      return students.reject(student => {
+        return existingWorkspaces.find(ws => {
+          let ownerId = this.get('utils').getBelongsToId(ws, 'owner');
+          return ownerId === student.get('id');
+        });
+      });
+    }.property('studentList.[]', 'linkedWorkspaces.[]'),
 
     actions: {
       editAssignment: function() {
@@ -320,6 +380,23 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
       },
 
       updateAssignment: function() {
+        let isAddingLinkedWs = this.get('showLinkedWsForm');
+        let isAddingParentWs = this.get('showParentWsForm');
+
+        if (isAddingLinkedWs || isAddingParentWs) {
+          let msg = `Please finish or cancel adding of ${
+            isAddingLinkedWs ? 'Linked Workspaces' : 'Parent Workspace'
+          }`;
+          return this.get('alert').showToast(
+            'error',
+            msg,
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+        }
+
         const assignment = this.get('assignment');
 
         let selectedProblem = this.get('selectedProblem');
@@ -354,17 +431,34 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
           assignment.set('section', selectedSection);
         }
 
-        const endDate = $('#dueDate')
+        let dueDate;
+        let assignedDate;
+        let endDate;
+        let startDate;
+
+        if (this.get('canEditAssignedDate')){
+          startDate = $('#assignedDate')
           .data('daterangepicker')
           .startDate.format('YYYY-MM-DD');
-        const dueDate = this.getEndDate(endDate);
 
-        const startDate = $('#assignedDate')
+          assignedDate = this.getEndDate(startDate);
+
+        } else {
+          assignedDate = this.get('assignment.assignedDate');
+        }
+
+        if (this.get('canEditDueDate')) {
+          endDate = $('#dueDate')
           .data('daterangepicker')
           .startDate.format('YYYY-MM-DD');
-        const assignedDate = this.getEndDate(startDate);
 
-        if (assignedDate && endDate && assignedDate > dueDate) {
+          dueDate = this.getEndDate(endDate);
+
+        } else {
+          dueDate = this.get('assignment.dueDate');
+        }
+
+        if (assignedDate && dueDate && assignedDate > dueDate) {
           this.set('invalidDateRange', true);
           return;
         } else {
@@ -421,8 +515,37 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
         }
       },
       stopEditing: function() {
-        this.set('isEditing', false);
-        $('.daterangepicker').remove();
+        let isAddingLinkedWs = this.get('showLinkedWsForm');
+        let isAddingParentWs = this.get('showParentWsForm');
+
+        if (isAddingLinkedWs || isAddingParentWs) {
+          let title = `Are you sure you want to stop editing of this assignment?`;
+          let info = `Your ${isAddingLinkedWs ? 'Linked Workspaces have' : 'Parent Workspace has'} not been created.`;
+          return this.get('alert')
+          .showModal(
+            'question',
+            title,
+            info,
+            'Yes, stop editing'
+          )
+          .then(result => {
+            if (result.value) {
+              if (isAddingLinkedWs) {
+                this.set('showLinkedWsForm', false);
+              }
+              if (isAddingParentWs) {
+                this.set('showParentWsForm');
+              }
+              this.set('isEditing', false);
+              $('.daterangepicker').remove();
+            }
+          });
+        } else {
+          this.set('isEditing', false);
+          $('.daterangepicker').remove();
+
+        }
+
       },
       updateSelectizeSingle(val, $item, propToUpdate, model) {
         let errorProp = `${model}FormErrors`;
@@ -438,8 +561,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
         }
         this.set(propToUpdate, record);
       },
-      handleCreatedParentWs(parentWorkspace) {
-        if (parentWorkspace) {
+      handleCreatedParentWs(assignment) {
+        if (assignment) {
           this.get('alert').showToast(
             'success',
             'Parent Workspace Created',
@@ -449,6 +572,24 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
             null
           );
         }
+      },
+      handleCreatedLinkedWs(assignment) {
+        if (assignment) {
+          this.get('alert').showToast(
+            'success',
+            'Linked Workspaces Created',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+        }
+      },
+      toggleProperty(propName) {
+        if (typeof propName !== 'string') {
+          return;
+        }
+        this.toggleProperty(propName);
       }
     }
   }
