@@ -1,0 +1,39 @@
+  <p class="info">
+    Clicking "Create Workspaces" will generate a private workspace for each student in this assignment (who is not the owner of an existing linked assignment). The workspaces will automatically update as new submissions and revisions are submitted for this assignment.
+  </p>
+  <div class="info-flex-item">
+    <p class="label">
+      Workspace Name Format
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Student username will be prepended to name format">
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+    <div class="info-flex-item">
+      {{input id="linked-ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide format for workspace names"}}
+    </div>
+    <div class="name-previews">
+      <p class="label">
+        Workspaces to be created
+      </p>
+      <ul>
+      {{#each students as |student|}}
+        <li>{{student.username}}: {{previewName}}</li>
+      {{/each}}
+      </ul>
+    </div>
+  {{#each workspaceNameErrors as |error|}}
+    {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
+  {{/each}}
+  </div>
+
+  <div class="create-ws-error">
+    {{#if createWorkspaceError}}
+      {{error-box error=createWorkspaceError showDismiss=true resetError=(action (mut createWorkspaceError) null)}}
+    {{/if}}
+  </div>
+
+  <div class="button-row">
+    <button class="primary-button create-ws" data-test="add-linked-ws-create" {{action "create"}}>Create Workspaces</button>
+    <button class="primary-button cancel-button" data-test="add-linked-ws-cancel" {{action "cancel"}}>Cancel</button>
+
+  </div>

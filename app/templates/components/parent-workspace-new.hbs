@@ -1,5 +1,3 @@
-<h1>Create New Parent Workspace</h1>
-
 <div class="create-ws-content">
   <div class="ws-new name">
     <p class="input-label">
@@ -8,8 +6,8 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    <div class="single-text-input-container">
-      {{input id="ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
+    <div>
+      {{input id="parent-ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
     </div>
   {{#each workspaceNameErrors as |error|}}
     {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
@@ -23,8 +21,8 @@
   </div>
 
   <div class="button-row">
-    <button class="primary-button create-ws" {{action "create"}}>Create Workspace</button>
-    <button class="primary-button cancel-button" {{action "cancel"}}>Cancel</button>
+    <button class="primary-button" data-test="add-parent-ws-create" {{action "create"}}>Create Workspace</button>
+    <button class="primary-button cancel-button" data-test="add-parent-ws-cancel" {{action "cancel"}}>Cancel</button>
 
   </div>
 

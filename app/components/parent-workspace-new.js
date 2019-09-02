@@ -26,23 +26,23 @@ Encompass.ParentWorkspaceNewComponent = Ember.Component.extend(Encompass.Current
     },
     create() {
       let childWorkspaces = this.get('childWorkspaces') || [];
+      if (!childWorkspaces) {
+        return this.set('createWorkspaceError', 'Must provide child workspaces to create parent workspace');
+      }
+      let assignment = this.get('assignment');
       let data = {
-        owner : this.get('currentUser'),
-        createdBy : this.get('currentUser'),
         childWorkspaces: childWorkspaces.mapBy('id'),
-        mode : 'private',
         doAutoUpdateFromChildren: true,
         name: this.get('workspaceName') || this.get('defaultName'),
-        linkedAssignment: this.get('assignment'),
+        doCreate: true,
       };
 
-      let requestRecord = this.get('store').createRecord('parentWorkspaceRequest', data);
+      assignment.set('parentWorkspaceRequest', data);
 
-      return requestRecord.save()
+      return assignment.save()
         .then((results) => {
-          console.log('results', results);
-          let createWorkspaceError = results.get('createWorkspaceError');
-          let createdWorkspace = results.get('createdWorkspace');
+          let createWorkspaceError = results.get('parentWorkspaceRequest.error');
+          let createdWorkspace = results.get('parentWorkspaceRequest.createdWorkspace');
 
           if (createWorkspaceError) {
             return this.set('createWorkspaceError', createWorkspaceError);
