@@ -11,6 +11,7 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
   didLinkedAssignmentChange: false,
 
   isParentWs: Ember.computed.equal('workspace.workspaceType', 'parent'),
+  hasChildWorkspaces: Ember.computed.gt('childWorkspaces.length', 0),
 
   didReceiveAttrs() {
     this._super(...arguments);
@@ -160,8 +161,10 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
       }
 
       if (typeof updateSettingBool === 'boolean') {
-        if (updateSettingBool !== workspace.get('doAllowSubmissionUpdates')) {
-          workspace.set('doAllowSubmissionUpdates', updateSettingBool );
+        let updateProp = this.get('isParentWs') ? 'doAutoUpdateFromChildren' : 'doAllowSubmissionUpdates';
+
+        if (updateSettingBool !== workspace.get(updateProp)) {
+          workspace.set(updateProp, updateSettingBool );
         }
       }
 
@@ -190,29 +193,53 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
     },
 
     updateWithExistingWork() {
-      _.each(['wereNoAnswersToUpdate', 'updateErrors', 'addedSubmissions', 'missingLinkedAssignment', 'serverErrors'], (prop) => {
+      _.each(['wereNoAnswersToUpdate', 'updateErrors', 'addedSubmissions', 'missingLinkedAssignment', 'serverErrors', 'missingChildWorkspaces'], (prop) => {
         if (this.get(prop)) {
           this.set(prop, null);
         }
       });
 
-      if (!this.get('linkedAssignment')) {
-        this.set('missingLinkedAssignment', true);
-        return;
-      }
+      let isParentUpdate = this.get('isParentWs');
+
       if (!this.get('workspace')) {
         return;
       }
+
+      if (!this.get('linkedAssignment') && !isParentUpdate) {
+        this.set('missingLinkedAssignment', true);
+        return;
+      }
+
+      if (isParentUpdate && !this.get('hasChildWorkspaces')) {
+        return this.set('missingChildWorkspaces', true);
+      }
+
       this.set('isUpdateRequestInProgress', true);
 
       let newUpdateRequest = this.get('store').createRecord('updateWorkspaceRequest', {
         workspace: this.get('workspace'),
         linkedAssignment: this.get('linkedAssignment'),
         createdBy: this.get('currentUser'),
+        isParentUpdate: this.get('isParentWs'),
       });
       newUpdateRequest.save()
         .then((results) => {
           this.set('isUpdateRequestInProgress', false);
+
+          if (isParentUpdate) {
+            if (results.get('wasNoDataToUpdate') === true) {
+              this.get('alert').showToast('info', 'Workspace Up to Date', 'bottom-start', 3000, false, null);
+              return;
+            } else {
+              let updatedData = results.get('updatedParentData');
+
+              this.set('updatedParentData', updatedData);
+
+              let msg = 'Successfully updated parent workspace';
+              return this.get('alert').showToast('success', msg , 'bottom-start', 3000, false, null);
+
+            }
+          }
 
           if (results.get('wereNoAnswersToUpdate') === true) {
             this.get('alert').showToast('info', 'Workspace Up to Date', 'bottom-start', 3000, false, null);
@@ -222,14 +249,16 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
             this.set('updateErrors', results.get('updateErrors'));
             return;
           }
+
           if (results.get('addedSubmissions')) {
             let count = results.get('addedSubmissions.length');
             let msg = `Added ${count} new submissions`;
             if (count === 1) {
               msg = 'Added 1 new submission';
             }
-            this.get('alert').showToast('success', msg , 'bottom-start', 3000, false, null);
+            return this.get('alert').showToast('success', msg , 'bottom-start', 3000, false, null);
           }
+
         })
         .catch((err) => {
           this.handleErrors(err, 'serverErrors');
