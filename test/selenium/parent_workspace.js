@@ -29,9 +29,20 @@ describe('Parent Workspace creation and updating', function() {
   let workspacesUrl = `${host}/#/workspaces`;
 
   let parentWorkspaceHref;
+  let parentWorkspaceInfoHref;
+
   let student1WorkspaceHref;
   let student2WorkspaceHref;
   let student3WorkspaceHref;
+
+  function getWsInfoHref(wsHref) {
+
+    return wsHref.replace(/\/work$/, `/info`);
+  }
+
+  function goToWsInfo(url) {
+    return helpers.navigateAndWait(driver, url, css.wsInfo.settings.editBtn);
+  }
 
   before(async function() {
     driver = new Builder()
@@ -87,30 +98,29 @@ describe('Parent Workspace creation and updating', function() {
   function checkWorkspaceStats (workspaceName, expectedStats, options = {}) {
     describe('Checking stats for ' + workspaceName, function() {
       let { submissions, selections, comments, folders, responses } = expectedStats;
+        before(async function() {
+          try {
+              await helpers.navigateAndWait(driver, workspacesUrl, '.results-list');
+              if (options.doUseHref) {
+                await driver.get(parentWorkspaceHref);
+                await helpers.waitForUrlMatch(driver, new RegExp(parentWorkspaceHref));
 
-      before(async function() {
-        try {
-          await helpers.navigateAndWait(driver, workspacesUrl, '.results-list');
-          if (options.doUseHref) {
-            await driver.get(parentWorkspaceHref);
-            await helpers.waitForUrlMatch(driver, new RegExp(parentWorkspaceHref));
+              } else {
+                await helpers.navigateAndWait(driver, workspacesUrl, '.results-list');
+                let link = await driver.findElement(By.linkText(workspaceName));
+                await link.click();
 
-          } else {
-            await helpers.navigateAndWait(driver, workspacesUrl, '.results-list');
-            let link = await driver.findElement(By.linkText(workspaceName));
-            await link.click();
+              await helpers.waitForSelector(driver, '.info-link');
 
-          await helpers.waitForSelector(driver, '.info-link');
+              }
+                await helpers.dismissWorkspaceTour(driver);
+              await helpers.findAndClickElement(driver, '.info-link > a');
+              await helpers.waitForSelector(driver, '#workspace-info-stats');
 
+          }catch(err) {
+            throw(err);
           }
-            await helpers.dismissWorkspaceTour(driver);
-          await helpers.findAndClickElement(driver, '.info-link > a');
-          await helpers.waitForSelector(driver, '#workspace-info-stats');
-
-        }catch(err) {
-          throw(err);
-        }
-      });
+        });
       it(`should have ${submissions || 0} submissions`, async function() {
         let actualCount = await helpers.findAndGetText(driver, '.row-value.submissions');
         let expectedCount = submissions || 0;
@@ -139,6 +149,37 @@ describe('Parent Workspace creation and updating', function() {
       });
     });
 
+  }
+
+  function checkWorkspaceStatsFromPage (expectedStats) {
+    let { submissions, selections, comments, folders, responses } = expectedStats;
+
+    it(`should have ${submissions || 0} submissions`, async function() {
+      let actualCount = await helpers.findAndGetText(driver, '.row-value.submissions');
+      let expectedCount = submissions || 0;
+      expect(actualCount).to.eql(expectedCount.toString());
+    });
+    it(`should have ${selections || 0} selections`, async function() {
+      let actualCount = await helpers.findAndGetText(driver, '.row-value.selections');
+      let expectedCount = selections || 0;
+      expect(actualCount).to.eql(expectedCount.toString());
+    });
+    it(`should have ${comments || 0} comments`, async function() {
+      let actualCount = await helpers.findAndGetText(driver, '.row-value.comments');
+      let expectedCount = comments || 0;
+      expect(actualCount).to.eql(expectedCount.toString());
+    });
+    it(`should have ${folders || 0} folders`, async function() {
+      let actualCount = await helpers.findAndGetText(driver, '.row-value.folders');
+      let expectedCount = folders || 0;
+      expect(actualCount).to.eql(expectedCount.toString());
+    });
+
+    it(`should have ${responses || 0} responses`, async function() {
+      let actualCount = await helpers.findAndGetText(driver, '.row-value.responses');
+      let expectedCount = responses || 0;
+      expect(actualCount).to.eql(expectedCount.toString());
+    });
   }
 
   after(() => {
@@ -203,6 +244,7 @@ describe('Parent Workspace creation and updating', function() {
           return link.getAttribute('href')
             .then((href) => {
               parentWorkspaceHref = href;
+              parentWorkspaceInfoHref = getWsInfoHref(href);
             });
         });
       });
@@ -469,6 +511,282 @@ describe('Parent Workspace creation and updating', function() {
       await helpers.login(driver, host, teacher);
     });
     checkWorkspaceStats(teacher.parentWorkspace.name, expectedStats, { doUseHref: true } );
+  });
+
+  describe('Turning off auto updates for 2nd workspace', function() {
+    async function openEditMenu() {
+      await helpers.findAndClickElement(driver, css.wsInfo.settings.editBtn);
+      await helpers.waitForSelector(driver, css.wsInfo.settings.saveEdit);
+    }
+    async function saveSettings() {
+      await helpers.findAndClickElement(driver, css.wsInfo.settings.saveEdit);
+      await helpers.waitForSelector(driver, css.wsInfo.settings.editBtn);
+    }
+
+    before(async function() {
+      await goToWsInfo(student2WorkspaceHref);
+    });
+
+    describe('Toggling from yes to no', function() {
+      before(async function() {
+        await goToWsInfo(parentWorkspaceInfoHref);
+        await openEditMenu();
+        await helpers.selectOption(
+          driver,
+          css.wsInfo.settings.autoUpdateSelect,
+          'No',
+          true
+        );
+
+        await saveSettings();
+      });
+
+      it('should display success toast message', async function() {
+        expect(
+          await helpers.isTextInDom(
+            driver,
+            css.wsInfo.settings.updateSuccessText
+          )
+        ).to.eql(true);
+      });
+
+      it('should display No for automatic updates', async function() {
+        expect(
+          await helpers.findAndGetText(
+            driver,
+            css.wsInfo.settings.autoUpdateText
+          )
+        ).to.eql('No');
+      });
+
+      it('should display no after page refresh', async function() {
+        await goToWsInfo(parentWorkspaceInfoHref);
+        expect(
+          await helpers.findAndGetText(
+            driver,
+            css.wsInfo.settings.autoUpdateText
+          )
+        ).to.eql('No');
+      });
+    });
+
+    describe('Manually updating ', function() {
+      it('Should display workspace up to date toast', async function() {
+        let msg = 'Workspace Up to Date';
+        await helpers.findAndClickElement(
+          driver,
+          css.wsInfo.settings.updateParentWs
+        );
+        let didAppear = await helpers.waitForTextInDom(driver, msg);
+        expect(didAppear).to.eql(true);
+      });
+    });
+
+    describe('Additional student markup while autoupdate is off', function() {
+      let wsSelectors = css.workspace;
+      describe('Marking up as student2', function() {
+        let student = student2;
+        let selectionsCount = 0;
+        let taggingsCount = 0;
+        let foldersCount = 0;
+
+        let selectionLinkSel = wsSelectors.selections.selectionLink;
+        let studentToMarkup = student1;
+
+        let createdSelection;
+        let createdFolder;
+
+        before(async function() {
+          try {
+            let studentWsUrl = student2WorkspaceHref;
+
+            await helpers.logout(driver);
+            await helpers.login(driver, host, student);
+            let toggleSelectingInput = await helpers.navigateAndWait(
+              driver,
+              studentWsUrl,
+              wsSelectors.toggleSelectingInput
+            );
+
+            await helpers.waitForElementToHaveText(
+              driver,
+              wsSelectors.studentItem,
+              studentToMarkup.username
+            );
+            await toggleSelectingInput.click();
+            await helpers.waitForSelector(
+              driver,
+              wsSelectors.selectableArea.container
+            );
+          } catch (err) {
+            throw err;
+          }
+        });
+
+        it('Should not create selection just clicking on text', async function() {
+          let nodeSel = '#node-1';
+          let initialCount = selectionsCount;
+
+          let node = await helpers.getWebWelementByCss(driver, nodeSel);
+          await node.click();
+
+          let selectionLinks = await helpers.getWebElements(
+            driver,
+            selectionLinkSel
+          );
+
+          expect(selectionLinks).to.have.lengthOf(initialCount);
+        });
+
+        it('Creating a selection', async function() {
+          let nodeSel = '#node-1';
+          let node2Sel = '#node-2';
+          let initialCount = selectionsCount;
+
+          // let node = await helpers.getWebWelementByCss(driver, nodeSel );
+          let [node1, node2] = await Promise.all([
+            helpers.getWebWelementByCss(driver, nodeSel),
+            helpers.getWebWelementByCss(driver, node2Sel)
+          ]);
+          const actions = driver.actions({ bridge: true });
+
+          await actions.dragAndDrop(node1, node2).perform();
+
+          await helpers.waitForTextInDom(driver, 'Selection Created');
+          await helpers.waitForRemoval(driver, css.sweetAlert.container);
+          let selectionLinks = await helpers.getWebElements(
+            driver,
+            selectionLinkSel
+          );
+          expect(selectionLinks).to.have.lengthOf(initialCount + 1);
+
+          createdSelection = await helpers.getWebWelementByCss(
+            driver,
+            wsSelectors.selections.selectedDraggable
+          );
+        });
+
+        it('Creating a comment', async function() {
+          let text = student.linkedWs.newComment.text;
+
+          await helpers.findInputAndType(driver, css.wsComments.textArea, text);
+          await helpers.findAndClickElement(driver, css.wsComments.save);
+          await helpers.waitForTextInDom(driver, 'Comment Created');
+
+          let commentLinkItems = await helpers.getWebElements(
+            driver,
+            css.wsComments.commentText
+          );
+          expect(commentLinkItems).to.have.lengthOf(1);
+        });
+
+        xit('Reusing a comment', async function() {});
+
+        it('Creating a folder', async function() {
+          let folderName = student.linkedWs.newFolder.name;
+          await helpers.findAndClickElement(driver, wsSelectors.folders.add);
+          let swalInput = await helpers.waitForSelector(
+            driver,
+            css.sweetAlert.textInput
+          );
+          await swalInput.sendKeys(folderName);
+          await helpers.findAndClickElement(driver, css.sweetAlert.confirmBtn);
+
+          await helpers.waitForTextInDom(driver, `${folderName} created`);
+          await helpers.waitForRemoval(driver, css.sweetAlert.container);
+
+          createdFolder = await helpers.getWebWelementByCss(
+            driver,
+            '.dropZone'
+          );
+          expect(createdFolder).to.exist;
+        });
+
+        xit('Filing a selection', async function() {
+          const actions = driver.actions({ bridge: true });
+          let successText = 'Selection Filed';
+
+          await actions.dragAndDrop(createdSelection, createdFolder).perform();
+          await helpers.waitForTextInDom(driver, successText);
+
+          let showFolderCircle = await helpers.getWebWelementByCss(
+            driver,
+            wsSelectors.folders.showFolderCircle
+          );
+          expect(await showFolderCircle.getText()).to.eql(
+            (taggingsCount + 1).toString()
+          );
+        });
+
+        it('Creating a response', async function() {
+          try {
+            let successText = 'Response Sent';
+            await helpers.findAndClickElement(driver, wsSelectors.newResponse);
+
+            await helpers.waitForAndClickElement(
+              driver,
+              css.responsesNew.saveBtn
+            );
+
+            await helpers.waitForTextInDom(driver, successText);
+            expect(
+              await helpers.isElementVisible(
+                driver,
+                css.responseInfo.mentorReplyView.unreadIcon
+              )
+            ).to.eql(true);
+          } catch (err) {
+            throw err;
+          }
+        });
+
+        xit('Updating a response', async function() {});
+      });
+
+      describe('Checking parent workspace did not update automatically', function() {
+        let expectedStats = {
+          submissions: 2,
+          folders: 4,
+          selections: 1,
+          comments: 1,
+          responses: 1
+        };
+
+        before(async function() {
+          await helpers.logout(driver);
+          await helpers.login(driver, host, teacher);
+        });
+        checkWorkspaceStats(teacher.parentWorkspace.name, expectedStats, {
+          doUseHref: true
+        });
+      });
+    });
+
+    describe('Manually updating after additional markup', function() {
+      // already on info page
+      it('Should display update success toast', async function() {
+          let msg = 'Successfully updated parent workspace';
+        await helpers.findAndClickElement(
+          driver,
+          css.wsInfo.settings.updateParentWs
+        );
+        let didAppear = await helpers.waitForTextInDom(driver, msg);
+        expect(didAppear).to.eql(true);
+      });
+
+      describe('Checking that stats updated', function() {
+        let expectedStats = {
+          submissions: 2,
+          folders: 5,
+          selections: 2,
+          comments: 2,
+          responses: 2
+        };
+
+        checkWorkspaceStatsFromPage(expectedStats);
+
+      });
+    });
   });
 
 });

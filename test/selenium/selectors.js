@@ -429,7 +429,7 @@ module.exports = {
     container: '#workspace-info',
     settings: {
       container: '#workspace-info-settings',
-      editBtn: '#workspace-info-settings > div > div.heading > span > i',
+      editBtn: 'span[data-test=ws-settings-edit]',
       cancelEdit: '#workspace-info-settings > div > div.card-content > div.card-row.button-row > button.primary-button.cancel-button',
       saveEdit: '#workspace-info-settings > div > div.card-content > div.card-row.button-row > button:nth-child(2)',
       editName: '#edit-name-input',
@@ -439,6 +439,7 @@ module.exports = {
       updateSuccessText: 'Workspace Updated',
       linkedAssnInput: '#linked-assignment-select-selectized',
       linkedAssnText: 'div[data-test="linked-assn"]',
+      updateParentWs: 'button[data-test=parent-ws-update]'
     },
     collabs: {
       container: '#workspace-info-collaborators',

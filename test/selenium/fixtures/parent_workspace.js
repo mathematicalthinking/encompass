@@ -36,6 +36,12 @@ module.exports = {
     },
     linkedWs: {
       name: `mtgstudent2: Morty's Public / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
+      newFolder: {
+        name: 'interesting',
+      },
+      newComment: {
+        text: 'I notice that I am student 2...'
+      }
     }
   },
   newAssignment: {
