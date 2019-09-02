@@ -1,161 +1,223 @@
-<section class="assignment-info-teacher">
+<div class="info-flex-item assignment-name">
   {{#if isEditing}}
-    <form id='assignment-info-form' class='properForm'>
-      <fieldset>
-        <ol>
-          <li>
-            <label for="assignment">Assignment Name</label>
-            {{input type="text" value=assignmentName}}
-          </li>
-          <li>
-            <label for="problem">Problem</label>
-              {{#if canEditProblem}}
-                {{selectize-input
-                store=store
-                inputId="assn-new-problem-select"
-                initialOptions=problemOptions
-                initialItems=initialProblemItem
-                onItemAdd=(action "updateSelectizeSingle")
-                onItemRemove=(action "updateSelectizeSingle")
-                maxItems=1
-                labelField="title"
-                valueField="id"
-                searchField="title"
-                propToUpdate="selectedProblem"
-                placeholder="Search for a problem by title"
-                isAsync=true
-                model="problem"
-                queryParamsKey="query"
-                searchCriterion="title"
-                topLevelQueryParams="searchBy"
-                preload=problemsPreloadValue
-              }}
-              {{else}}
-                <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
-              {{/if}}
-            </li>
-          <li>
-            <label for="section">Class</label>
-            {{#if canEditProblem}}
-              {{selectize-input
-                inputId="assn-new-section-select"
-                initialOptions=sectionOptions
-                initialItems=initialSectionItem
-                onItemAdd=(action "updateSelectizeSingle")
-                onItemRemove=(action "updateSelectizeSingle")
-                maxItems=1
-                labelField="name"
-                valueField="id"
-                searchField="name"
-                propToUpdate="selectedSection"
-                placeholder="Search for a section by name"
-                model="section"
-                store=store
-              }}
-              {{input required=true type="hidden" value=selectedSection}}
-
-            {{else}}
-              <p class="assignment-info">{{#link-to 'section' assignment.section.id}}{{assignment.section.name}}{{/link-to}}</p>
-
-            {{/if}}
-        </li>
-        <li class="assignment-info">
-          <label for="assignedDate">Assigned Date</label>
-          {{#if canEditAssignedDate}}
-            {{input name="daterange" id="assignedDate" type="text" value=formattedAssignedDate}}
-          {{else}}
-            <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
-          {{/if}}
-        </li>
-        <li class="assignment-info">
-          <label for="dueDate">Due Date</label>
-          {{#if canEditDueDate}}
-            {{input id="dueDate" name="daterange" type="text" value=formattedDueDate}}
-          {{else}}
-              <p class="assignment-info">{{format-date assignment.dueDate displayDateFormat}}</p>
-          {{/if}}
-        </li>
-        </ol>
-      </fieldset>
-    </form>
-    <div class="button-row">
-      <button class="primary-button" {{action 'updateAssignment'}}>Save Assignment</button>
-      <button class="primary-button cancel-button" {{action 'stopEditing'}}>Cancel</button>
-    </div>
-    <button data-test="trash-assn" class="right" {{action 'showDeleteModal'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+    {{input type="text" value=assignmentName}}
+  {{else}}
+    {{assignment.name}}
   {{/if}}
-  {{#if isDisplaying}}
-    <section id='assignment-info' class='properForm'>
-      <fieldset>
-        <ol>
-          {{#if assignment.name}}
-          <li>
-            <label for="assignment">Assignment Name</label>
-            <p class="assignment-info">{{assignment.name}}</p>
-          </li>
-          {{/if}}
-          <li>
-            <label for="problem">Problem Title</label>
-            <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
-          </li>
-          <li>
-            <label for="section">Class Name</label>
-            <p class="assignment-info">{{#link-to 'section' assignment.section.id}}{{assignment.section.name}}{{/link-to}}</p>
-          </li>
-          <li>
-            <label for="assignedDate">Assigned Date</label>
-            {{#if assignment.assignedDate}}
-              <p class="assignment-info">{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
-            {{else}}
-              <p class="assignment-info">N/A</p>
-            {{/if}}
-          </li>
-          <li>
-            <label for="dueDate">Due Date</label>
-          {{#if assignment.dueDate}}
-          <p class="assignment-info">{{format-date assignment.dueDate 'MMM Do YYYY'}}</p>
-          {{else}}
-            <p class="assignment-info">N/A</p>
-          {{/if}}
-          </li>
-          <li>
-            <label for="linkedWorkspaces">Linked Workspaces</label>
-            <ul class="assignment-info linked-workspaces">
-              {{#each linkedWorkspaces as |workspace|}}
-              <li>
-                {{#link-to 'workspace.work' workspace.id}}{{workspace.name}}{{/link-to}}
-              </li>
-                {{else}}
-                <li>N/A</li>
-                {{/each}}
-              </ul>
-          </li>
-          <li>
-            <label for="parentWorkspace">Parent Workspace</label>
-            <ul class="assignment-info parent-workspace">
-              <li>
-                {{#if parentWorkspace}}
-                  {{#link-to 'workspace.work' parentWorkspace.id}}{{parentWorkspace.name}}{{/link-to}}
-                  {{else}}
-                  N/A
-                {{/if}}
-              </li>
-
-              </ul>
-          </li>
-        </ol>
-      </fieldset>
-    </section>
-    {{#if showEditButton}}
-      <button data-test="edit-assignment" class="primary-button" {{action 'editAssignment'}}>Edit Assignment</button>
-    {{/if}}
-    {{#if showCreateParentWsBtn}}
-      <button data-test="create-parent-ws" class="primary-button" {{action (mut showParentWsForm) true}}>Generate Parent Workspace</button>
-    {{/if}}
+</div>
+<div class="info-flex-item creation-details">
+  by
+  {{#link-to "user" assignment.createdBy.username}}
+    {{assignment.createdBy.username}}
+  {{/link-to}}
+  on
+  {{format-date assignment.createDate "Do MMM YYYY"}}
+</div>
+<div class="info-flex-item single-line assigned-date">
+  <p class="label">
+    Assigned
+  </p>
+  {{#if showAssignedDateInput}}
+    {{input
+      name="daterange"
+      id="assignedDate"
+      type="text"
+      value=formattedAssignedDate
+      disabled=true
+    }}
+  {{else}}
+    <p class="value">
+      {{format-date assignment.assignedDate "Do MMM YYYY"}}
+    </p>
   {{/if}}
-  </section>
+</div>
+<div class="info-flex-item single-line due-date">
+  <p class="label">
+    Due
+  </p>
+  {{#if showDueDateInput}}
+    {{input id="dueDate" name="daterange" type="text" value=formattedDueDate}}
+  {{else}}
+    <p class="value">
+      {{format-date assignment.dueDate "Do MMM YYYY"}}
+    </p>
+  {{/if}}
+</div>
+<div class="info-flex-item section">
+  <p class="label">
+    Class
+  </p>
+  {{#if showSectionInput}}
+    {{selectize-input
+      inputId="assn-new-section-select"
+      initialOptions=sectionOptions
+      initialItems=initialSectionItem
+      onItemAdd=(action "updateSelectizeSingle")
+      onItemRemove=(action "updateSelectizeSingle")
+      maxItems=1
+      labelField="name"
+      valueField="id"
+      searchField="name"
+      propToUpdate="selectedSection"
+      placeholder="Search for a section by name"
+      model="section"
+      store=store
+    }}
+  {{else}}
+    {{#link-to "section" section}}
+      {{section.name}}
+    {{/link-to}}
+  {{/if}}
+</div>
+<div class="info-flex-item problem">
+  <p class="label">
+    Problem
+  </p>
+  {{#if showProblemInput}}
+    {{selectize-input
+      store=store
+      inputId="assn-new-problem-select"
+      initialOptions=problemOptions
+      initialItems=initialProblemItem
+      onItemAdd=(action "updateSelectizeSingle")
+      onItemRemove=(action "updateSelectizeSingle")
+      maxItems=1
+      labelField="title"
+      valueField="id"
+      searchField="title"
+      propToUpdate="selectedProblem"
+      placeholder="Search for a problem by title"
+      isAsync=true
+      model="problem"
+      queryParamsKey="query"
+      searchCriterion="title"
+      topLevelQueryParams="searchBy"
+      preload=problemsPreloadValue
+    }}
+  {{else}}
+    {{#link-to "problem" problem}}
+      {{problem.title}}
+    {{/link-to}}
+  {{/if}}
+</div>
+<div class="info-flex-item linked-ws">
+  <p class="label">
+    Linked Workspaces
+    <i
+      class={{displayListsOptions.linkedWs.icon}}
+      {{action "toggleProperty" "areLinkedWsExpanded"}}
+    ></i>
+  </p>
+  {{#if hasLinkedWorkspaces}}
+    <ul class={{if areLinkedWsHidden "hidden"}}>
+      {{#each linkedWorkspaces as |ws|}}
+        <li>
+          {{#link-to "workspace.work" ws.id}}
+            {{ws.name}}
+          {{/link-to}}
+        </li>
+      {{else}}
 
-  {{#each findRecordErrors as |error|}}
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="value no-linked-ws">
+      N/A
+    </p>
+  {{/if}}
+    {{#if showLinkedWsForm}}
+      {{linked-workspaces-new
+        students=studentsWithoutWorkspaces
+        assignment=assignment
+        section=section
+        problem=problem
+        onCancel=(action (mut showLinkedWsForm) false)
+        store=store
+        handleResults=(action "handleCreatedLinkedWs")
+      }}
+    {{/if}}
+    {{#if showAddLinkedWsBtn}}
+      <button
+        data-test="add-linked-ws"
+        class="primary-button"
+        {{action (mut showLinkedWsForm) true}}
+      >
+        Add Linked
+        Workspaces
+      </button>
+    {{/if}}
+    {{#if showFullLinkedWsMsg}}
+      <p class="info" data-test="info-full-linked-ws">All students are already owner of a linked workspace</p>
+    {{/if}}
+</div>
+<div class="info-flex-item parent-ws">
+  <p class="label">
+    Parent Workspace
+  </p>
+  {{#if parentWorkspace}}
+    {{#link-to "workspace.work" parentWorkspace.id}}
+      {{parentWorkspace.name}}
+    {{/link-to}}
+  {{else}}
+    <p class="value no-parent-ws">
+      N/A
+    </p>
+  {{/if}}
+  {{#if showParentWsForm}}
+    {{parent-workspace-new childWorkspaces=assignment.linkedWorkspaces assignment=assignment section=section problem=problem
+    onCancel=(action (mut showParentWsForm) false)
+    store=store
+    handleResults=(action "handleCreatedParentWs")
+    }}
+  {{/if}}
+  {{#if showAddParentWsBtn}}
+    <button data-test="add-parent-ws" class="primary-button" {{action (mut showParentWsForm) true}}>Add Parent
+      Workspace</button>
+  {{/if}}
+  {{#if showNoParentWsMsg}}
+    <p class="info" data-test="info-no-parent-ws">You must first add linked workspaces in order to add a parent workspace</p>
+  {{/if}}
+
+</div>
+<div class="info-flex-item submissions">
+  <p class="label">
+    Submissions
+    <i
+      class={{displayListsOptions.submissions.icon}}
+      {{action "toggleProperty" "areSubmissionsExpanded"}}
+    ></i>
+  </p>
+  {{assignment-report
+    details=assignment.reportDetails
+    assignment=assignment
+    students=studentList
+    hidden=areSubmissionsHidden
+  }}
+</div>
+<div class="info-flex-item actions">
+  {{#if showEditButton}}
+    <button
+      data-test="edit-assignment"
+      class="primary-button"
+      {{action "editAssignment"}}
+    >
+      Edit
+    </button>
+  {{/if}}
+  {{#if isEditing}}
+    <button class="primary-button" data-test="assn-save" {{action "updateAssignment"}}>
+      Save
+    </button>
+    <button class="primary-button cancel-button" data-test="assn-cancel" {{action "stopEditing"}}>
+      Cancel
+    </button>
+    <button data-test="trash-assn" class="right" {{action "showDeleteModal"}}>
+      <i class="fa fa-trash" aria-hidden="true"></i>
+    </button>
+  {{/if}}
+</div>
+<div class="info-flex-item errors">
+ {{#each findRecordErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
   {{#each updateRecordErrors as |error|}}
@@ -170,25 +232,16 @@
   {{#if invalidDateRange}}
     <p class="error-message">Invalid Date Range</p>
   {{/if}}
+</div>
 
-  {{#if showParentWsForm}}
-    {{parent-workspace-new childWorkspaces=assignment.linkedWorkspaces assignment=assignment section=assignment.section problem=assignment.problem
-    onCancel=(action (mut showParentWsForm) false)
-    store=store
-    handleResults=(action "handleCreatedParentWs")
-    }}
-  {{/if}}
-  {{#if showReport}}
-    {{assignment-report details=assignment.reportDetails assignment=assignment students=studentList }}
-  {{/if}}
 
 {{#if isEditing}}
-<script>
-  $(function () {
-    $('input[name="daterange"]').daterangepicker({
-      singleDatePicker: true,
-      showDropdowns: true,
+  <script>
+    $(function () {
+      $('input[name="daterange"]').daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+      });
     });
-  });
-</script>
+  </script>
 {{/if}}
