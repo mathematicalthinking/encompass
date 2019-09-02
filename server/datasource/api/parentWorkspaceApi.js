@@ -33,10 +33,7 @@ const generateParentWorkspace = async function(config, user) {
     // need to populate child workspaces
     // need submissions, responses,comments, selections, folders, taggings
     if (!isNonEmptyArray(childWorkspaces)) {
-      return {
-        parentWorkspace: null,
-        errorMsg: 'No child workspaces provided'
-      };
+      return ['No child workspaces provided', null];
     }
 
     if (!name) {
@@ -106,12 +103,13 @@ const generateParentWorkspace = async function(config, user) {
     parentWorkspace.createDate = Date.now();
 
     await parentWorkspace.save();
-    return {
+    return [
+      null,
       parentWorkspace,
-      errorMsg: null
-    };
+    ];
   } catch (err) {
     console.log({ generateParentWorkspaceErr: err });
+    return [err, null];
   }
 };
 
