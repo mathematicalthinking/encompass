@@ -236,9 +236,9 @@ const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
   } catch (err) {
     if (err.name === 'StaleElementReferenceError' ) {
       // element we are waiting to be removed has already been removed
-      return;
+      return false;
     }
-    console.log('error wait for removal: ', err);
+    throw(err);
   }
 };
 

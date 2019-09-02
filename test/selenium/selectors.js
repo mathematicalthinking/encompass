@@ -225,6 +225,7 @@ module.exports = {
     select: 'select.swal2-select',
     container: '.swal2-container',
     textInput: 'input.swal2-input[type=text]',
+    modal: '.swal2-modal',
   },
 
   problemNew: {
@@ -460,14 +461,30 @@ module.exports = {
     editAssignment: 'button[data-test="edit-assignment"]',
     trashBtn: 'button[data-test="trash-assn"]',
     confirmTrash: 'body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled',
+    saveAssignment: 'button[data-test=assn-save]',
+    cancelAssignment: 'button[data-test=assn-cancel]',
+    container: '#assignment-info-teacher',
     sideList: {
       yours: 'ul.your-assignments'
     },
     linkedWorkspaces: {
-      link: 'ul.linked-workspaces > li > a',
+      container: '#linked-workspaces-new',
+      link: '.info-flex-item.linked-ws > ul > li > a',
+      add: 'button[data-test=add-linked-ws]',
+      nameInput: '#linked-ws-new-name',
+      create: 'button[data-test=add-linked-ws-create]',
+      cancel: 'button[data-test=add-linked-ws-cancel]',
+      fullLinkedMsg: 'p[data-test=info-full-linked-ws]',
+      namePreviews: '.name-previews > ul > li',
     },
     parentWorkspace: {
-      link: 'ul.parent-workspace > li > a',
+      container: '#parent-workspace-new',
+      link: '.info-flex-item.parent-ws > a',
+      add: 'button[data-test=add-parent-ws]',
+      nameInput: '#parent-ws-new-name',
+      create: 'button[data-test=add-parent-ws-create]',
+      cancel: 'button[data-test=add-parent-ws-cancel]',
+      noParentMsg: 'p[data-test=info-no-parent-ws]',
     },
     report: {
       table: 'table.report.rows.values',

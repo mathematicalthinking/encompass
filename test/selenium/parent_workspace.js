@@ -394,9 +394,6 @@ describe('Parent Workspace creation and updating', function() {
         let text = student.linkedWs.newComment.text;
 
         await helpers.findInputAndType(driver, css.wsComments.textArea, text);
-
-        await helpers.saveScreenshot(driver);
-
         await helpers.findAndClickElement(driver, css.wsComments.save);
         await helpers.waitForTextInDom(driver, 'Comment Created');
 
