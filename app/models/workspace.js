@@ -27,8 +27,8 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
     }
   }),
   workspaceType: DS.attr('string'),
-  childWorkspaces: DS.hasMany('workspace', { inverse: 'parentWorkspaces'}),
-  parentWorkspaces: DS.hasMany('workspace', { inverse: 'childWorkspaces' }),
+  childWorkspaces: DS.hasMany('workspace', { inverse: null}),
+  parentWorkspaces: DS.hasMany('workspace', { inverse: null }),
 
   _collectionLength: function(collection) {
     // https://stackoverflow.com/questions/35405360/ember-data-show-length-of-a-hasmany-relationship-in-a-template-without-downloadi
