@@ -24,6 +24,7 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 const responseAccess = require('../../middleware/access/responses');
+const parentWsApi = require('./parentWorkspaceApi');
 
 const objectUtils = require('../../utils/objects');
 const stringUtils = require('../../utils/strings');
@@ -710,7 +711,7 @@ async function putWorkspace(req, res, next) {
   let isCreator = areObjectIdsEqual(user._id, ws.createdBy);
   let isPdWs = isPdAdmin && (areObjectIdsEqual(user.organization, ws.organization));
 
-  let { isTrashed, owner, organization, linkedAssignment, doAllowSubmissionUpdates, permissions } = req.body.workspace;
+  let { isTrashed, owner, organization, linkedAssignment, doAllowSubmissionUpdates, permissions, doAutoUpdateFromChildren } = req.body.workspace;
 
   if (isAdmin || isOwner || isCreator || isPdWs) {
     ws.isTrashed = isTrashed;
@@ -720,6 +721,7 @@ async function putWorkspace(req, res, next) {
     ws.organization = organization;
     ws.linkedAssignment = linkedAssignment;
     ws.doAllowSubmissionUpdates = doAllowSubmissionUpdates;
+    ws.doAutoUpdateFromChildren = doAutoUpdateFromChildren;
   }
 
   const originalPermissions = ws.permissions || [];
@@ -3070,9 +3072,11 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
     let newUpdateRequest = new models.UpdateWorkspaceRequest(req.body.updateWorkspaceRequest);
 
-    let { workspace, linkedAssignment } = req.body.updateWorkspaceRequest;
+    let { workspace, linkedAssignment, isParentUpdate } = req.body.updateWorkspaceRequest;
 
-    if (!isValidMongoId(workspace) || !isValidMongoId(linkedAssignment)) {
+    logger.info({isParentUpdate});
+
+    if (!isValidMongoId(workspace) || (!isValidMongoId(linkedAssignment) && !isParentUpdate)) {
       newUpdateRequest.updateErrors.push('Invalid workspace or assignment.');
       await newUpdateRequest.save();
       return utils.sendResponse(res, {
@@ -3080,22 +3084,58 @@ const updateWorkspaceRequest = async function (req, res, next) {
       });
     }
 
-    let [ popWorkspace, assignment ] = await Promise.all([
-      models.Workspace.findById(workspace)
-      .populate('submissions')
-      .populate({path: 'linkedAssignment', populate: 'section'})
-      .populate('owner')
-      .populate('createdBy')
-      .exec(),
-      models.Assignment.findById(linkedAssignment).populate('answers').lean().exec()
-    ]);
+    let popWorkspace;
+    let assignment;
 
-    if (isNil(popWorkspace) || isNil(assignment)) {
-      newUpdateRequest.updateErrors.push('Invalid workspace or assignment.');
+    if (isParentUpdate) {
+      popWorkspace = await
+        models.Workspace.findById(workspace)
+        .populate('submissions')
+        .populate({path: 'selections', populate: 'submission'})
+        .populate({ path: 'comments', populate: 'submission'})
+        .populate({ path: 'responses', populate: 'submission'})
+        .populate('folders')
+        .populate({ path: 'childWorkspaces', populate: {
+          path: 'submissions', populate: 'answer'
+        }})
+        .populate('owner')
+        .populate('createdBy')
+        .exec();
+    } else {
+      [ popWorkspace, assignment ] = await Promise.all([
+        models.Workspace.findById(workspace)
+        .populate('submissions')
+        .populate({path: 'linkedAssignment', populate: 'section'})
+        .populate('owner')
+        .populate('createdBy')
+        .exec(),
+        models.Assignment.findById(linkedAssignment).populate('answers').lean().exec()
+      ]);
+    }
+
+    if (isNil(popWorkspace)) {
+      newUpdateRequest.updateErrors.push('Invalid workspace.');
       await newUpdateRequest.save();
       return utils.sendResponse(res, {
         updateWorkspaceRequest: newUpdateRequest
       });
+    }
+
+    if (isNil(assignment) && !isParentUpdate) {
+      newUpdateRequest.updateErrors.push('Invalid linked assignment.');
+      await newUpdateRequest.save();
+      return utils.sendResponse(res, {
+        updateWorkspaceRequest: newUpdateRequest
+      });
+    }
+
+    if (isParentUpdate && !isNonEmptyArray(popWorkspace.childWorkspaces)) {
+      newUpdateRequest.updateErrors.push('No child workspaces to update from');
+      await newUpdateRequest.save();
+      return utils.sendResponse(res, {
+        updateWorkspaceRequest: newUpdateRequest
+      });
+
     }
 
     // check if user has permission to do this
@@ -3104,69 +3144,80 @@ const updateWorkspaceRequest = async function (req, res, next) {
       return utils.sendError.NotAuthorizedError('You do not have permission to update this workspace\'s submissions', res);
     }
 
-    let missingAnswers = [];
-    assignment.answers.forEach((answer) => {
-      let foundAnswer = _.find(popWorkspace.submissions, (sub) => {
-        return areObjectIdsEqual(sub.answer, answer._id);
-      });
-      if (!foundAnswer) {
-        missingAnswers.push(answer);
-      }
-    });
+    let data = {};
 
-    if (!isNonEmptyArray(missingAnswers)) {
-      // no answers to update
-      newUpdateRequest.wereNoAnswersToUpdate = true;
-      await newUpdateRequest.save();
-      return utils.sendResponse(res, {
-        updateWorkspaceRequest: newUpdateRequest
+    if (isParentUpdate) {
+      let results = await parentWsApi.updateParentWorkspace(user, popWorkspace, newUpdateRequest);
+
+      let updatedWorkspace = await models.Workspace.findById(popWorkspace._id).lean().exec();
+      data.workspaces = [ updatedWorkspace ];
+
+      data.updateWorkspaceRequest = results;
+    } else {
+      let missingAnswers = [];
+      assignment.answers.forEach((answer) => {
+        let foundAnswer = _.find(popWorkspace.submissions, (sub) => {
+          return areObjectIdsEqual(sub.answer, answer._id);
+        });
+        if (!foundAnswer) {
+          missingAnswers.push(answer);
+        }
       });
+
+      if (!isNonEmptyArray(missingAnswers)) {
+        // no answers to update
+        newUpdateRequest.wereNoAnswersToUpdate = true;
+        await newUpdateRequest.save();
+        return utils.sendResponse(res, {
+          updateWorkspaceRequest: newUpdateRequest
+        });
+      }
+
+      let JSONObjects = await answersToSubmissions(missingAnswers);
+      if (!isNonEmptyArray(JSONObjects)) {
+        newUpdateRequest.updateErrors.push('Error updating workspace with new submissions.');
+        await newUpdateRequest.save();
+        return utils.sendResponse(res, {
+          updateWorkspaceRequest: newUpdateRequest
+        });  }
+
+      let savedSubs = await Promise.all(JSONObjects.map((obj) => {
+        obj.createDate = Date.now();
+        let creatorId;
+
+        let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+        // set creator of submission as the enc user who created it if applicable
+        // else set as importer
+
+        if (isValidMongoId(encUserId)) {
+          creatorId = encUserId;
+        } else {
+          creatorId = user._id;
+        }
+        obj.createdBy = creatorId;
+        // obj.createdBy = user._id;
+        let newSubmission = new models.Submission(obj);
+
+        newSubmission.workspaces.push(workspace);
+        return newSubmission.save();
+
+      }));
+
+      popWorkspace.submissions = popWorkspace.submissions.map(sub => sub._id);
+      savedSubs.forEach((sub) => {
+        popWorkspace.submissions.push(sub._id);
+        newUpdateRequest.addedSubmissions.push(sub._id);
+      });
+      await popWorkspace.save();
+
+      newUpdateRequest.workspace = popWorkspace._id;
+      data.workspaces = [ popWorkspace ];
+      await newUpdateRequest.save();
+      data.updateWorkspaceRequest = newUpdateRequest;
     }
 
-    let JSONObjects = await answersToSubmissions(missingAnswers);
-    if (!isNonEmptyArray(JSONObjects)) {
-      newUpdateRequest.updateErrors.push('Error updating workspace with new submissions.');
-      await newUpdateRequest.save();
-      return utils.sendResponse(res, {
-        updateWorkspaceRequest: newUpdateRequest
-      });  }
-
-    let savedSubs = await Promise.all(JSONObjects.map((obj) => {
-      obj.createDate = Date.now();
-      let creatorId;
-
-      let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
-
-      // set creator of submission as the enc user who created it if applicable
-      // else set as importer
-
-      if (isValidMongoId(encUserId)) {
-        creatorId = encUserId;
-      } else {
-        creatorId = user._id;
-      }
-      obj.createdBy = creatorId;
-      // obj.createdBy = user._id;
-      let newSubmission = new models.Submission(obj);
-
-      newSubmission.workspaces.push(workspace);
-      return newSubmission.save();
-
-    }));
-
-    popWorkspace.submissions = popWorkspace.submissions.map(sub => sub._id);
-    savedSubs.forEach((sub) => {
-      popWorkspace.submissions.push(sub._id);
-      newUpdateRequest.addedSubmissions.push(sub._id);
-    });
-    await popWorkspace.save();
-
-    newUpdateRequest.workspace = popWorkspace._id;
-    await newUpdateRequest.save();
-
-    return utils.sendResponse(res, {
-      updateWorkspaceRequest: newUpdateRequest
-    });
+    return utils.sendResponse(res, data);
   }catch(err) {
     console.error(`Error updateWorkspaceRequest: ${err}`);
     console.trace();
