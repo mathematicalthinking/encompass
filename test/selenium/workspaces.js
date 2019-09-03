@@ -32,7 +32,7 @@ describe('Visiting Workspaces', function() {
     expect(await helpers.getCurrentUrl(driver)).to.equal(`${host}/#/workspaces`);
   });
 
-  it('should display 4 workspaces', async function() {
+  it('should display 7 workspaces', async function() {
     let names;
     let workspaces = await helpers.getWebElements(driver, 'i.workspace_info');
 
@@ -43,7 +43,7 @@ describe('Visiting Workspaces', function() {
     }catch(err) {
       console.log(err);
     }
-    expect(names.length).to.eql(6);
+    expect(names.length).to.eql(7);
   });
 
   describe('Visiting ESI 2014 Wednesday Reflection', function() {

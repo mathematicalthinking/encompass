@@ -77,20 +77,21 @@ describe('Sections', async function () {
 
               let hash = {
                 ssmith: ['teachertaylor','5b914a802ecaf7c30dd47493', 'teachertaylor'],
-                rick: ['p','5b7321ee59a672806ec903d5', 'pdadmin'],
-                pdadmin: ['d','5b1e7bf9a5d2157ef4c911a6', 'drex']
+                rick: ['pdadmin','5b7321ee59a672806ec903d5', 'pdadmin'],
+                pdadmin: ['drex','5b1e7bf9a5d2157ef4c911a6', 'drex']
               };
               let usernameLinkSelector = `a[href="#/users/${hash[username][2]}"]`;
-              let userToAddSelector = `[data-value="${hash[username][1]}"]`;
               it('clicking on edit students should bring up menus', async function() {
                 expect(await helpers.isElementVisible(driver, css.sectionInfo.editButtons.students)).to.eql(true);
 
                 await helpers.findAndClickElement(driver, css.sectionInfo.editButtons.students);
 
-                await helpers.findInputAndType(driver, 'input#select-add-student-selectized', hash[username][0]);
-                await helpers.waitForSelector(driver, userToAddSelector);
+                await driver.sleep(500);
+                let addUserInput = 'input#select-add-student-selectized';
+                await helpers.waitForSelector(driver, addUserInput);
 
-                await helpers.waitForAndClickElement(driver, userToAddSelector);
+                await helpers.selectSingleSelectizeItem(driver, addUserInput , hash[username][0], hash[username][1], {willInputClearOnSelect: true, toastText: 'Student Added'});
+
                 await helpers.waitForSelector(driver, usernameLinkSelector);
 
                 expect(await helpers.isElementVisible(driver, usernameLinkSelector));

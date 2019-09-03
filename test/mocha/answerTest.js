@@ -130,15 +130,20 @@ describe('Answer CRUD operations by account type', function() {
                   throw(err);
                 }
                 expect(res).to.have.status(200);
-
                 let { answer, meta } = res.body;
                 expect(answer).to.have.any.keys('problem', 'answer', 'priorAnswer');
-                expect(meta.updatedWorkspacesInfo).to.be.an('array');
+                expect(meta.updatedWorkspacesInfo).to.have.all.keys('updatedWorkspaceInfo', 'updatedParentWsIds');
 
-                let { updatedWorkspaceInfo } = meta.updatedWorkspacesInfo[0];
 
-                let updatedWorkspaceId = updatedWorkspaceInfo.workspaceId;
-                let newSubmissionId = updatedWorkspaceInfo.submissionId;
+                let { updatedWorkspaceInfo } = meta.updatedWorkspacesInfo;
+
+                expect(updatedWorkspaceInfo).to.be.an('array');
+
+                expect(updatedWorkspaceInfo).to.have.lengthOf(1);
+
+                let updatedWorkspaceId = updatedWorkspaceInfo[0].updatedWorkspaceInfo.workspaceId;
+
+                let newSubmissionId = updatedWorkspaceInfo[0].updatedWorkspaceInfo.submissionId;
 
                 expect(updatedWorkspaceId).to.eql(workspaceToUpdate);
                 expect(newSubmissionId).to.exist;

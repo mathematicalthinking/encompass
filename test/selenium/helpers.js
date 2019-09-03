@@ -425,7 +425,9 @@ const waitForAndGetErrorBoxText = function(webDriver) {
   return findAndGetText(webDriver, css.general.errorBoxText);
 };
 
-const selectSingleSelectizeItem = function(webDriver, inputSelector, text, itemValue ) {
+const selectSingleSelectizeItem = function(webDriver, inputSelector, text, itemValue, options = { willInputClearOnSelect: false } ) {
+
+  let { willInputClearOnSelect, toastText } = options;
 
   return getWebElementByCss(webDriver, inputSelector)
     .then((selectizeInput) => {
@@ -436,7 +438,13 @@ const selectSingleSelectizeItem = function(webDriver, inputSelector, text, itemV
         .then(() => {
           return getParentElement(selectizeInput)
             .then((parentNode) => {
-              return waitForElementToHaveText(webDriver, parentNode, text );
+              if (!willInputClearOnSelect) {
+                return waitForElementToHaveText(webDriver, parentNode, text );
+              }
+              if (toastText) {
+                return waitForTextInDom(webDriver, toastText);
+              }
+              return parentNode;
             });
 
         });

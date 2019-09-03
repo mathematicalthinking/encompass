@@ -100,12 +100,12 @@ describe('Linking multiple workspaces to one assignment', function() {
       await helpers.findAndClickElement(driver, css.topBar.logout);
     });
 
-    it('should display two linkedWorkspaces', async function() {
+    it('should display 3 linkedWorkspaces', async function() {
       let wsLinks = await helpers.getWebElements(driver, css.assignmentsTeacher.linkedWorkspaces.link);
-      expect(wsLinks).to.have.lengthOf(2);
+      expect(wsLinks).to.have.lengthOf(3);
 
       let wsNames = await Promise.all(wsLinks.map((webEl) => {
-        return webEl.getAttribute('text');
+        return webEl.getAttribute('innerText');
       }));
       expect(wsNames).to.include(newLinkedWs.name);
     });
@@ -242,8 +242,8 @@ describe('Linking multiple workspaces to one assignment', function() {
 
         it('should have automatically updated assignment revision counts', async function() {
           let updatedCount = 4;
-          let summary = await helpers.findAndGetText(driver, '.info-summary');
-          expect(summary).to.include(`for a total of ${updatedCount} submissions`);
+          let didAppear = await helpers.waitForTextInDom(driver, `for a total of ${updatedCount} submissions` );
+          expect(didAppear).to.eql(true);
         });
       });
     });
