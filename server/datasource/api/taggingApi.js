@@ -13,8 +13,9 @@ const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/taggings');
 
-const { areObjectIdsEqual, isValidMongoId } = require('../../utils/mongoose');
-const { isNonEmptyArray } = require('../../utils/objects');
+const { areObjectIdsEqual } = require('../../utils/mongoose');
+
+const { resolveParentUpdates } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -133,58 +134,10 @@ async function postTagging(req, res, next) {
 
     await tagging.save();
 
-    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true, workspaceType: 'parent'})
-    .populate('folders')
-    .populate('submissions')
-    .populate('selections')
-    .exec();
+    let data = { tagging };
+    utils.sendResponse(res, data);
 
-    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
-      await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
-        let taggingCopy = { ...tagging.toObject() };
-        let oldId = taggingCopy._id;
-        delete taggingCopy._id;
-
-        taggingCopy.originalTagging = oldId;
-        taggingCopy.workspace = parentWs._id;
-
-        if (isValidMongoId(tagging.folder)) {
-          // find corresponding parent folder in parent ws
-          let parentWsFolder = _.find(parentWs.folders, (f) => {
-            return areObjectIdsEqual(f.originalFolder, tagging.folder);
-          });
-
-          if (!parentWsFolder) {
-            // should never happen
-            logger.info('missing parentws parent');
-            return;
-          }
-          taggingCopy.folder = parentWsFolder._id;
-
-        }
-
-        // find corresponding selection in parentWs
-
-        let parentSelection = _.find(parentWs.selections, (s) => {
-          return areObjectIdsEqual(s.originalSelection, tagging.selection);
-        });
-
-        if (!parentSelection) {
-          // should never happen
-          logger.info('missing parent selection');
-          return;
-        }
-        taggingCopy.selection = parentSelection._id;
-
-        logger.info('creating copy in parent', taggingCopy);
-
-        return models.Tagging.create(taggingCopy);
-      }));
-    }
-
-      let data = { tagging };
-      utils.sendResponse(res, data);
-
+    resolveParentUpdates(user, tagging, 'tagging', 'create', next);
 
   }catch(err) {
     logger.error(err);

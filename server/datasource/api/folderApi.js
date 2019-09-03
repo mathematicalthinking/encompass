@@ -1,7 +1,7 @@
 /**
   * # Folder API
   * @description This is the API for folder based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
+  * @author Damola Mabogunje, Daniel Kelly
   * @since 1.0.0
   */
 
@@ -17,9 +17,9 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/folders');
 const fsAccess = require('../../middleware/access/foldersets');
 
-const { isNil, isNonEmptyArray } = require('../../utils/objects');
-const {  areObjectIdsEqual } = require('../../utils/mongoose');
+const { isNil } = require('../../utils/objects');
 
+const { resolveParentUpdates } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -166,52 +166,10 @@ async function postFolder(req, res, next) {
 
     await folder.save();
 
-    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true}).populate('folders');
-
-    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
-      await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
-        let folderCopy = { ...folder.toObject() };
-        let oldId = folderCopy._id;
-        delete folderCopy._id;
-
-        folderCopy.originalFolder = oldId;
-        folderCopy.workspace = parentWs._id;
-        // should folder owner be original owner or owner of parent ws?
-        folderCopy.owner = parentWs.owner;
-
-        let isTopLevel = isNil(folder.parent);
-
-        if (isTopLevel) {
-          // need to set parent as the 'workspace' folder
-          let childWsFolder = _.find(parentWs.folders, (f) => {
-            return areObjectIdsEqual(f.srcChildWs, workspaceId);
-          });
-
-          if (!childWsFolder) {
-            // should never happen
-            logger.info('missing child ws folder');
-            return;
-          }
-          folderCopy.parent = childWsFolder;
-        } else {
-          // find corresponding parent folder in parent ws
-          let parentWsParent = _.find(parentWs.folders, (f) => {
-            return areObjectIdsEqual(f.originalFolder, folder.parent);
-          });
-
-          if (!parentWsParent) {
-            // should never happen
-            logger.info('missing parentws parent');
-            return;
-          }
-          folderCopy.parent = parentWsParent;
-        }
-        return models.Folder.create(folderCopy);
-      }));
-
-    }
     let data = { folder };
     utils.sendResponse(res, data);
+
+    resolveParentUpdates(user, folder, 'folder', 'create', next);
 
   }catch(err) {
     logger.error('error postFolder: ', err);

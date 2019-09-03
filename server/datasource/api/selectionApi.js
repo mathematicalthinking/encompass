@@ -18,9 +18,9 @@ const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/selections');
 
-const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
-const { isNonEmptyArray } = require('../../utils/objects');
+const { isValidMongoId } = require('../../utils/mongoose');
 
+const { resolveParentUpdates } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -260,40 +260,9 @@ async function postSelection(req, res, next) {
     let savedSelection = await selection.save();
 
     let data = {'selection': savedSelection};
+    utils.sendResponse(res, data);
 
-    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true})
-    .populate('submissions')
-    .exec();
-
-    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
-      await savedSelection.populate('submission').execPopulate();
-    }
-
-    let selectionAnswerId = savedSelection.submission.answer;
-    savedSelection.depopulate('submission');
-
-    await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
-      let selectionCopy = { ...savedSelection.toObject()};
-      let oldId = selectionCopy._id;
-      delete selectionCopy._id;
-
-      selectionCopy.originalSelection = oldId;
-      selectionCopy.workspace = parentWs._id;
-      selectionCopy.originalSelection = savedSelection._id;
-
-      let parentSubmission = _.find(parentWs.submissions, (sub) => {
-        return areObjectIdsEqual(sub.answer, selectionAnswerId);
-      });
-
-      if (!parentSubmission) {
-        // should never happen
-        return;
-      }
-      selectionCopy.submission = parentSubmission._id;
-      return models.Selection.create(selectionCopy);
-    }));
-
-    return utils.sendResponse(res, data);
+    resolveParentUpdates(user, savedSelection, 'selection', 'create', next);
 
   }catch(err) {
     console.error(`Error postSelection: ${err}`);

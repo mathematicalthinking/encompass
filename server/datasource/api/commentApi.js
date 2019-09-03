@@ -17,8 +17,9 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/comments');
 const asyncWrapper = utils.asyncWrapper;
 
-const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
-const { isNonEmptyArray } = require('../../utils/objects');
+const { isValidMongoId, } = require('../../utils/mongoose');
+
+const { resolveParentUpdates } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -258,93 +259,10 @@ async function postComment(req, res, next) {
 
     await comment.save();
 
-    let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: workspaceId, doAutoUpdateFromChildren: true, workspaceType: 'parent'})
-    .populate('comments')
-    .populate('submissions')
-    .populate('selections')
-    .exec();
-
-    if (isNonEmptyArray(parentWorkspacesToUpdate)) {
-      await comment.populate('submission').execPopulate();
-      let commentAnswerId = comment.submission.answer;
-
-      comment.depopulate('submission');
-
-      await Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
-        let commentCopy = { ...comment.toObject() };
-        let oldId = commentCopy._id;
-        delete commentCopy._id;
-
-        commentCopy.originalComment = oldId;
-        commentCopy.workspace = parentWs._id;
-        // should folder owner be original owner or owner of parent ws?
-
-        if (isValidMongoId(comment.parent)) {
-          // find corresponding parent comment in parent ws
-          let parentWsParent = _.find(parentWs.comments, (c) => {
-            return areObjectIdsEqual(c.originalComment, comment.parent);
-          });
-
-          if (!parentWsParent) {
-            // should never happen
-            logger.info('missing parentws parent');
-            return;
-          }
-          commentCopy.parent = parentWsParent._id;
-
-        }
-
-        if (isNonEmptyArray(comment.ancestors)) {
-          commentCopy.ancestors = comment.ancestors.map((ancestor) => {
-            // find this ancestor comment in parent ws
-            let parentWsAncestor = _.find(parentWs.comments, (c) => {
-              return areObjectIdsEqual(c.originalComment, ancestor);
-            });
-
-            if (!parentWsAncestor) {
-              // should never happen
-              logger.info('missing parentws parent');
-              return;
-            }
-            return ancestor;
-          });
-
-          commentCopy.ancestors = _.compact(commentCopy.ancestors);
-        }
-
-        // find corresponding selection in parentWs
-
-        let parentSelection = _.find(parentWs.selections, (s) => {
-          return areObjectIdsEqual(s.originalSelection, comment.selection);
-        });
-
-        if (!parentSelection) {
-          // should never happen
-          logger.info('missing parent selection');
-          return;
-        }
-        commentCopy.selection = parentSelection._id;
-
-        // find corresponding submission in parentWs
-
-        let parentSubmission = _.find(parentWs.submissions, (s) => {
-          return areObjectIdsEqual(s.answer, commentAnswerId);
-        });
-
-        if (!parentSubmission) {
-          // should never happen
-          logger.info('missing parent submission');
-          return;
-        }
-        commentCopy.submission = parentSubmission._id;
-
-        return models.Comment.create(commentCopy);
-      }));
-    }
-
     let data = { comment };
     utils.sendResponse(res, data);
 
+    resolveParentUpdates(user, comment, 'comment', 'create', next);
   }catch(err) {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
