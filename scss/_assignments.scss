@@ -255,7 +255,7 @@ section.assignment-info-teacher {
 
 #assignment-info-teacher {
   @include flex-container(null, null, row, wrap, flex-start, flex-start, flex-start);
-  padding: 15px;
+  padding: 35px;
 
   a {
     @include accent-link
@@ -383,7 +383,7 @@ section.assignment-info-teacher {
     }
   }
 
-  #linked-workspaces-new {
+  #linked-workspaces-new, #parent-workspace-new {
     margin-top: 20px;
     margin-bottom: 20px;
     margin-left: 20px;
