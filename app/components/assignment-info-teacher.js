@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
   Encompass.CurrentUserMixin,
   Encompass.ErrorHandlingMixin,
@@ -89,21 +90,12 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
 
         if (dueDate) {
           this.set('formattedDueDate', moment(dueDate).format(dateFormat));
-        } else {
-          // for editing
-          this.set('formattedDueDate', moment(new Date()).format(dateFormat));
         }
 
         if (assignedDate) {
           this.set(
             'formattedAssignedDate',
             moment(assignedDate).format(dateFormat)
-          );
-        } else {
-          // for editing
-          this.set(
-            'formattedAssignedDate',
-            moment(new Date()).format(dateFormat)
           );
         }
       }
@@ -320,6 +312,45 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
 
     actions: {
       editAssignment: function() {
+        let assignedDate = this.get('assignment.assignedDate');
+        let dueDate = this.get('assignment.dueDate');
+        let format = this.get('htmlDateFormat');
+
+        let that = this;
+
+        let autoUpdateAssigned = assignedDate !== null && assignedDate !== undefined;
+        let autoUpdateDue = dueDate !== null && dueDate !== undefined;
+
+        $(function () {
+          $('input#assignedDate').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            autoUpdateInput: autoUpdateAssigned,
+          }, function(start, end, label) {
+            let assignedDate = start.format(format);
+            $('input#assignedDate').val(assignedDate);
+          });
+          $('input#dueDate').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            autoUpdateInput: autoUpdateDue,
+          }, function(start, end, label) {
+            let dueDate = start.format(format);
+            $('input#dueDate').val(dueDate);
+          });
+
+          let assignedInputVal = assignedDate ? moment(assignedDate).format(format): '';
+          let dueInputVal = dueDate ? moment(dueDate).format(format): '';
+
+          that.set('assignedDateEditVal', assignedInputVal);
+          that.set('dueDateEditVal', dueInputVal);
+
+          $('input#assignedDate').val(assignedInputVal);
+          $('input#dueDate').val(dueInputVal);
+
+          $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
+        });
+
         this.set('isEditing', true);
       },
 
@@ -436,27 +467,47 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
         let endDate;
         let startDate;
 
-        if (this.get('canEditAssignedDate')){
-          startDate = $('#assignedDate')
-          .data('daterangepicker')
-          .startDate.format('YYYY-MM-DD');
+        let htmlDateFormat = this.get('htmlDateFormat');
 
-          assignedDate = this.getEndDate(startDate);
+        let currentAssignedDate = this.get('assignment.assignedDate');
+        let currentDueDate = this.get('assignment.dueDate');
+
+        let currentAssignedFmt = currentAssignedDate ?
+          moment(currentAssignedDate).format(htmlDateFormat) :
+          undefined;
+        let currentDueFmt = currentDueDate ?
+          moment(currentDueDate).format(htmlDateFormat) :
+          undefined;
+
+        let assignedDateEditVal = this.get('assignedDateEditVal');
+        let dueDateEditVal = this.get('dueDateEditVal');
+
+        if (this.get('canEditAssignedDate')){
+          if (assignedDateEditVal) {
+            startDate = $('#assignedDate')
+            .data('daterangepicker')
+            .startDate.format('YYYY-MM-DD');
+
+            assignedDate = this.getMongoDate(startDate);
+          }
 
         } else {
           assignedDate = this.get('assignment.assignedDate');
         }
 
         if (this.get('canEditDueDate')) {
-          endDate = $('#dueDate')
-          .data('daterangepicker')
-          .startDate.format('YYYY-MM-DD');
+          if (dueDateEditVal) {
 
-          dueDate = this.getEndDate(endDate);
+            endDate = $('#dueDate')
+            .data('daterangepicker')
+            .startDate.format('YYYY-MM-DD');
+
+            dueDate = this.getEndDate(endDate);
 
         } else {
           dueDate = this.get('assignment.dueDate');
         }
+      }
 
         if (assignedDate && dueDate && assignedDate > dueDate) {
           this.set('invalidDateRange', true);
@@ -467,16 +518,19 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
           }
         }
 
-        if (
-          JSON.stringify(dueDate) !== JSON.stringify(assignment.get('dueDate'))
-        ) {
+        let areDueDatesSame =
+          (!currentDueDate && !dueDateEditVal) ||
+          currentDueFmt === dueDateEditVal;
+        let areAssignedDatesSame =
+          (!currentAssignedDate && !assignedDateEditVal) ||
+          currentAssignedFmt === assignedDateEditVal;
+
+        if (!areDueDatesSame) {
           assignment.set('dueDate', dueDate);
         }
 
         if (
-          JSON.stringify(assignedDate) !==
-          JSON.stringify(assignment.get('assignedDate'))
-        ) {
+          !areAssignedDatesSame) {
           assignment.set('assignedDate', assignedDate);
         }
 

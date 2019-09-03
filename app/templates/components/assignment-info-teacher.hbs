@@ -22,8 +22,7 @@
       name="daterange"
       id="assignedDate"
       type="text"
-      value=formattedAssignedDate
-      disabled=true
+      value=assignedDateEditVal
     }}
   {{else}}
     <p class="value">
@@ -36,7 +35,7 @@
     Due
   </p>
   {{#if showDueDateInput}}
-    {{input id="dueDate" name="daterange" type="text" value=formattedDueDate}}
+    {{input id="dueDate" name="daterange" type="text" value=dueDateEditVal}}
   {{else}}
     <p class="value">
       {{format-date assignment.dueDate "Do MMM YYYY"}}
@@ -233,15 +232,3 @@
     <p class="error-message">Invalid Date Range</p>
   {{/if}}
 </div>
-
-
-{{#if isEditing}}
-  <script>
-    $(function () {
-      $('input[name="daterange"]').daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-      });
-    });
-  </script>
-{{/if}}
