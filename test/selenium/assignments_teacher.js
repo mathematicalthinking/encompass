@@ -128,6 +128,15 @@ describe('Assignment Info as Teacher', function() {
         expect(await isEditing(driver)).to.eql(false);
       });
 
+      it('Should not save assignment when no changes were made', async function() {
+        await helpers.findAndClickElement(driver, css.assignmentsTeacher.editAssignment);
+        await helpers.waitForSelector(driver, css.assignmentsTeacher.trashBtn);
+
+        await helpers.findAndClickElement(driver, css.assignmentsTeacher.saveAssignment);
+        let msg = 'No changes to save';
+        expect(await helpers.waitForTextInDom(driver, msg)).to.eql(true);
+      });
+
       describe('Adding linked workspaces', function() {
         let nameInputSel = css.assignmentsTeacher.linkedWorkspaces.nameInput;
         let usernames = fixtures.linkedWorkspaces.studentUsernames;
@@ -479,6 +488,7 @@ describe('Assignment Info as Teacher', function() {
             );
 
             expect(didAppear).to.eql(true);
+            await helpers.waitForRemoval(driver, css.sweetAlert.container);
           });
 
           it('Parent workspace form should be closed', async function() {

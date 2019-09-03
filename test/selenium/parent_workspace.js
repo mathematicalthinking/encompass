@@ -199,6 +199,14 @@ describe('Parent Workspace creation and updating', function() {
     });
   });
 
+  it('Should not save assignment when no changes were made', async function() {
+    await helpers.waitForRemoval(driver, css.sweetAlert.container);
+    await helpers.waitForAndClickElement(driver, css.assignmentsTeacher.editAssignment);
+    await helpers.waitForAndClickElement(driver, css.assignmentsTeacher.saveAssignment);
+    let msg = 'No changes to save';
+    expect(await helpers.waitForTextInDom(driver, msg)).to.eql(true);
+  });
+
   describe('Resulting linked workspaces', function() {
     let linkedWorkspacesLinks;
 
@@ -529,14 +537,18 @@ describe('Parent Workspace creation and updating', function() {
 
     describe('Toggling from yes to no', function() {
       before(async function() {
+        await helpers.saveScreenshot(driver);
         await goToWsInfo(parentWorkspaceInfoHref);
+        await helpers.saveScreenshot(driver);
         await openEditMenu();
+        await helpers.saveScreenshot(driver);
         await helpers.selectOption(
           driver,
           css.wsInfo.settings.autoUpdateSelect,
           'No',
           true
         );
+        await helpers.saveScreenshot(driver);
 
         await saveSettings();
       });
