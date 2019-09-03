@@ -39,6 +39,8 @@ Encompass.ParentWorkspaceNewComponent = Ember.Component.extend(Encompass.Current
 
       assignment.set('parentWorkspaceRequest', data);
 
+      // make sure linked workspaces request is not set to create
+      assignment.set('linkedWorkspacesRequest', { doCreate: false });
       return assignment.save()
         .then((results) => {
           let createWorkspaceError = results.get('parentWorkspaceRequest.error');

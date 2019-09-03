@@ -39,6 +39,7 @@ Encompass.LinkedWorkspacesNewComponent = Ember.Component.extend(Encompass.Curren
 
       assignment.set('linkedWorkspacesRequest', data);
 
+      assignment.set('parentWorkspaceRequest', { doCreate: false });
       return assignment.save()
         .then((assignment) => {
           let createWorkspaceError = assignment.get('linkedWorkspacesRequest.error');

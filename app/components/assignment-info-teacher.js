@@ -535,6 +535,11 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
         }
 
         if (assignment.get('hasDirtyAttributes') || didRelationshipsChange) {
+
+          // never creating workspaces from this function
+          assignment.set('linkedWorkspacesRequest', { doCreate: false });
+          assignment.set('parentWorkspaceRequest', { doCreate: false });
+
           return assignment
             .save()
             .then(() => {

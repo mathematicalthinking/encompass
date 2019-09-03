@@ -408,6 +408,7 @@ const putAssignment = async (req, res, next) => {
     let linkedWorkspacesErr;
     let linkedWorkspaces;
 
+    console.log({doCreateLinkedWorkspaces});
     if (doCreateLinkedWorkspaces) {
       // create a linked workspace for each student in assignment
       assignment.linkedWorkspacesRequest.doCreate = false;
@@ -450,6 +451,7 @@ const putAssignment = async (req, res, next) => {
       return utils.sendResponse(res, data);
     }
 
+    console.log({doCreateParentWorkspace});
     if (doCreateParentWorkspace) {
       assignment.linkedWorkspacesRequest.doCreate = false;
       // reset to false so future put requests do not default to true;
