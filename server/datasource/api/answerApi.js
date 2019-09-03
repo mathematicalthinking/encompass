@@ -269,9 +269,7 @@ const getAnswer = (req, res, next) => {
     workspaceId,
     submissionId
     */
-    if (isNonEmptyArray(updatedWorkspacesInfo)) {
-      data.meta = { updatedWorkspacesInfo };
-    }
+    data.meta = { updatedWorkspacesInfo };
     utils.sendResponse(res, data);
    }catch(err) {
      console.error(`Error postAnswer: ${err}`);

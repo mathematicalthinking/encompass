@@ -3043,6 +3043,10 @@ function addAnswerToWorkspaces(user, answer) {
     let updatedWorkspaceIds = addAnswerResults.map((result) => {
       return result.updatedWorkspaceInfo.workspaceId;
     });
+    let results = {
+      updatedWorkspaceInfo: addAnswerResults,
+    };
+
     // get list of the updated workspace ids so we can check if any of them
     // are a child workspace of a parent workspace
     if (isNonEmptyArray(updatedWorkspaceIds)) {
@@ -3051,7 +3055,16 @@ function addAnswerToWorkspaces(user, answer) {
       // create a new submission from answer and add to any parent workspaces
       return Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
         return addAnswerToWorkspace(user, answer, parentWs._id, {isParentWsUpdate: true});
-      }));
+      }))
+        .then((parentResults) => {
+          let updatedParentWorkspaceIds = parentResults.map((result) => {
+            return result.updatedWorkspaceInfo.workspaceId;
+          });
+
+          results.updatedParentWsIds = updatedParentWorkspaceIds;
+          return results;
+
+        });
     }
   });
 
