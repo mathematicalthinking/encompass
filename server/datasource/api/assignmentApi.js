@@ -282,6 +282,7 @@ const postAssignment = async (req, res, next) => {
     await assignment.save();
 
     let doCreateLinkedWorkspaces = _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
+    let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
 
     let linkedWorkspaces;
     let parentWorkspace;
@@ -309,9 +310,6 @@ const postAssignment = async (req, res, next) => {
 
           assignment.linkedWorkspaces = linkedWorkspacesIds;
           assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
-          assignment.depopulate('students').depopulate('section').depopulate('answers');
-
-          let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
 
           if (doCreateParentWorkspace) {
             let { name, doAutoUpdateFromChildren } = parentWorkspaceRequest;
@@ -344,6 +342,17 @@ const postAssignment = async (req, res, next) => {
           }
         }
       }
+      assignment.depopulate('students').depopulate('section').depopulate('answers');
+
+      // so future assignment put requests do not default to having doCreate=true
+      if (doCreateLinkedWorkspaces) {
+        assignment.linkedWorkspacesRequest.doCreate = false;
+      }
+
+      if (doCreateParentWorkspace) {
+        assignment.parentWorkspaceRequest.doCreate = false;
+      }
+
       await assignment.save();
     }
 
@@ -394,12 +403,14 @@ const putAssignment = async (req, res, next) => {
     let { linkedWorkspacesRequest, parentWorkspaceRequest } = req.body.assignment;
 
     let doCreateLinkedWorkspaces = _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
+    let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
 
     let linkedWorkspacesErr;
     let linkedWorkspaces;
+
     if (doCreateLinkedWorkspaces) {
       // create a linked workspace for each student in assignment
-      assignment.linkedWorkspacesRequest = {};
+      assignment.linkedWorkspacesRequest.doCreate = false;
       let data = {};
 
       await assignment
@@ -426,11 +437,11 @@ const putAssignment = async (req, res, next) => {
           linkedWorkspacesIds
         );
         assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
-        assignment
-          .depopulate('students')
-          .depopulate('section')
-          .depopulate('answers');
       }
+      assignment
+      .depopulate('students')
+      .depopulate('section')
+      .depopulate('answers');
 
       await assignment.save();
 
@@ -439,9 +450,9 @@ const putAssignment = async (req, res, next) => {
       return utils.sendResponse(res, data);
     }
 
-    let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
-
     if (doCreateParentWorkspace) {
+      assignment.linkedWorkspacesRequest.doCreate = false;
+      // reset to false so future put requests do not default to true;
       let data = {};
       assignment.parentWorkspaceRequest = {};
       if (assignment.parentWorkspace) {
