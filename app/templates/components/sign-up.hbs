@@ -17,6 +17,9 @@
         {{#if isEmailInvalid}}
           <p class="error-message">{{emailErrors.invalid}}</p>
         {{/if}}
+      {{#if emailError}}
+        <p class="error-message">{{emailError}}</p>
+      {{/if}}
     </div>
     {{#if isEmailValid}}
       <div class="auth-form-input">
