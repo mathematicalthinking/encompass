@@ -12,7 +12,7 @@
 			{{/if}}
 			{{#if canDeleteFolder}}
 				<div class="delete-folder">
-					<span {{action 'confirmDelete'}}><i class="fas fa-trash"></i></span>
+					<span {{action 'confirmDelete'}} data-test="trash-{{model.name}}"><i class="fas fa-trash"></i></span>
 				</div>
 			{{/if}}
 			{{#if canEditFolder}}
