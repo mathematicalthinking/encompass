@@ -78,15 +78,17 @@
   {{#if showLoadingMessage}}
     <p class="loading-message">Creating Answer... Thank you for your patience.</p>
   {{/if}}
-  <section class="submit">
-    <span>
-      <button class="primary-button create" {{action 'validate'}}>{{createButtonDisplayText}}</button>
-    </span>
-    <span class="cancelResponse">
-      <button class="action_button cancel-button" {{action 'cancelResponse'}}>Cancel</button>
-    </span>
+  {{#unless isCreatingAnswer}}
+    <section class="submit">
+      <span>
+        <button class="primary-button create" {{action 'validate'}}>{{createButtonDisplayText}}</button>
+      </span>
+      <span class="cancelResponse">
+        <button class="action_button cancel-button" {{action 'cancelResponse'}}>Cancel</button>
+      </span>
 
-  </section>
+    </section>
+  {{/unless}}
 
 
 
