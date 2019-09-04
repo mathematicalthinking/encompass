@@ -275,47 +275,63 @@ async function postSelection(req, res, next) {
 
 /**
   * @public
-  * @method postSelection
+  * @method putSelection
   * @description __URL__: /api/selections
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function putSelection(req, res, next) {
-  logger.warn("Putting Selection 1");
-  var user = userAuth.requireUser(req);
+async function putSelection(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-
-  models.Selection.findById(req.params.id, function (err, doc) {
-    logger.warn("Putting Selection 2");
-    if(err) {
-      logger.warn("Putting Selection 3");
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
 
-      logger.warn("Putting Selection 4");
-    for(var field in req.body.selection) {
+    let selection = await models.Selection.findById(req.params.id);
+
+    if (!selection) {
+      logger.info(`${user.username} attempted to update nonexistant selection with id ${req.params.id}`);
+      return utils.sendResponse(res, null);
+    }
+
+    let didIsTrashedChange = req.body.selection.isTrashed !== selection.isTrashed;
+
+    logger.info({didIsTrashedChange});
+
+    let didRelativeCoordsChange = !_.isEqual(req.body.selection.relativeCoords, selection.relativeCoords);
+
+    logger.info({didRelativeCoordsChange});
+
+    let didRelativeSizeChange = !_.isEqual(req.body.selection.relativeSize, selection.relativeSize);
+
+    logger.info({didRelativeSizeChange});
+
+    for(let field in req.body.selection) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.selection[field];
+        selection[field] = req.body.selection[field];
       }
     }
-      logger.warn("Putting Selection 5 doc: " + JSON.stringify(doc) );
 
-    doc.save(function (err, selection) {
-      logger.warn("Tried to save selection!");
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
+    selection.lastModifiedDate = new Date();
+    selection.lastModifiedBy = user._id;
 
-      var data = {'selection': selection};
-      utils.sendResponse(res, data);
-    });
-  });
+    await selection.save();
+
+    let data = { selection };
+    utils.sendResponse(res, data);
+
+    if (didIsTrashedChange || didRelativeSizeChange ||didRelativeCoordsChange) {
+      // resolve parent updates
+      logger.info('starting selection parent update check');
+      resolveParentUpdates(user, selection, 'selection', 'update', next);
+    }
+
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 module.exports.get.selections = getSelections;
