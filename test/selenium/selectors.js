@@ -226,6 +226,9 @@ module.exports = {
     container: '.swal2-container',
     textInput: 'input.swal2-input[type=text]',
     modal: '.swal2-modal',
+    toasts: {
+      title: 'div.swal2-toast > .swal2-header > #swal2-title'
+    }
   },
 
   problemNew: {
@@ -421,7 +424,10 @@ module.exports = {
     },
     folders: {
       add: '.folders-modify-item.add > span',
-      showFolderCircle: ''
+      showFolderCircle: '',
+      edit: '.folders-modify-item.edit > span',
+      doneEditingIcon: '.folders-modify-item.edit > span > .fas.fa-check',
+      editNameInput: '.edit-folder-name',
     }
 
   },
@@ -498,7 +504,10 @@ module.exports = {
     save: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.save',
     cancel: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.cancel-button',
     commentText: 'div.comment-flex-item.text > p:nth-child(1) > a',
+    commentActions: 'div.comment-flex-item.actions',
     textArea: '#commentTextarea',
+    commentTypeSelect: 'div.label-select select',
+    commentListItem: '.ws-comment-comp',
   },
   vmtImport: {
     search: {

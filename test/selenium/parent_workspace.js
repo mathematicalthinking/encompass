@@ -12,6 +12,7 @@ const fixtures = require('./fixtures/parent_workspace');
 const host = helpers.host;
 
 const RadioButtonSelector = require('./utilities/radio_group');
+const SweetAlertDriver = require('./utilities/sweet_alert');
 
 describe('Parent Workspace creation and updating', function() {
   this.timeout(helpers.timeoutTestMsStr);
@@ -20,6 +21,7 @@ describe('Parent Workspace creation and updating', function() {
   let { newAssignment, teacher, student1, student2 } = fixtures;
 
   let radioButtonSelector;
+  let swalDriver;
 
   let assignmentInfoUrlRegEx = new RegExp(`^${host}/#/assignments/[0-9a-fA-F]{24}$`);
 
@@ -50,6 +52,7 @@ describe('Parent Workspace creation and updating', function() {
       .build();
     await dbSetup.prepTestDb();
     radioButtonSelector = new RadioButtonSelector(driver);
+    swalDriver = new SweetAlertDriver(driver);
     try {
       await helpers.login(driver, host, teacher);
     }catch(err) {
@@ -85,6 +88,7 @@ describe('Parent Workspace creation and updating', function() {
 
       await helpers.findAndClickElement(driver, css.assignmentsNew.submitBtn);
 
+      await swalDriver.verifyToast('Assignment Created');
       // wait for url to match /assignments/id
 
       let urlRegEx = assignmentInfoUrlRegEx;
@@ -182,6 +186,86 @@ describe('Parent Workspace creation and updating', function() {
     });
   }
 
+  async function createTextSelection(node1Selector, node2Selector, initialSelectionsCount) {
+    try {
+      let selectionLinkSelector = css.workspace.selections.selectionLink;
+      let createdSelectionSelector = css.workspace.selections.selectedDraggable;
+      let toastText = 'Selection Created';
+
+      let [node1, node2] = await Promise.all([
+        helpers.getWebWelementByCss(driver, node1Selector),
+        helpers.getWebWelementByCss(driver, node2Selector)
+      ]);
+      const actions = driver.actions();
+
+      await actions.dragAndDrop(node1, node2).perform();
+
+      await swalDriver.verifyToast(toastText);
+
+      let selectionLinks = await helpers.getWebElements(
+        driver,
+        selectionLinkSelector
+      );
+      expect(selectionLinks).to.have.lengthOf(initialSelectionsCount + 1);
+
+      let createdSelection = await helpers.getWebWelementByCss(
+        driver,
+        createdSelectionSelector
+      );
+      return createdSelection;
+    }catch(err) {
+      throw(err);
+    }
+  }
+
+  async function createComment(selectionWebEl, commentType, text, initialCount) {
+    try {
+      let commentTypes = ['notice', 'wonder', 'feedback'];
+
+      if (!commentTypes.includes(commentType)) {
+        throw new Error(`${commentType} is not a valid comment type`);
+      }
+
+      await selectionWebEl.click();
+
+      await helpers.selectOption(driver, css.wsComments.commentTypeSelect, commentType, true);
+
+      await helpers.findInputAndType(driver, css.wsComments.textArea, text);
+      await helpers.findAndClickElement(driver, css.wsComments.save);
+
+      let toastText = 'Comment Created';
+
+      await swalDriver.verifyToast(toastText);
+
+      let commentListItems = await helpers.getWebElements(driver, css.wsComments.commentListItem);
+
+      expect(commentListItems).to.have.lengthOf(initialCount + 1);
+
+      return commentListItems[0];
+    }catch(err) {
+      throw(err);
+    }
+  }
+
+  async function deleteFolderByName(folderName) {
+    try {
+      await helpers.findAndClickElement(driver, css.workspace.folders.edit);
+
+      let deleteSelector = `span[data-test="trash-${folderName}"]`;
+      let deleteBtn = await helpers.waitForSelector(driver, deleteSelector);
+      await deleteBtn.click();
+      await swalDriver.confirmYesNoModal(`${folderName} deleted`);
+
+      console.log(1);
+      await helpers.waitForAndClickElement(driver, css.workspace.folders.doneEditingIcon);
+      console.log(2);
+      await helpers.waitForSelector(driver, css.workspace.folders.edit);
+      console.log(3);
+    }catch(err) {
+      throw(err);
+    }
+  }
+
   after(() => {
     driver.quit();
   });
@@ -200,7 +284,6 @@ describe('Parent Workspace creation and updating', function() {
   });
 
   it('Should not save assignment when no changes were made', async function() {
-    await helpers.waitForRemoval(driver, css.sweetAlert.container);
     await helpers.waitForAndClickElement(driver, css.assignmentsTeacher.editAssignment);
     await helpers.waitForAndClickElement(driver, css.assignmentsTeacher.saveAssignment);
     let msg = 'No changes to save';
@@ -378,12 +461,18 @@ describe('Parent Workspace creation and updating', function() {
       let selectionsCount = 0;
       let taggingsCount = 0;
       let foldersCount = 0;
+      let commentsCount = 0;
 
       let selectionLinkSel = wsSelectors.selections.selectionLink;
       let studentToMarkup = student2;
 
       let createdSelection;
+      let secondSelection;
       let createdFolder;
+      let secondFolder;
+
+      let secondComment;
+      let secondFolderName;
 
       before(async function() {
         try {
@@ -421,34 +510,47 @@ describe('Parent Workspace creation and updating', function() {
         let node2Sel = '#node-2';
         let initialCount = selectionsCount;
 
-        // let node = await helpers.getWebWelementByCss(driver, nodeSel );
-        let [node1, node2] = await Promise.all([
-          helpers.getWebWelementByCss(driver, nodeSel ),
-          helpers.getWebWelementByCss(driver, node2Sel )
-        ]);
-        const actions = driver.actions({bridge: true});
+        createdSelection = await createTextSelection(nodeSel, node2Sel, initialCount);
+        expect(createdSelection).to.exist;
+      });
 
-        await actions
-          .dragAndDrop(node1, node2)
-          .perform();
+      it('Creating a second selection', async function() {
+        let nodeSel = '#node-1';
+        let node2Sel = '#node-2';
+        let initialCount = selectionsCount + 1;
 
-        await helpers.waitForTextInDom(driver, 'Selection Created');
-        await helpers.waitForRemoval(driver, css.sweetAlert.container);
-        let selectionLinks = await helpers.getWebElements(driver, selectionLinkSel);
-        expect(selectionLinks).to.have.lengthOf(initialCount + 1);
+        secondSelection = await createTextSelection(nodeSel, node2Sel, initialCount);
+        expect(secondSelection).to.exist;
 
-        createdSelection = await helpers.getWebWelementByCss(driver, wsSelectors.selections.selectedDraggable);
+      });
+
+      it('Deleting second selection', async function() {
+        let toastText = 'Selection Deleted';
+        let deleteBtn = await secondSelection.findElement({tagName: 'span'});
+        await deleteBtn.click();
+
+        await swalDriver.confirmYesNoModal(toastText);
       });
 
       it('Creating a comment', async function() {
         let text = student.linkedWs.newComment.text;
+        let createdComment = await createComment(createdSelection, 'notice', text, commentsCount);
 
-        await helpers.findInputAndType(driver, css.wsComments.textArea, text);
-        await helpers.findAndClickElement(driver, css.wsComments.save);
-        await helpers.waitForTextInDom(driver, 'Comment Created');
+        expect(createdComment).to.exist;
+      });
 
-        let commentLinkItems = await helpers.getWebElements(driver, css.wsComments.commentText);
-        expect(commentLinkItems).to.have.lengthOf(1);
+      it('Creating a second comment', async function() {
+        let text = student.linkedWs.newComment.text + 'second comment';
+        secondComment = await createComment(createdSelection, 'feedback', text, commentsCount + 1);
+
+        expect(secondComment).to.exist;
+
+      });
+
+      it('Deleting second comment', async function() {
+        let deleteBtn = await secondComment.findElement({css: 'span.delete_button'});
+        await deleteBtn.click();
+        await swalDriver.confirmYesNoModal('Comment Deleted');
       });
 
       xit('Reusing a comment', async function() {
@@ -462,11 +564,32 @@ describe('Parent Workspace creation and updating', function() {
         await swalInput.sendKeys(folderName);
         await helpers.findAndClickElement(driver, css.sweetAlert.confirmBtn);
 
-        await helpers.waitForTextInDom(driver, `${folderName} created`);
-        await helpers.waitForRemoval(driver, css.sweetAlert.container);
+        let toastText = `${folderName} created`;
+
+        await swalDriver.verifyToast(toastText);
 
         createdFolder = await helpers.getWebWelementByCss(driver, '.dropZone');
         expect(createdFolder).to.exist;
+      });
+
+      it('Creating a second folder', async function() {
+        let folderName = student.linkedWs.newFolder.name + 'second folder';
+        secondFolderName = folderName;
+        await helpers.findAndClickElement(driver, wsSelectors.folders.add);
+        let swalInput = await helpers.waitForSelector(driver, css.sweetAlert.textInput);
+        await swalInput.sendKeys(folderName);
+        await helpers.findAndClickElement(driver, css.sweetAlert.confirmBtn);
+
+        let toastText = `${folderName} created`;
+
+        await swalDriver.verifyToast(toastText);
+
+        secondFolder = await helpers.getWebWelementByCss(driver, '.dropZone');
+        expect(createdFolder).to.exist;
+      });
+
+      it('Deleting second folder', async function() {
+        await deleteFolderByName(secondFolderName);
       });
 
       xit('Filing a selection', async function() {
@@ -521,7 +644,7 @@ describe('Parent Workspace creation and updating', function() {
     checkWorkspaceStats(teacher.parentWorkspace.name, expectedStats, { doUseHref: true } );
   });
 
-  describe('Turning off auto updates for 2nd workspace', function() {
+  describe('Turning off auto updates for parent workspace', function() {
     async function openEditMenu() {
       await helpers.findAndClickElement(driver, css.wsInfo.settings.editBtn);
       await helpers.waitForSelector(driver, css.wsInfo.settings.saveEdit);
@@ -531,24 +654,16 @@ describe('Parent Workspace creation and updating', function() {
       await helpers.waitForSelector(driver, css.wsInfo.settings.editBtn);
     }
 
-    before(async function() {
-      await goToWsInfo(student2WorkspaceHref);
-    });
-
     describe('Toggling from yes to no', function() {
       before(async function() {
-        await helpers.saveScreenshot(driver);
         await goToWsInfo(parentWorkspaceInfoHref);
-        await helpers.saveScreenshot(driver);
         await openEditMenu();
-        await helpers.saveScreenshot(driver);
         await helpers.selectOption(
           driver,
           css.wsInfo.settings.autoUpdateSelect,
           'No',
           true
         );
-        await helpers.saveScreenshot(driver);
 
         await saveSettings();
       });
@@ -655,27 +770,8 @@ describe('Parent Workspace creation and updating', function() {
           let node2Sel = '#node-2';
           let initialCount = selectionsCount;
 
-          // let node = await helpers.getWebWelementByCss(driver, nodeSel );
-          let [node1, node2] = await Promise.all([
-            helpers.getWebWelementByCss(driver, nodeSel),
-            helpers.getWebWelementByCss(driver, node2Sel)
-          ]);
-          const actions = driver.actions({ bridge: true });
-
-          await actions.dragAndDrop(node1, node2).perform();
-
-          await helpers.waitForTextInDom(driver, 'Selection Created');
-          await helpers.waitForRemoval(driver, css.sweetAlert.container);
-          let selectionLinks = await helpers.getWebElements(
-            driver,
-            selectionLinkSel
-          );
-          expect(selectionLinks).to.have.lengthOf(initialCount + 1);
-
-          createdSelection = await helpers.getWebWelementByCss(
-            driver,
-            wsSelectors.selections.selectedDraggable
-          );
+          createdSelection = await createTextSelection(nodeSel, node2Sel, initialCount);
+          expect(createdSelection).to;
         });
 
         it('Creating a comment', async function() {
@@ -704,8 +800,9 @@ describe('Parent Workspace creation and updating', function() {
           await swalInput.sendKeys(folderName);
           await helpers.findAndClickElement(driver, css.sweetAlert.confirmBtn);
 
-          await helpers.waitForTextInDom(driver, `${folderName} created`);
-          await helpers.waitForRemoval(driver, css.sweetAlert.container);
+          let toastText = `${folderName} created`;
+
+          await swalDriver.verifyToast(toastText);
 
           createdFolder = await helpers.getWebWelementByCss(
             driver,
