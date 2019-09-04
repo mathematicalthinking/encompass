@@ -6,6 +6,8 @@ const models = require('../schemas');
 const { isNonEmptyArray, isNil } = require('../../utils/objects');
 const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 
+const { capitalizeWord } = require('../../utils/strings');
+
 const { requireUser } = require('../../middleware/userAuth');
 
 const { sendError, sendResponse } = require('../../middleware/requestHandler');
@@ -644,7 +646,7 @@ const createParentSelectionCopy = async (userId, childSelection, parentWorkspace
 
 const updateSelections = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any selections that parent ws doesnt have
-  //
+  // or if folders were deleted from child workspaces
 
   let parentWsSelectionIds = parentWs.selections.map(selection => {
     return selection.originalSelection;
@@ -1187,6 +1189,44 @@ const updateParentWorkspace = async (
   }
 };
 
+const updateParentRecord = async (user, childRecord, recordType) => {
+  try {
+    let capRecordType = capitalizeWord(recordType);
+    let originalRecordPropName = `original${capRecordType}`;
+
+    let parentCriteria = {
+      [originalRecordPropName]: childRecord._id
+    };
+
+    let parentRecord = await models[capRecordType].findOne(parentCriteria);
+
+    if (!parentRecord) {
+      return null;
+    }
+
+    let allowedFieldsHash = {
+      selection : ['isTrashed', 'relativeCoords', 'relativeSize'],
+      tagging: [ 'isTrashed' ],
+      folder: [ 'isTrashed'],
+      comment: ['isTrashed' ],
+      response: ['isTrashed', 'status'],
+    };
+
+    let allowedFields = allowedFieldsHash[recordType];
+
+    allowedFields.forEach((field) => {
+      parentRecord[field] = childRecord[field];
+    });
+    parentRecord.lastModifiedBy = user._id;
+    parentRecord.lastModifiedDate = new Date();
+
+    return parentRecord.save();
+
+  }catch(err) {
+    logger.error(err);
+  }
+};
+
 const resolveParentUpdates = async (user, childRecord, childRecordType, modificationType, next, options = {}) => {
   // this function will run after a record related to a workspace has been saved and response sent
   // any errors will be passed to express next function
@@ -1241,6 +1281,18 @@ const resolveParentUpdates = async (user, childRecord, childRecordType, modifica
     logger.info(`No parent workspaces to update for ${childRecordType} ${childRecord}`);
     return;
   }
+
+  if (modificationType === 'update') {
+    let updatedParentRecord = await updateParentRecord(user, childRecord, childRecordType);
+
+    if (!updateParentRecord) {
+      logger.info(`Could not find parent record for ${childRecord}`);
+    }
+
+    logger.info(`Successfully updated parent ${childRecordType} ${updatedParentRecord}}`);
+    return;
+  }
+
 
   let copyHandlerHash = {
     submission: {
