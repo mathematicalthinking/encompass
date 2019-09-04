@@ -58,9 +58,8 @@
       <td class="is-email-confirm">
         {{#if isEditing}}
           {{#if unconfirmedEmail}}
-          {{!-- <button {{action 'authEmail'}}>Manually confirm email?</button> --}}
             {{#if user.email}}
-              {{input type="checkbox" checked=user.isEmailConfirmed value=authorized classNames="user-email-auth"}}
+              <input class="user-email-auth" type="checkbox" checked={{user.isEmailConfirmed}} onclick={{action "onManualConfirm" user.isEmailConfirmed}} />
               <label for="">Manually confirm email?</label>
             {{/if}}
           {{else}}

@@ -15,9 +15,10 @@ const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/users');
 const auth = require('../../datasource/api/auth');
+const sso = require('../../services/sso');
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyObject, isNonEmptyArray } = objectUtils;
+const { isNonEmptyObject } = objectUtils;
 
 const { areObjectIdsEqual } = require('../../utils/mongoose');
 
@@ -230,6 +231,7 @@ function postUser(req, res, next) {
     }
 
     let shouldSendAuthEmail = requestBody.shouldSendAuthEmail;
+    let doConfirmEmail;
 
     let updateHash = {};
 
@@ -258,6 +260,9 @@ function postUser(req, res, next) {
           delete requestBody.accountType;
         }
       }
+      doConfirmEmail = requestBody.isConfirmingEmail;
+
+      delete requestBody.isConfirmingEmail;
 
       updateHash = requestBody;
     }
@@ -271,7 +276,26 @@ function postUser(req, res, next) {
 
     const updatedUser = await models.User.findByIdAndUpdate(req.params.id, updateHash, {new: true}).exec();
 
-    const data = {'user': updatedUser};
+    let confirmEmailResults;
+    let ssoConfirmedUser;
+
+    console.log({doConfirmEmail});
+
+    if (doConfirmEmail) {
+      try {
+        confirmEmailResults = await sso.confirmEmailById(updatedUser.ssoId, user);
+        console.log('confirmEmailReuslts', confirmEmailResults);
+
+        ssoConfirmedUser = confirmEmailResults.user;
+      }catch(err) {
+        console.log('sso confirm email error', err);
+        // need to notify user that confirm email may have failed?
+        // but what if other updates were successfull?
+      }
+    }
+
+
+    const data = { user: ssoConfirmedUser ? ssoConfirmedUser : updatedUser };
     // if shouldSendAuthEmail send email to user confirming that they have been authorized
     if (shouldSendAuthEmail) {
       let recipient = updatedUser.email;
