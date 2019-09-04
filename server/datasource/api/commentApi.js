@@ -277,45 +277,80 @@ async function postComment(req, res, next) {
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
   */
-function putComment(req, res, next) {
 
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.comment.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if(_.isEqual(user.id, req.body.comment.createdBy) || wsAccess.canModify(user, ws, 'comments', 3)) {
+/**
+  * @public
+  * @method putComment
+  * @description __URL__: /api/comments/:id
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+  */
+async function putComment(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.comment.workspace;
 
-      models.Comment.findById(req.params.id,
-        function (err, doc) {
-          if(err) {
-            logger.error(err);
-            return utils.sendError.InternalError(err, res);
-          }
+    let popWs = await models.Workspace.findById(workspaceId)
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
 
-          for(var field in req.body.comment) {
-            if((field !== '_id') && (field !== undefined)) {
-              doc[field] = req.body.comment[field];
-            }
-          }
-          doc.save(function (err, comment) {
-            if(err) {
-              logger.error(err);
-              return utils.sendError.InternalError(err, res);
-            }
-
-            var data = {'comment': comment};
-            utils.sendResponse(res, data);
-          });
-        }
+    if (!popWs || popWs.isTrashed) {
+      logger.info(
+        `${user.username} attempted to modify comment ${req.params.id} for missing or trashed workspace ${workspaceId}`
       );
-    } else { //not permitted
-      logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
+      return utils.sendResponse(res, null);
     }
-  });
+    let isParentWs = popWs.workspaceType === 'parent';
+
+    let canModifyCommentInWs =
+      !isParentWs &&
+      (_.isEqual(user._id, req.body.comment.createdBy) ||
+        wsAccess.canModify(user, popWs, 'comments', 3));
+
+    if (!canModifyCommentInWs) {
+      logger.info(
+        `Permission denied to modify comment ${req.params.id} in workspace ${popWs.name} (id: ${popWs._id})`
+      );
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission to modify comments in this workspace`,
+        res
+      );
+    }
+
+    let comment = await models.Comment.findById(req.params.id).exec();
+
+    if (!comment) {
+      logger.info(
+        `${user.username} attempted to modify missing comment ${req.params.id} for workspace ${workspaceId}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    let didIsTrashedChange = req.body.comment.isTrashed !== comment.isTrashed;
+
+    for (let field in req.body.comment) {
+      if (field !== '_id' && field !== undefined) {
+        comment[field] = req.body.comment[field];
+      }
+    }
+
+    await comment.save();
+
+    let data = { comment };
+    utils.sendResponse(res, data);
+
+    if (didIsTrashedChange) {
+      resolveParentUpdates(user, comment, 'comment', 'update', next);
+    }
+
+  } catch (err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 module.exports.get.comments = getComments;
