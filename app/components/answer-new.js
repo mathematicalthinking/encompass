@@ -254,6 +254,15 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   },
 
   isRevisionDifferent(original, newSummary,newExplanation, newContributors) {
+    let filesToBeUploaded = this.get('filesToBeUploaded');
+
+    if (filesToBeUploaded) {
+      // when revising is initiated, there will be no files to upload
+      // if user adds a pdf, we should count it as a different revision
+      // even if brief summary or explanation did not change
+      return true;
+    }
+
     let originalSummary = original.get('answer');
 
     if (originalSummary !== newSummary) {
