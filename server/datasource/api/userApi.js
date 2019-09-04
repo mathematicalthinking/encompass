@@ -279,12 +279,10 @@ function postUser(req, res, next) {
     let confirmEmailResults;
     let ssoConfirmedUser;
 
-    console.log({doConfirmEmail});
 
     if (doConfirmEmail) {
       try {
         confirmEmailResults = await sso.confirmEmailById(updatedUser.ssoId, user);
-        console.log('confirmEmailReuslts', confirmEmailResults);
 
         ssoConfirmedUser = confirmEmailResults.user;
       }catch(err) {
