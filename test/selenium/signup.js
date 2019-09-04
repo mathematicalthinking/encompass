@@ -101,6 +101,28 @@ describe('Signup form', function () {
 
     });
 
+    it('should not allow submitting with existing username', async function() {
+      let expectedMsg = 'Username already exists';
+      let existingUsername = 'rick';
+
+      let usernameInput = await driver.findElement(By.css(css.signup.inputs.username));
+
+      await usernameInput.clear();
+      await usernameInput.sendKeys(existingUsername);
+
+      await helpers.findAndClickElement(driver, css.signup.submit);
+      await helpers.waitForTextInDom(driver, expectedMsg );
+      expect(await helpers.isTextInDom(driver, expectedMsg)).to.eql(true);
+
+      let url = await driver.getCurrentUrl();
+      expect(url).to.eql(`${host}/#/auth/signup`);
+
+      await usernameInput.clear();
+      await usernameInput.sendKeys(helpers.newUser.username);
+
+    });
+
+
     it('should not allow submitting with invalid password', async function() {
       let passwordInput = await driver.findElement(By.css(css.signup.inputs.password));
       passwordInput.clear();
@@ -116,6 +138,47 @@ describe('Signup form', function () {
       await passwordInput.clear();
       await passwordInput.sendKeys(helpers.newUser.password);
 
+    });
+
+    it('should not allow submitting with existing email', async function() {
+      try {
+        let confSel = css.signup.inputs.confirmEmail;
+        let existingEmail = 'glaforge98@gmail.com';
+        let errorMsg = 'Email address has already been used';
+
+        let emailInput = await driver.findElement(By.css(css.signup.inputs.email));
+
+        await emailInput.clear();
+        await emailInput.sendKeys(existingEmail);
+
+        await helpers.waitForSelector(driver, confSel);
+
+        let confirmEmailInput = await driver.findElement({css: confSel});
+
+        await confirmEmailInput.clear();
+        await confirmEmailInput.sendKeys(existingEmail);
+
+        await helpers.findAndClickElement(driver, css.signup.submit);
+        await driver.sleep(1000);
+        await helpers.waitForTextInDom(driver, errorMsg);
+
+        let url = await driver.getCurrentUrl();
+        expect(url).to.eql(`${host}/#/auth/signup`);
+
+        await confirmEmailInput.clear();
+
+        await emailInput.clear();
+        await emailInput.sendKeys(helpers.newUser.email);
+
+        await helpers.waitForSelector(driver, confSel);
+
+        confirmEmailInput = await driver.findElement({css: confSel});
+
+        await confirmEmailInput.sendKeys(helpers.newUser.email);
+
+      }catch(err) {
+        throw(err);
+      }
     });
 
     it('should display terms error if submitted without checking agree to terms',

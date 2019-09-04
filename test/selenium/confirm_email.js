@@ -37,6 +37,11 @@ describe('Confirm Email', function () {
     it('should display error message', async function() {
       expect(await helpers.isElementVisible(driver, css.confirmEmail.invalidToken)).to.be.true;
     });
+
+    it('should display link to login page', async function() {
+      expect(await helpers.isElementVisible(driver, css.confirmEmail.loginLink)).to.be.true;
+    });
+
   });
 
   describe('Matching but expired token', function() {
@@ -47,6 +52,11 @@ describe('Confirm Email', function () {
     it('should display error message', async function() {
       expect(await helpers.isElementVisible(driver, css.confirmEmail.invalidToken)).to.be.true;
     });
+
+    it('should display link to login page', async function() {
+      expect(await helpers.isElementVisible(driver, css.confirmEmail.loginLink)).to.be.true;
+    });
+
   });
 
   describe('Valid token', function() {
@@ -64,6 +74,19 @@ describe('Confirm Email', function () {
     it('should display link to login page', async function() {
       expect(await helpers.isElementVisible(driver, css.confirmEmail.loginLink)).to.be.true;
     });
+
+    describe('Navigating to valid link after already confirming', function() {
+      it('should display that email is already confirmed', async function() {
+        let msg = 'Email address has already been confirmed';
+        await driver.get(host);
+        await helpers.navigateAndWait(driver, confirmLink, '.confirm-page');
+        expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+      });
+
+      it('should display link to login page', async function() {
+        expect(await helpers.isElementVisible(driver, css.confirmEmail.loginLink)).to.be.true;
+      });
+    });
   });
 
   describe('Logging in without confirmed email', function() {
@@ -73,14 +96,7 @@ describe('Confirm Email', function () {
     };
     before(async function() {
       await dbSetup.prepTestDb();
-      //await helpers.login(driver, host, user);
-      await helpers.findAndClickElement(driver, css.confirmEmail.loginLink);
-      await helpers.waitForSelector(driver, css.login.username);
-
-      await helpers.findInputAndType(driver, css.login.username, user.username);
-      await helpers.findInputAndType(driver, css.login.password, user.password);
-      await helpers.findAndClickElement(driver, css.login.submit);
-      await helpers.waitForSelector(driver, css.topBar.logout);
+      await helpers.login(driver, host, user);
       await helpers.waitForUrlMatch(driver, /unconfirmed/);
     });
 

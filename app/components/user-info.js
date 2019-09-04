@@ -219,11 +219,17 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           user.set('organizationRequest', orgReq);
         }
         user.set('email', this.get('userEmail'));
+
+
       //if is authorized is now true, then we need to set the value of authorized by to current user
         if (user.get('hasDirtyAttributes')) {
           let newDate = new Date();
           user.set('lastModifiedBy', currentUser);
           user.set('lastModifiedDate', newDate);
+
+          // so server knows whether to make request to sso server
+          user.set('isConfirmingEmail', this.get('isConfirmingEmail'));
+
           user.save().then(() => {
             this.get('alert').showToast('success', 'User updated', 'bottom-end', 3000, false, null);
             this.set('isEditing', false);
@@ -369,6 +375,17 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       doneTour: function () {
         this.set('user.seenTour', new Date());
+      },
+      onManualConfirm() {
+        // clicked manual confirm email box
+        let user = this.get('user');
+
+        if (user) {
+          let isConfirmingEmail = !user.get('isEmailConfirmed');
+
+          this.set('isConfirmingEmail', isConfirmingEmail);
+          user.toggleProperty('isEmailConfirmed');
+        }
       }
     }
 });

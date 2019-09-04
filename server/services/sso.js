@@ -100,3 +100,7 @@ module.exports.confirmEmail = (token) => {
 module.exports.resendConfirmEmail = (reqUser) => {
   return this.get('/auth/confirmEmail/resend', {}, reqUser);
 };
+
+module.exports.confirmEmailById = (ssoId, reqUser) => {
+  return this.post(`/auth/confirmEmail/confirm/user`, { ssoId }, reqUser);
+};

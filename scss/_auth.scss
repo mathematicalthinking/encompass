@@ -30,7 +30,7 @@
 }
 
 // GENERAL STYLING
-.auth-page, .login-page, .signup-page, .forgot-page, .reset-page {
+.auth-page, .login-page, .signup-page, .forgot-page, .reset-page, .confirm-page {
   // background-color: $filter-list-background-color;
   width: 100%;
   font-family: $primary-font;
@@ -440,4 +440,38 @@
   p.info{
     font-size: 1.2em;
   }
+}
+
+.confirm-page {
+  height: 90vh;
+  padding-top: 12vh;
+  z-index: -1;
+
+  a {
+    @include main-link;
+  }
+
+  .confirm-box {
+    margin: 0 auto;
+    width: 500px;
+    padding: 40px 0;
+    background-color: white;
+    box-shadow: $box-shadow;
+
+    .info {
+      margin-bottom: 20px;
+      font-weight: $light-font-weight;
+      text-align: center;
+      padding: 10px;
+    }
+    .error-message,
+    .success-message {
+      margin-bottom: 20px;
+      font-weight: $light-font-weight;
+      text-align: center;
+      font-size: 1em;
+      padding: 20px 50px;
+    }
+  }
+
 }
