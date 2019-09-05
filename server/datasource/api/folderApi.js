@@ -177,6 +177,49 @@ async function postFolder(req, res, next) {
   }
 }
 
+// function putFolder(req, res, next) {
+
+//   var user = userAuth.requireUser(req);
+//   models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
+//     if (err) {
+//       logger.error(err);
+//       return utils.sendError.InternalError(err, res);
+//     }
+//     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
+//     if(_.isEqual(user.id, req.body.folder.createdBy) || wsAccess.canModify(user, ws, 'folders', 3)) {
+//       models.Folder.findById(req.params.id,
+//         function (err, doc) {
+//           if(err) {
+//             logger.error(err);
+//             return utils.sendError.InternalError(err, res);
+//           }
+
+//           for(var field in req.body.folder) {
+//             if((field !== '_id') && (field !== undefined)) {
+//               doc[field] = req.body.folder[field];
+//             }
+//           }
+
+//           if(req.body.folder.isTopLevel) {
+//             doc.parent = null;
+//           }
+
+//           doc.save(function (err, folder) {
+//             if (err) {
+//               logger.error(err);
+//               return utils.sendError.InternalError(err, res);
+//             }
+//             var data = {'folder': folder};
+//             utils.sendResponse(res, data);
+//           });
+//         }
+//       );
+//     } else {
+//       logger.info("permission denied");
+//       return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
+//     }
+//   });
+// }
 /**
   * @public
   * @method putFolder
@@ -185,48 +228,65 @@ async function postFolder(req, res, next) {
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
   */
-function putFolder(req, res, next) {
+async function putFolder(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let popWs = await models.Workspace.findOne({ folders: req.params.id })
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
 
-  var user = userAuth.requireUser(req);
-  models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
-    if(_.isEqual(user.id, req.body.folder.createdBy) || wsAccess.canModify(user, ws, 'folders', 3)) {
-      models.Folder.findById(req.params.id,
-        function (err, doc) {
-          if(err) {
-            logger.error(err);
-            return utils.sendError.InternalError(err, res);
-          }
-
-          for(var field in req.body.folder) {
-            if((field !== '_id') && (field !== undefined)) {
-              doc[field] = req.body.folder[field];
-            }
-          }
-
-          if(req.body.folder.isTopLevel) {
-            doc.parent = null;
-          }
-
-          doc.save(function (err, folder) {
-            if (err) {
-              logger.error(err);
-              return utils.sendError.InternalError(err, res);
-            }
-            var data = {'folder': folder};
-            utils.sendResponse(res, data);
-          });
-        }
+    if (!popWs || popWs.isTrshed) {
+      logger.info(
+        `${user.username} attempted to modify folder ${req.params.id} for missing or trashed workspace`
       );
-    } else {
-      logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
+      return utils.sendResponse(res, null);
     }
-  });
+
+    let canModifyFolderInWs =
+      _.isEqual(user.id, req.body.folder.createdBy) ||
+      wsAccess.canModify(user, popWs, 'folders', 3);
+
+    if (!canModifyFolderInWs) {
+      logger.info(
+        `Permission denied to modify folder ${req.params.id} in workspace ${popWs.name} (id: ${popWs._id})`
+      );
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission to modify folders in this workspace`,
+        res
+      );
+    }
+
+    let folder = await models.Folder.findById(req.params.id).exec();
+
+    if (!folder) {
+      logger.info(
+        `${user.username} attempted to modify missing folder ${req.params.id} for workspace ${popWs._id}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    for (let field in req.body.folder) {
+      if (field !== '_id' && field !== undefined) {
+        folder[field] = req.body.folder[field];
+      }
+    }
+
+    if (req.body.folder.isTopLevel) {
+      folder.parent = null;
+    }
+
+    await folder.save();
+
+    let data = { folder };
+    utils.sendResponse(res, data);
+
+  } catch (err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 function getFolderSet(req, res, next) {
