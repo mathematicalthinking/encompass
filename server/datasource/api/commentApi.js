@@ -304,12 +304,10 @@ async function putComment(req, res, next) {
       );
       return utils.sendResponse(res, null);
     }
-    let isParentWs = popWs.workspaceType === 'parent';
 
     let canModifyCommentInWs =
-      !isParentWs &&
-      (_.isEqual(user._id, req.body.comment.createdBy) ||
-        wsAccess.canModify(user, popWs, 'comments', 3));
+      _.isEqual(user._id, req.body.comment.createdBy) ||
+      wsAccess.canModify(user, popWs, 'comments', 3);
 
     if (!canModifyCommentInWs) {
       logger.info(
