@@ -9,6 +9,8 @@ const sockets = require('../../socketInit');
 
 const { isValidMongoId } = require('../../utils/mongoose');
 
+const { resolveParentUpdates } = require('../api/parentWorkspaceApi');
+
 /**
   * @public
   * @class Response
@@ -37,18 +39,25 @@ var ResponseSchema = new Schema({
     note: {type: String },
     approvedBy: { type: ObjectId, ref: 'User' },
     unapprovedBy: { type: ObjectId, ref: 'User' },
-    wasReadByRecipient: { type: Boolean, default: false },
-    wasReadByApprover: { type: Boolean, default: false },
-    isApproverNoteOnly: { type: Boolean, default: false },
-    isNewlyApproved: { type: Boolean, default: false },
-    isNewApproved: { type: Boolean, default : false },
-    isNewPending: { type: Boolean, default: false },
-    isNewlyNeedsRevisions: { type: Boolean, default: false },
-    isNewlySuperceded: { type: Boolean, default: false},
-    isNewlyRead: { type: Boolean, default: false},
-    wasUnapproved: {type: Boolean, default: false},
     powsRecipient: { type: String },
-    originalResponse: { type: ObjectId, ref: 'Response' } // when response is in a parent workspace to ref original
+    originalResponse: { type: ObjectId, ref: 'Response' }, // when response is in a parent workspace to ref original
+
+    /*
+    For post save hook use only
+    */
+   wasReadByRecipient: { type: Boolean, default: false },
+   wasReadByApprover: { type: Boolean, default: false },
+   isApproverNoteOnly: { type: Boolean, default: false },
+   isNewlyApproved: { type: Boolean, default: false },
+   isNewApproved: { type: Boolean, default : false },
+   isNewPending: { type: Boolean, default: false },
+   isNewlyNeedsRevisions: { type: Boolean, default: false },
+   isNewlySuperceded: { type: Boolean, default: false},
+   isNewlyRead: { type: Boolean, default: false},
+   wasUnapproved: {type: Boolean, default: false},
+   wasNew: { type: Boolean, default: false },
+   updatedFields: [ { type: String } ],
+
   }, {versionKey: false});
 
 /**
@@ -72,8 +81,13 @@ ResponseSchema.pre('save', function (next) {
 
     // if status is approved, send ntf to recipient
     let isNew = this.isNew;
+    this.wasNew = isNew;
+
     let modifiedFields = this.modifiedPaths();
 
+    if (!this.wasNew) {
+      this.updatedFields = modifiedFields;
+    }
     let isApproved = this.status === 'approved';
 
     if (isApproved && isValidMongoId(this.unapprovedBy)) {
@@ -347,6 +361,51 @@ ResponseSchema.post('save', function (response) {
 
             });
       }
+  }
+
+  let { updatedFields, wasNew } = response;
+
+  let wereUpdatedFields =
+    Array.isArray(updatedFields) && updatedFields.length > 0;
+
+  if (wasNew) {
+    return resolveParentUpdates(
+      response.createdBy,
+      response,
+      'response',
+      'create'
+    ).catch(err => {
+      throw err;
+    });
+  } else if (wereUpdatedFields) {
+    let allowedParentUpdateFields = [
+      'isTrashed',
+      'status',
+      'text',
+      'note',
+      'approvedBy',
+      'unapprovedBy',
+      'wasReadByRecipient',
+      'wasReadByApprover'
+    ];
+
+    let parentFieldsToUpdate = updatedFields.filter(field => {
+      return allowedParentUpdateFields.includes(field);
+    });
+
+    if (parentFieldsToUpdate.length === 0) {
+      return;
+    }
+
+    resolveParentUpdates(
+      response.lastModifiedBy,
+      response,
+      'response',
+      'update',
+      parentFieldsToUpdate
+    ).catch(err => {
+      throw err;
+    });
   }
 
 });

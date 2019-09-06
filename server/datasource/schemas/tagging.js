@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
+const { resolveParentUpdates } = require('../api/parentWorkspaceApi');
+
 /**
   * @public
   * @class Tagging
@@ -20,6 +22,10 @@ var TaggingSchema = new Schema({
     selection: { type: ObjectId, ref: 'Selection' },
     folder: { type: ObjectId, ref: 'Folder' },
     originalTagging: { type: ObjectId, ref: 'Tagging' }, // when in a parent workspace to ref original
+    wasNew: { type: Boolean, default: false },
+    updatedFields: [ { type: String } ],
+    isDefaultTagging: { type: Boolean, default: false },
+
   }, {
     versionKey: false,
     toObject: { virtuals: true },
@@ -75,6 +81,11 @@ TaggingSchema.pre('save', true, function (next, done) {
 
 /* + The Workspace exists */
 TaggingSchema.pre('save', true, function (next, done) {
+  this.wasNew = this.isNew;
+  if (!this.wasNew) {
+    this.updatedFields = this.modifiedPaths();
+  }
+
   mongoose.models.Workspace.findById(this.workspace)
     .lean()
     .exec(function (err, found) {
@@ -130,6 +141,37 @@ TaggingSchema.post('save', function (tagging) {
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
+  }
+
+  let { updatedFields, wasNew } = tagging;
+
+  let wereUpdatedFields =
+    Array.isArray(updatedFields) && updatedFields.length > 0;
+
+  if (wasNew) {
+    resolveParentUpdates(tagging.createdBy, tagging, 'tagging', 'create').catch(
+      err => {
+        throw err;
+      }
+    );
+  } else if (wereUpdatedFields) {
+    let allowedParentUpdateFields = ['isTrashed'];
+    let parentFieldsToUpdate = updatedFields.filter(field => {
+      return allowedParentUpdateFields.includes(field);
+    });
+
+    if (parentFieldsToUpdate.length === 0) {
+      return;
+    }
+    resolveParentUpdates(
+      tagging.lastModifiedBy,
+      tagging,
+      'tagging',
+      'update',
+      parentFieldsToUpdate
+    ).catch(err => {
+      throw err;
+    });
   }
 });
 

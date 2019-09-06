@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const _ = require('underscore');
 const ObjectId = Schema.ObjectId;
+const { resolveParentUpdates} = require('../api/parentWorkspaceApi');
 
 /**
   * @public
@@ -29,6 +30,8 @@ var FolderSchema = new Schema({
   workspace: { type:ObjectId, ref:'Workspace' },
   originalFolder: { type: ObjectId, ref: 'Folder' }, // when in a parent workspace to ref original
   srcChildWs: { type: ObjectId, ref: 'Workspace' }, // for "workspace" folders create to contain a child workspaces folders in a parent workspace
+  wasNew: { type: Boolean, default: false},
+  updatedFields: [ {type: String }],
 }, {versionKey: false});
 
 /**
@@ -60,6 +63,10 @@ FolderSchema.pre('save', function (next) {
 /*  + Folder parent/child relationships are updated */
 FolderSchema.pre('save', function (next) {
   var hasWorkspace = this.workspace;
+  this.wasNew = this.isNew;
+  if (!this.isNew) {
+    this.updatedFields = this.modifiedPaths();
+  }
 
   var folder = this;
 
@@ -138,6 +145,45 @@ FolderSchema.post('save', function (folder) {
           if (err) { throw new Error(err.message); }
         });
     }
+  }
+
+  let { updatedFields, wasNew } = folder;
+
+  let wereUpdatedFields =
+    Array.isArray(updatedFields) && updatedFields.length > 0;
+
+  if (wasNew) {
+    resolveParentUpdates(folder.createdBy, folder, 'folder', 'create').catch(
+      err => {
+        throw err;
+      }
+    );
+  } else if (wereUpdatedFields) {
+    let allowedParentUpdateFields = [
+      'isTrashed',
+      'name',
+      'children',
+      'parent',
+      'weight'
+    ];
+
+    let parentFieldsToUpdate = updatedFields.filter(field => {
+      return allowedParentUpdateFields.includes(field);
+    });
+
+    if (parentFieldsToUpdate.length === 0) {
+      return;
+    }
+
+    resolveParentUpdates(
+      folder.lastModifiedBy,
+      folder,
+      'folder',
+      'update',
+      parentFieldsToUpdate
+    ).catch(err => {
+      throw err;
+    });
   }
 });
 

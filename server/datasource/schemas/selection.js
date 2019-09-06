@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 const _ = require('underscore');
 const ObjectId = Schema.ObjectId;
 
+const { resolveParentUpdates } = require('../api/parentWorkspaceApi');
+
 /**
   * @public
   * @class Selection
@@ -38,6 +40,8 @@ var SelectionSchema = new Schema({
       endTime: { type: Number }
     },
     originalSelection: { type: ObjectId, ref: 'Selection' }, // when in a parent workspace to ref original
+    wasNew: { type: Boolean, default: false },
+    updatedFields: [ { type: String } ],
   }, {versionKey: false});
 
 
@@ -57,6 +61,11 @@ SelectionSchema.pre('save', function (next) {
     *   that native lookups and updates don't fail.
     */
   try {
+    this.wasNew = this.isNew;
+    if (!this.wasNew) {
+      this.updatedFields = this.modifiedPaths();
+    }
+
     this.comments.forEach(toObjectId);
     this.taggings.forEach(toObjectId);
     next();
@@ -155,6 +164,45 @@ SelectionSchema.post('save', function (selection) {
           throw new Error(err.message);
         }
       });
+  }
+
+  let { updatedFields, wasNew } = selection;
+
+  let wereUpdatedFields =
+    Array.isArray(updatedFields) && updatedFields.length > 0;
+
+  if (wasNew) {
+    resolveParentUpdates(
+      selection.createdBy,
+      selection,
+      'selection',
+      'create'
+    ).catch(err => {
+      throw err;
+    });
+  } else if (wereUpdatedFields) {
+    let allowedParentUpdateFields = [
+      'isTrashed',
+      'relativeCoords',
+      'relativeSize'
+    ];
+    let parentFieldsToUpdate = updatedFields.filter(field => {
+      return allowedParentUpdateFields.includes(field);
+    });
+
+    if (parentFieldsToUpdate.length === 0) {
+      return;
+    }
+
+    resolveParentUpdates(
+      selection.lastModifiedBy,
+      selection,
+      'selection',
+      'update',
+      parentFieldsToUpdate
+    ).catch(err => {
+      throw err;
+    });
   }
 });
 

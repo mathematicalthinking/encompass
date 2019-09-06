@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
+const { resolveParentUpdates } = require('../api/parentWorkspaceApi');
+
 /**
   * @public
   * @class Comment
@@ -56,6 +58,8 @@ var CommentSchema = new Schema({
     /* Not to be confused with label, type depends on the object this comment is for */
     type: {type: String, enum: ['selection', 'submission', 'workspace']},
     originalComment: { type: ObjectId, ref: 'Comment' }, // when in a parent workspace to ref original
+    wasNew: { type: Boolean, default: false },
+    updatedFields: [ { type: String } ],
   }, {versionKey: false});
 
 /**
@@ -96,6 +100,12 @@ CommentSchema.pre('save', function (next) {
 /* + The parent Comment exists */
 CommentSchema.pre('save', function (next) {
   var comment = this;
+
+  this.wasNew = this.isNew;
+  if (!this.wasNew) {
+    this.updatedFields = this.modifiedPaths();
+  }
+
   if(this.parent) {
     mongoose.models.Comment.findById(this.parent)
       .lean()
@@ -177,6 +187,39 @@ CommentSchema.post('save', function (comment) {
           if(error) { throw new Error(error.message); }
         });
     }
+  }
+
+  let { updatedFields, wasNew } = comment;
+
+  let wereUpdatedFields =
+    Array.isArray(updatedFields) && updatedFields.length > 0;
+
+  if (wasNew) {
+    resolveParentUpdates(comment.createdBy, comment, 'comment', 'create').catch(
+      err => {
+        throw err;
+      }
+    );
+  } else if (wereUpdatedFields) {
+    let allowedParentUpdateFields = ['isTrashed'];
+
+    let parentFieldsToUpdate = updatedFields.filter(field => {
+      return allowedParentUpdateFields.includes(field);
+    });
+
+    if (parentFieldsToUpdate.length === 0) {
+      return;
+    }
+
+    resolveParentUpdates(
+      comment.lastModifiedBy,
+      comment,
+      'comment',
+      'update',
+      parentFieldsToUpdate
+    ).catch(err => {
+      throw err;
+    });
   }
 });
 
