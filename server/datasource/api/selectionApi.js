@@ -1,7 +1,7 @@
 /**
   * # Selections API
   * @description This is the API for selection based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
+  * @author Damola Mabogunje, Daniel Kelly
   * @since 1.0.0
   */
 
@@ -9,7 +9,6 @@
 const logger   = require('log4js').getLogger('server');
 const sharp = require('sharp');
 const axios = require('axios');
-const _ = require('underscore');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -19,8 +18,6 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/selections');
 
 const { isValidMongoId } = require('../../utils/mongoose');
-
-const { resolveParentUpdates } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -262,8 +259,6 @@ async function postSelection(req, res, next) {
     let data = {'selection': savedSelection};
     utils.sendResponse(res, data);
 
-    resolveParentUpdates(user, savedSelection, 'selection', 'create', next);
-
   }catch(err) {
     console.error(`Error postSelection: ${err}`);
     console.trace();
@@ -296,17 +291,10 @@ async function putSelection(req, res, next) {
       return utils.sendResponse(res, null);
     }
 
-    let didIsTrashedChange = req.body.selection.isTrashed !== selection.isTrashed;
 
-    logger.info({didIsTrashedChange});
 
-    let didRelativeCoordsChange = !_.isEqual(req.body.selection.relativeCoords, selection.relativeCoords);
 
-    logger.info({didRelativeCoordsChange});
 
-    let didRelativeSizeChange = !_.isEqual(req.body.selection.relativeSize, selection.relativeSize);
-
-    logger.info({didRelativeSizeChange});
 
     for(let field in req.body.selection) {
       if((field !== '_id') && (field !== undefined)) {
@@ -321,12 +309,6 @@ async function putSelection(req, res, next) {
 
     let data = { selection };
     utils.sendResponse(res, data);
-
-    if (didIsTrashedChange || didRelativeSizeChange ||didRelativeCoordsChange) {
-      // resolve parent updates
-      logger.info('starting selection parent update check');
-      resolveParentUpdates(user, selection, 'selection', 'update', next);
-    }
 
   }catch(err) {
     logger.error(err);

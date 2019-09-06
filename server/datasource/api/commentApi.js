@@ -19,8 +19,6 @@ const asyncWrapper = utils.asyncWrapper;
 
 const { isValidMongoId, } = require('../../utils/mongoose');
 
-const { resolveParentUpdates } = require('./parentWorkspaceApi');
-
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
@@ -262,7 +260,6 @@ async function postComment(req, res, next) {
     let data = { comment };
     utils.sendResponse(res, data);
 
-    resolveParentUpdates(user, comment, 'comment', 'create', next);
   }catch(err) {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
@@ -328,8 +325,6 @@ async function putComment(req, res, next) {
       return utils.sendResponse(res, null);
     }
 
-    let didIsTrashedChange = req.body.comment.isTrashed !== comment.isTrashed;
-
     for (let field in req.body.comment) {
       if (field !== '_id' && field !== undefined) {
         comment[field] = req.body.comment[field];
@@ -341,9 +336,6 @@ async function putComment(req, res, next) {
     let data = { comment };
     utils.sendResponse(res, data);
 
-    if (didIsTrashedChange) {
-      resolveParentUpdates(user, comment, 'comment', 'update', next);
-    }
 
   } catch (err) {
     logger.error(err);

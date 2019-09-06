@@ -169,57 +169,12 @@ async function postFolder(req, res, next) {
     let data = { folder };
     utils.sendResponse(res, data);
 
-    resolveParentUpdates(user, folder, 'folder', 'create', next);
-
   }catch(err) {
     logger.error('error postFolder: ', err);
     return utils.sendError.InternalError(err, res);
   }
 }
 
-// function putFolder(req, res, next) {
-
-//   var user = userAuth.requireUser(req);
-//   models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-//     if (err) {
-//       logger.error(err);
-//       return utils.sendError.InternalError(err, res);
-//     }
-//     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
-//     if(_.isEqual(user.id, req.body.folder.createdBy) || wsAccess.canModify(user, ws, 'folders', 3)) {
-//       models.Folder.findById(req.params.id,
-//         function (err, doc) {
-//           if(err) {
-//             logger.error(err);
-//             return utils.sendError.InternalError(err, res);
-//           }
-
-//           for(var field in req.body.folder) {
-//             if((field !== '_id') && (field !== undefined)) {
-//               doc[field] = req.body.folder[field];
-//             }
-//           }
-
-//           if(req.body.folder.isTopLevel) {
-//             doc.parent = null;
-//           }
-
-//           doc.save(function (err, folder) {
-//             if (err) {
-//               logger.error(err);
-//               return utils.sendError.InternalError(err, res);
-//             }
-//             var data = {'folder': folder};
-//             utils.sendResponse(res, data);
-//           });
-//         }
-//       );
-//     } else {
-//       logger.info("permission denied");
-//       return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
-//     }
-//   });
-// }
 /**
   * @public
   * @method putFolder
@@ -274,9 +229,11 @@ async function putFolder(req, res, next) {
       }
     }
 
-    if (req.body.folder.isTopLevel) {
-      folder.parent = null;
-    }
+    // why was this here?
+    // if (req.body.folder.isTopLevel) {
+    //   folder.parent = null;
+    // }
+
 
     await folder.save();
 

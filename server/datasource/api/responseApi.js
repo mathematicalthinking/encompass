@@ -20,8 +20,6 @@ const apiUtils = require('./utils');
 const { isNonEmptyArray } = require('../../utils/objects');
 const { isValidMongoId, areObjectIdsEqual  } = require('../../utils/mongoose');
 
-const { resolveParentUpdates } = require('./parentWorkspaceApi');
-
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
@@ -150,8 +148,6 @@ async function postResponse(req, res, next) {
 
     let data = { response: savedResponse };
     utils.sendResponse(res, data);
-
-    resolveParentUpdates(user, savedResponse, 'response', 'create', next);
 
   }catch(err) {
     console.error(`Error postResponse: ${err}`);

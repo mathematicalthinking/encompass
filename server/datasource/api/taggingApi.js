@@ -1,11 +1,10 @@
 /**
   * @description This is the API for tagging based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
+  * @author Damola Mabogunje, Daniel Kelly
   * @since 1.0.0
   */
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
-const _ = require('underscore');
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
@@ -14,8 +13,6 @@ const wsAccess = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/taggings');
 
 const { areObjectIdsEqual } = require('../../utils/mongoose');
-
-const { resolveParentUpdates } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -136,8 +133,6 @@ async function postTagging(req, res, next) {
 
     let data = { tagging };
     utils.sendResponse(res, data);
-
-    resolveParentUpdates(user, tagging, 'tagging', 'create', next);
 
   }catch(err) {
     logger.error(err);
