@@ -9,7 +9,13 @@
     {{/if}}
   </p>
     <p class="meta">
-      by <span class="creator">{{comment.createdBy.username}}</span>
+      by <span class="creator">
+        {{#if isParentWorkspace}}
+          {{comment.originalComment.createdBy.username}}
+        {{else}}
+          {{comment.createdBy.username}}
+        {{/if}}
+        </span>
       in <span class="workspace">
         {{#if isParentWorkspace }}
           {{comment.originalComment.workspace.name}}
