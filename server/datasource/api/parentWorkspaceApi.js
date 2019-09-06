@@ -130,13 +130,24 @@ const populateChildWorkspaces = workspaceIds => {
   return models.Workspace.find({ _id: { $in: workspaceIds } })
     .populate({
       path: 'submissions',
-      populate: { path: 'answer', populate: answerOptions }
+      populate: [
+        { path: 'answer', populate: answerOptions },
+        { path: 'selections' },
+        { path: 'responses' },
+        { path: 'comments' }
+      ]
     })
     .populate('selections')
-    .populate('comments')
+    .populate({
+      path: 'comments',
+      populate: [{ path: 'children' }, { path: 'ancestors' }]
+    })
     .populate({ path: 'folders', populate: 'taggings' })
     .populate('taggings')
-    .populate('responses')
+    .populate({
+      path: 'responses',
+      populate: [{ path: 'selections' }, { path: 'comments' }]
+    })
     .lean();
 };
 
@@ -163,6 +174,9 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
   try {
     return workspaces.reduce((acc, workspace) => {
       // copy selections
+      // workspace submissions have answer, selections, responses, comments populated
+      // workspace responses have selections and comments populated
+      // workspace comments have children, ancestors populated
       let newParentFolder = new models.Folder({
         name: workspace.name,
         owner: parentOwner,
@@ -182,6 +196,10 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
 
           copyOldSelection.originalSelection = oldId;
           let newSelection = new models.Selection(copyOldSelection);
+          newSelection.createDate = new Date();
+          newSelection.lastModifiedDate = new Date();
+          newSelection.lastModifiedBy = parentCreator;
+          newSelection.createdBy = parentCreator;
 
           acc.oldToNewMap.selection[oldId] = newSelection._id;
 
@@ -193,7 +211,7 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
               folder: newParentFolder._id,
               workspace: parentId,
               createdBy: newSelection.createdBy,
-              createDate: newSelection.createDate,
+              createDate: new Date(),
               isDefaultTagging: true,
             });
             defaultTaggings.push(defTagging);
@@ -210,7 +228,14 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
           delete oldComment._id;
 
           oldComment.originalComment = oldId;
+          oldComment.children = rejectTrashedDocs(oldComment.children).map(child => child._id);
+          oldComment.ancestors = rejectTrashedDocs(oldComment.ancestors).map(ancestor => ancestor._id);
+
           let newComment = new models.Comment(oldComment);
+          newComment.createDate = new Date();
+          newComment.lastModifiedDate = new Date();
+          newComment.lastModifiedBy = parentCreator;
+          newComment.createdBy = parentCreator;
 
           acc.oldToNewMap.comment[oldId] = newComment._id;
           return newComment;
@@ -237,6 +262,11 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
           oldFolder.originalFolder = oldId;
           let newFolder = new models.Folder(oldFolder);
 
+          newFolder.createDate = new Date();
+          newFolder.lastModifiedDate = new Date();
+          newFolder.lastModifiedBy = parentCreator;
+          newFolder.createdBy = parentCreator;
+
           acc.oldToNewMap.folder[oldId] = newFolder._id;
           return newFolder;
         })
@@ -252,6 +282,11 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
 
           oldTagging.originalTagging = oldId;
           let newTagging = new models.Tagging(oldTagging);
+          newTagging.createDate = new Date();
+          newTagging.lastModifiedDate = new Date();
+          newTagging.lastModifiedBy = parentCreator;
+          newTagging.createdBy = parentCreator;
+
 
           acc.oldToNewMap.tagging[oldId] = newTagging._id;
           return newTagging;
@@ -265,7 +300,17 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
           delete oldResponse._id;
 
           oldResponse.originalResponse = oldId;
+
+          // there are rare cases of response referencing trashed selections comments
+          oldResponse.selections = rejectTrashedDocs(oldResponse.selections).map(selection => selection._id);
+          oldResponse.comments = rejectTrashedDocs(oldResponse.comments).map(comment => comment._id);
+
           let newResponse = new models.Response(oldResponse);
+
+          newResponse.createDate = new Date();
+          newResponse.lastModifiedDate = new Date();
+          newResponse.lastModifiedBy = parentCreator;
+          newResponse.createdBy = parentCreator;
 
           acc.oldToNewMap.response[oldId] = newResponse._id;
           return newResponse;
@@ -278,12 +323,25 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
   }
 };
 
+function rejectTrashedDocs(docArray) {
+  if (!Array.isArray(docArray)) {
+    return [];
+  }
+  return docArray.filter((doc) => {
+    if (isValidMongoId(doc)) {
+      throw(new Error('got object Id when should be populated doc'));
+    }
+    return doc && !doc.isTrashed;
+  });
+}
+
 const combineSubmissions = workspaces => {
   let oldToNewMap = {};
 
   let submissionHash = workspaces.reduce((acc, workspace) => {
     let submissions = workspace.submissions || [];
     submissions.forEach(submission => {
+      // submission has answer, responses, comments, selections populated
       let answer = submission.answer;
       if (!acc[answer._id]) {
         let oldId = submission._id;
@@ -291,21 +349,36 @@ const combineSubmissions = workspaces => {
 
         submission.answer = answer._id;
         submission.originalSubmission = oldId;
+
+        // filter out trashed responses, comments, selections
+
+        submission.selections = rejectTrashedDocs(submission.selections).map(
+          selection => selection._id
+        );
+        submission.comments = rejectTrashedDocs(submission.comments).map(
+          comment => comment._id
+        );
+        submission.responses = rejectTrashedDocs(submission.responses).map(
+          response => response._id
+        );
+
         let newSubmission = new models.Submission(submission);
         oldToNewMap[oldId] = newSubmission._id;
         acc[answer._id] = newSubmission;
       } else {
         // take markup from this submission and add to
+        // only take NON trashed markup
+        // if trashed markup is later untrashed, will get pulled in by update
         acc[answer._id].selections = acc[answer._id].selections.concat(
-          submission.selections
+          rejectTrashedDocs(submission.selections).map(selection => selection._id)
         );
 
         acc[answer._id].comments = acc[answer._id].comments.concat(
-          submission.comments
+          rejectTrashedDocs(submission.comments).map(comment => comment._id)
         );
 
         acc[answer._id].responses = acc[answer._id].responses.concat(
-          submission.responses
+          rejectTrashedDocs(submission.responses).map(response => response._id)
         );
 
         oldToNewMap[submission._id] = acc[answer._id]._id;
@@ -363,17 +436,35 @@ const updateRelationships = (
   combinedWorkspace.comments = combinedWorkspace.comments.map(comment => {
     comment.ancestors = comment.ancestors.map(ancestor => {
       // ancestor is objectId
+      if (!isValidMongoId(ancestor)) {
+        throw new Error('expected object id for ancestor');
+      }
       return oldToNewMap.comment[ancestor];
     });
 
     comment.children = comment.children.map(child => {
       // ancestor is objectId
+      if (!isValidMongoId(child)) {
+        throw new Error('expected object id for child');
+      }
+
       return oldToNewMap.comment[child];
     });
 
+    // parent is not necessarily from this workspce
+    // one can reuse a comment from another workspace, and that
+    // comment will be this comment's parent
+
+    let isParentFromSameWs = isValidMongoId(oldToNewMap.comment[comment.parent]);
+
+    if (isParentFromSameWs) {
+      comment.parent = oldToNewMap.comment[comment.parent];
+    } else if (comment.parent) {
+      logger.info(`comment originated from reusing a comment from another workspace: ${comment.parent}`);
+    }
+
     comment.submission = subOldToNewMap[comment.submission];
     comment.selection = oldToNewMap.selection[comment.selection];
-    comment.parent = oldToNewMap.comment[comment.parent];
     comment.workspace = parentWs._id;
 
     return comment;
@@ -798,30 +889,52 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
         return areObjectIdsEqual(c.originalComment, childCopy.parent);
       });
 
-      if (!parentWsParent) {
-        // should never happen
-        logger.info('comment missing parentws parent');
-        return;
+      if (parentWsParent) {
+        childCopy.parent = parentWsParent._id;
       }
-      childCopy.parent = parentWsParent._id;
+      // parent does not have to be from this ws (can reuse any comment from any ws that you have access to)
+      // just leave parent as is
+      // should we check the parent is valid?
     }
 
     if (isNonEmptyArray(childCopy.ancestors)) {
+      // ancestors do not necessarily have to be from this workspace
+      // if someone reeuses your comment, their comment will be a child of yours
       childCopy.ancestors = childCopy.ancestors.map(ancestor => {
         // find this ancestor comment in parent ws
         let parentWsAncestor = _.find(parentWorkspace.comments, c => {
           return areObjectIdsEqual(c.originalComment, ancestor);
         });
 
-        if (!parentWsAncestor) {
-          // should never happen
-          logger.info('comment missing parentws ancestor');
-          return;
+        if (parentWsAncestor) {
+          return parentWsAncestor;
         }
+
+        // ancestor not from this ws, just return original ancestor
         return ancestor;
       });
 
       childCopy.ancestors = _.compact(childCopy.ancestors);
+    }
+
+    if (isNonEmptyArray(childCopy.children)) {
+      // children do not necessarily have to be from this workspace
+      // if someone reeuses your comment, their comment will be a child of yours
+      childCopy.children = childCopy.children.map(child => {
+        // find this child comment in parent ws
+        let parentWsChild = _.find(parentWorkspace.comments, c => {
+          return areObjectIdsEqual(c.originalComment, child);
+        });
+
+        if (parentWsChild) {
+          return parentWsChild;
+        }
+
+        // child not from this ws, just return original child
+        return child;
+      });
+
+      childCopy.children = _.compact(childCopy.children);
     }
 
     // find corresponding selection in parentWs
