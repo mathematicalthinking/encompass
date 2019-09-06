@@ -58,7 +58,11 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   }).property('submissions.[]'),
   editorsLength: Ember.computed(function() {
     return this._collectionLength('editors');
-  }).property('submissions.[]'),
+  }).property('editors.[]'),
+  taggingsLength: Ember.computed(function() {
+    return this._collectionLength('taggings');
+  }).property('taggings.[]'),
+
   firstSubmissionId: function() {
     var firstId = this.get('data.submissions.firstObject.id');
     return firstId;
