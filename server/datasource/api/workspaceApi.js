@@ -488,12 +488,13 @@ async function sendWorkspace(req, res, next) {
     let ws = await models.Workspace.findById(req.params.id)
       .populate('owner')
       .populate('createdBy')
-      .populate('selections')
+      .populate({path: 'selections', populate: {path: 'originalSelection'}})
       .populate({path: 'submissions', populate: {path: 'answer', select: 'createdBy', populate: {path: 'createdBy'}}})
-      .populate('folders')
-      .populate('taggings')
-      .populate({ path: 'responses', populate: [ {path: 'recipient'}, {path: 'createdBy'}]})
-      .populate('comments')
+      .populate({ path: 'folders', populate: { path: 'originalFolder'} })
+      .populate({path: 'taggings', populate: {path: 'originalTagging'}})
+      .populate({ path: 'responses', populate: [ {path: 'recipient'}, {path: 'createdBy'}, {path: 'originalResponse'}]})
+      .populate({ path: 'comments', populate: { path: 'originalComment'} } )
+      .populate('childWorkspaces')
       .lean().exec();
 
       if (isNil(ws) || ws.isTrashed) {
@@ -626,8 +627,16 @@ async function sendWorkspace(req, res, next) {
                 item.createdBy = item.createdBy._id;
               }
             }
+
+            let originalRecordProp = `original${stringUtils.capitalizeWord(key.slice(0, key.length - 1))}`;
+
             relatedData[key].push(item);//[ws[key]._id] = comment[key];
             idBag.push(item._id);
+
+            if (item[originalRecordProp] && item[originalRecordProp]._id) {
+              relatedData[key].push(item[originalRecordProp]);
+              item[originalRecordProp] = item[originalRecordProp]._id;
+            }
           });
           ws[key] = idBag;
         } else {
@@ -644,6 +653,10 @@ async function sendWorkspace(req, res, next) {
         data[modelName] = _.values(relatedData[key]);
       });
 
+      if (isNonEmptyArray(ws.childWorkspaces)) {
+        data.workspaces = Array.isArray(data.workspaces) ? data.workspaces.concat(ws.childWorkspaces) : ws.childWorkspaces;
+        ws.childWorkspaces = ws.childWorkspaces.map(childWs => childWs._id);
+      }
     return utils.sendResponse(res, data);
 
   }catch(err) {
@@ -668,7 +681,7 @@ async function putWorkspace(req, res, next) {
   // for now let acting role student modify workspaces but need to come up with a better solution
   const popWs = await models.Workspace.findById(req.params.id).lean().populate('owner').populate('createdBy').exec();
 
-  if (isNil(popWs || popWs.isTrashed)) {
+  if (isNil(popWs) || popWs.isTrashed) {
     return utils.sendResponse(res, null);
   }
   if(!access.get.workspace(user, popWs)) {
@@ -2949,8 +2962,6 @@ async function addAnswerToWorkspace(user, answer, workspaceId, options = {}) {
       .populate('createdBy')
       .exec());
 
-    console.log(`Beginning update of workspace: ${workspaceToUpdate.name} with answerId: ${answer._id}`);
-
     if (isNil(workspaceToUpdate)) {
       return;
     }
@@ -2960,7 +2971,6 @@ async function addAnswerToWorkspace(user, answer, workspaceId, options = {}) {
     });
 
     if (existingSubWithAnswer) {
-      console.log('existing sub: ', existingSubWithAnswer);
       // answer has already been added to workspace
       return;
     }
@@ -3085,6 +3095,8 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
     let newUpdateRequest = new models.UpdateWorkspaceRequest(req.body.updateWorkspaceRequest);
 
+    newUpdateRequest.createDate = new Date();
+
     let { workspace, linkedAssignment, isParentUpdate } = req.body.updateWorkspaceRequest;
 
     logger.info({isParentUpdate});
@@ -3113,6 +3125,7 @@ const updateWorkspaceRequest = async function (req, res, next) {
         }})
         .populate('owner')
         .populate('createdBy')
+        .populate('taggings')
         .exec();
     } else {
       [ popWorkspace, assignment ] = await Promise.all([
@@ -3161,6 +3174,8 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
     if (isParentUpdate) {
       let results = await parentWsApi.updateParentWorkspace(user, popWorkspace, newUpdateRequest);
+
+      logger.info('update res: ', JSON.stringify(results, null, 2));
 
       let updatedWorkspace = await models.Workspace.findById(popWorkspace._id).lean().exec();
       data.workspaces = [ updatedWorkspace ];
