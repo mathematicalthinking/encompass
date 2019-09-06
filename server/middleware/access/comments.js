@@ -44,7 +44,6 @@ const accessibleCommentsQuery = async function(user, ids) {
     orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
 
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'comments');
-    console.log('restrictedCommentIds', restrictedRecords);
 
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });

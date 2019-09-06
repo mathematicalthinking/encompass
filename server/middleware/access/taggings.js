@@ -59,7 +59,6 @@ const accessibleTaggingsQuery = async function(user, ids) {
 
     // returns array of Ids
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'taggings');
-    console.log('restrictedTaggingIds', restrictedRecords);
 
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
@@ -120,7 +119,6 @@ const canGetTagging = async function(user, taggingId) {
   let accessibleIds = await utils.getModelIds('Tagging', criteria);
 
   accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
-  console.log('acc', accessibleIds, 'id', taggingId);
     if (accessibleIds.includes(taggingId)) {
       return true;
     }

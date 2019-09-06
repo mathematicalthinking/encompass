@@ -59,7 +59,6 @@ const accessibleSelectionsQuery = async function(user, ids) {
 
     // returns array of Ids
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'selections');
-    console.log('restrictedSelectionIds', restrictedRecords);
 
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
@@ -120,7 +119,6 @@ const canGetSelection = async function(user, selectionId) {
   let accessibleIds = await utils.getModelIds('Selection', criteria);
 
   accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
-  console.log('acc', accessibleIds, 'id', selectionId);
     if (accessibleIds.includes(selectionId)) {
       return true;
     }

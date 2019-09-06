@@ -44,7 +44,6 @@ const accessibleFoldersQuery = async function(user, ids) {
     // in case they are not in a workspace
 
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'folders');
-    console.log('restrictedFolderIds', restrictedRecords);
 
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
