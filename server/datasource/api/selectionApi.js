@@ -291,11 +291,6 @@ async function putSelection(req, res, next) {
       return utils.sendResponse(res, null);
     }
 
-
-
-
-
-
     for(let field in req.body.selection) {
       if((field !== '_id') && (field !== undefined)) {
         selection[field] = req.body.selection[field];

@@ -155,7 +155,7 @@ FolderSchema.post('save', function (folder) {
   if (wasNew) {
     resolveParentUpdates(folder.createdBy, folder, 'folder', 'create').catch(
       err => {
-        throw err;
+         console.log('Error creating parent folder: ', err);
       }
     );
   } else if (wereUpdatedFields) {
@@ -182,7 +182,7 @@ FolderSchema.post('save', function (folder) {
       'update',
       parentFieldsToUpdate
     ).catch(err => {
-      throw err;
+      console.log('Error updating parent folder: ', err);
     });
   }
 });

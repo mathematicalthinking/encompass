@@ -234,6 +234,8 @@ async function putFolder(req, res, next) {
     //   folder.parent = null;
     // }
 
+    folder.lastModifiedDate = new Date();
+    folder.lastModifiedBy = user._id;
 
     await folder.save();
 

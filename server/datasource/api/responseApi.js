@@ -194,6 +194,8 @@ async function putResponse(req, res, next) {
           existingResponse[field] = req.body.response[field];
         }
       }
+      existingResponse.lastModifiedBy = user._id;
+      existingResponse.lastModifiedDate = new Date();
 
       let savedResponse = await existingResponse.save();
       let data = {response: savedResponse};

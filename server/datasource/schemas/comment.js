@@ -197,7 +197,7 @@ CommentSchema.post('save', function (comment) {
   if (wasNew) {
     resolveParentUpdates(comment.createdBy, comment, 'comment', 'create').catch(
       err => {
-        throw err;
+        console.log('Error creating parent comment: ', err);
       }
     );
   } else if (wereUpdatedFields) {
@@ -218,7 +218,7 @@ CommentSchema.post('save', function (comment) {
       'update',
       parentFieldsToUpdate
     ).catch(err => {
-      throw err;
+      console.log('Error updating parent comment: ', err);
     });
   }
 });

@@ -151,7 +151,7 @@ TaggingSchema.post('save', function (tagging) {
   if (wasNew) {
     resolveParentUpdates(tagging.createdBy, tagging, 'tagging', 'create').catch(
       err => {
-        throw err;
+        console.log('Error creating parent tagging: ', err);
       }
     );
   } else if (wereUpdatedFields) {
@@ -170,7 +170,7 @@ TaggingSchema.post('save', function (tagging) {
       'update',
       parentFieldsToUpdate
     ).catch(err => {
-      throw err;
+      console.log('Error updating parent tagging: ', err);
     });
   }
 });

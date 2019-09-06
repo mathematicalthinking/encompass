@@ -331,6 +331,9 @@ async function putComment(req, res, next) {
       }
     }
 
+    comment.lastModifiedBy = user._id;
+    comment.lastModifiedDate = new Date();
+
     await comment.save();
 
     let data = { comment };

@@ -178,7 +178,7 @@ SelectionSchema.post('save', function (selection) {
       'selection',
       'create'
     ).catch(err => {
-      throw err;
+      console.log('Error creating parent selection: ', err);
     });
   } else if (wereUpdatedFields) {
     let allowedParentUpdateFields = [
@@ -201,7 +201,7 @@ SelectionSchema.post('save', function (selection) {
       'update',
       parentFieldsToUpdate
     ).catch(err => {
-      throw err;
+      console.log('Error updating parent selection: ', err);
     });
   }
 });

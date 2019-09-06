@@ -28,8 +28,8 @@ var ResponseSchema = new Schema({
     source: { type: String, required: true }, // submission, workspace, etc - what triggered this?
     original: { type: String },
     recipient: { type: ObjectId, ref: 'User' },
-    selections: [{type: ObjectId, ref:'Selections'}],
-    comments: [{type: ObjectId, ref:'Comments'}],
+    selections: [{type: ObjectId, ref:'Selection'}],
+    comments: [{type: ObjectId, ref:'Comment'}],
     workspace: {type:ObjectId, ref:'Workspace'},
     submission: {type:ObjectId, ref:'Submission'},
     responseType: {type: String, enum: ['mentor', 'approver', 'student', 'note', 'newRevisionNotice']},
@@ -375,7 +375,7 @@ ResponseSchema.post('save', function (response) {
       'response',
       'create'
     ).catch(err => {
-      throw err;
+      console.log('error creating new parent response: ', err);
     });
   } else if (wereUpdatedFields) {
     let allowedParentUpdateFields = [
@@ -404,7 +404,7 @@ ResponseSchema.post('save', function (response) {
       'update',
       parentFieldsToUpdate
     ).catch(err => {
-      throw err;
+      console.log('err resolving parent response update', err);
     });
   }
 
