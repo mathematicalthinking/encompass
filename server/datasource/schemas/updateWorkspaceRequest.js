@@ -25,14 +25,54 @@ var UpdateWorkspaceRequestSchema = new Schema(
     addedSubmissions: [{ type: ObjectId, ref: 'Submission' }],
     isParentUpdate: { type: Boolean, default: false },
     wasNoDataToUpdate: { type: Boolean, default: false },
-    updatedParentData: {
+    createdParentData: {
       submissions: [{ type: ObjectId, ref: 'Submission' }],
       selections: [{ type: ObjectId, ref: 'Selection' }],
       comments: [{ type: ObjectId, ref: 'Comment' }],
       responses: [{ type: ObjectId, ref: 'Responses' }],
       folders: [{ type: ObjectId, ref: 'Folder' }],
       taggings: [{ type: ObjectId, ref: 'Tagging'}],
+    },
+    updatedParentData: {
+      submissions: [{
+        recordId: { type: ObjectId, ref: 'Submission'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      selections: [{
+        recordId: { type: ObjectId, ref: 'Selection'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      comments: [{
+        recordId: { type: ObjectId, ref: 'Comment'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      responses: [{
+        recordId: { type: ObjectId, ref: 'Response'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      folders: [{
+        recordId: { type: ObjectId, ref: 'Folder'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      taggings: [{
+        recordId: { type: ObjectId, ref: 'Tagging'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+
     }
+
   },
   { versionKey: false }
 );
