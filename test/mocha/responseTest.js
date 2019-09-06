@@ -9,6 +9,9 @@ const userFixtures = require('./userFixtures');
 const expect = chai.expect;
 const host = helpers.host;
 const baseUrl = "/api/responses/";
+const mongoose = require('mongoose');
+const models = require('../../server/datasource/schemas');
+mongoose.Promise = global.Promise;
 
 chai.use(chaiHttp);
 
@@ -110,7 +113,77 @@ describe('Response CRUD operations by account type', async function() {
         });
       });
     });
-  }
+
+    describe('/PUT update response isTrashed', () => {
+      let results = {};
+      let responseToTrash = {
+        "_id" : "5d5d635b4f217a59dfbbdefe",
+        "text" : "<p>Hello ashleyc,</p><p><br></p><p>You wrote:</p><p><br></p><blockquote class='pf-response-text'>undefined</blockquote><p><br></p><p>...and I thought...</p><p><br></p><p class='pf-response-text'>I'm not sure about this</p><p><br></p>",
+        "original" : "<p>Hello ashleyc,</p><br><p>You wrote:</p><br><blockquote class=\"pf-response-text\">undefined</blockquote><br><p>...and I thought...</p><br><p class=\"pf-response-text\">I'm not sure about this</p><br>",
+        "source" : "submission",
+        "responseType" : "mentor",
+        "note" : null,
+        "status" : "approved",
+        "createdBy" : "5b914a102ecaf7c30dd47492",
+        "lastModifiedBy" : null,
+        "recipient" : "5b9149c22ecaf7c30dd47490",
+        "submission" : "5d5d60ef4f217a59dfbbdeed",
+        "workspace" : "5d5d60ef4f217a59dfbbdeeb",
+        "priorRevision" : null,
+        "reviewedResponse" : null,
+        "approvedBy" : null,
+        "unapprovedBy" : null,
+        "wasReadByApprover" : false,
+        "wasReadByRecipient" : false,
+        "comments" : [
+            "5d5d63384f217a59dfbbdefc"
+        ],
+        "selections" : [
+            "5d5d631c4f217a59dfbbdefb"
+        ],
+        "lastModifiedDate" : null,
+        "isTrashed" : true,
+        "createDate" : "2019-08-21T15:29:31.265Z"
+    };
+
+      before(function(done) {
+        let url = baseUrl + responseToTrash._id;
+        agent
+        .put(url)
+        .send({response: responseToTrash})
+        .end((err, res) => {
+          if (err) {
+            console.error(err);
+          }
+          results = res;
+          done();
+        });
+      });
+
+      it('Should update response', done => {
+        expect(results).to.have.status(200);
+        expect(results.body.response.isTrashed).to.eql(true);
+        done();
+      });
+
+      it('Should have removed response from submission', async () => {
+        try {
+          await mongoose.connect('mongodb://localhost:27017/encompass_seed', {useMongoClient: true});
+
+          let submission = await models.Submission.findById(results.body.response.submission);
+
+          let subResponses = submission.responses.map(r => r.toString());
+          expect(subResponses).to.not.have.members([results.body.response._id]);
+          mongoose.connection.close();
+          return;
+
+        }catch(err) {
+          mongoose.connection.close();
+
+          throw(err);
+        }
+      });
+    });  }
 
   });
   }
