@@ -26,8 +26,14 @@
         <div class="response-info">
       {{#if displayResponse}}
         <p class="response-title">Mentor Response</p>
-        <p class="response-date">{{format-date displayResponse.createDate 'Do MMM YYYY'}}
-          <span class="response-time">{{format-date displayResponse.createDate 'h:mm a'}}</span>
+        <p class="response-date">
+          {{#if isParentWorkspace}}
+            {{format-date displayResponse.originalResponse.createDate 'Do MMM YYYY'}}
+            <span class="response-time">{{format-date displayResponse.originalResponse.createDate 'h:mm a'}}</span>
+          {{else}}
+            {{format-date displayResponse.createDate 'Do MMM YYYY'}}
+            <span class="response-time">{{format-date displayResponse.createDate 'h:mm a'}}</span>
+          {{/if}}
         </p>
         <div class="response-users">
           <p>
@@ -40,7 +46,13 @@
           </p>
           <p>
             <span class="response-label">From:</span>
-            <span class="response-value">{{displayResponse.createdBy.username}}</span>
+            <span class="response-value">
+              {{#if isParentWorkspace}}
+                {{displayResponse.originalResponse.createdBy.username}}
+              {{else}}
+                {{displayResponse.createdBy.username}}
+              {{/if}}
+              </span>
           </p>
           {{#if showStatus}}
           <p class="response-status">
