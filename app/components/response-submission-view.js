@@ -39,8 +39,8 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   }.property('submission.creator.studentId'),
 
   canRevise: function() {
-    return this.get('isOwnSubmission');
-  }.property('isOwnSubmission'),
+    return !this.get('isParentWorkspace') && this.get('isOwnSubmission');
+  }.property('isOwnSubmission', 'isParentWorkspace'),
 
   showButtonRow: function() {
     return this.get('canRevise');
