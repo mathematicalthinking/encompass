@@ -231,9 +231,12 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
               this.get('alert').showToast('info', 'Workspace Up to Date', 'bottom-start', 3000, false, null);
               return;
             } else {
-              let updatedData = results.get('updatedParentData');
+              let createdParentData = results.get('createdParentData');
 
-              this.set('updatedParentData', updatedData);
+              this.set('createdParentData', createdParentData);
+
+              let updatedParentData = results.get('updatedParentData');
+              this.set('updatedParentData', updatedParentData);
 
               let msg = 'Successfully updated parent workspace';
               return this.get('alert').showToast('success', msg , 'bottom-start', 3000, false, null);

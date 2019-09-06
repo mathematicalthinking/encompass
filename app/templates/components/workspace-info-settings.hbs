@@ -151,11 +151,15 @@
             preload="focus"
             }} --}}
           {{else}}
-          {{#each childWorkspaces as |ws|}}
+          <ul class="child-workspaces">
+            {{#each childWorkspaces as |ws|}}
+            <li>
               {{#link-to 'workspace.work' ws.id}}{{ws.name}}{{/link-to}}
+            </li>
             {{else}}
-            N/A
+           <li>N/A</li>
           {{/each}}
+          </ul>
 
           {{/if}}
         </div>
@@ -185,9 +189,17 @@
             {{#each serverErrors as |error|}}
               {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'serverErrors' error)}}
             {{/each}}
-            {{#each-in updatedParentData as |recordType records|}}
-              <p class="success-message">Added {{records.length}} {{recordType}}</p>
+            {{#each-in createdParentData as |recordType records|}}
+              {{#if records}}
+                <p class="success-message">Added {{records.length}} {{recordType}}</p>
+              {{/if}}
             {{/each-in}}
+            {{#each-in updatedParentData as |recordType records|}}
+              {{#if records}}
+                <p class="success-message">Updated {{records.length}} {{recordType}}</p>
+              {{/if}}
+            {{/each-in}}
+
           </div>
 
         </div>
