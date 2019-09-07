@@ -1,0 +1,69 @@
+<div class="collab-container">
+  {{radio-group options=addTypeItems selectedValue=addType}}
+  {{#if isBulkAdd}}
+    {{checkbox-list
+      items=usersToAdd
+      selectedItems=collabsToAdd
+      itemDisplayProp="username"
+      inputName="bulkAddCollabs"
+      header="Add users as collaborators"
+      noItemsMessage="All students have been added already"
+    }}
+  {{else}}
+    <div class="collab-name">
+      {{selectize-input
+        store=store
+        inputId="collab-select"
+        maxItems=1
+        initialOptions=initialCollabOptions
+        selectedItemsHash=selectedCollaborators
+        onItemAdd=(action "setCollab")
+        onItemRemove=(action "setCollab")
+        labelField="username"
+        valueField="id"
+        searchField="username"
+        model="user"
+        queryParamsKey="usernameSearch"
+        isAsync=true
+        placeholder="Search by username"
+        preload="focus"
+      }}
+    </div>
+  {{/if}}
+  {{#unless isNoActionToTake}}
+    <div class="collab-settings global">
+      {{radio-group options=globalItems selectedValue=globalPermissionValue}}
+    </div>
+  {{/unless}}
+  <div class="collab-settings">
+    {{#if missingUserError}}
+      <div class="card-row">
+        {{error-box
+          error="Please select a user"
+          resetError=(action (mut missingUserError) null)
+          showDismiss=true
+        }}
+      </div>
+    {{/if}}
+    {{#if existingUserError}}
+      <div class="card-row">
+        {{error-box
+          error="Collaborator already exists. Edit permissions below"
+          resetError=(action (mut existingUserError) null)
+          showDismiss=true
+        }}
+      </div>
+    {{/if}}
+    <div class="button-row">
+      <button
+        class="primary-button cancel-button"
+        {{action "cancelCreateCollab"}}
+      >
+        Cancel
+      </button>
+      <button class="primary-button" {{action "saveCollab"}}>
+        Save
+      </button>
+    </div>
+  </div>
+</div>
