@@ -779,13 +779,6 @@ async function putWorkspace(req, res, next) {
     }
   }
 
-  let doUpdateLinkedAssignment = false;
-
-  if (isValidMongoId(ws.linkedAssignment) && !areObjectIdsEqual(linkedAssignment, ws.linkedAssignment)) {
-    // linkedAssignment was removed or changed
-    doUpdateLinkedAssignment = true;
-  }
-
   if (ws.permissions) {
     ws.permissions.forEach((permission) => {
       delete permission.userObj;
@@ -797,10 +790,6 @@ async function putWorkspace(req, res, next) {
   ws.lastModifiedBy = user._id;
 
   const savedWorkspace = await ws.save();
-
-  if (doUpdateLinkedAssignment) {
-    models.Assignment.updateMany({linkedWorkspaces: {$elemMatch: ws._id}}, {$pull: {linkedWorkspaces: ws._id}}).exec();
-  }
     const wsPermissions = savedWorkspace.permissions;
 
     if (_.isArray(wsPermissions)) {
@@ -824,8 +813,6 @@ async function putWorkspace(req, res, next) {
     return utils.sendError.InternalError(null, res);
   }
 }
-
-
 /**
   * @private
   * @method updateWorkspaces
