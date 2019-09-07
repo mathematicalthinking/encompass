@@ -679,7 +679,10 @@ async function putWorkspace(req, res, next) {
     const user = userAuth.requireUser(req);
   // 403 error when a teacher is in a workspace and switches to acting role of student
   // for now let acting role student modify workspaces but need to come up with a better solution
-  const popWs = await models.Workspace.findById(req.params.id).lean().populate('owner').populate('createdBy').exec();
+  const popWs = await models.Workspace.findById(req.params.id)
+    .populate('owner')
+    .populate('createdBy')
+    .exec();
 
   if (isNil(popWs) || popWs.isTrashed) {
     return utils.sendResponse(res, null);
@@ -699,7 +702,10 @@ async function putWorkspace(req, res, next) {
     }
   }
 
-  const ws = await models.Workspace.findById(req.params.id).exec();
+  // why fetch again?
+  // just depopulate
+  popWs.depopulate('owner').depopulate('createdBy');
+  const ws = popWs;
 
   let { doOnlyUpdateLastViewed, lastViewed } = req.body.workspace;
 
