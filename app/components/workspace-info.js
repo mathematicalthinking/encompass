@@ -10,6 +10,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   updateRecordErrors: [],
   isShowingCustomViewer: false,
   customSubmissionIds: [],
+  isParentWorkspace: Ember.computed.equal('workspace.workspaceType', 'parent'),
 
   didReceiveAttrs() {
     this._super(...arguments);
