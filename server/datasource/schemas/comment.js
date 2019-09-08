@@ -201,7 +201,7 @@ CommentSchema.post('save', function (comment) {
       }
     );
   } else if (wereUpdatedFields) {
-    let allowedParentUpdateFields = ['isTrashed'];
+    let allowedParentUpdateFields = ['isTrashed', 'children', 'ancestors', 'parent'];
 
     let parentFieldsToUpdate = updatedFields.filter(field => {
       return allowedParentUpdateFields.includes(field);

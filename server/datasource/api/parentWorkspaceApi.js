@@ -4,7 +4,12 @@ const logger = require('log4js').getLogger('server');
 
 const models = require('../schemas');
 const { isNonEmptyArray, isNil } = require('../../utils/objects');
-const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
+const {
+  isValidMongoId,
+  areObjectIdsEqual,
+  auditObjectIdField,
+  didObjectIdArrayFieldChange
+} = require('../../utils/mongoose');
 
 const { capitalizeWord } = require('../../utils/strings');
 
@@ -1017,11 +1022,34 @@ const updateComments = async (userId, parentWs, childWorkspaces) => {
         }
         let childComment = parentComment.originalComment;
 
+        let mappedParent = await mapCommentParent(childComment, parentWs._id);
+        let didParentChange = auditObjectIdField(parentComment.parent, mappedParent);
+
+        let mappedAncestors = await mapCommentAncestors(childComment, parentWs._id);
+        let didAncestorsChange = didObjectIdArrayFieldChange(parentComment.ancestors, mappedAncestors);
+
+        let mappedChildren = await mapCommentChildren(childComment, parentWs._id);
+        let didChildrenChange = didObjectIdArrayFieldChange(parentComment.children, mappedChildren);
         // determine if fields were modified. for now just do isTrashed
         let modifiedFields = [];
-        if (childComment.isTrashed !== parentComment.isTrashed) {
-          modifiedFields.push('isTrashed');
+
+        if (didParentChange) {
+          modifiedFields.push('parent');
         }
+        if (didAncestorsChange) {
+          modifiedFields.push('ancestors');
+        }
+        if (didChildrenChange) {
+          modifiedFields.push('children');
+        }
+
+        let simpleFields = ['isTrashed'];
+
+        simpleFields.forEach((field) => {
+          if (!_.isEqual(parentComment[field], childComment[field])) {
+            modifiedFields.push(field);
+          }
+        });
 
         if (modifiedFields.length > 0) {
           return updateParentRecord(
@@ -1051,6 +1079,94 @@ const updateComments = async (userId, parentWs, childWorkspaces) => {
     })
   );
     return [ createdComments, updatedComments ];
+};
+
+const mapCommentChildren = (childComment, parentWorkspaceId) => {
+  let originalChildren = childComment.children || [];
+  return Promise.all(originalChildren.map((originalChildId) => {
+    let filter = { originalComment: originalChildId, workspace: parentWorkspaceId };
+    // comment children can be from other workspaces
+    return models.Comment.findOne(filter)
+      .then((parentChild) => {
+        return parentChild ? parentChild._id : originalChildId;
+      });
+  }))
+  .then((childrenIds) => {
+    return _.compact(childrenIds);
+  })
+  .catch((err) => {
+    throw(err);
+  });
+};
+
+const mapCommentAncestors = (childComment, parentWorkspaceId) => {
+  let originalAncestors = childComment.ancestor || [];
+  return Promise.all(originalAncestors.map((originalAncestorId) => {
+    let filter = { originalComment: originalAncestorId, workspace: parentWorkspaceId };
+    // comment ancestor can be from other workspaces
+    return models.Comment.findOne(filter)
+      .then((parentAncestor) => {
+        return parentAncestor ? parentAncestor._id : originalAncestorId;
+      });
+  }))
+  .then((ancestorIds) => {
+    return _.compact(ancestorIds);
+  })
+  .catch((err) => {
+    throw(err);
+  });
+
+};
+
+const mapCommentParent = (childComment, parentWorkspaceId) => {
+  let originalParentId = childComment.parent;
+  return models.Comment.findOne({ originalComment: originalParentId, workspace: parentWorkspaceId})
+    .then((parentParent) => {
+      return parentParent ? parentParent._id : originalParentId;
+    })
+    .catch((err) => {
+      throw(err);
+    });
+};
+
+
+
+const mapFolderChildren = (childFolder) => {
+  let childChildrenIds = childFolder.children || [];
+  return Promise.all(childChildrenIds.map((childId) => {
+    return models.Folder.findOne({ originalFolder: childId })
+    .then((parentChild) => {
+      return parentChild ? parentChild._id : null;
+    });
+  }))
+  .then((parentChildrenIds) => {
+    return _.compact(parentChildrenIds);
+  }).catch((err) => {
+    throw(err);
+  });
+};
+
+const mapFolderParent = (childFolder, parentWorkspaceId) => {
+  let childParentId = childFolder.parent;
+  let resultParent;
+
+  if (childParentId) {
+    resultParent = models.Folder.findOne({ originalFolder: childParentId });
+  } else {
+    // find default ws folder
+    resultParent = models.Folder.findOne({
+      srcChildWs: childFolder.workspace,
+      workspace: parentWorkspaceId
+    });
+  }
+
+  return resultParent
+    .then(parentParentFolder => {
+      return parentParentFolder ? parentParentFolder._id : null;
+    })
+    .catch(err => {
+      throw err;
+    });
 };
 
 const updateResponses = async (userId, parentWs, childWorkspaces) => {
@@ -1087,11 +1203,28 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
             errorMsg: 'Nonexistant parent or original response'
           };
         }
-        return updateParentRecord(
-          userId,
-          parentResponse.originalResponse,
-          'response'
-        );
+        let childResponse = parentResponse.originalResponse;
+
+        // determine if fields were modified. for now just do isTrashed
+        let modifiedFields = [];
+        if (childResponse.isTrashed !== parentResponse.isTrashed) {
+          modifiedFields.push('isTrashed');
+        }
+
+        if (modifiedFields.length > 0) {
+          return updateParentRecord(
+            userId,
+            parentResponse.originalResponse,
+            'response',
+            modifiedFields
+          );
+        }
+        return {
+          didUpdate: false,
+          updatedRecord: null,
+          modifiedFields: [],
+          errorMsg: 'No updated fields to save'
+        };
       })
     );
   }
@@ -1285,11 +1418,34 @@ const updateFolders = async (userId, parentWs, childWorkspaces) => {
             errorMsg: errorMsg
           };
         }
-        // determine if fields were modified. for now just do isTrashed
+
+        let parentChildren = await mapFolderChildren(childFolder);
+        let parentParent = await mapFolderParent(childFolder, parentWs._id);
+
+        let didParentChange = auditObjectIdField(parentFolder.parent, parentParent) !== 0;
+
+        let didChildrenChange = didObjectIdArrayFieldChange(parentFolder.children, parentChildren);
+        console.log(`Did the parent of ${parentFolder.name} change?: ${didParentChange}`);
+        console.log(`Did the children of ${parentFolder.name} change?: ${didChildrenChange}`);
+
+        let simpleCompares = ['isTrashed', 'name', 'weight'];
+
         let modifiedFields = [];
-        if (childFolder.isTrashed !== parentFolder.isTrashed) {
-          modifiedFields.push('isTrashed');
+
+        if (didParentChange) {
+          modifiedFields.push('parent');
         }
+
+        if (didChildrenChange) {
+          modifiedFields.push('children');
+        }
+
+        simpleCompares.forEach((fieldName) => {
+          let didChange = childFolder[fieldName] !== parentFolder[fieldName];
+          if (didChange) {
+            modifiedFields.push(fieldName);
+          }
+        });
 
         if (modifiedFields.length > 0) {
           return updateParentRecord(
@@ -1828,7 +1984,6 @@ const updateParentRecord = async (userId, childRecord, recordType, modifiedField
     modifiedFields: [],
     errorMsg: null,
   };
-
   try {
     let capRecordType = capitalizeWord(recordType);
     let originalRecordPropName = `original${capRecordType}`;
@@ -1843,21 +1998,51 @@ const updateParentRecord = async (userId, childRecord, recordType, modifiedField
       results.errorMsg = `Could not find a parent ${recordType} associated with child id ${childRecord._id}`;
       return results;
     }
-    if (Array.isArray(modifiedFields)) {
-      modifiedFields.forEach(field => {
+
+    if (isNonEmptyArray(modifiedFields)) {
+      let simpleFields = [...modifiedFields];
+
+      if (recordType === 'folder') {
+        if (modifiedFields.includes('children')) {
+          parentRecord.children = await mapFolderChildren(childRecord);
+          simpleFields = _.reject(simpleFields, (field => field === 'children'));
+        }
+
+        if (modifiedFields.includes('parent')) {
+          parentRecord.parent = await mapFolderParent(childRecord, parentRecord.workspace);
+          simpleFields = _.reject(simpleFields, (field => field === 'parent'));
+        }
+      } else if (recordType === 'comment') {
+        if (modifiedFields.includes('children')) {
+          parentRecord.children = await mapCommentChildren(childRecord, parentRecord.workspace);
+          simpleFields = _.reject(simpleFields, (field => field === 'children'));
+        }
+
+        if (modifiedFields.includes('parent')) {
+          parentRecord.parent = await mapCommentParent(childRecord, parentRecord.workspace);
+          simpleFields = _.reject(simpleFields, (field => field === 'parent'));
+        }
+        if (modifiedFields.includes('ancestors')) {
+          parentRecord.ancestors = await mapCommentAncestors(childRecord, parentRecord.workspace);
+          simpleFields = _.reject(simpleFields, (field => field === 'ancestors'));
+        }
+
+      }
+
+      simpleFields.forEach(field => {
         parentRecord[field] = childRecord[field];
       });
 
-      parentRecord.lastModifiedBy = userId;
-      parentRecord.lastModifiedDate = new Date();
+        parentRecord.lastModifiedBy = userId;
+        parentRecord.lastModifiedDate = new Date();
 
-      await parentRecord.save();
+        await parentRecord.save();
 
-      results.didUpdate = true;
-      results.modifiedFields = modifiedFields;
-      results.updatedRecord = parentRecord;
+        results.didUpdate = true;
+        results.modifiedFields = modifiedFields;
+        results.updatedRecord = parentRecord;
 
-      return results;
+        return results;
     } else {
       // initiated by updateSubmission
       // needs to be refactored
