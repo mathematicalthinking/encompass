@@ -98,9 +98,41 @@ const addToObjectIdSet = (objectIds, objectIdToAdd) => {
   objectIds.push(objectIdToAdd);
   return true;
 };
+/** Returns 0 if values did not change, 1 if value was added, -1 if value
+ * was removed
+*
+* @param {any} originalValue - value of field before update
+* @param {any} newValue - value of field after update
+* @returns {0 | 1 | -1 }
+*/
+const auditObjectIdField = (originalValue, newValue) => {
+  let isOrigValidId = isValidMongoId(originalValue);
+  let isNewValidId = isValidMongoId(newValue);
+
+  if (!isOrigValidId && !isNewValidId) {
+    // was empty and still is empty
+    return 0;
+  }
+
+  if (areObjectIdsEqual(originalValue, newValue)) {
+    // same Id
+    return 0;
+  }
+
+  // one is valid id, one is not
+
+  if (isValidMongoId(newValue)) {
+    // updating field
+    return 1;
+  }
+
+  // value was removed
+  return -1;
+};
 
   module.exports.isValidMongoId = isValidMongoId;
   module.exports.areObjectIdsEqual = areObjectIdsEqual;
   module.exports.cleanObjectIdArray = cleanObjectIdArray;
   module.exports.addToObjectIdSet = addToObjectIdSet;
   module.exports.doesObjectIdSetContainObjectId = doesObjectIdSetContainObjectId;
+  module.exports.auditObjectIdField = auditObjectIdField;
