@@ -5,7 +5,7 @@ const expect = chai.expect;
 
 const helpers = require('../../../server/utils/mongoose');
 
-let { isValidMongoId, areObjectIdsEqual } = helpers;
+let { isValidMongoId, areObjectIdsEqual, didObjectIdArrayFieldChange } = helpers;
 
 describe('isValidMongoId', function() {
   it('should return false if passed no arguments', function() {
@@ -91,4 +91,55 @@ describe('areObjectIdsEqual', function() {
 
 
   });
+});
+
+describe('didObjectIdArrayChange', function() {
+  let fn = didObjectIdArrayFieldChange;
+  let id1 = mongoose.Types.ObjectId();
+  let id2 = mongoose.Types.ObjectId();
+  let id3 = mongoose.Types.ObjectId();
+
+  it('should return false if passed no arguments', function() {
+    expect(fn()).to.eql(false);
+  });
+
+  it('should return false if passed 2 empty arrays', function() {
+    expect(fn([], [])).to.eql(false);
+  });
+
+  it('should return true if passed 1 empty array and 1 non array', function() {
+    expect(fn([], '')).to.eql(true);
+  });
+
+  it('should return true if passed 1 empty array and 1 non empty array', function() {
+    expect(fn([], [id1])).to.eql(true);
+  });
+
+  it('should return true if passed 1 nonempty array and 1 empty array', function() {
+    expect(fn([id2], [])).to.eql(true);
+  });
+
+  it('should return false if passed identical arrays in same order', function() {
+    expect(fn([id1, id2], [id1, id2])).to.eql(false);
+  });
+
+  it('should return false if passed identical arrays in diff order', function() {
+    expect(fn([id1, id2], [id2, id1])).to.eql(false);
+  });
+
+  it('should return true if passed different arrays of same length', function() {
+    expect(fn([id1, id3], [id2, id1])).to.eql(true);
+  });
+
+  it('should return true if passed different arrays of same length', function() {
+    expect(fn([id1, id3], [id2, id1])).to.eql(true);
+  });
+
+  it('should return true if passed different arrays of diff length', function() {
+    expect(fn([id1, id3, id2], [id2, id1])).to.eql(true);
+  });
+
+
+
+
 });

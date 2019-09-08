@@ -130,9 +130,55 @@ const auditObjectIdField = (originalValue, newValue) => {
   return -1;
 };
 
+/** Returns true if arrays do not contain the same object id members
+
+* @param {any} originalValues - value of array field before update
+* @param {any} newValues - value of array field after update
+* @returns { boolean }
+*/
+
+const didObjectIdArrayFieldChange = (originalValues, newValues) => {
+  // if both are not arrays, return true
+  if (!Array.isArray(originalValues) && !Array.isArray(newValues)) {
+    return false;
+  }
+
+  if (!Array.isArray(originalValues) || !Array.isArray(newValues)) {
+    // one value is array, one is not
+    return true;
+  }
+
+  // both values must be arrays now
+  if (originalValues.length !== newValues.length) {
+    return true;
+  }
+
+  // both arrays have same length
+  // only way to be equal is both arrays consist of same objectIds
+
+  let originalValuesMap = {};
+
+  originalValues.forEach((val) => {
+    originalValuesMap[val] = true;
+  });
+
+  for(let newValue of newValues) {
+    // iterate over newValues, and if we find a value that does not
+    // exist in the originalValuesMap, we can return early with true
+    if (!originalValuesMap[newValue]) {
+      return true;
+    }
+  }
+
+  // all values in newValues are in oldValues
+  return false;
+
+};
+
   module.exports.isValidMongoId = isValidMongoId;
   module.exports.areObjectIdsEqual = areObjectIdsEqual;
   module.exports.cleanObjectIdArray = cleanObjectIdArray;
   module.exports.addToObjectIdSet = addToObjectIdSet;
   module.exports.doesObjectIdSetContainObjectId = doesObjectIdSetContainObjectId;
   module.exports.auditObjectIdField = auditObjectIdField;
+  module.exports.didObjectIdArrayFieldChange = didObjectIdArrayFieldChange;
