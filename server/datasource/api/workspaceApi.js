@@ -494,7 +494,7 @@ async function sendWorkspace(req, res, next) {
       .populate({path: 'taggings', populate: {path: 'originalTagging'}})
       .populate({ path: 'responses', populate: [ {path: 'recipient'}, {path: 'createdBy'}, {path: 'originalResponse'}]})
       .populate({ path: 'comments', populate: { path: 'originalComment'} } )
-      .populate('childWorkspaces')
+      .populate({ path: 'childWorkspaces', populate: { path:  'owner' }})
       .lean().exec();
 
       if (isNil(ws) || ws.isTrashed) {
@@ -655,6 +655,21 @@ async function sendWorkspace(req, res, next) {
 
       if (isNonEmptyArray(ws.childWorkspaces)) {
         data.workspaces = Array.isArray(data.workspaces) ? data.workspaces.concat(ws.childWorkspaces) : ws.childWorkspaces;
+
+        // sideload any owners of child workspaces that are not being
+        // sideloaded already
+
+        ws.childWorkspaces.forEach((childWs) => {
+          let ownerObj = childWs.owner;
+          if (ownerObj) {
+            let doesExist = _.find(data.user, (user) => {
+              return areObjectIdsEqual(user._id, ownerObj._id);
+            });
+            if (!doesExist) {
+              data.user.push(ownerObj);
+            }
+          }
+        });
         ws.childWorkspaces = ws.childWorkspaces.map(childWs => childWs._id);
       }
     return utils.sendResponse(res, data);
