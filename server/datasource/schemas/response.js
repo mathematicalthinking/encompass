@@ -177,6 +177,8 @@ async function emitResponseReadEvent(response) {
   */
 ResponseSchema.post('save', function (response) {
   var update = { $addToSet: { 'responses': response } };
+  let isParentResponse = isValidMongoId(response.originalResponse);
+
   if( response.isTrashed ) {
     var responseIdObj = mongoose.Types.ObjectId( response._id );
     /* + If deleted, all references are also deleted */
@@ -201,103 +203,106 @@ ResponseSchema.post('save', function (response) {
         }
       });
   }
+  // do not send ntfs if parent response
 
-  if (response.recipient) {
-    if (this.isNewApproved || this.isNewlyApproved) {
-      // send ntf to recipient
-      let responseType = response.responseType;
-      let ntfType;
-      let text = '';
-      if (responseType === 'mentor') {
-        ntfType = 'newMentorReply';
-        text = 'You have received a new mentor reply.';
-      } else if (responseType === 'approver') {
-        ntfType = 'newApproverReply';
-        text = 'You have received a new reply from a feedback approver.';
+  if (!isParentResponse) {
+    if (response.recipient) {
+      if (this.isNewApproved || this.isNewlyApproved) {
+        // send ntf to recipient
+        let responseType = response.responseType;
+        let ntfType;
+        let text = '';
+        if (responseType === 'mentor') {
+          ntfType = 'newMentorReply';
+          text = 'You have received a new mentor reply.';
+        } else if (responseType === 'approver') {
+          ntfType = 'newApproverReply';
+          text = 'You have received a new reply from a feedback approver.';
+        }
+
+        let newReplyNtf = new models.Notification({
+          createdBy: response.createdBy,
+          recipient: response.recipient,
+          response: response._id,
+          primaryRecordType: 'response',
+          notificationType: ntfType,
+          text
+        });
+
+        newReplyNtf.save();
+
+        if (response.isNewlyApproved) {
+          // send ntf to creator
+          let newlyApprovedNtf = new models.Notification({
+            createdBy: response.approvedBy,
+            recipient: response.createdBy,
+            response: response._id,
+            primaryRecordType: 'response',
+            notificationType: 'newlyApprovedReply',
+            text: 'One of your mentor replies was recently approved.'
+          });
+          newlyApprovedNtf.save();
+
+          //clear old waiting for approval ntfs
+          models.Notification.find({
+            notificationType: 'mentorReplyRequiresApproval',
+            response: response._id,
+            wasSeen: false,
+            isTrashed: false
+          }).exec()
+            .then((ntfs) => {
+              ntfs.forEach((ntf) => {
+                ntf.wasSeen = true;
+                ntf.save();
+              });
+            });
+        }
       }
+    }
 
-      let newReplyNtf = new models.Notification({
-        createdBy: response.createdBy,
-        recipient: response.recipient,
-        response: response._id,
-        primaryRecordType: 'response',
-        notificationType: ntfType,
-        text
-      });
+    if (response.isNewPending) {
+      // send ntf to owner of workspace and any approvers
+      return models.Workspace.findById(response.workspace).lean().exec()
+        .then((workspace) => {
+          if (!workspace) {
+            return null;
+          }
+          let ntfRecipients = [];
+          if (isValidMongoId(workspace.owner)) {
+            ntfRecipients.push(workspace.owner);
+          }
+          let permissions = workspace.permissions || [];
 
-      newReplyNtf.save();
-
-      if (response.isNewlyApproved) {
-        // send ntf to creator
-        let newlyApprovedNtf = new models.Notification({
-          createdBy: response.approvedBy,
+          permissions.forEach((obj) => {
+            if (obj.user && obj.feedback === 'approver') {
+              ntfRecipients.push(obj.user);
+            }
+          });
+          ntfRecipients.forEach((userId) => {
+            let ntf = new models.Notification({
+              createdBy: response.createdBy,
+              recipient: userId,
+              response: response._id,
+              primaryRecordType: 'response',
+              notificationType: 'mentorReplyRequiresApproval',
+              text: 'There is a new mentor reply waiting to be approved.'
+            });
+            ntf.save();
+          });
+        });
+    }
+    if (response.isNewlyNeedsRevisions) {
+      // send ntf to creator of response
+      if (isValidMongoId(response.createdBy)) {
+        let ntf = new models.Notification({
           recipient: response.createdBy,
           response: response._id,
           primaryRecordType: 'response',
-          notificationType: 'newlyApprovedReply',
-          text: 'One of your mentor replies was recently approved.'
+          notificationType: 'mentorReplyNeedsRevisions',
+          text: 'One of your mentor replies needs revisions.'
         });
-        newlyApprovedNtf.save();
-
-        //clear old waiting for approval ntfs
-        models.Notification.find({
-          notificationType: 'mentorReplyRequiresApproval',
-          response: response._id,
-          wasSeen: false,
-          isTrashed: false
-        }).exec()
-          .then((ntfs) => {
-            ntfs.forEach((ntf) => {
-              ntf.wasSeen = true;
-              ntf.save();
-            });
-          });
+        ntf.save();
       }
-    }
-  }
-
-  if (response.isNewPending) {
-    // send ntf to owner of workspace and any approvers
-    return models.Workspace.findById(response.workspace).lean().exec()
-      .then((workspace) => {
-        if (!workspace) {
-          return null;
-        }
-        let ntfRecipients = [];
-        if (isValidMongoId(workspace.owner)) {
-          ntfRecipients.push(workspace.owner);
-        }
-        let permissions = workspace.permissions || [];
-
-        permissions.forEach((obj) => {
-          if (obj.user && obj.feedback === 'approver') {
-            ntfRecipients.push(obj.user);
-          }
-        });
-        ntfRecipients.forEach((userId) => {
-          let ntf = new models.Notification({
-            createdBy: response.createdBy,
-            recipient: userId,
-            response: response._id,
-            primaryRecordType: 'response',
-            notificationType: 'mentorReplyRequiresApproval',
-            text: 'There is a new mentor reply waiting to be approved.'
-          });
-          ntf.save();
-        });
-      });
-  }
-  if (response.isNewlyNeedsRevisions) {
-    // send ntf to creator of response
-    if (isValidMongoId(response.createdBy)) {
-      let ntf = new models.Notification({
-        recipient: response.createdBy,
-        response: response._id,
-        primaryRecordType: 'response',
-        notificationType: 'mentorReplyNeedsRevisions',
-        text: 'One of your mentor replies needs revisions.'
-      });
-      ntf.save();
     }
   }
 
@@ -386,7 +391,9 @@ ResponseSchema.post('save', function (response) {
       'approvedBy',
       'unapprovedBy',
       'wasReadByRecipient',
-      'wasReadByApprover'
+      'wasReadByApprover',
+      // 'reviewedResponse',
+      // 'priorRevision'
     ];
 
     let parentFieldsToUpdate = updatedFields.filter(field => {
