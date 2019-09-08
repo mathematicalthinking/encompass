@@ -257,6 +257,10 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
 
           if (isTopLevel) {
             oldFolder.parent = newParentFolder._id;
+            if (!isValidMongoId(oldId)) {
+              logger.error(`oldFolder: ${oldFolder}, oldFolderId: ${oldId}, workspacename: ${workspace.name}`);
+              throw(new Error('Invalid child folder'));
+            }
             newParentFolder.children.push(oldId);
           }
           oldFolder.originalFolder = oldId;
@@ -436,19 +440,28 @@ const updateRelationships = (
   combinedWorkspace.comments = combinedWorkspace.comments.map(comment => {
     comment.ancestors = comment.ancestors.map(ancestor => {
       // ancestor is objectId
+      let isAncestorFromSameWs = isValidMongoId(oldToNewMap.comment[ancestor]);
+
       if (!isValidMongoId(ancestor)) {
         throw new Error('expected object id for ancestor');
       }
-      return oldToNewMap.comment[ancestor];
+      if (isAncestorFromSameWs) {
+        return oldToNewMap.comment[ancestor];
+      }
+      return ancestor;
     });
 
     comment.children = comment.children.map(child => {
-      // ancestor is objectId
+      // child is objectId
       if (!isValidMongoId(child)) {
         throw new Error('expected object id for child');
       }
+      let isChildFromSameWs = isValidMongoId(oldToNewMap.comment[child]);
 
-      return oldToNewMap.comment[child];
+      if (isChildFromSameWs) {
+        return oldToNewMap.comment[child];
+      }
+      return child;
     });
 
     // parent is not necessarily from this workspce
@@ -472,7 +485,13 @@ const updateRelationships = (
 
   combinedWorkspace.folders = combinedWorkspace.folders.map(folder => {
     folder.children = folder.children.map(child => {
-      return oldToNewMap.folder[child];
+      let newChildId = oldToNewMap.folder[child];
+
+      if (!newChildId) {
+        logger.error(`folder: ${folder}, oldToNewMap.folder: ${JSON.stringify(oldToNewMap.folder, null, 2)}`);
+        throw(new Error('invalid child folder'));
+      }
+      return newChildId;
     });
 
     if (folder.parent && oldToNewMap.folder[folder.parent]) {
@@ -484,7 +503,7 @@ const updateRelationships = (
       });
       folder.workspace = parentWs._id;
     }
-
+    folder.workspace = parentWs._id;
     return folder;
   });
 
