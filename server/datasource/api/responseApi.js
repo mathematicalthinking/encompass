@@ -217,7 +217,8 @@ function getSubmitterThreads(user, limit, skip) {
     isTrashed: false,
     status: 'approved',
     responseType: 'mentor',
-    recipient: userId
+    recipient: userId,
+    originalResponse: null, // filter out responses in parent ws
   });
 
   return responseIds
@@ -334,6 +335,7 @@ function getMentorThreads(user, limit, skip) {
 
   let ids = accessUtils.getModelIds('Response', {
     isTrashed: false,
+    originalResponse: null, // filter out responses in parent ws
     $or: [
       {
         responseType: 'mentor',
@@ -478,12 +480,15 @@ function getApproverThreads(user, asSuperAdmin, limit, skip) {
   if (asSuperAdmin && isAdmin) {
     wsCriteria = {
       isTrashed: false,
-      responses: {$ne: []}
+      responses: {$ne: []},
+      workspaceType: { $ne: 'parent' }, // filter out responses in parent ws
     };
   }
   wsCriteria = {
     isTrashed: false,
     responses: {$ne: []},
+    workspaceType: { $ne: 'parent' }, // filter out responses in parent ws
+
     $or: [
       { createdBy: userId },
       { owner: userId },
