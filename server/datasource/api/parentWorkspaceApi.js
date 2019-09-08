@@ -831,9 +831,18 @@ const updateSelections = async (userId, parentWs, childWorkspaces) => {
 
         // determine if fields were modified. for now just do isTrashed
         let modifiedFields = [];
-        if (childSelection.isTrashed !== parentSelection.isTrashed) {
-          modifiedFields.push('isTrashed');
-        }
+
+        let simpleFields = [
+          'isTrashed',
+          'relativeCoords',
+          'relativeSize'
+        ];
+
+        simpleFields.forEach((field) => {
+          if(!_.isEqual(parentSelection[field], childSelection[field])) {
+            modifiedFields.push(field);
+          }
+        });
 
         if (modifiedFields.length > 0) {
           return updateParentRecord(
@@ -1207,9 +1216,23 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
 
         // determine if fields were modified. for now just do isTrashed
         let modifiedFields = [];
-        if (childResponse.isTrashed !== parentResponse.isTrashed) {
-          modifiedFields.push('isTrashed');
-        }
+
+        let simpleFields = [
+          'isTrashed',
+          'status',
+          'text',
+          'note',
+          'approvedBy',
+          'unapprovedBy',
+          'wasReadByRecipient',
+          'wasReadByApprover',
+        ];
+
+        simpleFields.forEach((field) => {
+          if (!_.isEqual(parentResponse[field], childResponse[field])) {
+            modifiedFields.push(field);
+          }
+        });
 
         if (modifiedFields.length > 0) {
           return updateParentRecord(
