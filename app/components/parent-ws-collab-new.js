@@ -136,14 +136,13 @@ Encompass.ParentWsCollabNewComponent = Ember.Component.extend(Encompass.CurrentU
         collabs.forEach((collab) => {
           this.get('originalCollaborators').addObject(collab);
          permissions.addObject({
-            user: collab.get('id'),
-            global: 'custom',
-            submissions: { all: true, userOnly: false, submissionIds: [] },
-            folders: 1,
-            selections: 1,
-            feedback: 'authReq' // currently no feebdack setting for view-only
-
-          });
+           user: collab.get('id'),
+           global: 'custom',
+           submissions: { all: true, userOnly: false, submissionIds: [] },
+           folders: 1,
+           selections: 1,
+           feedback: 'approver' // this is a workaround for collabs of a parent workspace to be able to see all of the responses. even tho the setting is approver, they will not be able to modify any responses for this workspace
+         });
         });
 
       ws.save().then(() => {
