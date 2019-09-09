@@ -1178,6 +1178,30 @@ const mapFolderParent = (childFolder, parentWorkspaceId) => {
     });
 };
 
+const mapResponsePriorRevision = (childResponse) => {
+  let priorRevision = childResponse.priorRevision;
+
+  return models.Response.findOne({ originalResponse: priorRevision })
+    .then((parentRevision) => {
+      return parentRevision ? parentRevision._id : null;
+    })
+    .catch((err) => {
+      throw(err);
+    });
+};
+
+const mapResponseReviewedResponse = (childResponse) => {
+  let reviewedResponse = childResponse.reviewedResponse;
+
+  return models.Response.findOne({ originalResponse: reviewedResponse })
+    .then((parentResponse) => {
+      return parentResponse ? parentResponse._id : null;
+    })
+    .catch((err) => {
+      throw(err);
+    });
+};
+
 const updateResponses = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any comments that parent ws doesnt have
 
@@ -1214,8 +1238,44 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
         }
         let childResponse = parentResponse.originalResponse;
 
-        // determine if fields were modified. for now just do isTrashed
+        let childPriorRevision = childResponse.priorRevision;
+        let childReviewedResponse = childResponse.reviewedResponse;
+
+        let parentRevision = null;
+        let parentReviewedResponse = null;
+
+        if (childPriorRevision) {
+          parentRevision = await mapResponsePriorRevision(childResponse);
+        }
+
+        if (childReviewedResponse) {
+          parentReviewedResponse = await mapResponseReviewedResponse(childResponse);
+        }
+
+        let didPriorRevisionChange =
+          auditObjectIdField(parentResponse.priorRevision, parentRevision) !== 0;
+        let didReviewedResponseChange =
+          auditObjectIdField(parentResponse.reviewedResponse, parentReviewedResponse) !== 0;
+
+          console.log(
+            `Did prior revision change for response ${parentResponse}? ${didPriorRevisionChange}`
+          );
+
+          console.log(
+            `Did reviewedResponse change for response ${parentResponse}? ${didReviewedResponseChange}`
+          );
+
+
+        // determine if fields were modified
         let modifiedFields = [];
+
+        if (didPriorRevisionChange) {
+          modifiedFields.push('priorRevision');
+        }
+        if (didReviewedResponseChange) {
+          modifiedFields.push('reviewedResponse');
+        }
+
 
         let simpleFields = [
           'isTrashed',
@@ -1255,7 +1315,6 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
   let childResponses = await models.Response.find(responseFilter).populate(
     'submission'
   );
-
   let createdResponses = await Promise.all(
     childResponses.map(childResponse => {
       return createParentResponseCopy(userId, childResponse, parentWs);
@@ -2049,7 +2108,16 @@ const updateParentRecord = async (userId, childRecord, recordType, modifiedField
           parentRecord.ancestors = await mapCommentAncestors(childRecord, parentRecord.workspace);
           simpleFields = _.reject(simpleFields, (field => field === 'ancestors'));
         }
+      } else if (recordType === 'response') {
+        if (modifiedFields.includes('priorRevision')) {
+          parentRecord.parent = await mapResponsePriorRevision(childRecord);
+          simpleFields = _.reject(simpleFields, field => field === 'priorRevision');
+        }
 
+        if (modifiedFields.includes('reviewdResponse')) {
+          parentRecord.parent = await mapResponseReviewedResponse(childRecord);
+          simpleFields = _.reject(simpleFields, field => field === 'reviewedResponse');
+        }
       }
 
       simpleFields.forEach(field => {
@@ -2133,7 +2201,7 @@ const resolveParentUpdates = async (userId, childRecord, childRecordType, modifi
 
   if (!isNonEmptyArray(parentWorkspacesToUpdate)) {
     // no workspaces to update
-    // logger.info(`No parent workspaces to update for ${childRecordType} ${childRecord}`);
+    logger.info(`No parent workspaces to update for ${childRecordType} ${childRecord}`);
     return [];
   }
 

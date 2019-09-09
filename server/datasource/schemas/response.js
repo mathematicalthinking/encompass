@@ -392,8 +392,8 @@ ResponseSchema.post('save', function (response) {
       'unapprovedBy',
       'wasReadByRecipient',
       'wasReadByApprover',
-      // 'reviewedResponse',
-      // 'priorRevision'
+      'reviewedResponse',
+      'priorRevision'
     ];
 
     let parentFieldsToUpdate = updatedFields.filter(field => {
