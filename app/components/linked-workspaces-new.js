@@ -1,5 +1,6 @@
 Encompass.LinkedWorkspacesNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'linked-workspaces-new',
+  loading: Ember.inject.service('loading-display'),
 
   didReceiveAttrs() {
     this.set('workspaceName', this.get('defaultName'));
@@ -31,6 +32,8 @@ Encompass.LinkedWorkspacesNewComponent = Ember.Component.extend(Encompass.Curren
         return;
       }
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isRequestInProgress', 'doShowLoadingMessage');
+
       let data = {
         doAllowSubmissionUpdates: true,
         name: this.get('workspaceName') || this.get('defaultName'),
@@ -42,6 +45,8 @@ Encompass.LinkedWorkspacesNewComponent = Ember.Component.extend(Encompass.Curren
       assignment.set('parentWorkspaceRequest', { doCreate: false });
       return assignment.save()
         .then((assignment) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isRequestInProgress', 'doShowLoadingMessage');
+
           let createWorkspaceError = assignment.get('linkedWorkspacesRequest.error');
 
           if (createWorkspaceError) {
@@ -52,6 +57,8 @@ Encompass.LinkedWorkspacesNewComponent = Ember.Component.extend(Encompass.Curren
           this.send('cancel');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'start', 'isRequestInProgress', 'doShowLoadingMessage');
+
           this.set('createWorkspaceError', err);
         });
     }

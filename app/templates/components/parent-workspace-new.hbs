@@ -19,8 +19,12 @@
     {{/if}}
   </div>
 
-  <div class="button-row">
-    <button class="primary-button" data-test="add-parent-ws-create" {{action "create"}}>Create Workspace</button>
-    <button class="primary-button cancel-button" data-test="add-parent-ws-cancel" {{action "cancel"}}>Cancel</button>
-
-  </div>
+  {{#if doShowLoadingMessage}}
+    <p class="loading-message">Request in Progress... Thank you for your patience.</p>
+  {{/if}}
+  {{#unless isRequestIsInProgress}}
+    <div class="button-row">
+      <button class="primary-button" data-test="add-parent-ws-create" {{action "create"}}>Create Workspace</button>
+      <button class="primary-button cancel-button" data-test="add-parent-ws-cancel" {{action "cancel"}}>Cancel</button>
+    </div>
+  {{/unless}}

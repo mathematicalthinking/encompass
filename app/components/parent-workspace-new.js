@@ -1,5 +1,9 @@
 Encompass.ParentWorkspaceNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'parent-workspace-new',
+  loading: Ember.inject.service('loading-display'),
+
+  isRequestInProgess: false,
+  doShowLoadingMessage: false,
 
   didReceiveAttrs() {
     this.set('workspaceName', this.get('defaultName'));
@@ -29,6 +33,9 @@ Encompass.ParentWorkspaceNewComponent = Ember.Component.extend(Encompass.Current
       if (!childWorkspaces) {
         return this.set('createWorkspaceError', 'Must provide child workspaces to create parent workspace');
       }
+
+      this.get('loading').handleLoadingMessage(this, 'start', 'isRequestInProgress', 'doShowLoadingMessage');
+
       let assignment = this.get('assignment');
       let data = {
         childWorkspaces: childWorkspaces.mapBy('id'),
@@ -43,6 +50,8 @@ Encompass.ParentWorkspaceNewComponent = Ember.Component.extend(Encompass.Current
       assignment.set('linkedWorkspacesRequest', { doCreate: false });
       return assignment.save()
         .then((results) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isRequestInProgress', 'doShowLoadingMessage');
+
           let createWorkspaceError = results.get('parentWorkspaceRequest.error');
           let createdWorkspace = results.get('parentWorkspaceRequest.createdWorkspace');
 
@@ -54,6 +63,7 @@ Encompass.ParentWorkspaceNewComponent = Ember.Component.extend(Encompass.Current
           this.send('cancel');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isRequestInProgress', 'doShowLoadingMessage');
           this.set('createWorkspaceError', err);
         });
     }
