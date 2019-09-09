@@ -14,4 +14,5 @@ Encompass.Comment = DS.Model.extend(Encompass.Auditable, {
   type: function() {
     return 'selection';
   }.property('selection', 'submission', 'workspace'),
+  originalComment: DS.belongsTo('comment', {inverse: null})
 });

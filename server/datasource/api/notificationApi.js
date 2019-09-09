@@ -28,7 +28,6 @@ const getNotifications = (req, res, next) => {
   let { ids, filterBy } = req.query;
 
   let criteria = access.get.notifications(user, ids, filterBy);
-  console.log('crit', criteria);
   if (!isNonEmptyObject(criteria)) {
     return utils.sendError.InternalError(null, res);
   }

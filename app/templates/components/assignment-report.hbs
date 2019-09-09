@@ -1,8 +1,7 @@
 <section class="assignmentReport">
-    <h2>Assignment Report </h2>
     <p class="info-summary">{{summaryMessage}}</p>
     <table class="report rows values">
-    <tr>
+    <tr class="headers">
       <th>{{toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
@@ -19,7 +18,7 @@
             onUpdate=(action "updateSortCriterion")
             initialState=0
             options=sortOptions.revisionCount
-            label="Submission Count"
+            label="Submissions"
             type="count"
             activeType=sortCriterion.type
             }}

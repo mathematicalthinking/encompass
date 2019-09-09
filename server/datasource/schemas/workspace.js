@@ -70,8 +70,13 @@ var WorkspaceSchema = new Schema({
   permissions: [ WorkspacePermissionObjectSchema ],
   sourceWorkspace: { type: ObjectId, ref: 'Workspace' },
   linkedAssignment: { type: ObjectId, ref: 'Assignment' },
-  doAllowSubmissionUpdates: { type: Boolean, default: true },
-  doOnlyUpdateLastViewed: { type: Boolean, default: false }
+  doAllowSubmissionUpdates: { type: Boolean, default: true }, // for markup workspaces with a linked assignment
+  doOnlyUpdateLastViewed: { type: Boolean, default: false },
+  workspaceType: { type: String, enum: ['markup', 'parent', 'response'], default: 'markup'},
+  parentWorkspaces: [ {type: ObjectId, ref: 'Workspace'} ],
+  childWorkspaces: [{type: ObjectId, ref: 'Workspace'}],
+  doAutoUpdateFromChildren: { type: Boolean, default: false }, // for parent workspaces
+  updatedFields: [{ type: String }],
 }, {versionKey: false});
 
 /**
@@ -90,6 +95,12 @@ WorkspaceSchema.pre('save', function (next) {
     *   that native lookups and updates don't fail.
     */
   try {
+
+    let isNew = this.isNew;
+    if (!isNew) {
+      this.updatedFields = this.modifiedPaths();
+    }
+
     this.editors.forEach(toObjectId);
     this.folders.forEach(toObjectId);
     this.submissions.forEach(toObjectId);
@@ -106,6 +117,11 @@ WorkspaceSchema.pre('save', function (next) {
 
 /* Update all submissions in this Workspace after saving (Updates cascade) */
 WorkspaceSchema.post('save', function (workspace) {
+
+  let wereUpdatedFields =
+    Array.isArray(workspace.updatedFields) &&
+    workspace.updatedFields.length > 0;
+
   mongoose.models.Submission.update({_id: {$in: workspace.submissions}},
     {$addToSet: { 'workspaces': workspace }},
     {'multi': true},
@@ -123,18 +139,77 @@ WorkspaceSchema.post('save', function (workspace) {
         });
       }
     }
+    let didLinkedAssignmentChange =
+      wereUpdatedFields && workspace.updatedFields.includes('linkedAssignment');
 
     if (workspace.linkedAssignment) {
-      let updateHash = { $addToSet: { linkedWorkspaces: workspace._id } };
+      let isParent = workspace.workspaceType === 'parent';
+
+      let updateHash = isParent ?
+        { $set: { parentWorkspace: workspace._id } } :
+        { $addToSet: { linkedWorkspaces: workspace._id } };
 
       if (workspace.isTrashed) {
-        updateHash = { $pull: { linkedWorkspaces: workspace._id } };
+        updateHash = isParent ?
+          { $set: { parentWorkspace: null } } :
+          { $pull: { linkedWorkspaces: workspace._id } };
       }
-      mongoose.models.Assignment.findByIdAndUpdate(workspace.linkedAssignment, updateHash, function (err, affected, result) {
-        if (err) {
-          throw new Error(err.message);
+      mongoose.models.Assignment.findByIdAndUpdate(
+        workspace.linkedAssignment,
+        updateHash,
+        function(err, affected, result) {
+          if (err) {
+            throw new Error(err.message);
+          }
         }
+      );
+    }
+    let wasLinkedAssignmentRemoved =
+      didLinkedAssignmentChange && !workspace.linkedAssignment;
+    if (wasLinkedAssignmentRemoved) {
+      // remove workspace from assignment's linked workspaces array
+      let assignmentFilter = { linkedWorkspaces: workspace._id };
+      let assignmentUpdate = { $pull: { linkedWorkspaces: workspace._id } };
+
+      mongoose.models.Assignment.updateMany(
+        assignmentFilter,
+        assignmentUpdate
+      ).catch(err => {
+        console.log('Error removing workspace from assignments: ', err);
       });
+    }
+
+    let { childWorkspaces } = workspace;
+    let hasChildWorkspaces =
+      Array.isArray(childWorkspaces) && childWorkspaces.length > 0;
+
+    if (hasChildWorkspaces) {
+      // add or remove this workspace from any child workspace's parentWorkspaces array
+      let update = workspace.isTrashed ?
+        { $pull: { parentWorkspaces: workspace._id } } :
+        { $addToSet: { parentWorkspaces: workspace._id } };
+
+      let filter = { _id: { $in: childWorkspaces } };
+      mongoose.models.Workspace.updateMany(filter, update).catch(err => {
+        console.log('Error updating parent workspace child workspaces: ', err);
+      });
+    } else {
+      let didChildWorkspacesChange = workspace.updatedFields.includes(
+        'childWorkspaces'
+      );
+      // this means that one or more child workspaces were removed
+      // and now there are no child workspaces
+      // remove this workspace from any workspace that has it in its parent workspace array
+      if (didChildWorkspacesChange) {
+        let filter = { parentWorkspaces: workspace._id };
+        let update = { $pull: { parentWorkspaces: workspace._id } };
+        mongoose.models.Workspace.updateMany(filter, update).catch(err => {
+          console.log(
+            'Error removing parent workspace reference from child workspace: ',
+            err
+          );
+        });
+      }
     }
 });
 

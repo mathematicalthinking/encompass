@@ -24,6 +24,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   areFoldersHidden: false,
   areCommentsHidden: false,
 
+  isParentWorkspace: Ember.computed.equal('currentWorkspace.workspaceType', 'parent'),
+
   canSelect: function() {
     let cws = this.get('currentWorkspace');
     return this.get('permissions').canEdit(cws, 'selections', 2);

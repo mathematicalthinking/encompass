@@ -4,9 +4,15 @@ Encompass.UndraggableSelectionComponent = Ember.Component.extend(Encompass.Curre
   classNames: ['undraggable-selection'],
   isExpanded: false,
 
+  workspaceType: Ember.computed.alias('selection.workspace.workspaceType'),
+
+  isParentWorkspace: Ember.computed.equal('workspaceType', 'parent'),
+
   isImage: function() {
     return this.get('selection.imageTagLink.length') > 0;
   }.property('selection.imageTagLink'),
+
+  isText: Ember.computed.not('isImage'),
 
   isVmtClip: function() {
     return this.get('selection.vmtInfo.startTime') >= 0 &&
@@ -25,9 +31,15 @@ Encompass.UndraggableSelectionComponent = Ember.Component.extend(Encompass.Curre
   }.property('selection', 'currentSelection'),
   titleText: function() {
     if (!this.get('isVmtClip')) {
-      let createDate = this.get('selection.createDate');
+      let createDate;
+      if (this.get('isParentWorkspace')) {
+        createDate = this.get('selection.originalSelection.createDate');
+      } else {
+        createDate = this.get('selection.createDate');
 
-      let displayDate = moment(createDate).format('l h:mm');
+      }
+      let displayDate;
+      displayDate = moment(createDate).format('l h:mm');
       return `Created ${displayDate}`;
     }
     let startTime = this.get('selection.vmtInfo.startTime');
@@ -35,7 +47,7 @@ Encompass.UndraggableSelectionComponent = Ember.Component.extend(Encompass.Curre
 
     return `${this.get('utils').getTimeStringFromMs(startTime)} -
             ${this.get('utils').getTimeStringFromMs(endTime)}`;
-  }.property('isVmtClip', 'createDate'),
+  }.property('isVmtClip', 'selection.createDate', 'isParentWorkspace', 'selection.originalSelection'),
 
   overlayIcon: function() {
     if (!this.get('isImage')) {

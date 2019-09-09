@@ -21,7 +21,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   classNameBindings: ['canComment:can-comment', 'isHidden:hidden', 'onSelection:on-selection', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled'],
 
   permissions: Ember.inject.service('workspace-permissions'),
-  myCommentsOnly: true,
   thisSubmissionOnly: true,
   thisWorkspaceOnly: true,
   commentFilterText: '',
@@ -61,6 +60,14 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
     }
   },
+
+
+  showComposeButtons: Ember.computed.and('canComment', 'onSelection'),
+
+  myCommentsOnly: function() {
+    return !this.get('isParentWorkspace');
+  }.property('isParentWorkspace'),
+
 
   init: function() {
     this._super(...arguments);
@@ -203,24 +210,29 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return 'Hide Comments';
   }.property('isHidden'),
 
-  filterOptions: {
-    thisWorkspaceOnly: {
-      label: 'This Workspace Only',
-      relatedProp: 'thisWorkspaceOnly',
-      isChecked: true,
-    },
-    thisSubmissionOnly: {
-      label: 'This Submission Only',
-      relatedProp: 'thisSubmissionOnly',
-      isChecked: true,
-    },
-    myCommentsOnly: {
-      label: 'My Comments Only',
-      relatedProp: 'myCommentsOnly',
-      isChecked: true,
-    },
+  filterOptions: function() {
+    return {
+      thisWorkspaceOnly: {
+        label: 'This Workspace Only',
+        relatedProp: 'thisWorkspaceOnly',
+        isChecked: true,
+        isDisabled: this.get('isParentWorkspace'),
+      },
+      thisSubmissionOnly: {
+        label: 'This Submission Only',
+        relatedProp: 'thisSubmissionOnly',
+        isChecked: true,
+        isDisabled: false,
+      },
+      myCommentsOnly: {
+        label: 'My Comments Only',
+        relatedProp: 'myCommentsOnly',
+        isChecked: !this.get('isParentWorkspace'),
+        isDisabled: false,
+      },
 
-  },
+    };
+  }.property('isParentWorkspace'),
 
   emptyResultsMessage: function() {
     if (this.get('commentFilterText')) {

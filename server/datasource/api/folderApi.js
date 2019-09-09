@@ -1,7 +1,7 @@
 /**
   * # Folder API
   * @description This is the API for folder based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
+  * @author Damola Mabogunje, Daniel Kelly
   * @since 1.0.0
   */
 
@@ -17,9 +17,9 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/folders');
 const fsAccess = require('../../middleware/access/foldersets');
 
-const objectUtils = require('../../utils/objects');
-const { isNil, } = objectUtils;
+const { isNil } = require('../../utils/objects');
 
+const { resolveParentUpdates } = require('./parentWorkspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -144,32 +144,35 @@ async function getFolders(req, res, next) {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-function postFolder(req, res, next) {
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.folder.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if(wsAccess.canModify(user, ws, 'folders', 2)) {
-      var folder = new models.Folder(req.body.folder);
-      folder.createdBy = user;
-      folder.createDate = Date.now();
-      folder.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
+async function postFolder(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.folder.workspace;
 
-        var data = {'folder': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
+    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
+
+    let canCreateFolderInWs = wsAccess.canModify(user, workspace, 'folders', 2);
+
+    if (!canCreateFolderInWs) {
       logger.info("permission denied");
       return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
     }
-  });
+
+    let folder = new models.Folder(req.body.folder);
+    folder.createdBy = user;
+    folder.createDate = Date.now();
+    folder.lastModifiedDate = Date.now();
+    folder.lastModifiedBy = user;
+
+    await folder.save();
+
+    let data = { folder };
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    logger.error('error postFolder: ', err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 /**
@@ -180,48 +183,69 @@ function postFolder(req, res, next) {
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
   */
-function putFolder(req, res, next) {
+async function putFolder(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let popWs = await models.Workspace.findOne({ folders: req.params.id })
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
 
-  var user = userAuth.requireUser(req);
-  models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
-    if(_.isEqual(user.id, req.body.folder.createdBy) || wsAccess.canModify(user, ws, 'folders', 3)) {
-      models.Folder.findById(req.params.id,
-        function (err, doc) {
-          if(err) {
-            logger.error(err);
-            return utils.sendError.InternalError(err, res);
-          }
-
-          for(var field in req.body.folder) {
-            if((field !== '_id') && (field !== undefined)) {
-              doc[field] = req.body.folder[field];
-            }
-          }
-
-          if(req.body.folder.isTopLevel) {
-            doc.parent = null;
-          }
-
-          doc.save(function (err, folder) {
-            if (err) {
-              logger.error(err);
-              return utils.sendError.InternalError(err, res);
-            }
-            var data = {'folder': folder};
-            utils.sendResponse(res, data);
-          });
-        }
+    if (!popWs || popWs.isTrshed) {
+      logger.info(
+        `${user.username} attempted to modify folder ${req.params.id} for missing or trashed workspace`
       );
-    } else {
-      logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
+      return utils.sendResponse(res, null);
     }
-  });
+
+    let canModifyFolderInWs =
+      _.isEqual(user.id, req.body.folder.createdBy) ||
+      wsAccess.canModify(user, popWs, 'folders', 3);
+
+    if (!canModifyFolderInWs) {
+      logger.info(
+        `Permission denied to modify folder ${req.params.id} in workspace ${popWs.name} (id: ${popWs._id})`
+      );
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission to modify folders in this workspace`,
+        res
+      );
+    }
+
+    let folder = await models.Folder.findById(req.params.id).exec();
+
+    if (!folder) {
+      logger.info(
+        `${user.username} attempted to modify missing folder ${req.params.id} for workspace ${popWs._id}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    for (let field in req.body.folder) {
+      if (field !== '_id' && field !== undefined) {
+        folder[field] = req.body.folder[field];
+      }
+    }
+
+    // why was this here?
+    // if (req.body.folder.isTopLevel) {
+    //   folder.parent = null;
+    // }
+
+    folder.lastModifiedDate = new Date();
+    folder.lastModifiedBy = user._id;
+
+    await folder.save();
+
+    let data = { folder };
+    utils.sendResponse(res, data);
+
+  } catch (err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 function getFolderSet(req, res, next) {

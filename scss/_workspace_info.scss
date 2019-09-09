@@ -93,6 +93,11 @@
       font-size: 1em;
       }
   }
+  .child-workspaces {
+    li {
+      padding: 5px;
+    }
+  }
 }
 
 #workspace-info-collaborators {
@@ -218,5 +223,20 @@
         }
       }
     }
+  }
+}
+
+#parent-ws-collab-new {
+  .checkbox-list {
+    margin-top: 10px;
+
+  }
+  .collab-settings.global {
+    .radio-group {
+      margin-top: 10px;
+    }
+  }
+  .collab-name {
+    margin-top: 10px;
   }
 }

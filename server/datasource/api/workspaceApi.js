@@ -24,6 +24,7 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 const responseAccess = require('../../middleware/access/responses');
+const parentWsApi = require('./parentWorkspaceApi');
 
 const objectUtils = require('../../utils/objects');
 const stringUtils = require('../../utils/strings');
@@ -487,12 +488,13 @@ async function sendWorkspace(req, res, next) {
     let ws = await models.Workspace.findById(req.params.id)
       .populate('owner')
       .populate('createdBy')
-      .populate('selections')
+      .populate({path: 'selections', populate: {path: 'originalSelection'}})
       .populate({path: 'submissions', populate: {path: 'answer', select: 'createdBy', populate: {path: 'createdBy'}}})
-      .populate('folders')
-      .populate('taggings')
-      .populate({ path: 'responses', populate: [ {path: 'recipient'}, {path: 'createdBy'}]})
-      .populate('comments')
+      .populate({ path: 'folders', populate: { path: 'originalFolder'} })
+      .populate({path: 'taggings', populate: {path: 'originalTagging'}})
+      .populate({ path: 'responses', populate: [ {path: 'recipient'}, {path: 'createdBy'}, {path: 'originalResponse'}]})
+      .populate({ path: 'comments', populate: { path: 'originalComment'} } )
+      .populate({ path: 'childWorkspaces', populate: { path:  'owner' }})
       .lean().exec();
 
       if (isNil(ws) || ws.isTrashed) {
@@ -625,8 +627,16 @@ async function sendWorkspace(req, res, next) {
                 item.createdBy = item.createdBy._id;
               }
             }
+
+            let originalRecordProp = `original${stringUtils.capitalizeWord(key.slice(0, key.length - 1))}`;
+
             relatedData[key].push(item);//[ws[key]._id] = comment[key];
             idBag.push(item._id);
+
+            if (item[originalRecordProp] && item[originalRecordProp]._id) {
+              relatedData[key].push(item[originalRecordProp]);
+              item[originalRecordProp] = item[originalRecordProp]._id;
+            }
           });
           ws[key] = idBag;
         } else {
@@ -643,6 +653,29 @@ async function sendWorkspace(req, res, next) {
         data[modelName] = _.values(relatedData[key]);
       });
 
+      if (isNonEmptyArray(ws.childWorkspaces)) {
+
+        // sideload any owners of child workspaces that are not being
+        // sideloaded already
+
+        ws.childWorkspaces.forEach((childWs) => {
+          let ownerObj = childWs.owner;
+          if (ownerObj) {
+            let doesExist = _.find(data.user, (user) => {
+              return areObjectIdsEqual(user._id, ownerObj._id);
+            });
+            if (!doesExist) {
+              data.user.push(ownerObj);
+            }
+          // need to depopulate the owner field
+            childWs.owner = childWs.owner._id;
+          }
+        });
+
+        data.workspaces = Array.isArray(data.workspaces) ? data.workspaces.concat(ws.childWorkspaces) : ws.childWorkspaces;
+
+        ws.childWorkspaces = ws.childWorkspaces.map(childWs => childWs._id);
+      }
     return utils.sendResponse(res, data);
 
   }catch(err) {
@@ -665,9 +698,12 @@ async function putWorkspace(req, res, next) {
     const user = userAuth.requireUser(req);
   // 403 error when a teacher is in a workspace and switches to acting role of student
   // for now let acting role student modify workspaces but need to come up with a better solution
-  const popWs = await models.Workspace.findById(req.params.id).lean().populate('owner').populate('createdBy').exec();
+  const popWs = await models.Workspace.findById(req.params.id)
+    .populate('owner')
+    .populate('createdBy')
+    .exec();
 
-  if (isNil(popWs || popWs.isTrashed)) {
+  if (isNil(popWs) || popWs.isTrashed) {
     return utils.sendResponse(res, null);
   }
   if(!access.get.workspace(user, popWs)) {
@@ -685,7 +721,10 @@ async function putWorkspace(req, res, next) {
     }
   }
 
-  const ws = await models.Workspace.findById(req.params.id).exec();
+  // why fetch again?
+  // just depopulate
+  popWs.depopulate('owner').depopulate('createdBy');
+  const ws = popWs;
 
   let { doOnlyUpdateLastViewed, lastViewed } = req.body.workspace;
 
@@ -710,7 +749,7 @@ async function putWorkspace(req, res, next) {
   let isCreator = areObjectIdsEqual(user._id, ws.createdBy);
   let isPdWs = isPdAdmin && (areObjectIdsEqual(user.organization, ws.organization));
 
-  let { isTrashed, owner, organization, linkedAssignment, doAllowSubmissionUpdates, permissions } = req.body.workspace;
+  let { isTrashed, owner, organization, linkedAssignment, doAllowSubmissionUpdates, permissions, doAutoUpdateFromChildren } = req.body.workspace;
 
   if (isAdmin || isOwner || isCreator || isPdWs) {
     ws.isTrashed = isTrashed;
@@ -720,6 +759,7 @@ async function putWorkspace(req, res, next) {
     ws.organization = organization;
     ws.linkedAssignment = linkedAssignment;
     ws.doAllowSubmissionUpdates = doAllowSubmissionUpdates;
+    ws.doAutoUpdateFromChildren = doAutoUpdateFromChildren;
   }
 
   const originalPermissions = ws.permissions || [];
@@ -758,13 +798,6 @@ async function putWorkspace(req, res, next) {
     }
   }
 
-  let doUpdateLinkedAssignment = false;
-
-  if (isValidMongoId(ws.linkedAssignment) && !areObjectIdsEqual(linkedAssignment, ws.linkedAssignment)) {
-    // linkedAssignment was removed or changed
-    doUpdateLinkedAssignment = true;
-  }
-
   if (ws.permissions) {
     ws.permissions.forEach((permission) => {
       delete permission.userObj;
@@ -776,10 +809,6 @@ async function putWorkspace(req, res, next) {
   ws.lastModifiedBy = user._id;
 
   const savedWorkspace = await ws.save();
-
-  if (doUpdateLinkedAssignment) {
-    models.Assignment.updateMany({linkedWorkspaces: {$elemMatch: ws._id}}, {$pull: {linkedWorkspaces: ws._id}}).exec();
-  }
     const wsPermissions = savedWorkspace.permissions;
 
     if (_.isArray(wsPermissions)) {
@@ -803,8 +832,6 @@ async function putWorkspace(req, res, next) {
     return utils.sendError.InternalError(null, res);
   }
 }
-
-
 /**
   * @private
   * @method updateWorkspaces
@@ -2934,27 +2961,41 @@ async function cloneWorkspace(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 
-async function addAnswerToWorkspace(user, answer, workspaceId) {
+async function addAnswerToWorkspace(user, answer, workspaceId, options = {}) {
   try {
     if (!isNonEmptyObject(user) || !isNonEmptyObject(answer) || !isValidMongoId(workspaceId)) {
       return;
     }
-
-    let workspaceToUpdate = await models.Workspace.findById(workspaceId)
-    .populate('submissions')
-    .populate({path: 'linkedAssignment', populate: 'section'})
-    .populate('owner')
-    .populate('createdBy')
-    .exec();
+    let workspaceToUpdate = await (
+      models.Workspace.findById(workspaceId)
+      .populate('submissions')
+      .populate({path: 'linkedAssignment', populate: 'section'})
+      .populate('owner')
+      .populate('createdBy')
+      .exec());
 
     if (isNil(workspaceToUpdate)) {
       return;
     }
-    // do we need to check for submissions already containing this answer?
+
+    let existingSubWithAnswer = _.find(workspaceToUpdate.submissions, (sub) => {
+      return areObjectIdsEqual(sub.answer, answer._id);
+    });
+
+    if (existingSubWithAnswer) {
+      // answer has already been added to workspace
+      return;
+    }
+
+    let { isParentWsUpdate } = options;
 
     // create JSON submission obj from answer
     if (!access.canUpdateSubmissions(user, workspaceToUpdate, 'add')) {
-      return;
+      // isParentWsUpdate flag is only set to true after an authorized workspace update
+      // has been made to an existing child workspace
+      if (!isParentWsUpdate) {
+        return;
+      }
     }
     // returns array
     let submissionJSON = await answersToSubmissions([answer]);
@@ -2988,7 +3029,7 @@ async function addAnswerToWorkspace(user, answer, workspaceId) {
 
     let savedSub = await newSubmission.save();
     workspaceToUpdate.submissions = workspaceToUpdate.submissions.map(sub => sub._id);
-    workspaceToUpdate.submissions.push(savedSub._id);
+    workspaceToUpdate.submissions = workspaceToUpdate.submissions.concat([savedSub._id]);
 
     await workspaceToUpdate.save();
 
@@ -3013,14 +3054,41 @@ function addAnswerToWorkspaces(user, answer) {
   }
 
   let workspaceIds = answer.workspacesToUpdate;
-  console.log('wsIds', workspaceIds);
   if (!isNonEmptyArray(workspaceIds)) {
     return;
   }
 
   return Promise.all(workspaceIds.map((id) => {
     return addAnswerToWorkspace(user, answer, id);
-  }));
+  }))
+  .then(async (addAnswerResults) => {
+    let updatedWorkspaceIds = addAnswerResults.map((result) => {
+      return result.updatedWorkspaceInfo.workspaceId;
+    });
+    let results = {
+      updatedWorkspaceInfo: addAnswerResults,
+    };
+
+    // get list of the updated workspace ids so we can check if any of them
+    // are a child workspace of a parent workspace
+    if (isNonEmptyArray(updatedWorkspaceIds)) {
+      let parentWorkspacesToUpdate = await models.Workspace.find({isTrashed: false, childWorkspaces: {$elemMatch: {$in: updatedWorkspaceIds}}, doAutoUpdateFromChildren: true}).populate('submissions').exec();
+
+      // create a new submission from answer and add to any parent workspaces
+      return Promise.all(parentWorkspacesToUpdate.map((parentWs) => {
+        return addAnswerToWorkspace(user, answer, parentWs._id, {isParentWsUpdate: true});
+      }))
+        .then((parentResults) => {
+          let updatedParentWorkspaceIds = parentResults.map((result) => {
+            return result.updatedWorkspaceInfo.workspaceId;
+          });
+
+          results.updatedParentWsIds = updatedParentWorkspaceIds;
+          return results;
+
+        });
+    }
+  });
 
 
 }
@@ -3039,9 +3107,13 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
     let newUpdateRequest = new models.UpdateWorkspaceRequest(req.body.updateWorkspaceRequest);
 
-    let { workspace, linkedAssignment } = req.body.updateWorkspaceRequest;
+    newUpdateRequest.createDate = new Date();
 
-    if (!isValidMongoId(workspace) || !isValidMongoId(linkedAssignment)) {
+    let { workspace, linkedAssignment, isParentUpdate } = req.body.updateWorkspaceRequest;
+
+    logger.info({isParentUpdate});
+
+    if (!isValidMongoId(workspace) || (!isValidMongoId(linkedAssignment) && !isParentUpdate)) {
       newUpdateRequest.updateErrors.push('Invalid workspace or assignment.');
       await newUpdateRequest.save();
       return utils.sendResponse(res, {
@@ -3049,22 +3121,59 @@ const updateWorkspaceRequest = async function (req, res, next) {
       });
     }
 
-    let [ popWorkspace, assignment ] = await Promise.all([
-      models.Workspace.findById(workspace)
-      .populate('submissions')
-      .populate({path: 'linkedAssignment', populate: 'section'})
-      .populate('owner')
-      .populate('createdBy')
-      .exec(),
-      models.Assignment.findById(linkedAssignment).populate('answers').lean().exec()
-    ]);
+    let popWorkspace;
+    let assignment;
 
-    if (isNil(popWorkspace) || isNil(assignment)) {
-      newUpdateRequest.updateErrors.push('Invalid workspace or assignment.');
+    if (isParentUpdate) {
+      popWorkspace = await
+        models.Workspace.findById(workspace)
+        .populate('submissions')
+        .populate({path: 'selections', populate: 'submission'})
+        .populate({ path: 'comments', populate: 'submission'})
+        .populate({ path: 'responses', populate: 'submission'})
+        .populate('folders')
+        .populate({ path: 'childWorkspaces', populate: {
+          path: 'submissions', populate: 'answer'
+        }})
+        .populate('owner')
+        .populate('createdBy')
+        .populate('taggings')
+        .exec();
+    } else {
+      [ popWorkspace, assignment ] = await Promise.all([
+        models.Workspace.findById(workspace)
+        .populate('submissions')
+        .populate({path: 'linkedAssignment', populate: 'section'})
+        .populate('owner')
+        .populate('createdBy')
+        .exec(),
+        models.Assignment.findById(linkedAssignment).populate('answers').lean().exec()
+      ]);
+    }
+
+    if (isNil(popWorkspace)) {
+      newUpdateRequest.updateErrors.push('Invalid workspace.');
       await newUpdateRequest.save();
       return utils.sendResponse(res, {
         updateWorkspaceRequest: newUpdateRequest
       });
+    }
+
+    if (isNil(assignment) && !isParentUpdate) {
+      newUpdateRequest.updateErrors.push('Invalid linked assignment.');
+      await newUpdateRequest.save();
+      return utils.sendResponse(res, {
+        updateWorkspaceRequest: newUpdateRequest
+      });
+    }
+
+    if (isParentUpdate && !isNonEmptyArray(popWorkspace.childWorkspaces)) {
+      newUpdateRequest.updateErrors.push('No child workspaces to update from');
+      await newUpdateRequest.save();
+      return utils.sendResponse(res, {
+        updateWorkspaceRequest: newUpdateRequest
+      });
+
     }
 
     // check if user has permission to do this
@@ -3073,69 +3182,82 @@ const updateWorkspaceRequest = async function (req, res, next) {
       return utils.sendError.NotAuthorizedError('You do not have permission to update this workspace\'s submissions', res);
     }
 
-    let missingAnswers = [];
-    assignment.answers.forEach((answer) => {
-      let foundAnswer = _.find(popWorkspace.submissions, (sub) => {
-        return areObjectIdsEqual(sub.answer, answer._id);
-      });
-      if (!foundAnswer) {
-        missingAnswers.push(answer);
-      }
-    });
+    let data = {};
 
-    if (!isNonEmptyArray(missingAnswers)) {
-      // no answers to update
-      newUpdateRequest.wereNoAnswersToUpdate = true;
-      await newUpdateRequest.save();
-      return utils.sendResponse(res, {
-        updateWorkspaceRequest: newUpdateRequest
+    if (isParentUpdate) {
+      let results = await parentWsApi.updateParentWorkspace(user, popWorkspace, newUpdateRequest);
+
+      logger.info('update res: ', JSON.stringify(results, null, 2));
+
+      let updatedWorkspace = await models.Workspace.findById(popWorkspace._id).lean().exec();
+      data.workspaces = [ updatedWorkspace ];
+
+      data.updateWorkspaceRequest = results;
+    } else {
+      let missingAnswers = [];
+      assignment.answers.forEach((answer) => {
+        let foundAnswer = _.find(popWorkspace.submissions, (sub) => {
+          return areObjectIdsEqual(sub.answer, answer._id);
+        });
+        if (!foundAnswer) {
+          missingAnswers.push(answer);
+        }
       });
+
+      if (!isNonEmptyArray(missingAnswers)) {
+        // no answers to update
+        newUpdateRequest.wereNoAnswersToUpdate = true;
+        await newUpdateRequest.save();
+        return utils.sendResponse(res, {
+          updateWorkspaceRequest: newUpdateRequest
+        });
+      }
+
+      let JSONObjects = await answersToSubmissions(missingAnswers);
+      if (!isNonEmptyArray(JSONObjects)) {
+        newUpdateRequest.updateErrors.push('Error updating workspace with new submissions.');
+        await newUpdateRequest.save();
+        return utils.sendResponse(res, {
+          updateWorkspaceRequest: newUpdateRequest
+        });  }
+
+      let savedSubs = await Promise.all(JSONObjects.map((obj) => {
+        obj.createDate = Date.now();
+        let creatorId;
+
+        let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+        // set creator of submission as the enc user who created it if applicable
+        // else set as importer
+
+        if (isValidMongoId(encUserId)) {
+          creatorId = encUserId;
+        } else {
+          creatorId = user._id;
+        }
+        obj.createdBy = creatorId;
+        // obj.createdBy = user._id;
+        let newSubmission = new models.Submission(obj);
+
+        newSubmission.workspaces.push(workspace);
+        return newSubmission.save();
+
+      }));
+
+      popWorkspace.submissions = popWorkspace.submissions.map(sub => sub._id);
+      savedSubs.forEach((sub) => {
+        popWorkspace.submissions.push(sub._id);
+        newUpdateRequest.addedSubmissions.push(sub._id);
+      });
+      await popWorkspace.save();
+
+      newUpdateRequest.workspace = popWorkspace._id;
+      data.workspaces = [ popWorkspace ];
+      await newUpdateRequest.save();
+      data.updateWorkspaceRequest = newUpdateRequest;
     }
 
-    let JSONObjects = await answersToSubmissions(missingAnswers);
-    if (!isNonEmptyArray(JSONObjects)) {
-      newUpdateRequest.updateErrors.push('Error updating workspace with new submissions.');
-      await newUpdateRequest.save();
-      return utils.sendResponse(res, {
-        updateWorkspaceRequest: newUpdateRequest
-      });  }
-
-    let savedSubs = await Promise.all(JSONObjects.map((obj) => {
-      obj.createDate = Date.now();
-      let creatorId;
-
-      let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
-
-      // set creator of submission as the enc user who created it if applicable
-      // else set as importer
-
-      if (isValidMongoId(encUserId)) {
-        creatorId = encUserId;
-      } else {
-        creatorId = user._id;
-      }
-      obj.createdBy = creatorId;
-      // obj.createdBy = user._id;
-      let newSubmission = new models.Submission(obj);
-
-      newSubmission.workspaces.push(workspace);
-      return newSubmission.save();
-
-    }));
-
-    popWorkspace.submissions = popWorkspace.submissions.map(sub => sub._id);
-    savedSubs.forEach((sub) => {
-      popWorkspace.submissions.push(sub._id);
-      newUpdateRequest.addedSubmissions.push(sub._id);
-    });
-    await popWorkspace.save();
-
-    newUpdateRequest.workspace = popWorkspace._id;
-    await newUpdateRequest.save();
-
-    return utils.sendResponse(res, {
-      updateWorkspaceRequest: newUpdateRequest
-    });
+    return utils.sendResponse(res, data);
   }catch(err) {
     console.error(`Error updateWorkspaceRequest: ${err}`);
     console.trace();
@@ -3159,3 +3281,4 @@ module.exports.getRestrictedDataMap = getRestrictedDataMap;
 module.exports.addAnswerToWorkspace = addAnswerToWorkspace;
 module.exports.post.updateWorkspaceRequest = updateWorkspaceRequest;
 module.exports.addAnswerToWorkspaces = addAnswerToWorkspaces;
+module.exports.answersToSubmissions = answersToSubmissions;

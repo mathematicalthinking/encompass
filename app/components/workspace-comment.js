@@ -8,6 +8,8 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
   classNames: ['ws-comment-comp'],
   classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse', 'isFromCurrentSelection:is-for-cs',],
 
+  originalWorkspace: Ember.computed.alias('comment.originalComment.workspace'),
+
   isForCurrentWorkspace: function() {
     let workspaceId = this.get('utils').getBelongsToId(this.get('comment'), 'workspace');
     return workspaceId === this.get('currentWorkspace.id');
@@ -25,8 +27,8 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
 
   canDelete: function () {
     let ws = this.get('currentWorkspace');
-    return this.get('isOwnComment') || this.get('permissions').canEdit(ws, 'comments', 4);
-  }.property('currentWorkspace.permissions.@each.{global,comments}', 'isOwnComment'),
+    return this.get('permissions').canEdit(ws, 'comments', 4);
+  }.property('currentWorkspace.permissions.@each.{global,comments}'),
 
   permittedToComment: function () {
     let ws = this.get('currentWorkspace');

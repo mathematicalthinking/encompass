@@ -1,0 +1,28 @@
+{{#if items}}
+  {{#if header}}
+    <p class="checkbox-list-label">{{header}}</p>
+  {{/if}}
+{{/if}}
+
+<ul>
+  {{#if items}}
+    <li class="toggle-all">
+    <input type="checkbox" checked={{toggleAllValue}} name={{toggleAllName}}
+      onclick={{action "onToggleAll" checked}}>
+    <label>{{selectAllLabel}}</label>
+    </li>
+  {{/if}}
+  {{#each items as |item|}}
+    <li>
+    {{checkbox-list-item
+      item=item
+      selectedItems=selectedItems
+      displayProp=itemDisplayProp
+      onSelect=(action "onItemSelect")
+      name=inputName
+      }}
+    </li>
+  {{else}}
+    <li>{{noItemsMessage}}</li>
+  {{/each}}
+</ul>

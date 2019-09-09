@@ -148,7 +148,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       return callback();
     }
     if (!query.length) {
-      if (this.get('preload') !== true) {
+      if (!this.get('preload')) {
         return callback();
       }
       // to preload results

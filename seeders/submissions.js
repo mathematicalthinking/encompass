@@ -2600,4 +2600,97 @@ module.exports = [
     "isTrashed" : false,
     "createDate" : ISODate("2019-02-21T15:38:19.872Z")
 },
+/* 1 */
+{
+    "_id" : ObjectId("5d5d60ef4f217a59dfbbdeec"),
+    "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+    "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+    "answer" : ObjectId("5bb813fc9885323f6d894972"),
+    "vmtRoomInfo" : {
+        "participants" : [],
+        "facilitators" : []
+    },
+    "responses" : [],
+    "workspaces" : [
+        ObjectId("5d5d60ef4f217a59dfbbdeeb")
+    ],
+    "comments" : [
+        ObjectId("5d5d62f84f217a59dfbbdef9")
+    ],
+    "selections" : [
+        ObjectId("5d5d62e64f217a59dfbbdef7"),
+        ObjectId("5d5d62e94f217a59dfbbdef8")
+    ],
+    "teacher" : {
+        "id" : "5b4e4b48808c7eebc9f9e827"
+    },
+    "teachers" : [],
+    "pdSet" : "default",
+    "publication" : {
+        "publicationId" : null,
+        "puzzle" : {
+            "title" : "Summer's Private Problem",
+            "problemId" : "5b9173e23da5efca74705772"
+        }
+    },
+    "clazz" : {
+        "sectionId" : "5b9149a32ecaf7c30dd4748f",
+        "name" : "Summer's Algebra 2 1st Period"
+    },
+    "creator" : {
+        "studentId" : "5b914a102ecaf7c30dd47492",
+        "username" : "tracyc"
+    },
+    "lastModifiedDate" : ISODate("2019-08-21T15:19:11.855Z"),
+    "isTrashed" : false,
+    "createDate" : ISODate("2019-08-21T15:19:11.854Z")
+},
+
+/* 2 */
+{
+    "_id" : ObjectId("5d5d60ef4f217a59dfbbdeed"),
+    "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+    "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+    "answer" : ObjectId("5bec35898c73047613e2f34b"),
+    "vmtRoomInfo" : {
+        "participants" : [],
+        "facilitators" : []
+    },
+    "responses" : [
+        ObjectId("5d5d635b4f217a59dfbbdefe")
+    ],
+    "workspaces" : [
+        ObjectId("5d5d60ef4f217a59dfbbdeeb")
+    ],
+    "comments" : [
+        ObjectId("5d5d63384f217a59dfbbdefc")
+    ],
+    "selections" : [
+        ObjectId("5d5d631c4f217a59dfbbdefb")
+    ],
+    "teacher" : {
+        "id" : "5b4e4b48808c7eebc9f9e827"
+    },
+    "teachers" : [],
+    "pdSet" : "default",
+    "publication" : {
+        "publicationId" : null,
+        "puzzle" : {
+            "title" : "Summer's Private Problem",
+            "problemId" : "5b9173e23da5efca74705772"
+        }
+    },
+    "clazz" : {
+        "sectionId" : "5b9149a32ecaf7c30dd4748f",
+        "name" : "Summer's Algebra 2 1st Period"
+    },
+    "creator" : {
+        "studentId" : "5b9149c22ecaf7c30dd47490",
+        "username" : "ashleyc"
+    },
+    "lastModifiedDate" : ISODate("2019-08-21T15:19:11.856Z"),
+    "isTrashed" : false,
+    "createDate" : ISODate("2019-08-21T15:19:11.856Z")
+}
+
 ];

@@ -3,6 +3,7 @@ Encompass.AssignmentReportComponent = Ember.Component.extend(Encompass.CurrentUs
   elementId: 'assignment-report',
 
   sortCriterion: { name: 'A-Z', sortParam: { param: 'username', direction: 'asc' }, icon:"fas fa-sort-alpha-down sort-icon", type: 'username' },
+  classNameBindings: ['hidden'],
 
   sortedReportItems: function() {
    let reportObj = this.get('reportWithUser');

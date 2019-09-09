@@ -7,6 +7,11 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
   classNames: ['draggable-selection'],
   classNameBindings:['isSelected:is-selected'],
 
+  workspaceType: Ember.computed.alias('selection.workspace.workspaceType'),
+
+  isParentWorkspace: Ember.computed.equal('workspaceType', 'parent'),
+
+
   dragStart: function(event) {
     this._super(event);
     var dataTransfer = event.originalEvent.dataTransfer;

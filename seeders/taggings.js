@@ -866,4 +866,30 @@ module.exports = [
   "isTrashed" : false,
   "createDate" : ISODate("2014-08-07T13:31:22.605Z")
 },
+
+/* 73 */
+{
+  "_id" : ObjectId("5d5d63054f217a59dfbbdefa"),
+  "createdBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "lastModifiedBy" : null,
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "selection" : ObjectId("5d5d62e64f217a59dfbbdef7"),
+  "folder" : ObjectId("5d5d60ef4f217a59dfbbdeee"),
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:28:05.324Z")
+},
+
+/* 74 */
+{
+  "_id" : ObjectId("5d5d634c4f217a59dfbbdefd"),
+  "createdBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "lastModifiedBy" : null,
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "selection" : ObjectId("5d5d631c4f217a59dfbbdefb"),
+  "folder" : ObjectId("5d5d60ef4f217a59dfbbdef4"),
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:29:16.019Z")
+},
 ];

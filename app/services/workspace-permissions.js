@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUserMixin, {
   utils: Ember.inject.service('utility-methods'),
 
@@ -57,7 +58,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   canApproveFeedback(ws) {
-    if (!ws) {
+    if (!ws || ws.workspaceType === 'parent') {
       return false;
     }
     return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isFeedbackApprover(ws) || this.isInPdAdminDomain(ws);
@@ -68,6 +69,20 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
 
     if (!utils.isNonEmptyObject(ws)) {
       return false;
+    }
+
+    let wsType = ws.get('workspaceType');
+
+    if (wsType === 'parent') {
+      // cannot create new selections or taggings or edit folders
+      // still need to be able to see everything;
+      if (requiredPermissionLevel > 1) {
+        return false;
+      }
+
+      if (requiredPermissionLevel === 1 && recordType === 'feedback') {
+        return false;
+      }
     }
 
     if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {

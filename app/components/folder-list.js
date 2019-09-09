@@ -138,10 +138,10 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       let folderName = folder.get('name');
       folder.set('isTrashed', true);
       folder.save().then((folder) => {
-        this.get('alert').showToast('success', `${folderName} deleted`, 'bottom-end', 5000, false, null);
+        this.get('alert').showToast('success', `${folderName} deleted`, 'bottom-end', 3000, false, null);
       }).catch((err) => {
         let message = err.errors[0].detail;
-        this.get('alert').showToast('error', `${message}`, 'bottom-end', 4000, false, null);
+        this.get('alert').showToast('error', `${message}`, 'bottom-end', 3000, false, null);
         this.handleErrors(err, 'updateRecordErrors', folder);
       });
     },

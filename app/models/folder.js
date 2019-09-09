@@ -54,9 +54,10 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
   }.property('childSelections.@each.isTrashed'),
 
   submissions: function() {
-    return this.get('cleanSelections')
-      .mapBy('submission.content')
-      .uniqBy('id');
+    let results = this.get('cleanSelections');
+    let submissions = results.mapBy('submission.content');
+    let clean = submissions.compact();
+    return clean.uniqBy('id');
   }.property('cleanSelections.@each.submission'),
 
   _submissions: function() {
@@ -81,4 +82,5 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
   },
 
   sortedChildren: Ember.computed.sort('cleanChildren', 'sortProperties'),
+  originalFolder: DS.belongsTo('folder', {inverse: null}),
 });

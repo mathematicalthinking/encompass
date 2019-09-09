@@ -386,7 +386,6 @@ const sortAnswersByLength = function(model, sortParam, req, criteria) {
 
   // All objects are pushed into the aggregate array
   aggregateArray.push(matchObj, projectObj, sortObj, skipObj, limitObj);
-console.log('projectOBj', JSON.stringify(projectObj));
   // Return results of aggregate by provied model
   return models[model].aggregate(aggregateArray).exec();
 };

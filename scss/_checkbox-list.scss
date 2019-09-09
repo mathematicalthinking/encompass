@@ -1,0 +1,23 @@
+.checkbox-list {
+  margin-top: 10px;
+
+  .checkbox-list-label {
+    font-size: 1em;
+    margin-bottom: 10px;
+    color: black;
+  }
+  .toggle-all {
+    margin-bottom: 10px;
+  }
+}
+
+.checkbox-list-item {
+  @include flex-container(null, null, row, row, flex-start, flex-start, flex-start);
+
+  input {
+    margin-right: 5px;
+  }
+  p {
+    display: inline-block;
+  }
+}

@@ -1,10 +1,9 @@
 /**
   * # Comment API
   * @description This is the API for comment based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
-  * @since 1.0.0
+  * @author Damola Mabogunje, Daniel Kelly
+  * @since 1.0.1
   */
-/* jshint ignore:start */
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
@@ -18,7 +17,7 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/comments');
 const asyncWrapper = utils.asyncWrapper;
 
-const { isValidMongoId } = require('../../utils/mongoose');
+const { isValidMongoId, } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -238,31 +237,33 @@ async function getComment(req, res, next) {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-function postComment(req, res, next) {
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.comment.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if(wsAccess.canModify(user, ws, 'comments', 2)) {
-      var comment = new models.Comment(req.body.comment);
-      comment.createdBy = user;
-      comment.createDate = Date.now();
-      comment.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-        var data = {'comment': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
+async function postComment(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.comment.workspace;
+    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
+
+    let canCreateCommentInWs = wsAccess.canModify(user, workspace, 'comments', 2);
+
+    if (!canCreateCommentInWs) {
       logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
     }
-  });
+    let comment = new models.Comment(req.body.comment);
+    comment.createdBy = user;
+    comment.lastModifiedBy = user;
+    comment.createDate = Date.now();
+    comment.lastModifiedDate = Date.now();
+
+    await comment.save();
+
+    let data = { comment };
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 /**
@@ -273,49 +274,79 @@ function postComment(req, res, next) {
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
   */
-function putComment(req, res, next) {
 
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.comment.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if(_.isEqual(user.id, req.body.comment.createdBy) || wsAccess.canModify(user, ws, 'comments', 3)) {
+/**
+  * @public
+  * @method putComment
+  * @description __URL__: /api/comments/:id
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+  */
+async function putComment(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.comment.workspace;
 
-      models.Comment.findById(req.params.id,
-        function (err, doc) {
-          if(err) {
-            logger.error(err);
-            return utils.sendError.InternalError(err, res);
-          }
+    let popWs = await models.Workspace.findById(workspaceId)
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
 
-          for(var field in req.body.comment) {
-            if((field !== '_id') && (field !== undefined)) {
-              doc[field] = req.body.comment[field];
-            }
-          }
-          doc.save(function (err, comment) {
-            if(err) {
-              logger.error(err);
-              return utils.sendError.InternalError(err, res);
-            }
-
-            var data = {'comment': comment};
-            utils.sendResponse(res, data);
-          });
-        }
+    if (!popWs || popWs.isTrashed) {
+      logger.info(
+        `${user.username} attempted to modify comment ${req.params.id} for missing or trashed workspace ${workspaceId}`
       );
-    } else { //not permitted
-      logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
+      return utils.sendResponse(res, null);
     }
-  });
+
+    let canModifyCommentInWs =
+      _.isEqual(user._id, req.body.comment.createdBy) ||
+      wsAccess.canModify(user, popWs, 'comments', 3);
+
+    if (!canModifyCommentInWs) {
+      logger.info(
+        `Permission denied to modify comment ${req.params.id} in workspace ${popWs.name} (id: ${popWs._id})`
+      );
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission to modify comments in this workspace`,
+        res
+      );
+    }
+
+    let comment = await models.Comment.findById(req.params.id).exec();
+
+    if (!comment) {
+      logger.info(
+        `${user.username} attempted to modify missing comment ${req.params.id} for workspace ${workspaceId}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    for (let field in req.body.comment) {
+      if (field !== '_id' && field !== undefined) {
+        comment[field] = req.body.comment[field];
+      }
+    }
+
+    comment.lastModifiedBy = user._id;
+    comment.lastModifiedDate = new Date();
+
+    await comment.save();
+
+    let data = { comment };
+    utils.sendResponse(res, data);
+
+
+  } catch (err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 module.exports.get.comments = getComments;
 module.exports.get.comment = getComment;
 module.exports.post.comment = postComment;
 module.exports.put.comment = putComment;
-/* jshint ignore:end */

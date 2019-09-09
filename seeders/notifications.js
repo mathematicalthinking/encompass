@@ -85,4 +85,19 @@ module.exports = [
   "isTrashed" : false,
   "createDate" : ISODate("2019-07-01T17:23:27.871Z")
 },
+{
+  "_id" : ObjectId("5d5d635b4f217a59dfbbdeff"),
+  "doPullFromRecipient" : false,
+  "doAddToRecipient" : true,
+  "createdBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "recipient" : ObjectId("5b9149c22ecaf7c30dd47490"),
+  "response" : ObjectId("5d5d635b4f217a59dfbbdefe"),
+  "primaryRecordType" : "response",
+  "notificationType" : "newMentorReply",
+  "text" : "You have received a new mentor reply.",
+  "wasSeen" : false,
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.597Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.597Z")
+}
 ];

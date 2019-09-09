@@ -223,7 +223,12 @@ module.exports = {
     confirmBtn: 'button.swal2-confirm',
     cancelBtn: 'button.swal2-cancel',
     select: 'select.swal2-select',
-    container: '.swal2-container'
+    container: '.swal2-container',
+    textInput: 'input.swal2-input[type=text]',
+    modal: '.swal2-modal',
+    toasts: {
+      title: 'div.swal2-toast > .swal2-header > #swal2-title'
+    }
   },
 
   problemNew: {
@@ -385,11 +390,12 @@ module.exports = {
       sender: 'div.response-users > p:nth-child(2) > span.response-value',
       saveButton: 'button.primary-button.save-response',
       saveAsDraft: 'button.primary-button.save-draft',
-      statusText: '.status-text.mentor-reply'
+      statusText: '.status-text.mentor-reply',
+      unreadIcon: 'span.response-read-unread i.far.fa-envelope'
     }
   },
   workspace: {
-    newResponse: 'button.action_button:nth-child(1)',
+    newResponse: '.submission-row-item.new-response > button.new-response',
     studentsSelect: '.submission-row-item.students > .selectize-comp',
     studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
     dropdownContent: '.selectize-dropdown-content',
@@ -400,6 +406,28 @@ module.exports = {
       index: '.submission_index',
       rightArrow: '#rightArrow',
       leftArrow: '#leftArrow'
+    },
+    tour: {
+      xBtn: 'div.guiders_x_button',
+      overlay: '#guiders_overlay',
+    },
+    toggleSelectingInput: 'input[type=checkbox][name=is-selecting]',
+    selectableArea: {
+      container: '#selectable-area',
+    },
+    selections: {
+      container: '#submission_selections',
+      selectionLink: '.selectionLink > a',
+      currentSelectionLink: '.selectionLink > a.active',
+      draggable: 'draggable-selection',
+      selectedDraggable: '.draggable-selection.is-selected',
+    },
+    folders: {
+      add: '.folders-modify-item.add > span',
+      showFolderCircle: '',
+      edit: '.folders-modify-item.edit > span',
+      doneEditingIcon: '.folders-modify-item.edit > span > .fas.fa-check',
+      editNameInput: '.edit-folder-name',
     }
 
   },
@@ -407,7 +435,7 @@ module.exports = {
     container: '#workspace-info',
     settings: {
       container: '#workspace-info-settings',
-      editBtn: '#workspace-info-settings > div > div.heading > span > i',
+      editBtn: 'span[data-test=ws-settings-edit]',
       cancelEdit: '#workspace-info-settings > div > div.card-content > div.card-row.button-row > button.primary-button.cancel-button',
       saveEdit: '#workspace-info-settings > div > div.card-content > div.card-row.button-row > button:nth-child(2)',
       editName: '#edit-name-input',
@@ -417,6 +445,7 @@ module.exports = {
       updateSuccessText: 'Workspace Updated',
       linkedAssnInput: '#linked-assignment-select-selectized',
       linkedAssnText: 'div[data-test="linked-assn"]',
+      updateParentWs: 'button[data-test=parent-ws-update]'
     },
     collabs: {
       container: '#workspace-info-collaborators',
@@ -439,11 +468,30 @@ module.exports = {
     editAssignment: 'button[data-test="edit-assignment"]',
     trashBtn: 'button[data-test="trash-assn"]',
     confirmTrash: 'body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled',
+    saveAssignment: 'button[data-test=assn-save]',
+    cancelAssignment: 'button[data-test=assn-cancel]',
+    container: '#assignment-info-teacher',
     sideList: {
       yours: 'ul.your-assignments'
     },
     linkedWorkspaces: {
-      link: 'ul.assignment-info > li > a',
+      container: '#linked-workspaces-new',
+      link: '.info-flex-item.linked-ws > ul > li > a',
+      add: 'button[data-test=add-linked-ws]',
+      nameInput: '#linked-ws-new-name',
+      create: 'button[data-test=add-linked-ws-create]',
+      cancel: 'button[data-test=add-linked-ws-cancel]',
+      fullLinkedMsg: 'p[data-test=info-full-linked-ws]',
+      namePreviews: '.name-previews > ul > li',
+    },
+    parentWorkspace: {
+      container: '#parent-workspace-new',
+      link: '.info-flex-item.parent-ws > a',
+      add: 'button[data-test=add-parent-ws]',
+      nameInput: '#parent-ws-new-name',
+      create: 'button[data-test=add-parent-ws-create]',
+      cancel: 'button[data-test=add-parent-ws-cancel]',
+      noParentMsg: 'p[data-test=info-no-parent-ws]',
     },
     report: {
       table: 'table.report.rows.values',
@@ -455,7 +503,11 @@ module.exports = {
   wsComments: {
     save: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.save',
     cancel: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.cancel-button',
-    commentText: 'div.comment-flex-item.text > p:nth-child(1) > a'
+    commentText: 'div.comment-flex-item.text > p:nth-child(1) > a',
+    commentActions: 'div.comment-flex-item.actions',
+    textArea: '#commentTextarea',
+    commentTypeSelect: 'div.label-select select',
+    commentListItem: '.ws-comment-comp',
   },
   vmtImport: {
     search: {
@@ -487,5 +539,39 @@ module.exports = {
       container: '#vmt-import-step4',
       create: 'button[data-test=create]'
     }
+  },
+  assignmentsNew: {
+    container: '#assignment-new',
+    inputs: {
+      section: {
+        input: '#assn-new-section-select-selectized',
+      },
+      problem: {
+        input: '#assn-new-problem-select-selectized',
+      },
+      linkedWorkspaces: {
+        groupName: 'linkedWorkspaces',
+        yes: {
+          value: "true"
+        },
+        no: {
+          value: "false"
+        }
+      },
+      parentWorkspace: {
+        groupName: 'parentWorkspace',
+        yes: {
+          value: 'true',
+        },
+        no: {
+          value: 'false'
+        }
+      }
+
+    },
+    submitBtn: 'button[data-test=create]',
+  },
+  responsesNew: {
+    saveBtn: 'button.save-response'
   }
 };

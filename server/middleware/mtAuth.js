@@ -84,8 +84,6 @@ const getMtUser = async (req, res) => {
 
     verifiedAccessToken = await verifyJwt(accessToken, secret);
 
-    console.log('received new access token: ', verifiedAccessToken);
-
     setSsoCookie(res, accessToken);
     return verifiedAccessToken;
 

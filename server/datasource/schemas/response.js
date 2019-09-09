@@ -9,6 +9,8 @@ const sockets = require('../../socketInit');
 
 const { isValidMongoId } = require('../../utils/mongoose');
 
+const { resolveParentUpdates } = require('../api/parentWorkspaceApi');
+
 /**
   * @public
   * @class Response
@@ -26,8 +28,8 @@ var ResponseSchema = new Schema({
     source: { type: String, required: true }, // submission, workspace, etc - what triggered this?
     original: { type: String },
     recipient: { type: ObjectId, ref: 'User' },
-    selections: [{type: ObjectId, ref:'Selections'}],
-    comments: [{type: ObjectId, ref:'Comments'}],
+    selections: [{type: ObjectId, ref:'Selection'}],
+    comments: [{type: ObjectId, ref:'Comment'}],
     workspace: {type:ObjectId, ref:'Workspace'},
     submission: {type:ObjectId, ref:'Submission'},
     responseType: {type: String, enum: ['mentor', 'approver', 'student', 'note', 'newRevisionNotice']},
@@ -37,17 +39,25 @@ var ResponseSchema = new Schema({
     note: {type: String },
     approvedBy: { type: ObjectId, ref: 'User' },
     unapprovedBy: { type: ObjectId, ref: 'User' },
-    wasReadByRecipient: { type: Boolean, default: false },
-    wasReadByApprover: { type: Boolean, default: false },
-    isApproverNoteOnly: { type: Boolean, default: false },
-    isNewlyApproved: { type: Boolean, default: false },
-    isNewApproved: { type: Boolean, default : false },
-    isNewPending: { type: Boolean, default: false },
-    isNewlyNeedsRevisions: { type: Boolean, default: false },
-    isNewlySuperceded: { type: Boolean, default: false},
-    isNewlyRead: { type: Boolean, default: false},
-    wasUnapproved: {type: Boolean, default: false},
     powsRecipient: { type: String },
+    originalResponse: { type: ObjectId, ref: 'Response' }, // when response is in a parent workspace to ref original
+
+    /*
+    For post save hook use only
+    */
+   wasReadByRecipient: { type: Boolean, default: false },
+   wasReadByApprover: { type: Boolean, default: false },
+   isApproverNoteOnly: { type: Boolean, default: false },
+   isNewlyApproved: { type: Boolean, default: false },
+   isNewApproved: { type: Boolean, default : false },
+   isNewPending: { type: Boolean, default: false },
+   isNewlyNeedsRevisions: { type: Boolean, default: false },
+   isNewlySuperceded: { type: Boolean, default: false},
+   isNewlyRead: { type: Boolean, default: false},
+   wasUnapproved: {type: Boolean, default: false},
+   wasNew: { type: Boolean, default: false },
+   updatedFields: [ { type: String } ],
+
   }, {versionKey: false});
 
 /**
@@ -71,8 +81,13 @@ ResponseSchema.pre('save', function (next) {
 
     // if status is approved, send ntf to recipient
     let isNew = this.isNew;
+    this.wasNew = isNew;
+
     let modifiedFields = this.modifiedPaths();
 
+    if (!this.wasNew) {
+      this.updatedFields = modifiedFields;
+    }
     let isApproved = this.status === 'approved';
 
     if (isApproved && isValidMongoId(this.unapprovedBy)) {
@@ -162,6 +177,8 @@ async function emitResponseReadEvent(response) {
   */
 ResponseSchema.post('save', function (response) {
   var update = { $addToSet: { 'responses': response } };
+  let isParentResponse = isValidMongoId(response.originalResponse);
+
   if( response.isTrashed ) {
     var responseIdObj = mongoose.Types.ObjectId( response._id );
     /* + If deleted, all references are also deleted */
@@ -186,103 +203,106 @@ ResponseSchema.post('save', function (response) {
         }
       });
   }
+  // do not send ntfs if parent response
 
-  if (response.recipient) {
-    if (this.isNewApproved || this.isNewlyApproved) {
-      // send ntf to recipient
-      let responseType = response.responseType;
-      let ntfType;
-      let text = '';
-      if (responseType === 'mentor') {
-        ntfType = 'newMentorReply';
-        text = 'You have received a new mentor reply.';
-      } else if (responseType === 'approver') {
-        ntfType = 'newApproverReply';
-        text = 'You have received a new reply from a feedback approver.';
+  if (!isParentResponse) {
+    if (response.recipient) {
+      if (this.isNewApproved || this.isNewlyApproved) {
+        // send ntf to recipient
+        let responseType = response.responseType;
+        let ntfType;
+        let text = '';
+        if (responseType === 'mentor') {
+          ntfType = 'newMentorReply';
+          text = 'You have received a new mentor reply.';
+        } else if (responseType === 'approver') {
+          ntfType = 'newApproverReply';
+          text = 'You have received a new reply from a feedback approver.';
+        }
+
+        let newReplyNtf = new models.Notification({
+          createdBy: response.createdBy,
+          recipient: response.recipient,
+          response: response._id,
+          primaryRecordType: 'response',
+          notificationType: ntfType,
+          text
+        });
+
+        newReplyNtf.save();
+
+        if (response.isNewlyApproved) {
+          // send ntf to creator
+          let newlyApprovedNtf = new models.Notification({
+            createdBy: response.approvedBy,
+            recipient: response.createdBy,
+            response: response._id,
+            primaryRecordType: 'response',
+            notificationType: 'newlyApprovedReply',
+            text: 'One of your mentor replies was recently approved.'
+          });
+          newlyApprovedNtf.save();
+
+          //clear old waiting for approval ntfs
+          models.Notification.find({
+            notificationType: 'mentorReplyRequiresApproval',
+            response: response._id,
+            wasSeen: false,
+            isTrashed: false
+          }).exec()
+            .then((ntfs) => {
+              ntfs.forEach((ntf) => {
+                ntf.wasSeen = true;
+                ntf.save();
+              });
+            });
+        }
       }
+    }
 
-      let newReplyNtf = new models.Notification({
-        createdBy: response.createdBy,
-        recipient: response.recipient,
-        response: response._id,
-        primaryRecordType: 'response',
-        notificationType: ntfType,
-        text
-      });
+    if (response.isNewPending) {
+      // send ntf to owner of workspace and any approvers
+      return models.Workspace.findById(response.workspace).lean().exec()
+        .then((workspace) => {
+          if (!workspace) {
+            return null;
+          }
+          let ntfRecipients = [];
+          if (isValidMongoId(workspace.owner)) {
+            ntfRecipients.push(workspace.owner);
+          }
+          let permissions = workspace.permissions || [];
 
-      newReplyNtf.save();
-
-      if (response.isNewlyApproved) {
-        // send ntf to creator
-        let newlyApprovedNtf = new models.Notification({
-          createdBy: response.approvedBy,
+          permissions.forEach((obj) => {
+            if (obj.user && obj.feedback === 'approver') {
+              ntfRecipients.push(obj.user);
+            }
+          });
+          ntfRecipients.forEach((userId) => {
+            let ntf = new models.Notification({
+              createdBy: response.createdBy,
+              recipient: userId,
+              response: response._id,
+              primaryRecordType: 'response',
+              notificationType: 'mentorReplyRequiresApproval',
+              text: 'There is a new mentor reply waiting to be approved.'
+            });
+            ntf.save();
+          });
+        });
+    }
+    if (response.isNewlyNeedsRevisions) {
+      // send ntf to creator of response
+      if (isValidMongoId(response.createdBy)) {
+        let ntf = new models.Notification({
           recipient: response.createdBy,
           response: response._id,
           primaryRecordType: 'response',
-          notificationType: 'newlyApprovedReply',
-          text: 'One of your mentor replies was recently approved.'
+          notificationType: 'mentorReplyNeedsRevisions',
+          text: 'One of your mentor replies needs revisions.'
         });
-        newlyApprovedNtf.save();
-
-        //clear old waiting for approval ntfs
-        models.Notification.find({
-          notificationType: 'mentorReplyRequiresApproval',
-          response: response._id,
-          wasSeen: false,
-          isTrashed: false
-        }).exec()
-          .then((ntfs) => {
-            ntfs.forEach((ntf) => {
-              ntf.wasSeen = true;
-              ntf.save();
-            });
-          });
+        ntf.save();
       }
-    }
-  }
-
-  if (response.isNewPending) {
-    // send ntf to owner of workspace and any approvers
-    return models.Workspace.findById(response.workspace).lean().exec()
-      .then((workspace) => {
-        if (!workspace) {
-          return null;
-        }
-        let ntfRecipients = [];
-        if (isValidMongoId(workspace.owner)) {
-          ntfRecipients.push(workspace.owner);
-        }
-        let permissions = workspace.permissions || [];
-
-        permissions.forEach((obj) => {
-          if (obj.user && obj.feedback === 'approver') {
-            ntfRecipients.push(obj.user);
-          }
-        });
-        ntfRecipients.forEach((userId) => {
-          let ntf = new models.Notification({
-            createdBy: response.createdBy,
-            recipient: userId,
-            response: response._id,
-            primaryRecordType: 'response',
-            notificationType: 'mentorReplyRequiresApproval',
-            text: 'There is a new mentor reply waiting to be approved.'
-          });
-          ntf.save();
-        });
-      });
-  }
-  if (response.isNewlyNeedsRevisions) {
-    // send ntf to creator of response
-    if (isValidMongoId(response.createdBy)) {
-      let ntf = new models.Notification({
-        recipient: response.createdBy,
-        response: response._id,
-        primaryRecordType: 'response',
-        notificationType: 'mentorReplyNeedsRevisions',
-        text: 'One of your mentor replies needs revisions.'
-      });
-      ntf.save();
     }
   }
 
@@ -346,6 +366,53 @@ ResponseSchema.post('save', function (response) {
 
             });
       }
+  }
+
+  let { updatedFields, wasNew } = response;
+
+  let wereUpdatedFields =
+    Array.isArray(updatedFields) && updatedFields.length > 0;
+
+  if (wasNew) {
+    return resolveParentUpdates(
+      response.createdBy,
+      response,
+      'response',
+      'create'
+    ).catch(err => {
+      console.log('error creating new parent response: ', err);
+    });
+  } else if (wereUpdatedFields) {
+    let allowedParentUpdateFields = [
+      'isTrashed',
+      'status',
+      'text',
+      'note',
+      'approvedBy',
+      'unapprovedBy',
+      'wasReadByRecipient',
+      'wasReadByApprover',
+      'reviewedResponse',
+      'priorRevision'
+    ];
+
+    let parentFieldsToUpdate = updatedFields.filter(field => {
+      return allowedParentUpdateFields.includes(field);
+    });
+
+    if (parentFieldsToUpdate.length === 0) {
+      return;
+    }
+
+    resolveParentUpdates(
+      response.lastModifiedBy,
+      response,
+      'response',
+      'update',
+      parentFieldsToUpdate
+    ).catch(err => {
+      console.log('err resolving parent response update', err);
+    });
   }
 
 });

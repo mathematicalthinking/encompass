@@ -3,7 +3,7 @@
     Workspace Settings
     {{#if canEdit}}
       {{#unless isEditing}}
-        <span class="heading-icon" {{action 'editWorkspaceInfo'}}>
+        <span class="heading-icon" data-test="ws-settings-edit" {{action 'editWorkspaceInfo'}}>
           <i class="fas fa-edit"></i>
         </span>
       {{/unless}}
@@ -120,6 +120,86 @@
             {{#each serverErrors as |error|}}
               {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'serverErrors' error)}}
             {{/each}}
+          </div>
+
+        </div>
+      {{/unless}}
+    {{/if}}
+
+     {{#if doShowChildWorkspaces}}
+      <div class="card-row">
+        <div class="row-label">
+         Child Workspaces
+        </div>
+        <div data-test="child-workspaces" class="row-value">
+          {{#if isEditing}}
+            {{!-- {{selectize-input
+            store=store
+            inputId="linked-assignment-select"
+            maxItems=1
+            initialItems=initialLinkedAssignmentItem
+            onItemAdd=(action "setLinkedAssignment")
+            onItemRemove=(action "setLinkedAssignment")
+            labelField="name"
+            valueField="id"
+            searchField="name"
+            model="assignment"
+            topLevelQueryParams="filterBy"
+            queryParamsKey="name"
+            isAsync=true
+            placeholder="Search for an assignment by name"
+            preload="focus"
+            }} --}}
+          {{else}}
+          <ul class="child-workspaces">
+            {{#each childWorkspaces as |ws|}}
+            <li>
+              {{#link-to 'workspace.work' ws.id}}{{ws.name}}{{/link-to}}
+            </li>
+            {{else}}
+           <li>N/A</li>
+          {{/each}}
+          </ul>
+
+          {{/if}}
+        </div>
+      </div>
+      <div class="card-row">
+      <div class="row-label">
+        Allow Automatic Updates From Children
+      </div>
+      <div data-test="allow-updates" class="row-value">
+        {{#if isEditing}}
+          {{my-select cannotBeNull=true selectedValue=selectedAutoUpdateSetting content=yesNoMySelect action=(action (mut selectedAutoUpdateSetting))}}
+        {{else}}
+          {{yes-no workspace.doAutoUpdateFromChildren}}
+        {{/if}}
+      </div>
+      </div>
+      {{#unless isEditing}}
+        <div class="update-submissions">
+          <button {{action "updateWithExistingWork"}} class="primary-button" data-test="parent-ws-update">Update Parent Workspace</button>
+          <div class="update-results">
+            {{#if missingChildWorkspaces}}
+              {{error-box error="No child workspaces to update from" showDismiss=true resetError=(action (mut missingChildWorkspaces) null)}}
+            {{/if}}
+            {{#each updateErrors as |error|}}
+              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'updateErrors' error)}}
+            {{/each}}
+            {{#each serverErrors as |error|}}
+              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'serverErrors' error)}}
+            {{/each}}
+            {{#each-in createdParentData as |recordType records|}}
+              {{#if records}}
+                <p class="success-message">Added {{records.length}} {{recordType}}</p>
+              {{/if}}
+            {{/each-in}}
+            {{#each-in updatedParentData as |recordType records|}}
+              {{#if records}}
+                <p class="success-message">Updated {{records.length}} {{recordType}}</p>
+              {{/if}}
+            {{/each-in}}
+
           </div>
 
         </div>

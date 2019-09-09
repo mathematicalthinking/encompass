@@ -7,22 +7,75 @@ const ObjectId = Schema.ObjectId;
   * @class UpdateWorkspaceRequest
   * @description UpdateWorkspaceRequests are a student's response to a problem
   */
-var UpdateWorkspaceRequestSchema = new Schema({
-  //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
-  createDate: { type: Date, 'default': Date.now() },
-  isTrashed: { type: Boolean, 'default': false },
-  lastModifiedBy: { type: ObjectId, ref: 'User' },
-  lastModifiedDate: { type: Date, 'default': Date.now() },
-  //====
-  //student: { type: ObjectId, ref: 'User' },
-  // studentName: { type: String },
-  linkedAssignment: { type: ObjectId, ref: 'Assignment' },
-  workspace: { type: ObjectId, ref: 'Workspace' },
-  wereNoAnswersToUpdate: { type: Boolean, default: false },
-  updateErrors: [ { type: String } ],
-  addedSubmissions: [ { type: ObjectId, ref: 'Submission' } ],
-}, { versionKey: false });
+var UpdateWorkspaceRequestSchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
+    lastModifiedBy: { type: ObjectId, ref: 'User' },
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
+    //student: { type: ObjectId, ref: 'User' },
+    // studentName: { type: String },
+    linkedAssignment: { type: ObjectId, ref: 'Assignment' },
+    workspace: { type: ObjectId, ref: 'Workspace' },
+    wereNoAnswersToUpdate: { type: Boolean, default: false },
+    updateErrors: [{ type: String }],
+    addedSubmissions: [{ type: ObjectId, ref: 'Submission' }],
+    isParentUpdate: { type: Boolean, default: false },
+    wasNoDataToUpdate: { type: Boolean, default: false },
+    createdParentData: {
+      submissions: [{ type: ObjectId, ref: 'Submission' }],
+      selections: [{ type: ObjectId, ref: 'Selection' }],
+      comments: [{ type: ObjectId, ref: 'Comment' }],
+      responses: [{ type: ObjectId, ref: 'Responses' }],
+      folders: [{ type: ObjectId, ref: 'Folder' }],
+      taggings: [{ type: ObjectId, ref: 'Tagging'}],
+    },
+    updatedParentData: {
+      submissions: [{
+        recordId: { type: ObjectId, ref: 'Submission'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      selections: [{
+        recordId: { type: ObjectId, ref: 'Selection'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      comments: [{
+        recordId: { type: ObjectId, ref: 'Comment'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      responses: [{
+        recordId: { type: ObjectId, ref: 'Response'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      folders: [{
+        recordId: { type: ObjectId, ref: 'Folder'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+      taggings: [{
+        recordId: { type: ObjectId, ref: 'Tagging'},
+        updatedFields: [ { type: String } ],
+        wasJustTrashed: { type: Boolean, default: false },
+        wasJustRestored: { type: Boolean, default: false },
+      }],
+
+    }
+
+  },
+  { versionKey: false }
+);
 
 /**
   * ## Pre-Validation

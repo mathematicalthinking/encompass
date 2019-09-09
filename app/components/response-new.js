@@ -39,24 +39,41 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   filteredSelections: function() {
+    // filter out trashed selections
+    // if a user deletes a selection and then immediately after
+    // goes to make a response, the trashed selection may still
+    // be associated with the workspace
+
     if (this.get('doUseOnlyOwnMarkup')) {
       return this.get('model.selections').filter((selection) => {
+        if (selection.get('isTrashed')) {
+          return false;
+        }
         let creatorId = this.get('utils').getBelongsToId(selection, 'createdBy');
         return creatorId === this.get('currentUser.id');
       });
     }
-    return this.get('model.selections');
-  }.property('model.selections.[]', 'doUseOnlyOwnMarkup'),
+    return this.get('model.selections').rejectBy('isTrashed');
+  }.property('model.selections.@each.isTrashed', 'doUseOnlyOwnMarkup'),
 
   filteredComments: function() {
+    // filter out trashed selections
+    // if a user deletes a selection and then immediately after
+    // goes to make a response, the trashed selection may still
+    // be associated with the workspace
+
     if (this.get('doUseOnlyOwnMarkup')) {
       return this.get('model.comments').filter((comment) => {
+        if (comment.get('isTrashed')) {
+          return false;
+        }
+
         let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
         return creatorId === this.get('currentUser.id');
       });
     }
-    return this.get('model.comments');
-  }.property('model.comments.[]', 'doUseOnlyOwnMarkup'),
+    return this.get('model.comments').rejectBy('isTrashed');
+  }.property('model.comments.@each.isTrashed', 'doUseOnlyOwnMarkup'),
 
   willDestroyElement() {
     if (!this.get('model.persisted')) {
@@ -318,6 +335,21 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       let response = this.get('model');
+
+      // need to remove any trashed selections or comments
+
+      response.get('selections').forEach((selection) => {
+        if (selection.get('isTrashed')) {
+          response.get('selections').removeObject(selection);
+        }
+      });
+
+      response.get('comments').forEach((comment) => {
+        if (comment.get('isTrashed')) {
+          response.get('comments').removeObject(comment);
+        }
+      });
+
 
       let toastMessage =  isDraft ? 'Draft Saved' : 'Response Sent';
       let newStatus = isDraft ? 'draft' : this.get('newReplyStatus');

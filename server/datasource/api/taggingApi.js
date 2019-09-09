@@ -1,11 +1,10 @@
 /**
   * @description This is the API for tagging based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
+  * @author Damola Mabogunje, Daniel Kelly
   * @since 1.0.0
   */
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
-const _ = require('underscore');
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
@@ -13,7 +12,7 @@ const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/taggings');
 
-const { areObjectIdsEqual, } = require('../../utils/mongoose');
+const { areObjectIdsEqual } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -110,37 +109,36 @@ async function getTagging(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function postTagging(req, res, next) {
+async function postTagging(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.tagging.workspace;
 
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.tagging.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    // if you can select, you can tag
-    if(wsAccess.canModify(user, ws, 'selections', 2)) {
+    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
 
-      var tagging = new models.Tagging(req.body.tagging);
-      tagging.createdBy = user;
-      tagging.createDate = Date.now();
+    let canCreateTaggingInWs = wsAccess.canModify(user, workspace, 'selections', 2);
 
-      tagging.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-
-        var data = {'tagging': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
+    if (!canCreateTaggingInWs) {
       logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+      return utils.sendError.NotAuthorizedError( `You don't have permission for this workspace`, res);
     }
-  });
 
+    let tagging = new models.Tagging(req.body.tagging);
+    tagging.createdBy = user;
+    tagging.lastModifiedBy = user;
+    tagging.createDate = Date.now();
+    tagging.lastModifiedDate = Date.now();
+
+    await tagging.save();
+
+    let data = { tagging };
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+
+  }
 }
 
 /**

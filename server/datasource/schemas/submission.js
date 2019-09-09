@@ -87,7 +87,8 @@ var encompassSubmission = _.extend({}, baseSubmission, {
     facilitators: [ { type: String } ], // just usernames for now
     participants: [ { type: String } ], // just usernames for now
     activityName: { type: String },
-  }
+  },
+  originalSubmission: {type: ObjectId, ref: 'Submission'},
 });
 
 var PDSubmissionSchema = new Schema(pdSubmission, {versionKey: false});

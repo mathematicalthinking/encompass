@@ -93,7 +93,11 @@ Encompass.AssignmentPermissionsService = Ember.Service.extend({
   },
 
   canEditAssignedDate(assignment) {
-    return this.isNowBeforeAssignedDate(assignment);
+    return (
+      !assignment.get('assignedDate') ||
+      !this.haveAnswersBeenSubmitted(assignment) ||
+      this.isNowBeforeAssignedDate(assignment)
+    );
   },
 
   canEditDueDate(assignment) {

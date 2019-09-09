@@ -7,7 +7,7 @@ module.exports = {
     "organization": "5b4e4d5f808c7eebc9f9e82c",
     "createdBy" : "5b4e4b48808c7eebc9f9e827",
     "lastModifiedBy" : "5b7321ee59a672806ec903d5",
-    "lastViewed" : "2019-03-12T16:27:47.826Z",
+    "lastViewed" :"2019-08-21T15:17:57.265Z",
     "permissions" : [
         {
             "user" : "5b99146e25b620610ceead75",
@@ -135,6 +135,9 @@ module.exports = {
     "isTrashed" : false,
     "createDate" : "2018-11-14T14:30:46.526Z",
     "doOnlyUpdateLastViewed": false,
+    "childWorkspaces" : [],
+    "workspaceType" : "markup"
+
 },
 byAnswerIdSubmission: {
     "_id" : "5bec36958c73047613e2f34d",

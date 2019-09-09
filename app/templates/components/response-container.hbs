@@ -7,12 +7,15 @@
   <p class="feedback-mode">
     {{#if isOwnSubmission}}
       Viewing feedback for
-    {{else if isOwnMentorReply}}
-    Viewing your own mentoring feedback for
-    {{else}}
-    Viewing feedback authored by {{mentorReplyDisplayResponse.createdBy.username}} for
+      {{else if isOwnMentorReply}}
+        Viewing your own mentoring feedback
+      {{else}}
+        Viewing feedback
+        {{#if mentorReplyDisplayResponse}}
+          authored by {{mentorReplyDisplayResponse.createdBy.username}}
+        {{/if}}
     {{/if}}
-    {{studentDescriptor}}
+    for {{studentDescriptor}}
     <a {{action 'openSubmission' workspace.id submission.id}} class="link">submission</a>
     in {{workspace.name}}
   </p>
@@ -29,6 +32,7 @@
     studentSubmissions=submissions
     onSubChange=(action "onSubmissionChange")
     sendRevisionNotices=(action "sendSubmissionRevisionNotices")
+    isParentWorkspace=isParentWorkspace
     }}
   </div>
 
@@ -57,6 +61,7 @@
       iconFillOptions=iconFillOptions
       toSubmission=(action "onSubmissionChange")
       handleResponseThread=(action "handleResponseThread")
+      isParentWorkspace=isParentWorkspace
     }}
   </div>
 

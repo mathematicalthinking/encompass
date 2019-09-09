@@ -37,7 +37,8 @@ exports.delete = {};
  "organizationApi",
  "assignmentApi",
  "notificationApi",
- "vmtApi"
+ "vmtApi",
+ "parentWorkspaceApi",
 ].forEach(function (path) {
     var module = require('./' + path);
 

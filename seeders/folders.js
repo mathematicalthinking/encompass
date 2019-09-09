@@ -837,4 +837,178 @@ module.exports = [
   "isTrashed" : false,
   "createDate" : ISODate("2018-11-14T14:54:08.048Z")
 },
+
+/* 47 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdef0"),
+  "parent" : ObjectId("5d5d60ef4f217a59dfbbdeef"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "3rd Level 1",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 48 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdef1"),
+  "parent" : ObjectId("5d5d60ef4f217a59dfbbdeee"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "2nd Level 2",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 49 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdef6"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "Top Level 3",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 50 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdef5"),
+  "parent" : ObjectId("5d5d60ef4f217a59dfbbdef4"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "4th Level 1",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 51 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdef4"),
+  "parent" : ObjectId("5d5d60ef4f217a59dfbbdef3"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "3rd Level 2",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [
+      ObjectId("5d5d634c4f217a59dfbbdefd")
+  ],
+  "children" : [
+      ObjectId("5d5d60ef4f217a59dfbbdef5")
+  ],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 52 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdeef"),
+  "parent" : ObjectId("5d5d60ef4f217a59dfbbdeee"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "2nd Level 1",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "children" : [
+      ObjectId("5d5d60ef4f217a59dfbbdef0")
+  ],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 53 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdef3"),
+  "parent" : ObjectId("5d5d60ef4f217a59dfbbdef2"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "2nd Level 3",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "children" : [
+      ObjectId("5d5d60ef4f217a59dfbbdef4")
+  ],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 54 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdeee"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "Top Level 1",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [
+      ObjectId("5d5d63054f217a59dfbbdefa")
+  ],
+  "children" : [
+      ObjectId("5d5d60ef4f217a59dfbbdeef"),
+      ObjectId("5d5d60ef4f217a59dfbbdef1")
+  ],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
+
+/* 55 */
+{
+  "_id" : ObjectId("5d5d60ef4f217a59dfbbdef2"),
+  "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "name" : "Top Level 2",
+  "weight" : 0,
+  "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "lastModifiedBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "children" : [
+      ObjectId("5d5d60ef4f217a59dfbbdef3")
+  ],
+  "editors" : [],
+  "lastModifiedDate" : ISODate("2019-08-21T15:17:11.559Z"),
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:17:11.559Z")
+},
 ];

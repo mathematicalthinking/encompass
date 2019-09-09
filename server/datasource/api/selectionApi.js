@@ -1,7 +1,7 @@
 /**
   * # Selections API
   * @description This is the API for selection based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
+  * @author Damola Mabogunje, Daniel Kelly
   * @since 1.0.0
   */
 
@@ -18,7 +18,6 @@ const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/selections');
 
 const { isValidMongoId } = require('../../utils/mongoose');
-
 
 module.exports.get = {};
 module.exports.post = {};
@@ -176,7 +175,7 @@ async function postSelection(req, res, next) {
     let user = userAuth.requireUser(req);
     let workspaceId = req.body.selection.workspace;
 
-    let ws = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').lean().exec();
+    let ws = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').lean().populate('submissions').exec();
 
     if (!wsAccess.canModify(user, ws, 'selections', 2)) {
       return utils.sendError.NotAuthorizedError('You don\'t have permission for this workspace', res);
@@ -258,8 +257,7 @@ async function postSelection(req, res, next) {
     let savedSelection = await selection.save();
 
     let data = {'selection': savedSelection};
-
-    return utils.sendResponse(res, data);
+    utils.sendResponse(res, data);
 
   }catch(err) {
     console.error(`Error postSelection: ${err}`);
@@ -272,47 +270,45 @@ async function postSelection(req, res, next) {
 
 /**
   * @public
-  * @method postSelection
+  * @method putSelection
   * @description __URL__: /api/selections
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function putSelection(req, res, next) {
-  logger.warn("Putting Selection 1");
-  var user = userAuth.requireUser(req);
+async function putSelection(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-
-  models.Selection.findById(req.params.id, function (err, doc) {
-    logger.warn("Putting Selection 2");
-    if(err) {
-      logger.warn("Putting Selection 3");
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
 
-      logger.warn("Putting Selection 4");
-    for(var field in req.body.selection) {
+    let selection = await models.Selection.findById(req.params.id);
+
+    if (!selection) {
+      logger.info(`${user.username} attempted to update nonexistant selection with id ${req.params.id}`);
+      return utils.sendResponse(res, null);
+    }
+
+    for(let field in req.body.selection) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.selection[field];
+        selection[field] = req.body.selection[field];
       }
     }
-      logger.warn("Putting Selection 5 doc: " + JSON.stringify(doc) );
 
-    doc.save(function (err, selection) {
-      logger.warn("Tried to save selection!");
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
+    selection.lastModifiedDate = new Date();
+    selection.lastModifiedBy = user._id;
 
-      var data = {'selection': selection};
-      utils.sendResponse(res, data);
-    });
-  });
+    await selection.save();
+
+    let data = { selection };
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 module.exports.get.selections = getSelections;

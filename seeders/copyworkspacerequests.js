@@ -41,5 +41,46 @@ module.exports = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : null
+},
+{
+    "_id" : ObjectId("5d5d60ef4f217a59dfbbdeea"),
+    "name" : "Copy of Summer's Test Workspace 1",
+    "mode" : "private",
+    "copyWorkspaceError" : null,
+    "createdBy" : ObjectId("5b4e4b48808c7eebc9f9e827"),
+    "lastModifiedBy" : null,
+    "owner" : ObjectId("5b914a102ecaf7c30dd47492"),
+    "originalWsId" : ObjectId("5bec36958c73047613e2f34e"),
+    "createdWorkspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+    "createdFolderSet" : null,
+    "permissionOptions" : {
+        "permissionObjects" : []
+    },
+    "responseOptions" : {
+        "none" : true,
+        "responseIds" : []
+    },
+    "commentOptions" : {
+        "none" : true,
+        "commentIds" : []
+    },
+    "selectionOptions" : {
+        "none" : true,
+        "selectionIds" : []
+    },
+    "folderOptions" : {
+        "none" : true,
+        "folderSetOptions" : {
+            "doCreateFolderSet" : false,
+            "existingFolderSetToUse" : ObjectId("5bec409176124a776f2ff00e")
+        }
+    },
+    "submissionOptions" : {
+        "all" : true,
+        "submissionIds" : []
+    },
+    "lastModifiedDate" : null,
+    "isTrashed" : false,
+    "createDate" : null
 }
 ];

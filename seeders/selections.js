@@ -1379,4 +1379,65 @@ module.exports = [
   "isTrashed" : false,
   "createDate" : ISODate("2018-10-08T20:13:41.935Z")
 },
+/* 1 */
+{
+  "_id" : ObjectId("5d5d62e64f217a59dfbbdef7"),
+  "text" : "This is my explanation.",
+  "coordinates" : "node-3 0 0 node-3 0 23",
+  "imageSrc" : null,
+  "imageTagLink" : null,
+  "createdBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "lastModifiedBy" : null,
+  "submission" : ObjectId("5d5d60ef4f217a59dfbbdeec"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [
+      ObjectId("5d5d63054f217a59dfbbdefa")
+  ],
+  "comments" : [
+      ObjectId("5d5d62f84f217a59dfbbdef9")
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:27:34.301Z")
+},
+
+/* 2 */
+{
+  "_id" : ObjectId("5d5d62e94f217a59dfbbdef8"),
+  "text" : "brief summary ",
+  "coordinates" : "node-1 2 10 node-1 2 24",
+  "imageSrc" : null,
+  "imageTagLink" : null,
+  "createdBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "lastModifiedBy" : null,
+  "submission" : ObjectId("5d5d60ef4f217a59dfbbdeec"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [],
+  "comments" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:27:37.996Z")
+},
+
+/* 3 */
+{
+  "_id" : ObjectId("5d5d631c4f217a59dfbbdefb"),
+  "text" : "undefined",
+  "coordinates" : "node-2 3 0 node-2 3 9",
+  "imageSrc" : null,
+  "imageTagLink" : null,
+  "createdBy" : ObjectId("5b914a102ecaf7c30dd47492"),
+  "lastModifiedBy" : null,
+  "submission" : ObjectId("5d5d60ef4f217a59dfbbdeed"),
+  "workspace" : ObjectId("5d5d60ef4f217a59dfbbdeeb"),
+  "taggings" : [
+      ObjectId("5d5d634c4f217a59dfbbdefd")
+  ],
+  "comments" : [
+      ObjectId("5d5d63384f217a59dfbbdefc")
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : ISODate("2019-08-21T15:28:28.775Z")
+},
 ];

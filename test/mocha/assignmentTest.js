@@ -12,6 +12,8 @@ const baseUrl = "/api/assignments/";
 
 chai.use(chaiHttp);
 
+const fixtures = require('./fixtures/assignments');
+
 describe('Assignment CRUD operations by account type', function() {
   const testUsers = userFixtures.users;
 
@@ -87,22 +89,48 @@ describe('Assignment CRUD operations by account type', function() {
       });
 
       /** POST **/
-      // xdescribe('/POST assignment', () => {
-      //   it('should post a new assignment', done => {
-      //     agent
-      //     .post(baseUrl)
-      //     .send({assignment: validAssignment})
-      //     .end((err, res) => {
-      //       if (err) {
-      //         console.error(err);
-      //       }
-      //       expect(res).to.have.status(200);
-      //       expect(res.body.assignment).to.have.any.keys('problem', 'assignment');
-      //       expect(res.body.assignment.explanation).to.eql('I put 2 and 2 together');
-      //       done();
-      //     });
-      //   });
-      // });
+      if (username === 'ssmith') {
+        describe('/POSTing assignment and creating linkedWorkspaces', () => {
+          let body = fixtures.withLinkedWorkspaces.valid;
+          it('should post a new assignment', done => {
+            agent
+            .post(baseUrl)
+            .send({assignment: body})
+            .end((err, res) => {
+              if (err) {
+                throw(err);
+              }
+              expect(res).to.have.status(200);
+              expect(res.body.assignment).to.have.any.keys('problem', 'assignment');
+              expect(res.body.assignment.name).to.eql(body.name);
+              let createdWorkspaces = res.body.assignment.linkedWorkspacesRequest.createdWorkspaces;
+
+              expect(createdWorkspaces).to.be.an('array');
+              expect(createdWorkspaces).to.have.lengthOf(body.students.length);
+              done();
+            });
+          });
+        });
+
+        describe('Posting assignment without name', function() {
+          let body = fixtures.withoutName.valid.body;
+          it('should post a new assignment', done => {
+            agent
+            .post(baseUrl)
+            .send({assignment: body})
+            .end((err, res) => {
+              if (err) {
+                throw(err);
+              }
+              expect(res).to.have.status(200);
+              expect(res.body.assignment).to.have.any.keys('problem', 'assignment');
+              expect(res.body.assignment.name).to.eql(fixtures.withoutName.valid.expectedResultName);
+              done();
+            });
+          });
+        });
+      }
+
 
       // /** PUT name**/
       // xdescribe('/PUT update assignment explanation for already submitted', () => {

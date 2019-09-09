@@ -10,6 +10,8 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   areMentorReplies: Ember.computed.gt('mentorReplies.length', 0),
   utils: Ember.inject.service('utility-methods'),
 
+  isParentWorkspace: Ember.computed.equal('workspace.workspaceType', 'parent'),
+
   didReceiveAttrs() {
     this.set('subResponses', this.get('responses'));
     this.handleResponseViewAudit();
@@ -213,6 +215,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
 
   showApproverReply: function() {
     if (this.get('isCreatingNewMentorReply')) {
+      return false;
+    }
+
+    if (this.get('isParentWorkspace')) {
+      // only interested in seeing mentor replies for parent workspace?
       return false;
     }
     if (this.get('primaryResponseType') === 'approver') {

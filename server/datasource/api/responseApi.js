@@ -1,7 +1,7 @@
 /**
   * # Response API
   * @description This is the API for response requests
-  * @author Amir Tahvildaran <amir@mathforum.org>
+  * @author Amir Tahvildaran, Daniel Kelly
   * @since 1.0.3
   */
 
@@ -147,7 +147,7 @@ async function postResponse(req, res, next) {
     let savedResponse = await response.save();
 
     let data = { response: savedResponse };
-    return utils.sendResponse(res, data);
+    utils.sendResponse(res, data);
 
   }catch(err) {
     console.error(`Error postResponse: ${err}`);
@@ -194,6 +194,8 @@ async function putResponse(req, res, next) {
           existingResponse[field] = req.body.response[field];
         }
       }
+      existingResponse.lastModifiedBy = user._id;
+      existingResponse.lastModifiedDate = new Date();
 
       let savedResponse = await existingResponse.save();
       let data = {response: savedResponse};
@@ -215,7 +217,8 @@ function getSubmitterThreads(user, limit, skip) {
     isTrashed: false,
     status: 'approved',
     responseType: 'mentor',
-    recipient: userId
+    recipient: userId,
+    originalResponse: null, // filter out responses in parent ws
   });
 
   return responseIds
@@ -318,7 +321,7 @@ function getSubmitterThreads(user, limit, skip) {
             }
           ]
         }},
-      ]).exec();
+      ]).allowDiskUse(true).exec();
     })
     .catch((err) => {
       console.error(`Error getSubmitterThreads: ${err}`);
@@ -332,6 +335,7 @@ function getMentorThreads(user, limit, skip) {
 
   let ids = accessUtils.getModelIds('Response', {
     isTrashed: false,
+    originalResponse: null, // filter out responses in parent ws
     $or: [
       {
         responseType: 'mentor',
@@ -457,7 +461,7 @@ function getMentorThreads(user, limit, skip) {
             }
           ]
         }},
-      ]).exec();
+      ]).allowDiskUse(true).exec();
     })
     .catch((err) => {
       console.error(`Error getMentorThreads: ${err}`);
@@ -476,12 +480,15 @@ function getApproverThreads(user, asSuperAdmin, limit, skip) {
   if (asSuperAdmin && isAdmin) {
     wsCriteria = {
       isTrashed: false,
-      responses: {$ne: []}
+      responses: {$ne: []},
+      workspaceType: { $ne: 'parent' }, // filter out responses in parent ws
     };
   }
   wsCriteria = {
     isTrashed: false,
     responses: {$ne: []},
+    workspaceType: { $ne: 'parent' }, // filter out responses in parent ws
+
     $or: [
       { createdBy: userId },
       { owner: userId },
@@ -623,7 +630,7 @@ function getApproverThreads(user, asSuperAdmin, limit, skip) {
         }
       ]
     }},
-  ]).exec();
+  ]).allowDiskUse(true).exec();
 }
 
 async function getResponseThreads(req, res, next) {
