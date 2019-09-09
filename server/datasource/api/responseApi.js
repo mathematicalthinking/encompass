@@ -321,7 +321,7 @@ function getSubmitterThreads(user, limit, skip) {
             }
           ]
         }},
-      ]).exec();
+      ]).allowDiskUse(true).exec();
     })
     .catch((err) => {
       console.error(`Error getSubmitterThreads: ${err}`);
@@ -461,7 +461,7 @@ function getMentorThreads(user, limit, skip) {
             }
           ]
         }},
-      ]).exec();
+      ]).allowDiskUse(true).exec();
     })
     .catch((err) => {
       console.error(`Error getMentorThreads: ${err}`);
@@ -630,7 +630,7 @@ function getApproverThreads(user, asSuperAdmin, limit, skip) {
         }
       ]
     }},
-  ]).exec();
+  ]).allowDiskUse(true).exec();
 }
 
 async function getResponseThreads(req, res, next) {
