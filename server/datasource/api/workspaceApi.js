@@ -654,7 +654,6 @@ async function sendWorkspace(req, res, next) {
       });
 
       if (isNonEmptyArray(ws.childWorkspaces)) {
-        data.workspaces = Array.isArray(data.workspaces) ? data.workspaces.concat(ws.childWorkspaces) : ws.childWorkspaces;
 
         // sideload any owners of child workspaces that are not being
         // sideloaded already
@@ -668,8 +667,13 @@ async function sendWorkspace(req, res, next) {
             if (!doesExist) {
               data.user.push(ownerObj);
             }
+          // need to depopulate the owner field
+            childWs.owner = childWs.owner._id;
           }
         });
+
+        data.workspaces = Array.isArray(data.workspaces) ? data.workspaces.concat(ws.childWorkspaces) : ws.childWorkspaces;
+
         ws.childWorkspaces = ws.childWorkspaces.map(childWs => childWs._id);
       }
     return utils.sendResponse(res, data);
