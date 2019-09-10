@@ -54,6 +54,16 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     ]
   },
 
+  hasSelectedSection: Ember.computed.notEmpty('selectedSection'),
+
+  hasProblem: Ember.computed.notEmpty('selectedProblem'),
+
+  hasProblemAndSection: Ember.computed.and('hasProblem', 'hasSelectedSection'),
+
+  showLinkedWsForm: Ember.computed.and('doCreateLinkedWorkspaces', 'hasProblemAndSection'),
+
+  showParentWsForm: Ember.computed.and('doCreateParentWorkspace', 'showLinkedWsForm'),
+
   problemsPreloadValue: function() {
     // if there is at least one problem in the store
     // do not auto fetch problems on focus
@@ -61,7 +71,28 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     return length > 0 ? undefined : 'focus';
   }.property('cachedProblems.[]'),
 
+
+  assignmentNamePreview: function() {
+    let hasName = this.get('name.length') > 0;
+
+    if (hasName) {
+      return this.get('name');
+    }
+
+    if(!this.get('hasProblem')) {
+      return '';
+    }
+    let title = this.get('selectedProblem.title');
+
+    let nameDate = this.get('nameDate');
+
+    return `${title} / ${nameDate}`;
+
+  }.property('name', 'selectedProblem.title', 'nameDate'),
+
   init: function() {
+    let that = this;
+    this.set('nameDate', moment().format('MMM Do YYYY') );
     this._super(...arguments);
     let tooltips = {
       class: 'Select which class you want to assign the problem',
@@ -81,6 +112,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       }, function(start, end, label) {
         let assignedDate = start.format('MM/DD/YYYY');
         $('input#assignedDate').val(assignedDate);
+        that.set('nameDate', start.format('MMM Do YYYY'));
       });
       $('input#dueDate').daterangepicker({
         singleDatePicker: true,
@@ -108,8 +140,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
 
   },
-
-
   willDestroyElement: function () {
     $(".daterangepicker").remove();
     let problem = this.get('selectedProblem');
@@ -118,7 +148,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
     this._super(...arguments);
   },
-
 
   createAssignment: function(formValues) {
     let { section, problem, assignedDate, dueDate, name } = formValues;
@@ -149,12 +178,28 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     const doCreateLinkedWorkspaces = this.get('doCreateLinkedWorkspaces');
     const doCreateParentWorkspace = this.get('doCreateParentWorkspace');
 
+    let linkedFormatInput = this.$('#linked-ws-new-name');
+    let linkedNameFormat;
+
+    if (linkedFormatInput) {
+      linkedNameFormat = linkedFormatInput.val();
+    }
+
+    let parentFormatInput = this.$('#parent-ws-new-name');
+    let parentNameFormat;
+
+    if (parentFormatInput) {
+      parentNameFormat = parentFormatInput.val();
+    }
+
       createAssignmentData.linkedWorkspacesRequest = {
-        doCreate: doCreateLinkedWorkspaces
+        doCreate: doCreateLinkedWorkspaces,
+        name: linkedNameFormat,
       };
 
       createAssignmentData.parentWorkspaceRequest = {
         doCreate : doCreateLinkedWorkspaces ? doCreateParentWorkspace: false,
+        name: parentNameFormat,
       };
 
     students.forEach((student) => {

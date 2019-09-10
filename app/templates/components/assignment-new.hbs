@@ -183,11 +183,19 @@
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
               data-tooltip={{tooltips.linkedWorkspaces}}
             >
-             Create Linked Workspace for Each Student
+             Create Student Workspaces Now?
             </span>
           </label>
           {{radio-group options=linkedWsOptions selectedValue=doCreateLinkedWorkspaces}}
 
+          {{#if showLinkedWsForm}}
+            {{linked-workspaces-new
+            isDisplayOnly=true
+            students=selectedSection.students.content
+            assignmentName=assignmentNamePreview
+            sectionName=selectedSection.name
+            }}
+          {{/if}}
         </li>
         {{#if doCreateLinkedWorkspaces}}
         <li class="parent-ws">
@@ -196,11 +204,17 @@
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
               data-tooltip={{tooltips.parentWorkspace}}
             >
-             Create Parent Workspace
+            Create Parent Workspace Now?
             </span>
           </label>
           {{radio-group options=parentWsOptions selectedValue=doCreateParentWorkspace}}
 
+          {{#if showParentWsForm}}
+            {{parent-workspace-new
+              isDisplayOnly=true
+              assignmentName=assignmentNamePreview
+            }}
+          {{/if}}
         </li>
         {{/if}}
       </ol>
