@@ -101,7 +101,7 @@ module.exports = function (grunt) {
                 'test/selenium/sections.js',
                 'test/selenium/selectors.js',
                 'test/selenium/workspaces_new.js',
-                'test/selenium/worksapces.js',
+                'test/selenium/workspaces.js',
               ]
       },
       api: {
@@ -113,7 +113,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false
         },
-        src: ['test/mocha/*.js']
+        src: ['test/mocha/*.js', 'test/mocha/unit-tests/*.js']
       }
     },
 
