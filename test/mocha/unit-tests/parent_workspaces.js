@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const mongoose = require('mongoose');
 const dbSetup  = require('../../data/restore');
 
+const models = require('../../../server/datasource/schemas');
 mongoose.Promise = global.Promise;
 
 const { generateParentWorkspace } = require('../../../server/datasource/api/parentWorkspaceApi');
@@ -22,8 +23,8 @@ const runTest = function(config, expectedResults, description, compareOptions = 
     });
 
     it('Should return results object', function() {
-      expect(results).to.be.an('object');
-      expect(results).to.have.all.keys(['parentWorkspace', 'errorMsg']);
+      expect(results).to.be.an('array');
+      expect(results).to.lengthOf(2);
     });
 
     if (compareOptions.doUseDeepEqual) {
@@ -34,45 +35,45 @@ const runTest = function(config, expectedResults, description, compareOptions = 
       // can't use deep equal to determine success
       // because ids are unknow
       it('Error msg should be null', function() {
-        expect(results.errorMsg).to.eql(expectedResults.errorMsg);
+        expect(results[0]).to.eql(expectedResults.errorMsg);
       });
 
       it('Should correctly combine submissions', function() {
         let expectedLength = expectedResults.parentWorkspace.submissions.length;
-        expect(results.parentWorkspace.submissions.length).to.eql(expectedLength);
+        expect(results[1].submissions.length).to.eql(expectedLength);
       });
 
       it('Should correctly combine selections', function() {
         let expectedLength = expectedResults.parentWorkspace.selections.length;
-        expect(results.parentWorkspace.selections.length).to.eql(expectedLength);
+        expect(results[1].selections.length).to.eql(expectedLength);
       });
 
       it('Should correctly combine comments', function() {
         let expectedLength = expectedResults.parentWorkspace.comments.length;
-        expect(results.parentWorkspace.comments.length).to.eql(expectedLength);
+        expect(results[1].comments.length).to.eql(expectedLength);
       });
 
       it('Should correctly combine folders', function() {
         let expectedLength = expectedResults.parentWorkspace.folders.length;
-        expect(results.parentWorkspace.folders.length).to.eql(expectedLength);
+        expect(results[1].folders.length).to.eql(expectedLength);
       });
 
       it('Should correctly combine taggings', function() {
         let expectedLength = expectedResults.parentWorkspace.taggings.length;
-        expect(results.parentWorkspace.taggings.length).to.eql(expectedLength);
+        expect(results[1].taggings.length).to.eql(expectedLength);
       });
 
       it('Should correctly combine responses', function() {
         let expectedLength = expectedResults.parentWorkspace.responses.length;
-        expect(results.parentWorkspace.responses.length).to.eql(expectedLength);
+        expect(results[1].responses.length).to.eql(expectedLength);
       });
 
       it('Workspace type should be parent', function() {
-        expect(results.parentWorkspace.workspaceType).to.eql(expectedResults.parentWorkspace.workspaceType);
+        expect(results[1].workspaceType).to.eql(expectedResults.parentWorkspace.workspaceType);
       });
 
       it('Should have correct childWorkspaces', function() {
-        expect(results.parentWorkspace.childWorkspaces.map(id => id.toString())).to.have.members(expectedResults.parentWorkspace.childWorkspaces);
+        expect(results[1].childWorkspaces.map(id => id.toString())).to.have.members(expectedResults.parentWorkspace.childWorkspaces);
       });
 
     }
