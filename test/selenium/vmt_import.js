@@ -119,7 +119,7 @@ describe('Importing VMT Work', function() {
       describe('should return both own and public rooms', function() {
         let info = {
           query: 'room',
-          numRooms: 4,
+          numRooms: 6,
           numActivities: 0,
         };
         before(async function() {
@@ -148,7 +148,13 @@ describe('Importing VMT Work', function() {
         let { room1, room2 } = newWs;
 
         before(async function() {
+          await helpers.clearElement(driver, searchInput);
+          await helpers.findInputAndType(driver, searchInput, room1.name);
+
           await helpers.findAndClickElement(driver, `input[value="${room1.id}"]`);
+
+          await helpers.clearElement(driver, searchInput);
+          await helpers.findAndClickElement(driver, searchInput, room2.name);
           await helpers.findAndClickElement(driver,`input[value="${room2.id}"]`);
 
         });
