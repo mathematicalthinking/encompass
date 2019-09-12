@@ -55,11 +55,18 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
 
   yesNoMySelect: ['Yes', 'No'],
 
+  boolToYesNo(boolean) {
+    return boolean ? 'Yes' : 'No';
+  },
+
   actions: {
     editWorkspaceInfo () {
       this.set('isEditing', true);
       let workspace = this.get('workspace');
       this.set('selectedMode', workspace.get('mode'));
+
+      let selectedAutoUpdateSetting = this.get('isParentWs') ? workspace.get('doAutoUpdateFromChildren') : workspace.get('doAllowSubmissionUpdates');
+      this.set('selectedAutoUpdateSetting', this.boolToYesNo(selectedAutoUpdateSetting));
     },
 
     setOwner(val, $item) {
@@ -183,6 +190,7 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
           this.handleErrors(err, 'updateRecordErrors', workspace);
         });
       } else {
+        this.get('alert').showToast('info', 'No Changes to Save', 'bottom-start', 3000, false, null);
         this.set('isEditing', false);
       }
     },
