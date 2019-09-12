@@ -678,7 +678,7 @@ buildCollabFilter() {
       }
 
       if (isHiddenOnly) {
-        console.log('getWorksapces and isHiddenOnly is', isHiddenOnly);
+        console.log('getWorkspaces and isHiddenOnly is', isHiddenOnly);
       }
     }).catch((err) => {
       if (!this.get('isDestroyed') && !this.get('isDestroying')) {

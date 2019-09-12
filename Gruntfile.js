@@ -79,7 +79,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false
         },
-        src: ['test/selenium/**/*.js']
+        src: ['test/selenium/*.js']
       },
       travis: {
         options: {
@@ -91,7 +91,6 @@ module.exports = function (grunt) {
             noFail: false
           },
           src: [
-                'test/selenium/fixtures/*.js',
                 'test/selenium/base.js',
                 'test/selenium/comments.js',
                 'test/selenium/folders.js',
@@ -101,7 +100,7 @@ module.exports = function (grunt) {
                 'test/selenium/sections.js',
                 'test/selenium/selectors.js',
                 'test/selenium/workspaces_new.js',
-                'test/selenium/worksapces.js',
+                'test/selenium/workspaces.js',
               ]
       },
       api: {
@@ -113,7 +112,39 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false
         },
-        src: ['test/mocha/*.js']
+        src: ['test/mocha/*.js', 'test/mocha/unit-tests/*.js']
+      },
+      e2e_xProb: { // does not run problems and users tests
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: [
+          'test/selenium/assignments_teacher.js',
+          'test/selenium/assignments_students.js',
+          'test/selenium/base.js',
+          'test/selenium/comments.js',
+          'test/selenium/confirm_email.js',
+          'test/selenium/forgot_password',
+          'test/selenium/folders.js',
+          'test/selenium/linked_workspaces.js',
+          'test/selenium/mentoring_approving',
+          'test/selenium/mentoring',
+          'test/selenium/parent_workspace',
+          'test/selenium/responses.js',
+          'test/selenium/sections.js',
+          'test/selenium/users.js',
+          'test/selenium/vmt_import.js',
+          'test/selenium/workspaces_new.js',
+          'test/selenium/workspaces.js',
+          'test/selenium/workspaces_settings',
+        ]
+
+
       }
     },
 

@@ -7,11 +7,11 @@ Encompass.LinkedWorkspacesNewComponent = Ember.Component.extend(Encompass.Curren
   },
 
   defaultName: function() {
-    let assignmentName = this.get('assignment.name');
-    let sectionName = this.get('section.name');
+    let assignmentName = this.get('assignment.name') || this.get('assignmentName');
+    let sectionName = this.get('section.name') || this.get('sectionName');
 
     return `${assignmentName} (${sectionName})`;
-  }.property('assignment.name', 'section.name'),
+  }.property('assignment.name', 'section.name', 'assignmentName', 'sectionName'),
 
   previewName: function() {
     return this.get('workspaceName') || this.get('defaultName');
@@ -61,6 +61,6 @@ Encompass.LinkedWorkspacesNewComponent = Ember.Component.extend(Encompass.Curren
 
           this.set('createWorkspaceError', err);
         });
-    }
+    },
   }
 });

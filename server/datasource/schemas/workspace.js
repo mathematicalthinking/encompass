@@ -76,7 +76,11 @@ var WorkspaceSchema = new Schema({
   parentWorkspaces: [ {type: ObjectId, ref: 'Workspace'} ],
   childWorkspaces: [{type: ObjectId, ref: 'Workspace'}],
   doAutoUpdateFromChildren: { type: Boolean, default: false }, // for parent workspaces
-  updatedFields: [{ type: String }],
+
+  /*
+    For post save hook use only
+  */
+  updatedFields: [{ type: String, select: false }],
 }, {versionKey: false});
 
 /**

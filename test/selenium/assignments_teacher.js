@@ -201,7 +201,7 @@ describe('Assignment Info as Teacher', function() {
 
         it('Clearing input should display default name previews', async function() {
           await helpers.clearElement(driver, nameInputSel);
-
+          await driver.sleep(100);
           let nameVal = defaultName;
           let expected = usernames.map(username => {
             return `${username}: ${nameVal}`;

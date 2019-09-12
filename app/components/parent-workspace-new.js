@@ -11,14 +11,14 @@ Encompass.ParentWorkspaceNewComponent = Ember.Component.extend(Encompass.Current
 
   defaultName: function() {
     let base = 'Parent Workspace: ';
-    let assignmentName = this.get('assignment.name');
+    let assignmentName = this.get('assignment.name') || this.get('assignmentName');
 
     if (assignmentName) {
       return base + assignmentName;
     }
 
     return base + this.get('currentUser.username');
-  }.property('assignment.name', 'currentUser.username'),
+  }.property('assignment.name', 'currentUser.username', 'assignmentName'),
 
   actions: {
     cancel() {

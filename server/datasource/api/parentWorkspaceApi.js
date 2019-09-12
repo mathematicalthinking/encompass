@@ -1950,7 +1950,7 @@ const updateParentWorkspace = async (
 
       updateWorkspaceRequest.updatedParentData.submissions = updatedSubmissions.map(
         obj => {
-          let isTrashed = obj.isTrashed;
+          let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
           return {
@@ -1966,9 +1966,10 @@ const updateParentWorkspace = async (
       didUpdate = true;
       updateWorkspaceRequest.updatedParentData.selections = updatedSelections.map(
         obj => {
-          let isTrashed = obj.isTrashed;
+          let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
+          logger.debug(`Updated selection isTrashed value: `, obj.isTrashed);
           return {
             recordId: obj.updatedRecord._id,
             updatedFields: obj.modifiedFields,
@@ -1984,7 +1985,7 @@ const updateParentWorkspace = async (
 
       updateWorkspaceRequest.updatedParentData.comments = updatedComments.map(
         obj => {
-          let isTrashed = obj.isTrashed;
+          let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
           return {
@@ -2002,7 +2003,7 @@ const updateParentWorkspace = async (
 
       updateWorkspaceRequest.updatedParentData.responses = updatedResponses.map(
         obj => {
-          let isTrashed = obj.isTrashed;
+          let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
           return {
@@ -2020,7 +2021,7 @@ const updateParentWorkspace = async (
 
       updateWorkspaceRequest.updatedParentData.folders = updatedFolders.map(
         obj => {
-          let isTrashed = obj.isTrashed;
+          let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
           return {
@@ -2038,7 +2039,7 @@ const updateParentWorkspace = async (
 
       updateWorkspaceRequest.updatedParentData.taggings = updatedTaggings.map(
         obj => {
-          let isTrashed = obj.isTrashed;
+          let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
           return {

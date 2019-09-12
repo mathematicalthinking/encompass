@@ -48,7 +48,7 @@ var UserSchema = new Schema({
   /* + The username is the mfapps username */
   username: { type: String, unique: true, required: true },
   accountType: { type: String, enum: ['A', 'P', 'T', 'S'], required: true },
-  isAdmin: Boolean, // depricated - needed to convert to new accountType field
+  isAdmin: { type: Boolean, select: false }, // deprecated
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: { type: Boolean, default: false },
   authorizedBy: { type: ObjectId, ref: 'User' },

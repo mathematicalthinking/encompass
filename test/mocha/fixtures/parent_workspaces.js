@@ -1,9 +1,6 @@
 module.exports = {
   results: {
-    noChildWorkspaces: {
-      parentWorkspace: null,
-      errorMsg: 'No child workspaces provided'
-    },
+    noChildWorkspaces: ['No child workspaces provided', null ],
     validMultiple: {
       errorMsg: null,
       parentWorkspace: {

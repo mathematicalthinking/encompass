@@ -30,8 +30,12 @@ var FolderSchema = new Schema({
   workspace: { type:ObjectId, ref:'Workspace' },
   originalFolder: { type: ObjectId, ref: 'Folder' }, // when in a parent workspace to ref original
   srcChildWs: { type: ObjectId, ref: 'Workspace' }, // for "workspace" folders create to contain a child workspaces folders in a parent workspace
-  wasNew: { type: Boolean, default: false},
-  updatedFields: [ {type: String }],
+
+  /*
+    For post save hook use only
+  */
+  wasNew: { type: Boolean, default: false, select: false },
+  updatedFields: [ {type: String, select: false }],
 }, {versionKey: false});
 
 /**

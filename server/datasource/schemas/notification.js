@@ -36,8 +36,12 @@ var NotificationSchema = new Schema({
     organization: { type: ObjectId, ref: 'Organization' },
     problem: { type: ObjectId, ref: 'Problem' },
     wasSeen: {type: Boolean, default: false},
-    doAddToRecipient: { type: Boolean }, // only used for post save hook,
-    doPullFromRecipient: { type: Boolean } // only used for post save hook,
+
+    /*
+    For post save hook use only
+    */
+    doAddToRecipient: { type: Boolean, select: false },
+    doPullFromRecipient: { type: Boolean, select: false },
   }, {versionKey: false});
 
 /**

@@ -41,22 +41,22 @@ var ResponseSchema = new Schema({
     unapprovedBy: { type: ObjectId, ref: 'User' },
     powsRecipient: { type: String },
     originalResponse: { type: ObjectId, ref: 'Response' }, // when response is in a parent workspace to ref original
+    wasReadByRecipient: { type: Boolean, default: false },
+    wasReadByApprover: { type: Boolean, default: false },
+    isApproverNoteOnly: { type: Boolean, default: false },
 
     /*
     For post save hook use only
     */
-   wasReadByRecipient: { type: Boolean, default: false },
-   wasReadByApprover: { type: Boolean, default: false },
-   isApproverNoteOnly: { type: Boolean, default: false },
-   isNewlyApproved: { type: Boolean, default: false },
-   isNewApproved: { type: Boolean, default : false },
-   isNewPending: { type: Boolean, default: false },
-   isNewlyNeedsRevisions: { type: Boolean, default: false },
-   isNewlySuperceded: { type: Boolean, default: false},
-   isNewlyRead: { type: Boolean, default: false},
-   wasUnapproved: {type: Boolean, default: false},
-   wasNew: { type: Boolean, default: false },
-   updatedFields: [ { type: String } ],
+   isNewlyApproved: { type: Boolean, default: false, select: false },
+   isNewApproved: { type: Boolean, default : false, select: false },
+   isNewPending: { type: Boolean, default: false, select: false },
+   isNewlyNeedsRevisions: { type: Boolean, default: false, select: false },
+   isNewlySuperceded: { type: Boolean, default: false, select: false},
+   isNewlyRead: { type: Boolean, default: false, select: false},
+   wasUnapproved: {type: Boolean, default: false, select: false},
+   wasNew: { type: Boolean, default: false, select: false },
+   updatedFields: [ { type: String , select: false } ],
 
   }, {versionKey: false});
 

@@ -1484,7 +1484,7 @@ async function getWorkspaces(req, res, next) {
   let user = userAuth.requireUser(req);
 
   let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
-  //if users hiddenWorksapces is not an empty array add $nin
+  //if users hiddenWorkspaces is not an empty array add $nin
 
   if (filterBy) {
     let { all, includeFromOrg } = filterBy;

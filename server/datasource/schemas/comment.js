@@ -58,8 +58,12 @@ var CommentSchema = new Schema({
     /* Not to be confused with label, type depends on the object this comment is for */
     type: {type: String, enum: ['selection', 'submission', 'workspace']},
     originalComment: { type: ObjectId, ref: 'Comment' }, // when in a parent workspace to ref original
-    wasNew: { type: Boolean, default: false },
-    updatedFields: [ { type: String } ],
+
+    /*
+    For post save hook use only
+    */
+    wasNew: { type: Boolean, default: false, select: false },
+    updatedFields: [ { type: String, select: false } ],
   }, {versionKey: false});
 
 /**

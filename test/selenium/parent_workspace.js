@@ -61,8 +61,12 @@ describe('Parent Workspace creation and updating', function() {
   });
 
   async function createAssignment(assignmentDetails, assignmentNewUrl=`${host}/#/assignments/new`) {
-    let { name, section, problem } = assignmentDetails;
+    let { name, section, problem, linkedWsName, parentWsName } = assignmentDetails;
     let inputSelectors = css.assignmentsNew.inputs;
+
+    let linkedNameInput= css.assignmentsTeacher.linkedWorkspaces.nameInput;
+
+    let parentNameInput = css.assignmentsTeacher.parentWorkspace.nameInput;
 
     try {
       await helpers.navigateAndWait(driver, assignmentNewUrl, css.assignmentsNew.container);
@@ -80,10 +84,20 @@ describe('Parent Workspace creation and updating', function() {
       // select yes for create linked ws
       await radioButtonSelector.selectRadioButton(inputSelectors.linkedWorkspaces.groupName, inputSelectors.linkedWorkspaces.yes.value);
 
+      if (linkedWsName) {
+        // use customName
+        await helpers.clearElement(driver, linkedNameInput);
+        await helpers.findInputAndType(driver, linkedNameInput, linkedWsName);
+      }
       // select yes for parent ws
 
       await radioButtonSelector.selectRadioButton(inputSelectors.parentWorkspace.groupName, inputSelectors.parentWorkspace.yes.value);
 
+      if (parentWsName) {
+        await helpers.clearElement(driver, parentNameInput);
+        await helpers.findInputAndType(driver, parentNameInput, parentWsName);
+
+      }
       // submit
 
       await helpers.findAndClickElement(driver, css.assignmentsNew.submitBtn);
@@ -297,6 +311,7 @@ describe('Parent Workspace creation and updating', function() {
       let expectedCount = newAssignment.students.length;
       let linkSel = css.assignmentsTeacher.linkedWorkspaces.link;
 
+      let expectedNames = [fixtures.student1.linkedWs.name, fixtures.student2.linkedWs.name, fixtures.student3.linkedWs.name];
       return helpers.getWebElements(driver, linkSel)
         .then((links) => {
           linkedWorkspacesLinks = links;
@@ -310,6 +325,7 @@ describe('Parent Workspace creation and updating', function() {
             };
           }))
           .then((hrefs) => {
+            expect(hrefs.map(o => o.name)).to.have.members(expectedNames);
             hrefs.forEach((obj) => {
               if (obj.name === student1.linkedWs.name) {
                 student1WorkspaceHref = obj.href;
@@ -332,10 +348,13 @@ describe('Parent Workspace creation and updating', function() {
         .then((links) => {
           expect(links).to.have.lengthOf(expectedCount);
           let link = links[0];
-          return link.getAttribute('href')
-            .then((href) => {
+          return Promise.all([link.getAttribute('href'), link.getAttribute('innerText')])
+            .then((results) => {
+              let [href, name ] = results;
               parentWorkspaceHref = href;
               parentWorkspaceInfoHref = getWsInfoHref(href);
+              expect(name).to.eql(newAssignment.parentWsName);
+
             });
         });
       });

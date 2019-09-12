@@ -6,7 +6,7 @@ module.exports = {
     password: 'test',
     parentWorkspace: {
       name: `
-      Parent Workspace: Morty's Public / ${moment(new Date()).format('MMM Do YYYY')} `,
+      Parent Ws Custom: Morty's Public / ${moment(new Date()).format('MMM Do YYYY')} `,
       initialFolders: 3,
     }
   },
@@ -18,7 +18,7 @@ module.exports = {
       explanation: 'here is my explanation'
     },
     linkedWs: {
-      name: `mtgstudent1: Morty's Public / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
+      name: `mtgstudent1: Morty's Public Custom / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
       newFolder: {
         name: 'curious',
       },
@@ -35,13 +35,20 @@ module.exports = {
       explanation: 'here is my explanation as student2'
     },
     linkedWs: {
-      name: `mtgstudent2: Morty's Public / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
+      name: `mtgstudent2: Morty's Public Custom / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
       newFolder: {
         name: 'interesting',
       },
       newComment: {
         text: 'I notice that I am student 2...'
       }
+    }
+  },
+  student3: {
+    username: 'mtgstudent2',
+    password: 'test',
+    linkedWs: {
+      name: `mtgstudent3: Morty's Public Custom / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
     }
   },
   newAssignment: {
@@ -65,6 +72,8 @@ module.exports = {
       {
         username: 'mtgstudent3'
       }
-    ]
+    ],
+    linkedWsName: `Morty's Public Custom / ${moment(new Date()).format('MMM Do YYYY')} (MTG Period 1)`,
+    parentWsName: `Parent Ws Custom: Morty's Public / ${moment(new Date()).format('MMM Do YYYY')}`
   }
 };

@@ -1,13 +1,16 @@
-  <p class="info">
-    Clicking "Create Workspaces" will generate a private workspace for each student in this assignment (who is not the owner of an existing linked assignment). The workspaces will automatically update as new submissions and revisions are submitted for this assignment.
-  </p>
-  <div class="info-flex-item">
-    <p class="label">
-      Workspace Name Format
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Student username will be prepended to name format">
-        <i class="fas fa-info-circle info-icon"></i>
-      </span>
+  {{#unless isDisplayOnly}}
+    <p class="info">
+      Clicking "Create Workspaces" will generate a private workspace for each student in this assignment (who is not the owner of an existing linked assignment). The workspaces will automatically update as new submissions and revisions are submitted for this assignment.
     </p>
+  {{/unless}}
+
+    <div class="info-flex-item">
+      <p class="label">
+        Workspace Name Format
+        <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Student username will be prepended to name format">
+          <i class="fas fa-info-circle info-icon"></i>
+        </span>
+      </p>
     <div class="info-flex-item">
       {{input id="linked-ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide format for workspace names"}}
     </div>
@@ -26,6 +29,7 @@
   {{/each}}
   </div>
 
+{{#unless isDisplayOnly}}
   <div class="create-ws-error">
     {{#if createWorkspaceError}}
       {{error-box error=createWorkspaceError showDismiss=true resetError=(action (mut createWorkspaceError) null)}}
@@ -42,3 +46,5 @@
       <button class="primary-button cancel-button" data-test="add-linked-ws-cancel" {{action "cancel"}}>Cancel</button>
     </div>
   {{/unless}}
+
+{{/unless}}
