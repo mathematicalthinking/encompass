@@ -23,9 +23,12 @@ var TaggingSchema = new Schema({
     folder: { type: ObjectId, ref: 'Folder' },
     originalTagging: { type: ObjectId, ref: 'Tagging' }, // when in a parent workspace to ref original
     wasNew: { type: Boolean, default: false },
-    updatedFields: [ { type: String } ],
     isDefaultTagging: { type: Boolean, default: false },
 
+    /*
+    For post save hook use only
+    */
+    updatedFields: [ { type: String, select: false } ],
   }, {
     versionKey: false,
     toObject: { virtuals: true },

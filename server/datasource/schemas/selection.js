@@ -40,8 +40,12 @@ var SelectionSchema = new Schema({
       endTime: { type: Number }
     },
     originalSelection: { type: ObjectId, ref: 'Selection' }, // when in a parent workspace to ref original
-    wasNew: { type: Boolean, default: false },
-    updatedFields: [ { type: String } ],
+
+    /*
+    For post save hook use only
+    */
+    wasNew: { type: Boolean, default: false, select: false },
+    updatedFields: [ { type: String, select: false } ],
   }, {versionKey: false});
 
 
