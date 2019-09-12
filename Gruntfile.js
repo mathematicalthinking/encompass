@@ -137,6 +137,7 @@ module.exports = function (grunt) {
           'test/selenium/parent_workspace',
           'test/selenium/responses.js',
           'test/selenium/sections.js',
+          'test/selenium/users.js',
           'test/selenium/vmt_import.js',
           'test/selenium/workspaces_new.js',
           'test/selenium/workspaces.js',
