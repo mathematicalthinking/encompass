@@ -15,7 +15,7 @@ const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/assignments');
 
-const { areObjectIdsEqual, isValidMongoId } = require('../../utils/mongoose');
+const { areObjectIdsEqual, isValidMongoId, auditObjectIdField } = require('../../utils/mongoose');
 
 const { isNonEmptyArray, isNonEmptyString } = require('../../utils/objects');
 
@@ -504,16 +504,57 @@ const putAssignment = async (req, res, next) => {
 
     }
 
+    let oldSection = assignment.section;
+    let newSection = req.body.assignment.section;
+
+    let didSectionChange = auditObjectIdField(oldSection, newSection) !== 0;
+
     // make the updates
     for(let field in req.body.assignment) {
       if((field !== '_id') && (field !== undefined)) {
         assignment[field] = req.body.assignment[field];
       }
     }
+
+    if (didSectionChange) {
+      // section was updated
+      // set assignment students to section's students
+      // set assignment teachers to section's teachers
+      // should the creator of assignment be in the teachers array?
+      // teacher's array is not being displayed right now.. should it?
+
+      await assignment.populate('section').execPopulate();
+      assignment.students = assignment.section.students;
+      assignment.teachers = assignment.section.teachers;
+      assignment.depopulate('section');
+    }
+
     assignment.lastModifiedBy = user;
     assignment.lastModifiedDate = Date.now();
 
     await assignment.save();
+
+    if (didSectionChange) {
+      // pull assignment from old section
+      models.Section.findByIdAndUpdate(oldSection, {
+        $pull: { $assignments: assignment._id },
+      }).exec();
+
+      let { students = [], teachers = [] } = assignment
+      let combinedStudentsTeachers = students.concat(teachers);
+
+      if (isNonEmptyArray(combinedStudentsTeachers)) {
+        // pull assignment from students that are NOT from new section
+        models.User.updateMany(
+          { _id: { $nin: combinedStudentsTeachers }, assignments: assignment._id },
+          { $pull: { assignments: assignment._id } }
+        ).exec();
+      }
+
+      // what if linked workspaces or parent ws have already been created?
+      // should we prevent user from changing section?
+      // if not, need to trash all of them
+    }
 
     const data = { assignment };
     utils.sendResponse(res, data);
