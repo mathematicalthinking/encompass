@@ -1,4 +1,6 @@
 const moment = require('moment');
+const seededAssignments = require('../../../seeders/assignments');
+
 module.exports = {
   withLinkedWorkspaces: {
     valid: {
@@ -44,5 +46,8 @@ module.exports = {
       },
       expectedResultName: `Summer's Org Problem / ${moment(new Date()).format('MMM Do YYYY')}`
     }
+  },
+  pdAdmin: {
+    toModify: seededAssignments.find(assn => assn._id = '5b9146a83add43b868ae9809')
   }
 };

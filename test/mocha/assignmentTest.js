@@ -38,6 +38,16 @@ describe('Assignment CRUD operations by account type', function() {
         agent.close();
       });
 
+      function putAPIResourceById(agent, resource, id, body) {
+        let url = `/api/${resource}/${id}`;
+      
+        let model = resource.slice(0, resource.length - 1);
+        return agent
+          .put(url)
+          .send({[model]: body});
+      }
+      
+
       describe('/GET assignments', () => {
         it('should get all assignments', done => {
           agent
@@ -127,6 +137,28 @@ describe('Assignment CRUD operations by account type', function() {
               expect(res.body.assignment.name).to.eql(fixtures.withoutName.valid.expectedResultName);
               done();
             });
+          });
+        });
+      }
+
+      if (username === 'pdadmin') {
+        describe('Changing Assignment Section', function() {
+          let assn = {...fixtures.pdAdmin.toModify }
+          let newSectionId = '5b1e7b2aa5d2157ef4c91108';
+          assn.section = newSectionId;
+
+          let putResults;
+
+          before(async function() {
+            return putAPIResourceById(agent, 'assignments', assn._id, assn)
+            .then((results) => {
+              console.log('results', JSON.stringify(results, null, 2));
+              putResults = results.assignment;
+            })
+          });
+
+          it('should remove students from old section from assignment', function() {
+            return true;
           });
         });
       }
