@@ -772,7 +772,7 @@ const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOpt
     let submissionObjects = await answersToSubmissions(answers);
 
     // create a workspace for each student in assignment
-    let workspaces = await Promise.all(students.map(async (student) => {
+    let workspaces = await Promise.all(studentsWithoutWorkspaces.map(async (student) => {
       // create submission record copies
       let submissionRecords = await Promise.all( submissionObjects.map((obj) => {
         let sub = new models.Submission(obj);
