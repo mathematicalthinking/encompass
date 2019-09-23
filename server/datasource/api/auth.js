@@ -26,7 +26,7 @@ const { isNil } = require('../../utils/objects');
 const ssoService = require('../../services/sso');
 
 let secret;
-if (process.env.NODE_ENV === 'test') {
+if (process.env.NODE_ENV === 'seed') {
   secret = process.env.MT_USER_JWT_SECRET_TEST;
 } else {
   secret = process.env.MT_USER_JWT_SECRET;
