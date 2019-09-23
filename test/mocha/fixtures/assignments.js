@@ -1,5 +1,6 @@
 const moment = require('moment');
 const seededAssignments = require('../../../seeders/assignments');
+const seededSections = require('../../../seeders/sections');
 
 module.exports = {
   withLinkedWorkspaces: {
@@ -48,6 +49,10 @@ module.exports = {
     }
   },
   pdAdmin: {
-    toModify: seededAssignments.find(assn => assn._id = '5b9146a83add43b868ae9809')
+    toModify: {
+      assignment: seededAssignments.find(assn => assn._id.toString() === '5b9146a83add43b868ae9809'),
+      newSection: seededSections.find(section => section._id.toString() === '5b1e7b2aa5d2157ef4c91108' )
+    }
+
   }
 };
