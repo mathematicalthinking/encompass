@@ -10,16 +10,14 @@ before_install:
   # clone mt-sso
   - "cd .."
   - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/mt-sso.git"
-  - "cd mt-sso"
-  - "npm i"
+  - "cd mt-sso && npm i"
   - "npm run test-travis &"
   - "sleep 5"
 
   # clone vmt
   - "cd .."
   - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/vmt.git"
-  - "cd vmt"
-  - "npm i"
+  - "cd vmt/server && npm i"
   - "npm run test-travis &"
   - "sleep 6"
   - "cd ../encompass"
