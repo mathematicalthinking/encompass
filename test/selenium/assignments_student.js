@@ -56,9 +56,10 @@ describe('Assignments as Student', async function () {
 
           it('should display assignment details', async function() {
             let results = await Promise.all(_.map(assignmentDetails, (val, key) => {
-              if (key !== '_.id') {
-                return helpers.isTextInDom(driver, val);
+              if (key === '_id') {
+                return true;
               }
+                return helpers.waitForTextInDom(driver, val);
             }));
             expect(_.every(results, res => res === true)).to.be.true;
           });
