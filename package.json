@@ -11,12 +11,12 @@
     "mocha": "mocha",
     "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test",
     "seed-vmt": "cd ../vmt/server && npm run test",
-    "seed-mt": "cd ../mt-login && npm run test",
+    "seed-mt": "cd ../mt-sso && npm run test",
     "seed-all": "concurrently \"grunt serve-seed\" \"npm:seed-vmt\" \"npm:seed-mt\"",
-    "restore-mt": "cd ../mt-login && npm run seed",
+    "restore-mt": "cd ../mt-sso && npm run seed",
     "restore-vmt": "cd ../vmt/server && npm run seed",
     "dev-vmt": "cd ../vmt/server && npm run dev",
-    "dev-mt": "cd ../mt-login && npm run dev",
+    "dev-mt": "cd ../mt-sso && npm run dev",
     "dev-all": "concurrently \"npm:start\" \"npm:dev-mt\" \"npm:dev-vmt\""
   },
   "repository": {
