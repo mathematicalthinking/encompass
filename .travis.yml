@@ -10,17 +10,17 @@ before_install:
   # clone mt-sso
   - "cd .."
   - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/mt-sso.git"
-  - "cd mt-sso && npm i"
+  - "cd mt-sso && npm i --only=production"
   - "npm run test-travis &"
   - "sleep 5"
 
   # clone vmt
   - "cd .."
   - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/vmt.git"
-  - "cd vmt/server && npm i"
+  - "cd vmt/server && npm i--only=production"
   - "npm run test-travis &"
   - "sleep 6"
-  - "cd ../encompass"
+  - "cd ../../encompass"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1600x1024x16"
 install:
   - npm install
