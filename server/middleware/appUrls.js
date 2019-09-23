@@ -32,18 +32,18 @@ module.exports.getEncIssuerId = () => {
   let envName = process.env.NODE_ENV;
 
   if (envName === 'production') {
-    return process.env.JWT_ISSUER_ID_PROD;
+    return process.env.ENC_JWT_ISSUER_ID_PROD;
   }
 
   if (envName === 'staging') {
-    return process.env.JWT_ISSUER_ID_STAGING;
+    return process.env.ENC_JWT_ISSUER_ID_STAGING;
   }
 
   if (envName === 'seed') {
-    return process.env.JWT_ISSUER_ID_TEST;
+    return process.env.ENC_JWT_ISSUER_ID_TEST;
   }
 
-  return process.env.JWT_ISSUER_ID_DEV;
+  return process.env.ENC_JWT_ISSUER_ID_DEV;
 };
 
 module.exports.getMtIssuerId = () => {
