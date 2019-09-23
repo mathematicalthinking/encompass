@@ -39,9 +39,26 @@ const setup = async function(agent, user=admin.username, pass=admin.password, ur
   }
 };
 
+
+function putApiResourceById(agent, resource, id, body) {
+  let url = `/api/${resource}/${id}`;
+
+  let model = resource.slice(0, resource.length - 1);
+  return agent
+    .put(url)
+    .send({[model]: body});
+}
+
+function getApiResourceById(agent, resource, id) {
+  let url = `/api/${resource}/${id}`;
+  return agent.get(url);
+}
+
 module.exports.setup = setup;
 module.exports.admin = admin;
 module.exports.regUser = regUser;
 module.exports.host = host;
 module.exports.pdAdmin = pdAdmin;
 module.exports.loginUrl = loginUrl;
+module.exports.putApiResourceById = putApiResourceById;
+module.exports.getApiResourceById = getApiResourceById;
