@@ -135,6 +135,9 @@ describe('Mentoring Interactions', function() {
 
     it('should indicate that thread has unread reply', async function() {
       let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
+
+      await helpers.waitForAttributeToEql(driver, itemContainer[0], 'font-weight', css.general.boldFontWeight, {useCssValue: true});
+
       expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
 
       let statusCircle = await helpers.getWebElements(driver, css.responsesList.threadItems.statusCircle);

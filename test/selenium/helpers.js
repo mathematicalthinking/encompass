@@ -496,10 +496,12 @@ const getParentElement = function(webElement) {
     });
 };
 
-const waitForAttributeToEql = function(webDriver, webElement, attributeName, expectedValue, timeout=timeoutMs) {
+const waitForAttributeToEql = function(webDriver, webElement, attributeName, expectedValue, options = {}, timeout=timeoutMs) {
+  let { useCssValue = false } = options;
   let conditionFn = () => {
-    return webElement.getAttribute(attributeName)
-      .then((attributeVal) => {
+    let val = useCssValue ? webElement.getCssValue(attributeName) : webElement.getAttribute(attributeName);
+      return val
+        .then((attributeVal) => {
         return attributeVal === expectedValue;
       });
   };
