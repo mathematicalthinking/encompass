@@ -25,6 +25,14 @@ const { isNil } = require('../../utils/objects');
 
 const ssoService = require('../../services/sso');
 
+let secret;
+if (process.env.NODE_ENV === 'test') {
+  secret = process.env.MT_USER_JWT_SECRET_TEST;
+} else {
+  secret = process.env.MT_USER_JWT_SECRET;
+}
+
+
 const localLogin = async (req, res, next) => {
   try {
     let { message, accessToken, refreshToken } = await ssoService.login(req.body);
@@ -303,7 +311,7 @@ const insertNewMtUser = async (req, res, next) => {
   try {
     let authToken = extractBearerToken(req);
 
-    await verifyJwt(authToken, process.env.MT_USER_JWT_SECRET);
+    await verifyJwt(authToken, secret);
 
     // valid token
     let newUser = await User.create(req.body);
@@ -318,8 +326,8 @@ const ssoUpdateUser = async(req, res, next) => {
   try {
     let authToken = extractBearerToken(req);
     await verifyJwt(
-     authToken,
-     process.env.MT_USER_JWT_SECRET
+    authToken,
+    secret
    );
    let user = await User.findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true});
    return res.json(user);

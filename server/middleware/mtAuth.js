@@ -4,7 +4,12 @@ const ssoService = require('../services/sso');
 const { accessCookie, refreshCookie,} = require('../constants/sso');
 const { verifyJwt } = require('../utils/jwt');
 
-const secret = process.env.MT_USER_JWT_SECRET;
+let secret;
+if (process.env.NODE_ENV === 'test') {
+  secret = process.env.MT_USER_JWT_SECRET_TEST;
+} else {
+  secret = process.env.MT_USER_JWT_SECRET;
+}
 
 const setSsoCookie = (res, encodedToken) => {
   let doSetSecure =
