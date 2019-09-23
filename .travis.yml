@@ -14,6 +14,14 @@ before_install:
   - "npm i"
   - "npm run test-travis &"
   - "sleep 5"
+
+  # clone vmt
+  - "cd .."
+  - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/vmt.git"
+  - "cd vmt"
+  - "npm i"
+  - "npm run test-travis &"
+  - "sleep 6"
   - "cd ../encompass"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1600x1024x16"
 install:
