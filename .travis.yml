@@ -39,4 +39,4 @@ script:
   # - grunt endToEndTests
 sudo: required
 addons:
-  chrome: stable
+  # chrome: stable
