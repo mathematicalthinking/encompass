@@ -39,7 +39,8 @@ before_script: ./scripts/before-tests.sh
   # # - "sh -e /etc/init.d/xvfb start"
   # - sleep 3 # give xvfb some time to start
   # - grunt serve-seed & # start server on test port 8082, & to run in background.
-  - sleep 6 # give Web server some time to bind to sockets, etc
+  # - sleep 6
+  # give Web server some time to bind to sockets, etc
 script: ./scripts/run-tests.sh
   #  - 'if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then grunt tests else grunt travisTests fi'
   #  - grunt mochaTest:api
