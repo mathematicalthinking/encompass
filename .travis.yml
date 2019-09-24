@@ -34,7 +34,7 @@ cache:
     # - "../mt-sso/node_modules"
     # - "../vmt/server/node_modules"
     # - "../vmt/client/node_modules"
-before_script: ./scripts/before-tests.sh
+# before_script: ./scripts/before-tests.sh
   # - "export DISPLAY=:99.0"
   # # - "sh -e /etc/init.d/xvfb start"
   # - sleep 3 # give xvfb some time to start
