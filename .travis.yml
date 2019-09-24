@@ -53,3 +53,6 @@ script: ./scripts/run-tests.sh
 sudo: required
 addons:
   # chrome: stable
+env:
+  - TEST_SUITE=api
+  - TEST_SUITE=e2e

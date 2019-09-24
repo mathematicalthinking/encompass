@@ -1,8 +1,10 @@
 #!/bin/bash
 set -ev
-grunt mochaTest:api
+grunt env:test
+grunt build-test
+grunt mochaTest:"${TEST_SUITE}"
 if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
   grunt mochaTest:travis
 else
-  grunt mochaTest:e2e
+  grunt mochaTest:"${TEST_SUITE}"
 fi
