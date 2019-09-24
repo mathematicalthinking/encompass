@@ -17,7 +17,11 @@ before_install:
   # clone vmt
   - "cd .."
   - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/vmt.git"
-  - "cd vmt/server && npm i --only=production"
+  - "cd vmt/server"
+  - "npm ci"
+  - "npm i"
+  - npm --prefix ../client install ../client
+  - npm run build-production-test
   - "npm run test-travis &"
   - "sleep 6"
   - "cd ../../encompass"
