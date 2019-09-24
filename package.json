@@ -17,7 +17,9 @@
     "restore-vmt": "cd ../vmt/server && npm run seed",
     "dev-vmt": "cd ../vmt/server && npm run dev",
     "dev-mt": "cd ../mt-sso && npm run dev",
-    "dev-all": "concurrently \"npm:start\" \"npm:dev-mt\" \"npm:dev-vmt\""
+    "dev-all": "concurrently \"npm:start\" \"npm:dev-mt\" \"npm:dev-vmt\"",
+    "test-travis": "NODE_ENV=seed node server/server.js"
+
   },
   "repository": {
     "type": "git",
