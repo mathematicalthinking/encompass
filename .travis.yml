@@ -18,9 +18,9 @@ before_install:
   - "cd .."
   - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/vmt.git"
   - "cd vmt/server"
-  - "npm i"
+  - "npm i --only=production"
   - npm --prefix ../client install ../client
-  - npm run build-production-test
+  - npm run build-enc-test
   - "npm run test-travis &"
   - "sleep 6"
   - "cd ../../encompass"
@@ -30,6 +30,9 @@ install:
 cache:
   directories:
     - "node_modules"
+    # - "../mt-sso/node_modules"
+    # - "../vmt/server/node_modules"
+    # - "../vmt/client/node_modules"
 before_script:
   - "export DISPLAY=:99.0"
   # - "sh -e /etc/init.d/xvfb start"
