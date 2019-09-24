@@ -20,7 +20,8 @@ before_install:
   - "cd vmt/server"
   - "npm i --only=production"
   - npm --prefix ../client install ../client
-  - npm run build-enc-dev
+  - npm run build-production-test
+  - npm run build-enc-test
   - "npm run test-travis &"
   - "sleep 6"
   - "cd ../../encompass"
