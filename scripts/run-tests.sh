@@ -1,7 +1,5 @@
 #!/bin/bash
 set -ev
-grunt env:test
-grunt build-test
 grunt mochaTest:"${TEST_SUITE}"
 if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
   grunt mochaTest:travis
