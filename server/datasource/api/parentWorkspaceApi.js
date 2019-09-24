@@ -2202,7 +2202,7 @@ const resolveParentUpdates = async (userId, childRecord, childRecordType, modifi
 
   if (!isNonEmptyArray(parentWorkspacesToUpdate)) {
     // no workspaces to update
-    logger.info(`No parent workspaces to update for ${childRecordType} ${childRecord}`);
+    // logger.info(`No parent workspaces to update for ${childRecordType} ${childRecord}`);
     return [];
   }
 

@@ -342,7 +342,7 @@ describe(`Copy Workspace operations by account type`, function () {
           mongoose.connect('mongodb://localhost:27017/encompass_seed', {useMongoClient: true});
 
         } catch (err) {
-          console.log(err);
+          throw(err);
         }
       });
 
