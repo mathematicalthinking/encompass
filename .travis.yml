@@ -34,8 +34,10 @@ before_script:
   - grunt serve-seed & # start server on test port 8082, & to run in background.
   - sleep 6 # give Web server some time to bind to sockets, etc
 script:
-   - 'if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then grunt tests else grunt travisTests fi'
+  #  - 'if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then grunt tests else grunt travisTests fi'
+   - '[ "${TRAVIS_PULL_REQUEST}" == "false" ] && grunt tests'
   #  - '[ "${TRAVIS_PULL_REQUEST}" == "false" ] && grunt tests || grunt travisTests'
+
   # - grunt apiTests
   # - grunt endToEndTests
 sudo: required
