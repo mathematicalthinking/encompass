@@ -18,7 +18,6 @@ before_install:
   - "cd .."
   - "git clone --branch=fixTravisTests https://github.com/DanielJKelly/vmt.git"
   - "cd vmt/server"
-  - "npm ci"
   - "npm i"
   - npm --prefix ../client install ../client
   - npm run build-production-test
