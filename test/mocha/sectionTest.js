@@ -23,6 +23,10 @@ mongoose.Promise = global.Promise;
 
 chai.use(chaiHttp);
 
+function getAPIResourceById(agent, resource, id) {
+  let url = `/api/${resource}/${id}`;
+  return agent.get(url);
+}
 describe('Section CRUD operations by account type', function() {
   function runTests(user) {
     describe(`Section CRUD operations as ${user.details.testDescriptionTitle}`, function() {
@@ -176,16 +180,17 @@ if (!isStudent) {
       });
     });
 
-    it('should add section object to new teacher\'s sections array', function(done) {
-      models.User.findById(modifiableSection.teacherToAdd, (err, res) => {
-        if (err) {
-          done(err);
-        }
-        expect(_.find(res.sections, obj => obj.sectionId.toString() === modifiableSection._id && obj.role === 'teacher')).to.exist;
-        expect(_.find(res.sections, obj => obj.sectionId === modifiableSection._id && obj.role === 'student')).to.not.exist;
-        done();
+    it('should add section object to new teacher\'s sections array', async function() {
+      return getAPIResourceById(agent, 'users', modifiableSection.teacherToAdd)
+      .then((results) => {
+        let sections = results.body.user.sections;
+        expect(_.find(sections, obj => obj.sectionId.toString() === modifiableSection._id && obj.role === 'teacher')).to.exist;
+        expect(_.find(sections, obj => obj.sectionId === modifiableSection._id && obj.role === 'student')).to.not.exist;
+      return;
+      })
+      .catch((err) => {
+        throw(err);
       });
-
     });
 
 
