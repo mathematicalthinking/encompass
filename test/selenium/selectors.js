@@ -398,6 +398,7 @@ module.exports = {
     newResponse: '.submission-row-item.new-response > button.new-response',
     studentsSelect: '.submission-row-item.students > .selectize-comp',
     studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
+    studentSelect: '#student-select',
     dropdownContent: '.selectize-dropdown-content',
     container: '#workspace-container',
     name: '.ws-meta .workspace-name',

@@ -214,9 +214,9 @@ describe('Mentoring Interactions', function() {
 
     it('should show revise button', function() {
       return helpers.waitForAndClickElement(driver, submitterCss.reviseBtn)
-      .then(() => {
-        return helpers.waitForSelector(driver, answerNewCss.createBtn);
-      })
+      // .then(() => {
+      //   return helpers.waitForSelector(driver, answerNewCss.createBtn);
+      // })
       .catch((err) => {
         throw(err);
       });
@@ -228,7 +228,10 @@ describe('Mentoring Interactions', function() {
       it('should not submit revision if no changes are made', async function() {
         let text = answerNewCss.errors.duplicateRevisionText;
         let submitBtnClass = answerNewCss.createBtn;
-        await helpers.findAndClickElement(driver, submitBtnClass);
+
+        await helpers.waitForAndClickElement(driver, submitBtnClass);
+
+        // await helpers.findAndClickElement(driver, submitBtnClass);
 
         await swalDriver.verifyToast(text);
 

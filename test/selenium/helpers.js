@@ -607,6 +607,28 @@ const waitForElToBeVisible = function(webDriver, selectorOrEl, timeout=timeoutMs
 
   return webDriver.wait(conditionFn, timeout);
 };
+
+function waitForSelectizeSingleText(webDriver, selector, expectedText, timeout=timeoutMs) {
+  let conditionFn = () => {
+    return getSelectizeSingleText(webDriver, selector)
+    .then((text) => {
+      return text === expectedText;
+    });
+  };
+
+  return webDriver.wait(conditionFn, timeout);
+}
+
+function getSelectizeSingleText(webDriver, selector) {
+  return getWebElementByCss(webDriver, selector)
+  .then((el) => {
+    return el.getAttribute('innerText');
+  })
+  .catch((err) => {
+    throw(err);
+  });
+}
+
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -682,3 +704,5 @@ module.exports.waitForAttributeToEql = waitForAttributeToEql;
 module.exports.logout = logout;
 module.exports.dismissWorkspaceTour = dismissWorkspaceTour;
 module.exports.waitForElToBeVisible = waitForElToBeVisible;
+module.exports.getSelectizeSingleText = getSelectizeSingleText;
+module.exports.waitForSelectizeSingleText = waitForSelectizeSingleText;

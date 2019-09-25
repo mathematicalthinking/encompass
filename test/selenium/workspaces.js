@@ -68,7 +68,19 @@ describe('Visiting Workspaces', function() {
 
     it('should display a select box for students', async function() {
       expect(await helpers.isElementVisible(driver, css.workspace.studentsSelect)).to.eql(true);
-      expect(await helpers.findAndGetText(driver, css.workspace.studentItem)).to.contain('Andrew S.');
+
+      return helpers.waitForSelectizeSingleText(driver, '#student-select', 'Andrew S.');
+      // let item = await helpers.getWebElements(driver, css.workspace.studentItem);
+      // console.log('items', item);
+
+      // let selectText = await helpers.findAndGetText(driver, '#student-select');
+      // console.log({selectText});
+      // let studentItem = item[0];
+
+      // let text = await studentItem.getAttribute('value');
+      // console.log({text});
+      // await helpers.waitForElementToHaveText(driver, css.workspace.studentItem, 'Andrew S.');
+      // expect(await helpers.findAndGetText(driver, css.workspace.studentItem)).to.contain('Andrew S.');
       // expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
     });
 
@@ -156,23 +168,28 @@ describe('Visiting Workspaces', function() {
       // The arrow clicks only seem to work once each way?
       it('should change the current student', async function() {
         try {
-          let studentItemSel = css.workspace.studentItem;
+          let studentSelect = css.workspace.studentSelect;
+
+          let itemText = await helpers.getSelectizeSingleText(driver, studentSelect);
+          console.log('text before clicking left: ', itemText);
 
           await helpers.findAndClickElement(driver, '#leftArrow');
           console.log('clicked left arrow');
-          await helpers.waitForTextInDom(driver, 'Peg C.');
+          // await helpers.waitForTextInDom(driver, 'Peg C.');
+          await helpers.waitForSelectizeSingleText(driver, studentSelect, 'Peg C.');
 
-          // await helpers.waitForElementToHaveText(driver, studentItemSel, 'Peg C.');
+          // await helpers.waitForElementToHaveText(driver, studentSelect, 'Peg C.');
 
-          let itemText = await helpers.findAndGetText(driver, studentItemSel);
+          itemText = await helpers.getSelectizeSingleText(driver, studentSelect);
           console.log('text after clicking left: ', itemText);
 
           await helpers.findAndClickElement(driver, '#rightArrow');
           console.log('clicked right arrow');
-          // await helpers.waitForElementToHaveText(driver, studentItemSel, 'Andrew S.');
-          await helpers.waitForTextInDom(driver, 'Andrew S.');
+          // await helpers.waitForElementToHaveText(driver, studentSelect, 'Andrew S.');
+          // await helpers.waitForTextInDom(driver, 'Andrew S.');
+          await helpers.waitForSelectizeSingleText(driver, studentSelect, 'Andrew S.');
 
-          itemText = await helpers.findAndGetText(driver, studentItemSel);
+          itemText = await helpers.findAndGetText(driver, studentSelect);
           console.log('text after clicking right: ', itemText);
 
         }catch(err) {
