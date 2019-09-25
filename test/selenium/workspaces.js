@@ -158,7 +158,10 @@ describe('Visiting Workspaces', function() {
           let itemText = await helpers.getSelectizeSingleText(driver, '#student-select');
           console.log('text before closing selectBox: ', itemText);
 
-          await selectBox.click();
+          // click outside of box to close
+          // travis errors when clicking the box because it selects another item
+          await helpers.findAndClickElement(driver, '#al_submission');
+          // await selectBox.click();
           await helpers.waitForRemoval(driver, '#studentList');
 
           let itemTextAfter = await helpers.getSelectizeSingleText(driver, '#student-select');
