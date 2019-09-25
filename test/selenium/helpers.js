@@ -148,7 +148,7 @@ const getWebElementTooltip = async function (webDriver, selector) {
   return webValue;
 };
 
-const navigateAndWait = function (webDriver, url, selector, urlToWaitfor='', timeout=timeoutMs) {
+const navigateAndWait = function (webDriver, url, selector, timeout=timeoutMs, urlToWaitfor=null) {
   urlToWaitfor = urlToWaitfor || url;
   return webDriver.get(url)
   .then(() => {
