@@ -540,7 +540,9 @@ module.exports = {
     reviewStep: {
       container: '#vmt-import-step4',
       create: 'button[data-test=create]'
-    }
+    },
+    noRoomsItem: 'li[data-test=no-rooms]',
+    noActivitiesItem: 'li[data-test=no-activities]',
   },
   assignmentsNew: {
     container: '#assignment-new',

@@ -63,15 +63,20 @@ describe('Importing VMT Work', function() {
 
       it('searching for nonexistant room name should yield no results', async function() {
         await helpers.findInputAndType(driver, searchInput, 'bogusname');
-
+        console.log('ater type');
         let roomsMsg = css.vmtImport.noRoomsResult;
         let activitiesMsg = css.vmtImport.noActivitiesResult;
 
-        await helpers.waitForTextInDom(driver, roomsMsg);
-        await helpers.waitForTextInDom(driver, activitiesMsg);
+        await helpers.waitForElementToHaveText(driver, css.vmtImport.noRoomsItem, roomsMsg);
+        console.log('after rooms');
+        await helpers.waitForElementToHaveText(driver, css.vmtImport.noActivitiesItem, activitiesMsg);
 
-        expect(await helpers.isTextInDom(driver, roomsMsg)).to.eql(true);
-        expect(await helpers.isTextInDom(driver, activitiesMsg)).to.eql(true);
+        console.log('after activities');
+        // await helpers.waitForTextInDom(driver, roomsMsg);
+        // await helpers.waitForTextInDom(driver, activitiesMsg);
+
+        // expect(await helpers.isTextInDom(driver, roomsMsg)).to.eql(true);
+        // expect(await helpers.isTextInDom(driver, activitiesMsg)).to.eql(true);
       });
 
       xdescribe('should return both own and public activities', function() {
