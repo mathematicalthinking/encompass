@@ -7,5 +7,5 @@ else
   export DISPLAY=:99.0
   sleep 3
   grunt serve-seed &
-  sleep 6
+  sleep 20
 fi
