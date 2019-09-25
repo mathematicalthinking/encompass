@@ -8,6 +8,8 @@ const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
+const SwalDriver = require('./utilities/sweet_alert');
+
 const host = helpers.host;
 
 let feedbackReceiver = {
@@ -70,10 +72,15 @@ function checkThreadValues(webDriver, values, excludedValues=[]) {
 describe('Mentoring Interactions', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
+  let swalDriver;
+
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+
+      swalDriver = new SwalDriver(driver);
+
     await dbSetup.prepTestDb();
     try {
       await helpers.login(driver, host, feedbackReceiver);
@@ -88,7 +95,9 @@ describe('Mentoring Interactions', function() {
 
   describe('On Home page', function() {
     it('should have 1 visible response notification', async function() {
-      expect(await helpers.findAndGetText(driver, css.topBar.responseNtf)).to.eql('1');
+      let numNtfs = 1;
+      await helpers.waitForElementToHaveText(driver, css.topBar.responseNtf, numNtfs.toString());
+      // expect(await helpers.findAndGetText(driver, css.topBar.responseNtf)).to.eql('1');
     });
   });
 
@@ -99,6 +108,8 @@ describe('Mentoring Interactions', function() {
     });
 
     it('should display solver tab and display count', async function() {
+
+      await helpers.waitForNElements(driver, css.responsesList.submitterTab, 1);
       let submitterTabs = await helpers.getWebElements(driver, css.responsesList.submitterTab);
 
       expect(submitterTabs).to.have.lengthOf(1);
@@ -113,7 +124,8 @@ describe('Mentoring Interactions', function() {
     });
 
     it('should have one response thread in list', async function() {
-      let responseThreads = await helpers.getWebElements(driver, css.responsesList.responseThreads);
+      let responseThreads = await helpers.waitForNElements(driver, css.responsesList.responseThreads, 1);
+
       expect(responseThreads).to.have.lengthOf(1);
     });
 
@@ -159,23 +171,35 @@ describe('Mentoring Interactions', function() {
       let responseId = responseInfo.response._id;
       let expectedUrl = `/responses/submission/${subId}?responseId=${responseId}`;
 
-      await driver.wait(until.urlContains(expectedUrl), 5000);
+      await driver.wait(until.urlContains(expectedUrl), 8000);
     });
 
-    it('should display submission view', async function() {
-      expect(await helpers.findAndGetText(driver, submitterCss.studentIndicator)).to.eql(feedbackReceiver.username);
+    it('should display submission view', function() {
+      return helpers.waitForElementToHaveText(driver, submitterCss.studentIndicator, feedbackReceiver.username)
+      .catch((err) => {
+        throw(err);
+      });
+      // expect(await helpers.findAndGetText(driver, submitterCss.studentIndicator)).to.eql(feedbackReceiver.username);
     });
 
-    it('should display mentor reply view', async function() {
-      expect(await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.recipient)).to.eql(feedbackReceiver.username);
-
-      expect( await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.sender)).to.eql(mentorInfo.username);
+    it('should display mentor reply view', function() {
+      return Promise.all([
+        helpers.waitForElementToHaveText(driver, css.responseInfo.mentorReplyView.recipient, feedbackReceiver.username),
+        helpers.waitForElementToHaveText(driver, css.responseInfo.mentorReplyView.sender, mentorInfo.username),
+      ])
+      .catch((err) => {
+        throw(err);
+      });
     });
 
-    it('should show revise button', async function() {
-      expect(await helpers.isElementVisible(driver, submitterCss.reviseBtn)).to.eql(true);
-      await helpers.findAndClickElement(driver, submitterCss.reviseBtn);
-      await helpers.waitForSelector(driver, answerNewCss.createBtn);
+    it('should show revise button', function() {
+      return helpers.waitForAndClickElement(driver, submitterCss.reviseBtn)
+      .then(() => {
+        return helpers.waitForSelector(driver, answerNewCss.createBtn);
+      })
+      .catch((err) => {
+        throw(err);
+      });
     });
 
     describe('Submitting revision from response page', function() {
@@ -185,8 +209,11 @@ describe('Mentoring Interactions', function() {
         let text = answerNewCss.errors.duplicateRevisionText;
         let submitBtnClass = answerNewCss.createBtn;
         await helpers.findAndClickElement(driver, submitBtnClass);
-        await helpers.waitForTextInDom(driver, text);
-        expect(await helpers.isTextInDom(driver, text)).to.eql(true);
+
+        await swalDriver.verifyToast(text);
+
+        // await helpers.waitForTextInDom(driver, text);
+        // expect(await helpers.isTextInDom(driver, text)).to.eql(true);
         expect(await helpers.isElementVisible(driver, submitBtnClass)).to.eql(true);
 
       });
@@ -197,24 +224,32 @@ describe('Mentoring Interactions', function() {
         await helpers.findInputAndType(driver, answerNewCss.inputs.explanation, newExplanation);
 
         await helpers.findAndClickElement(driver, answerNewCss.createBtn);
+        await swalDriver.verifyToast(toastMsg);
 
-        await helpers.waitForTextInDom(driver, toastMsg);
+        // await helpers.waitForTextInDom(driver, toastMsg);
 
-        let revItems = await helpers.getWebElements(driver, submitterCss.revIndexItem);
+        let revItems = await helpers.waitForNElements(driver, submitterCss.revIndexItem, 2);
+
+        // let revItems = await helpers.getWebElements(driver, submitterCss.revIndexItem);
         expect(revItems).to.have.lengthOf(2);
       });
 
       it('linked workspace should have been updated', async function() {
+        let url = `${host}/#/workspaces/${workspaceInfo._id}/work`;
 
-        await driver.get(`${host}/#/workspaces/${workspaceInfo._id}/work`);
-        await helpers.waitForSelector(driver, 'span.submission_count');
+        await helpers.navigateAndWait(driver, url, {selector: 'span.submission_count' } );
+        // await driver.get();
+        // await helpers.waitForSelector(driver, 'span.submission_count');
 
         // click x button on tour box
-        await helpers.findAndClickElement(driver, 'div.guiders_x_button');
+        // await helpers.findAndClickElement(driver, 'div.guiders_x_button');
 
-        await helpers.waitForRemoval(driver, 'div#guiders_overlay');
+        // await helpers.waitForRemoval(driver, 'div#guiders_overlay');
 
-        expect(await helpers.findAndGetText(driver, 'span.submission_count')).to.eql('2');
+        await helpers.dismissWorkspaceTour(driver);
+
+        return helpers.waitForElementToHaveText(driver,  'span.submission_count', '2');
+        // expect(await helpers.findAndGetText(driver,)).to.eql('2');
 
       });
 

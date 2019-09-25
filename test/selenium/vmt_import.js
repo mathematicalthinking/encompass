@@ -201,12 +201,8 @@ describe('Importing VMT Work', function() {
           it('Should display error messages', async function() {
             let numErrors = 2;
             await helpers.findAndClickElement(driver, css.vmtImport.next);
-            await helpers.waitForNElements(driver, css.general.errorBox, numErrors);
-
-            let errorBoxes = await helpers.getWebElements(driver, css.general.errorBox);
-
+            let errorBoxes = await helpers.waitForNElements(driver, css.general.errorBox, numErrors);
             expect(errorBoxes).to.have.lengthOf(numErrors);
-
           });
         });
 

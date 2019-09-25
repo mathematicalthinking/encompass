@@ -112,9 +112,8 @@ describe('Assignments as Student', async function () {
               let numExpectedErrors = 2;
 
               await helpers.findAndClickElement(driver, newAnswerSelectors.createBtn);
-              await helpers.waitForNElements(driver, 'div.error-box', numExpectedErrors);
+              let errors = await helpers.waitForNElements(driver, 'div.error-box', numExpectedErrors);
 
-              let errors = await helpers.getWebElements(driver, 'div.error-box');
               expect(errors).to.have.lengthOf(2);
 
               expect(await helpers.isTextInDom(driver, `can't be blank`)).to.be.true;

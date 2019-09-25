@@ -343,8 +343,6 @@ describe('Parent Workspace creation and updating', function() {
       let expectedCount = 1;
       let linkSel = css.assignmentsTeacher.parentWorkspace.link;
       return helpers.waitForNElements(driver, linkSel, 1)
-      .then(() => {
-        return helpers.getWebElements(driver, linkSel)
         .then((links) => {
           expect(links).to.have.lengthOf(expectedCount);
           let link = links[0];
@@ -357,7 +355,6 @@ describe('Parent Workspace creation and updating', function() {
 
             });
         });
-      });
 
 
     });

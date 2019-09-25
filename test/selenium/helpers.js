@@ -426,13 +426,22 @@ const saveScreenshot = function(webdriver) {
 };
 
 const waitForNElements = function(webDriver, selector, num, timeout=timeoutMs) {
+  let elements;
+
   let conditionFn = () => {
     return getWebElements(webDriver, selector)
     .then((els) => {
-      return els.length === num;
+      if (els.length === num) {
+        elements = els;
+        return true;
+      }
+      return false;
     });
   };
   return webDriver.wait(conditionFn, timeout)
+  .then(() => {
+    return elements;
+  })
   .catch((err) => {
     throw(err);
   });
