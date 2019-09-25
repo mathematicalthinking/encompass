@@ -155,8 +155,15 @@ describe('Visiting Workspaces', function() {
 
       it('should hide the list of students if clicked', async function() {
         try{
+          let itemText = await helpers.getSelectizeSingleText(driver, '#student-select');
+          console.log('text before closing selectBox: ', itemText);
+
           await selectBox.click();
           await helpers.waitForRemoval(driver, '#studentList');
+
+          let itemTextAfter = await helpers.getSelectizeSingleText(driver, '#student-select');
+          console.log('text after closing selectBox: ', itemTextAfter);
+
           return;
         }catch(err) {
           throw(err);
