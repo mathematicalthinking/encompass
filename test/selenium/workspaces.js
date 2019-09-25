@@ -155,18 +155,10 @@ describe('Visiting Workspaces', function() {
 
       it('should hide the list of students if clicked', async function() {
         try{
-          let itemText = await helpers.getSelectizeSingleText(driver, '#student-select');
-          console.log('text before closing selectBox: ', itemText);
-
           // click outside of box to close
           // travis errors when clicking the box because it selects another item
           await helpers.findAndClickElement(driver, '#al_submission');
-          // await selectBox.click();
           await helpers.waitForRemoval(driver, '#studentList');
-
-          let itemTextAfter = await helpers.getSelectizeSingleText(driver, '#student-select');
-          console.log('text after closing selectBox: ', itemTextAfter);
-
           return;
         }catch(err) {
           throw(err);
@@ -180,27 +172,11 @@ describe('Visiting Workspaces', function() {
         try {
           let studentSelect = css.workspace.studentSelect;
 
-          let itemText = await helpers.getSelectizeSingleText(driver, studentSelect);
-          console.log('text before clicking left: ', itemText);
-
           await helpers.findAndClickElement(driver, '#leftArrow');
-          console.log('clicked left arrow');
-          // await helpers.waitForTextInDom(driver, 'Peg C.');
           await helpers.waitForSelectizeSingleText(driver, studentSelect, 'Peg C.');
 
-          // await helpers.waitForElementToHaveText(driver, studentSelect, 'Peg C.');
-
-          itemText = await helpers.getSelectizeSingleText(driver, studentSelect);
-          console.log('text after clicking left: ', itemText);
-
           await helpers.findAndClickElement(driver, '#rightArrow');
-          console.log('clicked right arrow');
-          // await helpers.waitForElementToHaveText(driver, studentSelect, 'Andrew S.');
-          // await helpers.waitForTextInDom(driver, 'Andrew S.');
           await helpers.waitForSelectizeSingleText(driver, studentSelect, 'Andrew S.');
-
-          itemText = await helpers.findAndGetText(driver, studentSelect);
-          console.log('text after clicking right: ', itemText);
 
         }catch(err) {
          throw(err);

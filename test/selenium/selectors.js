@@ -49,7 +49,7 @@ module.exports = {
       password: "input[name=password]",
       confirmPassword: "input[name=confirmPassword]",
       requestReason: "input[name=requestReason]",
-      terms: "input[name=terms]"
+      terms: "input[name=terms]",
     },
     submit: "button[type=submit]"
   },
@@ -115,7 +115,8 @@ module.exports = {
     loginLink: "a.login-link",
     infoMessage: "p.info",
     newEmailButton: "button.action_button",
-    resentConfirm: "p#resent-confirm"
+    resentConfirm: "p#resent-confirm",
+    alreadyConfirmed: `p[data-test="already-confirmed"]`
   },
 
   newWorkspaceEnc: {

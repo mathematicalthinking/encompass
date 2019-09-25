@@ -89,16 +89,19 @@ describe('Confirm Email', function () {
 
     describe('Navigating to valid link after already confirming', function() {
       it('should display that email is already confirmed', async function() {
-        let msg = 'Email address has already been confirmed';
+        let msg = 'Email address has already been confirmed.';
         await driver.get(host);
         let options = {
           selector: '.confirm-page'
         };
         await helpers.navigateAndWait(driver, confirmLink, options);
-        expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+
+        await helpers.waitForSelector(driver, css.confirmEmail.alreadyConfirmed);
+        await helpers.waitForElementToHaveText(driver, css.confirmEmail.alreadyConfirmed, msg);
       });
 
       it('should display link to login page', async function() {
+        await helpers.waitForSelector(driver, css.confirmEmail.loginLink);
         expect(await helpers.isElementVisible(driver, css.confirmEmail.loginLink)).to.be.true;
       });
     });
@@ -139,4 +142,3 @@ describe('Confirm Email', function () {
 
 
 });
-

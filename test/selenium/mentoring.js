@@ -213,10 +213,15 @@ describe('Mentoring Interactions', function() {
     });
 
     it('should show revise button', function() {
+      console.log('clicking revise btn');
       return helpers.waitForAndClickElement(driver, submitterCss.reviseBtn)
-      // .then(() => {
-      //   return helpers.waitForSelector(driver, answerNewCss.createBtn);
-      // })
+      .then(() => {
+        console.log('clicked revise');
+        return helpers.waitForSelector(driver, answerNewCss.createBtn);
+      })
+      .then(() => {
+        console.log('found create btn');
+      })
       .catch((err) => {
         throw(err);
       });
@@ -226,11 +231,12 @@ describe('Mentoring Interactions', function() {
       let newExplanation = 'Revised explanation';
 
       it('should not submit revision if no changes are made', async function() {
+        console.log('should be 2nd');
         let text = answerNewCss.errors.duplicateRevisionText;
         let submitBtnClass = answerNewCss.createBtn;
 
         await helpers.waitForAndClickElement(driver, submitBtnClass);
-
+        console.log('after submit click');
         // await helpers.findAndClickElement(driver, submitBtnClass);
 
         await swalDriver.verifyToast(text);
