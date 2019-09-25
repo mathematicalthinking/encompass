@@ -26,7 +26,13 @@ describe('Home Page', function () {
   });
 
   it('should load without error', async function () {
-    await helpers.navigateAndWait(driver, host, css.login.username, helpers.loginUrl, 10000);
+    let options = {
+      selector: css.login.username,
+      urlToWaitFor: helpers.loginUrl,
+      timeout: 10000
+    };
+
+    await helpers.navigateAndWait(driver, host, options );
 
   });
   // default behavior is now to redirect to login page if user is not logged in

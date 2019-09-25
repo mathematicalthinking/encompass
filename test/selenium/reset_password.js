@@ -29,7 +29,7 @@ describe('Resetting Password', function () {
   });
   describe('Invalid token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, invalidResetLink, css.resetPassword.invalidToken);
+      await helpers.navigateAndWait(driver, invalidResetLink, {selector: css.resetPassword.invalidToken});
     });
 
     it('should not display reset form', async function() {
@@ -43,7 +43,7 @@ describe('Resetting Password', function () {
 
   describe('Matching but expired token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, expiredResetLink, css.resetPassword.invalidToken, 10000);
+      await helpers.navigateAndWait(driver, expiredResetLink, {selector: css.resetPassword.invalidToken, timeout: 10000});
     });
 
     it('should not display reset form', async function() {
@@ -57,8 +57,8 @@ describe('Resetting Password', function () {
 
   describe('Valid token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, resetLink, css.resetPassword.resetForm);
-      await driver.sleep(3000);
+      await helpers.navigateAndWait(driver, resetLink, {selector: css.resetPassword.resetForm});
+      // await driver.sleep(3000);
     });
 
     it('should display reset form', async function() {

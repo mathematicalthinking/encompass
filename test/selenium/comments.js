@@ -14,13 +14,14 @@ let commentsCss = css.wsComments;
 describe('Comments', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
+  let user = helpers.admin;
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
       await dbSetup.prepTestDb();
     try {
-      await helpers.login(driver, host);
+      await helpers.login(driver, host, user);
     }catch(err) {
       console.log(err);
     }

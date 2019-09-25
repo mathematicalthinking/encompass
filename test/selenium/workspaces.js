@@ -14,12 +14,13 @@ const workspaceId = '53e36522b48b12793f000d3b';
 describe('Visiting Workspaces', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
+  let user = helpers.admin;
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
     await dbSetup.prepTestDb();
-    await helpers.login(driver, host);
+    await helpers.login(driver, host, user);
   });
 
   after(() => {

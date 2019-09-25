@@ -31,7 +31,11 @@ describe('Confirm Email', function () {
 
   describe('Invalid token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, invalidResetLink, css.confirmEmail.invalidToken);
+      let options = {
+        selector: css.confirmEmail.invalidToken,
+      };
+
+      await helpers.navigateAndWait(driver, invalidResetLink, options);
     });
 
     it('should display error message', async function() {
@@ -46,7 +50,11 @@ describe('Confirm Email', function () {
 
   describe('Matching but expired token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, expiredResetLink, css.confirmEmail.invalidToken, 10000);
+      let options = {
+        selector: css.confirmEmail.invalidToken,
+      };
+
+      await helpers.navigateAndWait(driver, expiredResetLink, options);
     });
 
     it('should display error message', async function() {
@@ -61,7 +69,11 @@ describe('Confirm Email', function () {
 
   describe('Valid token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, confirmLink, css.confirmEmail.successMessage, 10000);
+      let options = {
+        selector: css.confirmEmail.successMessage,
+      };
+
+      await helpers.navigateAndWait(driver, confirmLink, options);
     });
 
     it('should display success message', async function() {
@@ -79,7 +91,10 @@ describe('Confirm Email', function () {
       it('should display that email is already confirmed', async function() {
         let msg = 'Email address has already been confirmed';
         await driver.get(host);
-        await helpers.navigateAndWait(driver, confirmLink, '.confirm-page');
+        let options = {
+          selector: '.confirm-page'
+        };
+        await helpers.navigateAndWait(driver, confirmLink, options);
         expect(await helpers.isTextInDom(driver, msg)).to.be.true;
       });
 

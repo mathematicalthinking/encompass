@@ -71,7 +71,7 @@ describe('Workspace info / settings interactions', function() {
 
   describe('Navigating to workspace info page', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, wsInfoUrl, selectors.container);
+      await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.container});
     });
 
     it('should show workspace settings container', async function() {
@@ -105,7 +105,7 @@ describe('Workspace info / settings interactions', function() {
     });
 
     it('should display new name after page refresh', async function() {
-      await helpers.navigateAndWait(driver, wsInfoUrl, selectors.settings.container);
+      await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.settings.container});
       expect(await helpers.findAndGetText(driver, selectors.settings.nameText)).to.eql(newName);
     });
   });
@@ -128,7 +128,7 @@ describe('Workspace info / settings interactions', function() {
       });
 
       it('should display no after page refresh', async function() {
-        await helpers.navigateAndWait(driver, wsInfoUrl, selectors.settings.container);
+        await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.settings.container});
         expect(await helpers.findAndGetText(driver, selectors.settings.autoUpdateText)).to.eql('No');
       });
     });
@@ -150,7 +150,7 @@ describe('Workspace info / settings interactions', function() {
       });
 
       it('should display no after page refresh', async function() {
-        await helpers.navigateAndWait(driver, wsInfoUrl, selectors.settings.container);
+        await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.settings.container});
         expect(await helpers.findAndGetText(driver, selectors.settings.autoUpdateText)).to.eql('Yes');
       });
     });
@@ -178,7 +178,7 @@ describe('Workspace info / settings interactions', function() {
     });
 
     it('should display no after page refresh', async function() {
-      await helpers.navigateAndWait(driver, wsInfoUrl, selectors.settings.container);
+      await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.settings.container});
       expect(await helpers.findAndGetText(driver, selectors.settings.linkedAssnText)).to.contain(assignmentToLink.name);
 
     });
@@ -215,7 +215,7 @@ describe('Workspace info / settings interactions', function() {
     });
 
     it('should display new collab after page refresh', async function() {
-      await helpers.navigateAndWait(driver, wsInfoUrl, selectors.settings.container);
+      await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.settings.container});
       let items = await helpers.getWebElements(driver, collabItems);
       expect(items).to.have.lengthOf(1);
       expect(await helpers.isElementVisible(driver, `a[href="#/users/${collabToAdd.username}"]`)).to.eql(true);

@@ -40,7 +40,7 @@ describe('Importing VMT Work', function() {
     describe('Using direct link', function() {
       let url = `${host}/#/vmt/import`;
       before(async function() {
-        await helpers.navigateAndWait(driver, url, css.vmtImport.search.container);
+        await helpers.navigateAndWait(driver, url, {selector: css.vmtImport.search.container});
       });
 
       it('should load import page on step 1', async function() {

@@ -34,7 +34,7 @@ module.exports = {
     password: "input[name=password]",
     submit: "button[type=submit]",
     google: `a[href="http://localhost:3003/oauth/google?redirectURL=http://localhost:8082"]`,
-    signup: "a.signup-link",
+    signup: "p[data-test=auth-signup] > a",
   },
   signup: {
     form: "form.form-signup",

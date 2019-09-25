@@ -20,8 +20,10 @@ describe('Signup form', function () {
       .forBrowser('chrome')
       .build();
     await dbSetup.prepTestDb();
-    await helpers.navigateAndWait(driver, `${host}/`, css.topBar.signup);
-    await helpers.findAndClickElement(driver, css.topBar.signup);
+
+    let signupLink = css.login.signup;
+    await helpers.navigateAndWait(driver, host, { selector: signupLink, urlToWaitFor: helpers.loginUrl });
+    await helpers.findAndClickElement(driver, signupLink);
     await helpers.waitForSelector(driver, css.signup.form);
   });
   after(() => {

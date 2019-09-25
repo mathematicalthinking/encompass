@@ -9,7 +9,7 @@ const config = require('../../server/config');
 const css = require('./selectors');
 
 // testing timeout values
-const timeoutMs = 5000;  // timeout per await
+const timeoutMs = 8000;  // timeout per await
 const timeoutTestMsStr = '20s';  // timeout per test
 
 const nconf = config.nconf;
@@ -148,11 +148,13 @@ const getWebElementTooltip = async function (webDriver, selector) {
   return webValue;
 };
 
-const navigateAndWait = function (webDriver, url, selector, timeout=timeoutMs, urlToWaitfor=null) {
-  urlToWaitfor = urlToWaitfor || url;
+const navigateAndWait = function (webDriver, url, options = {}) {
+
+  let { selector, timeout=timeoutMs, urlToWaitFor = url } = options;
+
   return webDriver.get(url)
   .then(() => {
-    return waitForUrlToEql(webDriver, urlToWaitfor, timeout)
+    return waitForUrlToEql(webDriver, urlToWaitFor, timeout)
     .then(() => {
       return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
     });
@@ -212,7 +214,11 @@ const waitForAndClickElement = function (webDriver, selector, timeout = timeoutM
       .then((locatedEl) => {
         return webDriver.wait(until.elementIsVisible(locatedEl), timeout, `Element ${selector} not visible`)
         .then((visibleEl) => {
-          return visibleEl.click();
+          return visibleEl.getText()
+          .then((text) => {
+            // console.log('clicking btn with text: ', text);
+            return visibleEl.click();
+          });
         });
       })
       .catch((err) => {
@@ -335,13 +341,20 @@ const selectOption = async function (webDriver, selector, item, isByCss) {
   }
 };
 
-const login = async function(webDriver, host, user=admin) {
-  await navigateAndWait(webDriver, loginUrl, css.login.username, 10000);
+const login = async function(webDriver, host, user, selectorToTest) {
+  let navOptions = {
+    selector: css.login.username,
+  };
+
+  let selectorToWaitFor = selectorToTest || css.topBar.logout;
+  // may need to pass in different selector if testing for mobile devices
+  // because logout button is hidden in the side menu
+  await navigateAndWait(webDriver, loginUrl, navOptions);
 
   await findInputAndType(webDriver, css.login.username, user.username);
   await findInputAndType(webDriver, css.login.password, user.password);
   await findAndClickElement(webDriver, css.login.submit);
-  return waitForSelector(webDriver, '#homepage', 10000);
+  return waitForSelector(webDriver, selectorToWaitFor);
 };
 
 const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {
@@ -556,6 +569,29 @@ const waitForUrlToEql = function(webDriver, url, timeout=timeoutMs) {
     console.error(`Error waitForUrlMatch: ${err}`);
   });
 };
+
+const waitForElToBeVisible = function(webDriver, selectorOrEl, timeout=timeoutMs) {
+  let isSelector = typeof selectorOrEl === 'string';
+  let conditionFn;
+
+  if (isSelector) {
+    conditionFn = () => {
+      return webDriver.findElements({css: selectorOrEl})
+      .then((els) => {
+        if (els.length === 0) {
+          return false;
+        }
+        return els[0].isDisplayed();
+      });
+    };
+  } else {
+    conditionFn = () => {
+      return selectorOrEl.isDisplayed();
+    };
+  }
+
+  return webDriver.wait(conditionFn, timeout);
+};
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -630,3 +666,4 @@ module.exports.waitForElementToHaveText = waitForElementToHaveText;
 module.exports.waitForAttributeToEql = waitForAttributeToEql;
 module.exports.logout = logout;
 module.exports.dismissWorkspaceTour = dismissWorkspaceTour;
+module.exports.waitForElToBeVisible = waitForElToBeVisible;

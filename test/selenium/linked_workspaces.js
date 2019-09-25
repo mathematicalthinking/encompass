@@ -59,7 +59,7 @@ describe('Linking multiple workspaces to one assignment', function() {
 
   describe('Linking new workspace to assignment', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, newWsInfoUrl, wsInfoSelectors.container);
+      await helpers.navigateAndWait(driver, newWsInfoUrl, {selector: wsInfoSelectors.container});
     });
 
     describe('Setting Linked Assignment', function() {
@@ -84,7 +84,7 @@ describe('Linking multiple workspaces to one assignment', function() {
       });
 
       it('should still display linked assignment name after page refresh', async function() {
-        await helpers.navigateAndWait(driver, newWsInfoUrl, wsInfoSelectors.settings.container);
+        await helpers.navigateAndWait(driver, newWsInfoUrl, {selector: wsInfoSelectors.settings.container});
         expect(await helpers.findAndGetText(driver, wsInfoSelectors.settings.linkedAssnText)).to.contain(assignment.name);
 
       });
@@ -93,7 +93,7 @@ describe('Linking multiple workspaces to one assignment', function() {
 
   describe('Visiting assignment page', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, assignmentInfoUrl, css.assignmentsTeacher.editAssignment);
+      await helpers.navigateAndWait(driver, assignmentInfoUrl, {selector: css.assignmentsTeacher.editAssignment});
 
     });
     after(async function() {
@@ -117,7 +117,7 @@ describe('Linking multiple workspaces to one assignment', function() {
 
     describe('Creating response in newly linked workspace', function() {
       it('should create response successfully', async function() {
-        await helpers.navigateAndWait(driver, newWsUrlFirstSub, css.workspace.container);
+        await helpers.navigateAndWait(driver, newWsUrlFirstSub, {selector: css.workspace.container});
         await helpers.findAndClickElement(driver, css.workspace.newResponse);
 
         await helpers.findAndClickElement(driver, 'button.new-response');
@@ -139,7 +139,7 @@ describe('Linking multiple workspaces to one assignment', function() {
 
       before(async function() {
         await helpers.login(driver, host, student);
-        await helpers.navigateAndWait(driver, responseUrl, submitterCss.reviseBtn);
+        await helpers.navigateAndWait(driver, responseUrl, {selector: submitterCss.reviseBtn});
         await helpers.findAndClickElement(driver, submitterCss.reviseBtn);
       });
 
@@ -188,7 +188,7 @@ describe('Linking multiple workspaces to one assignment', function() {
 
       before(async function() {
         await helpers.login(driver, host, student);
-        await helpers.navigateAndWait(driver, responseUrl, submitterCss.reviseBtn);
+        await helpers.navigateAndWait(driver, responseUrl, {selector: submitterCss.reviseBtn});
         await helpers.findAndClickElement(driver, submitterCss.reviseBtn);
       });
 
@@ -237,7 +237,7 @@ describe('Linking multiple workspaces to one assignment', function() {
       describe('Visiting assignment page', function() {
         before(async function() {
           await helpers.login(driver, host, owner);
-          await helpers.navigateAndWait(driver, assignmentInfoUrl, css.assignmentsTeacher.editAssignment);
+          await helpers.navigateAndWait(driver, assignmentInfoUrl, {selector: css.assignmentsTeacher.editAssignment});
         });
 
         it('should have automatically updated assignment revision counts', async function() {
