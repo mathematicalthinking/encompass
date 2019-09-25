@@ -89,15 +89,21 @@ describe('Confirm Email', function () {
 
     describe('Navigating to valid link after already confirming', function() {
       it('should display that email is already confirmed', async function() {
-        let msg = 'Email address has already been confirmed.';
-        await driver.get(host);
-        let options = {
-          selector: '.confirm-page'
-        };
-        await helpers.navigateAndWait(driver, confirmLink, options);
+        try {
+          let msg = 'Email address has already been confirmed.';
+          await driver.get(host);
+          let options = {
+            selector: css.confirmEmail.alreadyConfirmed
+          };
+          await helpers.navigateAndWait(driver, confirmLink, options);
 
-        await helpers.waitForSelector(driver, css.confirmEmail.alreadyConfirmed);
-        await helpers.waitForElementToHaveText(driver, css.confirmEmail.alreadyConfirmed, msg);
+          // await helpers.waitForSelector(driver, css.confirmEmail.alreadyConfirmed);
+          console.log('after navand wait alrady conf');
+          return helpers.waitForElementToHaveText(driver, css.confirmEmail.alreadyConfirmed, msg);
+
+        }catch(err) {
+          throw(err);
+        }
       });
 
       it('should display link to login page', async function() {
