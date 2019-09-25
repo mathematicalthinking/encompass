@@ -342,19 +342,25 @@ const selectOption = async function (webDriver, selector, item, isByCss) {
 };
 
 const login = async function(webDriver, host, user, selectorToTest) {
-  let navOptions = {
-    selector: css.login.username,
-  };
+  try {
+    let navOptions = {
+      selector: css.login.username,
+    };
 
-  let selectorToWaitFor = selectorToTest || css.topBar.logout;
-  // may need to pass in different selector if testing for mobile devices
-  // because logout button is hidden in the side menu
-  await navigateAndWait(webDriver, loginUrl, navOptions);
+    let selectorToWaitFor = selectorToTest || css.topBar.logout;
+    // may need to pass in different selector if testing for mobile devices
+    // because logout button is hidden in the side menu
+    await navigateAndWait(webDriver, loginUrl, navOptions);
 
-  await findInputAndType(webDriver, css.login.username, user.username);
-  await findInputAndType(webDriver, css.login.password, user.password);
-  await findAndClickElement(webDriver, css.login.submit);
-  return waitForSelector(webDriver, selectorToWaitFor);
+    await findInputAndType(webDriver, css.login.username, user.username);
+    await findInputAndType(webDriver, css.login.password, user.password);
+    await findAndClickElement(webDriver, css.login.submit);
+    return waitForSelector(webDriver, selectorToWaitFor);
+
+  }catch(err) {
+    console.log(`login error: ${err}`);
+    throw(err);
+  }
 };
 
 const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {

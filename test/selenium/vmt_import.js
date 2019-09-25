@@ -21,14 +21,15 @@ describe('Importing VMT Work', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {
-    driver = new Builder()
+    try {
+      driver = new Builder()
       .forBrowser('chrome')
       .build();
-    await dbSetup.prepTestDb();
-    try {
-      await helpers.login(driver, host, user);
+      await dbSetup.prepTestDb();
+      console.log('db prepped vmt');
+      return helpers.login(driver, host, user);
     }catch(err) {
-      console.log(err);
+      throw(err);
     }
   });
 
