@@ -12,12 +12,12 @@ module.exports = {
     errorBoxText: 'div.error-box p span.error-text'
   },
   topBar: {
-    login: "a.menu.login",
-    signup: "a.menu.signup",
+    login: "li[data-test=login]",
+    signup: "li[data-test=signup]",
     workspaces: "a.menu.workspaces",
     responses: "a.menu.responses",
     users: "#users-home",
-    logout: "a.menu.logout",
+    logout: `a[href="#/logout"]`,
     problems: "#problems-home",
     workspacesNew: "a.workspaces-new",
     home: "a.menu.home",
@@ -33,8 +33,8 @@ module.exports = {
     username: "input[name=username]",
     password: "input[name=password]",
     submit: "button[type=submit]",
-    google: 'a[href="/auth/google"]',
-    signup: "a.signup-link"
+    google: `a[href="http://localhost:3003/oauth/google?redirectURL=http://localhost:8082"]`,
+    signup: "a.signup-link",
   },
   signup: {
     form: "form.form-signup",

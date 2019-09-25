@@ -26,23 +26,16 @@ describe('Home Page', function () {
   });
 
   it('should load without error', async function () {
-    await helpers.navigateAndWait(driver, host, css.topBar.login);
+    await helpers.navigateAndWait(driver, host, css.login.username, helpers.loginUrl, 10000);
+
   });
+  // default behavior is now to redirect to login page if user is not logged in
 
-  it('login button should be visible', async function () {
-    expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
-  });
-
-  it('should display login page after clicking login', async function () {
-    await helpers.findAndClickElement(driver, css.topBar.login);
-    await helpers.waitForSelector(driver, css.login.username);
-    let url = await helpers.getCurrentUrl(driver);
-
-    expect(url).to.eql(helpers.loginUrl);
+  it('should display login page', async function () {
     expect(await helpers.isElementVisible(driver, css.login.username)).to.be.true;
     expect(await helpers.isElementVisible(driver, css.login.password)).to.be.true;
     expect(await helpers.isElementVisible(driver, css.login.submit)).to.be.true;
-    // expect(await helpers.isElementVisible(driver, css.login.google)).to.be.true;
+    expect(await helpers.isElementVisible(driver, css.login.google)).to.be.true;
     expect(await helpers.isElementVisible(driver, css.login.signup)).to.be.true;
   });
 
