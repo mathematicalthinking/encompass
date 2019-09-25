@@ -144,10 +144,11 @@ describe('Visiting Workspaces', function() {
       it('should hide the list of students if clicked', async function() {
         try{
           await selectBox.click();
+          await helpers.waitForRemoval(driver, '#studentList');
+          return;
         }catch(err) {
-          console.log(err);
+          throw(err);
         }
-        expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
       });
     });
 
@@ -158,10 +159,18 @@ describe('Visiting Workspaces', function() {
           let studentItemSel = css.workspace.studentItem;
 
           await helpers.findAndClickElement(driver, '#leftArrow');
+          console.log('clicked left arrow');
           await helpers.waitForElementToHaveText(driver, studentItemSel, 'Peg C.');
 
+          let itemText = await helpers.findAndGetText(driver, studentItemSel);
+          console.log('text after clicking left: ', itemText);
+
           await helpers.findAndClickElement(driver, '#rightArrow');
+          console.log('clicked right arrow');
           await helpers.waitForElementToHaveText(driver, studentItemSel, 'Andrew S.');
+
+          itemText = await helpers.findAndGetText(driver, studentItemSel);
+          console.log('text after clicking right: ', itemText);
 
         }catch(err) {
          throw(err);
