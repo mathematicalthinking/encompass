@@ -135,7 +135,8 @@ module.exports = [
   "categories" : [],
   "lastModifiedDate" : ISODate("2019-07-01T17:23:27.855Z"),
   "isTrashed" : true,
-  "createDate" : ISODate("2019-07-01T17:23:27.855Z")
+  "createDate" : ISODate("2019-07-01T17:23:27.855Z"),
+  "privacySetting": "M",
 },
 /* 7 */
 {

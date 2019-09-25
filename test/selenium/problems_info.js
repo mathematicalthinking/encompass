@@ -626,7 +626,7 @@ describe('Problems Info', async function () {
               await helpers.waitForAndClickElement(driver, '.refresh-icon');
               let resultsMsg = `${problems.mine.count} problems found`;
               await helpers.waitForTextInDom(driver, resultsMsg);
-              expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
             });
 
             if (isPdadmin) {

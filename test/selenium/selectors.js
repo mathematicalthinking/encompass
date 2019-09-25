@@ -176,7 +176,7 @@ module.exports = {
   },
 
 
-  resultsMesasage: 'div.results-message',
+  resultsMessage: 'div.results-message',
   noResultsMsg: 'No results found. Please try expanding your filter criteria.',
 
   problemFilterList: {
