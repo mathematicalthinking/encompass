@@ -327,7 +327,7 @@ const selectOption = async function (webDriver, selector, item, isByCss) {
 };
 
 const login = async function(webDriver, host, user=admin) {
-  await navigateAndWait(webDriver, host, css.topBar.login);
+  await navigateAndWait(webDriver, host, css.topBar.login, 10000);
   await findAndClickElement(webDriver, css.topBar.login);
 
   await waitForSelector(webDriver, css.login.username);
