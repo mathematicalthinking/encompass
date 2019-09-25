@@ -26,6 +26,8 @@ function postError(req, res, next) {
 
   var user = userAuth.getUser(req);
   var error = new models.Error(req.body);
+
+  console.log('error enc: ', JSON.stringify(error, null, 2));
   error.object = req.body; //store the full POST
   error.createdBy = user;
   error.createDate = Date.now();
