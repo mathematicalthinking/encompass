@@ -81,7 +81,7 @@
   {{#unless isCreatingAnswer}}
     <section class="submit">
       <span>
-        <button class="primary-button create" {{action 'validate'}}>{{createButtonDisplayText}}</button>
+        <button class="primary-button create" data-test="submit-answer" {{action 'validate'}}>{{createButtonDisplayText}}</button>
       </span>
       <span class="cancelResponse">
         <button class="action_button cancel-button" {{action 'cancelResponse'}}>Cancel</button>

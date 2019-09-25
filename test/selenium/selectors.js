@@ -383,7 +383,7 @@ module.exports = {
     submissionView: {
       studentIndicator: '#response-submission-view > div.submission-container > div.submission-student > span',
       reviseBtn: 'button[data-test="submitter-revise"]',
-      submitRevision: 'button[data-test="submit-revision"]',
+      submitRevision: 'button[data-test="submit-answer"]',
       revIndexItem: '.student-submissions .bread-crumbs-item'
     },
     mentorReplyView: {

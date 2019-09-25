@@ -217,7 +217,7 @@ describe('Mentoring Interactions', function() {
       return helpers.waitForAndClickElement(driver, submitterCss.reviseBtn)
       .then(() => {
         console.log('clicked revise');
-        return helpers.waitForSelector(driver, answerNewCss.createBtn);
+        return helpers.waitForSelector(driver, submitterCss.submitRevision);
       })
       .then(() => {
         console.log('found create btn');
@@ -229,11 +229,11 @@ describe('Mentoring Interactions', function() {
 
     describe('Submitting revision from response page', function() {
       let newExplanation = 'Revised explanation';
+      let submitBtnClass = submitterCss.submitRevision;
 
       it('should not submit revision if no changes are made', async function() {
         console.log('should be 2nd');
         let text = answerNewCss.errors.duplicateRevisionText;
-        let submitBtnClass = answerNewCss.createBtn;
 
         await helpers.waitForAndClickElement(driver, submitBtnClass);
         console.log('after submit click');
@@ -252,7 +252,7 @@ describe('Mentoring Interactions', function() {
         await helpers.clearElement(driver, answerNewCss.inputs.explanation);
         await helpers.findInputAndType(driver, answerNewCss.inputs.explanation, newExplanation);
 
-        await helpers.findAndClickElement(driver, answerNewCss.createBtn);
+        await helpers.findAndClickElement(driver, submitBtnClass);
         await swalDriver.verifyToast(toastMsg);
 
         // await helpers.waitForTextInDom(driver, toastMsg);

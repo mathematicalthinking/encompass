@@ -508,7 +508,6 @@ const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedTe
     conditionFn = () => {
       return findAndGetText(webDriver, webElOrSelector)
         .then((text) => {
-          console.log({text});
           return useIncludes ? text.includes(expectedText) : text === expectedText;
         });
     };
