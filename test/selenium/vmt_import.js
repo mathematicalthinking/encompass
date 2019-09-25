@@ -64,9 +64,16 @@ describe('Importing VMT Work', function() {
       it('searching for nonexistant room name should yield no results', async function() {
         await helpers.findInputAndType(driver, searchInput, 'bogusname');
         console.log('ater type');
+        await driver.sleep(5000);
         let roomsMsg = css.vmtImport.noRoomsResult;
         let activitiesMsg = css.vmtImport.noActivitiesResult;
 
+        let roomsList = await helpers.waitForSelector(driver, '.vmt-room-list');
+
+        console.log('roomsList', roomsList);
+
+        let activityList = await helpers.waitForSelector(driver, '.vmt-activity-list');
+        console.log('activityList', activityList);
         await helpers.waitForElementToHaveText(driver, css.vmtImport.noRoomsItem, roomsMsg);
         console.log('after rooms');
         await helpers.waitForElementToHaveText(driver, css.vmtImport.noActivitiesItem, activitiesMsg);
