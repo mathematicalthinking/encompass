@@ -109,10 +109,11 @@ describe('Assignments as Student', async function () {
               expect(await listItems[0].getText()).to.eql(username);
             });
             it('should display errors if empty form is submitted', async function() {
+              let numExpectedErrors = 2;
+
               await helpers.findAndClickElement(driver, newAnswerSelectors.createBtn);
-              await driver.sleep(500);
-              await helpers.waitForSelector(driver, 'div.error-box');
-              await driver.sleep(2000);
+              await helpers.waitForNElements(driver, 'div.error-box', numExpectedErrors);
+
               let errors = await helpers.getWebElements(driver, 'div.error-box');
               expect(errors).to.have.lengthOf(2);
 
