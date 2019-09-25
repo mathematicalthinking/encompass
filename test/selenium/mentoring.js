@@ -146,18 +146,35 @@ describe('Mentoring Interactions', function() {
     });
 
     it('should indicate that thread has unread reply', async function() {
-      let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
+      try {
+        let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
+        console.log('found item container');
 
-      await helpers.waitForAttributeToEql(driver, itemContainer[0], 'font-weight', css.general.boldFontWeight, {useCssValue: true});
+        await helpers.waitForAttributeToEql(driver, itemContainer[0], 'font-weight', css.general.boldFontWeight, {useCssValue: true});
 
-      expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
+        expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
 
-      let statusCircle = await helpers.getWebElements(driver, css.responsesList.threadItems.statusCircle);
-      expect(statusCircle).to.have.lengthOf(1);
-      expect(await statusCircle[0].getCssValue('fill')).to.eql(css.general.unreadReplyFill);
+        console.log('after fw');
 
-      let ntfBell = await helpers.getWebElements(driver, css.responsesList.threadItems.ntfBell);
-      expect(await ntfBell[0].getAttribute('title')).to.eql('1 New Notification');
+        let statusCircle = await helpers.getWebElements(driver, css.responsesList.threadItems.statusCircle);
+        expect(statusCircle).to.have.lengthOf(1);
+
+        let statusCircles = await helpers.waitForNElements(driver, css.responsesList.threadItems.statusCircle, 1);
+
+        await helpers.waitForAttributeToEql(driver, statusCircles[0], 'fill', css.general.unreadReplyFill, {useCssValue: true});
+
+        console.log('after sc');
+        // expect(await statusCircle[0].getCssValue('fill')).to.eql(css.general.unreadReplyFill);
+
+        let ntfBells = await helpers.getWebElements(driver, css.responsesList.threadItems.ntfBell);
+
+        return helpers.waitForAttributeToEql(driver, ntfBells[0], 'title', '1 New Notification');
+
+        // expect(await ntfBell[0].getAttribute('title')).to.eql('1 New Notification');
+      }catch(err) {
+        throw(err);
+      }
+
     });
 
   });

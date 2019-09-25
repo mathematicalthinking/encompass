@@ -153,23 +153,19 @@ describe('Visiting Workspaces', function() {
 
     describe('clicking the prev/next arrows', function() {
       // The arrow clicks only seem to work once each way?
-      let afterLeftClick;
-      let afterRightClick;
-
       it('should change the current student', async function() {
         try {
-          let leftArrow = await driver.wait(until.elementLocated(By.id('leftArrow')), 3000);
-          await leftArrow.click();
-          afterLeftClick = await driver.wait(until.elementLocated(By.css(css.workspace.studentItem)), 3000).getText();
+          let studentItemSel = css.workspace.studentItem;
 
-          let rightArrow = await driver.wait(until.elementLocated(By.id('rightArrow')), 3000);
-          await rightArrow.click();
-          afterRightClick = await driver.wait(until.elementLocated(By.css(css.workspace.studentItem)), 3000).getText();
+          await helpers.findAndClickElement(driver, '#leftArrow');
+          await helpers.waitForElementToHaveText(driver, studentItemSel, 'Peg C.');
+
+          await helpers.findAndClickElement(driver, '#rightArrow');
+          await helpers.waitForElementToHaveText(driver, studentItemSel, 'Andrew S.');
+
         }catch(err) {
-          console.log(err);
+         throw(err);
         }
-        expect(afterLeftClick).to.eql('Peg C.');
-        expect(afterRightClick).to.eql('Andrew S.');
       });
     });
 

@@ -216,7 +216,7 @@ if (!isStudent) {
       });
     });
 
-    it('should add section object to new student\'s sections array', function(done) {
+    xit('should add section object to new student\'s sections array', function(done) {
       models.User.findById(modifiableSection.studentToAdd, (err, res) => {
         if (err) {
           done(err);
