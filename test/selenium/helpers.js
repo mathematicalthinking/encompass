@@ -148,9 +148,17 @@ const getWebElementTooltip = async function (webDriver, selector) {
   return webValue;
 };
 
-const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
-  await webDriver.get(url);
-  return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+const navigateAndWait = function (webDriver, url, selector, timeout=timeoutMs) {
+  return webDriver.get(url)
+  .then(() => {
+    return waitForUrlToEql(webDriver, url, timeout)
+    .then(() => {
+      return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+    });
+  })
+  .catch((err) => {
+    console.log(`Error navigateAndWait: ${err.message}`);
+  });
 };
 
 const findAndGetText = async function (webDriver, selector, caseInsenstive=false) {
@@ -327,14 +335,12 @@ const selectOption = async function (webDriver, selector, item, isByCss) {
 };
 
 const login = async function(webDriver, host, user=admin) {
-  await navigateAndWait(webDriver, host, css.topBar.login, 10000);
-  await findAndClickElement(webDriver, css.topBar.login);
+  await navigateAndWait(webDriver, loginUrl, css.login.username, 10000);
 
-  await waitForSelector(webDriver, css.login.username);
   await findInputAndType(webDriver, css.login.username, user.username);
   await findInputAndType(webDriver, css.login.password, user.password);
   await findAndClickElement(webDriver, css.login.submit);
-  return waitForSelector(webDriver, css.topBar.logout);
+  return waitForSelector(webDriver, '#homepage', 10000);
 };
 
 const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {
@@ -463,22 +469,24 @@ const getWebElementByCss = function(webDriver, selector ) {
     });
 };
 
-const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedText, timeout){
+const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedText, options={}, timeout=timeoutMs){
   let conditionFn;
   let isSelector = typeof webElOrSelector === 'string';
+
+  let { useIncludes = false } = options;
 
   if (isSelector) {
     conditionFn = () => {
       return findAndGetText(webDriver, webElOrSelector)
         .then((text) => {
-          return text === expectedText;
+          return useIncludes ? text.includes(expectedText) : text === expectedText;
         });
     };
   } else {
     conditionFn = () => {
       return webElOrSelector.getText()
         .then((val) => {
-          return val === expectedText;
+          return useIncludes ? val.includes(expectedText) : val === expectedText;
         });
     };
   }
@@ -539,6 +547,13 @@ const dismissWorkspaceTour = function(webDriver) {
       }
       throw (err);
     });
+};
+
+const waitForUrlToEql = function(webDriver, url, timeout=timeoutMs) {
+  return webDriver.wait(until.urlIs(url), timeout)
+  .catch((err) => {
+    console.error(`Error waitForUrlMatch: ${err}`);
+  });
 };
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
