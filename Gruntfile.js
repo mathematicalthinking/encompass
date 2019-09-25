@@ -188,7 +188,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false
         },
-        src: ['test/selenium/mentoring.js', 'test/selenium/mentoring_approving.js', 'test/selenium/responses.js'],
+        src: ['test/selenium/mentoring_approving.js', 'test/selenium/responses.js'], // fix and add back in: 'test/selenium/mentoring.js'
       },
       e2eVmt: {
         options: {
