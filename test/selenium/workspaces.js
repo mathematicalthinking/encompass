@@ -160,14 +160,17 @@ describe('Visiting Workspaces', function() {
 
           await helpers.findAndClickElement(driver, '#leftArrow');
           console.log('clicked left arrow');
-          await helpers.waitForElementToHaveText(driver, studentItemSel, 'Peg C.');
+          await helpers.waitForTextInDom(driver, 'Peg C.');
+
+          // await helpers.waitForElementToHaveText(driver, studentItemSel, 'Peg C.');
 
           let itemText = await helpers.findAndGetText(driver, studentItemSel);
           console.log('text after clicking left: ', itemText);
 
           await helpers.findAndClickElement(driver, '#rightArrow');
           console.log('clicked right arrow');
-          await helpers.waitForElementToHaveText(driver, studentItemSel, 'Andrew S.');
+          // await helpers.waitForElementToHaveText(driver, studentItemSel, 'Andrew S.');
+          await helpers.waitForTextInDom(driver, 'Andrew S.');
 
           itemText = await helpers.findAndGetText(driver, studentItemSel);
           console.log('text after clicking right: ', itemText);

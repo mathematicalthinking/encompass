@@ -147,12 +147,15 @@ describe('Mentoring Interactions', function() {
 
     it('should indicate that thread has unread reply', async function() {
       try {
-        let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
-        console.log('found item container');
+        // let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
+        // console.log('found item container');
 
-        await helpers.waitForAttributeToEql(driver, itemContainer[0], 'font-weight', css.general.boldFontWeight, {useCssValue: true});
+        let unreadReplyClass = '.has-unread-reply';
 
-        expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
+        await helpers.waitForNElements(driver, unreadReplyClass, 1);
+        // await helpers.waitForAttributeToEql(driver, itemContainer[0], 'font-weight', css.general.boldFontWeight, {useCssValue: true});
+
+        // expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
 
         console.log('after fw');
 
