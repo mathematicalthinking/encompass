@@ -23,8 +23,14 @@ addons:
 env:
   - TEST_SUITE=api
   - TEST_SUITE=e2eProblems
-  - "if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then TEST_SUITE=e2eAuth fi"
+  - TEST_SUITE=e2eAuth
   - TEST_SUITE=e2eMentoring
   - TEST_SUITE=e2eWorkspaces
   # - TEST_SUITE=e2eVmt cant get these to run correctly on travis
   - TEST_SUITE=e2eGeneral
+jobs:
+  exclude:
+   - # exclude tests that involve sending emails until we find a better way to test sending emails
+     # i.e. not using a test gmail account/password
+    if: type = pull_request
+    env: TEST_SUITE=e2eAuth
