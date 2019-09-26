@@ -18,14 +18,14 @@ echo "Account: $githubAccount"
   # clone mt-sso
   cd ..
   git clone --branch=$branch https://github.com/$githubAccount/mt-sso.git $githubAccount/$branch
-  cd mt-sso && npm i
+  cd $githubAccount/mt-sso && npm i
   npm run test-travis &
   sleep 5
 
   # clone vmt
   cd ..
   git clone --branch=$branch https://github.com/$githubAccount/vmt.git $githubAccount/$branch
-  cd vmt/server
+  cd $githubAccount/vmt/server
   npm i --only=production
   npm run test-travis &
   sleep 6
