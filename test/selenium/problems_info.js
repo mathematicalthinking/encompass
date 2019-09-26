@@ -9,6 +9,8 @@ const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
+const SwalDriver = require('./utilities/sweet_alert');
+
 const host = helpers.host;
 const testUsers = require('./fixtures/users');
 const topLink = css.topBar.problems;
@@ -32,6 +34,7 @@ describe('Problems Info', async function () {
       describe(`As ${testDescriptionTitle}`, function () {
         this.timeout(helpers.timeoutTestMsStr);
         let driver = null;
+        let swalDriver;
 
         before(async function () {
           driver = new Builder()
@@ -41,6 +44,7 @@ describe('Problems Info', async function () {
             width: 1580,
             height: 1080
           });
+          swalDriver = new SwalDriver(driver);
           await dbSetup.prepTestDb();
           return helpers.login(driver, host, user);
         });
@@ -272,18 +276,31 @@ describe('Problems Info', async function () {
                 it('should fill in star icon when recommended', async function () {
                   await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
                   await driver.sleep(500);
+
                   await helpers.waitForAndClickElement(driver, css.sweetAlert.confirmBtn);
-                  await driver.sleep(500);
+
                   if (isAdmin) {
+                    await helpers.waitForSelector(driver, css.sweetAlert.select);
                     await helpers.findInputAndType(driver, css.sweetAlert.select, 'Drexel', true);
                   }
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-filled')).to.be.true;
+
+                  await helpers.waitForRemoval(driver, css.sweetAlert.modal);
+                  let filledSel = css.problemInfo.recommendButton + ' i.star-filled';
+                  await helpers.waitForSelector(driver, filledSel);
+
+                  expect(await helpers.isElementVisible(driver, filledSel)).to.be.true;
                 });
                 it('should remove fill for star icon when removed from recommended', async function () {
                   await driver.sleep(500);
                   await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
-                  await driver.sleep(500);
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-line')).to.be.true;
+
+                  let filledSel = css.problemInfo.recommendButton + ' i.star-filled';
+
+                  await helpers.waitForRemoval(driver, filledSel);
+
+                  let lineSel = css.problemInfo.recommendButton + ' i.star-line';
+                  await helpers.waitForSelector(driver, lineSel);
+                  expect(await helpers.isElementVisible(driver, lineSel)).to.be.true;
                 });
               }
 
@@ -293,16 +310,20 @@ describe('Problems Info', async function () {
 
           describe('Visiting problem info to edit', function () {
             before(async function () {
+              await helpers.findAndClickElement(driver, '.remove-icon');
+              await helpers.waitForRemoval(driver, '#problem-info');
+
               await helpers.waitForAndClickElement(driver, topLink);
               await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
-              await driver.sleep(5000);
+              // await driver.sleep(5000);
             });
 
             describe(`Checking the following is always visible`, function () {
               before(async function () {
-                await helpers.findAndClickElement(driver, css.problemInfo.editButton);
-                await driver.sleep(500);
+                await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+                // await driver.sleep(500);
+                await helpers.waitForSelector(driver, css.problemEdit.saveButton);
               });
 
               it('should show privacy setting icon with select drop down', async function () {
@@ -626,7 +647,7 @@ describe('Problems Info', async function () {
               await helpers.waitForAndClickElement(driver, '.refresh-icon');
               let resultsMsg = `${problems.mine.count} problems found`;
               await helpers.waitForTextInDom(driver, resultsMsg);
-              expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
             });
 
             if (isPdadmin) {

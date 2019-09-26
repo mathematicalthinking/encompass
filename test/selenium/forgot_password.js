@@ -27,7 +27,10 @@ describe('Forgot Password', function () {
 
   describe('Forgot Password Form', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, url, css.forgotPassword.forgotForm);
+      let options = {
+        selector: css.forgotPassword.forgotForm
+      };
+      await helpers.navigateAndWait(driver, url, options );
     });
     function verifyResetForm() {
       const inputs = css.forgotPassword.inputs;

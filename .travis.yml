@@ -6,23 +6,31 @@ node_js:
 services:
   - mongodb
   - xvfb
-before_install:
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1600x1024x16"
+before_install: bash scripts/travis-before-install.sh fixTravisTests DanielJKelly
 install:
   - npm install
 cache:
   directories:
     - "node_modules"
-before_script:
-  - "export DISPLAY=:99.0"
-  # - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-  - grunt serve-seed & # start server on test port 8082, & to run in background.
-  - sleep 6 # give Web server some time to bind to sockets, etc
-script:
-   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && grunt tests || grunt travisTests'
-  # - grunt apiTests
-  # - grunt endToEndTests
+    # - "../mt-sso/node_modules"
+    # - "../vmt/server/node_modules"
+    # - "../vmt/client/node_modules"
+before_script: ./scripts/before-tests.sh
+script: ./scripts/run-tests.sh
 sudo: required
 addons:
-  chrome: stable
+  # chrome: stable
+env:
+  - TEST_SUITE=api
+  - TEST_SUITE=e2eProblems
+  - TEST_SUITE=e2eAuth
+  - TEST_SUITE=e2eMentoring
+  - TEST_SUITE=e2eWorkspaces
+  # - TEST_SUITE=e2eVmt cant get these to run correctly on travis
+  - TEST_SUITE=e2eGeneral
+jobs:
+  exclude:
+   - # exclude tests that involve sending emails until we find a better way to test sending emails
+     # i.e. not using a test gmail account/password
+    if: type = pull_request
+    env: TEST_SUITE=e2eAuth

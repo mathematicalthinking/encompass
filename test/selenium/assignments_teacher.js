@@ -7,6 +7,9 @@ const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
+const SwalDriver = require('./utilities/sweet_alert');
+const { assignmentsTeacher: assnSels } = css;
+const { cancelAssignment: cancelAssn, editAssignment: editAssn } = assnSels;
 const host = helpers.host;
 
 const fixtures = require('./fixtures/assignments_teacher');
@@ -28,11 +31,14 @@ let assignmentInfo = {
 describe('Assignment Info as Teacher', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
+  let swalDriver;
+
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
     await dbSetup.prepTestDb();
+    swalDriver = new SwalDriver(driver);
     try {
       await helpers.login(driver, host, teacherInfo);
     }catch(err) {
@@ -48,17 +54,18 @@ describe('Assignment Info as Teacher', function() {
     let assignmentId = assignmentInfo._id;
     let url = `${host}/#/assignments/${assignmentId}`;
     before(async function() {
-      await helpers.navigateAndWait(driver, url, css.assignmentsTeacher.editAssignment);
+      let selector = editAssn;
+      await helpers.navigateAndWait(driver, url, { selector } );
     });
 
     it('should display Edit Assignment Button', async function() {
-      let btn = await helpers.getWebElements(driver, css.assignmentsTeacher.editAssignment);
+      let btn = await helpers.getWebElements(driver, editAssn);
       expect(btn[0]).to.exist;
 
     });
 
     function isEditing(webDriver) {
-      let containerSel = css.assignmentsTeacher.container;
+      let containerSel = assnSels.container;
       let targetClass = 'is-editing';
       return helpers.getWebWelementByCss(webDriver, containerSel)
         .then((container) => {
@@ -73,10 +80,10 @@ describe('Assignment Info as Teacher', function() {
 
       it('should display trashcan button/icon after clicking edit', async function() {
 
-        await helpers.findAndClickElement(driver, css.assignmentsTeacher.editAssignment);
-        await helpers.waitForSelector(driver, css.assignmentsTeacher.trashBtn);
+        await helpers.findAndClickElement(driver, editAssn);
+        await helpers.waitForSelector(driver, assnSels.trashBtn);
 
-        expect(await helpers.isElementVisible(driver, css.assignmentsTeacher.trashBtn)).to.eql(true);
+        expect(await helpers.isElementVisible(driver, assnSels.trashBtn)).to.eql(true);
 
       });
 
@@ -84,7 +91,7 @@ describe('Assignment Info as Teacher', function() {
         expect(
           await helpers.isElementVisible(
             driver,
-            css.assignmentsTeacher.parentWorkspace.add
+            assnSels.parentWorkspace.add
           )
         ).to.eql(false);
       });
@@ -93,7 +100,7 @@ describe('Assignment Info as Teacher', function() {
         expect(
           await helpers.isElementVisible(
             driver,
-            css.assignmentsTeacher.parentWorkspace.noParentMsg
+            assnSels.parentWorkspace.noParentMsg
           )
         ).to.eql(true);
       });
@@ -101,7 +108,7 @@ describe('Assignment Info as Teacher', function() {
       it('Should display Add LinkedWorkspaces button', async function() {
         addLinkedWsBtn = await helpers.getWebWelementByCss(
           driver,
-          css.assignmentsTeacher.linkedWorkspaces.add
+          assnSels.linkedWorkspaces.add
         );
 
         expect(await addLinkedWsBtn.isDisplayed()).to.eql(true);
@@ -111,7 +118,7 @@ describe('Assignment Info as Teacher', function() {
         expect(
           await helpers.isElementVisible(
             driver,
-            css.assignmentsTeacher.linkedWorkspaces.fullLinkedMsg
+            assnSels.linkedWorkspaces.fullLinkedMsg
           )
         ).to.eql(false);
       });
@@ -119,31 +126,31 @@ describe('Assignment Info as Teacher', function() {
       it('Should stop editing after hitting cancel', async function() {
         await helpers.findAndClickElement(
           driver,
-          css.assignmentsTeacher.cancelAssignment
+          cancelAssn
         );
         await helpers.waitForRemoval(
           driver,
-          css.assignmentsTeacher.saveAssignment
+          assnSels.saveAssignment
         );
         expect(await isEditing(driver)).to.eql(false);
       });
 
       it('Should not save assignment when no changes were made', async function() {
-        await helpers.findAndClickElement(driver, css.assignmentsTeacher.editAssignment);
-        await helpers.waitForSelector(driver, css.assignmentsTeacher.trashBtn);
+        await helpers.findAndClickElement(driver, editAssn);
+        await helpers.waitForSelector(driver, assnSels.trashBtn);
 
-        await helpers.findAndClickElement(driver, css.assignmentsTeacher.saveAssignment);
+        await helpers.findAndClickElement(driver, assnSels.saveAssignment);
         let msg = 'No changes to save';
         expect(await helpers.waitForTextInDom(driver, msg)).to.eql(true);
       });
 
       describe('Adding linked workspaces', function() {
-        let nameInputSel = css.assignmentsTeacher.linkedWorkspaces.nameInput;
+        let nameInputSel = assnSels.linkedWorkspaces.nameInput;
         let usernames = fixtures.linkedWorkspaces.studentUsernames;
         let defaultName = fixtures.linkedWorkspaces.defaultName;
 
         function getLinkedWsNamePreviews(webDriver) {
-          let sel = css.assignmentsTeacher.linkedWorkspaces.namePreviews;
+          let sel = assnSels.linkedWorkspaces.namePreviews;
           return helpers.getWebElements(webDriver, sel).then(els => {
             return Promise.all(
               els.map(el => {
@@ -163,11 +170,11 @@ describe('Assignment Info as Teacher', function() {
         before(async function() {
           await helpers.findAndClickElement(
             driver,
-            css.assignmentsTeacher.editAssignment
+            editAssn
           );
           await helpers.waitForAndClickElement(
             driver,
-            css.assignmentsTeacher.linkedWorkspaces.add
+            assnSels.linkedWorkspaces.add
           );
           await helpers.waitForSelector(driver, nameInputSel);
         });
@@ -215,12 +222,10 @@ describe('Assignment Info as Teacher', function() {
           let msg = fixtures.toasts.finishLinkedWs;
           await helpers.findAndClickElement(
             driver,
-            css.assignmentsTeacher.saveAssignment
+            assnSels.saveAssignment
           );
-          let didDisplay = await helpers.waitForTextInDom(driver, msg);
-          expect(didDisplay).to.eql(true);
 
-          await helpers.waitForRemoval(driver, css.sweetAlert.container);
+          await swalDriver.verifyToast(msg);
           expect(await isEditing(driver)).to.eql(true);
         });
 
@@ -228,7 +233,7 @@ describe('Assignment Info as Teacher', function() {
           it('Clicking cancel should prompt user to confirm cancelling', async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.cancelAssignment
+              cancelAssn
             );
             await helpers.waitForSelector(driver, css.sweetAlert.modal);
 
@@ -236,12 +241,11 @@ describe('Assignment Info as Teacher', function() {
           });
 
           it('Clicking modal cancel button should close modal and still be editing', async function() {
-            await helpers.findAndClickElement(driver, css.sweetAlert.cancelBtn);
-            await helpers.waitForRemoval(driver, css.sweetAlert.modal);
+            await swalDriver.cancelYesNoModal();
             expect(
               await helpers.isElementVisible(
                 driver,
-                css.assignmentsTeacher.cancelAssignment
+                cancelAssn
               )
             ).to.eql(true);
             expect(await isEditing(driver)).to.eql(true);
@@ -250,21 +254,18 @@ describe('Assignment Info as Teacher', function() {
           it('Clicking modal confirm should cancel editing of assignment', async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.cancelAssignment
+              cancelAssn
             );
-            await helpers.waitForAndClickElement(
-              driver,
-              css.sweetAlert.confirmBtn
-            );
-            await helpers.waitForRemoval(driver, css.sweetAlert.modal);
+
+            await swalDriver.confirmYesNoModal();
 
             await helpers.waitForRemoval(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.container
+              assnSels.linkedWorkspaces.container
             );
             await helpers.waitForRemoval(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.cancel
+              assnSels.linkedWorkspaces.cancel
             );
             expect(await isEditing(driver)).to.eql(false);
           });
@@ -274,22 +275,22 @@ describe('Assignment Info as Teacher', function() {
           it('Should hide input', async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.editAssignment
+              editAssn
             );
 
             await helpers.waitForAndClickElement(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.add
+              assnSels.linkedWorkspaces.add
             );
 
             await helpers.waitForAndClickElement(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.cancel
+              assnSels.linkedWorkspaces.cancel
             );
 
             let didRemove = await helpers.waitForRemoval(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.container
+              assnSels.linkedWorkspaces.container
             );
             expect(didRemove).to.eql(true);
           });
@@ -299,12 +300,12 @@ describe('Assignment Info as Teacher', function() {
           before(async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.add
+              assnSels.linkedWorkspaces.add
             );
 
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.create
+              assnSels.linkedWorkspaces.create
             );
           });
 
@@ -320,7 +321,7 @@ describe('Assignment Info as Teacher', function() {
             expect(
               await helpers.isElementVisible(
                 driver,
-                css.assignmentsTeacher.linkedWorkspaces.container
+                assnSels.linkedWorkspaces.container
               )
             ).to.eql(false);
           });
@@ -332,7 +333,7 @@ describe('Assignment Info as Teacher', function() {
           it('Should display newly created workspace links', async function() {
             let links = await helpers.getWebElements(
               driver,
-              css.assignmentsTeacher.linkedWorkspaces.link
+              assnSels.linkedWorkspaces.link
             );
 
             let expectedCount =
@@ -345,7 +346,7 @@ describe('Assignment Info as Teacher', function() {
             expect(
               await helpers.isElementVisible(
                 driver,
-                css.assignmentsTeacher.linkedWorkspaces.fullLinkedMsg
+                assnSels.linkedWorkspaces.fullLinkedMsg
               )
             ).to.eql(true);
           });
@@ -354,14 +355,14 @@ describe('Assignment Info as Teacher', function() {
             expect(
               await helpers.isElementVisible(
                 driver,
-                css.assignmentsTeacher.linkedWorkspaces.add
+                assnSels.linkedWorkspaces.add
               )
             ).to.eql(false);
           });
         });
       });
       describe('Adding parent workspaces', function() {
-        let nameInputSel = css.assignmentsTeacher.parentWorkspace.nameInput;
+        let nameInputSel = assnSels.parentWorkspace.nameInput;
         let defaultName = fixtures.parentWorkspace.defaultName;
 
         function getParentWsNameVal(webDriver) {
@@ -374,7 +375,7 @@ describe('Assignment Info as Teacher', function() {
         before(async function() {
           await helpers.findAndClickElement(
             driver,
-            css.assignmentsTeacher.parentWorkspace.add
+            assnSels.parentWorkspace.add
           );
           await helpers.waitForSelector(driver, nameInputSel);
         });
@@ -388,12 +389,10 @@ describe('Assignment Info as Teacher', function() {
           let msg = fixtures.toasts.finishParentWs;
           await helpers.findAndClickElement(
             driver,
-            css.assignmentsTeacher.saveAssignment
+            assnSels.saveAssignment
           );
-          let didDisplay = await helpers.waitForTextInDom(driver, msg);
-          expect(didDisplay).to.eql(true);
 
-          await helpers.waitForRemoval(driver, css.sweetAlert.container);
+          await swalDriver.verifyToast(msg);
           expect(await isEditing(driver)).to.eql(true);
         });
 
@@ -401,43 +400,34 @@ describe('Assignment Info as Teacher', function() {
           it('Clicking cancel should prompt user to confirm cancelling', async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.cancelAssignment
+              cancelAssn
             );
             await helpers.waitForSelector(driver, css.sweetAlert.modal);
 
             expect(await isEditing(driver)).to.eql(true);
+            // await helpers.saveScreenshot(driver);
           });
 
           it('Clicking modal cancel button should close modal and still be editing', async function() {
-            await helpers.findAndClickElement(driver, css.sweetAlert.cancelBtn);
-            await helpers.waitForRemoval(driver, css.sweetAlert.modal);
-            expect(
-              await helpers.isElementVisible(
-                driver,
-                css.assignmentsTeacher.cancelAssignment
-              )
-            ).to.eql(true);
+            await swalDriver.cancelYesNoModal();
+            await helpers.waitForElToBeVisible(driver, cancelAssn);
             expect(await isEditing(driver)).to.eql(true);
           });
 
           it('Clicking modal confirm should cancel editing of assignment', async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.cancelAssignment
+              cancelAssn
             );
-            await helpers.waitForAndClickElement(
-              driver,
-              css.sweetAlert.confirmBtn
-            );
-            await helpers.waitForRemoval(driver, css.sweetAlert.modal);
+              await swalDriver.confirmYesNoModal();
 
             await helpers.waitForRemoval(
               driver,
-              css.assignmentsTeacher.parentWorkspace.container
+              assnSels.parentWorkspace.container
             );
             await helpers.waitForRemoval(
               driver,
-              css.assignmentsTeacher.parentWorkspace.cancel
+              assnSels.parentWorkspace.cancel
             );
             expect(await isEditing(driver)).to.eql(false);
           });
@@ -447,22 +437,22 @@ describe('Assignment Info as Teacher', function() {
           it('Should hide input', async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.editAssignment
+              editAssn
             );
 
             await helpers.waitForAndClickElement(
               driver,
-              css.assignmentsTeacher.parentWorkspace.add
+              assnSels.parentWorkspace.add
             );
 
             await helpers.waitForAndClickElement(
               driver,
-              css.assignmentsTeacher.parentWorkspace.cancel
+              assnSels.parentWorkspace.cancel
             );
 
             let didRemove = await helpers.waitForRemoval(
               driver,
-              css.assignmentsTeacher.parentWorkspace.container
+              assnSels.parentWorkspace.container
             );
             expect(didRemove).to.eql(true);
           });
@@ -472,30 +462,24 @@ describe('Assignment Info as Teacher', function() {
           before(async function() {
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.parentWorkspace.add
+              assnSels.parentWorkspace.add
             );
 
             await helpers.findAndClickElement(
               driver,
-              css.assignmentsTeacher.parentWorkspace.create
+              assnSels.parentWorkspace.create
             );
           });
 
           it('Should display success toast', async function() {
-            let didAppear = await helpers.waitForTextInDom(
-              driver,
-              fixtures.toasts.parentWsSuccess
-            );
-
-            expect(didAppear).to.eql(true);
-            await helpers.waitForRemoval(driver, css.sweetAlert.container);
+            await swalDriver.verifyToast(fixtures.toasts.parentWsSuccess);
           });
 
           it('Parent workspace form should be closed', async function() {
             expect(
               await helpers.isElementVisible(
                 driver,
-                css.assignmentsTeacher.parentWorkspace.container
+                assnSels.parentWorkspace.container
               )
             ).to.eql(false);
           });
@@ -507,7 +491,7 @@ describe('Assignment Info as Teacher', function() {
           it('Should display newly created workspace link', async function() {
             let links = await helpers.getWebElements(
               driver,
-              css.assignmentsTeacher.parentWorkspace.link
+              assnSels.parentWorkspace.link
             );
 
             let expectedCount = 1;
@@ -519,7 +503,7 @@ describe('Assignment Info as Teacher', function() {
             expect(
               await helpers.isElementVisible(
                 driver,
-                css.assignmentsTeacher.parentWorkspace.add
+                assnSels.parentWorkspace.add
               )
             ).to.eql(false);
           });
@@ -527,15 +511,15 @@ describe('Assignment Info as Teacher', function() {
       });
       describe('Deleting assignment', function() {
         it('confirm modal should be displayed after clicking trash icon', async function() {
-          await helpers.findAndClickElement(driver, css.assignmentsTeacher.editAssignment);
-          let confirmTrash = css.assignmentsTeacher.confirmTrash;
-          await helpers.findAndClickElement(driver, css.assignmentsTeacher.trashBtn);
+          await helpers.findAndClickElement(driver, editAssn);
+          let confirmTrash = assnSels.confirmTrash;
+          await helpers.findAndClickElement(driver, assnSels.trashBtn);
           await helpers.waitForSelector(driver, confirmTrash);
           expect(await helpers.isElementVisible(driver, confirmTrash)).to.eql(true);
         });
 
         it('clicking confirm delete should remove assignment from the list', async function() {
-          await helpers.findAndClickElement(driver, css.assignmentsTeacher.confirmTrash);
+          await helpers.findAndClickElement(driver, assnSels.confirmTrash);
 
           let linkSelector = `a[href="${url}"]`;
           let didRemove = await helpers.waitForRemoval(driver, linkSelector);

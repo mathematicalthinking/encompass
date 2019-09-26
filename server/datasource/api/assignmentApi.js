@@ -761,10 +761,10 @@ const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOpt
 
     await assignment.depopulate('linkedWorkspaces');
 
-    logger.info('students without workspaces', studentsWithoutWorkspaces.map(s => s.username));
+    // logger.info('students without workspaces', studentsWithoutWorkspaces.map(s => s.username));
     if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
       // should send message detailing this
-      logger.info('No students without a linked workspace');
+      // logger.info('No students without a linked workspace');
       return ['All students already own a linked workspace', null ];
     }
     // if answers convert answers to submissions

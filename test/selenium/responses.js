@@ -11,13 +11,14 @@ const host = helpers.host;
 describe('Responses', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
+  let user = helpers.admin;
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
     await dbSetup.prepTestDb();
     try {
-      await helpers.login(driver, host);
+      await helpers.login(driver, host, user);
     }catch(err) {
       console.log(err);
     }
@@ -29,8 +30,8 @@ describe('Responses', function() {
 
   describe('Visiting a submission with selections', function() {
     before(async function() {
-      let url = `${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`;
-      await helpers.navigateAndWait(driver, url, '.selectionLink');
+      let url = `${host}/#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`;
+      await helpers.navigateAndWait(driver, url, {selector: '.selectionLink'});
     });
 
     it('should have a respond link', async function() {
@@ -109,9 +110,12 @@ describe('Responses', function() {
 
       it('should let us save and take us to a new URL', async function() {
         try {
+          let greetingText = 'Hello Andrew,';
           // type some dummy text
           await helpers.findAndClickElement(driver, 'input[name="ownMarkUpOnly"]');
-          await driver.sleep(3000);
+
+          await helpers.waitForElementToHaveText(driver, '.ql-editor', greetingText, {useIncludes: true});
+
           await driver.findElement(By.css('button.save-response')).click();
           await driver.wait(until.urlMatches(/#\/responses\/submission\/[0-9a-f]{24}/), 5000);
 

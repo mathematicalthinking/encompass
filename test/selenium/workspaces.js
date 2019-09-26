@@ -14,12 +14,13 @@ const workspaceId = '53e36522b48b12793f000d3b';
 describe('Visiting Workspaces', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
+  let user = helpers.admin;
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
     await dbSetup.prepTestDb();
-    await helpers.login(driver, host);
+    await helpers.login(driver, host, user);
   });
 
   after(() => {
@@ -67,7 +68,19 @@ describe('Visiting Workspaces', function() {
 
     it('should display a select box for students', async function() {
       expect(await helpers.isElementVisible(driver, css.workspace.studentsSelect)).to.eql(true);
-      expect(await helpers.findAndGetText(driver, css.workspace.studentItem)).to.contain('Andrew S.');
+
+      return helpers.waitForSelectizeSingleText(driver, '#student-select', 'Andrew S.');
+      // let item = await helpers.getWebElements(driver, css.workspace.studentItem);
+      // console.log('items', item);
+
+      // let selectText = await helpers.findAndGetText(driver, '#student-select');
+      // console.log({selectText});
+      // let studentItem = item[0];
+
+      // let text = await studentItem.getAttribute('value');
+      // console.log({text});
+      // await helpers.waitForElementToHaveText(driver, css.workspace.studentItem, 'Andrew S.');
+      // expect(await helpers.findAndGetText(driver, css.workspace.studentItem)).to.contain('Andrew S.');
       // expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
     });
 
@@ -142,33 +155,32 @@ describe('Visiting Workspaces', function() {
 
       it('should hide the list of students if clicked', async function() {
         try{
-          await selectBox.click();
+          // click outside of box to close
+          // travis errors when clicking the box because it selects another item
+          await helpers.findAndClickElement(driver, '#al_submission');
+          await helpers.waitForRemoval(driver, '#studentList');
+          return;
         }catch(err) {
-          console.log(err);
+          throw(err);
         }
-        expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
       });
     });
 
     describe('clicking the prev/next arrows', function() {
       // The arrow clicks only seem to work once each way?
-      let afterLeftClick;
-      let afterRightClick;
-
       it('should change the current student', async function() {
         try {
-          let leftArrow = await driver.wait(until.elementLocated(By.id('leftArrow')), 3000);
-          await leftArrow.click();
-          afterLeftClick = await driver.wait(until.elementLocated(By.css(css.workspace.studentItem)), 3000).getText();
+          let studentSelect = css.workspace.studentSelect;
 
-          let rightArrow = await driver.wait(until.elementLocated(By.id('rightArrow')), 3000);
-          await rightArrow.click();
-          afterRightClick = await driver.wait(until.elementLocated(By.css(css.workspace.studentItem)), 3000).getText();
+          await helpers.findAndClickElement(driver, '#leftArrow');
+          await helpers.waitForSelectizeSingleText(driver, studentSelect, 'Peg C.');
+
+          await helpers.findAndClickElement(driver, '#rightArrow');
+          await helpers.waitForSelectizeSingleText(driver, studentSelect, 'Andrew S.');
+
         }catch(err) {
-          console.log(err);
+         throw(err);
         }
-        expect(afterLeftClick).to.eql('Peg C.');
-        expect(afterRightClick).to.eql('Andrew S.');
       });
     });
 

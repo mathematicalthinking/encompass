@@ -49,8 +49,9 @@ describe('Users', function() {
   }
 
   describe('Logged in as an admin user', function () {
+    let user = helpers.admin;
     before(async function () {
-      await helpers.login(driver, host);
+      await helpers.login(driver, host, user);
       await helpers.waitForSelector(driver, css.topBar.users);
     });
 
@@ -123,7 +124,8 @@ describe('Users', function() {
         await clearAndTypeInput(driver, 'username', badUsername);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
-        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
+        await helpers.waitForElementToHaveText(driver, 'div.error-box', expectedMsg);
+        // expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
         await helpers.dismissErrorBox(driver);
 
       });
@@ -147,7 +149,8 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
         await helpers.waitForTextInDom(driver, expectedMsg);
-        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
+        await helpers.waitForElementToHaveText(driver, 'div.error-box', expectedMsg);
+        // expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain(expectedMsg);
         await helpers.dismissErrorBox(driver);
       });
 
@@ -182,9 +185,11 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(1000);
+        // await driver.sleep(1000);
         await helpers.waitForTextInDom(driver, 'Email address has already been used');
-        expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain('Email address has already been used');
+        await helpers.waitForElementToHaveText(driver, 'div.error-box', 'Email address has already been used');
+
+        // expect(await helpers.waitForAndGetErrorBoxText(driver)).to.contain('Email address has already been used');
         await helpers.dismissErrorBox(driver);
         await helpers.clearElement(driver, 'input.user-email');
         await helpers.findInputAndType(driver, 'input.user-email', newEmail);
@@ -265,7 +270,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users/home`, '#user-home');
+        await helpers.navigateAndWait(driver, `${host}/#/users/home`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {
@@ -512,7 +517,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users/home`, '#user-home');
+        await helpers.navigateAndWait(driver, `${host}/#/users/home`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {
@@ -686,7 +691,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users/home`, '#user-home');
+        await helpers.navigateAndWait(driver, `${host}/#/users/home`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {

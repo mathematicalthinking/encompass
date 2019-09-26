@@ -21,14 +21,15 @@ describe('Importing VMT Work', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {
-    driver = new Builder()
+    try {
+      driver = new Builder()
       .forBrowser('chrome')
       .build();
-    await dbSetup.prepTestDb();
-    try {
-      await helpers.login(driver, host, user);
+      await dbSetup.prepTestDb();
+      console.log('db prepped vmt');
+      return helpers.login(driver, host, user);
     }catch(err) {
-      console.log(err);
+      throw(err);
     }
   });
 
@@ -40,7 +41,7 @@ describe('Importing VMT Work', function() {
     describe('Using direct link', function() {
       let url = `${host}/#/vmt/import`;
       before(async function() {
-        await helpers.navigateAndWait(driver, url, css.vmtImport.search.container);
+        await helpers.navigateAndWait(driver, url, {selector: css.vmtImport.search.container});
       });
 
       it('should load import page on step 1', async function() {
@@ -62,9 +63,21 @@ describe('Importing VMT Work', function() {
 
       it('searching for nonexistant room name should yield no results', async function() {
         await helpers.findInputAndType(driver, searchInput, 'bogusname');
-        await driver.sleep(3000);
-        expect(await helpers.isTextInDom(driver, css.vmtImport.noRoomsResult)).to.eql(true);
-        expect(await helpers.isTextInDom(driver, css.vmtImport.noActivitiesResult)).to.eql(true);
+        console.log('ater type');
+        let roomsMsg = css.vmtImport.noRoomsResult;
+        let activitiesMsg = css.vmtImport.noActivitiesResult;
+
+        let roomsList = await helpers.waitForSelector(driver, '.vmt-room-list');
+
+        console.log('roomsList', roomsList);
+
+        let activityList = await helpers.waitForSelector(driver, '.vmt-activity-list');
+        console.log('activityList', activityList);
+        await helpers.waitForElementToHaveText(driver, css.vmtImport.noRoomsItem, roomsMsg);
+        console.log('after rooms');
+        await helpers.waitForElementToHaveText(driver, css.vmtImport.noActivitiesItem, activitiesMsg);
+
+        console.log('after activities');
       });
 
       xdescribe('should return both own and public activities', function() {
@@ -194,12 +207,8 @@ describe('Importing VMT Work', function() {
           it('Should display error messages', async function() {
             let numErrors = 2;
             await helpers.findAndClickElement(driver, css.vmtImport.next);
-            await helpers.waitForNElements(driver, css.general.errorBox, numErrors);
-
-            let errorBoxes = await helpers.getWebElements(driver, css.general.errorBox);
-
+            let errorBoxes = await helpers.waitForNElements(driver, css.general.errorBox, numErrors);
             expect(errorBoxes).to.have.lengthOf(numErrors);
-
           });
         });
 

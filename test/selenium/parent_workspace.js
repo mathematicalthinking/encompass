@@ -43,7 +43,7 @@ describe('Parent Workspace creation and updating', function() {
   }
 
   function goToWsInfo(url) {
-    return helpers.navigateAndWait(driver, url, css.wsInfo.settings.editBtn);
+    return helpers.navigateAndWait(driver, url, {selector: css.wsInfo.settings.editBtn});
   }
 
   before(async function() {
@@ -69,7 +69,7 @@ describe('Parent Workspace creation and updating', function() {
     let parentNameInput = css.assignmentsTeacher.parentWorkspace.nameInput;
 
     try {
-      await helpers.navigateAndWait(driver, assignmentNewUrl, css.assignmentsNew.container);
+      await helpers.navigateAndWait(driver, assignmentNewUrl, {selector: css.assignmentsNew.container});
 
       // select section
       await helpers.selectSingleSelectizeItem(driver, inputSelectors.section.input, section.name, section.id );
@@ -118,13 +118,13 @@ describe('Parent Workspace creation and updating', function() {
       let { submissions, selections, comments, folders, responses } = expectedStats;
         before(async function() {
           try {
-              await helpers.navigateAndWait(driver, workspacesUrl, '.results-list');
+              await helpers.navigateAndWait(driver, workspacesUrl, {selector: '.results-list'});
               if (options.doUseHref) {
                 await driver.get(parentWorkspaceHref);
                 await helpers.waitForUrlMatch(driver, new RegExp(parentWorkspaceHref));
 
               } else {
-                await helpers.navigateAndWait(driver, workspacesUrl, '.results-list');
+                await helpers.navigateAndWait(driver, workspacesUrl, {selector: '.results-list'});
                 let link = await driver.findElement(By.linkText(workspaceName));
                 await link.click();
 
@@ -343,8 +343,6 @@ describe('Parent Workspace creation and updating', function() {
       let expectedCount = 1;
       let linkSel = css.assignmentsTeacher.parentWorkspace.link;
       return helpers.waitForNElements(driver, linkSel, 1)
-      .then(() => {
-        return helpers.getWebElements(driver, linkSel)
         .then((links) => {
           expect(links).to.have.lengthOf(expectedCount);
           let link = links[0];
@@ -357,7 +355,6 @@ describe('Parent Workspace creation and updating', function() {
 
             });
         });
-      });
 
 
     });
@@ -391,7 +388,7 @@ describe('Parent Workspace creation and updating', function() {
 
       describe('Respond to assignment', function() {
         before(function() {
-          return helpers.navigateAndWait(driver, assignmentsUrl, '.your-assignments')
+          return helpers.navigateAndWait(driver, assignmentsUrl, {selector: '.your-assignments'})
           .then(() => {
             return driver.findElement(By.linkText(newAssignment.name))
             .then((link) => {
@@ -432,7 +429,7 @@ describe('Parent Workspace creation and updating', function() {
 
       describe('Respond to assignment', function() {
         before(function() {
-          return helpers.navigateAndWait(driver, assignmentsUrl, '.your-assignments')
+          return helpers.navigateAndWait(driver, assignmentsUrl,{selector: '.your-assignments'})
           .then(() => {
             return driver.findElement(By.linkText(newAssignment.name))
             .then((link) => {
@@ -499,7 +496,7 @@ describe('Parent Workspace creation and updating', function() {
 
           await helpers.logout(driver);
           await helpers.login(driver, host, student);
-          let toggleSelectingInput = await helpers.navigateAndWait(driver, studentWsUrl, wsSelectors.toggleSelectingInput);
+          let toggleSelectingInput = await helpers.navigateAndWait(driver, studentWsUrl, {selector: wsSelectors.toggleSelectingInput});
 
           await helpers.findAndClickElement(driver, wsSelectors.submissionNav.rightArrow);
           await helpers.waitForElementToHaveText(driver, wsSelectors.studentItem, studentToMarkup.username);
@@ -751,7 +748,7 @@ describe('Parent Workspace creation and updating', function() {
             let toggleSelectingInput = await helpers.navigateAndWait(
               driver,
               studentWsUrl,
-              wsSelectors.toggleSelectingInput
+              {selector: wsSelectors.toggleSelectingInput}
             );
 
             await helpers.waitForElementToHaveText(

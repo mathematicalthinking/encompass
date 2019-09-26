@@ -89,7 +89,7 @@ describe('Mentoring / Approving Interactions', function() {
     let url = `${host}/#/workspaces/${wsId}/submissions/${subId}`;
     before(async function() {
       // await driver.get(url);
-      await helpers.navigateAndWait(driver, url, css.workspace.newResponse);
+      await helpers.navigateAndWait(driver, url, {selector: css.workspace.newResponse});
     });
 
     it('should display Respond Button', async function() {

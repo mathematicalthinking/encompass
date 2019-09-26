@@ -19,9 +19,18 @@ const { accessCookie, refreshCookie } = require('../../constants/sso');
 // const { isNonEmptyArray, } = objectUtils;
 // const accessUtils = require('../../middleware/access/utils');
 
+let secret;
+if (process.env.NODE_ENV === 'seed') {
+  secret = process.env.MT_USER_JWT_SECRET_TEST;
+} else {
+  secret = process.env.MT_USER_JWT_SECRET;
+}
+
+
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
+
 
 function getVmtUrl() {
   let nodeEnv = process.env.NODE_ENV;
@@ -48,7 +57,7 @@ let options = {
   subject: 'room',
 };
 
-return signJwt(payload, process.env.MT_USER_JWT_SECRET, options);
+return signJwt(payload, secret, options);
 };
 const getVmtRoom = async (req, res, next) => {
   try {

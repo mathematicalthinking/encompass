@@ -5,7 +5,7 @@
   {{else}}
 
     {{#if isAlreadyConfirmed}}
-      <p class="info">Email address has already been confirmed.</p>
+      <p class="info" data-test="already-confirmed">Email address has already been confirmed.</p>
     {{/if}}
     {{#if invalidTokenError}}
       <p class="error-message">{{invalidTokenError}}</p>

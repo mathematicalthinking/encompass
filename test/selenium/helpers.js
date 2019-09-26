@@ -9,8 +9,8 @@ const config = require('../../server/config');
 const css = require('./selectors');
 
 // testing timeout values
-const timeoutMs = 5000;  // timeout per await
-const timeoutTestMsStr = '20s';  // timeout per test
+const timeoutMs = 8000;  // timeout per await
+const timeoutTestMsStr = '25s';  // timeout per test
 
 const nconf = config.nconf;
 const port = nconf.get('testPort');
@@ -148,9 +148,21 @@ const getWebElementTooltip = async function (webDriver, selector) {
   return webValue;
 };
 
-const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
-  await webDriver.get(url);
-  return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+const navigateAndWait = function (webDriver, url, options = {}) {
+
+  let { selector, timeout=timeoutMs, urlToWaitFor = url } = options;
+
+  return webDriver.get(url)
+  .then(() => {
+    return waitForUrlToEql(webDriver, urlToWaitFor, timeout)
+    .then(() => {
+      return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+    });
+  })
+  .catch((err) => {
+    console.log(`Error navigateAndWait: ${err.message}`);
+    throw(err);
+  });
 };
 
 const findAndGetText = async function (webDriver, selector, caseInsenstive=false) {
@@ -203,7 +215,11 @@ const waitForAndClickElement = function (webDriver, selector, timeout = timeoutM
       .then((locatedEl) => {
         return webDriver.wait(until.elementIsVisible(locatedEl), timeout, `Element ${selector} not visible`)
         .then((visibleEl) => {
-          return visibleEl.click();
+          return visibleEl.getText()
+          .then((text) => {
+            // console.log('clicking btn with text: ', text);
+            return visibleEl.click();
+          });
         });
       })
       .catch((err) => {
@@ -326,15 +342,26 @@ const selectOption = async function (webDriver, selector, item, isByCss) {
   }
 };
 
-const login = async function(webDriver, host, user=admin) {
-  await navigateAndWait(webDriver, host, css.topBar.login);
-  await findAndClickElement(webDriver, css.topBar.login);
+const login = async function(webDriver, host, user, selectorToTest) {
+  try {
+    let navOptions = {
+      selector: css.login.username,
+    };
 
-  await waitForSelector(webDriver, css.login.username);
-  await findInputAndType(webDriver, css.login.username, user.username);
-  await findInputAndType(webDriver, css.login.password, user.password);
-  await findAndClickElement(webDriver, css.login.submit);
-  return waitForSelector(webDriver, css.topBar.logout);
+    let selectorToWaitFor = selectorToTest || css.topBar.logout;
+    // may need to pass in different selector if testing for mobile devices
+    // because logout button is hidden in the side menu
+    await navigateAndWait(webDriver, loginUrl, navOptions);
+
+    await findInputAndType(webDriver, css.login.username, user.username);
+    await findInputAndType(webDriver, css.login.password, user.password);
+    await findAndClickElement(webDriver, css.login.submit);
+    return waitForSelector(webDriver, selectorToWaitFor);
+
+  }catch(err) {
+    console.log(`login error: ${err}`);
+    throw(err);
+  }
 };
 
 const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {
@@ -400,13 +427,22 @@ const saveScreenshot = function(webdriver) {
 };
 
 const waitForNElements = function(webDriver, selector, num, timeout=timeoutMs) {
+  let elements;
+
   let conditionFn = () => {
     return getWebElements(webDriver, selector)
     .then((els) => {
-      return els.length === num;
+      if (els.length === num) {
+        elements = els;
+        return true;
+      }
+      return false;
     });
   };
   return webDriver.wait(conditionFn, timeout)
+  .then(() => {
+    return elements;
+  })
   .catch((err) => {
     throw(err);
   });
@@ -463,22 +499,24 @@ const getWebElementByCss = function(webDriver, selector ) {
     });
 };
 
-const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedText, timeout){
+const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedText, options={}, timeout=timeoutMs){
   let conditionFn;
   let isSelector = typeof webElOrSelector === 'string';
+
+  let { useIncludes = false } = options;
 
   if (isSelector) {
     conditionFn = () => {
       return findAndGetText(webDriver, webElOrSelector)
         .then((text) => {
-          return text === expectedText;
+          return useIncludes ? text.includes(expectedText) : text === expectedText;
         });
     };
   } else {
     conditionFn = () => {
       return webElOrSelector.getText()
         .then((val) => {
-          return val === expectedText;
+          return useIncludes ? val.includes(expectedText) : val === expectedText;
         });
     };
   }
@@ -496,10 +534,12 @@ const getParentElement = function(webElement) {
     });
 };
 
-const waitForAttributeToEql = function(webDriver, webElement, attributeName, expectedValue, timeout=timeoutMs) {
+const waitForAttributeToEql = function(webDriver, webElement, attributeName, expectedValue, options = {}, timeout=timeoutMs) {
+  let { useCssValue = false } = options;
   let conditionFn = () => {
-    return webElement.getAttribute(attributeName)
-      .then((attributeVal) => {
+    let val = useCssValue ? webElement.getCssValue(attributeName) : webElement.getAttribute(attributeName);
+      return val
+        .then((attributeVal) => {
         return attributeVal === expectedValue;
       });
   };
@@ -538,6 +578,58 @@ const dismissWorkspaceTour = function(webDriver) {
       throw (err);
     });
 };
+
+const waitForUrlToEql = function(webDriver, url, timeout=timeoutMs) {
+  return webDriver.wait(until.urlIs(url), timeout)
+  .catch((err) => {
+    console.error(`Error waitForUrlMatch: ${err}`);
+  });
+};
+
+const waitForElToBeVisible = function(webDriver, selectorOrEl, timeout=timeoutMs) {
+  let isSelector = typeof selectorOrEl === 'string';
+  let conditionFn;
+
+  if (isSelector) {
+    conditionFn = () => {
+      return webDriver.findElements({css: selectorOrEl})
+      .then((els) => {
+        if (els.length === 0) {
+          return false;
+        }
+        return els[0].isDisplayed();
+      });
+    };
+  } else {
+    conditionFn = () => {
+      return selectorOrEl.isDisplayed();
+    };
+  }
+
+  return webDriver.wait(conditionFn, timeout);
+};
+
+function waitForSelectizeSingleText(webDriver, selector, expectedText, timeout=timeoutMs) {
+  let conditionFn = () => {
+    return getSelectizeSingleText(webDriver, selector)
+    .then((text) => {
+      return text === expectedText;
+    });
+  };
+
+  return webDriver.wait(conditionFn, timeout);
+}
+
+function getSelectizeSingleText(webDriver, selector) {
+  return getWebElementByCss(webDriver, selector)
+  .then((el) => {
+    return el.getAttribute('innerText');
+  })
+  .catch((err) => {
+    throw(err);
+  });
+}
+
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -612,3 +704,6 @@ module.exports.waitForElementToHaveText = waitForElementToHaveText;
 module.exports.waitForAttributeToEql = waitForAttributeToEql;
 module.exports.logout = logout;
 module.exports.dismissWorkspaceTour = dismissWorkspaceTour;
+module.exports.waitForElToBeVisible = waitForElToBeVisible;
+module.exports.getSelectizeSingleText = getSelectizeSingleText;
+module.exports.waitForSelectizeSingleText = waitForSelectizeSingleText;

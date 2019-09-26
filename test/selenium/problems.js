@@ -11,6 +11,8 @@ const host = helpers.host;
 const testUsers = require('./fixtures/users');
 const topLink = css.topBar.problems;
 
+const SwalDriver = require('./utilities/sweet_alert');
+
 const handleRetries = function (driver, fetchPromise, numRetries) {
   console.log('inside handleRetries function');
   numRetries = 'undefined' === typeof numRetries ? 1 : numRetries;
@@ -34,12 +36,15 @@ describe('Problems', async function () {
       describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
         let driver = null;
-
+        let swalDriver;
         before(async function() {
           driver = new Builder()
             .forBrowser('chrome')
             .build();
           driver.manage().window().setRect({ width: 1580, height: 1080 });
+
+          swalDriver = new SwalDriver(driver);
+
             await dbSetup.prepTestDb();
             return helpers.login(driver, host, user);
           });
@@ -81,7 +86,7 @@ describe('Problems', async function () {
                 await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
                 let resultsMsg = `${problems.public.count} problems found`;
                 await helpers.waitForTextInDom(driver, resultsMsg);
-                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
               }
             });
 
@@ -90,7 +95,7 @@ describe('Problems', async function () {
                 await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                 let resultsMsg = `${problems.mine.count} problems found`;
                 await helpers.waitForTextInDom(driver, resultsMsg);
-                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
               }
             });
 
@@ -106,17 +111,17 @@ describe('Problems', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.org.total} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
                 it('should update problem list when unchecking created by members', async function () {
                   if (!isStudent) {
                     await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     let resultsMsg = `${problems.org.recommended} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -130,19 +135,19 @@ describe('Problems', async function () {
                 it('should update problem list when unchecking recommended', async function () {
                   if (!isStudent) {
                     await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     await helpers.waitForTextInDom(driver, css.noResultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(css.noResultsMsg);
                   }
                 });
 
                 it('should update problem list when checking created by members', async function () {
                   if (!isStudent) {
                     await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     let resultsMsg = `${problems.org.members} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                     await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
                   }
                 });
@@ -171,7 +176,7 @@ describe('Problems', async function () {
                     await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content.K');
                     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f673"]');
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -182,7 +187,7 @@ describe('Problems', async function () {
                     await helpers.findInputAndType(driver, '#categories-filter-selectized', '8.EE');
                     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f675"]');
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -191,7 +196,7 @@ describe('Problems', async function () {
                     let resultsMsg = `${problems.category.noSub} problems found`;
                     await helpers.findAndClickElement(driver, '.subfilter');
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -203,7 +208,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -212,7 +217,7 @@ describe('Problems', async function () {
                     let resultsMsg = `${problems.category.ee} problems found`;
                     await helpers.findInputAndType(driver, '#categories-filter-selectized', 'Math.Content.4', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -245,7 +250,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'button.close');
                     await driver.sleep(300);
                     let resultsMsg = `1 problems found`;
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
               });
@@ -272,7 +277,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
                     await helpers.findInputAndType(driver, '.search-field', 'Problem', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -281,7 +286,7 @@ describe('Problems', async function () {
                     let resultsMsg = `Based off your filter criteria, we found ${problems.search.org} problems that contain "problem"`;
                     await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -293,7 +298,7 @@ describe('Problems', async function () {
                     }
                     await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -303,7 +308,7 @@ describe('Problems', async function () {
                       let resultsMsg = `Based off your filter criteria, we found ${problems.search.all} problems that contain "problem"`;
                       await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
                       await helpers.waitForTextInDom(driver, resultsMsg);
-                      expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                      expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                     }
                   });
                 }
@@ -313,7 +318,7 @@ describe('Problems', async function () {
                     let resultsMsg = `${problems.search.clear} problems found`;
                     await helpers.findAndClickElement(driver, 'svg.clear');
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -325,7 +330,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'option[value="title"]');
                     await helpers.findInputAndType(driver, '.search-field', 'Zebra', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -367,7 +372,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'svg.clear');
                     await helpers.findInputAndType(driver, '.search-field', 'Graphton', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -377,7 +382,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'svg.clear');
                     await helpers.findInputAndType(driver, '.search-field', 'expected', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -387,7 +392,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'svg.clear');
                     await helpers.findInputAndType(driver, '.search-field', 'pending', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -397,7 +402,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'svg.clear');
                     await helpers.findInputAndType(driver, '.search-field', 'McCartney', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -407,7 +412,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, 'svg.clear');
                     await helpers.findInputAndType(driver, '.search-field', 'apple', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                     await helpers.findAndClickElement(driver, 'svg.clear');
                   }
                 });
@@ -424,7 +429,7 @@ describe('Problems', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.public.count} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -500,7 +505,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, '#privacy-menu ul li .radio-filter .radio-label input[value="M"]');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -511,7 +516,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, '#privacy-menu ul li .radio-filter .radio-label input[value="O,E"]');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -522,7 +527,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, '#privacy-menu ul li .radio-filter .radio-label input[value="M,O,E"]');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -534,7 +539,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="approved"]');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -545,7 +550,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="pending"]');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -560,7 +565,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="approved"]');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -575,7 +580,7 @@ describe('Problems', async function () {
                     await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="pending"]');
                     await driver.sleep(500);
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -854,35 +859,48 @@ describe('Problems', async function () {
                   await helpers.findAndClickElement(driver, '.more-header');
                 });
 
-                it('should update problem list and display message', async function () {
-                  await helpers.findAndClickElement(driver, '#toggle-trashed');
+                it('should update problem list and display message', function () {
                   let resultsMsg = `2 problems found - Displaying Trashed Problems`;
-                  await helpers.waitForTextInDom(driver, resultsMsg);
-                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+
+                  return helpers.findAndClickElement(driver, '#toggle-trashed')
+                  .then(async () => {
+                    await helpers.saveScreenshot(driver);
+                    return helpers.waitForElementToHaveText(driver, css.resultsMessage, resultsMsg);
+                  })
+                  .then(() => {
+                    console.log('results message passed');
+                  })
+                  .catch((err) => {
+                    throw(err);
+                  });
                 });
 
                 it('should restore a trashed problem', async function () {
-                  await helpers.findAndClickElement(driver, 'button.primary-button');
-                  await driver.sleep(500);
-                  await helpers.waitForAndClickElement(driver, 'button.swal2-confirm' );
-                  // await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                  await helpers.saveScreenshot(driver);
+                let list = await helpers.waitForSelector(driver, '#problem-list-ul');
+                let firstItem = await list.findElement({xpath: './li'});
+
+                let btn = await firstItem.findElement({css: '.primary-button'});
+                  await btn.click();
+                  await helpers.saveScreenshot(driver);
+                  await swalDriver.confirmYesNoModal('Problem Restored');
                   let resultsMsg = `1 problems found - Displaying Trashed Problems`;
-                  await helpers.waitForTextInDom(driver, resultsMsg);
-                  // expect(await helpers.isTextInDom(resultsMsg)).to.be.true;
-                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+
+                  await helpers.waitForElementToHaveText(driver, css.resultsMessage, resultsMsg);
                 });
 
+                // is this actually being implemented?
                 it('should continue displaying trashed problems until unchecked', async function () {
                   await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                   let resultsMsg = `${problems.mine.count} problems found - Displaying Trashed Problems`;
-                  await helpers.waitForTextInDom(driver, resultsMsg);
-                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+
+                  await helpers.waitForElementToHaveText(driver, css.resultsMessage, resultsMsg);
 
                   await helpers.findAndClickElement(driver, '.more-filter-list .subfilter input#toggle-trashed');
                   let updatedMsg = `${problems.mine.count} problems found`;
 
-                  await helpers.waitForTextInDom(driver, updatedMsg);
-                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(updatedMsg);
+                  await helpers.waitForElementToHaveText(driver, css.resultsMessage, updatedMsg);
+
                   await helpers.findAndClickElement(driver, '.more-header');
                 });
               });
@@ -894,17 +912,19 @@ describe('Problems', async function () {
                 });
 
                 it('should update the problem list and display message', async function () {
-                  await helpers.waitForSelector(driver, css.resultsMesasage);
+                  await helpers.waitForSelector(driver, css.resultsMessage);
                   let resultsMsg = `${problems.all.total} problems found`;
                   await helpers.waitForTextInDom(driver, resultsMsg);
-                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                 });
 
                 it('should test pagination and go to the second page', async function () {
                   await helpers.findAndClickElement(driver, '.sort-bar-item.name');
                   await helpers.findAndClickElement(driver, '.nav-right i.fa-caret-right');
-                  await driver.sleep(500);
-                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`The Shortest Possible Side`);
+                  // await driver.sleep(500);
+
+                  await helpers.waitForElementToHaveText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child', 'The Shortest Possible Side' );
+                  // expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`The Shortest Possible Side`);
                 });
 
                 it('should test pagination and go back to the first page', async function () {
@@ -916,36 +936,36 @@ describe('Problems', async function () {
                 describe('Searching by organization', function () {
                   before(async function () {
                     await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
-                    await helpers.findAndClickElement(driver, css.resultsMesasage);
+                    await helpers.findAndClickElement(driver, css.resultsMessage);
                   });
 
                   it('should select an organization then update the list and display message', async function () {
                     let resultsMsg = `${problems.all.org.total} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   });
 
                   it('should uncheck Created by Members then update the list and display message', async function () {
                     await helpers.findAndClickElement(driver, 'li.fromOrg label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     let resultsMsg = `${problems.all.org.recommended} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg );
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   });
 
                   it('should uncheck Recommended then no problems should appear', async function () {
                     await helpers.findAndClickElement(driver, 'li.recommended label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     await helpers.waitForTextInDom(driver, css.noResultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(css.noResultsMsg);
                   });
 
                   it('should check Created by Members and the update the list and display message', async function () {
                     await helpers.findAndClickElement(driver, 'li.fromOrg label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     let resultsMsg = `${problems.all.org.members} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   });
                 });
 
@@ -956,12 +976,12 @@ describe('Problems', async function () {
                     await helpers.findInputAndType(driver, '#all-user-filter-selectized', 'morty');
                     await helpers.waitForSelector(driver, '[data-value="5b245841ac75842be3189526"]');
                     await helpers.findAndClickElement(driver, '[data-value="5b245841ac75842be3189526"]');
-                    await helpers.findAndClickElement(driver, css.resultsMesasage);
+                    await helpers.findAndClickElement(driver, css.resultsMessage);
                   });
 
                   it('should select a creator and then update the list and display message', async function () {
                     let resultsMsg = `${problems.all.creator} problems found`;
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   });
                 });
 
@@ -974,30 +994,30 @@ describe('Problems', async function () {
 
                   it('should update the list and display message', async function () {
                     let resultsMsg = `${problems.all.pows.total} problems found`;
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   });
 
                   it('should uncheck public then update the list and display message', async function () {
                     await helpers.findAndClickElement(driver, 'li.shared label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     let resultsMsg = `${problems.all.pows.private} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   });
 
                   it('should uncheck private then show no problems', async function () {
                     await helpers.findAndClickElement(driver, 'li.unshared label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     await helpers.waitForTextInDom(driver, css.noResultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(css.noResultsMsg);
                   });
 
                   it('should check private then update the list and display message', async function () {
                     await helpers.findAndClickElement(driver, 'li.shared label.checkbox-label');
-                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForSelector(driver, css.resultsMessage);
                     let resultsMsg = `${problems.all.pows.public} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMessage)).to.contain(resultsMsg);
                   });
                 });
 
@@ -1108,10 +1128,13 @@ describe('Problems', async function () {
                 it("delete button in more menu should show delete modal and remove problem", async function() {
                   await helpers.findAndClickElement(driver, "#problem-list-ul li:nth-child(2) .item-section.more");
                   await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-trash');
-                  await driver.sleep(500);
-                  await helpers.findAndClickElement(driver, 'button.swal2-confirm');
-                  await driver.sleep(500);
-                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
+                  // await driver.sleep(500);
+                  await swalDriver.confirmYesNoModal('Problem Deleted');
+                  // await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                  // await driver.sleep(500);
+
+                  await helpers.waitForElementToHaveText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child', 'Flagged Problem');
+                  // expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
                 });
               }
             });

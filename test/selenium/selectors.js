@@ -12,12 +12,12 @@ module.exports = {
     errorBoxText: 'div.error-box p span.error-text'
   },
   topBar: {
-    login: "a.menu.login",
-    signup: "a.menu.signup",
+    login: "li[data-test=login]",
+    signup: "li[data-test=signup]",
     workspaces: "a.menu.workspaces",
     responses: "a.menu.responses",
     users: "#users-home",
-    logout: "a.menu.logout",
+    logout: `a[href="#/logout"]`,
     problems: "#problems-home",
     workspacesNew: "a.workspaces-new",
     home: "a.menu.home",
@@ -33,8 +33,8 @@ module.exports = {
     username: "input[name=username]",
     password: "input[name=password]",
     submit: "button[type=submit]",
-    google: 'a[href="/auth/google"]',
-    signup: "a.signup-link"
+    google: `a[href="http://localhost:3003/oauth/google?redirectURL=http://localhost:8082"]`,
+    signup: "p[data-test=auth-signup] > a",
   },
   signup: {
     form: "form.form-signup",
@@ -49,7 +49,7 @@ module.exports = {
       password: "input[name=password]",
       confirmPassword: "input[name=confirmPassword]",
       requestReason: "input[name=requestReason]",
-      terms: "input[name=terms]"
+      terms: "input[name=terms]",
     },
     submit: "button[type=submit]"
   },
@@ -115,7 +115,8 @@ module.exports = {
     loginLink: "a.login-link",
     infoMessage: "p.info",
     newEmailButton: "button.action_button",
-    resentConfirm: "p#resent-confirm"
+    resentConfirm: "p#resent-confirm",
+    alreadyConfirmed: `p[data-test="already-confirmed"]`
   },
 
   newWorkspaceEnc: {
@@ -175,7 +176,7 @@ module.exports = {
   },
 
 
-  resultsMesasage: 'div.results-message',
+  resultsMessage: 'div.results-message',
   noResultsMsg: 'No results found. Please try expanding your filter criteria.',
 
   problemFilterList: {
@@ -382,7 +383,7 @@ module.exports = {
     submissionView: {
       studentIndicator: '#response-submission-view > div.submission-container > div.submission-student > span',
       reviseBtn: 'button[data-test="submitter-revise"]',
-      submitRevision: 'button[data-test="submit-revision"]',
+      submitRevision: 'button[data-test="submit-answer"]',
       revIndexItem: '.student-submissions .bread-crumbs-item'
     },
     mentorReplyView: {
@@ -398,6 +399,7 @@ module.exports = {
     newResponse: '.submission-row-item.new-response > button.new-response',
     studentsSelect: '.submission-row-item.students > .selectize-comp',
     studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
+    studentSelect: '#student-select',
     dropdownContent: '.selectize-dropdown-content',
     container: '#workspace-container',
     name: '.ws-meta .workspace-name',
@@ -538,7 +540,9 @@ module.exports = {
     reviewStep: {
       container: '#vmt-import-step4',
       create: 'button[data-test=create]'
-    }
+    },
+    noRoomsItem: 'li[data-test=no-rooms]',
+    noActivitiesItem: 'li[data-test=no-activities]',
   },
   assignmentsNew: {
     container: '#assignment-new',

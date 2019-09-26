@@ -145,7 +145,76 @@ module.exports = function (grunt) {
         ]
 
 
-      }
+      },
+      e2eProblems: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: ['test/selenium/problems.js', 'test/selenium/problems_info.js', 'test/selenium/problems_new']
+      },
+      e2eAuth: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: ['test/selenium/confirm_email.js', 'test/selenium/forgot_password.js', 'test/selenium/reset_password.js', 'test/selenium/signup.js',
+        'test/selenium/users.js']
+      },
+      e2eWorkspaces: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: ['test/selenium/comments.js', 'test/selenium/folders.js', 'test/selenium/workspace_settings.js', 'test/selenium/workspaces.js', 'test/selenium/workspaces_new.js']
+      },
+      e2eMentoring: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: ['test/selenium/mentoring_approving.js', 'test/selenium/responses.js'], // fix and add back in: 'test/selenium/mentoring.js'
+      },
+      e2eVmt: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: ['test/selenium/vmt_import.js'],
+      },
+      e2eGeneral: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: ['test/selenium/base.js','test/selenium/assignments_student.js', 'test/selenium/assignments_teacher.js', 'test/selenium/sections.js', 'test/selenium/linked_workspaces.js', 'test/selenium/parent_workspaces.js', ]
+      },
+
+
     },
 
     /*

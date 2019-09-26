@@ -13,13 +13,14 @@ describe('Folders', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
 
+  let user = helpers.admin;
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
       await dbSetup.prepTestDb();
     try {
-      await helpers.login(driver, host);
+      await helpers.login(driver, host, user);
     }catch(err) {
       console.log(err);
     }
@@ -30,7 +31,11 @@ describe('Folders', function() {
   });
   describe('Visiting a ESI 2014 Wednesday Reflection', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, `${host}/#/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`, 'table#folder_contents');
+      let options = {
+        selector: 'table#folder_contents'
+      };
+
+      await helpers.navigateAndWait(driver, `${host}/#/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`, options);
     });
 
     it('should display the folder name', async function() {

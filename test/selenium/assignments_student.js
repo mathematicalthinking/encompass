@@ -56,9 +56,10 @@ describe('Assignments as Student', async function () {
 
           it('should display assignment details', async function() {
             let results = await Promise.all(_.map(assignmentDetails, (val, key) => {
-              if (key !== '_.id') {
-                return helpers.isTextInDom(driver, val);
+              if (key === '_id') {
+                return true;
               }
+                return helpers.waitForTextInDom(driver, val);
             }));
             expect(_.every(results, res => res === true)).to.be.true;
           });
@@ -108,11 +109,11 @@ describe('Assignments as Student', async function () {
               expect(await listItems[0].getText()).to.eql(username);
             });
             it('should display errors if empty form is submitted', async function() {
+              let numExpectedErrors = 2;
+
               await helpers.findAndClickElement(driver, newAnswerSelectors.createBtn);
-              await driver.sleep(500);
-              await helpers.waitForSelector(driver, 'div.error-box');
-              await driver.sleep(2000);
-              let errors = await helpers.getWebElements(driver, 'div.error-box');
+              let errors = await helpers.waitForNElements(driver, 'div.error-box', numExpectedErrors);
+
               expect(errors).to.have.lengthOf(2);
 
               expect(await helpers.isTextInDom(driver, `can't be blank`)).to.be.true;

@@ -31,7 +31,11 @@ describe('Confirm Email', function () {
 
   describe('Invalid token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, invalidResetLink, css.confirmEmail.invalidToken);
+      let options = {
+        selector: css.confirmEmail.invalidToken,
+      };
+
+      await helpers.navigateAndWait(driver, invalidResetLink, options);
     });
 
     it('should display error message', async function() {
@@ -46,7 +50,11 @@ describe('Confirm Email', function () {
 
   describe('Matching but expired token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, expiredResetLink, css.confirmEmail.invalidToken, 10000);
+      let options = {
+        selector: css.confirmEmail.invalidToken,
+      };
+
+      await helpers.navigateAndWait(driver, expiredResetLink, options);
     });
 
     it('should display error message', async function() {
@@ -61,7 +69,11 @@ describe('Confirm Email', function () {
 
   describe('Valid token', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, confirmLink, css.confirmEmail.successMessage, 10000);
+      let options = {
+        selector: css.confirmEmail.successMessage,
+      };
+
+      await helpers.navigateAndWait(driver, confirmLink, options);
     });
 
     it('should display success message', async function() {
@@ -77,13 +89,25 @@ describe('Confirm Email', function () {
 
     describe('Navigating to valid link after already confirming', function() {
       it('should display that email is already confirmed', async function() {
-        let msg = 'Email address has already been confirmed';
-        await driver.get(host);
-        await helpers.navigateAndWait(driver, confirmLink, '.confirm-page');
-        expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+        try {
+          let msg = 'Email address has already been confirmed.';
+          await driver.get(host);
+          let options = {
+            selector: css.confirmEmail.alreadyConfirmed
+          };
+          await helpers.navigateAndWait(driver, confirmLink, options);
+
+          // await helpers.waitForSelector(driver, css.confirmEmail.alreadyConfirmed);
+          console.log('after navand wait alrady conf');
+          return helpers.waitForElementToHaveText(driver, css.confirmEmail.alreadyConfirmed, msg);
+
+        }catch(err) {
+          throw(err);
+        }
       });
 
       it('should display link to login page', async function() {
+        await helpers.waitForSelector(driver, css.confirmEmail.loginLink);
         expect(await helpers.isElementVisible(driver, css.confirmEmail.loginLink)).to.be.true;
       });
     });
@@ -124,4 +148,3 @@ describe('Confirm Email', function () {
 
 
 });
-

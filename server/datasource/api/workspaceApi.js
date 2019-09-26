@@ -1268,7 +1268,6 @@ function packageSubmissions (matchOpts, sortOpts, groupOpts, inclusions, callbac
   *  }]
  */
 function prepareAndUpdateWorkspaces(user, callback) {
-  logger.info('in prepupdws');
   prepareUserSubmissions(user, null, null, function () {
     var matchBy = {
       "teacher.username": user.username,
@@ -1323,7 +1322,6 @@ function prepareAndUpdateWorkspaces(user, callback) {
     };
 
     packageSubmissions(matchBy, sortBy, groupBy, include, function (err, results) {
-      logger.info('pkg sub callback in');
       if(err) {
         logger.info('in error block pkgsub');
         callback( new Error( err.message ));
@@ -3111,8 +3109,6 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
     let { workspace, linkedAssignment, isParentUpdate } = req.body.updateWorkspaceRequest;
 
-    logger.info({isParentUpdate});
-
     if (!isValidMongoId(workspace) || (!isValidMongoId(linkedAssignment) && !isParentUpdate)) {
       newUpdateRequest.updateErrors.push('Invalid workspace or assignment.');
       await newUpdateRequest.save();
@@ -3187,7 +3183,7 @@ const updateWorkspaceRequest = async function (req, res, next) {
     if (isParentUpdate) {
       let results = await parentWsApi.updateParentWorkspace(user, popWorkspace, newUpdateRequest);
 
-      logger.info('update res: ', JSON.stringify(results, null, 2));
+      // logger.info('update res: ', JSON.stringify(results, null, 2));
 
       let updatedWorkspace = await models.Workspace.findById(popWorkspace._id).lean().exec();
       data.workspaces = [ updatedWorkspace ];
