@@ -10,7 +10,7 @@ const css = require('./selectors');
 
 // testing timeout values
 const timeoutMs = 8000;  // timeout per await
-const timeoutTestMsStr = '20s';  // timeout per test
+const timeoutTestMsStr = '25s';  // timeout per test
 
 const nconf = config.nconf;
 const port = nconf.get('testPort');
@@ -161,6 +161,7 @@ const navigateAndWait = function (webDriver, url, options = {}) {
   })
   .catch((err) => {
     console.log(`Error navigateAndWait: ${err.message}`);
+    throw(err);
   });
 };
 

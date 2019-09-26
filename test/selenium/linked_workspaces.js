@@ -92,8 +92,11 @@ describe('Linking multiple workspaces to one assignment', function() {
   });
 
   describe('Visiting assignment page', function() {
-    before(async function() {
-      await helpers.navigateAndWait(driver, assignmentInfoUrl, {selector: css.assignmentsTeacher.editAssignment});
+    before(function() {
+      return helpers.navigateAndWait(driver, assignmentInfoUrl, {selector: css.assignmentsTeacher.editAssignment})
+      .catch((err) => {
+        throw(err);
+      });
 
     });
     after(async function() {

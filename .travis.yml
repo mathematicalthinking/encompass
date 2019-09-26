@@ -22,9 +22,8 @@ addons:
   # chrome: stable
 env:
   - TEST_SUITE=api
-  # - TEST_SUITE=e2e
   - TEST_SUITE=e2eProblems
-  - TEST_SUITE=e2eAuth
+  - "[ "$TRAVIS_PULL_REQUEST" = "false" ] && TEST_SUITE=e2eAuth"
   - TEST_SUITE=e2eMentoring
   - TEST_SUITE=e2eWorkspaces
   # - TEST_SUITE=e2eVmt cant get these to run correctly on travis

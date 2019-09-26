@@ -166,7 +166,8 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false
         },
-        src: ['test/selenium/base.js', 'test/selenium/confirm_email.js', 'test/selenium/forgot_password.js', 'test/selenium/reset_password.js', 'test/selenium/signup.js']
+        src: ['test/selenium/confirm_email.js', 'test/selenium/forgot_password.js', 'test/selenium/reset_password.js', 'test/selenium/signup.js',
+        'test/selenium/users.js']
       },
       e2eWorkspaces: {
         options: {
@@ -210,7 +211,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false
         },
-        src: ['test/selenium/assignments_student.js', 'test/selenium/assignments_teacher.js', 'test/selenium/sections.js', 'test/selenium/linked_workspaces.js', 'test/selenium/parent_workspaces.js', 'test/selenium/users.js']
+        src: ['test/selenium/base.js','test/selenium/assignments_student.js', 'test/selenium/assignments_teacher.js', 'test/selenium/sections.js', 'test/selenium/linked_workspaces.js', 'test/selenium/parent_workspaces.js', ]
       },
 
 
