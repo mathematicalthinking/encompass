@@ -23,7 +23,7 @@ addons:
 env:
   - TEST_SUITE=api
   - TEST_SUITE=e2eProblems
-  - "[ "$TRAVIS_PULL_REQUEST" = "false" ] && TEST_SUITE=e2eAuth"
+  - "if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then TEST_SUITE=e2eAuth fi"
   - TEST_SUITE=e2eMentoring
   - TEST_SUITE=e2eWorkspaces
   # - TEST_SUITE=e2eVmt cant get these to run correctly on travis
