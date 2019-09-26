@@ -6,7 +6,7 @@ node_js:
 services:
   - mongodb
   - xvfb
-before_install: bash scripts/travis-before-install.sh fixTravisTests DanielJKelly
+before_install: bash scripts/travis-before-install.sh
 install:
   - npm install
 cache:
