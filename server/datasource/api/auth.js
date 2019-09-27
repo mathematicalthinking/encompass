@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /**
  * # Auth API
  * @description This is the API for authentication
@@ -8,6 +9,8 @@
 
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const { propertyOf } = require('underscore');
 
 const models = require('../../datasource/schemas');
 const User = models.User;
@@ -165,25 +168,26 @@ const getResetToken = function(size) {
 
 const sendEmailSMTP = function(recipient, host, template, token=null, userObj) {
   console.log(`getEmailAuth() return: ${userAuth.getEmailAuth().username}`);
-  const smtpTransport = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-      user: userAuth.getEmailAuth().username,
-      pass: userAuth.getEmailAuth().password
-    }
-  });
-  const msg = emails[template](recipient, host, token, userObj);
+  let username = userAuth.getEmailAuth().username;
+  let password = userAuth.getEmailAuth().password;
+
+  return resolveTransporter(username, password)
+  .then((smtpTransport) => {
+    const msg = emails[template](recipient, host, token, userObj);
+    let mailUsername = propertyOf(smtpTransport)(['options.auth.user']);
+
     return new Promise( (resolve, reject) => {
       smtpTransport.sendMail(msg, (err) => {
         if (err) {
-          let errorMsg = `Error sending email (${template}) to ${recipient} from ${userAuth.getEmailAuth().username}: ${err}`;
+          let errorMsg = `Error sending email (${template}) to ${recipient} from ${mailUsername}: ${err}`;
           console.error(errorMsg);
           console.trace();
           return reject(errorMsg);
         }
-        let msg = `Email (${template}) sent successfully to ${recipient} from ${userAuth.getEmailAuth().username}`;
+        let msg = `Email (${template}) sent successfully to ${recipient} from ${mailUsername}`;
       return resolve(msg);
     });
+  });
   });
 };
 
@@ -336,6 +340,75 @@ const ssoUpdateUser = async(req, res, next) => {
   }
 
 };
+
+const resolveTransporter = function(
+  username,
+  password,
+) {
+  return new Promise(
+    (resolve, reject) => {
+      let isTestEnv = process.env.NODE_ENV === 'seed';
+
+      if (isTestEnv) {
+        nodemailer.createTestAccount(
+          (err, account) => {
+            // create reusable transporter object using the default SMTP transport
+            if (err) {
+              reject(err);
+            } else {
+              // in case we want to look at the sent emails
+              let fileName = 'ethereal_creds.json';
+              fs.writeFile(
+                fileName,
+                JSON.stringify({
+                  user: account.user,
+                  pass: account.pass,
+                }),
+                (err) => {
+                  if (err) {
+                    throw err;
+                  }
+                  console.log('Ethereal creds saved to ', fileName);
+                },
+              );
+
+              resolve(
+                nodemailer.createTransport({
+                  host: 'smtp.ethereal.email',
+                  port: 587,
+                  secure: false, // true for 465, false for other ports
+                  auth: {
+                    user: account.user, // generated ethereal user
+                    pass: account.pass, // generated ethereal password
+                  },
+                }),
+              );
+            }
+          },
+        );
+      } else {
+        if (typeof username !== 'string') {
+          return reject(new Error('Missing gmail username'));
+        }
+
+        if (typeof password !== 'string') {
+          return reject(new Error('Missing gmail password'));
+        }
+
+        resolve(
+          nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+              user: username,
+              pass: password,
+            },
+          }),
+        );
+      }
+    },
+  );
+};
+
 
 module.exports.logout = logout;
 module.exports.localLogin = localLogin;
