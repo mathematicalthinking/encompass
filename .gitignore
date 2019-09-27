@@ -67,3 +67,6 @@ ChromeDriver.exe
 
 # test screenshots
 test/selenium/screenshots
+
+# email creds generated on fly by tests
+ethereal_creds.json
