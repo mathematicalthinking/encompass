@@ -9,6 +9,8 @@ const userFixtures = require('./userFixtures');
 const expect = chai.expect;
 const host = helpers.host;
 
+const { putApiResourceById, getApiResourceById } = helpers;
+
 chai.use(chaiHttp);
 
 let nonCollabStudent = {
@@ -36,21 +38,6 @@ let relatedTeacher = {
   }
 };
 
-function getAPIResourceById(agent, resource, id) {
-  let url = `/api/${resource}/${id}`;
-  return agent.get(url);
-}
-
-function putAPIResourceById(agent, resource, id, body) {
-  let url = `/api/${resource}/${id}`;
-
-  let model = resource.slice(0, resource.length - 1);
-  console.log({model});
-  return agent
-    .put(url)
-    .send({[model]: body});
-}
-
 describe('API requests related to the linking of workspaces/assignments', function() {
   this.timeout('10s');
   const agent = chai.request.agent(host);
@@ -71,7 +58,7 @@ describe('API requests related to the linking of workspaces/assignments', functi
     });
 
     it('should not be able to access', function() {
-      return getAPIResourceById(agent, 'workspaces', workspace._id)
+      return getApiResourceById(agent, 'workspaces', workspace._id)
         .then((result) => {
           expect(result).to.have.status(403);
         })
@@ -98,7 +85,7 @@ describe('API requests related to the linking of workspaces/assignments', functi
     });
 
     it('should be able to access', function() {
-      return getAPIResourceById(agent, 'workspaces', workspace._id)
+      return getApiResourceById(agent, 'workspaces', workspace._id)
         .then((result) => {
           expect(result).to.have.status(200);
         })
@@ -266,7 +253,7 @@ describe('API requests related to the linking of workspaces/assignments', functi
     before(async function(){
       try {
         await helpers.setup(agent, username, password);
-        updateResults = await putAPIResourceById(agent, 'workspaces', workspace._id, workspace);
+        updateResults = await putApiResourceById(agent, 'workspaces', workspace._id, workspace);
         expect(updateResults).to.have.status(200);
         updatedWorkspace = updateResults.body.workspace;
       }catch(err) {
@@ -284,7 +271,7 @@ describe('API requests related to the linking of workspaces/assignments', functi
     });
 
     it(`Should have removed workspace from assignment's linked workspaces`, async function() {
-      let results = await getAPIResourceById(agent, 'assignments', assignmentId);
+      let results = await getApiResourceById(agent, 'assignments', assignmentId);
       let assignment = results.body.assignment;
 
       expect(assignment.linkedWorkspaces.map(id => id.toString())).to.not.include(workspace._id);

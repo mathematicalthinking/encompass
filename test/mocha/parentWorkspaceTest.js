@@ -8,6 +8,8 @@ const helpers = require('./helpers');
 const expect = chai.expect;
 const host = helpers.host;
 
+const { putApiResourceById, getApiResourceById } = helpers;
+
 chai.use(chaiHttp);
 
 let assignment = {
@@ -36,20 +38,6 @@ let assignment = {
   "createDate" : "2018-09-06T18:38:50.073Z"
 };
 
-function putAPIResourceById(agent, resource, id, body) {
-  let url = `/api/${resource}/${id}`;
-
-  let model = resource.slice(0, resource.length - 1);
-  return agent
-    .put(url)
-    .send({[model]: body});
-}
-
-function getAPIResourceById(agent, resource, id) {
-  let url = `/api/${resource}/${id}`;
-  return agent.get(url);
-}
-
 describe('Creating Parent workspace from assignment', function() {
   this.timeout('10s');
   const agent = chai.request.agent(host);
@@ -71,10 +59,10 @@ describe('Creating Parent workspace from assignment', function() {
     await helpers.setup(agent, 'ssmith', 'ssmith');
 
     originalLinkedWs = await Promise.all(originalLinkedWorkspaceIds.map((id) => {
-      return getAPIResourceById(agent, 'workspaces', id)
+      return getApiResourceById(agent, 'workspaces', id.toString())
       .then(results => results.body.workspace);
     }));
-    results = await putAPIResourceById(agent, 'assignments', assignment._id, assignment);
+    results = await putApiResourceById(agent, 'assignments', assignment._id.toString(), assignment);
 
     expect(results).to.have.status(200);
     updatedAssn = results.body.assignment;
@@ -87,7 +75,7 @@ describe('Creating Parent workspace from assignment', function() {
     expect(linkedWorkspaces).to.have.members(originalLinkedWorkspaceIds);
 
     let populatedLinkedWorkspaces = await Promise.all((linkedWorkspaces.map((wsId) => {
-      return getAPIResourceById(agent, 'workspaces', wsId)
+      return getApiResourceById(agent, 'workspaces', wsId)
       .then(results => results.body.workspace);
     })));
 

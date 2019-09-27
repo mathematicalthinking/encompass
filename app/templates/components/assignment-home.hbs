@@ -1,9 +1,9 @@
 {{#if currentUser.isStudent}}
   <h1>Welcome to the Assignments Page</h1>
-  <p>Click on a assignment name to submit an answer, revise or review</p>
+  <p>Click on an assignment name to submit an answer, revise or review</p>
 {{else}}
   <h1>Welcome to the Assignments Page</h1>
-  <p>Click on a assignment name to see more info</p>
+  <p>Click on an assignment name to see more info</p>
   <p class="or">Or</p>
   {{#link-to 'assignments.new' id="assignment-new-link" class="new-link-btn"}}
   <span>Create New Assignment</span>{{/link-to}}

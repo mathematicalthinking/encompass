@@ -26,6 +26,8 @@ describe('Assignment CRUD operations by account type', function() {
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
 
+      const { putApiResourceById, getApiResourceById } = helpers;
+
       before(async function(){
         try {
           await helpers.setup(agent, username, password);
@@ -127,6 +129,61 @@ describe('Assignment CRUD operations by account type', function() {
               expect(res.body.assignment.name).to.eql(fixtures.withoutName.valid.expectedResultName);
               done();
             });
+          });
+        });
+      }
+
+      if (username === 'pdadmin') {
+        describe('Changing Assignment Section', function() {
+          let {assignment: assn, newSection} = fixtures.pdAdmin.toModify;
+          let { section: oldSectionId, students: oldStudentIds, teachers: oldTeacherIds } = assn;
+
+          assn.section = newSection._id;
+
+          let putResults;
+
+          before(function() {
+            return putApiResourceById(agent, 'assignments', assn._id, assn)
+            .then((results) => {
+              putResults = results.body.assignment;
+            });
+          });
+
+          it('should have new sectionId for section value', function() {
+            expect(putResults.section).to.eql(newSection._id.toString());
+          });
+
+          it('should have only students from new section in students array', function() {
+            expect(putResults.students).to.have.members(newSection.students.map(s => s.toString()));
+          });
+
+          describe('Checking old section data was updated', function() {
+            let oldSection;
+
+            before(function() {
+              return getApiResourceById(agent, 'sections', oldSectionId)
+              .then((res) => {
+                oldSection = res.body.section;
+                return;
+              });
+
+            });
+
+            it('old section should no longer be linked to assignment', function() {
+              expect(oldSection.assignment).to.not.exist;
+            });
+
+            it('students from old section should not belong to assignment anymore', function() {
+              return agent.get('/api/users')
+              .query({ids: oldStudentIds.map(id => id.toString())})
+              .then((res) => {
+                res.body.user.forEach((user) => {
+                  expect(user.assignments).to.not.include(assn._id.toString());
+                });
+              });
+
+            });
+
           });
         });
       }
