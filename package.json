@@ -19,7 +19,6 @@
     "dev-mt": "cd ../mt-sso && npm run dev",
     "dev-all": "concurrently \"npm:start\" \"npm:dev-mt\" \"npm:dev-vmt\"",
     "test-travis": "NODE_ENV=seed node server/server.js"
-
   },
   "repository": {
     "type": "git",
@@ -101,7 +100,7 @@
     "grunt-contrib-uglify": "^3.3.0",
     "grunt-contrib-watch": "^1.0.1",
     "grunt-ember-templates": "^1.1.2",
-    "grunt-env": "0.4.4",
+    "grunt-env": "^1.0.1",
     "grunt-eslint": "^21.0.0",
     "grunt-mocha-test": "^0.13.3",
     "grunt-neuter": "^0.6.0",
