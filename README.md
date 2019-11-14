@@ -1,6 +1,6 @@
 
 # ENCOMPASS
-ENCOMPASS is a web application designed to facilitate the process of learning from and providing feedback on student work, for both individual teachers and for collaborative and professional development purposes. For more about the project see [Github Repo](http://github.com/mathematicalthinking/encompass)
+ENCOMPASS is a web application designed to facilitate the process of learning from and providing feedback on student work, for both individual teachers and for collaborative and professional development purposes.
 
 ## License
 
@@ -20,6 +20,8 @@ This application uses a combination of:
 Instructions for getting started with this setup, are located [Github Repo](http://github.com/mathematicalthinking/encompass)
 
 ## Local Development Environment Setup
+
+ **N.B. These instructions are outdated and will not work with the new Single Sign On system that integrates EnCOMPASS with [VMT](https://github.com/mathematicalthinking/vmt). We hope to have updated instructions posted in the near future.**
 
 1. Fork this repo ([instructions](https://github.com/mathematicalthinking/encompass/blob/master/docs/GitForkRepo.md))
 2. Install node version 8+
