@@ -584,6 +584,7 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         doIncludeOldPows: this.get('doIncludeOldPows'),
         isVmtOnly: this.get('isVmtOnly'),
         vmtSearchText: this.get('vmtSearchText'),
+        isTrashedOnly: this.get('isTrashedOnly'),
       };
       _.each(criteria, (val, key) => {
         if (utils.isNullOrUndefined(val)|| val === '') {

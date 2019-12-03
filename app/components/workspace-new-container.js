@@ -126,7 +126,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
     return msg;
 
-  }.property('criteriaTooExclusive', 'isDisplayingSearchResults', 'answers.@each.isTrashed', 'isFetchingAnswers', 'showLoadingMessage'),
+  }.property('criteriaTooExclusive', 'isDisplayingSearchResults', 'answers.@each.isTrashed', 'isFetchingAnswers', 'showLoadingMessage', 'toggleTrashed'),
 
   getMostRecentAnswers: function(answers) {
     if (!_.isArray(answers)) {
@@ -223,8 +223,16 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     return [];
   }.property('answers.@each.isTrashed'),
 
+  filteredAnswers: function() {
+    if (!this.get('answers')) {
+      return [];
+    }
+    const isTrashedVal = this.get('toggleTrashed');
+    return this.get('answers').filterBy('isTrashed', isTrashedVal);
+  }.property('answers.@each.isTrashed', 'toggleTrashed'),
+
   displayAnswers: function () {
-    const answers = this.get('nonTrashedAnswers');
+    const answers =  this.get('filteredAnswers');
     const doIncludeRevisions = this.get('doIncludeRevisions');
     if (answers) {
       if (doIncludeRevisions) {
@@ -241,7 +249,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       }
     }
     return [];
-  }.property('nonTrashedAnswers.@each.isTrashed', 'doIncludeRevisions', 'submissionThreads'),
+  }.property('filteredAnswers.[]', 'doIncludeRevisions', 'submissionThreads'),
 
   buildQueryParams: function(page, isTrashedOnly, didConfirmLargeRequest) {
     let params = {};
@@ -358,12 +366,12 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   },
   submissionThreads: function() {
-    if (!this.get('answers')) {
+    if (!this.get('filteredAnswers')) {
       return [];
     }
     const threads = Ember.Map.create();
 
-    this.get('answers')
+    this.get('filteredAnswers')
       .sortBy('student')
       .getEach('student')
       .uniq()
@@ -374,7 +382,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
         }
       });
     return threads;
-  }.property('answers.[]'),
+  }.property('filteredAnswers.[]'),
 
   studentWork: function(student) {
     return this.get('answers')
@@ -456,7 +464,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       this.send('triggerFetch', this.get('toggleTrashed'));
     },
     triggerShowHidden() {
-      this.send('triggerFetch', this.get('toggleHidden'));
+      this.send('triggerFetch', this.get('toggleTrashed'), this.get('toggleHidden'));
     },
     clearSearchResults: function() {
       this.set('searchQuery', null);
@@ -564,7 +572,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       let isChecked = e.target.checked;
 
       const utils = this.get('utils');
-      let answers = this.get('nonTrashedAnswers');
+      let answers = this.get('filteredAnswers');
       if (!utils.isNonEmptyArray(answers)) {
         return;
       }
@@ -652,6 +660,40 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
         this.handleErrors(err, 'wsRequestErrors', encWorkspaceRequest);
         return;
+      });
+    },
+
+    restoreAllSelected() {
+      const selectedAnswers = this.get('selectedAnswers');
+      if (!Array.isArray(selectedAnswers) || selectedAnswers.length === 0) {
+        return;
+      }
+
+      const count = selectedAnswers.length;
+
+      let noun = 'submissions';
+      let modifier = 'These';
+
+      if (count === 1) {
+        noun = 'submission';
+        modifier = 'This';
+      }
+
+      this.get('alert').showModal('warning', `Are you sure you want to restore ${count} ${noun}?`, `${modifier} ${noun} will be searchable by other users`, 'Yes').then((result) => {
+        if (result.value) {
+          Ember.RSVP.all((selectedAnswers.map((answer) => {
+            answer.set('isTrashed', false);
+            return answer.save();
+          })))
+          .then(() => {
+            this.get('alert').showToast('success', `${count} ${noun} Restored`, 'bottom-end', 3000, false, null);
+            this.set('selectedAnswers', []);
+
+          })
+          .catch(() => {
+            this.get('alert').showToast('error', `Sorry, an error occurred`, 'bottom-end', 3000, false, null);
+          });
+        }
       });
     }
   }

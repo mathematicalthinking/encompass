@@ -13,28 +13,39 @@ const { isNonEmptyObject, isNonEmptyArray, isNonEmptyString } = objectUtils;
 
 module.exports.get = {};
 
-const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly) {
+const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy) {
   try {
     if (!isNonEmptyObject(user)) {
       return {};
     }
     const { accountType, actingRole } = user;
 
-    if (isTrashedOnly) {
-      if (accountType === 'A') {
-        return { isTrashed: true };
-      }
-      return;
-    }
-    let doIncludeOldPows = false;
-
-    const isStudent = accountType === 'S' || actingRole === 'student';
-
     let filter = {
       $and: [
         { isTrashed: false }
       ]
     };
+
+    if (isNonEmptyObject(filterBy)) {
+      const { isTrashedOnly } = filterBy;
+      if ( isTrashedOnly === true || isTrashedOnly === "true") {
+        if (accountType === 'A') {
+          filter = {
+            $and: [
+              { isTrashed: true }
+            ]
+          };
+
+        }
+      }
+      delete filterBy.isTrashedOnly;
+
+    }
+    let doIncludeOldPows = false;
+
+    const isStudent = accountType === 'S' || actingRole === 'student';
+
+
 
     if (isNonEmptyArray(ids)) {
       filter.$and.push({ _id: { $in : ids } });

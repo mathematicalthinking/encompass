@@ -540,7 +540,7 @@ const putAssignment = async (req, res, next) => {
         $pull: { $assignments: assignment._id },
       }).exec();
 
-      let { students = [], teachers = [] } = assignment
+      let { students = [], teachers = [] } = assignment;
       let combinedStudentsTeachers = students.concat(teachers);
 
       if (isNonEmptyArray(combinedStudentsTeachers)) {
