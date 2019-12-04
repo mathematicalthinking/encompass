@@ -195,9 +195,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
               this.handleErrors(err, 'createUserErrors', newUserData);
             });
         })
-        .catch((err) => {
+        .catch(() => {
           // err should be handled within handleOrg function
-          console.log('err', err);
         });
     },
 

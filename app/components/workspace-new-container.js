@@ -77,7 +77,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   listResultsMessage: function() {
     let msg;
-    // let userOrgName = this.get('userOrgName');
     if (this.get('isFetchingAnswers')) {
       if (this.get('showLoadingMessage')) {
         msg = 'Loading results... Thank you for your patience.';
@@ -216,12 +215,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       query
     };
   },
-  nonTrashedAnswers: function() {
-    if (this.get('answers')) {
-      return this.get('answers').rejectBy('isTrashed');
-    }
-    return [];
-  }.property('answers.@each.isTrashed'),
 
   filteredAnswers: function() {
     if (!this.get('answers')) {

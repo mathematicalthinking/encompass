@@ -123,10 +123,8 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
           this.get('onSubChange')(sub);
         }
       })
-      .catch((err) => {
-        console.log('err', err);
+      .catch(() => {
         this.send('cancelRevising');
-
       });
     },
     setDisplaySubmission(sub) {
