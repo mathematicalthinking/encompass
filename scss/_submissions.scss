@@ -90,7 +90,7 @@
     padding: 0 20px;
     margin-bottom: 60px;
     li {
-      &.include-pows-input {
+      &.include-pows-input, &.include-trashed-input {
         label {
           display: inline-block;
           width: 80%;
@@ -221,6 +221,12 @@
           outline: none;
         }
       }
+
+      &.restore-all {
+        button {
+          background-color: $success-color;
+        }
+      }
     }
   }
   .results-list {
@@ -288,6 +294,10 @@
           @include flex-item(2, start, .08 0 auto);
           width: 8%;
           vertical-align: top;
+          &.trashed {
+            text-decoration: line-through;
+            color: $error-color
+          }
         }
         &.revisions {
           @include flex-item(3, start, .08 0 auto);

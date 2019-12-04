@@ -43,7 +43,8 @@ async function getAnswers(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
 
-    let { ids, problem, filterBy, searchBy, isTrashedOnly, didConfirmLargeRequest } = req.query;
+    let { ids, problem, filterBy, searchBy, didConfirmLargeRequest } = req.query;
+
     if (problem) {
       let criteria = req.query;
       const requestedAnswers = await models.Answer.findOne(criteria).exec();
@@ -108,7 +109,7 @@ async function getAnswers(req, res, next) {
         }
       }
     }
-      const criteria = await access.get.answers(user, ids, filterBy, searchFilter, isTrashedOnly);
+      const criteria = await access.get.answers(user, ids, filterBy, searchFilter);
       if (_.isNull(criteria)) {
         const data = {
           'answers': [],

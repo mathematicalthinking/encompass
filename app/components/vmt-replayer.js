@@ -6,7 +6,6 @@ Encompass.VmtReplayerComponent = Ember.Component.extend(Encompass.VmtHostMixin,{
   },
 
   willDestroyElement() {
-    console.log('destroying vmt replayer!');
     $('#vmt-enc-replayer').remove();
     $('#vmt-enc-replayer-css').remove();
     this._super(...arguments);

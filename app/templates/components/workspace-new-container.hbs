@@ -15,6 +15,7 @@
         selectedTeacher=selectedTeacher
         startDate=startDate
         endDate=endDate
+        isTrashedOnly=toggleTrashed
       }}
 
 
@@ -25,30 +26,24 @@
         <div class="top-row">
           <h1 class="heading">Submissions</h1>
         {{#if selectedAnswers.length}}
+          {{#if toggleTrashed}}
+          <div class="action restore-all">
+            <button class="primary-button animated fadeIn" {{action "restoreAllSelected"}}>Restore {{selectedAnswers.length}} Submissions</button>
+          </div>
+          {{else}}
           <div class="action">
             <button class="primary-button animated fadeIn" {{action "toSettingsConfig"}}>Create Workspace</button>
           </div>
+          {{/if}}
         {{/if}}
         </div>
-        {{!-- <div class="searchbar">
-          {{search-bar
-            onSearch=(action "searchAnswers")
-            showFilter=true
-            searchOptions = searchOptions
-            basePlaceholder="Search submissions"
-            inputValue=searchInputValue
-            clearSearchResults=(action "clearSearchResults")
-            selectedCriterion=searchCriterion
-            }}
-
-        </div> --}}
       </div>
       <div class="results-list">
         <div class="results-info">
           <div class="results-icons">
             <span class="icon-message submissions">
               <i class="fas fa-file"></i>
-              {{nonTrashedAnswers.length}} Submissions
+              {{sortedAnswers.length}} Submissions
             </span>
             <span class="icon-message selected">
               <i class="fas fa-check-circle"></i>

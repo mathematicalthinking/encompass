@@ -2,7 +2,7 @@
   <div class="item-section toggle-all toggle-check">
     <input type="checkbox" checked={{isChecked}} name="customIds" value={{answer.id}} onclick={{action "onSelect"}}>
     </div>
-  <div class="item-section student">
+  <div class="item-section student {{if answer.isTrashed "trashed"}}">
       {{answer.student}}
   </div>
   <div class="item-section revisions">

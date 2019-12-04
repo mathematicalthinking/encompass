@@ -126,6 +126,13 @@
       <label>Include Old Pows Work</label>
     </li>
 
+    {{#if currentUser.isAdmin}}
+      <li class="include-trashed-input">
+        {{input type="checkbox" checked=isTrashedOnly name="isTrashedOnly"}}
+        <label>Only Trashed Answers</label>
+      </li>
+    {{/if}}
+
     <h3 {{action 'toggleVmtFilters'}} class="vmt-header">
       <i class="fas {{if showVmtFilters 'fa-chevron-down'}}{{unless showVmtFilters 'fa-chevron-right'}}"></i> Vmt
     </h3>

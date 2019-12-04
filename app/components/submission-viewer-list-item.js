@@ -9,7 +9,15 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   },
 
   ellipsisMenuOptions: function() {
-    let moreMenuOptions = this.get('moreMenuOptions');
+    let moreMenuOptions = [];
+
+    if (!this.get('answer.isTrashed')) {
+      moreMenuOptions.push({label: 'Delete', value: 'delete', action: 'deleteAnswer', icon: 'fas fa-trash'},
+      );
+    } else {
+      moreMenuOptions.push({label: 'Restore', value: 'restore', action: 'restoreAnswer', icon: 'fas fa-undo'},
+      );
+    }
     return moreMenuOptions;
   }.property('answer.id', 'answer.isTrashed'),
 
@@ -49,6 +57,27 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
                 answer.set('isTrashed', false);
                 answer.save().then(() => {
                   this.get('alert').showToast('success', 'Submission Restored', 'bottom-end', 3000, false, null);
+                });
+              }
+            });
+          });
+        }
+      });
+    },
+    restoreAnswer: function() {
+      let answer = this.get('answer');
+      //need to check if the answer has a thread, if it does, ask if they want to delete all reivisions as well
+
+      this.get('alert').showModal('warning', 'Are you sure you want to restore this submission', 'This submission will be searchable by other users', 'Yes').then((result) => {
+        if (result.value) {
+          answer.set('isTrashed', false);
+          answer.save().then((answer) => {
+            this.get('alert').showToast('success', 'Submission Restored', 'bottom-end', 4000, true, 'Undo')
+            .then((results) => {
+              if (results.value) {
+                answer.set('isTrashed', true);
+                answer.save().then(() => {
+                  this.get('alert').showToast('success', 'Submission Deleted', 'bottom-end', 3000, false, null);
                 });
               }
             });
