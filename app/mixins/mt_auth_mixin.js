@@ -5,6 +5,9 @@ getRedirectUrl() {
 
 getMtSsoUrl() {
   let { host }  = window.location;
+  if (host === 'prod1encompass.mathematicalthinking.org') {
+    return `https://prod1sso.mathematicalthinking.org`;
+  }
   if (host === 'encompass.mathematicalthinking.org') {
     return `https://sso.mathematicalthinking.org`;
   }
