@@ -40,19 +40,11 @@
     "axios": "^0.20.0",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
-<<<<<<< HEAD
     "debug": "^4.2.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-paginate": "^1.0.2",
     "express-session": "^1.17.1",
-=======
-    "debug": "^4.1.1",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-paginate": "^1.0.0",
-    "express-session": "^1.15.6",
->>>>>>> express
     "g": "^2.0.1",
     "gm": "^1.23.1",
     "gm-reloaded": "^1.24.0",
