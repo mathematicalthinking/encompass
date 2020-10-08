@@ -79,6 +79,7 @@
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
     "babel-eslint": "^10.1.0",
+<<<<<<< HEAD
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "chromedriver": "^86.0.0",
@@ -87,6 +88,17 @@
     "eslint": "^7.10.0",
     "geckodriver": "^1.20.0",
     "grunt": "^1.3.0",
+=======
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "chromedriver": "^2.46.0",
+    "concurrently": "^4.1.0",
+    "csvtojson": "^2.0.8",
+    "eslint": "^5.16.0",
+    "geckodriver": "^1.16.2",
+    "grunt": "^1.0.4",
+>>>>>>> chai-http
     "grunt-assets-versioning": "^1.0.6",
     "grunt-babel": "^8.0.0",
     "grunt-browserify": "^5.3.0",
