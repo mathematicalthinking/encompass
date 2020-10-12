@@ -101,7 +101,11 @@
     "grunt-contrib-uglify": "^5.0.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-ember-templates": "^1.2.0",
+<<<<<<< HEAD
     "grunt-env": "1.0.1",
+=======
+    "grunt-env": "0.4.4",
+>>>>>>> grunt-ember-templates
     "grunt-eslint": "^21.0.0",
     "grunt-mocha-test": "^0.13.3",
     "grunt-neuter": "^0.6.0",
