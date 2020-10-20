@@ -31,23 +31,22 @@ section.assignmentlist {
     margin-bottom: 15px;
     div.info-detail {
       display: flex;
+      margin-top: 4px;
     }
 
     p {
       font-size: 1em;
       width: 70%;
-      padding: 12px 20px;
       margin: 8px 0;
       display: inline-block;
     }
     label {
       width: 20%;
       font-size: 1em;
-      padding: 12px 20px;
       color: $dark-font-color;
     }
     .action_button {
-      padding: 12px 20px;
+
     }
     button.action_button {
       margin: 8px 15px 8px 5px;
