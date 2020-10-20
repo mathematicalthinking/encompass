@@ -63,14 +63,14 @@
   <button class="primary-button revise" {{action 'reviseAssignmentResponse'}}>Revise</button>
 {{/if}}
 {{#if showRespondButton}}
-  <button class="primary-button respond" {{action 'beginAssignmentResponse'}}>Share Your Ideas</button>
+  <button class="primary-button respond" {{action 'beginAssignmentResponse'}}>Submit</button>
 {{/if}}
 
   <div class="info-msg-container">
     {{#if sortedList.length}}
       <p class="info">You have made a total of {{sortedList.length}} submissions to this assignment. You can view the details of each submission by clicking on one of the Past Submissions items below. If you would like to revise your most recently submitted revision, cick Revise.</p>
     {{else}}
-      <p class="info">It looks like you have not made any submissions to this assignment. Click 'Share Your Ideas' to begin making a submission.</p>
+      <p class="info-none">It looks like you have not made any submissions to this assignment. Click 'Submit' to begin making a submission.</p>
     {{/if}}
   </div>
 
