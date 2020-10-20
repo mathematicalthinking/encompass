@@ -21,17 +21,20 @@ section.assignmentlist {
     color: $accent-color;
     font-weight: $bold-font-weight;
   }
+
   #assignment-new-link {
     color: $accent-color;
     font-weight: $bold-font-weight;
   }
 }
+
 #assignment-info-student {
   section.assignment-info-student {
     margin-bottom: 15px;
+
     div.info-detail {
       display: flex;
-      margin-top: 4px;
+      margin-top: 8px;
     }
 
     p {
@@ -40,14 +43,17 @@ section.assignmentlist {
       margin: 8px 0;
       display: inline-block;
     }
+
     label {
       width: 20%;
       font-size: 1em;
       color: $dark-font-color;
+      margin-top: 8px;
+      margin-left: 8px;
     }
-    .action_button {
 
-    }
+    .action_button {}
+
     button.action_button {
       margin: 8px 15px 8px 5px;
       padding: 10px 15px;
@@ -59,6 +65,7 @@ section.assignmentlist {
 
   .info-msg-container {
     margin-bottom: 8px;
+
     p.info {
       font-size: 0.9em;
     }
@@ -69,14 +76,17 @@ section.assignmentlist {
     display: flex;
     width: 100%;
     margin-bottom: 50px;
+
     section.past-submissions-list {
       width: 20%;
       display: inline-block;
+
       p {
         font-size: 0.8em;
         padding: 5px;
         margin: 8px 0px;
       }
+
       ol {
         li {
           padding: 6px 0 6px 10px;
@@ -85,7 +95,7 @@ section.assignmentlist {
 
           &.highlight {
             font-weight: $bold-font-weight;
-              background-color: lighten($background-color, 5%);
+            background-color: lighten($background-color, 5%);
           }
         }
       }
@@ -95,10 +105,12 @@ section.assignmentlist {
       width: 70%;
       display: inline-block;
     }
+
     div#answer-info {
       label {
         font-size: 1em;
       }
+
       border-left: 1px solid;
     }
   }
@@ -106,148 +118,168 @@ section.assignmentlist {
 
 
 section.assignment-info-teacher {
-    #assignment-info-form {
-      div.mySelect {
-        display: inline-block;
-        padding: 12px 0px;
-        margin: 8px 0;
-        font-size: 1em;
-        width: 70%;
-        select {
-          width: 100%;
-          font-size: 1em;
-          margin-left: 0px;
-          height: 45px;
-          text-indent: 10px;
-          border: 1px solid $input-border;
-          border-radius: 4px;
-          box-sizing: border-box;
-          background: none;
-          &::placeholder {
-            color: $primary-font-color;
-          }
-        }
+  #assignment-info-form {
+    div.mySelect {
+      display: inline-block;
+      padding: 12px 0px;
+      margin: 8px 0;
+      font-size: 1em;
+      width: 70%;
 
-      }
-      input[type=text], input[type=date]{
+      select {
+        width: 100%;
         font-size: 1em;
-        color: $primary-font-color;
-        width: 70%;
-        padding: 12px 20px;
-        margin: 8px 0px;
-        display: inline-block;
+        margin-left: 0px;
+        height: 45px;
+        text-indent: 10px;
         border: 1px solid $input-border;
         border-radius: 4px;
         box-sizing: border-box;
         background: none;
+
         &::placeholder {
           color: $primary-font-color;
         }
       }
-      div.twitter-typeahead {
-        display: inline-block;
-        padding: 12px 0px;
-        font-size: 1em;
-        width: 70%;
 
-        span.twitter-typeahead {
-          width:100%;
-        }
+    }
 
-        input.typeahead {
-          width: 100%;
-          padding: 12px 20px;
-          margin: 8px 0;
-          font-size: 1em;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          box-sizing: border-box;
-        }
-      }
-      label {
-        width: 20%;
-        font-size: 1em;
-        padding: 12px 20px;
-        color: $dark-font-color;
-      }
-      p.assignment-info {
-        font-size: 1em;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        input[type=text], input[type=date] {
-          border: none;
-        }
-      }
+    input[type=text],
+    input[type=date] {
+      font-size: 1em;
+      color: $primary-font-color;
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0px;
+      display: inline-block;
+      border: 1px solid $input-border;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background: none;
 
-      .selectize-comp {
-        width: 70%;
-        display: inline-block;
+      &::placeholder {
+        color: $primary-font-color;
       }
     }
-    #assignment-info {
-      .assignment-info {
-        font-size: 1em;
-        width: 70%;
+
+    div.twitter-typeahead {
+      display: inline-block;
+      padding: 12px 0px;
+      font-size: 1em;
+      width: 70%;
+
+      span.twitter-typeahead {
+        width: 100%;
+      }
+
+      input.typeahead {
+        width: 100%;
         padding: 12px 20px;
         margin: 8px 0;
-        display: inline-block;
-        border: none;
+        font-size: 1em;
+        border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
-        background: none;
-        &::placeholder {
-          color: $primary-font-color;
-        }
+      }
+    }
 
-      }
-      label {
-        width: 20%;
-        font-size: 1em;
-        padding: 12px 20px;
-        color: $dark-font-color;
-      }
-      .action_button {
-        padding: 12px 20px;
+    label {
+      width: 20%;
+      font-size: 1em;
+      padding: 12px 20px;
+      color: $dark-font-color;
+    }
+
+    p.assignment-info {
+      font-size: 1em;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+
+      input[type=text],
+      input[type=date] {
+        border: none;
       }
     }
-    button.action_button {
-      margin: 8px 15px 8px 5px;
-      padding: 10px 15px;
-      font-size: .8em;
-      border-radius: 3px;
-      font-weight: $bold-font-weight;
+
+    .selectize-comp {
+      width: 70%;
+      display: inline-block;
     }
-    .right {
-      float: right;
-      font-size: 1.5em;
-      color: $primary-font-color;
+  }
+
+  #assignment-info {
+    .assignment-info {
+      font-size: 1em;
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
       border: none;
-      &:hover {
-        color: lighten($primary-font-color, 10);
+      border-radius: 4px;
+      box-sizing: border-box;
+      background: none;
+
+      &::placeholder {
+        color: $primary-font-color;
       }
+
     }
+
+    label {
+      width: 20%;
+      font-size: 1em;
+      padding: 12px 20px;
+      color: $dark-font-color;
+    }
+
+    .action_button {
+      padding: 12px 20px;
+    }
+  }
+
+  button.action_button {
+    margin: 8px 15px 8px 5px;
+    padding: 10px 15px;
+    font-size: .8em;
+    border-radius: 3px;
+    font-weight: $bold-font-weight;
+  }
+
+  .right {
+    float: right;
+    font-size: 1.5em;
+    color: $primary-font-color;
+    border: none;
+
+    &:hover {
+      color: lighten($primary-font-color, 10);
+    }
+  }
 }
 
 #assignment-report {
- h2 {
-   margin-bottom: 10px;
- }
- .info-summary {
-   margin-bottom: 10px;
-   margin-left: 5px;
- }
+  h2 {
+    margin-bottom: 10px;
+  }
 
- table {
-   margin-left: 5px;
+  .info-summary {
+    margin-bottom: 10px;
+    margin-left: 5px;
+  }
+
+  table {
+    margin-left: 5px;
+
     th {
       background: $pale-accent
     }
+
     td {
       background: lighten($pale-accent, 10%);
       border: 1px solid $pale-accent;
     }
- }
+  }
 
 }
 
@@ -273,6 +305,7 @@ section.assignment-info-teacher {
     border-radius: 3px;
     font-size: 0.9em;
   }
+
   input[name=daterange] {
     padding: 6px 9px;
   }
@@ -300,31 +333,39 @@ section.assignment-info-teacher {
         padding: 10px 15px;
       }
     }
+
     &.creation-details {
       @include flex-item(2, flex-start, 1 1 auto);
       margin-bottom: 20px;
       font-size: 0.9em;
+
       a {
         color: $accent-color;
         font-weight: $light-font-weight;
-      &:hover {
+
+        &:hover {
           font-weight: $main-font-weight;
         }
       }
 
     }
+
     &.assigned-date {
       @include flex-item(3, flex-start, 1 1 auto);
     }
+
     &.due-date {
       @include flex-item(4, flex-start, 1 1 auto);
     }
-    &.section{
+
+    &.section {
       @include flex-item(5, flex-start, 1 1 auto);
     }
+
     &.problem {
       @include flex-item(6, flex-start, 1 1 auto);
     }
+
     &.linked-ws {
       @include flex-item(7, flex-start, 1 1 auto);
 
@@ -332,6 +373,7 @@ section.assignment-info-teacher {
         margin-top: 10px;
       }
     }
+
     &.parent-ws {
       @include flex-item(8, flex-start, 1 1 auto);
       margin-bottom: 25px;
@@ -340,11 +382,14 @@ section.assignment-info-teacher {
         margin-top: 10px;
       }
     }
+
     &.submissions {
       @include flex-item(9, flex-start, 1 1 auto);
     }
+
     &.actions {
       @include flex-item(10, flex-start, 1 1 auto);
+
       .cancel-button {
         margin-left: 10px;
       }
@@ -365,6 +410,7 @@ section.assignment-info-teacher {
         color: $filter-list-border-color;
       }
     }
+
     .value {
       min-width: 200px;
     }
@@ -374,6 +420,7 @@ section.assignment-info-teacher {
         max-width: 75px;
         display: inline-block;
       }
+
       .value {
         min-width: 120px;
         display: inline-block;
@@ -381,7 +428,8 @@ section.assignment-info-teacher {
     }
   }
 
-  #linked-workspaces-new, #parent-workspace-new {
+  #linked-workspaces-new,
+  #parent-workspace-new {
     margin-top: 20px;
     margin-bottom: 20px;
     margin-left: 20px;
@@ -389,12 +437,14 @@ section.assignment-info-teacher {
     .info {
       margin-bottom: 10px;
     }
+
     input[type=text] {
       max-width: 500px;
     }
+
     .label {
       font-size: 1.1em;
     }
   }
 
-  }
+}
