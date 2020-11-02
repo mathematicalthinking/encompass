@@ -4,6 +4,7 @@
   "description": "enCoMPASS",
   "main": "server/server.js",
   "scripts": {
+    "dev": "grunt",
     "start": "grunt",
     "force": "grunt --force",
     "seed": "node test/seedDb",
