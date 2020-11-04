@@ -25,7 +25,7 @@ module.exports = function (grunt) {
    * All initial configurations for grunt tasks needs to be done inside grunt.initConfig()
    */
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    pkg: grunt.file.readJSON("package.json"),
     //revision: process.env.SVN_REVISION || '??',
     //build: process.env.BUILD_NUMBER || '??',
     //
@@ -52,17 +52,17 @@ module.exports = function (grunt) {
      */
     env: {
       dev: {
-        NODE_ENV: 'development'
+        NODE_ENV: "development",
       },
       test: {
-        NODE_ENV: 'test'
+        NODE_ENV: "test",
       },
       seed: {
-        NODE_ENV: 'seed'
+        NODE_ENV: "seed",
       },
       prod: {
-        NODE_ENV: 'production'
-      }
+        NODE_ENV: "production",
+      },
     },
     /*
      * Set up the Mocha tests
@@ -72,149 +72,171 @@ module.exports = function (grunt) {
     mochaTest: {
       e2e: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/selenium/*.js']
+        src: ["test/selenium/*.js"],
       },
       travis: {
         options: {
-            reporter: 'spec',
-            //captureFile: 'results.txt',
-            quiet: false,
-            clearRequireCache: false,
-            clearCacheFilter: (key) => true,
-            noFail: false
-          },
-          src: [
-                'test/selenium/base.js',
-                'test/selenium/comments.js',
-                'test/selenium/folders.js',
-                'test/selenium/helpers.js',
-                'test/selenium/problems.js',
-                'test/selenium/responses.js',
-                'test/selenium/sections.js',
-                'test/selenium/selectors.js',
-                'test/selenium/workspaces_new.js',
-                'test/selenium/workspaces.js',
-              ]
+          reporter: "spec",
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false,
+        },
+        src: [
+          "test/selenium/base.js",
+          "test/selenium/comments.js",
+          "test/selenium/folders.js",
+          "test/selenium/helpers.js",
+          "test/selenium/problems.js",
+          "test/selenium/responses.js",
+          "test/selenium/sections.js",
+          "test/selenium/selectors.js",
+          "test/selenium/workspaces_new.js",
+          "test/selenium/workspaces.js",
+        ],
       },
       api: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/mocha/*.js', 'test/mocha/unit-tests/*.js']
+        src: ["test/mocha/*.js", "test/mocha/unit-tests/*.js"],
       },
-      e2e_xProb: { // does not run problems and users tests
+      e2e_xProb: {
+        // does not run problems and users tests
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
         src: [
-          'test/selenium/assignments_teacher.js',
-          'test/selenium/assignments_students.js',
-          'test/selenium/base.js',
-          'test/selenium/comments.js',
-          'test/selenium/confirm_email.js',
-          'test/selenium/forgot_password',
-          'test/selenium/folders.js',
-          'test/selenium/linked_workspaces.js',
-          'test/selenium/mentoring_approving',
-          'test/selenium/mentoring',
-          'test/selenium/parent_workspace',
-          'test/selenium/responses.js',
-          'test/selenium/sections.js',
-          'test/selenium/users.js',
-          'test/selenium/vmt_import.js',
-          'test/selenium/workspaces_new.js',
-          'test/selenium/workspaces.js',
-          'test/selenium/workspaces_settings',
-        ]
-
-
+          "test/selenium/assignments_teacher.js",
+          "test/selenium/assignments_students.js",
+          "test/selenium/base.js",
+          "test/selenium/comments.js",
+          "test/selenium/confirm_email.js",
+          "test/selenium/forgot_password",
+          "test/selenium/folders.js",
+          "test/selenium/linked_workspaces.js",
+          "test/selenium/mentoring_approving",
+          "test/selenium/mentoring",
+          "test/selenium/parent_workspace",
+          "test/selenium/responses.js",
+          "test/selenium/sections.js",
+          "test/selenium/users.js",
+          "test/selenium/vmt_import.js",
+          "test/selenium/workspaces_new.js",
+          "test/selenium/workspaces.js",
+          "test/selenium/workspaces_settings",
+        ],
       },
       e2eProblems: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/selenium/problems.js', 'test/selenium/problems_info.js', 'test/selenium/problems_new']
+        src: [
+          "test/selenium/problems.js",
+          "test/selenium/problems_info.js",
+          "test/selenium/problems_new",
+        ],
       },
       e2eAuth: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/selenium/confirm_email.js', 'test/selenium/forgot_password.js', 'test/selenium/reset_password.js', 'test/selenium/signup.js',
-        'test/selenium/users.js']
+        src: [
+          "test/selenium/confirm_email.js",
+          "test/selenium/forgot_password.js",
+          "test/selenium/reset_password.js",
+          "test/selenium/signup.js",
+          "test/selenium/users.js",
+        ],
       },
       e2eWorkspaces: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/selenium/comments.js', 'test/selenium/folders.js', 'test/selenium/workspace_settings.js', 'test/selenium/workspaces.js', 'test/selenium/workspaces_new.js']
+        src: [
+          "test/selenium/comments.js",
+          "test/selenium/folders.js",
+          "test/selenium/workspace_settings.js",
+          "test/selenium/workspaces.js",
+          "test/selenium/workspaces_new.js",
+        ],
       },
       e2eMentoring: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/selenium/mentoring_approving.js', 'test/selenium/responses.js'], // fix and add back in: 'test/selenium/mentoring.js'
+        src: [
+          "test/selenium/mentoring_approving.js",
+          "test/selenium/responses.js",
+        ], // fix and add back in: 'test/selenium/mentoring.js'
       },
       e2eVmt: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/selenium/vmt_import.js'],
+        src: ["test/selenium/vmt_import.js"],
       },
       e2eGeneral: {
         options: {
-          reporter: 'spec',
+          reporter: "spec",
           //captureFile: 'results.txt',
           quiet: false,
           clearRequireCache: false,
           clearCacheFilter: (key) => true,
-          noFail: false
+          noFail: false,
         },
-        src: ['test/selenium/base.js','test/selenium/assignments_student.js', 'test/selenium/assignments_teacher.js', 'test/selenium/sections.js', 'test/selenium/linked_workspaces.js', 'test/selenium/parent_workspaces.js', ]
+        src: [
+          "test/selenium/base.js",
+          "test/selenium/assignments_student.js",
+          "test/selenium/assignments_teacher.js",
+          "test/selenium/sections.js",
+          "test/selenium/linked_workspaces.js",
+          "test/selenium/parent_workspaces.js",
+        ],
       },
-
-
     },
 
     /*
@@ -222,14 +244,15 @@ module.exports = function (grunt) {
      */
     shell: {
       restoreTestDb: {
-        command: 'mongorestore --drop --db=encompass_test ./test/data/encompass_test'
+        command:
+          "mongorestore --drop --db=encompass_test ./test/data/encompass_test",
       },
       restoreSeedDb: {
-        command: 'npm run seed',
+        command: "npm run seed",
       },
       sleep3: {
-        command: "echo 'sleep start';sleep 3;echo 'sleep done'"
-      }
+        command: "echo 'sleep start';sleep 3;echo 'sleep done'",
+      },
     },
 
     /*
@@ -238,14 +261,16 @@ module.exports = function (grunt) {
      */
     sass: {
       dist: {
-        files: [{
-          expand: true,
-          cwd: 'scss',
-          src: 'main.scss',
-          dest: 'build',
-          ext: '.css'
-        }]
-      }
+        files: [
+          {
+            expand: true,
+            cwd: "scss",
+            src: "main.scss",
+            dest: "build",
+            ext: ".css",
+          },
+        ],
+      },
     },
 
     /*
@@ -255,17 +280,19 @@ module.exports = function (grunt) {
     babel: {
       options: {
         sourceMap: true,
-        presets: ['env']
+        presets: ["@babel/preset-env"],
       },
       dist: {
-        files: [{
-          expand: true,
-          cwd: 'app',
-          src: ['**/*.js'],
-          dest: 'babel',
-          ext: '.js'
-        }]
-      }
+        files: [
+          {
+            expand: true,
+            cwd: "app",
+            src: ["**/*.js"],
+            dest: "babel",
+            ext: ".js",
+          },
+        ],
+      },
     },
     /*
       This reads the babel/app.js folder and builds all the
@@ -279,15 +306,15 @@ module.exports = function (grunt) {
     neuter: {
       dev: {
         options: {
-          includeSourceURL: true
+          includeSourceURL: true,
         },
-        src: 'babel/app.js',
-        dest: 'build/application.js'
+        src: "babel/app.js",
+        dest: "build/application.js",
       },
       prod: {
-        src: 'babel/app.js',
-        dest: 'build/application-prod.js'
-      }
+        src: "babel/app.js",
+        dest: "build/application-prod.js",
+      },
     },
     /*
       Browserify is just taking a single .js file
@@ -296,13 +323,13 @@ module.exports = function (grunt) {
     browserify: {
       options: {
         browserifyOptions: {
-          debug: true
-        }
+          debug: true,
+        },
       },
       main: {
-        src: 'common/browser.js',
-        dest: 'build/common_bundle.js'
-      }
+        src: "common/browser.js",
+        dest: "build/common_bundle.js",
+      },
     },
 
     /*
@@ -311,61 +338,73 @@ module.exports = function (grunt) {
     */
     watch: {
       common_code: {
-        files: ['common/**/*.js'],
-        tasks: ['browserify', 'MochaTests', 'eslint'], //common code is used on the front and backend
+        files: ["common/**/*.js"],
+        tasks: ["browserify", "MochaTests", "eslint"], //common code is used on the front and backend
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       common_files: {
-        files: ['Gruntfile.js', '.eslintrc.js'],
-        tasks: ['eslint'], //anything could have changed in the Gruntfile
+        files: ["Gruntfile.js", ".eslintrc.js"],
+        tasks: ["eslint"], //anything could have changed in the Gruntfile
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       ember_code: {
-        files: ['app/**/*.js', 'dependencies/**/*.js', '!dependencies/compiled/templates.js', '!server/datasource/**', '!server/server.js', '!server/config.js'],
-        tasks: ['neuter:dev', 'eslint'], //jqunit
+        files: [
+          "app/**/*.js",
+          "dependencies/**/*.js",
+          "!dependencies/compiled/templates.js",
+          "!server/datasource/**",
+          "!server/server.js",
+          "!server/config.js",
+        ],
+        tasks: ["neuter:dev", "eslint"], //jqunit
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       server_code: {
-        files: ['server/server.js', 'server/fake_login.js', 'server/config.js', 'server/datasource/**/*.js'],
-        tasks: ['eslint'], //nodemon monitors it's own files,
+        files: [
+          "server/server.js",
+          "server/fake_login.js",
+          "server/config.js",
+          "server/datasource/**/*.js",
+        ],
+        tasks: ["eslint"], //nodemon monitors it's own files,
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       handlebars_templates: {
-        files: ['app/**/*.hbs'],
-        tasks: ['emberTemplates', 'neuter:dev'], //jqunit
+        files: ["app/**/*.hbs"],
+        tasks: ["emberTemplates", "neuter:dev"], //jqunit
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       common_tests: {
-        files: ['test/jasmine/common/**'],
-        tasks: ['jasmine:common','eslint'],
+        files: ["test/jasmine/common/**"],
+        tasks: ["jasmine:common", "eslint"],
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       ember_qunit: {
-        files: ['test/qunit/**/*.*', 'test/data/fixtures.js'],
-        tasks: ['eslint'], //jqunit
+        files: ["test/qunit/**/*.*", "test/data/fixtures.js"],
+        tasks: ["eslint"], //jqunit
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
       sass_code: {
-        files: ['scss/*.scss'],
-        tasks: ['sass'],
+        files: ["scss/*.scss"],
+        tasks: ["sass"],
         options: {
-          spawn: false
-        }
-      }
+          spawn: false,
+        },
+      },
     },
 
     /*
@@ -374,27 +413,27 @@ module.exports = function (grunt) {
     */
     jasmine: {
       common: {
-        src: 'build/common_bundle.js',
+        src: "build/common_bundle.js",
         options: {
-          specs: ['test/jasmine/common/**/*_spec.js'],
+          specs: ["test/jasmine/common/**/*_spec.js"],
           junit: {
-            path: 'build/.test'
+            path: "build/.test",
           },
           //display: 'short',
           summary: false, //https://github.com/gruntjs/grunt-contrib-jasmine/issues/145
-          keepRunner: true
-        }
-      }
+          keepRunner: true,
+        },
+      },
     },
     /*
       Qunit tests are built into ember, they are currently out of date,
       Maybe only use for large components & pages
     */
     qunit: {
-      all: ['test/qunit/q*html'],
+      all: ["test/qunit/q*html"],
       options: {
-        console: false //like to use 0.5.0 https://github.com/gruntjs/grunt-contrib-qunit/issues/68
-      }
+        console: false, //like to use 0.5.0 https://github.com/gruntjs/grunt-contrib-qunit/issues/68
+      },
     },
 
     /*
@@ -402,8 +441,8 @@ module.exports = function (grunt) {
     */
     qunit_junit: {
       options: {
-        dest: 'build/.test'
-      }
+        dest: "build/.test",
+      },
     },
     /*
       Reads the projects .jshintrc file and applies coding
@@ -411,16 +450,41 @@ module.exports = function (grunt) {
       support files.
     */
     jshint: {
-      all: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!server/db_migration/*.js', '!test/mocha/*.js', '!server/middleware/access/*.js',],
+      all: [
+        "Gruntfile.js",
+        "app/**/*.js",
+        "server/**/*.js",
+        "test/**/*.js",
+        "!dependencies/*.*",
+        "!test/qunit/support/*.*",
+        "!test/selenium/*.js",
+        "!test/data/*.js",
+        "!server/db_migration/*.js",
+        "!test/mocha/*.js",
+        "!server/middleware/access/*.js",
+      ],
       options: {
-        jshintrc: '.jshintrc'
-      }
+        jshintrc: ".jshintrc",
+      },
     },
     eslint: {
-      target: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'common/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', 'test/selenium/*.js', 'test/data/*.js', '!server/db_migration/*.js', 'test/mocha/*.js', 'server/middleware/access/*.js', '!server/fake_login.js'],
+      target: [
+        "Gruntfile.js",
+        "app/**/*.js",
+        "server/**/*.js",
+        "common/*.js",
+        "!dependencies/*.*",
+        "!test/qunit/support/*.*",
+        "test/selenium/*.js",
+        "test/data/*.js",
+        "!server/db_migration/*.js",
+        "test/mocha/*.js",
+        "server/middleware/access/*.js",
+        "!server/fake_login.js",
+      ],
       options: {
-        configFile: '.eslintrc.js'
-      }
+        configFile: ".eslintrc.js",
+      },
     },
     /*
       Finds Handlebars templates and precompiles them into functions.
@@ -437,35 +501,47 @@ module.exports = function (grunt) {
     emberTemplates: {
       options: {
         templateName: function (sourceFile) {
-          return sourceFile.replace(/app\/templates\//, '');
+          return sourceFile.replace(/app\/templates\//, "");
         },
-        templateCompilerPath: 'dependencies/ember-template-compiler2_14_1.js'
+        templateCompilerPath: "dependencies/ember-template-compiler2_14_1.js",
       },
-      'dependencies/compiled/templates.js': ["app/templates/**/*.hbs"]
+      "dependencies/compiled/templates.js": ["app/templates/**/*.hbs"],
     },
 
     nodemon: {
       dev: {
-        script: 'server/server.js',
+        script: "server/server.js",
         options: {
-          watch: ['server/server.js', 'config.json', 'server/config.js', 'server/datasource', 'Gruntfile.js']
-        }
+          watch: [
+            "server/server.js",
+            "config.json",
+            "server/config.js",
+            "server/datasource",
+            "Gruntfile.js",
+          ],
+        },
       },
       debug: {
-        script: 'server/server.js',
+        script: "server/server.js",
         options: {
-          nodeArgs: ['--debug'],
-          watch: ['server/server.js', 'config.json', 'server/config.js', 'server/datasource', 'Gruntfile.js']
-        }
-      }
+          nodeArgs: ["--debug"],
+          watch: [
+            "server/server.js",
+            "config.json",
+            "server/config.js",
+            "server/datasource",
+            "Gruntfile.js",
+          ],
+        },
+      },
     },
 
-    'node-inspector': {
+    "node-inspector": {
       custom: {
         options: {
-          'web-port': 8081
-        }
-      }
+          "web-port": 8081,
+        },
+      },
     },
 
     /**
@@ -473,73 +549,102 @@ module.exports = function (grunt) {
      */
     concurrent: {
       dev: {
-        tasks: ['nodemon:dev', 'eslint', 'watch'],
+        tasks: ["nodemon:dev", "eslint", "watch"],
         options: {
-          logConcurrentOutput: true
-        }
+          logConcurrentOutput: true,
+        },
       },
       endToEndTasks: {
-        tasks: ['nodemon:dev', 'endToEndTests']
+        tasks: ["nodemon:dev", "endToEndTests"],
       },
       apiTasks: {
-        tasks: ['nodemon:dev', 'apiTests']
+        tasks: ["nodemon:dev", "apiTests"],
       },
       waitApiTasks: {
-        tasks: ['nodemon:dev', 'waitApiTests']
+        tasks: ["nodemon:dev", "waitApiTests"],
       },
       test: {
-        tasks: ['nodemon:dev', 'MochaTests', 'watch'],
+        tasks: ["nodemon:dev", "MochaTests", "watch"],
         options: {
-          logConcurrentOutput: true
-        }
+          logConcurrentOutput: true,
+        },
       },
-      'debug-only': {
-        tasks: ['nodemon:debug', 'node-inspector'],
+      "debug-only": {
+        tasks: ["nodemon:debug", "node-inspector"],
         options: {
-          logConcurrentOutput: true
-        }
+          logConcurrentOutput: true,
+        },
       },
       debug: {
-        tasks: ['nodemon:debug', 'node-inspector', 'MochaTests', 'watch'],
+        tasks: ["nodemon:debug", "node-inspector", "MochaTests", "watch"],
         options: {
-          logConcurrentOutput: true
-        }
+          logConcurrentOutput: true,
+        },
       },
       systemTests: {
-        tasks: ['nodemon:sysTest', 'mochaSelenium'],
+        tasks: ["nodemon:sysTest", "mochaSelenium"],
         options: {
-          logConcurrentOutput: true
-        }
-      }
+          logConcurrentOutput: true,
+        },
+      },
     },
     // Would like to be able to put .env_* files in temp file in concat, and then output to .env filename in zip file.
     compress: {
       staging: {
         options: {
-          archive: 'staging.zip'
+          archive: "staging.zip",
         },
         files: [
-          {src: [ 'dist/**', 'common/**', 'dependencies/**', 'server/**', 'seeders/**', 'package.json', 'package-lock.json', '.env_staging', 'md-seed-config.js', 'md-seed-generator.json'], dest: './staging/', expand: true, cwd: '.'}
-        ]
+          {
+            src: [
+              "dist/**",
+              "common/**",
+              "dependencies/**",
+              "server/**",
+              "seeders/**",
+              "package.json",
+              "package-lock.json",
+              ".env_staging",
+              "md-seed-config.js",
+              "md-seed-generator.json",
+            ],
+            dest: "./staging/",
+            expand: true,
+            cwd: ".",
+          },
+        ],
       },
       prod: {
         options: {
-          archive: 'prod.zip'
+          archive: "prod.zip",
         },
         files: [
-          {src: [ 'dist/**', 'common/**', 'dependencies/**', 'server/**', 'package.json', 'package-lock.json', '.env_prod'], dest: './prod/', expand: true, cwd: '.'}
-        ]
-      }
+          {
+            src: [
+              "dist/**",
+              "common/**",
+              "dependencies/**",
+              "server/**",
+              "package.json",
+              "package-lock.json",
+              ".env_prod",
+            ],
+            dest: "./prod/",
+            expand: true,
+            cwd: ".",
+          },
+        ],
+      },
     },
     concat: {
       staging_env: {
-        src: ['.env', 'staging_env'],
-        dest: './.env_staging'
+        src: [".env", "staging_env"],
+        dest: "./.env_staging",
       },
       prod_env: {
-        src: ['.env', 'prod_env'],
-        dest: './.env_prod'
-      }
+        src: [".env", "prod_env"],
+        dest: "./.env_prod",
+      },
     },
     // // bump up version number (package and git) - not working
     // bump: {
@@ -563,61 +668,74 @@ module.exports = function (grunt) {
     // },
     clean: {
       dist: {
-        src: ['dist/', 'build/assets.json']
-      }
+        src: ["dist/", "build/assets.json"],
+      },
     },
     // create versioned files in dist directory (from build directory)
     assets_versioning: {
       dist: {
         options: {
-          versionsMapTrimPath: 'dist/',
-          versionsMapFile: 'assets.json',
-          tag: 'date'
+          versionsMapTrimPath: "dist/",
+          versionsMapFile: "assets.json",
+          tag: "date",
         },
         files: {
-          'dist/base.css': [ 'build/base.css'],
-          'dist/guiders.css': [ 'build/guiders.css'],
-          'dist/main.css': [ 'build/main.css'],
-          'dist/application.js': [ 'build/application.js'],
-          'dist/common_bundle.js': [ 'build/common_bundle.js'],
-          'dist/guiders.js': [ 'build/guiders.js'],
-          'dist/jquery.sticky.js': [ 'build/jquery.sticky.js']
-        }
-      }
+          "dist/base.css": ["build/base.css"],
+          "dist/guiders.css": ["build/guiders.css"],
+          "dist/main.css": ["build/main.css"],
+          "dist/application.js": ["build/application.js"],
+          "dist/common_bundle.js": ["build/common_bundle.js"],
+          "dist/guiders.js": ["build/guiders.js"],
+          "dist/jquery.sticky.js": ["build/jquery.sticky.js"],
+        },
+      },
     },
     // copy unversioned files to dist directory (from build directory)
     copy: {
       dist: {
         files: [
           // copy images folder in build to dist
-          {cwd: 'build/images', expand: true, src: ['**'], dest: 'dist/images', flatten: true},
+          {
+            cwd: "build/images",
+            expand: true,
+            src: ["**"],
+            dest: "dist/images",
+            flatten: true,
+          },
           // copy all html files in build root to dist
-          {cwd: 'build', expand: true, src: ['license.html'], dest: 'dist'},
+          { cwd: "build", expand: true, src: ["license.html"], dest: "dist" },
           // copy all png files in build root (bg.png). is this needed ???
-          {cwd: 'build', expand: true, src: ['*.png', '*.svg'], dest: 'dist'},
-          {cwd: 'build/image_uploads', expand: true, src: ['**'], dest: 'dist/image_uploads', flatten: true}
+          { cwd: "build", expand: true, src: ["*.png", "*.svg"], dest: "dist" },
+          {
+            cwd: "build/image_uploads",
+            expand: true,
+            src: ["**"],
+            dest: "dist/image_uploads",
+            flatten: true,
+          },
         ],
       },
     },
     // replace asset filenames in index.html using mapping
-    'string-replace': {
+    "string-replace": {
       dist: {
-        files:
-          [{
+        files: [
+          {
             expand: true,
-            cwd: 'build/',
-            src: 'index.html',
-            dest: 'dist/'
-          }],
+            cwd: "build/",
+            src: "index.html",
+            dest: "dist/",
+          },
+        ],
         options: {
           // replacements: [{
           //   pattern: '<%= mapping.originalPath.var1 %>',
           //   replacement: '<%= mapping.versionedPath.var2 %>'
           // }]
-          replacements: [] // <-- Intentionally empty and will be dynamically configured via `configAndRunStringReplace`.
-        }
-      }
-    }
+          replacements: [], // <-- Intentionally empty and will be dynamically configured via `configAndRunStringReplace`.
+        },
+      },
+    },
   });
 
 
