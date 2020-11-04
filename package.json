@@ -37,11 +37,7 @@
   },
   "homepage": "https://github.com/mathematicalthinking/encompass#readme",
   "dependencies": {
-<<<<<<< HEAD
     "axios": "^0.21.0",
-=======
-    "axios": "^0.20.0",
->>>>>>> origin/upgrade
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
     "debug": "^4.2.0",
