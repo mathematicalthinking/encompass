@@ -16,11 +16,9 @@
  * grunt testApi - runs only the api (backend) tests
  */
 
-
 /*jshint camelcase: false */
 /*global module:false */
 module.exports = function (grunt) {
-
   /*
    * All initial configurations for grunt tasks needs to be done inside grunt.initConfig()
    */
@@ -738,7 +736,6 @@ module.exports = function (grunt) {
     },
   });
 
-
   /*
   LOAD ALL GRUNT TASKS FROM NPM FILES
     This loads grunt: babel, browserify, uglify, jshint, jasmine,
@@ -746,7 +743,7 @@ module.exports = function (grunt) {
     node-inspector, concurrent, jasmine-node, mocha-casperjs,
     mocha-test, casperjs, env, shell
  */
-  require('load-grunt-tasks')(grunt);
+  require("load-grunt-tasks")(grunt);
 
   // ALL GRUNT TASKS & COMMANDS
 
@@ -757,18 +754,29 @@ module.exports = function (grunt) {
       - convert the common code into a single bundle
       - combine these files + application files in order
   */
-  grunt.registerTask('build', ['emberTemplates', 'sass', 'babel', 'browserify', 'neuter']);
+  grunt.registerTask("build", [
+    "emberTemplates",
+    "sass",
+    "babel",
+    "browserify",
+    "neuter",
+  ]);
 
-  grunt.registerTask('build-test', ['emberTemplates', 'babel', 'browserify', 'neuter']);
+  grunt.registerTask("build-test", [
+    "emberTemplates",
+    "babel",
+    "browserify",
+    "neuter",
+  ]);
 
   /*
     Task for default `grunt` command
     This builds the app, runs the server and monitors for changes
   */
-  grunt.registerTask('default', ['build', 'concurrent:dev']);
+  grunt.registerTask("default", ["build", "concurrent:dev"]);
 
   // Same as above except server is started in debug
-  grunt.registerTask('debug', ['build', 'concurrent:debug']);
+  grunt.registerTask("debug", ["build", "concurrent:debug"]);
 
   /*
   Tasks for running tests:
@@ -778,13 +786,12 @@ module.exports = function (grunt) {
     - apiTests - runs the api MochaTest (backend mocha/chai tets)
     - jasmineTests - NEED TO BE REPLACED
   */
-  grunt.registerTask('MochaTests', ['endToEndTests', 'apiTests']);
-  grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
-  grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
-  grunt.registerTask('travis', ['mochaTest:travis', 'apiTests']);
-  grunt.registerTask('apiTests', ['mochaTest:api']);
-  grunt.registerTask('jasmineTests', ['jasmine']);
-
+  grunt.registerTask("MochaTests", ["endToEndTests", "apiTests"]);
+  grunt.registerTask("jqunit", ["qunit_junit", "qunit"]);
+  grunt.registerTask("endToEndTests", ["mochaTest:e2e"]);
+  grunt.registerTask("travis", ["mochaTest:travis", "apiTests"]);
+  grunt.registerTask("apiTests", ["mochaTest:api"]);
+  grunt.registerTask("jasmineTests", ["jasmine"]);
 
   /*
     Alternative to 'default' where you want to run your server
@@ -792,25 +799,49 @@ module.exports = function (grunt) {
       grunt serve #terminal 1
       grunt dev   #terminal 2
   */
-  grunt.registerTask('serve', ['nodemon:dev']);
-  grunt.registerTask('serve-debug', ['concurrent:debug-only']);
-  grunt.registerTask('dev', ['env:dev', 'build', 'MochaTests', 'watch']);
+  grunt.registerTask("serve", ["nodemon:dev"]);
+  grunt.registerTask("serve-debug", ["concurrent:debug-only"]);
+  grunt.registerTask("dev", ["env:dev", "build", "MochaTests", "watch"]);
 
   // Task for reseting the TestDB
-  grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
-  grunt.registerTask('resetSeedDb', ['shell:restoreSeedDb']);
-
-
+  grunt.registerTask("resetTestDb", ["shell:restoreTestDb"]);
+  grunt.registerTask("resetSeedDb", ["shell:restoreSeedDb"]);
 
   // Tasks for creating test server, running all tests, or running indiviudal tests
-  grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build-test', 'nodemon:dev']);
-  grunt.registerTask('serve-seed', ['env:seed', 'resetSeedDb', 'build-test', 'nodemon:dev']);
-  grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
-  grunt.registerTask('travisTests', ['env:test', 'build-test', 'travis']);
-  grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
-  grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
+  grunt.registerTask("serve-test", [
+    "env:test",
+    "resetTestDb",
+    "build-test",
+    "nodemon:dev",
+  ]);
+  grunt.registerTask("serve-seed", [
+    "env:seed",
+    "resetSeedDb",
+    "build-test",
+    "nodemon:dev",
+  ]);
+  grunt.registerTask("tests", ["env:test", "build-test", "MochaTests"]);
+  grunt.registerTask("travisTests", ["env:test", "build-test", "travis"]);
+  grunt.registerTask("testEndToEnd", [
+    "env:test",
+    "resetTestDb",
+    "concurrent:endToEndTasks",
+  ]);
+  grunt.registerTask("testApi", [
+    "env:test",
+    "resetTestDb",
+    "concurrent:apiTasks",
+  ]);
   // grunt.registerTask('bump', ['bump']);
-  grunt.registerTask('dist', ['build', 'concat', 'clean', 'assets_versioning:dist', 'configAndRunStringReplace', 'copy:dist', 'compress']);
+  grunt.registerTask("dist", [
+    "build",
+    "concat",
+    "clean",
+    "assets_versioning:dist",
+    "configAndRunStringReplace",
+    "copy:dist",
+    "compress",
+  ]);
   // grunt.registerTask('map', ['clean:dist', 'assets_versioning:dist', 'configAndRunStringReplace']);
 
   /**
@@ -820,36 +851,36 @@ module.exports = function (grunt) {
    * `package.json`) is set as the search string, and it's respective value
    *  is set as the replacement value.
    */
-  grunt.registerTask('configAndRunStringReplace', function () {
-
+  grunt.registerTask("configAndRunStringReplace", function () {
     // 1. Read the `originalPath` mapping object from `assets.json` (Created by assets-versioning versionsMapFile option.
-    var replacements = grunt.file.readJSON('assets.json'),
+    var replacements = grunt.file.readJSON("assets.json"),
       config = [];
 
     // 2. Dynamically build the `options.replacements` array.
     for (var key in replacements) {
       if (replacements[key] && replacements[key].originalPath) {
-        console.log(`replacement pair= ${key}: ${replacements[key].versionedPath}`);
+        console.log(
+          `replacement pair= ${key}: ${replacements[key].versionedPath}`
+        );
         // console.log(`pattern: ${new RegExp(key, 'g')}`)
         console.log(`pattern: ${replacements[key].originalPath}`);
         config.push({
           // pattern: new RegExp(key, 'g'),
           pattern: replacements[key].originalPath,
           // replacement: replacements[key]
-          replacement: replacements[key].versionedPath
+          replacement: replacements[key].versionedPath,
         });
       }
     }
 
     // 3. Configure the option.replacements values.
-    grunt.config.set('string-replace.dist.options.replacements', config);
+    grunt.config.set("string-replace.dist.options.replacements", config);
 
     // 4. Run the task.
-    grunt.task.run('string-replace:dist');
+    grunt.task.run("string-replace:dist");
   });
 
   // Note: In the `default` Task we add the `configAndRunStringReplace`
   // task to the taskList array instead of `string-replace`.
   // grunt.registerTask('map2', ['configAndRunStringReplace']);
-
 };
