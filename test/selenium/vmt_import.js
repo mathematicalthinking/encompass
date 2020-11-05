@@ -132,7 +132,7 @@ describe('Importing VMT Work', function() {
       describe('should return both own and public rooms', function() {
         let info = {
           query: 'room',
-          numRooms: 6,
+          numRooms: 7,
           numActivities: 0,
         };
         before(async function() {

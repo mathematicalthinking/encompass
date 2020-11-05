@@ -67,7 +67,7 @@ describe('Assignments as Student', async function () {
 
         describe(`Submitting response to assignment`, function() {
           let newAnswerSelectors = css.assignmentsStudent.newAnswerForm;
-          let btnText = 'Respond';
+          let btnText = 'Share Your Ideas';
           if (submitDetails.isRevision) {
             btnText = 'Revise';
           }
