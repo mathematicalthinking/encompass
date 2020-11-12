@@ -5,11 +5,13 @@ const { accessCookie, refreshCookie,} = require('../constants/sso');
 const { verifyJwt } = require('../utils/jwt');
 
 let secret;
+
 if (process.env.NODE_ENV === 'seed') {
   secret = process.env.MT_USER_JWT_SECRET_TEST;
 } else {
   secret = process.env.MT_USER_JWT_SECRET;
 }
+console.log('made it here, secret:', secret);
 
 const setSsoCookie = (res, encodedToken) => {
   let doSetSecure =
@@ -70,8 +72,10 @@ const resolveAccessToken = async (token) => {
 };
 
 const getMtUser = async (req, res) => {
+  console.log('req:', req, 'res:', res);
   try {
     let verifiedAccessToken = await resolveAccessToken(req.cookies[accessCookie.name]);
+    console.log('verifiedAccessToken:', verifiedAccessToken);
 
     if (verifiedAccessToken !== null) {
       return verifiedAccessToken;
@@ -81,19 +85,23 @@ const getMtUser = async (req, res) => {
     let currentRefreshToken = req.cookies[refreshCookie.name];
 
     if (currentRefreshToken === undefined) {
+      console.log('currentRefreshToken was equal to undefined');
       return null;
     }
 
     // request new accessToken with refreshToken
     let { accessToken } = await ssoService.requestNewAccessToken(currentRefreshToken);
+    console.log('secret#1:', secret);
 
     verifiedAccessToken = await verifyJwt(accessToken, secret);
+    console.log('Made it after verifiedAccessToken / verifyJwt() was called');
 
     setSsoCookie(res, accessToken);
+    console.log('Made it after setting SsoCookie');
     return verifiedAccessToken;
 
   }catch(err) {
-    console.error(`Error getMtUser: ${err}`);
+    console.error(`Error getMtUser: ${err}, secret:` + secret);
     return null;
   }
 };
