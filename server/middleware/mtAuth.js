@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'seed') {
 } else {
   secret = process.env.MT_USER_JWT_SECRET;
 }
-console.log('made it here', secret);
+console.log('made it here, secret:', secret);
 
 const setSsoCookie = (res, encodedToken) => {
   let doSetSecure =
