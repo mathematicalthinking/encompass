@@ -5,7 +5,7 @@ const { accessCookie, refreshCookie,} = require('../constants/sso');
 const { verifyJwt } = require('../utils/jwt');
 
 let secret;
-secret = process.env.MT_USER_JWT_SECRET;
+
 if (process.env.NODE_ENV === 'seed') {
   secret = process.env.MT_USER_JWT_SECRET_TEST;
 } else {
