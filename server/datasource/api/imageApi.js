@@ -15,7 +15,9 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
-const PDF2Pic = require('pdf2pic');
+const { fromPath } = require("pdf2pic");
+const { mkdirsSync } = require("fs-extra");
+const rimraf = require("rimraf");
 
 const pdfParse = require('pdf-parse');
 
@@ -193,30 +195,36 @@ const postImages = async function(req, res, next) {
         });
 
         if (isPDF) {
-          let converter = new PDF2Pic({
+          // https://www.npmjs.com/package/pdf2pic#usage    
+          // https://github.com/yakovmeister/pdf2pic-examples/blob/master/from-file-to-images.js
+          const options = {
             density: 100, // output pixels per inch
             savename: f.name, // output file name
             savedir: saveDir, // output file location
             format: 'png', // output file format
             size: 500 // output size in pixels
-          });
-          let file = f.path;
-
-          let pdfBuffer = await readFilePromise(file);
-          let pdfParsed = await pdfParse(pdfBuffer);
-
-          let pageCount = pdfParsed.numpages;
-
-          let pageOptionsArr = [];
-          let maxPages = 50;
-          for (let i = 1; i <= maxPages; i++) {
-            pageOptionsArr.push(i);
           }
 
-          let pageOptions = pageCount > maxPages ? pageOptionsArr : -1;
+          let file = f.path;
+          const convert = fromPath(file, options);
 
-          return converter
-            .convertBulk(file, pageOptions)
+          // let pdfBuffer = await readFilePromise(file);
+          // let pdfParsed = await pdfParse(pdfBuffer);
+
+          // let pageCount = pdfParsed.numpages;
+
+          // let pageOptionsArr = [];
+          // let maxPages = 50;
+          // for (let i = 1; i <= maxPages; i++) {
+          //   pageOptionsArr.push(i);
+          // }
+
+          // let pageOptions = pageCount > maxPages ? pageOptionsArr : -1;
+
+
+
+          return convert
+            .bulk(-1)
             .then(results => {
               return Promise.all(
                 results.map(fileObj => {
