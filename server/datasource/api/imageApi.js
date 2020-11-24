@@ -205,8 +205,8 @@ const postImages = async function(req, res, next) {
             savedir: saveDir, // output file location
             format: "png", // output file format
             // size: 500 // output size in pixels
-            width: 528,
-            height: 792,
+            width: 500,
+            height: 646,
           };
 
           let file = f.path;
