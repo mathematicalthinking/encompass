@@ -2,7 +2,7 @@
 /**
   * # Image API
   * @description This is the API for image based requests
-  * @author Daniel Kelly
+  * @author Daniel Kelly, Crispina Muriel
 */
 
 //REQUIRE MODULES
@@ -15,6 +15,8 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
+
+//REQUIRE PDF2PIC DEPENDANCIES
 const { fromPath } = require("pdf2pic");
 const { mkdirsSync } = require("fs-extra");
 const rimraf = require("rimraf");
@@ -195,19 +197,23 @@ const postImages = async function(req, res, next) {
         });
 
         if (isPDF) {
-          // https://www.npmjs.com/package/pdf2pic#usage    
+          // https://www.npmjs.com/package/pdf2pic#usage
           // https://github.com/yakovmeister/pdf2pic-examples/blob/master/from-file-to-images.js
           const options = {
             density: 100, // output pixels per inch
             savename: f.name, // output file name
             savedir: saveDir, // output file location
-            format: 'png', // output file format
-            size: 500 // output size in pixels
-          }
+            format: "png", // output file format
+            // size: 500 // output size in pixels
+            width: 528,
+            height: 792,
+          };
 
           let file = f.path;
           const convert = fromPath(file, options);
 
+
+          // TODO: complete edgecase for large pdfs
           // let pdfBuffer = await readFilePromise(file);
           // let pdfParsed = await pdfParse(pdfBuffer);
 
