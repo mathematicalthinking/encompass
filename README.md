@@ -1,5 +1,7 @@
 
 # ENCOMPASS
+[![Twitter Follow](https://img.shields.io/twitter/follow/21PSTEM?label=%4021PSTEM&style=social)](https://twitter.com/intent/follow?screen_name=21PSTEM)
+
 ENCOMPASS is a web application designed to facilitate the process of learning from and providing feedback on student work, for both individual teachers and for collaborative and professional development purposes.
 
 ## License
