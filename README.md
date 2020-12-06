@@ -1,6 +1,6 @@
 
 # ENCOMPASS
-[![Twitter Follow](https://img.shields.io/twitter/follow/21PSTEM?label=%4021PSTEM&style=social)](https://twitter.com/intent/follow?screen_name=21PSTEM) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Twitter Follow](https://img.shields.io/twitter/follow/21PSTEM?label=%4021PSTEM&style=social)](https://twitter.com/intent/follow?screen_name=21PSTEM) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)[![Node Version](https://img.shields.io/node/v/e)](https://nodejs.org/en/blog/release/v12.16.1/)
 
 ENCOMPASS is a web application designed to facilitate the process of learning from and providing feedback on student work, for both individual teachers and for collaborative and professional development purposes.
 
