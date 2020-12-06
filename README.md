@@ -1,6 +1,6 @@
 
 # ENCOMPASS
-[![Twitter Follow](https://img.shields.io/twitter/follow/21PSTEM?label=%4021PSTEM&style=social)](https://twitter.com/intent/follow?screen_name=21PSTEM)
+[![Twitter Follow](https://img.shields.io/twitter/follow/21PSTEM?label=%4021PSTEM&style=social)](https://twitter.com/intent/follow?screen_name=21PSTEM) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 ENCOMPASS is a web application designed to facilitate the process of learning from and providing feedback on student work, for both individual teachers and for collaborative and professional development purposes.
 
@@ -84,7 +84,6 @@ The wiki is also a good place to look for notes on the project
 - if existing upstream `git remote rm upstream`
 
 ## Styleguide
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 We use [Prettier](https://prettier.io/) Add the VS code extension and configure it to format on save.
 
