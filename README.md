@@ -87,6 +87,6 @@ We use [Prettier](https://prettier.io/) Add the VS code extension and configure 
 
 ## Design
 
-Please visit our [design documentation](https://github.com/mathematicalthinking/encompass/tree/master/docs/design) for styling information.
+Please visit our [design documentation](https://github.com/mathematicalthinking/encompass/blob/master/docs/design/README.md) for styling information.
 
 
