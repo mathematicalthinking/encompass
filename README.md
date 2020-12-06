@@ -82,6 +82,7 @@ The wiki is also a good place to look for notes on the project
 - if existing upstream `git remote rm upstream`
 
 ## Styleguide
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 We use [Prettier](https://prettier.io/) Add the VS code extension and configure it to format on save.
 
