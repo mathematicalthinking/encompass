@@ -85,4 +85,8 @@ The wiki is also a good place to look for notes on the project
 
 We use [Prettier](https://prettier.io/) Add the VS code extension and configure it to format on save.
 
+## Design
+
+Please visit our [design documentation](https://github.com/mathematicalthinking/encompass/tree/master/docs/design) for styling information.
+
 
