@@ -25,6 +25,7 @@ These global colors are defined [here](https://github.com/mathematicalthinking/e
 - $accent-yellow: #ffd204;
 - $success-color: #4BB543;
 - $warning-color: #FFA500;
+- $notification-color: #FA6400;
 - $input-border: #ccc;
 - $cancel-color: #EFEFEF;
 - $list-hover-color: #f9fcff;

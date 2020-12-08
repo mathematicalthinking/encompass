@@ -1,6 +1,9 @@
 // FONT VARIABLES
-$primary-font: 'Roboto', sans-serif;
-$secondary-font: "Helvetica Neue", Helvetica, sans-serif;
+$primary-font: 'Roboto',
+sans-serif;
+$secondary-font: "Helvetica Neue",
+Helvetica,
+sans-serif;
 
 // COLOR VARIABLES
 $primary-font-color: #5e5e5e;
@@ -17,10 +20,11 @@ $pale-accent: #C9E3FA;
 $accent-yellow: #ffd204;
 $success-color: #4BB543;
 $warning-color: #FFA500;
+$notification-color: #FA6400;
 $input-border: #ccc;
 $cancel-color: #EFEFEF;
 $list-hover-color: #f9fcff;
-$soft-yellow:  #fdfd96;
+$soft-yellow: #fdfd96;
 
 // FONT WEIGHT
 $light-font-weight: 300;
@@ -33,10 +37,15 @@ $primary-button: #3997EE;
 $inactive-button: grey;
 
 //BOX SHADOW
-$box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-$button-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-$card-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-$card-hover: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+$box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16),
+0 3px 6px rgba(0, 0, 0, 0.23);
+$button-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+0 3px 1px -2px rgba(0, 0, 0, 0.12),
+0 1px 5px 0 rgba(0, 0, 0, 0.2);
+$card-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+0 1px 2px rgba(0, 0, 0, 0.24);
+$card-hover: 0 14px 28px rgba(0, 0, 0, 0.25),
+0 10px 10px rgba(0, 0, 0, 0.22);
 
 // LINKS
 $primary-link: #3997EE;
