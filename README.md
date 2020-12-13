@@ -16,7 +16,7 @@ This application uses a combination of:
 
 * [MongoDB](http://www.mongodb.org/),
 * [Express](http://expressjs.com/),
-* [Ember.js](http://emberjs.com/),
+* [Ember.js](http://emberjs.com/) [(v2.14)](https://guides.emberjs.com/v2.14.0/),
 * [Node.js](http://nodejs.org/)
 
 Instructions for getting started with this setup, are located [Github Repo](http://github.com/mathematicalthinking/encompass)
