@@ -244,6 +244,9 @@
     vertical-align: middle;
     text-align: center;
     width: max-content;
+      .caret-down {
+        margin-left: 2px;
+      }
       .active {
         background-color: $accent-yellow;
         padding: 10px 10px;
@@ -251,7 +254,14 @@
         border-radius: 3px;
         color: $primary-font-color;
         .caret-down {
+          margin-left: 7px;
+          padding-left: 3px;
           margin-right: 7px;
+        }
+        .caret-right {
+          margin-right: 7px;
+          padding-left: 5px;
+          margin-left: 7px;
         }
       }
   }
@@ -354,6 +364,10 @@ nav.actions>ul {
   margin: 0;
   overflow: visible;
   width: max-content;
+}
+
+.dropdown-custom {
+  width: 100px;
 }
 
 
