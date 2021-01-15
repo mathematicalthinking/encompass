@@ -80,6 +80,9 @@
       li {
         padding: 0 10px;
       }
+      .padding {
+        margin-right: 5px;
+      }
       #home-btn {
         display: none;
       }
@@ -232,6 +235,10 @@
   margin: 30px;
 }
 
+.spacing {
+  padding-left: 5px;
+}
+
 #al_nav {
   #main-nav {
     float: right;
@@ -244,6 +251,12 @@
     vertical-align: middle;
     text-align: center;
     width: max-content;
+      .caret-down {
+        margin-left: 3px;
+      }
+      .caret-right {
+        margin-right: 3px;
+      }
       .active {
         background-color: $accent-yellow;
         padding: 10px 10px;
@@ -251,7 +264,15 @@
         border-radius: 3px;
         color: $primary-font-color;
         .caret-down {
+          margin-left: 7px;
+          padding-left: 3px;
           margin-right: 7px;
+        }
+        .caret-right {
+          margin-right: 7px;
+          padding-left: 3px;
+          margin-left: 7px;
+          display:none;
         }
       }
   }
@@ -356,6 +377,10 @@ nav.actions>ul {
   width: max-content;
 }
 
+.dropdown-wide {
+  width: 110px;
+}
+
 
 .dropdown-content {
   display: none;
@@ -386,6 +411,21 @@ nav.actions>ul {
   display: block;
 }
 
+.dropdown-right {
+  position: absolute;
+  left: 110px;
+  top: 35px;
+  z-index: -1;
+}
+#dropdown-hidden {
+  display: none;
+  z-index: 9;
+}
+.parent-dropdown:hover #dropdown-hidden {
+  display: block;
+  position: absolute;
+  z-index: 999;
+}
 #current-username {
   color: $accent-color;
   font-weight: $bolder-font-weight;

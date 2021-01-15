@@ -10,18 +10,80 @@
       <div id="menu-toggle">
         <ul id="main-nav">
           <span id="menu-items">
-          <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
+            {{!-- My Work / Homepage Button --}}
+          <li id="home-btn"><div class="dropdown-wide">{{#link-to 'index' classNames='menu home'}}my work{{/link-to}}</div></li>
+            {{!-- Make Button --}}
+            {{#if notStudent}}
+              <li>
+                <div class="dropdown dropdown-wide">
+                  {{#link-to 'index' classNames='menu workspaces'}}make<i
+                    class="fa fa-caret-down caret-down"></i>{{/link-to}}
+                  <div class="dropdown-content">
+                    {{#link-to 'assignments.new' classNames='menu workspaces-new'}}assignment{{/link-to}}
+                    {{!-- {{#if notStudent}} --}}
+                    <div class="parent-dropdown">
+                      <div class="dropdown dropdown-wide">
+                      {{#link-to 'workspaces.new' classNames='menu import'}}workspace<i
+                      class="fa fa-caret-right caret-right spacing"></i>{{/link-to}}
+                    </div>
+                        <div id="dropdown-hidden" class="dropdown-content dropdown-right dropdown-hidden">
+                          {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
+                          {{!-- {{#if notStudent}} --}}
+                          {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
+                          {{#link-to 'workspaces.copy' classNames='menu import'}}copy{{/link-to}}
+                          {{#link-to 'vmt.import' classNames='menu vmt-import'}}vmt{{/link-to}}
+                          {{!-- {{/if}} --}}
+                        </div>
+                    </div>
+                    {{#link-to 'problems.new' classNames='menu import'}}problem{{/link-to}}
+                    {{#link-to 'users.new' classNames='menu vmt-import'}}users{{/link-to}}
+
+                    {{!-- {{/if}} --}}
+                  </div>
+                </div>
+              </li>
+              {{/if}}
+              {{!-- Do Button --}}
+              <li>
+                <div class="dropdown dropdown-wide">
+                  {{#link-to 'index' classNames='menu workspaces'}}do<i
+                    class="fa fa-caret-down caret-down"></i>{{/link-to}}
+                  <div class="dropdown-content">
+                    {{#link-to 'problems' classNames='menu workspaces-new'}}problem{{/link-to}}
+                      {{#link-to 'responses' classNames='menu import'}}review student{{/link-to}}
+                    {{#if notStudent}}
+                      {{#link-to 'responses' classNames='menu import'}}mentor{{/link-to}}
+                      {{#link-to 'users' classNames='menu vmt-import'}}manage users{{/link-to}}
+                    {{/if}}
+                  </div>
+                </div>
+              </li>
+              {{!-- Find Button --}}
+              <li>
+                <div class="dropdown dropdown-wide">
+                  {{#link-to 'index' classNames='menu workspaces'}}find<i
+                    class="fa fa-caret-down caret-down"></i>{{/link-to}}
+                  <div class="dropdown-content">
+                    {{#link-to 'assignments' classNames='menu workspaces-new'}}assignment{{/link-to}}
+                    {{#link-to 'workspaces' classNames='menu import'}}workspace{{/link-to}}
+                    {{#link-to 'problems' classNames='menu import'}}problem{{/link-to}}
+                    {{#if notStudent}}
+                      {{#link-to 'users' classNames='menu vmt-import'}}users{{/link-to}}
+                    {{/if}}
+                  </div>
+                </div>
+              </li>
           {{!-- {{#if notStudent}}
             <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
           {{/if}} --}}
           {{!-- {{#if isStudent}} --}}
-            <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}
+            {{!-- <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}
               {{#if assignmentNotifications}}
                 {{circle-ntf displayCount=assignmentNotifications.length}}
               {{/if}}
-            </li>
+            </li> --}}
           {{!-- {{/if}} --}}
-          {{#if currentUser.isStudent}}
+          {{!-- {{#if currentUser.isStudent}}
             <li>{{#link-to 'answers.home' classNames='menu answers'}}answers{{/link-to}}</li>
           {{/if}}
           {{#if notStudent}}
@@ -32,10 +94,10 @@
                 {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
               </div>
             </div>
-          </li>
+          </li> --}}
           {{!-- {{else}}
             <li>{{#link-to 'problems.home' classNames='menu problems'}}problems{{/link-to}}</li> --}}
-          {{/if}}
+          {{!-- {{/if}}
           {{#if notStudent}}
           <li>
             <div class="dropdown">
@@ -50,29 +112,29 @@
           </li>
           {{else}}
             <li>{{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes{{/link-to}}</li>
-          {{/if}}
+          {{/if}} --}}
           {{!-- {{#if notStudent}} --}}
-          <li>
+          {{!-- <li>
             <div class="dropdown">
               {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
               <div class="dropdown-content">
                 {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
                 {{!-- {{#if notStudent}} --}}
-                  {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
+                  {{!-- {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
                   {{#link-to 'workspaces.copy' classNames='menu import'}}copy{{/link-to}}
-                  {{#link-to 'vmt.import' classNames='menu vmt-import'}}vmt{{/link-to}}
+                  {{#link-to 'vmt.import' classNames='menu vmt-import'}}vmt{{/link-to}} --}}
 
                 {{!-- {{/if}} --}}
-              </div>
+              {{!-- </div>
             </div>
-          </li>
+          </li> --}}
           {{!-- {{/if}} --}}
-          <li data-test="topbar-responses">{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}
+          {{!-- <li data-test="topbar-responses">{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}
             {{#if responseNotifications}}
               {{circle-ntf displayCount=responseNotifications.length}}
             {{/if}}
-          </li>
-          {{#if notStudent}}
+          </li> --}}
+          {{!-- {{#if notStudent}}
             {{#if user.isAdmin}}
             <li>
               <div class="dropdown">
@@ -85,7 +147,7 @@
             {{else}}
               <li>{{#link-to 'users.home' classNames='menu users'}}users{{/link-to}}</li>
             {{/if}}
-          {{/if}}
+          {{/if}} --}}
           <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}<i class="fas fa-power-off logout-icon"></i><span id="logout-text">log out</span>{{/link-to}}</li>
           </span>
           {{#unless isStudentAccount}}
