@@ -2,6 +2,8 @@
 {{#if user.isStudent}}
   <div>
     <h1>Welcome, {{user.displayName}}!</h1>
+        <h1 class="header-home header-font">My Work Landing Page</h1>
+        <h2 class="home-categories">{{#link-to 'assignments.home'}}Problems to Solve{{/link-to}}</h2>
   </div>
   {{log user}}
 
@@ -11,12 +13,12 @@
   {{#if user.isAuthenticated}}
     <h1 class="header-home">My Work Landing Page</h1>
     <h2 class="header-home">{{#link-to 'assignments.home'}}Problems to Solve{{/link-to}}</h2>
-      <div class="w-layout-grid grid-1">
+      {{!-- <div class="w-layout-grid grid-1">
         <div id="w-node-3c650c5aa95e-13b3ac15" class="text-block"><strong>Problem</strong></div>
         <div id="w-node-1fc9e12818cc-13b3ac15">
           <a href="#"></a>
         </div>
-      </div>
+      </div> --}}
     <h2  class="header-home">{{#link-to 'responses'}}Student Work to Review{{/link-to}}</h2>
     <h2 class="header-home">{{#link-to 'workspaces.index'}}My Class' Work{{/link-to}}</h2>
     <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2>

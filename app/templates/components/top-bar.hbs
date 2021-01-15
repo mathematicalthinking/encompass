@@ -10,21 +10,33 @@
       <div id="menu-toggle">
         <ul id="main-nav">
           <span id="menu-items">
-            {{!-- My Work Button --}}
-          <li id="home-btn">{{#link-to 'index' classNames='menu home'}}my work{{/link-to}}</li>
+            {{!-- My Work / Homepage Button --}}
+          <li id="home-btn"><div class="dropdown-wide">{{#link-to 'index' classNames='menu home'}}my work{{/link-to}}</div></li>
             {{!-- Make Button --}}
             {{#if notStudent}}
               <li>
-                <div class="dropdown dropdown-custom">
-                  {{#link-to 'workspaces' classNames='menu workspaces'}}make<i
+                <div class="dropdown dropdown-wide">
+                  {{#link-to 'index' classNames='menu workspaces'}}make<i
                     class="fa fa-caret-down caret-down"></i>{{/link-to}}
                   <div class="dropdown-content">
                     {{#link-to 'assignments.new' classNames='menu workspaces-new'}}assign{{/link-to}}
                     {{!-- {{#if notStudent}} --}}
-                    {{#link-to 'import' classNames='menu import'}}workspace<i
-                    class="fa fa-caret-right caret-right"></i>{{/link-to}}
-                    {{#link-to 'workspaces.copy' classNames='menu import'}}problem{{/link-to}}
-                    {{#link-to 'vmt.import' classNames='menu vmt-import'}}users{{/link-to}}
+                    <div class="parent-dropdown">
+                      <div class="dropdown dropdown-wide">
+                      {{#link-to 'workspaces.new' classNames='menu import'}}workspace<i
+                      class="fa fa-caret-right caret-right spacing"></i>{{/link-to}}
+                    </div>
+                        <div id="dropdown-hidden" class="dropdown-content dropdown-right dropdown-hidden">
+                          {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
+                          {{!-- {{#if notStudent}} --}}
+                          {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
+                          {{#link-to 'workspaces.copy' classNames='menu import'}}copy{{/link-to}}
+                          {{#link-to 'vmt.import' classNames='menu vmt-import'}}vmt{{/link-to}}
+                          {{!-- {{/if}} --}}
+                        </div>
+                    </div>
+                    {{#link-to 'problems.new' classNames='menu import'}}problem{{/link-to}}
+                    {{#link-to 'users.new' classNames='menu vmt-import'}}users{{/link-to}}
 
                     {{!-- {{/if}} --}}
                   </div>
@@ -33,33 +45,31 @@
               {{/if}}
               {{!-- Do Button --}}
               <li>
-                <div class="dropdown dropdown-custom">
-                  {{#link-to 'workspaces' classNames='menu workspaces'}}do<i
+                <div class="dropdown dropdown-wide">
+                  {{#link-to 'index' classNames='menu workspaces'}}do<i
                     class="fa fa-caret-down caret-down"></i>{{/link-to}}
                   <div class="dropdown-content">
-                    {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}problem{{/link-to}}
-                    {{!-- {{#if notStudent}} --}}
-                    {{#link-to 'import' classNames='menu import'}}review student{{/link-to}}
-                    {{#link-to 'workspaces.copy' classNames='menu import'}}mentor{{/link-to}}
-                    {{#link-to 'vmt.import' classNames='menu vmt-import'}}manage users{{/link-to}}
-
-                    {{!-- {{/if}} --}}
+                    {{#link-to 'problems' classNames='menu workspaces-new'}}problem{{/link-to}}
+                      {{#link-to 'responses' classNames='menu import'}}review student{{/link-to}}
+                    {{#if notStudent}}
+                      {{#link-to 'responses' classNames='menu import'}}mentor{{/link-to}}
+                      {{#link-to 'users' classNames='menu vmt-import'}}manage users{{/link-to}}
+                    {{/if}}
                   </div>
                 </div>
               </li>
               {{!-- Find Button --}}
               <li>
-                <div class="dropdown dropdown-custom">
-                  {{#link-to 'workspaces' classNames='menu workspaces'}}find<i
+                <div class="dropdown dropdown-wide">
+                  {{#link-to 'index' classNames='menu workspaces'}}find<i
                     class="fa fa-caret-down caret-down"></i>{{/link-to}}
                   <div class="dropdown-content">
-                    {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}assign{{/link-to}}
-                    {{!-- {{#if notStudent}} --}}
-                    {{#link-to 'import' classNames='menu import'}}workspace{{/link-to}}
-                    {{#link-to 'workspaces.copy' classNames='menu import'}}prob{{/link-to}}
-                    {{#link-to 'vmt.import' classNames='menu vmt-import'}}users{{/link-to}}
-
-                    {{!-- {{/if}} --}}
+                    {{#link-to 'assignments' classNames='menu workspaces-new'}}assignment{{/link-to}}
+                    {{#link-to 'workspaces' classNames='menu import'}}workspace{{/link-to}}
+                    {{#link-to 'problems' classNames='menu import'}}problem{{/link-to}}
+                    {{#if notStudent}}
+                      {{#link-to 'users' classNames='menu vmt-import'}}users{{/link-to}}
+                    {{/if}}
                   </div>
                 </div>
               </li>

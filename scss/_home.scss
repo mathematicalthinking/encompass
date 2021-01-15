@@ -14,8 +14,20 @@ h1 {
 
 
 .header-home {
+  margin-top: 21px;
+  margin-bottom: 20px;
+}
+
+.header-font {
+  font-size: 24px;
+}
+
+.home-categories {
   margin-top: 5px;
   margin-bottom: 20px;
+  font-size: 16px;
+  text-decoration: underline;
+  text-decoration-color:  $accent-yellow;
 }
 
 .w-layout-grid {
@@ -342,9 +354,4 @@ h1 {
   grid-area: Area-9;
 }
 
-.grid-3>#w-node-329e17{
-
-}
-
-
-
+.grid-3>#w-node-329e17 {}
