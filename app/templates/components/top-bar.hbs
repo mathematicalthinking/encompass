@@ -49,11 +49,11 @@
                   {{#link-to 'index' classNames='menu workspaces'}}do<i
                     class="fa fa-caret-down caret-down"></i>{{/link-to}}
                   <div class="dropdown-content">
-                    {{#link-to 'problems' classNames='menu workspaces-new'}}problem{{/link-to}}
-                      {{#link-to 'responses' classNames='menu import'}}review student{{/link-to}}
+                    {{#link-to 'problems' classNames='menu problems'}}problem{{/link-to}}
+                      {{#link-to 'workspaces' classNames='menu workspaces'}}review student{{/link-to}}
                     {{#if notStudent}}
-                      {{#link-to 'responses' classNames='menu import'}}mentor{{/link-to}}
-                      {{#link-to 'users' classNames='menu vmt-import'}}manage users{{/link-to}}
+                      {{#link-to 'responses' classNames='menu responses'}}mentor{{/link-to}}
+                      {{#link-to 'users' classNames='menu users'}}manage users{{/link-to}}
                     {{/if}}
                   </div>
                 </div>
