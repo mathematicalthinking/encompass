@@ -36,6 +36,7 @@
                         </div>
                     </div>
                     {{#link-to 'problems.new' classNames='menu import'}}problem{{/link-to}}
+                    {{#link-to 'sections.new' classNames='menu sections'}}class{{/link-to}}
                     {{#link-to 'users.new' classNames='menu vmt-import'}}users{{/link-to}}
 
                     {{!-- {{/if}} --}}
@@ -53,6 +54,7 @@
                       {{#link-to 'workspaces' classNames='menu workspaces'}}review student{{/link-to}}
                     {{#if notStudent}}
                       {{#link-to 'responses' classNames='menu responses'}}mentor{{/link-to}}
+                      {{#link-to 'sections' classNames='menu sections'}}manage class{{/link-to}}
                       {{#link-to 'users' classNames='menu users'}}manage users{{/link-to}}
                     {{/if}}
                   </div>
@@ -67,6 +69,7 @@
                     {{#link-to 'assignments' classNames='menu workspaces-new'}}assignment{{/link-to}}
                     {{#link-to 'workspaces' classNames='menu import'}}workspace{{/link-to}}
                     {{#link-to 'problems' classNames='menu import'}}problem{{/link-to}}
+                    {{#link-to 'sections.home' classNames='menu sections'}}class{{/link-to}}
                     {{#if notStudent}}
                       {{#link-to 'users' classNames='menu vmt-import'}}users{{/link-to}}
                     {{/if}}

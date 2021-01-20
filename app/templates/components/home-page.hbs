@@ -5,10 +5,9 @@
         <h1 class="header-home header-font">My Work Landing Page</h1>
         <h2 class="home-categories">{{#link-to 'assignments.home'}}Problems to Solve{{/link-to}}</h2>
   </div>
-  {{log user}}
+
 
 {{else}}
-  {{log user}}
  <div id="welcome" class="al_wtf home  header-home">
   {{#if user.isAuthenticated}}
     <h1 class="header-home">My Work Landing Page</h1>
@@ -25,7 +24,7 @@
 
     {{!-- <p>	You'll probably want to get started by visiting your <span class="al_link">{{#link-to 'workspaces.index'}}workspaces{{/link-to}}</span>.</p>
     <p><span class="al_link">{{#link-to 'problems'}}Create a Problem{{/link-to}}</span>.</p> --}}
-    <p class="footer">EnCoMPASS version 2.2.0 last updated on 01/15/2020.</p>
+    <p class="footer">EnCoMPASS version 2.2.1 last updated on 01/20/2020.</p>
   {{else}}
     <h2>It looks like you are not logged in</h2>
     <p>Please login <a href="#/auth/login">here</a></p>
