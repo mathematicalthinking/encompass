@@ -210,6 +210,7 @@ const postImages = async function(req, res, next) {
           };
 
           let file = f.path;
+          console.log(f.path);
           const convert = fromPath(file, options);
 
 
