@@ -52,8 +52,8 @@
                   <div class="dropdown-content">
                     {{#link-to 'assignments' classNames='menu problems'}}solve a problem{{/link-to}}
                       {{#link-to 'workspaces' classNames='menu workspaces'}}review submitted work{{/link-to}}
-                    {{#if notStudent}}
                       {{#link-to 'responses' classNames='menu workspaces'}}mentor submissions{{/link-to}}
+                    {{#if notStudent}}
                       {{#link-to 'sections' classNames='menu sections'}}manage classes{{/link-to}}
                       {{#link-to 'users' classNames='menu users'}}manage users{{/link-to}}
                     {{/if}}
