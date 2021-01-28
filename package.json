@@ -1,11 +1,12 @@
 {
   "name": "encompass",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "enCoMPASS",
   "main": "server/server.js",
   "scripts": {
     "dev": "grunt",
     "start": "grunt",
+    "rebase": "git pull --rebase upstream master",
     "force": "grunt --force",
     "build": "grunt dist",
     "seed": "node test/seedDb",
