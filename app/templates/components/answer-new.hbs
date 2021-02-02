@@ -6,7 +6,7 @@
   <section class="third submissions">
     <form id='newanswerform' class='properForm'>
       <fieldset>
-        <p class="info">To upload images in .jpg or .png format, please use the explanation html editor (by clicking on the square icon in the toolbar). To upload a pdf, please use the separate file upload input.</p>
+        <p class="info">To upload images in .jpg or .png format, please use the explanation html editor (by clicking on the square icon in the toolbar). {{!--To upload a pdf, please use the separate file upload input.--}}</p>
         <div class="new-answer-input brief-summary">
           <label for="answer">Brief Summary <span class="required-star">*</span></label>
           {{textarea name="brief-summary" cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
@@ -24,20 +24,20 @@
           {{error-box error=error resetError=(action (mut explanationErrors) null) showDismiss=true}}
         {{/each}}
         <div class="new-answer-input uploaded-file">
-          <label for="uploadedFile">Upload PDF</label>
+          {{!-- <label for="uploadedFile">Upload PDF</label> --}}
             {{#if imageData}}
               <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
                 <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
               </a>
             <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
             <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
-            {{else}}
+            {{!-- {{else}}
               {{image-upload
                 filesToBeUploaded=filesToBeUploaded
                 hideSubmit=true
                 acceptMultiple=true
                 isPdfOnly=true
-                }}
+                }} --}}
             {{/if}}
           </div>
           <div class="new-answer-input contributors">
