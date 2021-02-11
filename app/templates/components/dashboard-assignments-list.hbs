@@ -1,78 +1,4 @@
-
-<section class="assignmentReport">
-  <p class="info-summary">Here are your assignments</p>
-  <table class="report rows values">
-    <tr class="headers">
-      <th>{{toggle-control
-        classToAdd="sort-bar-item name"
-        onUpdate=(action "updateSortCriterion")
-        initialState=1
-        options=sortOptions.student
-        label="Assignment"
-        parentProp=sortCriterion
-        type="username"
-        activeType=sortCriterion.type}}
-      </th>
-      <th>
-        {{toggle-control
-        classToAdd="sort-bar-item revisions"
-        onUpdate=(action "updateSortCriterion")
-        initialState=0
-        options=sortOptions.revisionCount
-        label="Class"
-        type="count"
-        activeType=sortCriterion.type
-        }}
-      </th>
-      <th>{{toggle-control
-        classToAdd="sort-bar-item date"
-        onUpdate=(action "updateSortCriterion")
-        initialState=0
-        options=sortOptions.latestRevisionDate
-        label="Date Assigned"
-        type="latestRevision"
-        activeType=sortCriterion.type
-        }}
-      </th>
-      <th>{{toggle-control
-        classToAdd="sort-bar-item date"
-        onUpdate=(action "updateSortCriterion")
-        initialState=0
-        options=sortOptions.latestRevisionDate
-        label="Date Due"
-        type="latestRevision"
-        activeType=sortCriterion.type
-        }}
-      </th>
-      <th>{{toggle-control
-        classToAdd="sort-bar-item date"
-        onUpdate=(action "updateSortCriterion")
-        initialState=0
-        options=sortOptions.latestRevisionDate
-        label="Status"
-        type="latestRevision"
-        activeType=sortCriterion.type
-        }}
-      </th>
-    </tr>
-    {{#each yourList as |item| }}
-    <tr>
-      <td class="username">{{item.name}}</td>
-      <td class="count">{{item.id}}</td>
-      {{#if item.id}}
-      {{!-- <td class="latest-date">{{format-date item.latestRevision "MMM Do YYYY h:mm A"}}</td> --}}
-      {{else}}
-      <td> N/A</td>
-      {{/if}}
-
-    </tr>
-    {{else}}
-    <p>No assignments yet.</p>
-    {{/each}}
-
-  </table>
-</section>
-{{!-- <section class="list-side">
+<section class="list-side">
   <header class="list-header">
     <h1>Problems To Solve</h1>
     {{#unless currentUser.isStudent}}
@@ -163,4 +89,4 @@
   {{outlet}}
 </div>
 
-<div class="clear" /> --}}
+<div class="clear" />
