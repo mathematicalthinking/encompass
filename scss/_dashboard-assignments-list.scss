@@ -1,0 +1,37 @@
+//general
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.assignments-list {
+  table {
+    margin-left: 5px;
+    margin-right: 5px;
+    width: 100%;
+
+    td,
+    th {
+      padding: 8px;
+    }
+
+    th {
+      background: $pale-accent;
+    }
+
+    td {
+      padding: 2px;
+      background: lighten($pale-accent, 10%);
+      border: 1px solid $pale-accent;
+    }
+  }
+}
+
+table td {
+  padding: 5px;
+  /* Apply cell padding */
+}
+
+#blue {
+  color: white;
+  background-color: $accent-color;
+}
