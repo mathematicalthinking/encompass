@@ -34,4 +34,18 @@ table td {
 #blue {
   color: white;
   background-color: $accent-color;
+
+  th {
+    width: 20%;
+  }
+}
+
+.dash-problems {
+  width: 100%;
+  height: 80px;
+  overflow: auto;
+
+  td {
+    width: 20%;
+  }
 }

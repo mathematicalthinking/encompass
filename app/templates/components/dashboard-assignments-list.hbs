@@ -1,7 +1,8 @@
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
   <tr>
     <td>
-      <table cellspacing="0" cellpadding="1" border="1" width="100%">
+      <div style="width:100%; overflow:auto;">
+      <table cellspacing="1" cellpadding="1" border="1" width="100%">
         <tr id="blue">
           <th>Problem</th>
           <th>Class</th>
@@ -10,52 +11,22 @@
           <th>Status</th>
         </tr>
       </table>
+      </div>
     </td>
   </tr>
   <tr>
     <td>
-      <div style="width:100%; height:80px; overflow:auto;">
-        <table cellspacing="0" cellpadding="1" border="1" width="300">
+      <div class="dash-problems" style="width:100%; height:80px; overflow:auto;">
+        <table cellspacing="0" cellpadding="1" border="1" width="100%">
+          {{#each yourList as |assignment|}}
           <tr>
+            <td>{{#link-to 'assignment' assignment.id classNames='assignment-new-link'}}{{assignment.name}}{{/link-to}}</td>
+            <td>{{#link-to 'section' assignment.section.sectionId}}{{assignment.section.name}}{{/link-to}}</td>
+            <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
             <td>new item</td>
             <td>new item</td>
           </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
-          <tr>
-            <td>new item</td>
-            <td>new item</td>
-          </tr>
+          {{/each}}
         </table>
       </div>
     </td>
