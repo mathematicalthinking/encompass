@@ -21,7 +21,7 @@ Encompass.ApplicationController = Ember.Controller.extend({
 
   actions: {
     toHome: function() {
-      this.transitionToRoute('/');
+      window.location.href = "/";
     },
     closeModal: function() {
       this.set('showCategoryList', false);
