@@ -21,7 +21,8 @@ Encompass.ApplicationController = Ember.Controller.extend({
 
   actions: {
     toHome: function() {
-      this.transitionToRoute('/');
+      console.log('coachella');
+      window.location.href = "/";
     },
     closeModal: function() {
       this.set('showCategoryList', false);

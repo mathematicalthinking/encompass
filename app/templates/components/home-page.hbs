@@ -1,7 +1,7 @@
 
 {{#if user.isStudent}}
   <div id="welcome"  class="al_wtf home header-home">
-    <h1>Welcome, {{user.displayName}}!</h1>
+    <h1>Welcome student, {{user.displayName}}!</h1>
         <h1 class="header-home header-font">My Work Landing Page</h1>
         <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
         {{dashboard-assignments-list store=store user=user assignments=assignments}}
