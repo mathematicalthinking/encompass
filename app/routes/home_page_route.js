@@ -1,6 +1,6 @@
 /**
   * # Home Page Route
-  * @description This is a base route for the dashboard, This model hook is returning all assignments, Assignments is being passed to be displyed in child dashboard table component.
+  * @description This is a base route for the Home Page / dashboard, This model hook returns all assignments, Assignments is being passed to be displyed in a table in the child dashboard-assignments-list component.
   * @author Crispina Muriel
   * @since 2.3.0
   */
