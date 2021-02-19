@@ -27,8 +27,15 @@
 }
 
 table td {
-  padding: 5px;
   /* Apply cell padding */
+  padding: 5px;
+
+  .link:hover{
+    background: #ededed;
+    opacity: 1;
+    filter: alpha(opacity=100);
+    font-weight: 500;
+  }
 }
 
 #blue {
