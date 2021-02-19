@@ -3,10 +3,8 @@
 */
 
 Encompass.Router.map(function() {
-  // INDEX
+  // INDEX HOME-PAGE
   this.route("index", { path: "/" });
-  // DASHBOARD
-  this.route("dashboard");
   // AUTH PARENT ROUTE
   this.route("auth", function(){
     this.route("login");
