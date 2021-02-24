@@ -5,7 +5,7 @@ Encompass.IndexRoute = Ember.Route.extend({
     this._super.apply(this, arguments);
     this.authenticate();
   },
-  authenticate: function() { //this is duplicated here and in AuthentecatedRoute and in ApplicationRoute
+  authenticate: function() { //this is duplicated here,AuthentecatedRoute, and in ApplicationRoute
     var user = this.modelFor('application');
     if(!user.get('isAuthenticated')) {
       this.get('store').unloadAll();
