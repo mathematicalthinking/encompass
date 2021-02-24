@@ -1,4 +1,3 @@
-{{log "workspaces:" workspaces}}
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
   <tr>
     <td>
@@ -20,15 +19,16 @@
     <td>
       <div class="dash-workspaces al_body" style="width:100%; height:80px; overflow:auto;">
         <table cellspacing="0" cellpadding="1" border="1" width="100%">
-          {{#each yourList as |assignment|}}
+          {{#each workspaces.content as |workspace|}}
+          {{log "hello kitty" workspace._data.linkedAssignment.name}}
           <tr>
-            <td>{{#link-to 'assignment' assignment.id classNames='link'}}{{assignment.name}}{{/link-to}}</td>
-            <td>{{#link-to 'section' assignment.section.sectionId classNames='link'}}{{assignment.section.name}}{{/link-to}}</td>
+            <td>{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace._data.name}}{{/link-to}}</td>
+            <td>{{#link-to 'section' workspace.linkedAssignment.section.sectionId classNames='link'}}{{workspace.linkedAssignment.section.name}}{{/link-to}}</td>
             <td>Student Name Here</td>
-            <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
-            <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
-            {{#if assignment.answers.content.currentState.length}}
-                <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
+            <td>{{format-date workspace.linkedAssignment.assignedDate 'MMM Do YYYY' }}</td>
+            <td>{{format-date workspace.linkedAssignment.dueDate 'MMM Do YYYY' }}</td>
+            {{#if workspace._data.submissionsLength}}
+                <td>Submissions: ({{workspace._data.submissionsLength}})</td>
               {{else}}
                 <td>No submissions</td>
             {{/if}}
