@@ -1,4 +1,8 @@
-/**
+  /**
+  * # Home Page Route
+  * @description This is a base route for the application index which renders home-page and dashboard components
+  * @author Crispina Muriel
+  * @since 2.3.0
   */
 Encompass.IndexRoute = Ember.Route.extend({
     beforeModel: function() {
