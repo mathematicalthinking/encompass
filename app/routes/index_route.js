@@ -1,5 +1,5 @@
   /**
-  * # Home Page Route
+  * # Index Route
   * @description This is a base route for the application index which renders home-page and dashboard components
   * @author Crispina Muriel
   * @since 2.3.0
