@@ -6,6 +6,7 @@
         <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
         {{dashboard-assignments-list store=store user=user assignments=assignments}}
         <h2 class="header-home">{{#link-to 'workspaces.index'}}Student Work to Review{{/link-to}}</h2>
+        {{dashboard-workspaces-list store=store user=user workspaces=workspaces}}
         <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2>
   </div>
 
@@ -18,6 +19,7 @@
     <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
     {{dashboard-assignments-list store=store assignments=assignments}}
     <h2  class="header-home">{{#link-to 'workspaces.index'}}Student Work to Review{{/link-to}}</h2>
+    {{dashboard-workspaces-list store=store user=user workspaces=workspaces}}
     <h2 class="header-home">{{#link-to 'assignments.home'}}My Class' Work{{/link-to}}</h2>
     <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2>
     <p class="footer">EnCoMPASS version 2.4.0 last updated on 02/24/2021.</p>
