@@ -1,9 +1,9 @@
 {{#if workspaces.length}}
-<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<table class="table-w">
   <tr>
     <td>
-      <div style="width:100%; overflow:auto;">
-      <table cellspacing="1" cellpadding="1" border="1" width="100%">
+      <div class="table-header">
+      <table class="table-inner">
         <tr id="ws-table">
           <th>Workspace</th>
           <th>Class</th>
@@ -18,10 +18,10 @@
   </tr>
   <tr>
     <td>
-      <div class="dash-workspaces al_body" style="width:100%; height:80px; overflow:auto;">
-        <table cellspacing="0" cellpadding="1" border="1" width="100%">
+      <div class="dash-workspaces al_body">
+        <table class="table-inner">
           {{#each workspaces.content as |workspace|}}
-          {{log "hello kitty" workspace._data.linkedAssignment.name}}
+          {{log workspace workspace._data}}
           <tr>
             <td>{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace._data.name}}{{/link-to}}</td>
             <td>{{#link-to 'section' workspace.linkedAssignment.section.sectionId classNames='link'}}{{workspace.linkedAssignment.section.name}}{{/link-to}}</td>

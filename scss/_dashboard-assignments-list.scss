@@ -30,7 +30,7 @@ table td {
   /* Apply cell padding */
   padding: 5px;
 
-  .link:hover{
+  .link:hover {
     background: #e7e7e7;
     opacity: 1;
     filter: alpha(opacity=100);
@@ -55,4 +55,18 @@ table td {
   td {
     width: 20%;
   }
+}
+
+.div-table {
+  width: 100%;
+  overflow: auto;
+}
+
+.max-width {
+  width: 100%;
+}
+
+.table-m {
+  width: 100%;
+  overflow: auto;
 }

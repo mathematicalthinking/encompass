@@ -1,9 +1,9 @@
 {{#if yourList.length}}
-<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<table class="max-width">
   <tr>
     <td>
-      <div style="width:100%; overflow:auto;">
-      <table cellspacing="1" cellpadding="1" border="1" width="100%">
+      <div class="table-m">
+      <table class="max-width">
         <tr id="blue">
           <th>Problem</th>
           <th>Class</th>
@@ -17,8 +17,8 @@
   </tr>
   <tr>
     <td>
-      <div class="dash-problems al_body" style="width:100%; height:80px; overflow:auto;">
-        <table cellspacing="0" cellpadding="1" border="1" width="100%">
+      <div class="dash-problems al_body">
+        <table class="max-width">
           {{#each yourList as |assignment|}}
           <tr>
             <td>{{#link-to 'assignment' assignment.id classNames='link'}}{{assignment.name}}{{/link-to}}</td>
