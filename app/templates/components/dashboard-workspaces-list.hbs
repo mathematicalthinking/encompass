@@ -21,8 +21,9 @@
       <div class="dash-workspaces al_body">
         <table class="table-inner">
           {{#each workspaces.content as |workspace|}}
-            {{!-- {{log assignments}} --}}
-            {{workspace-table-row workspace=workspace}}
+            {{dashboard-workspaces-row
+            assignments=assignments
+            workspace=workspace linkedAssignment=workspace._relationships.initializedRelationships.linkedAssignment.canonicalState.id}}
           {{/each}}
         </table>
       </div>

@@ -1,9 +1,9 @@
-Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  // utils: Ember.inject.service('utility-methods'),
+Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  utils: Ember.inject.service('utility-methods'),
 
-  // didReceiveAttrs: function() {
-  //   this.linkedAssignments();
-  // },
+  didReceiveAttrs: function() {
+    // this.linkedAssignments();
+  },
 
   // linkedAssignments: function() {
   //   const currentUser = this.get('currentUser');
