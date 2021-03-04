@@ -1,19 +1,37 @@
 Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   utils: Ember.inject.service('utility-methods'),
+  myLinkedAssignments: null,
 
   didReceiveAttrs: function() {
-    // this.linkedAssignments();
+    // this.yourLinkedAssignments();
+    // console.log("helo", this.myLinkedAssignments);
   },
 
-  // linkedAssignments: function() {
-  //   const currentUser = this.get('currentUser');
+  yourLinkedAssignments: function () {
+    const workspaces = this.workspaces;
+    let assignments = this.assignments;
 
-  //   const linkedAssignments = this.assignments.filter((assignment) => {
-  //     const userId = currentUser.get('id');
-  //     let assigmentCreatorId = this.get('utils').getBelongsToId(assignment, 'createdBy');
-  //     return userId === assigmentCreatorId && !assignment.get('isTrashed');
-  //   });
-  //   return linkedAssignments.sortBy('createDate').reverse();
-  // },
+    const workspaceLinkedAssignmentIds = {};
+
+
+    workspaces.forEach(workspace => {
+      console.log(workspace);
+      if (        workspace._internalModel.__relationships.initializedRelationships
+          .linkedAssignment &&
+        workspace._internalModel.__relationships.initializedRelationships
+          .linkedAssignment.canonicalState.id
+      ) {
+        workspaceLinkedAssignmentIds[workspace.id] =
+          workspace._internalModel.__relationships.initializedRelationships.linkedAssignment.canonicalState.id;
+      }
+
+    });
+
+    assignments = assignments.filter(assignment => {
+      return [];
+    });
+
+    this.myLinkedAssignments = assignments;
+  }
 
 });

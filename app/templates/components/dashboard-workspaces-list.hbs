@@ -21,6 +21,7 @@
       <div class="dash-workspaces al_body">
         <table class="table-inner">
           {{#each workspaces.content as |workspace|}}
+            {{!-- {{log workspace.__relationships.initializedRelationships.linkedAssignment}} --}}
             <tr>
               <td>{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace._data.name}}{{/link-to}}</td>
               <td>{{#link-to 'section' workspace.linkedAssignment.section.sectionId
