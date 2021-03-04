@@ -22,19 +22,7 @@
         <table class="table-inner">
           {{#each workspaces.content as |workspace|}}
             {{!-- {{log workspace.__relationships.initializedRelationships.linkedAssignment}} --}}
-            <tr>
-              <td>{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace._data.name}}{{/link-to}}</td>
-              <td>{{#link-to 'section' workspace.linkedAssignment.section.sectionId
-                classNames='link'}}{{workspace.linkedAssignment.section.name}}{{/link-to}}</td>
-              <td>Student Name Here</td>
-              <td>{{format-date workspace.linkedAssignment.assignedDate 'MMM Do YYYY' }}</td>
-              <td>{{format-date workspace.linkedAssignment.dueDate 'MMM Do YYYY' }}</td>
-              {{#if workspace._data.submissionsLength}}
-              <td>Submissions: ({{workspace._data.submissionsLength}})</td>
-              {{else}}
-              <td>No submissions</td>
-              {{/if}}
-            </tr>
+            {{dashboard-workspace-row workspace=workspace linkedAssignments=myLinkedAssignments assignments=assignments}}
           {{/each}}
         </table>
       </div>

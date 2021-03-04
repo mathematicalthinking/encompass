@@ -2,8 +2,9 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.Cu
   utils: Ember.inject.service('utility-methods'),
   myLinkedAssignments: null,
 
+
   didReceiveAttrs: function() {
-    // this.yourLinkedAssignments();
+    this.yourLinkedAssignments();
     // console.log("helo", this.myLinkedAssignments);
   },
 
@@ -15,9 +16,15 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.Cu
 
 
     workspaces.forEach(workspace => {
-      console.log(workspace);
-      if (        workspace._internalModel.__relationships.initializedRelationships
+      // console.log(workspace);
+      if (
+        workspace._internalModel &&
+        workspace._internalModel.__relationships &&
+        workspace._internalModel.__relationships.initializedRelationships &&
+        workspace._internalModel.__relationships.initializedRelationships
           .linkedAssignment &&
+        workspace._internalModel.__relationships.initializedRelationships
+          .linkedAssignment.canonicalState &&
         workspace._internalModel.__relationships.initializedRelationships
           .linkedAssignment.canonicalState.id
       ) {
@@ -27,11 +34,9 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.Cu
 
     });
 
-    assignments = assignments.filter(assignment => {
-      return [];
-    });
 
-    this.myLinkedAssignments = assignments;
+
+    this.myLinkedAssignments = workspaceLinkedAssignmentIds;
   }
 
 });
