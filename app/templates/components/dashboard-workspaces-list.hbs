@@ -1,5 +1,5 @@
 {{#if workspaces.length}}
-<table class="table-w">
+<table class="max-width">
   <tr>
     <td>
       <div class="table-header">
@@ -19,10 +19,11 @@
   <tr>
     <td>
       <div class="dash-workspaces al_body">
-        <table class="table-inner">
+        <table class="max-width">
           {{#each workspaces.content as |workspace|}}
             {{!-- {{log workspace.__relationships.initializedRelationships.linkedAssignment}} --}}
-            {{dashboard-workspace-row workspace=workspace linkedAssignments=myLinkedAssignments assignments=assignments}}
+            {{dashboard-workspace-row
+            classNames="ws-table" workspace=workspace linkedAssignments=myLinkedAssignments assignments=assignments}}
           {{/each}}
         </table>
       </div>
