@@ -5,7 +5,7 @@
         {{dashboard-assignments-list store=store user=user assignments=assignments}}
 
         {{dashboard-workspaces-list store=store user=user workspaces=workspaces assignments=assingments}}
-        <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2>
+        {{!-- <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2> --}}
   </div>
 
 
@@ -16,8 +16,8 @@
     {{dashboard-assignments-list store=store assignments=assignments}}
 
     {{dashboard-workspaces-list store=store user=user workspaces=workspaces assignments=assignments}}
-    <h2 class="header-home">{{#link-to 'assignments.home'}}My Class' Work{{/link-to}}</h2>
-    <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2>
+    {{!-- <h2 class="header-home">{{#link-to 'assignments.home'}}My Class' Work{{/link-to}}</h2>
+    <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2> --}}
     <p class="footer">EnCoMPASS version 2.4.0 last updated on 02/24/2021.</p>
   {{else}}
     <h2>It looks like you are not logged in</h2>

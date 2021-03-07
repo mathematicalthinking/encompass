@@ -1,16 +1,15 @@
-{{log myAssignment}}
   <tr>
     <td>{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace._data.name}}{{/link-to}}</td>
-    <td>{{#link-to 'section' workspace.linkedAssignment.section.sectionId
-      classNames='link'}}{{workspace.linkedAssignment.section.name}}{{/link-to}}</td>
-    <td>Student Name Here</td>
+    {{!-- <td>{{#link-to 'section' workspace.linkedAssignment.section.sectionId --}}
+      {{!-- classNames='link'}}{{workspace.linkedAssignment.section.name}}{{/link-to}}</td> --}}
+    {{!-- <td>Student Name Here</td> --}}
     <td>{{format-date myAssignment.assignedDate 'MMM Do YYYY' }}</td>
     <td>{{format-date myAssignment.dueDate 'MMM Do YYYY' }}</td>
-    {{#if workspace._data.submissionsLength}}
+    {{!-- {{#if workspace._data.submissionsLength}}
     <td>Submissions: ({{workspace._data.submissionsLength}})</td>
     {{else}}
     <td>No submissions</td>
-    {{/if}}
+    {{/if}} --}}
   </tr>
 
 
