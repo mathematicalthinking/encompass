@@ -38,42 +38,34 @@ table td {
   }
 }
 
-#blue {
+#ws-table {
   color: white;
   background-color: $accent-color;
 
   th {
-    width: 20%;
+    width: 16%;
   }
 }
 
-.dash-problems {
+.dash-workspaces {
   width: 100%;
   overflow: auto;
 
   td {
-    width: 20%;
+    width: 16%;
   }
 }
 
-.div-table {
+.table-header {
   width: 100%;
   overflow: auto;
 }
 
-.max-width {
+.table-w {
   width: 100%;
+  border: 0;
 }
 
-.table-m {
+.table-inner {
   width: 100%;
-  overflow: auto;
-}
-
-.resize {
-  resize: vertical;
-  height: 160px;
-  max-height: 400px;
-  overflow: auto;
-  border: solid lightgray 1px;
 }

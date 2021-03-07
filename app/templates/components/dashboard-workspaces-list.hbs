@@ -1,0 +1,39 @@
+{{#if workspaces.length}}
+{{#unless user.isStudent}}
+<h2 class="header-home">{{#link-to 'workspaces.index'}}Student Work to Review{{/link-to}}</h2>
+<div class="resize">
+  <table class="max-width">
+    <tr>
+      <td>
+        <div class="table-header">
+        <table class="table-inner">
+          <tr id="ws-table">
+            <th>Workspace</th>
+            {{!-- <th>Class</th> --}}
+            {{!-- <th>Student Name</th> --}}
+            <th>Date Assigned</th>
+            <th>Date Due</th>
+            {{!-- <th>Status</th> --}}
+          </tr>
+        </table>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="dash-workspaces al_body">
+          <table class="max-width">
+            {{#each workspaces.content as |workspace|}}
+              {{!-- {{log workspace.__relationships.initializedRelationships.linkedAssignment}} --}}
+              {{dashboard-workspace-row
+              classNames="ws-table" workspace=workspace linkedAssignments=myLinkedAssignments assignments=assignments}}
+            {{/each}}
+          </table>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+{{/unless}}
+{{/if}}

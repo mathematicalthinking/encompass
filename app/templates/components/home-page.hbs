@@ -1,12 +1,11 @@
-
 {{#if user.isStudent}}
   <div id="welcome"  class="al_wtf home header-home">
     <h1>Welcome student, {{user.displayName}}!</h1>
         <h1 class="header-home header-font">My Work Landing Page</h1>
-        <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
         {{dashboard-assignments-list store=store user=user assignments=assignments}}
-        <h2 class="header-home">{{#link-to 'workspaces.index'}}Student Work to Review{{/link-to}}</h2>
-        <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2>
+
+        {{dashboard-workspaces-list store=store user=user workspaces=workspaces assignments=assingments}}
+        {{!-- <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2> --}}
   </div>
 
 
@@ -14,12 +13,12 @@
  <div id="welcome" class="al_wtf home  header-home">
   {{#if user.isAuthenticated}}
     <h1 class="header-home">My Work Landing Page</h1>
-    <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
     {{dashboard-assignments-list store=store assignments=assignments}}
-    <h2  class="header-home">{{#link-to 'workspaces.index'}}Student Work to Review{{/link-to}}</h2>
-    <h2 class="header-home">{{#link-to 'assignments.home'}}My Class' Work{{/link-to}}</h2>
-    <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2>
-    <p class="footer">EnCoMPASS version 2.3.1 last updated on 02/24/2021.</p>
+
+    {{dashboard-workspaces-list store=store user=user workspaces=workspaces assignments=assignments}}
+    {{!-- <h2 class="header-home">{{#link-to 'assignments.home'}}My Class' Work{{/link-to}}</h2>
+    <h2 class="header-home">{{#link-to 'responses'}} Mentoring/Approving{{/link-to}}</h2> --}}
+    <p class="footer">EnCoMPASS version 2.5.0 last updated on 03/07/2021.</p>
   {{else}}
     <h2>It looks like you are not logged in</h2>
     <p>Please login <a href="#/auth/login">here</a></p>
