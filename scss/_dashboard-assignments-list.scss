@@ -75,6 +75,5 @@ table td {
   height: 130px;
   max-height: 400px;
   overflow: auto;
-  border-style: solid;
-  border-bottom: $filter-list-border-color;
+  border: solid lightgray 1px;
 }
