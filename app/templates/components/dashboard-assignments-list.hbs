@@ -7,7 +7,9 @@
       <table class="max-width">
         <tr id="blue">
           <th>Problem</th>
+          {{#unless user.isStudent}}
           <th>Class</th>
+          {{/unless}}
           <th>Date Assigned</th>
           <th>Date Due</th>
           <th>Status</th>
@@ -23,7 +25,9 @@
           {{#each yourList as |assignment|}}
           <tr>
             <td>{{#link-to 'assignment' assignment.id classNames='link'}}{{assignment.name}}{{/link-to}}</td>
+            {{#unless user.isStudent}}
             <td>{{#link-to 'section' assignment.section.sectionId classNames='link'}}{{assignment.section.name}}{{/link-to}}</td>
+            {{/unless}}
             <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
             <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
             {{#if assignment.answers.content.currentState.length}}
