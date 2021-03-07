@@ -1,45 +1,47 @@
 {{#if yourList.length}}
 <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
-<table class="max-width">
-  <tr>
-    <td>
-      <div class="table-m">
-      <table class="max-width">
-        <tr id="blue">
-          <th>Problem</th>
-          {{#unless user.isStudent}}
-          <th>Class</th>
-          {{/unless}}
-          <th>Date Assigned</th>
-          <th>Date Due</th>
-          <th>Status</th>
-        </tr>
-      </table>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="dash-problems al_body">
+<div class="resize">
+  <table class="max-width">
+    <tr>
+      <td>
+        <div class="table-m">
         <table class="max-width">
-          {{#each yourList as |assignment|}}
-          <tr>
-            <td>{{#link-to 'assignment' assignment.id classNames='link'}}{{assignment.name}}{{/link-to}}</td>
+          <tr id="blue">
+            <th>Problem</th>
             {{#unless user.isStudent}}
-            <td>{{#link-to 'section' assignment.section.sectionId classNames='link'}}{{assignment.section.name}}{{/link-to}}</td>
+            <th>Class</th>
             {{/unless}}
-            <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
-            <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
-            {{#if assignment.answers.content.currentState.length}}
-                <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
-              {{else}}
-                <td>No submissions</td>
-            {{/if}}
+            <th>Date Assigned</th>
+            <th>Date Due</th>
+            <th>Status</th>
           </tr>
-          {{/each}}
         </table>
-      </div>
-    </td>
-  </tr>
-</table>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="dash-problems al_body">
+          <table class="max-width">
+            {{#each yourList as |assignment|}}
+            <tr>
+              <td>{{#link-to 'assignment' assignment.id classNames='link'}}{{assignment.name}}{{/link-to}}</td>
+              {{#unless user.isStudent}}
+              <td>{{#link-to 'section' assignment.section.sectionId classNames='link'}}{{assignment.section.name}}{{/link-to}}</td>
+              {{/unless}}
+              <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
+              <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
+              {{#if assignment.answers.content.currentState.length}}
+                  <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
+                {{else}}
+                  <td>No submissions</td>
+              {{/if}}
+            </tr>
+            {{/each}}
+          </table>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
 {{/if}}

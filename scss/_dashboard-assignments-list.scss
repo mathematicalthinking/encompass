@@ -49,7 +49,6 @@ table td {
 
 .dash-problems {
   width: 100%;
-  height: 120px;
   overflow: auto;
 
   td {
@@ -69,4 +68,13 @@ table td {
 .table-m {
   width: 100%;
   overflow: auto;
+}
+
+.resize {
+  resize: vertical;
+  height: 130px;
+  max-height: 400px;
+  overflow: auto;
+  border-style: solid;
+  border-bottom: $filter-list-border-color;
 }
