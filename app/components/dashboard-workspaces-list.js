@@ -5,7 +5,6 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.Cu
 
   didReceiveAttrs: function() {
     this.yourLinkedAssignments();
-    // console.log("helo", this.myLinkedAssignments);
   },
 
   yourLinkedAssignments: function () {
