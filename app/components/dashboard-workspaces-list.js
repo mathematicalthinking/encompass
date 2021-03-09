@@ -1,21 +1,23 @@
 Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   utils: Ember.inject.service('utility-methods'),
   myLinkedAssignments: null,
+  tableHeight: '',
 
 
   didReceiveAttrs: function() {
     this.yourLinkedAssignments();
   },
 
+
   yourLinkedAssignments: function () {
     const workspaces = this.workspaces;
+    this.tableHeight = this.workspaces.content.length  * 31 + 'px';
     let assignments = this.assignments;
 
     const workspaceLinkedAssignmentIds = {};
 
 
     workspaces.forEach(workspace => {
-      // console.log(workspace);
       if (
         workspace._internalModel &&
         workspace._internalModel.__relationships &&
@@ -36,6 +38,8 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.Cu
 
 
     this.myLinkedAssignments = workspaceLinkedAssignmentIds;
-  }
+  },
+
+
 
 });

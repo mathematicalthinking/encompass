@@ -1,7 +1,6 @@
 {{#if workspaces.length}}
 {{#unless user.isStudent}}
 <h2 class="header-home">{{#link-to 'workspaces.index'}}Student Work to Review{{/link-to}}</h2>
-<div class="resize">
   <table class="max-width">
     <tr>
       <td>
@@ -21,7 +20,7 @@
     </tr>
     <tr>
       <td>
-        <div class="dash-workspaces al_body">
+        <div class="dash-workspaces al_body resize" style="max-height:{{tableHeight}};">
           <table class="max-width">
             {{#each workspaces.content as |workspace|}}
               {{!-- {{log workspace.__relationships.initializedRelationships.linkedAssignment}} --}}
@@ -33,7 +32,6 @@
       </td>
     </tr>
   </table>
-</div>
 
 {{/unless}}
 {{/if}}
