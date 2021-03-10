@@ -1,6 +1,7 @@
 Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
 
   utils: Ember.inject.service('utility-methods'),
+  tableHeight: '',
 
   didReceiveAttrs: function() {
     this.filterAssignments();
@@ -28,6 +29,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(Encompass.C
       let assigmentCreatorId = this.get('utils').getBelongsToId(assignment, 'createdBy');
       return userId === assigmentCreatorId && !assignment.get('isTrashed');
     });
+    this.tableHeight = yourList.length * 31 + "px";
     return yourList.sortBy('createDate').reverse();
   }.property('assignments.@each.isTrashed', 'currentUser.isStudent'),
 

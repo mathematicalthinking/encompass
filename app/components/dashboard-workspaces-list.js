@@ -12,7 +12,6 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.Cu
   yourLinkedAssignments: function () {
     const workspaces = this.workspaces;
     this.tableHeight = this.workspaces.content.length  * 31 + 'px';
-    let assignments = this.assignments;
 
     const workspaceLinkedAssignmentIds = {};
 
