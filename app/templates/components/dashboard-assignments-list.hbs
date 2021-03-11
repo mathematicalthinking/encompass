@@ -1,6 +1,5 @@
 {{#if yourList.length}}
 <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
-<div class="resize">
   <table class="max-width">
     <tr>
       <td>
@@ -21,7 +20,7 @@
     </tr>
     <tr>
       <td>
-        <div class="dash-problems al_body">
+        <div class="dash-problems al_body resize" style="max-height:{{tableHeight}};">
           <table class="max-width">
             {{#each yourList as |assignment|}}
             <tr>
@@ -43,5 +42,4 @@
       </td>
     </tr>
   </table>
-</div>
 {{/if}}
