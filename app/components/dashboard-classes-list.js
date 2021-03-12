@@ -1,6 +1,7 @@
-Encompass.DashboardClassesComponent = Ember.Component.extend(
+Encompass.DashboardClassesListComponent = Ember.Component.extend(
   Encompass.CurrentUserMixin,
   {
+    tableHeight: '',
     elementId: "section-list",
 
     cleanSections: function () {
@@ -13,6 +14,9 @@ Encompass.DashboardClassesComponent = Ember.Component.extend(
         let creatorId = this.get("utils").getBelongsToId(section, "createdBy");
         return creatorId === this.get("currentUser.id");
       });
+
+      this.tableHeight = yourSections.length * 31 + "px";
+
       return yourSections.sortBy("createDate").reverse();
     }.property("cleanSections.[]", "currentUser.id"),
 
