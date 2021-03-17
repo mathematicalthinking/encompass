@@ -24,11 +24,14 @@ Encompass.IndexRoute = Ember.Route.extend({
   },
   model: function () {
     const user = this.modelFor('application');
-    const assignments = this.get('store').findAll('assignment');
+    const assignments = this.get('store').findAll('assignment', {
+      include: 'section'
+    });
     const sections = this.get('store').findAll('section');
 
     //import workspaces created by current user
     const workspaceCriteria = {
+      include: 'linkedAssignment,linkedAssignment.section',
       filterBy: {
         createdBy: user.id,
       },

@@ -15,7 +15,8 @@ Encompass.SectionsNewRoute = Encompass.AuthenticatedRoute.extend({
         users: this.get('store').findAll('user'),
         organizations: this.get('store').findAll('organization'),
         user: this.modelFor('application'),
-        sections: this.get('store').findAll('section')
+        sections: this.get('store').findAll('section'),
+        workspaces: this.get('store').findall('workspace'),
       });
     },
     renderTemplate: function () {
