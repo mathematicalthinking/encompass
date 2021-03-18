@@ -1,4 +1,5 @@
-{{#if sections.length}}
+{{#unless user.isStudent}}
+{{#if yourSections}}
 <h2 class="header-home">{{#link-to 'assignments.home'}}My Class' Work{{/link-to}}</h2>
 <table class="max-width">
   <tr>
@@ -7,9 +8,7 @@
         <table class="max-width">
           <tr id="blue">
             <th>Problem</th>
-            {{#unless user.isStudent}}
             <th>Class</th>
-            {{/unless}}
             <th>Date Assigned</th>
             <th>Date Due</th>
             <th>Submissions</th>
@@ -24,11 +23,9 @@
         <table class="max-width">
           {{#each yourSections as |section|}}
           <tr>
-            <td>{{#link-to 'section' section.id classNames='link'}}{{section.name}}{{/link-to}}</td>
-            {{#unless user.isStudent}}
             <td>{{#link-to 'section' section.section.sectionId
               classNames='link'}}{{section.section.name}}{{/link-to}}</td>
-            {{/unless}}
+            <td>{{#link-to 'section' section.id classNames='link'}}{{section.name}}{{/link-to}}</td>
             <td>{{format-date section.assignedDate 'MMM Do YYYY' }}</td>
             <td>{{format-date section.dueDate 'MMM Do YYYY' }}</td>
             {{#if section.answers.content.currentState.length}}
@@ -44,3 +41,4 @@
   </tr>
 </table>
 {{/if}}
+{{/unless}}
