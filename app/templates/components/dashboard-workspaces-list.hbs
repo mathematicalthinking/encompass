@@ -8,11 +8,11 @@
         <table class="table-inner">
           <tr id="ws-table">
             <th>Workspace</th>
-            {{!-- <th>Class</th> --}}
-            {{!-- <th>Student Name</th> --}}
+            <th>Class</th>
+            <th>Student Name</th>
             <th>Date Assigned</th>
             <th>Date Due</th>
-            {{!-- <th>Status</th> --}}
+            <th>Status</th>
           </tr>
         </table>
         </div>
@@ -23,7 +23,6 @@
         <div class="dash-workspaces al_body resize" style="max-height:{{tableHeight}};">
           <table class="max-width">
             {{#each workspaces.content as |workspace|}}
-              {{!-- {{log workspace.__relationships.initializedRelationships.linkedAssignment}} --}}
               {{dashboard-workspace-row
               classNames="ws-table" workspace=workspace linkedAssignments=myLinkedAssignments assignments=assignments}}
             {{/each}}

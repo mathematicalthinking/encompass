@@ -1,0 +1,44 @@
+{{#unless user.isStudent}}
+{{#if yourSections}}
+<h2 class="header-home">{{#link-to 'assignments.home'}}My Class' Work{{/link-to}}</h2>
+<table class="max-width">
+  <tr>
+    <td>
+      <div class="table-m">
+        <table class="max-width">
+          <tr id="blue">
+            <th>Problem</th>
+            <th>Class</th>
+            <th>Date Assigned</th>
+            <th>Date Due</th>
+            <th>Submissions</th>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="dash-problems al_body resize" style="max-height:{{tableHeight}};">
+        <table class="max-width">
+          {{#each yourSections as |section|}}
+          <tr>
+            <td>{{#link-to 'section' section.section.sectionId
+              classNames='link'}}{{section.section.name}}{{/link-to}}</td>
+            <td>{{#link-to 'section' section.id classNames='link'}}{{section.name}}{{/link-to}}</td>
+            <td>{{format-date section.assignedDate 'MMM Do YYYY' }}</td>
+            <td>{{format-date section.dueDate 'MMM Do YYYY' }}</td>
+            {{#if section.answers.content.currentState.length}}
+            <td>Submissions: ({{section.answers.content.currentState.length}})</td>
+            {{else}}
+            <td>No submissions</td>
+            {{/if}}
+          </tr>
+          {{/each}}
+        </table>
+      </div>
+    </td>
+  </tr>
+</table>
+{{/if}}
+{{/unless}}
