@@ -9,20 +9,12 @@ Encompass.DashboardWorkspaceRowComponent = Ember.Component.extend({
 
   singleAssignment() {
 
-    if (this.linkedAssignments && this.workspace && this.assignments) {
-      // find student that has a workspace that matches the workspace we're on
-      // loop through students find linkedWorkspace
 
-
-
-
-      const assingmentId = this.linkedAssignments[this.workspace.id];
-      const assignment = this.assignments.find((a) => {
-        return a.id === assingmentId;
-      });
-
-      this.myAssignment = assignment;
-      console.log('single assignment',this.myAssignment);
-    }
+    this.myAssignment = this.assignments.find((assignment) => {
+      return assignment.id === this.linkedAssignments[this.workspace.id];
+    });
+    const ws = this.workspace;
+    // const owner = ws.get('owner');
+    // console.log(ws.get('owner'));
   },
 });
