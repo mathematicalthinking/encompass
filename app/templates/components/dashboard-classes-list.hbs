@@ -22,18 +22,24 @@
       <div class="dash-problems al_body resize" style="max-height:{{tableHeight}};">
         <table class="max-width">
           {{#each yourSections as |section|}}
+          {{#each section.assignments as |assignment|}}
           <tr>
-            <td>{{#link-to 'section' section.section.sectionId
-              classNames='link'}}{{section.section.name}}{{/link-to}}</td>
+            <td>
+                {{#link-to 'assignment' assignment.assignmentId
+                classNames='link'}}
+                  {{assignment.problem.title}}
+                {{/link-to}}
+            </td>
             <td>{{#link-to 'section' section.id classNames='link'}}{{section.name}}{{/link-to}}</td>
-            <td>{{format-date section.assignedDate 'MMM Do YYYY' }}</td>
-            <td>{{format-date section.dueDate 'MMM Do YYYY' }}</td>
-            {{#if section.answers.content.currentState.length}}
-            <td>Submissions: ({{section.answers.content.currentState.length}})</td>
+            <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
+            <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
+            {{#if assignment.answers.content.currentState.length}}
+            <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
             {{else}}
             <td>No submissions</td>
             {{/if}}
           </tr>
+          {{/each}}
           {{/each}}
         </table>
       </div>

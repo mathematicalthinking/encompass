@@ -15,7 +15,14 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         return creatorId === this.get("currentUser.id");
       });
 
-      this.tableHeight = yourSections.length * 31 + "px";
+      let count = 0;
+
+      yourSections.forEach((section) => {
+        // section.get is returning NaN
+        count += section.get('assignments').length - 1;
+      });
+
+      this.tableHeight = (count - 1) * 31  + "px";
 
       return yourSections.sortBy("createDate").reverse();
     }.property("cleanSections.[]", "currentUser.id"),
