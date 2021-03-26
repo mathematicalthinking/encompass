@@ -18,7 +18,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       let count = 0;
 
       yourSections.forEach((section) => {
-        // this section.get is returning NaN
+        // section.get is returning NaN
         count += section.get('assignments').length - 1;
       });
 
