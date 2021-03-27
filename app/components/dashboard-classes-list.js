@@ -18,11 +18,11 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       let count = 0;
 
       yourSections.forEach((section) => {
-        // section.get is returning NaN
-        count += section.get('assignments').length - 1;
+        const assignments = section.get('assignments');
+        count += assignments.content.length;
       });
 
-      this.tableHeight = (count - 1) * 31  + "px";
+      this.tableHeight = count * 31  + "px";
 
       return yourSections.sortBy("createDate").reverse();
     }.property("cleanSections.[]", "currentUser.id"),
