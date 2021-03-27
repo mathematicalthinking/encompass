@@ -2,13 +2,11 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(Encompass.Cu
   utils: Ember.inject.service('utility-methods'),
   tableHeight: '',
 
-
   didReceiveAttrs: function() {
-    this.calculateWSListHeight();
+    this.calculateTableHeight();
   },
 
-
-  calculateWSListHeight: function () {
+  calculateTableHeight: function () {
     this.tableHeight = this.workspaces.content.length  * 31 + 'px';
   },
 });
