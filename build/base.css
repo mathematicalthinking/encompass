@@ -1268,6 +1268,13 @@ table.cols td {
 .al_wtf a {
   border-bottom: 2px solid #ffcc00;
   line-height: 1.3;
+
+}
+
+.al_wtf_link {
+  border-bottom: 2px solid #ffcc00;
+  line-height: 1.3;
+  font-weight: bold;
 }
 
 .al_wtf section {

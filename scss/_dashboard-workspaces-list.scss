@@ -43,7 +43,10 @@ table td {
   background-color: $accent-color;
 
   th {
-    width: 16%;
+    width: 14%;
+  }
+  .inner {
+    width: 20%;
   }
 }
 
@@ -52,8 +55,15 @@ table td {
   overflow: auto;
 
   td {
-    width: 16%;
+    width: 14%;
   }
+  .inner {
+    width: 20%;
+  }
+}
+
+.inner-header {
+  width: 20%;
 }
 
 .table-header {

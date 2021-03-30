@@ -1,5 +1,5 @@
   <tr>
-    <td>{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace.name}}{{/link-to}}</td>
+    <td class="inner">{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace.name}}{{/link-to}}</td>
     {{#if myAssignment.section.name}}
     <td>{{#link-to 'section' myAssignment.section.sectionId
       classNames='link'}}{{myAssignment.section.name}}{{/link-to}}</td>
@@ -14,6 +14,7 @@
     {{else}}
     <td>No submissions</td>
     {{/if}}
+    <td>{{format-date workspace.lastModifiedDate 'MMM Do YYYY'}}</td>
   </tr>
 
 
