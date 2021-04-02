@@ -7,13 +7,69 @@
         <div class="table-header">
         <table class="table-inner">
           <tr id="ws-table">
-            <th class="inner">Workspace</th>
-            <th>Class</th>
-            <th>Owner</th>
-            <th>Date Assigned</th>
-            <th>Date Due</th>
-            <th>Status</th>
-            <th>Last Modified</th>
+            <th class="inner">{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.name
+            label="Workspace"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.classes
+            label="Class"
+            parentProp=sortCriterion
+            type="classes"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.owner
+            label="Owner"
+            parentProp=sortCriterion
+            type="owner"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.dateAssigned
+            label="Date Assigned"
+            parentProp=sortCriterion
+            type="dateAssigned"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.dueDate
+            label="Due Date"
+            parentProp=sortCriterion
+            type="dueDate"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.submissions
+            label="Status"
+            parentProp=sortCriterion
+            type="submissions"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.lastModifiedDate
+            label="Last Modified"
+            parentProp=sortCriterion
+            type="lastModifiedDate"
+            activeType=sortCriterion.type}}</th>
           </tr>
         </table>
         </div>
@@ -23,7 +79,7 @@
       <td>
         <div class="dash-workspaces al_body resize" style="max-height:{{tableHeight}};">
           <table class="max-width">
-            {{#each workspaces as |workspace|}}
+            {{#each sortedWorkspaces as |workspace|}}
               {{dashboard-workspace-row
               classNames="ws-table" workspace=workspace}}
             {{/each}}
