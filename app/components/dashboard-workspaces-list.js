@@ -46,7 +46,7 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
           type: "classes",
         },
       ],
-      dateAssigned: [
+      assignedDate: [
         { sortParam: null, icon: "" },
         {
           name: "Newest",
@@ -55,7 +55,7 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
-          type: "dateAssigned",
+          type: "assignedDate",
         },
         {
           name: "Oldest",
@@ -64,7 +64,7 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",
-          type: "dateAssigned",
+          type: "assignedDate",
         },
       ],
       dueDate: [
