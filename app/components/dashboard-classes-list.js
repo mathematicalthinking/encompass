@@ -134,39 +134,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
           icon: "fas fa-arrow-up sort-icon",
           type: "submissions",
         },
-      ],
-      owner: [
-        { sortParam: null, icon: "" },
-        {
-          name: "A-Z",
-          sortParam: { param: "owner.username", direction: "asc" },
-          icon: "fas fa-sort-alpha-down sort-icon",
-          type: "owner",
-        },
-        {
-          name: "Z-A",
-          sortParam: { param: "owner.username", direction: "desc" },
-          icon: "fas fa-sort-alpha-up sort-icon",
-          type: "owner",
-        },
-      ],
-      lastModifiedDate: [
-        { sortParam: null, icon: "" },
-        {
-          id: 3,
-          name: "Newest",
-          sortParam: { param: "lastModifiedDate", direction: "asc" },
-          icon: "fas fa-arrow-down sort-icon",
-          type: "lastModifiedDate",
-        },
-        {
-          id: 4,
-          name: "Oldest",
-          sortParam: { param: "lastModifiedDate", direction: "desc" },
-          icon: "fas fa-arrow-up sort-icon",
-          type: "lastModifiedDate",
-        },
-      ],
+      ]
     },
     sortedClasses: function () {
       let sortValue = this.get("sortCriterion.sortParam.param") || "name";
