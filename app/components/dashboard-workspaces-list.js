@@ -153,12 +153,12 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
     sortedWorkspaces: function () {
       let sortValue = this.get("sortCriterion.sortParam.param") || "lastModifiedDate";
       let sortDirection =
-        this.get("sortCriterion.sortParam.direction") || "desc";
+        this.get("sortCriterion.sortParam.direction") || "asc";
       let sorted;
       if (this.workspaces) {
         sorted = this.workspaces.sortBy(sortValue);
       }
-      if (sortDirection === "asc") {
+      if (sortDirection === "desc") {
         return sorted.reverse();
       }
       return sorted;
