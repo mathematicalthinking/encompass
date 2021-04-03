@@ -5,9 +5,9 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
     tableHeight: "",
     sortCriterion: {
       name: "A-Z",
-      sortParam: { param: "name", direction: "asc" },
+      sortParam: { param: "lastModifiedDate", direction: "asc" },
       icon: "fas fa-sort-alpha-down sort-icon",
-      type: "name",
+      type: "lastModifiedDate",
     },
     sortOptions: {
       name: [
@@ -151,14 +151,14 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
       this.tableHeight = this.workspaces.content.length * 31 + "px";
     },
     sortedWorkspaces: function () {
-      let sortValue = this.get("sortCriterion.sortParam.param") || "name";
+      let sortValue = this.get("sortCriterion.sortParam.param") || "lastModifiedDate";
       let sortDirection =
-        this.get("sortCriterion.sortParam.direction") || "asc";
+        this.get("sortCriterion.sortParam.direction") || "desc";
       let sorted;
       if (this.workspaces) {
         sorted = this.workspaces.sortBy(sortValue);
       }
-      if (sortDirection === "desc") {
+      if (sortDirection === "asc") {
         return sorted.reverse();
       }
       return sorted;

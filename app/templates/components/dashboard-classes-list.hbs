@@ -7,11 +7,51 @@
       <div class="table-m">
         <table class="max-width">
           <tr id="blue">
-            <th>Problem</th>
-            <th>Class</th>
-            <th>Date Assigned</th>
-            <th>Date Due</th>
-            <th>Submissions</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.name
+            label="Problem"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.name
+            label="Class"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.name
+            label="Date Assigned"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.name
+            label="Date Due"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.name
+            label="Submissions"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
           </tr>
         </table>
       </div>
@@ -21,7 +61,7 @@
     <td>
       <div class="dash-problems al_body resize" style="max-height:{{tableHeight}};">
         <table class="max-width">
-          {{#each yourSections as |section|}}
+          {{#each sortedClasses as |section|}}
           {{#each section.assignments as |assignment|}}
           <tr>
             {{#if assignment.problem.title}}

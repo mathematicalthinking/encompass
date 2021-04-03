@@ -10,7 +10,7 @@
             <th class="inner">{{toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
-            initialState=1
+            initialState=0
             options=sortOptions.name
             label="Workspace"
             parentProp=sortCriterion
@@ -64,7 +64,7 @@
             <th>{{toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
-            initialState=0
+            initialState=1
             options=sortOptions.lastModifiedDate
             label="Last Modified"
             parentProp=sortCriterion
