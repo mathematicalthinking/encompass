@@ -4,31 +4,6 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
     utils: Ember.inject.service("utility-methods"),
     tableHeight: "",
     elementId: "section-list",
-
-    cleanSections: function () {
-      return this.get("sections").rejectBy("isTrashed");
-    }.property("sections.@each.isTrashed"),
-    didReceiveAttrs: function () {
-      this.yourSections();
-    },
-    // This sorts all the sections in the database and returns only the ones you created
-    yourSections: function () {
-      let yourSections = this.get("cleanSections").filter((section) => {
-        let creatorId = this.get("utils").getBelongsToId(section, "createdBy");
-        return creatorId === this.get("currentUser.id");
-      });
-
-      let count = 0;
-
-      yourSections.forEach((section) => {
-        const assignments = section.get("assignments");
-        count += assignments.content.length;
-      });
-
-      this.tableHeight = count * 31 + "px";
-
-      return yourSections.sortBy("createDate").reverse();
-    },
     sortCriterion: {
       name: "A-Z",
       sortParam: { param: "name", direction: "asc" },
@@ -134,7 +109,31 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
           icon: "fas fa-arrow-up sort-icon",
           type: "submissions",
         },
-      ]
+      ],
+    },
+    cleanSections: function () {
+      return this.get("sections").rejectBy("isTrashed");
+    }.property("sections.@each.isTrashed"),
+    didReceiveAttrs: function () {
+      this.yourSections();
+    },
+    // This sorts all the sections in the database and returns only the ones you created
+    yourSections: function () {
+      let yourSections = this.get("cleanSections").filter((section) => {
+        let creatorId = this.get("utils").getBelongsToId(section, "createdBy");
+        return creatorId === this.get("currentUser.id");
+      });
+
+      let count = 0;
+
+      yourSections.forEach((section) => {
+        const assignments = section.get("assignments");
+        count += assignments.content.length;
+      });
+
+      this.tableHeight = count * 31 + "px";
+
+      return yourSections.sortBy("createDate").reverse();
     },
     sortedClasses: function () {
       let sortValue = this.get("sortCriterion.sortParam.param") || "name";

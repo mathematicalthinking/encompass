@@ -1,4 +1,4 @@
-{{#if yourList.length}}
+{{#if sortedProblems.length}}
 <h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
   <table class="max-width">
     <tr>
@@ -6,13 +6,53 @@
         <div class="table-m">
         <table class="max-width">
           <tr id="blue">
-            <th>Problem</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.name
+            label="Problem"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
             {{#unless user.isStudent}}
-            <th>Class</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.class
+            label="Class"
+            parentProp=sortCriterion
+            type="class"
+            activeType=sortCriterion.type}}</th>
             {{/unless}}
-            <th>Date Assigned</th>
-            <th>Date Due</th>
-            <th>Status</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.assignedDate
+            label="Date Assigned"
+            parentProp=sortCriterion
+            type="assignedDate"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.dueDate
+            label="Date Due"
+            parentProp=sortCriterion
+            type="dueDate"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.status
+            label="Status"
+            parentProp=sortCriterion
+            type="status"
+            activeType=sortCriterion.type}}</th>
           </tr>
         </table>
         </div>
@@ -22,7 +62,8 @@
       <td>
         <div class="dash-problems al_body resize" style="max-height:{{tableHeight}};">
           <table class="max-width">
-            {{#each yourList as |assignment|}}
+            {{#each sortedProblems as |assignment|}}
+            {{log assignment}}
             <tr>
               <td>{{#link-to 'assignment' assignment.id classNames='link'}}{{assignment.name}}{{/link-to}}</td>
               {{#unless user.isStudent}}
