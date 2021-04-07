@@ -1,3 +1,4 @@
+{{!-- Student Work to Review Table --}}
 {{#if workspaces.length}}
 {{#if user.isStudent}}
   <div class="header-space">
@@ -85,7 +86,7 @@
     </tr>
     <tr>
       <td>
-        <div class="dash-workspaces al_body resize" style="max-height:{{tableHeight}};">
+        <div class="dash-workspaces al_body resize" style="max-height:{{calculate-table-height sortedWorkspaces.length}};">
           <table class="max-width">
             {{#each sortedWorkspaces as |workspace|}}
               {{dashboard-workspace-row
