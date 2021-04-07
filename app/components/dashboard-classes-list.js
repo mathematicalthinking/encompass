@@ -6,9 +6,9 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
     elementId: "section-list",
     sortCriterion: {
       name: "A-Z",
-      sortParam: { param: "name", direction: "asc" },
+      sortParam: { param: "classes", direction: "asc" },
       icon: "fas fa-sort-alpha-down sort-icon",
-      type: "name",
+      type: "classes",
     },
     sortOptions: {
       name: [
@@ -31,7 +31,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "A-Z",
           sortParam: {
-            param: "linkedAssignment.section.name",
+            param: "name",
             direction: "asc",
           },
           icon: "fas fa-sort-alpha-down sort-icon",
@@ -40,7 +40,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Z-A",
           sortParam: {
-            param: "linkedAssignment.section.name",
+            param: "name",
             direction: "desc",
           },
           icon: "fas fa-sort-alpha-up sort-icon",
@@ -132,11 +132,11 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       });
 
       this.tableHeight = count * 31 + "px";
-
+      // return list of assignments, add section name, id to each
       return yourSections.sortBy("createDate").reverse();
     },
     sortedClasses: function () {
-      let sortValue = this.get("sortCriterion.sortParam.param") || "name";
+      let sortValue = this.get("sortCriterion.sortParam.param") || "classes";
       let sortDirection =
         this.get("sortCriterion.sortParam.direction") || "asc";
       let sorted;

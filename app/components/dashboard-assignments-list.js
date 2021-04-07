@@ -51,7 +51,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
         {
           name: "Newest",
           sortParam: {
-            param: "linkedAssignment.assignedDate",
+            param: "assignedDate",
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
@@ -60,7 +60,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
         {
           name: "Oldest",
           sortParam: {
-            param: "linkedAssignment.assignedDate",
+            param: "assignedDate",
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",
@@ -72,7 +72,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
         {
           name: "Newest",
           sortParam: {
-            param: "linkedAssignment.dueDate",
+            param: "dueDate",
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
@@ -81,7 +81,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
         {
           name: "Oldest",
           sortParam: {
-            param: "linkedAssignment.dueDate",
+            param: "dueDate",
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",
@@ -93,7 +93,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
         {
           name: "Newest",
           sortParam: {
-            param: "submissionsLength",
+            param: "answers.length",
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
@@ -102,7 +102,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
         {
           name: "Oldest",
           sortParam: {
-            param: "submissionsLength",
+            param: "answers.length",
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",

@@ -7,7 +7,8 @@
       <div class="table-m">
         <table class="max-width">
           <tr id="blue">
-            <th>{{toggle-control
+            <th>Problem</th>
+            {{!-- <th>{{toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
             initialState=1
@@ -15,17 +16,21 @@
             label="Problem"
             parentProp=sortCriterion
             type="name"
-            activeType=sortCriterion.type}}</th>
+            activeType=sortCriterion.type}}</th> --}}
             <th>{{toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
             initialState=0
-            options=sortOptions.name
+            options=sortOptions.classes
             label="Class"
             parentProp=sortCriterion
-            type="name"
+            type="classes"
             activeType=sortCriterion.type}}</th>
-            <th>{{toggle-control
+            <th>Date Assigned</th>
+            <th>Date Due</th>
+            <th>Submissions</th>
+
+            {{!-- <th>{{toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -51,7 +56,7 @@
             label="Submissions"
             parentProp=sortCriterion
             type="name"
-            activeType=sortCriterion.type}}</th>
+            activeType=sortCriterion.type}}</th> --}}
           </tr>
         </table>
       </div>
