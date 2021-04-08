@@ -2,7 +2,6 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
   Encompass.CurrentUserMixin,
   {
     utils: Ember.inject.service("utility-methods"),
-    tableHeight: "",
     sortCriterion: {
       name: "A-Z",
       sortParam: { param: "name", direction: "asc" },
@@ -139,7 +138,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
           assignedStudents.includes(userId) && !assignment.get("isTrashed")
         );
       });
-      this.tableHeight = yourList.length * 31 + "px";
+
       return yourList;
     },
 
@@ -154,7 +153,7 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
       if (sortDirection === "desc") {
         return sorted.reverse();
       }
-      this.tableHeight = sorted.length * 31 + "px";
+
       return sorted;
     }.property("sortCriterion"),
     actions: {
