@@ -71,7 +71,7 @@
               <td>
                   {{#link-to 'assignment' assignment.assignmentId
                   classNames='link'}}
-                    {{assignment.problem.title}}
+                    {{{assignment.problem.title}}}
                   {{/link-to}}
               </td>
             {{else}}
@@ -81,6 +81,7 @@
             <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
             <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
             {{#if assignment.answers.content.currentState.length}}
+            {{log 'answers' assignment.answers}}
             <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
             {{else}}
             <td>No submissions</td>

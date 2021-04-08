@@ -15,13 +15,13 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         { sortParam: null, icon: "" },
         {
           name: "A-Z",
-          sortParam: { param: "name", direction: "asc" },
+          sortParam: { param: "problem.title", direction: "asc" },
           icon: "fas fa-sort-alpha-down sort-icon",
           type: "name",
         },
         {
           name: "Z-A",
-          sortParam: { param: "name", direction: "desc" },
+          sortParam: { param: "problem.title", direction: "desc" },
           icon: "fas fa-sort-alpha-up sort-icon",
           type: "name",
         },
@@ -136,6 +136,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       let sortDirection =
         this.get("sortCriterion.sortParam.direction") || "asc";
       let sorted;
+
       if (this.yourAssignments) {
         sorted = this.yourAssignments().sortBy(sortValue);
       }
