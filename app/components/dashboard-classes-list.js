@@ -15,13 +15,13 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         { sortParam: null, icon: "" },
         {
           name: "A-Z",
-          sortParam: { param: "linkedAssignment.name", direction: "asc" },
+          sortParam: { param: "name", direction: "asc" },
           icon: "fas fa-sort-alpha-down sort-icon",
           type: "name",
         },
         {
           name: "Z-A",
-          sortParam: { param: "linkedAssignment.name", direction: "desc" },
+          sortParam: { param: "name", direction: "desc" },
           icon: "fas fa-sort-alpha-up sort-icon",
           type: "name",
         },
@@ -31,7 +31,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "A-Z",
           sortParam: {
-            param: "name",
+            param: "section.name",
             direction: "asc",
           },
           icon: "fas fa-sort-alpha-down sort-icon",
@@ -40,7 +40,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Z-A",
           sortParam: {
-            param: "name",
+            param: "section.name",
             direction: "desc",
           },
           icon: "fas fa-sort-alpha-up sort-icon",
@@ -52,7 +52,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Newest",
           sortParam: {
-            param: "linkedAssignment.assignedDate",
+            param: "assignedDate",
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
@@ -61,7 +61,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Oldest",
           sortParam: {
-            param: "linkedAssignment.assignedDate",
+            param: "assignedDate",
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",
@@ -73,7 +73,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Newest",
           sortParam: {
-            param: "linkedAssignment.dueDate",
+            param: "dueDate",
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
@@ -82,7 +82,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Oldest",
           sortParam: {
-            param: "linkedAssignment.dueDate",
+            param: "dueDate",
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",
@@ -94,7 +94,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Newest",
           sortParam: {
-            param: "submissionsLength",
+            param: "answers.length",
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
@@ -103,7 +103,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
         {
           name: "Oldest",
           sortParam: {
-            param: "submissionsLength",
+            param: "answers.length",
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",
@@ -115,38 +115,34 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       return this.get("sections").rejectBy("isTrashed");
     }.property("sections.@each.isTrashed"),
     didReceiveAttrs: function () {
-      this.yourSections();
+      this.yourAssignments();
     },
-    // This sorts all the sections in the database and returns only the ones you created
-    yourSections: function () {
+    // Sorts all the sections in the database
+    yourAssignments: function () {
       let yourSections = this.get("cleanSections").filter((section) => {
         let creatorId = this.get("utils").getBelongsToId(section, "createdBy");
         return creatorId === this.get("currentUser.id");
       });
 
-      let count = 0;
+      const yourSectionIds = yourSections.map((section) => section.get('sectionId'));
 
-      yourSections.forEach((section) => {
-        const assignments = section.get("assignments");
-        count += assignments.content.length;
-      });
+      let assignmentsList = this.assignments.filter((assignment) => yourSectionIds.includes(assignment.get('section').get('sectionId')));
 
-      this.tableHeight = count * 31 + "px";
-      // return list of assignments, add section name, id to each
-      return yourSections.sortBy("createDate").reverse();
+      // Return list of assignments, add section name, id to each
+      return assignmentsList;
     },
     sortedClasses: function () {
       let sortValue = this.get("sortCriterion.sortParam.param") || "classes";
       let sortDirection =
         this.get("sortCriterion.sortParam.direction") || "asc";
       let sorted;
-      if (this.yourSections) {
-        sorted = this.yourSections().sortBy(sortValue);
+      if (this.yourAssignments) {
+        sorted = this.yourAssignments().sortBy(sortValue);
       }
       if (sortDirection === "desc") {
         return sorted.reverse();
       }
-      this.tableHeight = sorted.length * 31 + "px";
+
       return sorted;
     }.property("sortCriterion"),
     actions: {

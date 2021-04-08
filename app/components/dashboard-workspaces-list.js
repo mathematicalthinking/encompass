@@ -2,7 +2,6 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
   Encompass.CurrentUserMixin,
   {
     utils: Ember.inject.service("utility-methods"),
-    tableHeight: "",
     classNameBindings: ['isSmallHeader:small', 'isHidden:hide'],
     isSmallHeader: false,
     isHidden: false,
@@ -149,13 +148,6 @@ Encompass.DashboardWorkspacesListComponent = Ember.Component.extend(
       ],
     },
 
-    didReceiveAttrs: function () {
-      this.calculateTableHeight();
-    },
-
-    calculateTableHeight: function () {
-      this.tableHeight = this.workspaces.content.length * 31 + "px";
-    },
     sortedWorkspaces: function () {
       let sortValue = this.get("sortCriterion.sortParam.param") || "lastModifiedDate";
       let sortDirection =
