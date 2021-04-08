@@ -115,10 +115,10 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       return this.get("sections").rejectBy("isTrashed");
     }.property("sections.@each.isTrashed"),
     didReceiveAttrs: function () {
-      this.yourSections();
+      this.yourAssignments();
     },
-    // This sorts all the sections in the database and returns only the ones you created
-    yourSections: function () {
+    // Sorts all the sections in the database
+    yourAssignments: function () {
       let yourSections = this.get("cleanSections").filter((section) => {
         let creatorId = this.get("utils").getBelongsToId(section, "createdBy");
         return creatorId === this.get("currentUser.id");
@@ -128,7 +128,7 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
 
       let assignmentsList = this.assignments.filter((assignment) => yourSectionIds.includes(assignment.get('section').get('sectionId')));
 
-      // return list of assignments, add section name, id to each
+      // Return list of assignments, add section name, id to each
       return assignmentsList;
     },
     sortedClasses: function () {
@@ -136,8 +136,8 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       let sortDirection =
         this.get("sortCriterion.sortParam.direction") || "asc";
       let sorted;
-      if (this.yourSections) {
-        sorted = this.yourSections().sortBy(sortValue);
+      if (this.yourAssignments) {
+        sorted = this.yourAssignments().sortBy(sortValue);
       }
       if (sortDirection === "desc") {
         return sorted.reverse();
