@@ -47,12 +47,30 @@ table td {
   }
 }
 
+#blue-class {
+  color: white;
+  background-color: $accent-color;
+
+  th {
+    width: 18%;
+  }
+}
+
 .dash-problems {
   width: 100%;
   overflow: auto;
 
   td {
     width: 20%;
+  }
+}
+
+.dash-classes {
+  width: 100%;
+  overflow: auto;
+
+  td {
+    width: 18%;
   }
 }
 

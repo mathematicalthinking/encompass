@@ -6,11 +6,11 @@
     <td>
       <div class="table-m">
         <table class="max-width">
-          <tr id="blue">
+          <tr id="blue-class">
             <th>{{toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
-            initialState=1
+            initialState=0
             options=sortOptions.name
             label="Problem"
             parentProp=sortCriterion
@@ -56,6 +56,16 @@
             parentProp=sortCriterion
             type="submissions"
             activeType=sortCriterion.type}}</th>
+
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.submissionDate
+            label="Submission Date"
+            parentProp=sortCriterion
+            type="submissionDate"
+            activeType=sortCriterion.type}}</th>
           </tr>
         </table>
       </div>
@@ -63,7 +73,7 @@
   </tr>
   <tr>
     <td>
-      <div class="dash-problems al_body resize" style="max-height:{{calculate-table-height sortedClasses.length}};">
+      <div class="dash-classes al_body resize" style="max-height:{{calculate-table-height sortedClasses.length}};">
         <table class="max-width">
           {{#each sortedClasses as |assignment|}}
           <tr>
@@ -81,11 +91,11 @@
             <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
             <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
             {{#if assignment.answers.content.currentState.length}}
-            {{log 'answers' assignment.answers}}
             <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
             {{else}}
             <td>No submissions</td>
             {{/if}}
+            <td>{{format-date assignment.createDateAnswer 'MMM Do YYYY'}}</td>
           </tr>
           {{/each}}
         </table>
