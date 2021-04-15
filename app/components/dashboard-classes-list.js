@@ -6,9 +6,9 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
     elementId: "section-list",
     sortCriterion: {
       name: "A-Z",
-      sortParam: { param: "submissionDate", direction: "asc" },
+      sortParam: { param: "createDateAnswer", direction: "asc" },
       icon: "fas fa-sort-alpha-down sort-icon",
-      type: "submissionDate",
+      type: "createDateAnswer",
     },
     sortOptions: {
       name: [
@@ -110,27 +110,27 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
           type: "submissions",
         },
       ],
-      submissionDate: [
+      createDateAnswer: [
         { sortParam: null, icon: "" },
         {
           id: 3,
           name: "Newest",
           sortParam: {
-            param: "submissionDate",
+            param: "createDateAnswer",
             direction: "asc",
           },
           icon: "fas fa-arrow-down sort-icon",
-          type: "submissionDate",
+          type: "createDateAnswer",
         },
         {
           id: 4,
           name: "Oldest",
           sortParam: {
-            param: "submissionDate",
+            param: "createDateAnswer",
             direction: "desc",
           },
           icon: "fas fa-arrow-up sort-icon",
-          type: "submissionDate",
+          type: "createDateAnswer",
         },
       ],
     },
@@ -138,8 +138,16 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
       return this.get("sections").rejectBy("isTrashed");
     }.property("sections.@each.isTrashed"),
     didReceiveAttrs: function () {
-      this.yourAssignments();
+      setTimeout(() => {
+        this.yourAssignments();
+
+        setTimeout(() => {
+          this.set("sortCriterion", this.sortCriterion);
+        }, 1000);
+
+      }, 1000);
     },
+
     // Sorts all the sections in the database
     yourAssignments: function () {
       let yourSections = this.get("cleanSections").filter((section) => {
@@ -152,45 +160,37 @@ Encompass.DashboardClassesListComponent = Ember.Component.extend(
 
       let assignmentsList = this.assignments.filter((assignment) => yourSectionIds.includes(assignment.get("section").get("sectionId"))
       );
+      assignmentsList.forEach((assignment) => {
+        if (assignment.get("answers").length) {
+          // loop through answers and create new property with latest answer create date
+          let createDate;
+          const latestAnswerA = assignment.get("answers").sortBy("createDate");
+          if (latestAnswerA[0]) {
+            createDate = latestAnswerA[0].get("createDate");
+          }
+
+          assignment.set("createDateAnswer", createDate);
+        }
+      });
 
       // Return list of assignments, add section name, id to each
       return assignmentsList;
     },
     sortedClasses: function () {
       let sortValue =
-        this.get("sortCriterion.sortParam.param") || "submissionDate";
+        this.get("sortCriterion.sortParam.param") || "createDateAnswer";
       let sortDirection =
         this.get("sortCriterion.sortParam.direction") || "asc";
       let sorted;
 
-      if (sortValue === "submissionDate") {
-        this.yourAssignments().forEach((assignment) => {
-          if (assignment.get("answers").length) {
-            console.log("inside if");
-
-            // loop through answers and create new property with latest answer create date
-            let createDate;
-            const latestAnswerA = assignment
-              .get("answers")
-              .sortBy("createDate");
-            if (latestAnswerA[0]) {
-              createDate = latestAnswerA[0].get("createDate");
-            }
-
-            assignment.set("createDateAnswer", createDate);
-          }
-        });
-        sorted = this.yourAssignments().sortBy("createDateAnswer");
-      } else {
-        if (this.yourAssignments().length) {
-          sorted = this.yourAssignments().sortBy(sortValue);
-        }
+      if (this.yourAssignments().length) {
+        sorted = this.yourAssignments().sortBy(sortValue);
       }
 
       if (sortDirection === "desc") {
         return sorted.reverse();
       }
-      this.set("sortCriterion", "submissionDate");
+
       return sorted;
     }.property("sortCriterion"),
     actions: {
