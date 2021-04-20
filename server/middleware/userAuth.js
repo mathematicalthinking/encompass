@@ -159,7 +159,7 @@ function splitName(name) {
 function createUserAvatar(name) {
   const bgColor = generateRandomColor('light', null, null, null, null);
   const bgString = bgColor.substring(1);
-  const formattedName = splitName(name);
+  const formattedName = splitName(name || "");
   const baseUrl = `https://ui-avatars.com/api/?rounded=true&color=ffffff&background=${bgString}&name=${formattedName}`;
   return baseUrl;
 }

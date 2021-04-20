@@ -15,6 +15,7 @@ require('dependencies/ie_hacks.js');
 require('dependencies/image-tagging');
 require('dependencies/selection-highlighting');
 require('dependencies/bind.polyfill');
+require('dependencies/randomcolor.js');
 /*
  * These are the dependencies for an Ember application
  * and they have to be loaded before any application code.

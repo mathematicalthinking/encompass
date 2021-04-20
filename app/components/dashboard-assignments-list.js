@@ -128,6 +128,8 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
     }.observes("assignments.@each.isTrashed", "currentUser.isStudent"),
 
     yourList: function () {
+      const date = new Date();
+
       let currentUser = this.get("currentUser");
       let yourList = this.assignments.filter((assignment) => {
         let userId = currentUser.get("id");
@@ -135,7 +137,9 @@ Encompass.DashboardAssignmentsListComponent = Ember.Component.extend(
           .get("students")
           .content.currentState.map((student) => student.id);
         return (
-          assignedStudents.includes(userId) && !assignment.get("isTrashed")
+          assignedStudents.includes(userId) &&
+          !assignment.get("isTrashed") &&
+          assignment.get("assignedDate").getTime() < date.getTime()
         );
       });
 
