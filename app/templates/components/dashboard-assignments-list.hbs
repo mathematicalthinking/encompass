@@ -68,6 +68,7 @@
               {{#unless user.isStudent}}
               <td>{{#link-to 'section' assignment.section.sectionId classNames='link'}}{{assignment.section.name}}{{/link-to}}</td>
               {{/unless}}
+              {{log "AD" assignment.assignedDate}}
               <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
               <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
               {{#if assignment.answers.content.currentState.length}}
