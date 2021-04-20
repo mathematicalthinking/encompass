@@ -1,6 +1,6 @@
 {
   "name": "encompass",
-  "version": "2.8.6",
+  "version": "2.8.7",
   "description": "enCoMPASS",
   "main": "server/server.js",
   "scripts": {
