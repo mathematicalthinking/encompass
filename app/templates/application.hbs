@@ -1,24 +1,30 @@
-{{!--outlet header--}}
+{{!outlet header}}
 
 {{top-bar store=store user=currentUser isHidden=isHidden toHome="toHome"}}
 {{socket-loader store=store currentUser=currentUser}}
-<section id="al_body">
-<!-- a dynamic section of the view hierarchy that will be filled in
+<main id="al_body">
+  <!-- a dynamic section of the view hierarchy that will be filled in
      response to routing changes -->
 
-{{outlet}}
+  {{outlet}}
 
-{{!-- {{outlet 'modal'}} --}}
+  {{!-- {{outlet 'modal'}} --}}
 
-{{#if showCategoryList}}
-<div id="category-list-modal">
-  <div class="modal-content">
-    <h4>Select a Category</h4>
-    <button class="close" {{action 'closeModal'}}><i class="fas fa-times"></i></button>
-    {{categories-menu categories=categories store=store addCategories="searchCategory"}}
-  </div>
-</div>
-{{/if}}
+  {{#if showCategoryList}}
+    <div id="category-list-modal">
+      <div class="modal-content">
+        <h4>Select a Category</h4>
+        <button class="close" {{action "closeModal"}}><i
+            class="fas fa-times"
+          ></i></button>
+        {{categories-menu
+          categories=categories
+          store=store
+          addCategories="searchCategory"
+        }}
+      </div>
+    </div>
+  {{/if}}
 
-</section> <!-- end al_body -->
-
+</main>
+<!-- end al_body -->
