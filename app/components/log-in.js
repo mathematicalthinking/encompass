@@ -19,14 +19,12 @@ Encompass.LogInComponent = Ember.Component.extend(
           this.set("missingCredentials", true);
           return;
         }
-
-        let createUserData = {
-          username: this.get("username").trim(),
-          password: this.get("password").trim(),
-        };
         Ember.$.post({
           url: "/auth/login",
-          data: createUserData,
+          data: {
+            username: this.get("username").trim(),
+            password: this.get("password").trim(),
+          },
         })
           .then((res) => {
             if (res.message === "Incorrect password") {
