@@ -32,7 +32,7 @@
       background: url(images/logo-encompass.gif) 0 0 no-repeat;
     }
     #topbar-unauth {
-      font-size: .8em;
+      font-size: 0.8em;
       width: 220px;
       li {
         padding: 0;
@@ -43,17 +43,16 @@
 }
 
 @media screen and (min-width: 350px) and (max-width: 974px) {
-    #al_nav {
-      font-size: 1em;
-      #menu-items {
-        display: none;
-      }
-      #current-username {
-        display: none;
-      }
-      #user-image {
-        margin: 0 20px 0 5px;
-      }
+  #al_nav {
+    font-size: 1em;
+    #menu-items {
+      display: none;
+    }
+    #current-username {
+      display: none;
+    }
+    #user-image {
+      margin: 0 20px 0 5px;
     }
     #sidemenu {
       display: none;
@@ -68,13 +67,14 @@
       text-indent: -99999px;
       background: url(images/logo-encompass.gif) 0 0 no-repeat;
     }
+  }
 }
 
 @media screen and (min-width: 975px) and (max-width: 1299px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
-      font-size: .9em;
+      font-size: 0.9em;
       li {
         padding: 0 10px;
       }
@@ -116,6 +116,7 @@
 }
 
 @media screen and (min-width: 1300px) and (max-width: 10000px) {
+  #al_header {
     #menu-toggle {
       // background-color: yellow;
       font-size: 1em;
@@ -137,6 +138,7 @@
     .logout-icon {
       display: none;
     }
+  }
 }
 
 // STYLING FOR THE ENCOMPASS LOGO
@@ -210,21 +212,21 @@
   height: 50px;
 }
 
-#al_header.small>#al_nav {
+#al_header.small > #al_nav {
   line-height: 20px;
   height: 20px;
 }
 
-#al_header.small>.al_logo {
-  display: none
+#al_header.small > .al_logo {
+  display: none;
 }
 
-#al_header.small>#status {
-  padding-top: 1px
+#al_header.small > #status {
+  padding-top: 1px;
 }
 
 #al_header:hover .control {
-  display: inline
+  display: inline;
 }
 
 #welcome {
@@ -247,37 +249,37 @@
     vertical-align: middle;
     text-align: center;
     width: max-content;
+    .caret-down {
+      margin-left: 3px;
+    }
+    .caret-right {
+      margin-right: 3px;
+    }
+    .active {
+      background-color: $accent-yellow;
+      padding: 10px 10px;
+      line-height: 20px;
+      border-radius: 3px;
+      color: $primary-font-color;
       .caret-down {
-        margin-left: 3px;
+        margin-left: 7px;
+        padding-left: 3px;
+        margin-right: 7px;
       }
       .caret-right {
-        margin-right: 3px;
+        margin-right: 7px;
+        padding-left: 3px;
+        margin-left: 7px;
+        display: none;
       }
-      .active {
-        background-color: $accent-yellow;
-        padding: 10px 10px;
-        line-height: 20px;
-        border-radius: 3px;
-        color: $primary-font-color;
-        .caret-down {
-          margin-left: 7px;
-          padding-left: 3px;
-          margin-right: 7px;
-        }
-        .caret-right {
-          margin-right: 7px;
-          padding-left: 3px;
-          margin-left: 7px;
-          display:none;
-        }
-      }
+    }
   }
   ul {
     font-size: 1em;
   }
   a {
     &:hover {
-      color:$primary-font-color;
+      color: $primary-font-color;
       font-weight: $bolder-font-weight;
     }
     .active {
@@ -290,20 +292,24 @@
   cursor: pointer;
 }
 
+#role-toggle {
+  // border: 1px solid red;
+}
+
 .hide-menu {
   display: none;
 }
 
 #al_header .control {
-  display: none
+  display: none;
 }
 
 #al_header:hover .control {
-  display: inline
+  display: inline;
 }
 
-#al_header.small>#status {
-  padding-top: 1px
+#al_header.small > #status {
+  padding-top: 1px;
 }
 
 #al_welcome {
@@ -321,7 +327,7 @@ nav.actions {
 }
 
 nav.listing,
-nav.actions>ul {
+nav.actions > ul {
   padding: 5px;
   border-bottom: 1px solid #cfcfcf;
 }
@@ -343,7 +349,7 @@ nav.actions>ul {
   color: white;
   background: $primary-button;
   border-radius: 3px;
-  font-size: .9em;
+  font-size: 0.9em;
   &:hover {
     background-color: darken($primary-button, 10);
     box-shadow: $button-shadow;
@@ -370,13 +376,12 @@ nav.actions>ul {
 }
 
 .dropdown-skinny {
-  width: 110px
+  width: 110px;
 }
 
 .dropdown-wide {
   width: 170px;
 }
-
 
 .dropdown-content {
   display: none;
@@ -441,7 +446,6 @@ nav.actions>ul {
     }
   }
 }
-
 
 .underline {
   border-bottom: 2px solid $accent-yellow;
