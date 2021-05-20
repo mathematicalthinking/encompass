@@ -43,7 +43,6 @@
 }
 
 @media screen and (min-width: 350px) and (max-width: 974px) {
-  #al_header {
     #al_nav {
       font-size: 1em;
       #menu-items {
@@ -69,7 +68,6 @@
       text-indent: -99999px;
       background: url(images/logo-encompass.gif) 0 0 no-repeat;
     }
-  }
 }
 
 @media screen and (min-width: 975px) and (max-width: 1299px) {
@@ -118,7 +116,6 @@
 }
 
 @media screen and (min-width: 1300px) and (max-width: 10000px) {
-  #al_header {
     #menu-toggle {
       // background-color: yellow;
       font-size: 1em;
@@ -140,7 +137,6 @@
     .logout-icon {
       display: none;
     }
-  }
 }
 
 // STYLING FOR THE ENCOMPASS LOGO
@@ -292,10 +288,6 @@
 
 .toggle-role {
   cursor: pointer;
-}
-
-#role-toggle {
-  // border: 1px solid red;
 }
 
 .hide-menu {
