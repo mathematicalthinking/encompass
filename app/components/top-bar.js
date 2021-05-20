@@ -18,8 +18,6 @@ Encompass.TopBarComponent = Ember.Component.extend(
       );
     }.property("user.actingRole", "user.id"),
 
-    notStudent: Ember.computed.not("isStudent"),
-
     didReceiveAttrs: function () {
       let currentUser = this.get("currentUser");
       this.set("isStudentAccount", currentUser.get("accountType") === "S");

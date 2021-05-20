@@ -9,17 +9,13 @@
     <fieldset>
       <ol>
         <li>
-          <label for="section">
-            <span
-              class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.class}}
-            >
-              Class
-            </span>
-            <span class="required-star">
-              *
-            </span>
-          </label>
+          {{assignment-form-label
+            for="section"
+            text="Class"
+            tagName=""
+            star=true
+            tooltip=tooltips.class
+          }}
           <div class="flex-input">
             {{#if fromSectionInfo}}
               <p>
@@ -54,17 +50,13 @@
           </div>
         </li>
         <li class="problem">
-          <label for="text">
-            <span
-              class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.problem}}
-            >
-              Problem
-            </span>
-            <span class="required-star">
-              *
-            </span>
-          </label>
+          {{assignment-form-label
+            for="text"
+            text="Problem"
+            star=true
+            tooltip=tooltips.problem
+            tagName=""
+          }}
           {{#if fromProblemInfo}}
             <p>
               {{{selectedProblem.title}}}
@@ -103,20 +95,18 @@
           {{/if}}
         </li>
         <li>
-          <label for="assignedDate">
-            <span
-              class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.dateAssigned}}
-            >
-              Date Assigned
-            </span>
-          </label>
+          {{assignment-form-label
+            for="assignedDate"
+            text="Date Assigned"
+            tooltip=tooltips.dateAssigned
+          }}
           <div class="flex-input">
             {{input
               id="assignedDate"
               name="daterange"
               type="text"
               value=assignedDate
+              tagName=""
             }}
             {{#each assignedDateFormErrors as |error|}}
               <p class="error-message">
@@ -126,21 +116,14 @@
           </div>
         </li>
         <li>
-          <label for="dueDate">
-            <span
-              class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.dueDate}}
-            >
-              Due Date
-            </span>
-          </label>
+          {{assignment-form-label
+            for="dueDate"
+            tooltip=tooltips.dueDate
+            text="Due Date"
+            tagName=""
+          }}
           <div class="flex-input">
-            {{input
-              id="dueDate"
-              name="daterange"
-              type="text"
-              value=dueDate
-            }}
+            {{input id="dueDate" name="daterange" type="text" value=dueDate}}
             {{#each dueDateFormErrors as |error|}}
               <p class="error-message">
                 {{error}}
@@ -156,14 +139,12 @@
           </div>
         </li>
         <li>
-          <label for="name">
-            <span
-              class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.name}}
-            >
-              Assignment Name
-            </span>
-          </label>
+          {{assignment-form-label
+            for="name"
+            tooltip=tooltips.name
+            text="Assignment Name"
+            tagName=""
+          }}
           <div class="flex-input">
             {{input
               type="text"
@@ -178,44 +159,46 @@
           </div>
         </li>
         <li class="linked-ws">
-          <label for="linkedWorkspaces">
-          <span
-              class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.linkedWorkspaces}}
-            >
-             Create Student Workspaces Now?
-            </span>
-          </label>
-          {{radio-group options=linkedWsOptions selectedValue=doCreateLinkedWorkspaces}}
+          {{assignment-form-label
+            for="linkedWorkspaces"
+            tooltip=tooltips.linkedWorkspaces
+            text="Create Student Workspaces Now?"
+            tagName=""
+          }}
+          {{radio-group
+            options=linkedWsOptions
+            selectedValue=doCreateLinkedWorkspaces
+          }}
 
           {{#if showLinkedWsForm}}
             {{linked-workspaces-new
-            isDisplayOnly=true
-            students=selectedSection.students.content
-            assignmentName=assignmentNamePreview
-            sectionName=selectedSection.name
+              isDisplayOnly=true
+              students=selectedSection.students.content
+              assignmentName=assignmentNamePreview
+              sectionName=selectedSection.name
             }}
           {{/if}}
         </li>
         {{#if doCreateLinkedWorkspaces}}
-        <li class="parent-ws">
-          <label for="parentWorkspace">
-          <span
-              class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.parentWorkspace}}
-            >
-            Create Parent Workspace Now?
-            </span>
-          </label>
-          {{radio-group options=parentWsOptions selectedValue=doCreateParentWorkspace}}
-
-          {{#if showParentWsForm}}
-            {{parent-workspace-new
-              isDisplayOnly=true
-              assignmentName=assignmentNamePreview
+          <li class="parent-ws">
+            {{assignment-form-label
+              for="parentWorkspace"
+              tooltip=tooltips.parentWorkspace
+              text="Create Parent Workspace Now?"
+              tagName=""
             }}
-          {{/if}}
-        </li>
+            {{radio-group
+              options=parentWsOptions
+              selectedValue=doCreateParentWorkspace
+            }}
+
+            {{#if showParentWsForm}}
+              {{parent-workspace-new
+                isDisplayOnly=true
+                assignmentName=assignmentNamePreview
+              }}
+            {{/if}}
+          </li>
         {{/if}}
       </ol>
     </fieldset>

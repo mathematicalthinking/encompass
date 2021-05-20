@@ -65,6 +65,7 @@ Encompass.SearchBarComponent = Ember.Component.extend({
     return this.get("defaultConstraints");
   }.property("constraints"),
 
+  //see workspace-list-container.js "searchWorkspaces"
   initiateSearch: function(val) {
     let criterion = this.get("selectedCriterion");
     this.get("onSearch")(val, criterion);
