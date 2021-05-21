@@ -11,22 +11,26 @@
       <ul id="main-nav">
         <span id="menu-items">
           {{! My Work / Homepage Button }}
-          <li id="home-btn"><div class="dropdown-skinny">{{#link-to
-                "index"
-                classNames="menu home"
-              }}my work{{/link-to}}</div></li>
+          <li id="home-btn">
+            <div class="dropdown-skinny">
+              {{#link-to "index" classNames="menu home"}}my work{{/link-to}}
+            </div>
+          </li>
           {{! Make Button }}
           {{#unless isStudent}}
             <li>
               <div class="dropdown dropdown-skinny">
-                {{#link-to "index" classNames="menu workspaces"}}make<i
-                    class="fa fa-caret-down caret-down"
-                  ></i>{{/link-to}}
+                {{#link-to "index" classNames="menu workspaces"}}
+                  make
+                  <i class="fa fa-caret-down caret-down"></i>
+                {{/link-to}}
                 <div class="dropdown-content">
                   {{#link-to
                     "assignments.new"
                     classNames="menu workspaces-new"
-                  }}assignment{{/link-to}}
+                  }}
+                    assignment
+                  {{/link-to}}
                   {{!-- {{#if notStudent}} --}}
                   <div class="parent-dropdown">
                     <div class="dropdown dropdown-skinny">
@@ -132,81 +136,6 @@
               </div>
             </div>
           </li>
-          {{!-- {{#if notStudent}}
-            <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
-          {{/if}} --}}
-          {{!-- {{#if isStudent}} --}}
-          {{!-- <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}
-              {{#if assignmentNotifications}}
-                {{circle-ntf displayCount=assignmentNotifications.length}}
-              {{/if}}
-            </li> --}}
-          {{!-- {{/if}} --}}
-          {{!-- {{#if currentUser.isStudent}}
-            <li>{{#link-to 'answers.home' classNames='menu answers'}}answers{{/link-to}}</li>
-          {{/if}}
-          {{#if notStudent}}
-          <li>
-            <div class="dropdown">
-              {{#link-to 'problems' classNames='menu problems' id="problems-home"}}problems <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-              <div class="dropdown-content">
-                {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
-              </div>
-            </div>
-          </li> --}}
-          {{!-- {{else}}
-            <li>{{#link-to 'problems.home' classNames='menu problems'}}problems{{/link-to}}</li> --}}
-          {{!-- {{/if}}
-          {{#if notStudent}}
-          <li>
-            <div class="dropdown">
-              {{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-              {{#if sectionNotifications}}
-              {{circle-ntf displayCount=sectionNotifications.length}}
-            {{/if}}
-              <div class="dropdown-content">
-                {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
-              </div>
-            </div>
-          </li>
-          {{else}}
-            <li>{{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes{{/link-to}}</li>
-          {{/if}} --}}
-          {{!-- {{#if notStudent}} --}}
-          {{!-- <li>
-            <div class="dropdown">
-              {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-              <div class="dropdown-content">
-                {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
-                {{!-- {{#if notStudent}} --}}
-          {{!-- {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
-                  {{#link-to 'workspaces.copy' classNames='menu import'}}copy{{/link-to}}
-                  {{#link-to 'vmt.import' classNames='menu vmt-import'}}vmt{{/link-to}} --}}
-
-          {{!-- {{/if}} --}}
-          {{! </div>
-            </div>
-          </li> }}
-          {{!-- {{/if}} --}}
-          {{!-- <li data-test="topbar-responses">{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}
-            {{#if responseNotifications}}
-              {{circle-ntf displayCount=responseNotifications.length}}
-            {{/if}}
-          </li> --}}
-          {{!-- {{#if notStudent}}
-            {{#if user.isAdmin}}
-            <li>
-              <div class="dropdown">
-                {{#link-to 'users.home' classNames='menu users' id="users-home"}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-                <div class="dropdown-content">
-                  {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
-                </div>
-              </div>
-            </li>
-            {{else}}
-              <li>{{#link-to 'users.home' classNames='menu users'}}users{{/link-to}}</li>
-            {{/if}}
-          {{/if}} --}}
           <li id="logout-btn">{{#link-to "logout" classNames="menu logout"}}<i
                 class="fas fa-power-off logout-icon"
               ></i><span id="logout-text">log out</span>{{/link-to}}</li>
@@ -283,25 +212,6 @@
     </ul>
   </nav>
 {{/if}}
-
-<div id="status">
-  {{!-- <span class="control">
-    {{#if isSmallHeader}}
-    <a {{action 'largeHeader'}}>
-      <img style="opacity: .1" src="http://mathforum.org/img/glyphish/xtras/xtras-gray/06-arrow-south.png" alt="expand" />
-    </a>
-    {{else}}
-    <a {{action 'smallHeader'}}>
-      <img style="opacity: .1" src="http://mathforum.org/img/glyphish/xtras/xtras-gray/03-arrow-north.png" alt="collapse" />
-    </a>
-    {{/if}}
-  </span> --}}
-  {{! <span id="loading" style="display:none">loading</span> }}
-</div>
-
-{{!-- {{#if actionToConfirm}}
-    {{modal-confirm actionToConfirm=actionToConfirm onConfirm="toggleActingRole" warningMessage="If you are currently modifying or creating a new record, you will lose all unsaved progress."}}
-{{/if}} --}}
 
 <script>
   $('#menu-button').click(function (e) { e.stopPropagation();
