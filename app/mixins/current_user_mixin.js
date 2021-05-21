@@ -1,4 +1,4 @@
-//used throughout app
+//used throughout app, especially top-bar.hbs?
 Encompass.CurrentUserMixin = Ember.Mixin.create({
   application: Ember.inject.controller(),
   utils: Ember.inject.service('utility-methods'),
@@ -20,6 +20,7 @@ Encompass.CurrentUserMixin = Ember.Mixin.create({
     return this.get('newNotifications').filterBy('primaryRecordType', 'response');
   }.property('newNotifications.[]'),
 
+  //only used here
   workspaceNotifications: function() {
     return this.get('newNotifications').filterBy('primaryRecordType', 'workspace');
   }.property('newNotifications.[]'),
@@ -31,19 +32,19 @@ Encompass.CurrentUserMixin = Ember.Mixin.create({
   sectionNotifications: function() {
     return this.get('newNotifications').filterBy('primaryRecordType', 'section');
   }.property('newNotifications.[]'),
-
+  //only used here
   problemNotifications: function() {
     return this.get('newNotifications').filterBy('primaryRecordType', 'problem');
   }.property('newNotifications.[]'),
-
+  //only used here
   organizationNotifications: function() {
     return this.get('newNotifications').filterBy('primaryRecordType', 'organization');
   }.property('newNotifications.[]'),
-
+//only used here
   userNotifications: function() {
     return this.get('newNotifications').filterBy('primaryRecordType', 'user');
   }.property('newNotifications.[]'),
-
+//app/services/user-ntfs.js
   newReplyNotifications: function() {
     return this.get('responseNotifications').filter((ntf) => {
       let recipientId = this.get('utils').getBelongsToId(ntf, 'recipient');
