@@ -1,21 +1,22 @@
+// throughout app
 Encompass.ErrorHandlingMixin = Ember.Mixin.create({
 
   alert: Ember.inject.service('sweet-alert'),
-
+//only found here
   isAdapterError: function(err) {
     if (!err) {
       return;
     }
     return err.isAdapterError === true;
   },
-
+// only found here
   isRecordInvalid: function(rec) {
     if (!rec) {
       return;
     }
     return rec.get('isValid') === false;
   },
-
+//only found here
   setErrorMessages: function(err, propName) {
     if (!err || !propName) {
       return;
@@ -29,7 +30,7 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
     let details = errors.map(e => e.detail);
     this.set(propName, details);
   },
-
+//throughout app
   handleErrors: function(err, propName, record=null, records=[]) {
     this.setErrorMessages(err, propName);
 
@@ -46,7 +47,7 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
       });
     }
   },
-
+//throughout app
   removeMessages: function(...errors) {
 
     for (let e of errors) {
@@ -78,6 +79,7 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
 
   // extracts first error detail from errors array and uses
   // sweet-alert to display toast
+  //only in response-approver-reply.js
   displayErrorToast(err, recordsToRollback) {
     if (!err) {
       return;
