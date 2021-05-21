@@ -43,12 +43,14 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
   },
 
+  //auto updates 'modified' on each visit
+  //TODO: change this
   willDestroyElement: function () {
     let workspace = this.get('workspace');
     workspace.save();
     this._super(...arguments);
   },
-
+//used once, sent down to workspace-info-collaborators
   canEdit: Ember.computed('workspace.id', function () {
     let workspace = this.get('workspace');
     let ownerId = workspace.get('owner.id');
@@ -73,7 +75,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   showRemoveSelfAsCollab: function() {
     return this.get('workspace.collaborators').includes(this.get('currentUser.id'));
   }.property('workspace.collaborators.[]'),
-
+//usure how this is used
   modes: function () {
     const basic = ['private', 'org', 'public'];
 
@@ -84,7 +86,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     return ['private', 'org', 'public', 'internet'];
 
   }.property('currentUser.isAdmin', 'currentUser.isStudent'),
-
+//sent into workspace-info-collaborators, tool-tip text gets cutoff
   globalItems: {
     groupName: 'globalPermissionValue',
     groupLabel: 'Workspace Permissions',
