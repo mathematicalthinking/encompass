@@ -1,3 +1,4 @@
+// found in sign-up.js, user-new-admin.js, user-new-pd.js, user-new-teacher.js
 Encompass.UserSignupMixin = Ember.Mixin.create({
   emailRegEx: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
   usernameRegEx: /^[a-z0-9_]{3,30}$/,
@@ -27,11 +28,11 @@ Encompass.UserSignupMixin = Ember.Mixin.create({
     missing: 'Password is required',
     mismatch: 'Passwords do not match',
   },
-
+//user-new-admin.hbs, user-new-pd.hbs
   isEmailRequired: function() {
     return this.get('selectedType') !== 'Student';
   }.property('selectedType'),
-
+//sign-up.hbs
   isEmailValid: function() {
     let email = this.get('email');
 
@@ -42,14 +43,15 @@ Encompass.UserSignupMixin = Ember.Mixin.create({
   }.property('email', 'isEmailDirty'),
 
   // We don't want error being displayed when form loads initially
+  //forgot-password.hbs, sign-up.hbs
   isEmailInvalid: Ember.computed('isEmailValid', 'isEmailDirty', function() {
     return this.get('isEmailDirty') && !this.get('isEmailValid');
   }),
-
+//sign-up.js, sign-up.hbs
   doEmailsMatch: function() {
     return this.get('email') === this.get('confirmEmail');
   }.property('email', 'confirmEmail'),
-
+//sign-up.hbs
   isPasswordValid: function() {
     if (!this.get('isPasswordDirty') && !Ember.isEmpty(this.get('password'))) {
       this.set('isPasswordDirty', true);
@@ -64,15 +66,15 @@ Encompass.UserSignupMixin = Ember.Mixin.create({
 
     return length >= min &&  length <= max;
   }.property('password', 'isPasswordValid', 'passwordMinLength', 'passwordMaxLength'),
-
+//sign-up.hbs
   isPasswordInvalid: Ember.computed('isPasswordValid', 'isPasswordDirty', function() {
     return this.get('isPasswordDirty') && !this.get('isPasswordValid');
   }),
-
+//sign-up.js / hbs
   doPasswordsMatch: function() {
     return this.get('password') === this.get('confirmPassword');
   }.property('password', 'confirmPassword'),
-
+//used below
   validateEmail: function(email) {
     if (!email) {
       return false;
