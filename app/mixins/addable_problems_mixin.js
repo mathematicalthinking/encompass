@@ -1,3 +1,4 @@
+//used in import-work-container.js and workspace-new-enc.js
 Encompass.AddableProblemsMixin = Ember.Mixin.create({
   getAddableProblems: function () {
     const store = this.get('store');
@@ -21,7 +22,7 @@ Encompass.AddableProblemsMixin = Ember.Mixin.create({
     };
     return ret.bind(this);
   },
-
+//only in workspace-new-enc.js
 setAddProblemFunction: function(name) {
   if (!this.get(name)) {
     this.set(name, this.getAddableProblems.call(this));
