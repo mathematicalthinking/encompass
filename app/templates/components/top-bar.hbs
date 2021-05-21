@@ -10,13 +10,11 @@
     <div id="menu-toggle">
       <ul id="main-nav">
         <span id="menu-items">
-          {{! My Work / Homepage Button }}
           <li id="home-btn">
             <div class="dropdown-skinny">
               {{#link-to "index" classNames="menu home"}}my work{{/link-to}}
             </div>
           </li>
-          {{! Make Button }}
           {{#unless isStudent}}
             <li>
               <div class="dropdown dropdown-skinny">
@@ -31,15 +29,12 @@
                   }}
                     assignment
                   {{/link-to}}
-                  {{!-- {{#if notStudent}} --}}
                   <div class="parent-dropdown">
                     <div class="dropdown dropdown-skinny">
-                      {{#link-to
-                        "workspaces.new"
-                        classNames="menu import"
-                      }}workspace<i
-                          class="fa fa-caret-right caret-right spacing"
-                        ></i>{{/link-to}}
+                      {{#link-to "workspaces.new" classNames="menu import"}}
+                        workspace
+                        <i class="fa fa-caret-right caret-right spacing"></i>
+                      {{/link-to}}
                     </div>
                     <div
                       id="dropdown-hidden"
@@ -48,57 +43,53 @@
                       {{#link-to
                         "workspaces.new"
                         classNames="menu workspaces-new"
-                      }}new{{/link-to}}
-                      {{!-- {{#if notStudent}} --}}
-                      {{#link-to
-                        "import"
-                        classNames="menu import"
-                      }}import{{/link-to}}
-                      {{#link-to
-                        "workspaces.copy"
-                        classNames="menu import"
-                      }}copy{{/link-to}}
-                      {{#link-to
-                        "vmt.import"
-                        classNames="menu vmt-import"
-                      }}vmt{{/link-to}}
-                      {{!-- {{/if}} --}}
+                      }}
+                        new
+                      {{/link-to}}
+                      {{#link-to "import" classNames="menu import"}}
+                        import
+                      {{/link-to}}
+                      {{#link-to "workspaces.copy" classNames="menu import"}}
+                        copy
+                      {{/link-to}}
+                      {{#link-to "vmt.import" classNames="menu vmt-import"}}
+                        vmt
+                      {{/link-to}}
                     </div>
                   </div>
-                  {{#link-to
-                    "problems.new"
-                    classNames="menu import"
-                  }}problem{{/link-to}}
-                  {{#link-to
-                    "sections.new"
-                    classNames="menu sections"
-                  }}class{{/link-to}}
-                  {{#link-to
-                    "users.new"
-                    classNames="menu vmt-import"
-                  }}users{{/link-to}}
-
-                  {{!-- {{/if}} --}}
+                  {{#link-to "problems.new" classNames="menu import"}}
+                    problem
+                  {{/link-to}}
+                  {{#link-to "sections.new" classNames="menu sections"}}
+                    class
+                  {{/link-to}}
+                  {{#link-to "users.new" classNames="menu vmt-import"}}
+                    users
+                  {{/link-to}}
                 </div>
               </div>
             </li>
           {{/unless}}
-          {{! Do Button }}
           <li>
             <div class="dropdown dropdown-wide">
-              {{#link-to "index" classNames="menu workspaces"}}do<i
-                  class="fa fa-caret-down caret-down"
-                ></i>{{/link-to}}
+              {{#link-to "index" classNames="menu workspaces"}}
+                do
+                <i class="fa fa-caret-down caret-down"></i>
+              {{/link-to}}
               <div class="dropdown-content">
-                {{#link-to "assignments" classNames="menu problems"}}solve a
-                  problem{{/link-to}}
-                {{#link-to "workspaces" classNames="menu workspaces"}}review
-                  submitted work{{/link-to}}
-                {{#link-to "responses" classNames="menu workspaces"}}mentor
-                  submissions{{/link-to}}
+                {{#link-to "assignments" classNames="menu problems"}}
+                  solve a problem
+                {{/link-to}}
+                {{#link-to "workspaces" classNames="menu workspaces"}}
+                  review submitted work
+                {{/link-to}}
+                {{#link-to "responses" classNames="menu workspaces"}}
+                  mentor submissions
+                {{/link-to}}
                 {{#unless isStudent}}
-                  {{#link-to "sections" classNames="menu sections"}}manage
-                    classes{{/link-to}}
+                  {{#link-to "sections" classNames="menu sections"}}
+                    manage classes
+                  {{/link-to}}
                   {{#link-to "users" classNames="menu users"}}manage users{{/link-to}}
                 {{/unless}}
               </div>
@@ -107,38 +98,37 @@
           {{! Find Button }}
           <li>
             <div class="dropdown dropdown-skinny">
-              {{#link-to "index" classNames="menu workspaces"}}find<i
-                  class="fa fa-caret-down caret-down"
-                ></i>{{/link-to}}
+              {{#link-to "index" classNames="menu workspaces"}}
+                find
+                <i class="fa fa-caret-down caret-down"></i>
+              {{/link-to}}
               <div class="dropdown-content">
-                {{#link-to
-                  "assignments"
-                  classNames="menu workspaces-new"
-                }}assignment{{/link-to}}
-                {{#link-to
-                  "workspaces"
-                  classNames="menu import"
-                }}workspace{{/link-to}}
-                {{#link-to
-                  "problems"
-                  classNames="menu import"
-                }}problem{{/link-to}}
-                {{#link-to
-                  "sections.home"
-                  classNames="menu sections"
-                }}class{{/link-to}}
+                {{#link-to "assignments" classNames="menu workspaces-new"}}
+                  assignment
+                {{/link-to}}
+                {{#link-to "workspaces" classNames="menu import"}}
+                  workspace
+                {{/link-to}}
+                {{#link-to "problems" classNames="menu import"}}
+                  problem
+                {{/link-to}}
+                {{#link-to "sections.home" classNames="menu sections"}}
+                  class
+                {{/link-to}}
                 {{#unless isStudent}}
-                  {{#link-to
-                    "users"
-                    classNames="menu vmt-import"
-                  }}users{{/link-to}}
+                  {{#link-to "users" classNames="menu vmt-import"}}
+                    users
+                  {{/link-to}}
                 {{/unless}}
               </div>
             </div>
           </li>
-          <li id="logout-btn">{{#link-to "logout" classNames="menu logout"}}<i
-                class="fas fa-power-off logout-icon"
-              ></i><span id="logout-text">log out</span>{{/link-to}}</li>
+          <li id="logout-btn">
+            {{#link-to "logout" classNames="menu logout"}}
+              <i class="fas fa-power-off logout-icon"></i>
+              <span id="logout-text">log out</span>
+            {{/link-to}}
+          </li>
         </span>
         {{#unless isStudentAccount}}
           <li id="role-toggle">
@@ -173,34 +163,48 @@
 
   <div id="hide-menu" class="hidden animated">
     <ul>
-      <li>{{#link-to "index"}}home{{/link-to}}</li>
-      <li>{{#link-to "assignments.home"}}assignments{{/link-to}}</li>
+      <li>
+        {{#link-to "index"}}home{{/link-to}}
+      </li>
+      <li>
+        {{#link-to "assignments.home"}}assignments{{/link-to}}
+      </li>
       {{#unless currentUser.isStudent}}
-        <li>{{#link-to "problems"}}problems{{/link-to}}</li>
+        <li>
+          {{#link-to "problems"}}problems{{/link-to}}
+        </li>
       {{/unless}}
-      <li>{{#link-to "sections.home"}}classes{{/link-to}}</li>
-      {{!-- {{#unless currentUser.isStudent}} --}}
-      <li>{{#link-to "workspaces"}}workspaces{{/link-to}}</li>
-      {{!-- {{/unless}} --}}
+      <li>
+        {{#link-to "sections.home"}}classes{{/link-to}}
+      </li>
+      <li>
+        {{#link-to "workspaces"}}workspaces{{/link-to}}
+      </li>
       {{#unless currentUser.isStudent}}
-        <li>{{#link-to "import"}}import{{/link-to}}</li>
+        <li>
+          {{#link-to "import"}}import{{/link-to}}
+        </li>
       {{/unless}}
-      <li>{{#link-to "responses"}}responses{{/link-to}}
+      <li>
+        {{#link-to "responses"}}responses{{/link-to}}
         {{#if responseNotifications}}
           {{circle-ntf displayCount=responseNotifications.length}}
         {{/if}}
       </li>
       {{#unless currentUser.isStudent}}
-        <li>{{#link-to "users.home"}}users{{/link-to}}</li>
+        <li>
+          {{#link-to "users.home"}}users{{/link-to}}
+        </li>
       {{/unless}}
-      <li id="logout-btn-side">{{#link-to "logout"}}logout{{/link-to}}</li>
+      <li id="logout-btn-side">
+        {{#link-to "logout"}}logout{{/link-to}}
+      </li>
     </ul>
   </div>
 
 {{else}}
   <nav id="topbar-unauth">
     <ul>
-      {{!-- <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li> --}}
       <li data-test="login">{{#link-to
           "auth.login"
           classNames="menu login hidden"
