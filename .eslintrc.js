@@ -8,7 +8,7 @@ module.exports = {
   extends: ["airbnb-base"],
   parser: "babel-eslint",
   parserOptions: {
-    ecmaVersion: 12
+    ecmaVersion: 12,
   },
   globals: {
     Ember: true,
@@ -20,12 +20,13 @@ module.exports = {
     guiders: true,
   },
   rules: {
-    "camelcase": "off",
+    camelcase: "off",
     "import/no-extraneous-dependencies": "off",
     "import/no-unresolved": "off",
     "import/no-dynamic-require": "off",
     "import/no-useless-path-segments": "off",
     "import/order": "off",
+    "import/extensions": "off",
     "accessor-pairs": "error",
     "no-useless-catch": "off",
     "object-curly-newline": "off",
