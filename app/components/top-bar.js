@@ -11,19 +11,21 @@ Encompass.TopBarComponent = Ember.Component.extend(
     toggleRoleErrors: [],
     alert: Ember.inject.service("sweet-alert"),
 
-
     isStudent: function () {
       return (
         this.user.get("isStudent") || this.user.get("actingRole") === "student"
       );
     }.property("user.actingRole", "user.id"),
 
-    notStudent: Ember.computed.not("isStudent"),
-
     didReceiveAttrs: function () {
       let currentUser = this.get("currentUser");
       this.set("isStudentAccount", currentUser.get("accountType") === "S");
-      currentUser.set("avatar", this.createUserAvatar(currentUser.get("firstName") + " " + currentUser.get("lastName")));
+      currentUser.set(
+        "avatar",
+        this.createUserAvatar(
+          currentUser.get("firstName") + " " + currentUser.get("lastName")
+        )
+      );
     },
 
     createUserAvatar: function (name) {
