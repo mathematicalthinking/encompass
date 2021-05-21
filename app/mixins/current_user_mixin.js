@@ -1,3 +1,4 @@
+//used throughout app
 Encompass.CurrentUserMixin = Ember.Mixin.create({
   application: Ember.inject.controller(),
   utils: Ember.inject.service('utility-methods'),
@@ -7,6 +8,7 @@ Encompass.CurrentUserMixin = Ember.Mixin.create({
 
   areNtfsLoaded: Ember.computed.alias('userNtfs.areNtfsLoaded'),
 
+  //used throughout mixin, app/models/response_thread.js, app/services/user-ntfs.js
   newNotifications: function() {
     if (this.get('areNtfsLoaded')) {
       return this.get('userNtfs.newNotifications');
@@ -52,6 +54,7 @@ Encompass.CurrentUserMixin = Ember.Mixin.create({
     });
   }.property('responseNotifications.[]'),
 
+  // used in app/components/response-container.js and app/services/user-ntfs.js
   findRelatedNtfs(primaryRecordType, relatedRecord, ntfType, belongsToType) {
     if (!primaryRecordType || !relatedRecord) {
       return [];
