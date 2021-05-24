@@ -25,16 +25,10 @@ Encompass.TopBarComponent = Ember.Component.extend(
     },
 
     createUserAvatar: function (name) {
-      // TODO: Create a robust color generate for the avatar
-      // function generateRandomColor() {
-      //   const colorArr =  ["f54242", "f5b342", "b3f542"];
-      //   return "3A97EE";
-      // }
 
       function splitName(name) {
         return name.split(" ").join("+");
       }
-      // const bgColor = generateRandomColor("light", null, null, null, null);
       const bgString = "3A97EE";
       const formattedName = splitName(name || "");
       const baseUrl = `https://ui-avatars.com/api/?rounded=true&color=ffffff&background=${bgString}&name=${formattedName}`;
@@ -58,7 +52,6 @@ Encompass.TopBarComponent = Ember.Component.extend(
       },
 
       toggleActingRole: function () {
-        // should this action be moved to the application controller?
         const currentUser = this.get("currentUser");
 
         // student account types cannot toggle to teacher role
@@ -87,10 +80,8 @@ Encompass.TopBarComponent = Ember.Component.extend(
             );
           })
           .catch((err) => {
-            // handle error
             this.handleErrors(err, "toggleRoleErrors", currentUser);
             this.set("isToggleError", true);
-            // send error up to application level to handle?
           });
       },
     },
