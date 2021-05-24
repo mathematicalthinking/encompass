@@ -270,6 +270,9 @@
       </thead>
       <tbody>
         {{#each evidence as |sel|}}
+        {{log sel}}
+        {{log sel.submission}}
+        {{log sel.submission.student}}
           <tr>
             <td>
               <a
@@ -293,7 +296,6 @@
                   class="change-submission"
                   {{action "changeSubmission" sel.submission}}
                 >
-                  {{log "student is: " sel.submission.student}}
                   {{sel.submission.student}}
                 </a>
               </td>
