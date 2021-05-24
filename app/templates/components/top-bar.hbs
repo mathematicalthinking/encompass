@@ -1,6 +1,5 @@
 {{#link-to "index"}}
-  <h1 id="encompass-logo" class="{{unless isSmallHeader "al_logo"}}">Drexel |
-    EnCoMPASS</h1>
+  <h1 id="encompass-logo" class="{{unless isSmallHeader "al_logo"}}">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 
 <div class="clear_r"></div>
@@ -12,26 +11,23 @@
         <span id="menu-items">
           <li id="home-btn">
             <div class="dropdown-skinny">
-              {{#link-to "index" classNames="menu home"}}my work{{/link-to}}
+              {{#link-to "index" }}my work{{/link-to}}
             </div>
           </li>
           {{#unless isStudent}}
             <li>
               <div class="dropdown dropdown-skinny">
-                {{#link-to "index" classNames="menu workspaces"}}
+                {{#link-to "index" }}
                   make
                   <i class="fa fa-caret-down caret-down"></i>
                 {{/link-to}}
                 <div class="dropdown-content">
-                  {{#link-to
-                    "assignments.new"
-                    classNames="menu workspaces-new"
-                  }}
+                  {{#link-to "assignments.new" }}
                     assignment
                   {{/link-to}}
                   <div class="parent-dropdown">
                     <div class="dropdown dropdown-skinny">
-                      {{#link-to "workspaces.new" classNames="menu import"}}
+                      {{#link-to "workspaces.new" }}
                         workspace
                         <i class="fa fa-caret-right caret-right spacing"></i>
                       {{/link-to}}
@@ -40,30 +36,27 @@
                       id="dropdown-hidden"
                       class="dropdown-content dropdown-right dropdown-hidden"
                     >
-                      {{#link-to
-                        "workspaces.new"
-                        classNames="menu workspaces-new"
-                      }}
+                      {{#link-to "workspaces.new" }}
                         new
                       {{/link-to}}
-                      {{#link-to "import" classNames="menu import"}}
+                      {{#link-to "import" }}
                         import
                       {{/link-to}}
-                      {{#link-to "workspaces.copy" classNames="menu import"}}
+                      {{#link-to "workspaces.copy" }}
                         copy
                       {{/link-to}}
-                      {{#link-to "vmt.import" classNames="menu vmt-import"}}
+                      {{#link-to "vmt.import" }}
                         vmt
                       {{/link-to}}
                     </div>
                   </div>
-                  {{#link-to "problems.new" classNames="menu import"}}
+                  {{#link-to "problems.new" }}
                     problem
                   {{/link-to}}
-                  {{#link-to "sections.new" classNames="menu sections"}}
+                  {{#link-to "sections.new" }}
                     class
                   {{/link-to}}
-                  {{#link-to "users.new" classNames="menu vmt-import"}}
+                  {{#link-to "users.new" }}
                     users
                   {{/link-to}}
                 </div>
@@ -72,25 +65,25 @@
           {{/unless}}
           <li>
             <div class="dropdown dropdown-wide">
-              {{#link-to "index" classNames="menu workspaces"}}
+              {{#link-to "index" }}
                 do
                 <i class="fa fa-caret-down caret-down"></i>
               {{/link-to}}
               <div class="dropdown-content">
-                {{#link-to "assignments" classNames="menu problems"}}
+                {{#link-to "assignments" }}
                   solve a problem
                 {{/link-to}}
-                {{#link-to "workspaces" classNames="menu workspaces"}}
+                {{#link-to "workspaces" }}
                   review submitted work
                 {{/link-to}}
-                {{#link-to "responses" classNames="menu workspaces"}}
+                {{#link-to "responses" }}
                   mentor submissions
                 {{/link-to}}
                 {{#unless isStudent}}
-                  {{#link-to "sections" classNames="menu sections"}}
+                  {{#link-to "sections" }}
                     manage classes
                   {{/link-to}}
-                  {{#link-to "users" classNames="menu users"}}manage users{{/link-to}}
+                  {{#link-to "users" }}manage users{{/link-to}}
                 {{/unless}}
               </div>
             </div>
@@ -98,25 +91,25 @@
           {{! Find Button }}
           <li>
             <div class="dropdown dropdown-skinny">
-              {{#link-to "index" classNames="menu workspaces"}}
+              {{#link-to "index" }}
                 find
                 <i class="fa fa-caret-down caret-down"></i>
               {{/link-to}}
               <div class="dropdown-content">
-                {{#link-to "assignments" classNames="menu workspaces-new"}}
+                {{#link-to "assignments" }}
                   assignment
                 {{/link-to}}
-                {{#link-to "workspaces" classNames="menu import"}}
+                {{#link-to "workspaces" }}
                   workspace
                 {{/link-to}}
-                {{#link-to "problems" classNames="menu import"}}
+                {{#link-to "problems" }}
                   problem
                 {{/link-to}}
-                {{#link-to "sections.home" classNames="menu sections"}}
+                {{#link-to "sections.home" }}
                   class
                 {{/link-to}}
                 {{#unless isStudent}}
-                  {{#link-to "users" classNames="menu vmt-import"}}
+                  {{#link-to "users" }}
                     users
                   {{/link-to}}
                 {{/unless}}
@@ -139,10 +132,12 @@
           </li>
         {{/unless}}
         <li id="current-username">
-          {{#link-to "user" currentUser.username}}<img
+          {{#link-to "user" currentUser.username}}
+            <img
               src={{currentUser.avatar}}
               alt={{currentUser.username}}
-            />{{/link-to}}
+            />
+          {{/link-to}}
         </li>
         <li id="user-image">
           {{input
