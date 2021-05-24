@@ -7,118 +7,118 @@
 {{#if user.isAuthenticated}}
   <nav class="al_nav menu-toggle">
     <ul id="main-nav">
-        <li class="menu-items" id="home-btn">
-          <div class="dropdown-skinny">
-            {{#link-to "index" }}my work{{/link-to}}
-          </div>
-        </li>
-        {{#unless currentUser.isStudent}}
-          <li class="menu-items">
-            <div class="dropdown dropdown-skinny">
-              {{#link-to "index" }}
-                make
-                <i class="fa fa-caret-down caret-down"></i>
-              {{/link-to}}
-              <div class="dropdown-content">
-                {{#link-to "assignments.new" }}
-                  assignment
-                {{/link-to}}
-                <div class="parent-dropdown">
-                  <div class="dropdown dropdown-skinny">
-                    {{#link-to "workspaces.new" }}
-                      workspace
-                      <i class="fa fa-caret-right caret-right spacing"></i>
-                    {{/link-to}}
-                  </div>
-                  <div
-                    id="dropdown-hidden"
-                    class="dropdown-content dropdown-right dropdown-hidden"
-                  >
-                    {{#link-to "workspaces.new" }}
-                      new
-                    {{/link-to}}
-                    {{#link-to "import" }}
-                      import
-                    {{/link-to}}
-                    {{#link-to "workspaces.copy" }}
-                      copy
-                    {{/link-to}}
-                    {{#link-to "vmt.import" }}
-                      vmt
-                    {{/link-to}}
-                  </div>
-                </div>
-                {{#link-to "problems.new" }}
-                  problem
-                {{/link-to}}
-                {{#link-to "sections.new" }}
-                  class
-                {{/link-to}}
-                {{#link-to "users.new" }}
-                  users
-                {{/link-to}}
-              </div>
-            </div>
-          </li>
-        {{/unless}}
-        <li class="menu-items">
-          <div class="dropdown dropdown-wide">
-            {{#link-to "index" }}
-              do
-              <i class="fa fa-caret-down caret-down"></i>
-            {{/link-to}}
-            <div class="dropdown-content">
-              {{#link-to "assignments" }}
-                solve a problem
-              {{/link-to}}
-              {{#link-to "workspaces" }}
-                review submitted work
-              {{/link-to}}
-              {{#link-to "responses" }}
-                mentor submissions
-              {{/link-to}}
-              {{#unless currentUser.isStudent}}
-                {{#link-to "sections" }}
-                  manage classes
-                {{/link-to}}
-                {{#link-to "users" }}manage users{{/link-to}}
-              {{/unless}}
-            </div>
-          </div>
-        </li>
+      <li class="menu-items" id="home-btn">
+        <div class="dropdown-skinny">
+          {{#link-to "index" }}my work{{/link-to}}
+        </div>
+      </li>
+      {{#unless currentUser.isStudent}}
         <li class="menu-items">
           <div class="dropdown dropdown-skinny">
             {{#link-to "index" }}
-              find
+              make
               <i class="fa fa-caret-down caret-down"></i>
             {{/link-to}}
             <div class="dropdown-content">
-              {{#link-to "assignments" }}
+              {{#link-to "assignments.new" }}
                 assignment
               {{/link-to}}
-              {{#link-to "workspaces" }}
-                workspace
-              {{/link-to}}
-              {{#link-to "problems" }}
+              <div class="parent-dropdown">
+                <div class="dropdown dropdown-skinny">
+                  {{#link-to "workspaces.new" }}
+                    workspace
+                    <i class="fa fa-caret-right caret-right spacing"></i>
+                  {{/link-to}}
+                </div>
+                <div
+                  id="dropdown-hidden"
+                  class="dropdown-content dropdown-right dropdown-hidden"
+                >
+                  {{#link-to "workspaces.new" }}
+                    new
+                  {{/link-to}}
+                  {{#link-to "import" }}
+                    import
+                  {{/link-to}}
+                  {{#link-to "workspaces.copy" }}
+                    copy
+                  {{/link-to}}
+                  {{#link-to "vmt.import" }}
+                    vmt
+                  {{/link-to}}
+                </div>
+              </div>
+              {{#link-to "problems.new" }}
                 problem
               {{/link-to}}
-              {{#link-to "sections.home" }}
+              {{#link-to "sections.new" }}
                 class
               {{/link-to}}
-              {{#unless currentUser.isStudent}}
-                {{#link-to "users" }}
-                  users
-                {{/link-to}}
-              {{/unless}}
+              {{#link-to "users.new" }}
+                users
+              {{/link-to}}
             </div>
           </div>
         </li>
-        <li class="menu-items" id="logout-btn">
-          {{#link-to "logout" classNames="menu logout"}}
-            <i class="fas fa-power-off logout-icon"></i>
-            <span id="logout-text">log out</span>
+      {{/unless}}
+      <li class="menu-items">
+        <div class="dropdown dropdown-wide">
+          {{#link-to "index" }}
+            do
+            <i class="fa fa-caret-down caret-down"></i>
           {{/link-to}}
-        </li>
+          <div class="dropdown-content">
+            {{#link-to "assignments" }}
+              solve a problem
+            {{/link-to}}
+            {{#link-to "workspaces" }}
+              review submitted work
+            {{/link-to}}
+            {{#link-to "responses" }}
+              mentor submissions
+            {{/link-to}}
+            {{#unless currentUser.isStudent}}
+              {{#link-to "sections" }}
+                manage classes
+              {{/link-to}}
+              {{#link-to "users" }}manage users{{/link-to}}
+            {{/unless}}
+          </div>
+        </div>
+      </li>
+      <li class="menu-items">
+        <div class="dropdown dropdown-skinny">
+          {{#link-to "index" }}
+            find
+            <i class="fa fa-caret-down caret-down"></i>
+          {{/link-to}}
+          <div class="dropdown-content">
+            {{#link-to "assignments" }}
+              assignment
+            {{/link-to}}
+            {{#link-to "workspaces" }}
+              workspace
+            {{/link-to}}
+            {{#link-to "problems" }}
+              problem
+            {{/link-to}}
+            {{#link-to "sections.home" }}
+              class
+            {{/link-to}}
+            {{#unless currentUser.isStudent}}
+              {{#link-to "users" }}
+                users
+              {{/link-to}}
+            {{/unless}}
+          </div>
+        </div>
+      </li>
+      <li class="menu-items" id="logout-btn">
+        {{#link-to "logout" classNames="menu logout"}}
+          <i class="fas fa-power-off logout-icon"></i>
+          <span id="logout-text">log out</span>
+        {{/link-to}}
+      </li>
       {{#unless isStudentAccount}}
         <li id="role-toggle">
           <span class="acting-role">Role: {{user.actingRoleName}}</span>
