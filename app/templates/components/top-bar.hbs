@@ -13,7 +13,7 @@
               {{#link-to "index" }}my work{{/link-to}}
             </div>
           </li>
-          {{#unless isStudent}}
+          {{#unless currentUser.isStudent}}
             <li>
               <div class="dropdown dropdown-skinny">
                 {{#link-to "index" }}
@@ -78,7 +78,7 @@
                 {{#link-to "responses" }}
                   mentor submissions
                 {{/link-to}}
-                {{#unless isStudent}}
+                {{#unless currentUser.isStudent}}
                   {{#link-to "sections" }}
                     manage classes
                   {{/link-to}}
@@ -87,7 +87,6 @@
               </div>
             </div>
           </li>
-          {{! Find Button }}
           <li>
             <div class="dropdown dropdown-skinny">
               {{#link-to "index" }}
@@ -107,7 +106,7 @@
                 {{#link-to "sections.home" }}
                   class
                 {{/link-to}}
-                {{#unless isStudent}}
+                {{#unless currentUser.isStudent}}
                   {{#link-to "users" }}
                     users
                   {{/link-to}}
