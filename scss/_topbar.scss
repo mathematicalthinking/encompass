@@ -10,26 +10,9 @@
       .menu-items {
         display: none;
       }
-      #current-username {
-        // margin: 0 5px;
-        display: none;
-      }
-      #user-image {
-        margin: 0 10px 0 0;
-      }
     }
     #sidemenu {
       display: none;
-    }
-    #encompass-logo {
-      width: 75px;
-      height: 80px;
-      display: block;
-      float: left;
-      position: relative;
-      top: -15px;
-      text-indent: -99999px;
-      background: url(images/logo-encompass.gif) 0 0 no-repeat;
     }
     #topbar-unauth {
       font-size: .8em;
@@ -40,6 +23,22 @@
       }
     }
   }
+  #encompass-logo {
+    width: 75px;
+    height: 80px;
+    display: block;
+    float: left;
+    position: relative;
+    top: -15px;
+    text-indent: -99999px;
+    background: url(images/logo-encompass.gif) 0 0 no-repeat;
+  }
+  #current-username {
+    display: none;
+  }
+  #user-image {
+    margin: 0 10px 0 0;
+  }
 }
 
 @media screen and (min-width: 350px) and (max-width: 974px) {
@@ -49,26 +48,26 @@
       .menu-items {
         display: none;
       }
-      #current-username {
-        display: none;
-      }
-      #user-image {
-        margin: 0 20px 0 5px;
-      }
     }
     #sidemenu {
       display: none;
     }
-    #encompass-logo {
-      width: 75px;
-      height: 80px;
-      display: block;
-      float: left;
-      position: relative;
-      top: -15px;
-      text-indent: -99999px;
-      background: url(images/logo-encompass.gif) 0 0 no-repeat;
-    }
+  }
+  #encompass-logo {
+    width: 75px;
+    height: 80px;
+    display: block;
+    float: left;
+    position: relative;
+    top: -15px;
+    text-indent: -99999px;
+    background: url(images/logo-encompass.gif) 0 0 no-repeat;
+  }
+  #current-username {
+    display: none;
+  }
+  #user-image {
+    margin: 0 20px 0 5px;
   }
 }
 
@@ -97,9 +96,6 @@
       #menu-btn {
         display: none;
       }
-      #user-image {
-        display: none;
-      }
     }
     #sidemenu {
       display: none;
@@ -115,6 +111,9 @@
     text-indent: -99999px;
     background: url(images/logo-encompass.gif) 0 0 no-repeat;
   }
+  #user-image {
+    display: none;
+  }
 }
 
 @media screen and (min-width: 1300px) and (max-width: 10000px) {
@@ -122,9 +121,6 @@
     .menu-toggle {
       // background-color: yellow;
       font-size: 1em;
-    }
-    #user-image {
-      display: none;
     }
     .al_nav {
       li {
@@ -140,6 +136,9 @@
     .logout-icon {
       display: none;
     }
+  }
+  #user-image {
+    display: none;
   }
 }
 
