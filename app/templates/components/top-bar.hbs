@@ -1,5 +1,5 @@
 {{#link-to "index"}}
-  <h1 id="encompass-logo" class="{{unless isSmallHeader "al_logo"}}">Drexel | EnCoMPASS</h1>
+  <h1 id="encompass-logo" class="al_logo">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 
 <div class="clear_r"></div>
@@ -139,14 +139,7 @@
           {{/link-to}}
         </li>
         <li id="user-image">
-          {{input
-            type="checkbox"
-            id="menu-button"
-            name="menu-toggle"
-            checked=openMenu
-            click=(action "toggleMenu")
-          }}
-          <img src={{user.avatar}} alt="" />
+          <img id="menu-button" src={{user.avatar}} alt="" />
           {{#if newNotifications}}
             {{circle-ntf displayCount=newNotifications.length}}
           {{/if}}
@@ -198,24 +191,35 @@
 {{else}}
   <nav id="topbar-unauth">
     <ul>
-      <li data-test="login">{{#link-to
-          "auth.login"
-          classNames="menu login hidden"
-        }}log in{{/link-to}}</li>
-      <li data-test="signup">{{#link-to
-          "auth.signup"
-          classNames="menu signup"
-        }}sign up{{/link-to}}</li>
+      <li data-test="login">
+        {{#link-to "auth.login" classNames="menu login hidden" }}
+          log in
+        {{/link-to}}
+      </li>
+      <li data-test="signup">
+        {{#link-to "auth.signup" classNames="menu signup" }}
+          sign up
+        {{/link-to}}
+      </li>
     </ul>
   </nav>
 {{/if}}
 
 <script>
-  $('#menu-button').click(function (e) { e.stopPropagation();
-  $('#hide-menu').toggleClass('sidemenu-style');
-  $('#hide-menu').addClass('slideInRight'); }); $('#hide-menu').click(function
-  (e) { e.stopPropagation(); }); $('body,html').click(function (e) {
-  $('#hide-menu').removeClass('sidemenu-style'); });
-  $('#hide-menu>li>a').ready(() => { $('#hide-menu').click(function (e) {
-  $('#hide-menu').removeClass('sidemenu-style'); }); })
+  $('#menu-button').click(function (e) { 
+    e.stopPropagation();
+    $('#hide-menu').toggleClass('sidemenu-style');
+    $('#hide-menu').addClass('slideInRight'); 
+    }); 
+  $('#hide-menu').click(function(e) { 
+    e.stopPropagation(); 
+  }); 
+  $('body,html').click(function (e) {
+    $('#hide-menu').removeClass('sidemenu-style'); 
+  });
+  $('#hide-menu>li>a').ready(() => { 
+    $('#hide-menu').click(function (e) {
+      $('#hide-menu').removeClass('sidemenu-style'); 
+    }); 
+  })
 </script>

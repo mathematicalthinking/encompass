@@ -3,11 +3,7 @@ Encompass.TopBarComponent = Ember.Component.extend(
   Encompass.ErrorHandlingMixin,
   {
     tagName: "header",
-    classNameBindings: ["isSmallHeader:small", "isHidden:hide"],
     elementId: "al_header",
-    isSmallHeader: false,
-    isHidden: false,
-    openMenu: false,
     toggleRoleErrors: [],
     alert: Ember.inject.service("sweet-alert"),
 
@@ -46,15 +42,6 @@ Encompass.TopBarComponent = Ember.Component.extend(
     },
 
     actions: {
-      largeHeader: function () {
-        this.set("isSmallHeader", false);
-      },
-      smallHeader: function () {
-        this.set("isSmallHeader", true);
-      },
-      toggleMenu: function () {
-        // console.log('toggle called', this.openMenu);
-      },
       showToggleModal: function () {
         this.get("alert")
           .showModal(
