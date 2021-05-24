@@ -7,7 +7,7 @@
     .al_nav {
       font-size: 1em;
       overflow: auto;
-      #menu-items {
+      .menu-items {
         display: none;
       }
       #current-username {
@@ -46,7 +46,7 @@
   #al_header {
     .al_nav {
       font-size: 1em;
-      #menu-items {
+      .menu-items {
         display: none;
       }
       #current-username {
