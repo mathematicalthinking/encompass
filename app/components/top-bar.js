@@ -7,6 +7,35 @@ Encompass.TopBarComponent = Ember.Component.extend(
     toggleRoleErrors: [],
     alert: Ember.inject.service("sweet-alert"),
 
+    make: [
+      {text: "assignment", link: "assignments.new", restricted: true},
+      {text: "workspace", link: "workspaces.new", restricted: true, children: [ 
+        {link: "workspaces.new", text: "new"}, 
+        {link: "import", text: "import"}, 
+        {link: "workspaces.copy", text: "copy"}, 
+        {link: "vmt.import", text: "vmt"}
+      ]},
+      {text: "problem", link: "problem"}, 
+      {text: "class", link: "sections.new"},
+      {text: "users", link: "users.new"},
+    ],
+
+    do: [
+      {text: "solve a problem", link: "assignments", restricted: false},
+      {text: "review submitted work", link: "workspaces", restricted: false},
+      {text: "mentor submission", link: "responses", restricted: false},
+      {text: "manage classes", link: "sections", restricted: true},
+      {text: "manage users", link: "users", restricted: true},
+    ],
+
+    find: [
+      {text: "assignment", link: "assignments", restricted: false},
+      {text: "workspace", link: "workspaces", restricted: false},
+      {text: "problem", link: "problems", restricted: false},
+      {text: "class", link: "sections.home", restricted: false},
+      {text: "users", link: "users", restricted: true},
+    ],
+
     didReceiveAttrs: function () {
       let currentUser = this.get("currentUser");
       this.set("isStudentAccount", currentUser.get("accountType") === "S");

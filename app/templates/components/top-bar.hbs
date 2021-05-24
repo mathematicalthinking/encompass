@@ -68,21 +68,9 @@
             <i class="fa fa-caret-down caret-down"></i>
           {{/link-to}}
           <div class="dropdown-content">
-            {{#link-to "assignments" }}
-              solve a problem
-            {{/link-to}}
-            {{#link-to "workspaces" }}
-              review submitted work
-            {{/link-to}}
-            {{#link-to "responses" }}
-              mentor submissions
-            {{/link-to}}
-            {{#unless currentUser.isStudent}}
-              {{#link-to "sections" }}
-                manage classes
-              {{/link-to}}
-              {{#link-to "users" }}manage users{{/link-to}}
-            {{/unless}}
+            {{#each do as |item|}}
+              {{#link-to item.link}}{{item.text}}{{/link-to}}
+            {{/each}}
           </div>
         </div>
       </li>
@@ -93,23 +81,9 @@
             <i class="fa fa-caret-down caret-down"></i>
           {{/link-to}}
           <div class="dropdown-content">
-            {{#link-to "assignments" }}
-              assignment
-            {{/link-to}}
-            {{#link-to "workspaces" }}
-              workspace
-            {{/link-to}}
-            {{#link-to "problems" }}
-              problem
-            {{/link-to}}
-            {{#link-to "sections.home" }}
-              class
-            {{/link-to}}
-            {{#unless currentUser.isStudent}}
-              {{#link-to "users" }}
-                users
-              {{/link-to}}
-            {{/unless}}
+            {{#each find as |item|}}
+              {{#link-to item.link}}{{item.text}}{{/link-to}}
+            {{/each}}
           </div>
         </div>
       </li>
