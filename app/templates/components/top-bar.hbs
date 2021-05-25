@@ -68,7 +68,13 @@
           {{/link-to}}
           <div class="dropdown-content">
             {{#each do as |item|}}
-              {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{#if item.restricted}}
+                {{#unless currentUser.isStudent}}
+                  {{#link-to item.link}}{{item.text}}{{/link-to}}
+                {{/unless}}
+              {{else}}
+                {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{/if}}
             {{/each}}
           </div>
         </div>
@@ -81,7 +87,13 @@
           {{/link-to}}
           <div class="dropdown-content">
             {{#each find as |item|}}
-              {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{#if item.restricted}}
+                {{#unless currentUser.isStudent}}
+                  {{#link-to item.link}}{{item.text}}{{/link-to}}
+                {{/unless}}
+              {{else}}
+                {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{/if}}
             {{/each}}
           </div>
         </div>
