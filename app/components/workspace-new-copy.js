@@ -16,34 +16,6 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     display: 'Choose Workspace to Copy',
   },
 
-  copyConfig:
-    {
-      groupName: 'copyConfig',
-      required: true,
-      inputs: [
-        {
-          value: 'A',
-          label: 'Submissions Only',
-          moreInfo: 'Copy only the submissions used in this workspace'
-        },
-        {
-          value: 'B',
-          label: 'Submissions and Folder Structure',
-          moreInfo: 'Copy the submissions and the folder structure (not content) used in this workspace'
-        },
-        {
-          value: 'C',
-          label: 'Everything',
-          moreInfo: 'Copy everything used in this workspace (submissions, selections, folders, taggings, comments, responses)'
-        },
-        {
-          value: 'D',
-          label: 'Custom',
-          moreInfo: 'Decide which to copy for submissions, selections, folders, taggings, comments and responses'
-        }
-      ]
-    },
-
   submissionsPool: function() {
     let allSubmissions = this.get('workspaceToCopy.submissions.content');
     if (!allSubmissions) {

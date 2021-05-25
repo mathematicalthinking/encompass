@@ -55,7 +55,7 @@
         {{/if}}
 
         {{#if showSelectConfig}}
-          {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
+          {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
         {{/if}}
 
         {{#if showOwnerSettings}}
