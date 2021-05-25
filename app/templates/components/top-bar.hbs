@@ -5,128 +5,128 @@
 <div class="clear_r"></div>
 
 {{#if user.isAuthenticated}}
-    <ul class="al_nav menu-toggle" id="main-nav">
-      <li class="menu-items" id="home-btn">
-        <div class="dropdown-skinny">
-          {{#link-to "index" }}my work{{/link-to}}
-        </div>
-      </li>
-      {{#unless currentUser.isStudent}}
-        <li class="menu-items">
-          <div class="dropdown dropdown-skinny">
-            {{#link-to "index" }}
-              make
-              <i class="fa fa-caret-down caret-down"></i>
-            {{/link-to}}
-            <div class="dropdown-content">
-              {{#link-to "assignments.new" }}
-                assignment
-              {{/link-to}}
-              <div class="parent-dropdown">
-                <div class="dropdown dropdown-skinny">
-                  {{#link-to "workspaces.new" }}
-                    workspace
-                    <i class="fa fa-caret-right caret-right spacing"></i>
-                  {{/link-to}}
-                </div>
-                <div
-                  id="dropdown-hidden"
-                  class="dropdown-content dropdown-right dropdown-hidden"
-                >
-                  {{#link-to "workspaces.new" }}
-                    new
-                  {{/link-to}}
-                  {{#link-to "import" }}
-                    import
-                  {{/link-to}}
-                  {{#link-to "workspaces.copy" }}
-                    copy
-                  {{/link-to}}
-                  {{#link-to "vmt.import" }}
-                    vmt
-                  {{/link-to}}
-                </div>
-              </div>
-              {{#link-to "problems.new" }}
-                problem
-              {{/link-to}}
-              {{#link-to "sections.new" }}
-                class
-              {{/link-to}}
-              {{#link-to "users.new" }}
-                users
-              {{/link-to}}
-            </div>
-          </div>
-        </li>
-      {{/unless}}
-      <li class="menu-items">
-        <div class="dropdown dropdown-wide">
-          {{#link-to "index" }}
-            do
-            <i class="fa fa-caret-down caret-down"></i>
-          {{/link-to}}
-          <div class="dropdown-content">
-            {{#each do as |item|}}
-              {{#if item.restricted}}
-                {{#unless currentUser.isStudent}}
-                  {{#link-to item.link}}{{item.text}}{{/link-to}}
-                {{/unless}}
-              {{else}}
-                {{#link-to item.link}}{{item.text}}{{/link-to}}
-              {{/if}}
-            {{/each}}
-          </div>
-        </div>
-      </li>
+  <ul class="al_nav menu-toggle" id="main-nav">
+    <li class="menu-items" id="home-btn">
+      <div class="dropdown-skinny">
+        {{#link-to "index" }}my work{{/link-to}}
+      </div>
+    </li>
+    {{#unless currentUser.isStudent}}
       <li class="menu-items">
         <div class="dropdown dropdown-skinny">
           {{#link-to "index" }}
-            find
+            make
             <i class="fa fa-caret-down caret-down"></i>
           {{/link-to}}
           <div class="dropdown-content">
-            {{#each find as |item|}}
-              {{#if item.restricted}}
-                {{#unless currentUser.isStudent}}
-                  {{#link-to item.link}}{{item.text}}{{/link-to}}
-                {{/unless}}
-              {{else}}
-                {{#link-to item.link}}{{item.text}}{{/link-to}}
-              {{/if}}
-            {{/each}}
+            {{#link-to "assignments.new" }}
+              assignment
+            {{/link-to}}
+            <div class="parent-dropdown">
+              <div class="dropdown dropdown-skinny">
+                {{#link-to "workspaces.new" }}
+                  workspace
+                  <i class="fa fa-caret-right caret-right spacing"></i>
+                {{/link-to}}
+              </div>
+              <div
+                id="dropdown-hidden"
+                class="dropdown-content dropdown-right dropdown-hidden"
+              >
+                {{#link-to "workspaces.new" }}
+                  new
+                {{/link-to}}
+                {{#link-to "import" }}
+                  import
+                {{/link-to}}
+                {{#link-to "workspaces.copy" }}
+                  copy
+                {{/link-to}}
+                {{#link-to "vmt.import" }}
+                  vmt
+                {{/link-to}}
+              </div>
+            </div>
+            {{#link-to "problems.new" }}
+              problem
+            {{/link-to}}
+            {{#link-to "sections.new" }}
+              class
+            {{/link-to}}
+            {{#link-to "users.new" }}
+              users
+            {{/link-to}}
           </div>
         </div>
       </li>
-      <li class="menu-items" id="logout-btn">
-        {{#link-to "logout" classNames="menu logout"}}
-          <i class="fas fa-power-off logout-icon"></i>
-          <span id="logout-text">log out</span>
+    {{/unless}}
+    <li class="menu-items">
+      <div class="dropdown dropdown-wide">
+        {{#link-to "index" }}
+          do
+          <i class="fa fa-caret-down caret-down"></i>
         {{/link-to}}
-      </li>
-      {{#unless isStudentAccount}}
-        <li id="role-toggle">
-          <span class="acting-role">Role: {{user.actingRoleName}}</span>
-          <span class="toggle-role" {{action "showToggleModal"}}>
-            <i class="fas fa-sync-alt"></i>
-          </span>
-        </li>
-      {{/unless}}
-      <li id="current-username">
-        {{#link-to "user" currentUser.username}}
-          <img
-            src={{currentUser.avatar}}
-            alt={{currentUser.username}}
-          />
+        <div class="dropdown-content">
+          {{#each do as |item|}}
+            {{#if item.restricted}}
+              {{#unless currentUser.isStudent}}
+                {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{/unless}}
+            {{else}}
+              {{#link-to item.link}}{{item.text}}{{/link-to}}
+            {{/if}}
+          {{/each}}
+        </div>
+      </div>
+    </li>
+    <li class="menu-items">
+      <div class="dropdown dropdown-skinny">
+        {{#link-to "index" }}
+          find
+          <i class="fa fa-caret-down caret-down"></i>
         {{/link-to}}
+        <div class="dropdown-content">
+          {{#each find as |item|}}
+            {{#if item.restricted}}
+              {{#unless currentUser.isStudent}}
+                {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{/unless}}
+            {{else}}
+              {{#link-to item.link}}{{item.text}}{{/link-to}}
+            {{/if}}
+          {{/each}}
+        </div>
+      </div>
+    </li>
+    <li class="menu-items" id="logout-btn">
+      {{#link-to "logout" classNames="menu logout"}}
+        <i class="fas fa-power-off logout-icon"></i>
+        <span id="logout-text">log out</span>
+      {{/link-to}}
+    </li>
+    {{#unless isStudentAccount}}
+      <li id="role-toggle">
+        <span class="acting-role">Role: {{user.actingRoleName}}</span>
+        <span class="toggle-role" {{action "showToggleModal"}}>
+          <i class="fas fa-sync-alt"></i>
+        </span>
       </li>
-      <li id="user-image">
-        <img id="menu-button" src={{user.avatar}} alt="" />
-        {{#if newNotifications}}
-          {{circle-ntf displayCount=newNotifications.length}}
-        {{/if}}
-      </li>
-    </ul>
+    {{/unless}}
+    <li id="current-username">
+      {{#link-to "user" currentUser.username}}
+        <img
+          src={{currentUser.avatar}}
+          alt={{currentUser.username}}
+        />
+      {{/link-to}}
+    </li>
+    <li id="user-image">
+      <img id="menu-button" src={{user.avatar}} alt="" />
+      {{#if newNotifications}}
+        {{circle-ntf displayCount=newNotifications.length}}
+      {{/if}}
+    </li>
+  </ul>
 
   <div id="hide-menu" class="hidden animated">
     <ul>
