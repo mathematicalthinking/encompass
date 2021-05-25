@@ -10,6 +10,12 @@
       .menu-items {
         display: none;
       }
+      #current-username {
+        display: none;
+      }
+      #user-image {
+        margin: 0 10px 0 0;
+      }
     }
     #topbar-unauth {
       font-size: .8em;
@@ -30,12 +36,6 @@
     text-indent: -99999px;
     background: url(images/logo-encompass.gif) 0 0 no-repeat;
   }
-  #current-username {
-    display: none;
-  }
-  #user-image {
-    margin: 0 10px 0 0;
-  }
 }
 
 @media screen and (min-width: 350px) and (max-width: 974px) {
@@ -44,6 +44,12 @@
       font-size: 1em;
       .menu-items {
         display: none;
+      }
+      #current-username {
+        display: none;
+      }
+      #user-image {
+        margin: 0 20px 0 5px;
       }
     }
   }
@@ -56,12 +62,6 @@
     top: -15px;
     text-indent: -99999px;
     background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-  #current-username {
-    display: none;
-  }
-  #user-image {
-    margin: 0 20px 0 5px;
   }
 }
 
@@ -117,6 +117,9 @@
       li {
         padding: 0 13px;
       }
+      #user-image {
+        display: none;
+      }
     }
     #menu-btn {
       display: none;
@@ -124,9 +127,6 @@
     .logout-icon {
       display: none;
     }
-  }
-  #user-image {
-    display: none;
   }
 }
 
@@ -225,11 +225,9 @@
   padding-left: 5px;
 }
 
-.al_nav {
-  #main-nav {
-    float: right;
-    margin-top: 20px;
-  }
+.al_nav#main-nav {
+  float: right;
+  margin-top: 20px;
   li {
     line-height: 40px;
     height: 60px;

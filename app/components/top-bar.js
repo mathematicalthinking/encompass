@@ -2,7 +2,7 @@ Encompass.TopBarComponent = Ember.Component.extend(
   Encompass.CurrentUserMixin,
   Encompass.ErrorHandlingMixin,
   {
-    tagName: "header",
+    tagName: "nav",
     elementId: "al_header",
     toggleRoleErrors: [],
     alert: Ember.inject.service("sweet-alert"),
