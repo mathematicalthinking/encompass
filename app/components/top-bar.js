@@ -2,41 +2,56 @@ Encompass.TopBarComponent = Ember.Component.extend(
   Encompass.CurrentUserMixin,
   Encompass.ErrorHandlingMixin,
   {
-    tagName: "header",
-    classNameBindings: ["isSmallHeader:small", "isHidden:hide"],
+    tagName: "nav",
     elementId: "al_header",
-    isSmallHeader: false,
-    isHidden: false,
-    openMenu: false,
     toggleRoleErrors: [],
     alert: Ember.inject.service("sweet-alert"),
 
+    make: [
+      {text: "assignment", link: "assignments.new", restricted: true},
+      {text: "workspace", link: "workspaces.new", restricted: true, children: [ 
+        {link: "workspaces.new", text: "new"}, 
+        {link: "import", text: "import"}, 
+        {link: "workspaces.copy", text: "copy"}, 
+        {link: "vmt.import", text: "vmt"}
+      ]},
+      {text: "problem", link: "problem"}, 
+      {text: "class", link: "sections.new"},
+      {text: "users", link: "users.new"},
+    ],
 
-    isStudent: function () {
-      return (
-        this.user.get("isStudent") || this.user.get("actingRole") === "student"
-      );
-    }.property("user.actingRole", "user.id"),
+    do: [
+      {text: "solve a problem", link: "assignments", restricted: false},
+      {text: "review submitted work", link: "workspaces", restricted: false},
+      {text: "mentor submission", link: "responses", restricted: false},
+      {text: "manage classes", link: "sections", restricted: true},
+      {text: "manage users", link: "users", restricted: true},
+    ],
 
-    notStudent: Ember.computed.not("isStudent"),
+    find: [
+      {text: "assignment", link: "assignments", restricted: false},
+      {text: "workspace", link: "workspaces", restricted: false},
+      {text: "problem", link: "problems", restricted: false},
+      {text: "class", link: "sections.home", restricted: false},
+      {text: "users", link: "users", restricted: true},
+    ],
 
     didReceiveAttrs: function () {
       let currentUser = this.get("currentUser");
       this.set("isStudentAccount", currentUser.get("accountType") === "S");
-      currentUser.set("avatar", this.createUserAvatar(currentUser.get("firstName") + " " + currentUser.get("lastName")));
+      currentUser.set(
+        "avatar",
+        this.createUserAvatar(
+          currentUser.get("firstName") + " " + currentUser.get("lastName")
+        )
+      );
     },
 
     createUserAvatar: function (name) {
-      // TODO: Create a robust color generate for the avatar
-      // function generateRandomColor() {
-      //   const colorArr =  ["f54242", "f5b342", "b3f542"];
-      //   return "3A97EE";
-      // }
 
       function splitName(name) {
         return name.split(" ").join("+");
       }
-      // const bgColor = generateRandomColor("light", null, null, null, null);
       const bgString = "3A97EE";
       const formattedName = splitName(name || "");
       const baseUrl = `https://ui-avatars.com/api/?rounded=true&color=ffffff&background=${bgString}&name=${formattedName}`;
@@ -44,15 +59,6 @@ Encompass.TopBarComponent = Ember.Component.extend(
     },
 
     actions: {
-      largeHeader: function () {
-        this.set("isSmallHeader", false);
-      },
-      smallHeader: function () {
-        this.set("isSmallHeader", true);
-      },
-      toggleMenu: function () {
-        // console.log('toggle called', this.openMenu);
-      },
       showToggleModal: function () {
         this.get("alert")
           .showModal(
@@ -69,7 +75,6 @@ Encompass.TopBarComponent = Ember.Component.extend(
       },
 
       toggleActingRole: function () {
-        // should this action be moved to the application controller?
         const currentUser = this.get("currentUser");
 
         // student account types cannot toggle to teacher role
@@ -98,10 +103,8 @@ Encompass.TopBarComponent = Ember.Component.extend(
             );
           })
           .catch((err) => {
-            // handle error
             this.handleErrors(err, "toggleRoleErrors", currentUser);
             this.set("isToggleError", true);
-            // send error up to application level to handle?
           });
       },
     },
