@@ -5,7 +5,7 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
   permissions: Ember.inject.service('workspace-permissions'),
   menuOptions: Ember.computed.alias('parentView.moreMenuOptions'),
 
-
+// for the three dot button in grid menu
   ellipsisMenuOptions: function () {
     let ws = this.get('workspace');
     let currentUser = this.get('currentUser');
