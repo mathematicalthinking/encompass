@@ -90,6 +90,9 @@
       #menu-btn {
         display: none;
       }
+      #user-image {
+        display: none;
+      }
     }
   }
   #encompass-logo {
@@ -101,9 +104,6 @@
     top: -15px;
     text-indent: -99999px;
     background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-  #user-image {
-    display: none;
   }
 }
 
