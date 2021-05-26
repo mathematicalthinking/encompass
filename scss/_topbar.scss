@@ -89,6 +89,16 @@
     display: block;
     text-align: center;
   }
+  &__logout {
+    font-weight: $main-font-weight;
+    color: white;
+    background: $primary-button;
+    font-size: .9em;
+    &:hover {
+      background-color: darken($primary-button, 10);
+      box-shadow: $button-shadow;
+    }
+  }
   &__img-user {
     img {
       height: 48px;
@@ -188,6 +198,11 @@
       }
     }
   }
+  .nav__logout {
+    margin: 0;
+    padding: 8px 9px;
+    border-radius: 50px;
+  }
   .nav__text {
     display: none;
   }
@@ -199,6 +214,11 @@
   }
   .nav--full{
     display: inline-block;
+  }
+  .nav__logout {
+    margin: inherit;
+    padding: 8px 15px;
+    border-radius: 3px;
   }
   .nav__text{
     display: unset;
