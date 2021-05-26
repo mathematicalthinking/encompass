@@ -64,9 +64,12 @@
   &__dropdown-right {
     position: absolute;
     display: none;
+    width: 100%;
     left: 110px;
     top: 35px;
     z-index: -1;
+    background-color: white;
+    box-shadow: $box-shadow;
   }
   &__content {
     display: none;
@@ -77,6 +80,14 @@
     width: 100%;
     box-shadow: $box-shadow;
     z-index: 11;
+  }
+  &__link{
+    float: none;
+    color: #5e5e5e;
+    padding: 0px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
   }
   &__img-user {
     img {

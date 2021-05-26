@@ -21,25 +21,21 @@
               assignment
             {{/link-to}}
             <div class="nav__dropdown-inner">
-              <div class="nav--skinny">
                 {{#link-to "workspaces.new" }}
                   workspace
                   <i class="fa fa-caret-right caret-right spacing"></i>
                 {{/link-to}}
-              </div>
-              <div
-                class="nav__dropdown-right nav__dropdown--hidden"
-              >
-                {{#link-to "workspaces.new" }}
+              <div class="nav__dropdown-right nav__dropdown--hidden">
+                {{#link-to "workspaces.new" classNames="nav__link"}}
                   new
                 {{/link-to}}
-                {{#link-to "import" }}
+                {{#link-to "import" classNames="nav__link"}}
                   import
                 {{/link-to}}
-                {{#link-to "workspaces.copy" }}
+                {{#link-to "workspaces.copy" classNames="nav__link"}}
                   copy
                 {{/link-to}}
-                {{#link-to "vmt.import" }}
+                {{#link-to "vmt.import" classNames="nav__link"}}
                   vmt
                 {{/link-to}}
               </div>
