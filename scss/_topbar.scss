@@ -5,6 +5,7 @@
 .nav{
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   font-family: $primary-font;
   background-color: $background-body;
@@ -12,7 +13,8 @@
   top: 0;
   left: 0;
   font-size: 1em;
-  height: 75px;
+  height: 80px;
+  border-bottom: 1px solid $input-border;
   &__logo {
     width: 75px;
     height: 80px;
@@ -20,10 +22,15 @@
     background: url(images/logo-encompass.gif) 0 -15px no-repeat;
   }
   &__list {
-    margin-left: auto;
+    flex-grow: 1;
     display: flex;
     align-items: center;
+    justify-content: center;
     font-size: 1em;
+  }
+  &__auth{
+    display: flex;
+    align-items: center;
   }
   &__item {
     line-height: 40px;
@@ -113,8 +120,7 @@
   width: 170px;
   }
   &--parent{
-    background-color: $accent-yellow;
-    padding: 10px 10px;
+    padding: 10px;
     line-height: 20px;
     border-radius: 3px;
     color: $primary-font-color;

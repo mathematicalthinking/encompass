@@ -3,7 +3,7 @@
 {{/link-to}}
 
 {{#if user.isAuthenticated}}
-  <ul class="nav__list menu-toggle" id="main-nav">
+  <ul class="nav__list">
     <li class="nav__item nav--full">
       <div class="nav--skinny">
         {{#link-to "index" classNames="nav__link nav--parent"}}my work{{/link-to}}
@@ -91,6 +91,8 @@
         </div>
       </div>
     </li>
+    </ul>
+    <ul class="nav__auth">
     <li class="nav__item" id="logout-btn">
       {{#link-to "logout" classNames="nav__logout"}}
         <i class="fas fa-power-off nav__icon"></i>
