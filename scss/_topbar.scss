@@ -203,6 +203,9 @@
   .nav__text{
     display: unset;
   }
+  .nav__icon{
+    display: none;
+  }
 }
 
 // @media screen and (min-width: 0) and (max-width: 349px) {
