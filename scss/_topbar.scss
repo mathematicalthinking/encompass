@@ -84,6 +84,7 @@
     color: white;
     background: $primary-button;
     font-size: .9em;
+    display: none;
     &:hover {
       background-color: darken($primary-button, 10);
       box-shadow: $button-shadow;
@@ -94,7 +95,6 @@
       height: 48px;
       margin-left: 15px;
       margin-right: 10px;
-      margin-top: -5px;
     }
     input {
       display: block;
@@ -215,9 +215,13 @@
     }
   }
   .nav__logout {
+    display: inline;
     margin: 0;
     padding: 8px 9px;
     border-radius: 50px;
+  }
+  .nav__btn-logout{
+    margin: 0 10px;
   }
   .nav__text {
     display: none;
@@ -233,7 +237,6 @@
   }
   .nav__logout {
     margin: inherit;
-    padding: 8px 15px;
     border-radius: 3px;
   }
   .nav__text{
