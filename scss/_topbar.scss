@@ -107,6 +107,10 @@
   &--wide {
   width: 170px;
   }
+  &__dropdown--hidden {
+    display: none;
+    z-index: 9;
+  }
   &__dropdown-inner:hover .nav__dropdown--hidden {
     display: block;
     position: absolute;
