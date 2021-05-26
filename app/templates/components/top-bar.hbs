@@ -6,18 +6,18 @@
   <ul class="nav__list menu-toggle" id="main-nav">
     <li class="nav__item nav--full">
       <div class="nav--skinny">
-        {{#link-to "index" }}my work{{/link-to}}
+        {{#link-to "index" classNames="nav__link nav--parent"}}my work{{/link-to}}
       </div>
     </li>
     {{#unless currentUser.isStudent}}
       <li class="nav__item">
         <div class="nav__dropdown nav--skinny">
-          {{#link-to "index" classNames="nav__link"}}
+          {{#link-to "index" classNames="nav__link nav--parent"}}
             make
             <i class="fa fa-caret-down caret-down"></i>
           {{/link-to}}
           <div class="nav__content">
-            {{#link-to "assignments.new" }}
+            {{#link-to "assignments.new" classNames="nav__link"}}
               assignment
             {{/link-to}}
             <div class="nav__dropdown-inner">
@@ -55,7 +55,7 @@
     {{/unless}}
     <li class="nav__item">
       <div class="nav__dropdown nav--wide">
-        {{#link-to "index" }}
+        {{#link-to "index" classNames="nav__link nav--parent"}}
           do
           <i class="fa fa-caret-down caret-down"></i>
         {{/link-to}}
@@ -74,7 +74,7 @@
     </li>
     <li class="nav__item">
       <div class="nav__dropdown nav--skinny">
-        {{#link-to "index" }}
+        {{#link-to "index" classNames="nav__link nav--parent"}}
           find
           <i class="fa fa-caret-down caret-down"></i>
         {{/link-to}}

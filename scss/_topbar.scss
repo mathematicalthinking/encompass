@@ -17,7 +17,7 @@
     width: 75px;
     height: 80px;
     text-indent: -99999px;
-    background: url(images/logo-encompass.gif) 0 0 no-repeat;
+    background: url(images/logo-encompass.gif) 0 -15px no-repeat;
   }
   &__list {
     margin-left: auto;
@@ -32,24 +32,6 @@
     text-align: center;
     width: max-content;
     display: none;
-    .active {
-      background-color: $accent-yellow;
-      padding: 10px 10px;
-      line-height: 20px;
-      border-radius: 3px;
-      color: $primary-font-color;
-      .caret-down {
-        margin-left: 7px;
-        padding-left: 3px;
-        margin-right: 7px;
-      }
-      .caret-right {
-        margin-right: 7px;
-        padding-left: 3px;
-        margin-left: 7px;
-        display:none;
-      }
-    }
   }
   &__dropdown {
     position: relative;
@@ -127,6 +109,13 @@
   }
   &--wide {
   width: 170px;
+  }
+  &--parent{
+    background-color: $accent-yellow;
+    padding: 10px 10px;
+    line-height: 20px;
+    border-radius: 3px;
+    color: $primary-font-color;
   }
   &__dropdown--hidden {
     display: none;
