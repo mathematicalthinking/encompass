@@ -188,6 +188,9 @@
       }
     }
   }
+  .nav__text {
+    display: none;
+  }
 }
 
 @media screen and (min-width: 1300px){
@@ -196,6 +199,9 @@
   }
   .nav--full{
     display: inline-block;
+  }
+  .nav__text{
+    display: unset;
   }
 }
 
@@ -280,7 +286,7 @@
 //         margin: 0;
 //         padding: 8px 9px;
 //         border-radius: 50px;
-//         #logout-text {
+//         .nav__text {
 //           display: none;
 //         }
 //       }

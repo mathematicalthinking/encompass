@@ -12,7 +12,7 @@
     {{#unless currentUser.isStudent}}
       <li class="nav__item">
         <div class="nav__dropdown nav--skinny">
-          {{#link-to "index" }}
+          {{#link-to "index" classNames="nav__link"}}
             make
             <i class="fa fa-caret-down caret-down"></i>
           {{/link-to}}
@@ -21,7 +21,7 @@
               assignment
             {{/link-to}}
             <div class="nav__dropdown-inner">
-                {{#link-to "workspaces.new" }}
+                {{#link-to "workspaces.new" classNames="nav__link"}}
                   workspace
                   <i class="fa fa-caret-right caret-right spacing"></i>
                 {{/link-to}}
@@ -40,13 +40,13 @@
                 {{/link-to}}
               </div>
             </div>
-            {{#link-to "problems.new" }}
+            {{#link-to "problems.new" classNames="nav__link"}}
               problem
             {{/link-to}}
-            {{#link-to "sections.new" }}
+            {{#link-to "sections.new" classNames="nav__link"}}
               class
             {{/link-to}}
-            {{#link-to "users.new" }}
+            {{#link-to "users.new" classNames="nav__link"}}
               users
             {{/link-to}}
           </div>
@@ -63,10 +63,10 @@
           {{#each do as |item|}}
             {{#if item.restricted}}
               {{#unless currentUser.isStudent}}
-                {{#link-to item.link}}{{item.text}}{{/link-to}}
+                {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
               {{/unless}}
             {{else}}
-              {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
             {{/if}}
           {{/each}}
         </div>
@@ -82,10 +82,10 @@
           {{#each find as |item|}}
             {{#if item.restricted}}
               {{#unless currentUser.isStudent}}
-                {{#link-to item.link}}{{item.text}}{{/link-to}}
+                {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
               {{/unless}}
             {{else}}
-              {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
             {{/if}}
           {{/each}}
         </div>
@@ -94,7 +94,7 @@
     <li class="nav__item" id="logout-btn">
       {{#link-to "logout" classNames="menu logout"}}
         <i class="fas fa-power-off logout-icon"></i>
-        <span id="logout-text">log out</span>
+        <span class="nav__text">log out</span>
       {{/link-to}}
     </li>
     {{#unless isStudentAccount}}
