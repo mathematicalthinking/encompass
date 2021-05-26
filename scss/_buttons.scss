@@ -10,6 +10,10 @@
   border: 0;
   border-radius: 3px;
   cursor: pointer;
+  &:disabled{
+    background: none;
+    cursor: unset;
+  }
 }
 
 .primary-button {
