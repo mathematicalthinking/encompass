@@ -1,8 +1,13 @@
-<div style="position:fixed; top: 0; width:100%; z-index:10;">
-<div id="folder_header">
-  <div id="menubar">
-    <span class="al_sprite al_folder al_open"></span>
-    <h1> {{model.name}} </h1>
+<div style="position:fixed; top: 0; width:100%; z-index:2;">
+  <div id="folder_header">
+    <div id="menubar">
+      <span class="al_sprite al_folder al_open"></span>
+      <h1> {{model.name}} </h1>
+    </div>
+    <div id="statusbar">
+      <span>{{model._submissions.length}} submission(s), </span>
+      <span>{{evidence.length}} selection(s)</span>
+    </div>
   </div>
 
   <div id="controls">
