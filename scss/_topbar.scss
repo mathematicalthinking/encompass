@@ -148,10 +148,29 @@
   right: 0;
   top: 75px;
   height: 100vh;
-  width: 400px;
+  width: 250px;
   padding-top: 10px;
   background-color: $background-body;
   box-shadow: 0 5px 6px rgba(0, 0, 0, 0.23);
+  ul {
+    margin-bottom: 100px;
+  }
+  li {
+    margin: 30px 20px 30px 30px;
+  }
+  #logout-btn-side {
+    a {
+      color: white;
+      font-weight: $bold-font-weight;
+    }
+    background-color: $accent-color;
+    padding: 10px 0;
+    border-radius: 3px;
+    text-align: center;
+    &:hover {
+      background-color: darken($accent-color, 10);
+    }
+  }
 }
 
 @media screen and (min-width: 350px){
