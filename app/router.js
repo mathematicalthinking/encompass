@@ -68,12 +68,11 @@ Encompass.Router.map(function() {
     });
   });
   // USERS PARENT ROUTE
-  this.route("users", function(){ //uses/index.hbs
-    this.route("user", {resetNamespace: true, path: '/:username'}, function(){
+  this.route("users", function(){ //users/index.hbs
+    this.route("user", {resetNamespace: true, path: '/:username'}, function(){ //users/user.hbs
       //this.route("edit");
     });
-    this.route("new");
-    this.route('home');
+    this.route("new"); //users/new.hbs
   });
   // IMPORT ROUTE
   this.route("import", function() {
