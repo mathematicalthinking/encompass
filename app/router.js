@@ -24,7 +24,6 @@ Encompass.Router.map(function() {
     this.route("section", {resetNamespace: true, path: '/:sectionId'}, function() {
     });
     this.route("new");
-    this.route('home');
   });
 
   // WORKSPACES PARENT ROUTE

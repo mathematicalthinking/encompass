@@ -6,7 +6,7 @@ Encompass.SectionsNewRoute = Encompass.AuthenticatedRoute.extend({
     const isStudent = user.get("isStudent");
 
     if (isStudent) {
-      this.transitionTo("sections.home");
+      this.transitionTo("sections");
     }
   },
 
@@ -26,7 +26,7 @@ Encompass.SectionsNewRoute = Encompass.AuthenticatedRoute.extend({
       this.transitionTo("section", section);
     },
     toSectionsHome: function () {
-      this.transitionTo("sections.home");
+      this.transitionTo("sections");
     },
   },
 });
