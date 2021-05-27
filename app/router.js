@@ -46,7 +46,7 @@ Encompass.Router.map(function() {
         this.route("first", {path: "/first"});
         // this.resource("workspace.submission", {path: '/:submission_id'}, function()
         this.route("workspace.submission", {resetNamespace: true, path: '/:submission_id'}, function(){
-          this.route("response");
+          this.route("response"); //doesn't do anything?
           this.route("workspace.submission.selections", {resetNamespace: true, path: '/selections'}, function(){ //no template
             this.route("workspace.submission.selection", {resetNamespace: true, path: '/:selection_id'}, function(){ //highighted portion of student work
             });
@@ -68,7 +68,7 @@ Encompass.Router.map(function() {
     });
   });
   // USERS PARENT ROUTE
-  this.route("users", function(){
+  this.route("users", function(){ //uses/index.hbs
     this.route("user", {resetNamespace: true, path: '/:username'}, function(){
       //this.route("edit");
     });
