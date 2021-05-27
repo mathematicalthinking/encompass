@@ -33,7 +33,7 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       }
     });
   },
-
+//workspace_submission_controller?
   setupController: function(controller, model) {
     this._super(controller, model);
   },
@@ -42,7 +42,7 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
     this.render();
 
     let user = this.modelFor('application');
-
+//see workspace_submission_controller.js
     Ember.run.schedule('afterRender', () => {
       if(!user.get('seenTour')) {
         this.controller.send('startTour', 'workspace');
@@ -103,9 +103,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   actions: {
     reload: function() {
       this.refresh();
-    },
-
-    addSelection: function( selection ){
     },
 
     tagSelection: function(selection, tags){
