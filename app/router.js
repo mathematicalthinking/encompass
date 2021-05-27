@@ -88,7 +88,6 @@ Encompass.Router.map(function() {
     this.route("assignment", {resetNamespace: true, path: '/:assignmentId'}, function() {
     });
     this.route("new");
-    this.route('home');
   });
 
   // ANSWERS ROUTE

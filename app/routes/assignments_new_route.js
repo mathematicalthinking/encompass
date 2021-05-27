@@ -6,7 +6,7 @@ Encompass.AssignmentsNewRoute = Encompass.AuthenticatedRoute.extend({
     const isStudent = user.get('isStudent');
 
     if (isStudent) {
-      this.transitionTo('assignments.home');
+      this.transitionTo('assignments');
     }
   },
 
@@ -23,7 +23,7 @@ Encompass.AssignmentsNewRoute = Encompass.AuthenticatedRoute.extend({
       this.transitionTo('assignment', assignment);
     },
     toAssignmentsHome: function() {
-      this.transitionTo('assignments.home');
+      this.transitionTo('assignments');
     }
   }
 });
