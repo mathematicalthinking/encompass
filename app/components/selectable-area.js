@@ -33,7 +33,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       container.style.position = 'relative';
     }
 
-    // set up the SelectionHighlighting object
+    // set up the SelectionHighlighting object (from dependencies)
     this.selectionHighlighting = new SelectionHighlighting({
       selectableContainerId: containerId,
       automaticEvent: !this.get('isTouchScreen'),
