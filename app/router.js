@@ -72,7 +72,7 @@ Encompass.Router.map(function() {
     this.route("user", {resetNamespace: true, path: '/:username'}, function(){ //users/user.hbs
       //this.route("edit");
     });
-    this.route("new"); //users/new.hbs
+    this.route("new");
   });
   // IMPORT ROUTE
   this.route("import", function() {
