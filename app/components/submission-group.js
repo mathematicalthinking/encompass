@@ -192,8 +192,6 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
     });
   }.property('responses.[]', 'currentRevisions.@each.submission'),
 
-  revisionsToolTip: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
-
   isFirstChild: function() {
     let classname = this.get('containerLayoutClass');
     return classname === 'hsc';
