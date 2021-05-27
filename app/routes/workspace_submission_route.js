@@ -44,14 +44,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
     this._super(controller, model);
   },
 
-  activate: function() {
-    this.controllerFor('application').set('isSmallHeader', true);
-  },
-
-  deactivate: function() {
-    this.controllerFor('application').set('isSmallHeader', false);
-  },
-
   renderTemplate: function(controller, model) {
     this.render();
 
