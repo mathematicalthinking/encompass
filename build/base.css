@@ -1586,7 +1586,5 @@ div.selectBox .selector {
 /* Version footer on home page */
 
 .footer {
-  position: relative;
-  bottom: 0;
   font-family: "Times New Roman", Times, serif;
 }

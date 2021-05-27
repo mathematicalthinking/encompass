@@ -2,457 +2,136 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: 0) and (max-width: 349px) {
-  #al_header {
-    .al_nav {
-      font-size: 1em;
-      overflow: auto;
-      .menu-items {
-        display: none;
-      }
-      #current-username {
-        display: none;
-      }
-      #user-image {
-        margin: 0 10px 0 0;
-      }
-    }
-    #topbar-unauth {
-      font-size: .8em;
-      width: 220px;
-      li {
-        padding: 0;
-        margin: 0;
-      }
-    }
-  }
-  #encompass-logo {
-    width: 75px;
-    height: 80px;
-    display: block;
-    float: left;
-    position: relative;
-    top: -15px;
-    text-indent: -99999px;
-    background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-}
-
-@media screen and (min-width: 350px) and (max-width: 974px) {
-  #al_header {
-    .al_nav {
-      font-size: 1em;
-      .menu-items {
-        display: none;
-      }
-      #current-username {
-        display: none;
-      }
-      #user-image {
-        margin: 0 20px 0 5px;
-      }
-    }
-  }
-  #encompass-logo {
-    width: 75px;
-    height: 80px;
-    display: block;
-    float: left;
-    position: relative;
-    top: -15px;
-    text-indent: -99999px;
-    background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-}
-
-@media screen and (min-width: 975px) and (max-width: 1299px) {
-  #al_header {
-    .menu-toggle {
-      // background-color: blue;
-      font-size: .9em;
-      li {
-        padding: 0 10px;
-      }
-      .padding {
-        margin-right: 5px;
-      }
-      #home-btn {
-        display: none;
-      }
-      .logout {
-        margin: 0;
-        padding: 8px 9px;
-        border-radius: 50px;
-        #logout-text {
-          display: none;
-        }
-      }
-      #menu-btn {
-        display: none;
-      }
-    }
-  }
-  #encompass-logo {
-    width: 75px;
-    height: 80px;
-    display: block;
-    float: left;
-    position: relative;
-    top: -15px;
-    text-indent: -99999px;
-    background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-  #user-image {
-    display: none;
-  }
-}
-
-@media screen and (min-width: 1300px) and (max-width: 10000px) {
-  #al_header {
-    .menu-toggle {
-      // background-color: yellow;
-      font-size: 1em;
-    }
-    .al_nav {
-      li {
-        padding: 0 13px;
-      }
-      #user-image {
-        display: none;
-      }
-    }
-    #menu-btn {
-      display: none;
-    }
-    .logout-icon {
-      display: none;
-    }
-  }
-}
-
-// STYLING FOR THE ENCOMPASS LOGO
-.al_logo {
-  width: 230px;
-  height: 80px;
-  display: block;
-  float: left;
-  position: relative;
-  top: -15px;
-  text-indent: -99999px;
-  background: url(images/logo-encompass.gif) 0 0 no-repeat;
-}
-
-// TOP BAR STYLING FOR WHEN LOGGED OUT
-#topbar-unauth {
-  font-weight: $bolder-font-weight;
-  float: right;
-  margin-top: 12.5px;
-  background-color: $background-body;
-  li {
-    line-height: 50px;
-    height: 40px;
-    display: inline-block;
-    padding: 0 10px;
-    vertical-align: middle;
-    a {
-      color: white;
-      margin-right: 10px;
-      background: $primary-button;
-      padding: 10px 30px;
-      border-radius: 3px;
-      &:hover {
-        background-color: darken($primary-button, 10);
-      }
-    }
-  }
-}
-
-// GENERAL STYLING
-#sidemenu {
-  display: none;
-}
-
-#al_header {
+.nav{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   font-family: $primary-font;
   background-color: $background-body;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  z-index: 10;
-  margin-bottom: 0px;
-  font-size: 1em; // margin-bottom: 1px;
-  height: 75px;
-  .control {
-    display: none;
+  font-size: 1em;
+  height: 80px;
+  border-bottom: 1px solid $input-border;
+  &__logo {
+    width: 75px;
+    height: 80px;
+    text-indent: -99999px;
+    background: url(images/logo-encompass.gif) 0 -15px no-repeat;
   }
-  h1 {
-    float: left;
+  &__list {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
   }
-}
-
-.small {
-  $topbar-small: true;
-}
-
-#al_header.small {
-  line-height: 20px;
-  height: 50px;
-}
-
-#al_header.small>.al_nav {
-  line-height: 20px;
-  height: 20px;
-}
-
-#al_header.small>.al_logo {
-  display: none
-}
-
-#al_header.small>#status {
-  padding-top: 1px
-}
-
-#al_header:hover .control {
-  display: inline
-}
-
-#welcome {
-  margin: 30px;
-}
-
-.spacing {
-  padding-left: 5px;
-}
-
-.al_nav#main-nav {
-  float: right;
-  margin-top: 20px;
-  li {
+  &__auth{
+    display: flex;
+    align-items: center;
+  }
+  &__item {
     line-height: 40px;
     height: 60px;
-    display: inline-block;
+    margin: 0 15px;
     vertical-align: middle;
     text-align: center;
     width: max-content;
-      .caret-down {
-        margin-left: 3px;
-      }
-      .caret-right {
-        margin-right: 3px;
-      }
-      .active {
-        background-color: $accent-yellow;
-        padding: 10px 10px;
-        line-height: 20px;
-        border-radius: 3px;
-        color: $primary-font-color;
-        .caret-down {
-          margin-left: 7px;
-          padding-left: 3px;
-          margin-right: 7px;
-        }
-        .caret-right {
-          margin-right: 7px;
-          padding-left: 3px;
-          margin-left: 7px;
-          display:none;
-        }
-      }
+    display: none;
   }
-  ul {
-    font-size: 1em;
-  }
-  a {
-    &:hover {
-      color:$primary-font-color;
-      font-weight: $bolder-font-weight;
-    }
-    .active {
-      border-bottom: 2px solid $accent-yellow;
-    }
-  }
-}
-
-.toggle-role {
-  cursor: pointer;
-}
-
-.hide-menu {
-  display: none;
-}
-
-#al_header .control {
-  display: none
-}
-
-#al_header:hover .control {
-  display: inline
-}
-
-#al_header.small>#status {
-  padding-top: 1px
-}
-
-#al_welcome {
-  float: right;
-  margin: 8px 20px;
-  display: block;
-}
-
-nav.listing,
-nav.actions {
-  float: left;
-  width: 25%;
-  padding: 5px;
-  background-color: #dfdfdf;
-}
-
-nav.listing,
-nav.actions>ul {
-  padding: 5px;
-  border-bottom: 1px solid #cfcfcf;
-}
-
-#status {
-  padding-left: 300px;
-  margin-top: -80px;
-}
-
-#devTool {
-  float: left;
-  padding-left: 20px;
-}
-
-// LOGOUT BUTTON
-.logout {
-  font-weight: $main-font-weight;
-  padding: 8px 15px;
-  color: white;
-  background: $primary-button;
-  border-radius: 3px;
-  font-size: .9em;
-  &:hover {
-    background-color: darken($primary-button, 10);
-    box-shadow: $button-shadow;
-  }
-}
-
-#logout-btn {
-  margin-top: -5px;
-  a {
-    color: white;
-    &:hover {
-      color: white;
-      font-weight: $main-font-weight;
-    }
-  }
-}
-
-.dropdown {
-  position: relative;
-  height: 100%;
-  margin: 0;
-  overflow: visible;
-  width: max-content;
-}
-
-.dropdown-skinny {
-  width: 110px
-}
-
-.dropdown-wide {
-  width: 170px;
-}
-
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  margin-top: 15px;
-  background-color: white;
-  line-height: 45px;
-  width: 100%;
-  // border: 1px solid $input-border;
-  box-shadow: $box-shadow;
-  z-index: 11;
-}
-
-.dropdown-content a {
-  float: none;
-  color: $primary-font-color;
-  padding: 0px;
-  text-decoration: none;
-  display: block;
-  text-align: center;
-}
-
-.dropdown-content a:hover {
-  font-weight: $bold-font-weight;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.dropdown-right {
-  position: absolute;
-  left: 110px;
-  top: 35px;
-  z-index: -1;
-}
-#dropdown-hidden {
-  display: none;
-  z-index: 9;
-}
-.parent-dropdown:hover #dropdown-hidden {
-  display: block;
-  position: absolute;
-  z-index: 999;
-}
-#current-username {
-  color: $accent-color;
-  font-weight: $bolder-font-weight;
-  margin-right: 10px;
-  // border: 1px solid green;
-  padding: 0;
-  img {
-    height: 48px;
+  &__dropdown {
     position: relative;
-    top: -5px;
-  }
-  a {
-    color: $accent-color;
-    font-weight: $bolder-font-weight;
-    &.active {
-      background: none;
+    height: 100%;
+    margin: 0;
+    width: max-content;
+    &:hover .nav__content {
+      display: block;
     }
   }
-}
-
-
-.underline {
-  border-bottom: 2px solid $accent-yellow;
-}
-
-#user-image {
-  img {
-    height: 48px;
-    margin-left: 15px;
-    margin-top: -5px;
-  }
-  input {
-    display: block;
-    width: 40px;
-    height: 40px;
+  &__dropdown-right {
     position: absolute;
-    top: 20px;
-    right: 10px;
-    cursor: pointer;
-    opacity: 0;
-    /* hide this */
-    z-index: 2;
-    -webkit-touch-callout: none;
+    display: none;
+    width: 100%;
+    left: 110px;
+    top: 35px;
+    z-index: -1;
+    background-color: white;
+    box-shadow: $box-shadow;
+  }
+  &__content {
+    display: none;
+    position: relative;
+    margin-top: 15px;
+    background-color: white;
+    line-height: 45px;
+    width: 100%;
+    box-shadow: $box-shadow;
+    z-index: 11;
+  }
+  &__link{
+    color: #5e5e5e;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+  }
+  &__logout {
+    font-weight: $main-font-weight;
+    color: white;
+    background: $primary-button;
+    font-size: .9em;
+    display: none;
+    &:hover {
+      background-color: darken($primary-button, 10);
+      box-shadow: $button-shadow;
+    }
+  }
+  &__img-user {
+    img {
+      height: 48px;
+      margin-left: 15px;
+      margin-right: 10px;
+    }
+  }
+  &__user {
+    display: none;
+  }
+  &--skinny {
+  width: 110px;
+  }
+  &--wide {
+  width: 170px;
+  }
+  &--parent{
+    margin-top: 10px;
+    border-radius: 3px;
+    color: $primary-font-color;
+  }
+  &__dropdown--hidden {
+    display: none;
+    z-index: 9;
+  }
+  &__dropdown-inner:hover .nav__dropdown--hidden {
+    display: block;
+    position: absolute;
+    z-index: 10;
+  }
+  #topbar-unauth {
+    font-size: .8em;
+    width: 220px;
+    font-weight: 700;
+    li {
+      padding: 0;
+      margin: 0;
+    }
+    .login, .signup{
+      color: white;
+      margin-right: 10px;
+      background: #3997EE;
+      padding: 10px 30px;
+      border-radius: 3px;
+    }
   }
 }
 
@@ -462,17 +141,14 @@ nav.actions>ul {
 
 .sidemenu-style {
   display: block;
-  position: absolute;
+  position: fixed;
   right: 0;
   top: 75px;
   height: 100vh;
   width: 250px;
   padding-top: 10px;
-  background: $background-body;
-  overflow: auto;
-  // box-shadow: $box-shadow;
+  background-color: $background-body;
   box-shadow: 0 5px 6px rgba(0, 0, 0, 0.23);
-
   ul {
     margin-bottom: 100px;
   }
@@ -491,5 +167,70 @@ nav.actions>ul {
     &:hover {
       background-color: darken($accent-color, 10);
     }
+  }
+}
+
+@media screen and (min-width: 350px){
+  .nav__list {
+    font-size: 1em;
+  }
+}
+
+@media screen and (min-width: 975px){
+  .nav__img-user {
+    display: none;
+  }
+  .nav__item {
+    display: inline-block;
+  }
+  .nav--full {
+    display: none;
+  }
+  .nav__user {
+    display: unset;
+    color: $accent-color;
+    font-weight: $bolder-font-weight;
+    padding: 0;
+    img {
+      height: 48px;
+      margin-left: 15px;
+      margin-right: 10px;
+      margin-top: -5px;
+    }
+    a {
+      color: $accent-color;
+      font-weight: $bolder-font-weight;
+    }
+  }
+  .nav__logout {
+    display: inline;
+    margin: 0;
+    padding: 8px 9px;
+    border-radius: 50px;
+  }
+  .nav__btn-logout{
+    margin: 0 10px;
+  }
+  .nav__text {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 1300px){
+  .nav__logo{
+    width: 230px;
+  }
+  .nav--full{
+    display: inline-block;
+  }
+  .nav__logout {
+    margin: inherit;
+    border-radius: 3px;
+  }
+  .nav__text{
+    display: unset;
+  }
+  .nav__icon{
+    display: none;
   }
 }
