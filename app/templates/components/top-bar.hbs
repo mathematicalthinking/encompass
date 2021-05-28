@@ -1,253 +1,206 @@
-
-{{#link-to 'index'}}
-  <h1 id="encompass-logo" class="{{unless isSmallHeader 'al_logo'}}">Drexel | EnCoMPASS</h1>
+{{#link-to "index"}}
+  <h1 id="encompass-logo" class="al_logo">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 
-  <div class="clear_r"></div>
+<div class="clear_r"></div>
 
 {{#if user.isAuthenticated}}
-    <nav id="al_nav">
-      <div id="menu-toggle">
-        <ul id="main-nav">
-          <span id="menu-items">
-            {{!-- My Work / Homepage Button --}}
-          <li id="home-btn"><div class="dropdown-skinny">{{#link-to 'index' classNames='menu home'}}my work{{/link-to}}</div></li>
-            {{!-- Make Button --}}
-            {{#if notStudent}}
-              <li>
-                <div class="dropdown dropdown-skinny">
-                  {{#link-to 'index' classNames='menu workspaces'}}make<i
-                    class="fa fa-caret-down caret-down"></i>{{/link-to}}
-                  <div class="dropdown-content">
-                    {{#link-to 'assignments.new' classNames='menu workspaces-new'}}assignment{{/link-to}}
-                    {{!-- {{#if notStudent}} --}}
-                    <div class="parent-dropdown">
-                      <div class="dropdown dropdown-skinny">
-                      {{#link-to 'workspaces.new' classNames='menu import'}}workspace<i
-                      class="fa fa-caret-right caret-right spacing"></i>{{/link-to}}
-                    </div>
-                        <div id="dropdown-hidden" class="dropdown-content dropdown-right dropdown-hidden">
-                          {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
-                          {{!-- {{#if notStudent}} --}}
-                          {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
-                          {{#link-to 'workspaces.copy' classNames='menu import'}}copy{{/link-to}}
-                          {{#link-to 'vmt.import' classNames='menu vmt-import'}}vmt{{/link-to}}
-                          {{!-- {{/if}} --}}
-                        </div>
-                    </div>
-                    {{#link-to 'problems.new' classNames='menu import'}}problem{{/link-to}}
-                    {{#link-to 'sections.new' classNames='menu sections'}}class{{/link-to}}
-                    {{#link-to 'users.new' classNames='menu vmt-import'}}users{{/link-to}}
-
-                    {{!-- {{/if}} --}}
-                  </div>
-                </div>
-              </li>
-              {{/if}}
-              {{!-- Do Button --}}
-              <li>
-                <div class="dropdown dropdown-wide">
-                  {{#link-to 'index' classNames='menu workspaces'}}do<i
-                    class="fa fa-caret-down caret-down"></i>{{/link-to}}
-                  <div class="dropdown-content">
-                    {{#link-to 'assignments' classNames='menu problems'}}solve a problem{{/link-to}}
-                      {{#link-to 'workspaces' classNames='menu workspaces'}}review submitted work{{/link-to}}
-                      {{#link-to 'responses' classNames='menu workspaces'}}mentor submissions{{/link-to}}
-                    {{#if notStudent}}
-                      {{#link-to 'sections' classNames='menu sections'}}manage classes{{/link-to}}
-                      {{#link-to 'users' classNames='menu users'}}manage users{{/link-to}}
-                    {{/if}}
-                  </div>
-                </div>
-              </li>
-              {{!-- Find Button --}}
-              <li>
-                <div class="dropdown dropdown-skinny">
-                  {{#link-to 'index' classNames='menu workspaces'}}find<i
-                    class="fa fa-caret-down caret-down"></i>{{/link-to}}
-                  <div class="dropdown-content">
-                    {{#link-to 'assignments' classNames='menu workspaces-new'}}assignment{{/link-to}}
-                    {{#link-to 'workspaces' classNames='menu import'}}workspace{{/link-to}}
-                    {{#link-to 'problems' classNames='menu import'}}problem{{/link-to}}
-                    {{#link-to 'sections.home' classNames='menu sections'}}class{{/link-to}}
-                    {{#if notStudent}}
-                      {{#link-to 'users' classNames='menu vmt-import'}}users{{/link-to}}
-                    {{/if}}
-                  </div>
-                </div>
-              </li>
-          {{!-- {{#if notStudent}}
-            <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
-          {{/if}} --}}
-          {{!-- {{#if isStudent}} --}}
-            {{!-- <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}
-              {{#if assignmentNotifications}}
-                {{circle-ntf displayCount=assignmentNotifications.length}}
-              {{/if}}
-            </li> --}}
-          {{!-- {{/if}} --}}
-          {{!-- {{#if currentUser.isStudent}}
-            <li>{{#link-to 'answers.home' classNames='menu answers'}}answers{{/link-to}}</li>
-          {{/if}}
-          {{#if notStudent}}
-          <li>
-            <div class="dropdown">
-              {{#link-to 'problems' classNames='menu problems' id="problems-home"}}problems <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-              <div class="dropdown-content">
-                {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
-              </div>
-            </div>
-          </li> --}}
-          {{!-- {{else}}
-            <li>{{#link-to 'problems.home' classNames='menu problems'}}problems{{/link-to}}</li> --}}
-          {{!-- {{/if}}
-          {{#if notStudent}}
-          <li>
-            <div class="dropdown">
-              {{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-              {{#if sectionNotifications}}
-              {{circle-ntf displayCount=sectionNotifications.length}}
-            {{/if}}
-              <div class="dropdown-content">
-                {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
-              </div>
-            </div>
-          </li>
-          {{else}}
-            <li>{{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes{{/link-to}}</li>
-          {{/if}} --}}
-          {{!-- {{#if notStudent}} --}}
-          {{!-- <li>
-            <div class="dropdown">
-              {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-              <div class="dropdown-content">
-                {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
-                {{!-- {{#if notStudent}} --}}
-                  {{!-- {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
-                  {{#link-to 'workspaces.copy' classNames='menu import'}}copy{{/link-to}}
-                  {{#link-to 'vmt.import' classNames='menu vmt-import'}}vmt{{/link-to}} --}}
-
-                {{!-- {{/if}} --}}
-              {{!-- </div>
-            </div>
-          </li> --}}
-          {{!-- {{/if}} --}}
-          {{!-- <li data-test="topbar-responses">{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}
-            {{#if responseNotifications}}
-              {{circle-ntf displayCount=responseNotifications.length}}
-            {{/if}}
-          </li> --}}
-          {{!-- {{#if notStudent}}
-            {{#if user.isAdmin}}
-            <li>
-              <div class="dropdown">
-                {{#link-to 'users.home' classNames='menu users' id="users-home"}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-                <div class="dropdown-content">
-                  {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
-                </div>
-              </div>
-            </li>
-            {{else}}
-              <li>{{#link-to 'users.home' classNames='menu users'}}users{{/link-to}}</li>
-            {{/if}}
-          {{/if}} --}}
-          <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}<i class="fas fa-power-off logout-icon"></i><span id="logout-text">log out</span>{{/link-to}}</li>
-          </span>
-          {{#unless isStudentAccount}}
-          <li id="role-toggle">
-            <span class="acting-role">Role: {{user.actingRoleName}}</span>
-            <span class="toggle-role" {{action 'showToggleModal'}}>
-              <i class="fas fa-sync-alt"></i>
-            </span>
-          </li>
-          {{/unless}}
-          <li id="current-username">
-            {{#link-to 'user' currentUser.username}}<img src={{currentUser.avatar}} alt={{currentUser.username}}>{{/link-to}}
-          </li>
-          <li id="user-image">
-            {{input type="checkbox" id="menu-button" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
-            <img src={{user.avatar}} alt="">
-            {{#if newNotifications}}
-              {{circle-ntf displayCount=newNotifications.length}}
-            {{/if}}
-          </li>
-        </ul>
+  <ul class="al_nav menu-toggle" id="main-nav">
+    <li class="menu-items" id="home-btn">
+      <div class="dropdown-skinny">
+        {{#link-to "index" }}my work{{/link-to}}
       </div>
-    </nav>
+    </li>
+    {{#unless currentUser.isStudent}}
+      <li class="menu-items">
+        <div class="dropdown dropdown-skinny">
+          {{#link-to "index" }}
+            make
+            <i class="fa fa-caret-down caret-down"></i>
+          {{/link-to}}
+          <div class="dropdown-content">
+            {{#link-to "assignments.new" }}
+              assignment
+            {{/link-to}}
+            <div class="parent-dropdown">
+              <div class="dropdown dropdown-skinny">
+                {{#link-to "workspaces.new" }}
+                  workspace
+                  <i class="fa fa-caret-right caret-right spacing"></i>
+                {{/link-to}}
+              </div>
+              <div
+                id="dropdown-hidden"
+                class="dropdown-content dropdown-right dropdown-hidden"
+              >
+                {{#link-to "workspaces.new" }}
+                  new
+                {{/link-to}}
+                {{#link-to "import" }}
+                  import
+                {{/link-to}}
+                {{#link-to "workspaces.copy" }}
+                  copy
+                {{/link-to}}
+                {{#link-to "vmt.import" }}
+                  vmt
+                {{/link-to}}
+              </div>
+            </div>
+            {{#link-to "problems.new" }}
+              problem
+            {{/link-to}}
+            {{#link-to "sections.new" }}
+              class
+            {{/link-to}}
+            {{#link-to "users.new" }}
+              users
+            {{/link-to}}
+          </div>
+        </div>
+      </li>
+    {{/unless}}
+    <li class="menu-items">
+      <div class="dropdown dropdown-wide">
+        {{#link-to "index" }}
+          do
+          <i class="fa fa-caret-down caret-down"></i>
+        {{/link-to}}
+        <div class="dropdown-content">
+          {{#each do as |item|}}
+            {{#if item.restricted}}
+              {{#unless currentUser.isStudent}}
+                {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{/unless}}
+            {{else}}
+              {{#link-to item.link}}{{item.text}}{{/link-to}}
+            {{/if}}
+          {{/each}}
+        </div>
+      </div>
+    </li>
+    <li class="menu-items">
+      <div class="dropdown dropdown-skinny">
+        {{#link-to "index" }}
+          find
+          <i class="fa fa-caret-down caret-down"></i>
+        {{/link-to}}
+        <div class="dropdown-content">
+          {{#each find as |item|}}
+            {{#if item.restricted}}
+              {{#unless currentUser.isStudent}}
+                {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{/unless}}
+            {{else}}
+              {{#link-to item.link}}{{item.text}}{{/link-to}}
+            {{/if}}
+          {{/each}}
+        </div>
+      </div>
+    </li>
+    <li class="menu-items" id="logout-btn">
+      {{#link-to "logout" classNames="menu logout"}}
+        <i class="fas fa-power-off logout-icon"></i>
+        <span id="logout-text">log out</span>
+      {{/link-to}}
+    </li>
+    {{#unless isStudentAccount}}
+      <li id="role-toggle">
+        <span class="acting-role">Role: {{user.actingRoleName}}</span>
+        <span class="toggle-role" {{action "showToggleModal"}}>
+          <i class="fas fa-sync-alt"></i>
+        </span>
+      </li>
+    {{/unless}}
+    <li id="current-username">
+      {{#link-to "user" currentUser.username}}
+        <img
+          src={{currentUser.avatar}}
+          alt={{currentUser.username}}
+        />
+      {{/link-to}}
+    </li>
+    <li id="user-image">
+      <img id="menu-button" src={{user.avatar}} alt="" />
+      {{#if newNotifications}}
+        {{circle-ntf displayCount=newNotifications.length}}
+      {{/if}}
+    </li>
+  </ul>
 
-    <div id="hide-menu" class="hidden animated">
-      <ul>
-        <li>{{#link-to 'index'}}home{{/link-to}}</li>
-        <li>{{#link-to 'assignments.home'}}assignments{{/link-to}}</li>
-        {{#unless currentUser.isStudent}}
-          <li>{{#link-to 'problems'}}problems{{/link-to}}</li>
-        {{/unless}}
-        <li>{{#link-to 'sections.home'}}classes{{/link-to}}</li>
-        {{!-- {{#unless currentUser.isStudent}} --}}
-          <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
-        {{!-- {{/unless}} --}}
-        {{#unless currentUser.isStudent}}
-        <li>{{#link-to 'import'}}import{{/link-to}}</li>
-        {{/unless}}
-        <li>{{#link-to 'responses'}}responses{{/link-to}}
-          {{#if responseNotifications}}
-            {{circle-ntf displayCount=responseNotifications.length}}
-          {{/if}}
+  <div id="hide-menu" class="hidden animated">
+    <ul>
+      <li>
+        {{#link-to "index"}}home{{/link-to}}
+      </li>
+      <li>
+        {{#link-to "assignments.home"}}assignments{{/link-to}}
+      </li>
+      {{#unless currentUser.isStudent}}
+        <li>
+          {{#link-to "problems"}}problems{{/link-to}}
         </li>
-        {{#unless currentUser.isStudent}}
-          <li>{{#link-to 'users.home'}}users{{/link-to}}</li>
-        {{/unless}}
-        <li id="logout-btn-side">{{#link-to 'logout'}}logout{{/link-to}}</li>
-      </ul>
-    </div>
+      {{/unless}}
+      <li>
+        {{#link-to "sections.home"}}classes{{/link-to}}
+      </li>
+      <li>
+        {{#link-to "workspaces"}}workspaces{{/link-to}}
+      </li>
+      {{#unless currentUser.isStudent}}
+        <li>
+          {{#link-to "import"}}import{{/link-to}}
+        </li>
+      {{/unless}}
+      <li>
+        {{#link-to "responses"}}responses{{/link-to}}
+        {{#if responseNotifications}}
+          {{circle-ntf displayCount=responseNotifications.length}}
+        {{/if}}
+      </li>
+      {{#unless currentUser.isStudent}}
+        <li>
+          {{#link-to "users.home"}}users{{/link-to}}
+        </li>
+      {{/unless}}
+      <li id="logout-btn-side">
+        {{#link-to "logout"}}logout{{/link-to}}
+      </li>
+    </ul>
+  </div>
 
-  {{else}}
-    <nav id="topbar-unauth">
-      <ul>
-        {{!-- <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li> --}}
-        <li data-test="login">{{#link-to 'auth.login' classNames='menu login hidden'}}log in{{/link-to}}</li>
-        <li data-test="signup">{{#link-to 'auth.signup' classNames='menu signup'}}sign up{{/link-to}}</li>
-      </ul>
-    </nav>
-  {{/if}}
-
-<div id="status">
-  {{!-- <span class="control">
-    {{#if isSmallHeader}}
-    <a {{action 'largeHeader'}}>
-      <img style="opacity: .1" src="http://mathforum.org/img/glyphish/xtras/xtras-gray/06-arrow-south.png" alt="expand" />
-    </a>
-    {{else}}
-    <a {{action 'smallHeader'}}>
-      <img style="opacity: .1" src="http://mathforum.org/img/glyphish/xtras/xtras-gray/03-arrow-north.png" alt="collapse" />
-    </a>
-    {{/if}}
-  </span> --}}
-  {{!-- <span id="loading" style="display:none">loading</span> --}}
-</div>
-
-{{!-- {{#if actionToConfirm}}
-    {{modal-confirm actionToConfirm=actionToConfirm onConfirm="toggleActingRole" warningMessage="If you are currently modifying or creating a new record, you will lose all unsaved progress."}}
-{{/if}} --}}
+{{else}}
+  <nav id="topbar-unauth">
+    <ul>
+      <li data-test="login">
+        {{#link-to "auth.login" classNames="menu login hidden" }}
+          log in
+        {{/link-to}}
+      </li>
+      <li data-test="signup">
+        {{#link-to "auth.signup" classNames="menu signup" }}
+          sign up
+        {{/link-to}}
+      </li>
+    </ul>
+  </nav>
+{{/if}}
 
 <script>
-  $('#menu-button').click(function (e) {
+  $('#menu-button').click(function (e) { 
     e.stopPropagation();
     $('#hide-menu').toggleClass('sidemenu-style');
-    $('#hide-menu').addClass('slideInRight');
-  });
-
-  $('#hide-menu').click(function (e) {
-    e.stopPropagation();
-  });
-
+    $('#hide-menu').addClass('slideInRight'); 
+    }); 
+  $('#hide-menu').click(function(e) { 
+    e.stopPropagation(); 
+  }); 
   $('body,html').click(function (e) {
-    $('#hide-menu').removeClass('sidemenu-style');
+    $('#hide-menu').removeClass('sidemenu-style'); 
   });
-
-  $('#hide-menu>li>a').ready(() => {
+  $('#hide-menu>li>a').ready(() => { 
     $('#hide-menu').click(function (e) {
-      $('#hide-menu').removeClass('sidemenu-style');
-    });
+      $('#hide-menu').removeClass('sidemenu-style'); 
+    }); 
   })
 </script>

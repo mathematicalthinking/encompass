@@ -1,8 +1,9 @@
 Encompass.MtAuthMixin = Ember.Mixin.create({
+  //only used here
 getRedirectUrl() {
   return window.location.origin;
 },
-
+//only used here
 getMtSsoUrl() {
   let { host }  = window.location;
   if (host === 'encompass.mathematicalthinking.org') {
@@ -19,19 +20,19 @@ getMtSsoUrl() {
 
   return 'http://localhost:3002';
 },
-
+//only used here
 getMtLoginUrlWithRedirect() {
   return `${this.getMtSsoUrl()}/auth/login?redirectURL=${this.getRedirectUrl()}`;
 },
-
+//only used here
 getMtSignupUrl() {
   return `${this.getMtSsoUrl()}/auth/signup?redirectURL=${this.getRedirectUrl()}`;
 },
-
+//used in app/components/social-signin.js
 getSsoGoogleUrl() {
   return `${this.getMtSsoUrl()}/oauth/google?redirectURL=${this.getRedirectUrl()}`;
 },
-
+//used in app/components/un-authorized.js
 getContactEmail() {
   let { host }  = window.location;
   if (host === 'encompass.mathematicalthinking.org') {

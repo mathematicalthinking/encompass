@@ -4,6 +4,34 @@ Encompass.WsCopyConfigComponent = Ember.Component.extend({
   showCustomConfig: Ember.computed.equal('selectedConfig', 'D'),
   utils: Ember.inject.service('utility-methods'),
 
+  copyConfig:
+    {
+      groupName: 'copyConfig',
+      required: true,
+      inputs: [
+        {
+          value: 'A',
+          label: 'Submissions Only',
+          moreInfo: 'Copy only the submissions used in this workspace'
+        },
+        {
+          value: 'B',
+          label: 'Submissions and Folder Structure',
+          moreInfo: 'Copy the submissions and the folder structure (not content) used in this workspace'
+        },
+        {
+          value: 'C',
+          label: 'Everything',
+          moreInfo: 'Copy everything used in this workspace (submissions, selections, folders, taggings, comments, responses)'
+        },
+        {
+          value: 'D',
+          label: 'Custom',
+          moreInfo: 'Decide which to copy for submissions, selections, folders, taggings, comments and responses'
+        }
+      ]
+    },
+
   validConfigValues: function() {
     const configInputs = this.get('copyConfig.inputs');
 

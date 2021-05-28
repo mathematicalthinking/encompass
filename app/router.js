@@ -4,20 +4,20 @@
 
 Encompass.Router.map(function() {
   // INDEX HOME-PAGE
-  this.route("index", { path: "/" });
+  this.route("index", { path: "/" }); //renders templates/index.hbs
   // AUTH PARENT ROUTE
   this.route("auth", function(){
-    this.route("login");
-    this.route("signup");
-    this.route("forgot");
-    this.route("reset", {path: '/reset/:token'});
-    this.route("confirm", {path: '/confirm/:token'});
+    this.route("login"); // templates/auth/login.hbs
+    this.route("signup"); // templaste/auth/signup.hbs
+    this.route("forgot"); //templates/auth/forgot.hbs
+    this.route("reset", {path: '/reset/:token'}); //templates/auth/reset.hbs
+    this.route("confirm", {path: '/confirm/:token'}); //templates/auth/confirm.hbs
   });
   // PROBLEMS PARENT ROUTE
-  this.route("problems", function(){
+  this.route("problems", function(){ // templates/problems/problems.hbs
     this.route("problem", {resetNamespace: true, path: '/:problemId'}, function() {
-    });
-    this.route("new");
+    }); // templates/problems/problem.hbs
+    this.route("new"); // templates/problems/new.hbs
   });
   // SECTIONS ROUTE
   this.route("sections", function(){
@@ -28,18 +28,18 @@ Encompass.Router.map(function() {
   });
 
   // WORKSPACES PARENT ROUTE
-  this.route("workspaces", function(){
-    this.route("index", {path: "/"});
+  this.route("workspaces", function(){ // templates/workspaces/workspaces.hbs
+    this.route("index", {path: "/"}); // templates/workspaces/workspaces.hbs
     // this.route("mine");
     // this.route("public");
-    this.route("new");
-    this.route("copy");
-    this.route("workspace", {resetNamespace: true, path: '/:workspace_id'}, function(){
+    this.route("new"); // templates/workspaces/new.hbs
+    this.route("copy"); // templates/workspaces/copy.hbs
+    this.route("workspace", {resetNamespace: true, path: '/:workspace_id'}, function(){ //templates/workspace/submission.hbs
     //this.resource("workspace", {path: '/:workspace_id'}, function(){
-      this.route("info", {path: "/info"});
-      this.route("work", {path: "/work"});
-      this.route("folders", {resetNamespace: false, path: '/folders'}, function(){
-        this.route("workspace.folder", {resetNamespace: true, path: '/:folder_id'}, function(){
+      this.route("info", {path: "/info"}); // templates/workspace/info.hbs
+      this.route("work", {path: "/work"}); // redirects to workspace/workspace? is used as main link, though
+      this.route("folders", {resetNamespace: false, path: '/folders'}, function(){ // no template
+        this.route("workspace.folder", {resetNamespace: true, path: '/:folder_id'}, function(){ // templates/folders/edit.hbs
         });
       });
       this.route("submissions", {resetNamespace: false, path: '/submissions'}, function(){
@@ -47,8 +47,8 @@ Encompass.Router.map(function() {
         // this.resource("workspace.submission", {path: '/:submission_id'}, function()
         this.route("workspace.submission", {resetNamespace: true, path: '/:submission_id'}, function(){
           this.route("response");
-          this.route("workspace.submission.selections", {resetNamespace: true, path: '/selections'}, function(){
-            this.route("workspace.submission.selection", {resetNamespace: true, path: '/:selection_id'}, function(){
+          this.route("workspace.submission.selections", {resetNamespace: true, path: '/selections'}, function(){ //no template
+            this.route("workspace.submission.selection", {resetNamespace: true, path: '/:selection_id'}, function(){ //highighted portion of student work
             });
           });
         });

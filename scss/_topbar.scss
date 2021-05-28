@@ -4,32 +4,18 @@
 
 @media screen and (min-width: 0) and (max-width: 349px) {
   #al_header {
-    #al_nav {
+    .al_nav {
       font-size: 1em;
       overflow: auto;
-      #menu-items {
+      .menu-items {
         display: none;
       }
       #current-username {
-        // margin: 0 5px;
         display: none;
       }
       #user-image {
         margin: 0 10px 0 0;
       }
-    }
-    #sidemenu {
-      display: none;
-    }
-    #encompass-logo {
-      width: 75px;
-      height: 80px;
-      display: block;
-      float: left;
-      position: relative;
-      top: -15px;
-      text-indent: -99999px;
-      background: url(images/logo-encompass.gif) 0 0 no-repeat;
     }
     #topbar-unauth {
       font-size: .8em;
@@ -40,13 +26,23 @@
       }
     }
   }
+  #encompass-logo {
+    width: 75px;
+    height: 80px;
+    display: block;
+    float: left;
+    position: relative;
+    top: -15px;
+    text-indent: -99999px;
+    background: url(images/logo-encompass.gif) 0 0 no-repeat;
+  }
 }
 
 @media screen and (min-width: 350px) and (max-width: 974px) {
   #al_header {
-    #al_nav {
+    .al_nav {
       font-size: 1em;
-      #menu-items {
+      .menu-items {
         display: none;
       }
       #current-username {
@@ -56,25 +52,22 @@
         margin: 0 20px 0 5px;
       }
     }
-    #sidemenu {
-      display: none;
-    }
-    #encompass-logo {
-      width: 75px;
-      height: 80px;
-      display: block;
-      float: left;
-      position: relative;
-      top: -15px;
-      text-indent: -99999px;
-      background: url(images/logo-encompass.gif) 0 0 no-repeat;
-    }
+  }
+  #encompass-logo {
+    width: 75px;
+    height: 80px;
+    display: block;
+    float: left;
+    position: relative;
+    top: -15px;
+    text-indent: -99999px;
+    background: url(images/logo-encompass.gif) 0 0 no-repeat;
   }
 }
 
 @media screen and (min-width: 975px) and (max-width: 1299px) {
   #al_header {
-    #menu-toggle {
+    .menu-toggle {
       // background-color: blue;
       font-size: .9em;
       li {
@@ -101,9 +94,6 @@
         display: none;
       }
     }
-    #sidemenu {
-      display: none;
-    }
   }
   #encompass-logo {
     width: 75px;
@@ -119,20 +109,17 @@
 
 @media screen and (min-width: 1300px) and (max-width: 10000px) {
   #al_header {
-    #menu-toggle {
+    .menu-toggle {
       // background-color: yellow;
       font-size: 1em;
     }
-    #user-image {
-      display: none;
-    }
-    #al_nav {
+    .al_nav {
       li {
         padding: 0 13px;
       }
-    }
-    #sidemenu {
-      display: none;
+      #user-image {
+        display: none;
+      }
     }
     #menu-btn {
       display: none;
@@ -181,6 +168,10 @@
 }
 
 // GENERAL STYLING
+#sidemenu {
+  display: none;
+}
+
 #al_header {
   font-family: $primary-font;
   background-color: $background-body;
@@ -192,11 +183,6 @@
   margin-bottom: 0px;
   font-size: 1em; // margin-bottom: 1px;
   height: 75px;
-  // box-shadow: $box-shadow;
-  .small {
-    height: 20px;
-    overflow: hidden;
-  }
   .control {
     display: none;
   }
@@ -214,7 +200,7 @@
   height: 50px;
 }
 
-#al_header.small>#al_nav {
+#al_header.small>.al_nav {
   line-height: 20px;
   height: 20px;
 }
@@ -239,11 +225,9 @@
   padding-left: 5px;
 }
 
-#al_nav {
-  #main-nav {
-    float: right;
-    margin-top: 20px;
-  }
+.al_nav#main-nav {
+  float: right;
+  margin-top: 20px;
   li {
     line-height: 40px;
     height: 60px;
@@ -292,10 +276,6 @@
 
 .toggle-role {
   cursor: pointer;
-}
-
-#role-toggle {
-  // border: 1px solid red;
 }
 
 .hide-menu {

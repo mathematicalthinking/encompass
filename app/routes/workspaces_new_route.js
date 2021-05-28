@@ -1,4 +1,5 @@
 Encompass.WorkspacesNewRoute = Encompass.AuthenticatedRoute.extend({
+  //check if user is student, go home if true
   beforeModel: function() {
     this._super.apply(this, arguments);
 
@@ -9,6 +10,7 @@ Encompass.WorkspacesNewRoute = Encompass.AuthenticatedRoute.extend({
       this.transitionTo('/');
     }
   },
+  // gets all folderSets, sections, assignments, users, and problems immediately
   model: function() {
     return Ember.RSVP.hash({
       // pdSets: this.get('store').findAll('PdSet'),

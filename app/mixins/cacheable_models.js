@@ -16,6 +16,8 @@
   * @since 1.0.2
   */
 /*global _:false */
+
+//used in app.js...doesn't ember data automatically cache?
 Encompass.CacheableModels = Ember.Mixin.create({
   since: function(model) {
     //var meta = model.get('meta');
