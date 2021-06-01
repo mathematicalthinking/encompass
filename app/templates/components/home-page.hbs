@@ -9,7 +9,7 @@
 
 
 {{else}}
- <div class="al_wtf home  header-home">
+ <div class="al_wtf home header-home">
   {{#if user.isAuthenticated}}
     <h1 class="header-home">My Work Landing Page</h1>
     <span class="toggle-role" {{action 'showToggleModal' }}>
@@ -23,8 +23,8 @@
     <p class="footer">EnCoMPASS version 2.8.7 last updated on 04/20/2021.</p>
   {{else}}
     <h2>It looks like you are not logged in</h2>
-    <p>Please login <a href="#/auth/login">here</a></p>
-    <p>New to EnCoMPASS, sign up <a href="#/auth/signup">here</a></p>
+    <p>{{#link-to "auth.login"}}Please login here{{/link-to}}</p>
+    <p>{{#link-to "auth.signup"}}New to EnCoMPASS, sign up here{{/link-to}}</p>
   {{/if}}
 </div>
 
