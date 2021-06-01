@@ -1,7 +1,7 @@
 Encompass.HomePageComponent =
   Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'homepage',
-  className: ['homepage', 'index'],
+  classNames: ['homepage', 'index', 'al_wtf', 'home'],
   toggleRoleErrors: [],
   alert: Ember.inject.service('sweet-alert'),
 

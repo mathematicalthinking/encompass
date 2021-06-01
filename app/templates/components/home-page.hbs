@@ -1,15 +1,12 @@
 {{#if user.isStudent}}
-  <div class="al_wtf home header-home">
     <h1>Welcome student, {{user.displayName}}!</h1>
         <h1 class="header-home header-font">My Work Landing Page</h1>
         {{dashboard-assignments-list store=store user=user assignments=assignments}}
 
         {{dashboard-workspaces-list store=store user=user workspaces=workspaces assignments=assingments}}
-  </div>
 
 
 {{else}}
- <div class="al_wtf home header-home">
   {{#if user.isAuthenticated}}
     <h1 class="header-home">My Work Landing Page</h1>
     <span class="toggle-role" {{action 'showToggleModal' }}>
@@ -26,6 +23,5 @@
     <p>{{#link-to "auth.login"}}Please login here{{/link-to}}</p>
     <p>{{#link-to "auth.signup"}}New to EnCoMPASS, sign up here{{/link-to}}</p>
   {{/if}}
-</div>
 
 {{/if}}
