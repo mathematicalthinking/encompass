@@ -31,12 +31,6 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   parentWorkspaces: DS.hasMany('workspace', { inverse: null }),
 
   _collectionLength: function(collection) {
-    // https://stackoverflow.com/questions/35405360/ember-data-show-length-of-a-hasmany-relationship-in-a-template-without-downloadi
-    /*
-    if( this.hasMany( collection ).value() === null ) {
-      return 0;
-    }
-    */
     return this.hasMany( collection ).ids().length;
   },
   foldersLength: Ember.computed(function() {
