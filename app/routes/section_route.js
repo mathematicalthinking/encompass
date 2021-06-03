@@ -10,7 +10,7 @@ Encompass.SectionRoute = Encompass.AuthenticatedRoute.extend({
 
   actions: {
     toSectionList: function () {
-      this.transitionTo('sections.home');
+      this.transitionTo('sections');
     },
     toAssignmentInfo: function (assignment) {
       this.transitionTo('assignment', assignment);

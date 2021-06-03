@@ -32,7 +32,7 @@ Encompass.TopBarComponent = Ember.Component.extend(
       {text: "assignment", link: "assignments", restricted: false},
       {text: "workspace", link: "workspaces", restricted: false},
       {text: "problem", link: "problems", restricted: false},
-      {text: "class", link: "sections.home", restricted: false},
+      {text: "class", link: "sections", restricted: false},
       {text: "users", link: "users", restricted: true},
     ],
 

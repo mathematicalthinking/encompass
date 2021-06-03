@@ -2,6 +2,9 @@ Encompass.BreadCrumbsComponent = Ember.Component.extend({
   classNames: ['bread-crumbs-comp'],
 
   doTruncate: true,
+  infoToolTipPosition: "top",
+  
+  infoToolTipText: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
 
   didReceiveAttrs() {
     this._super(...arguments);

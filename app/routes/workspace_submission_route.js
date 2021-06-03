@@ -13,15 +13,9 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
 
   queryParams: 'vmtRoomId',
 
-  model(params) {
-
-    let { submission_id} = params;
-
-
+  model({ submission_id }) {
     let submissions = this.modelFor('workspace.submissions');
-    let submission = submissions.findBy('id', submission_id);
-
-    return submission;
+    return submissions.findBy('id', submission_id);
   },
 
   afterModel(submission, transition) {
@@ -39,24 +33,16 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       }
     });
   },
-
+//workspace_submission_controller?
   setupController: function(controller, model) {
     this._super(controller, model);
-  },
-
-  activate: function() {
-    this.controllerFor('application').set('isSmallHeader', true);
-  },
-
-  deactivate: function() {
-    this.controllerFor('application').set('isSmallHeader', false);
   },
 
   renderTemplate: function(controller, model) {
     this.render();
 
     let user = this.modelFor('application');
-
+//see workspace_submission_controller.js
     Ember.run.schedule('afterRender', () => {
       if(!user.get('seenTour')) {
         this.controller.send('startTour', 'workspace');
@@ -117,9 +103,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   actions: {
     reload: function() {
       this.refresh();
-    },
-
-    addSelection: function( selection ){
     },
 
     tagSelection: function(selection, tags){
