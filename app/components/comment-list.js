@@ -394,6 +394,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('alerts', this.get('alert'));
 
       comment.save().then((record) => {
+        this.get('currentWorkspace').save();
         this.get('alerts').showToast('success', 'Comment Created', 'bottom-end', 2000, false, null);
         //controller.get('currentSelection.comments').addObject(record);
         selection.get('comments').then(function(comments){
