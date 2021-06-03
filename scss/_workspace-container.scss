@@ -221,7 +221,7 @@
     .submission-row {
       @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
 
-      &.nav {
+      &.wsnav {
         @include flex-item(1, flex-start, initial);
         @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
         width: 100%;
