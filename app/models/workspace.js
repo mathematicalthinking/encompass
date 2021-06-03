@@ -19,7 +19,7 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
       return this.get('lastViewed');
     }
   }),
-  lastModifiedDateComp: Ember.computed(function() {
+  lastModifiedDateComp: Ember.computed('lastModifiedDate', 'createDate', function() {
     if (!this.get('lastModifiedDate')) {
       return this.get('createDate');
     } else {
