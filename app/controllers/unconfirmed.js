@@ -1,7 +1,5 @@
-Encompass.UnconfirmedEmailComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  elementId: ['unconfirmed-page'],
+Encompass.UnconfirmedController = Ember.Controller.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   emailErrors: [],
-
   actions: {
     sendEmail: function() {
       Ember.$.get('/auth/resend/confirm')
