@@ -1,30 +1,16 @@
-{{!-- <header class="workspace-listing-header"> --}}
-	{{!-- <h2>Select a workspace</h2>
-	<aside>
-    <span class="meta pointer refresh" {{action 'reloadPage'}}>current as of {{currentAsOf}}</span>
-	</aside>
-  <div class="toggle-btn">
-        <button {{action "toggleFilter" "all"}} class="filter-btn {{if (is-equal listFilter 'all') "active-filter"}}" >All</button>
-        <button {{action "toggleFilter" "mine"}} class="filter-btn {{if (is-equal listFilter 'mine') "active-filter"}}">Mine</button>
-        <button {{action "toggleFilter" "public"}} class="filter-btn {{if (is-equal listFilter 'public') "active-filter"}}">Public</button>
-  </div>
-	<div class="clear"></div>
-</header> --}}
-
-
-  <div class="main-list">
-    {{#if isSearching}}
-      <p class="loading-message">Searching workspaces...</p>
-    {{else}}
-      {{#each workspaces as |workspace|}}
-        {{workspace-list-item
-        workspace=workspace
-        isList=isList
-        isGrid=isGrid
-        store=store
-        toWorkspaceInfo=(action "toWorkspaceInfo")
-        toCopyWorkspace=(action "toCopyWorkspace")
-      }}
-      {{/each}}
-    {{/if}}
-  </div>
+<div class="main-list">
+  {{#if isSearching}}
+    <p class="loading-message">Searching workspaces...</p>
+  {{else}}
+    {{#each workspaces as |workspace|}}
+      {{workspace-list-item
+      workspace=workspace
+      isList=isList
+      isGrid=isGrid
+      store=store
+      toWorkspaceInfo=(action "toWorkspaceInfo")
+      toCopyWorkspace=(action "toCopyWorkspace")
+    }}
+    {{/each}}
+  {{/if}}
+</div>
