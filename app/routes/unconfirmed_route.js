@@ -1,4 +1,5 @@
-Encompass.UnconfirmedRoute = Ember.Route.extend({
+Encompass.UnconfirmedRoute = Ember.Route.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  emailErrors: [],
   beforeModel: function() {
     // redirect to login if no user logged in
     const user = this.modelFor('application');
@@ -10,6 +11,19 @@ Encompass.UnconfirmedRoute = Ember.Route.extend({
     // redirect to home page if email is already confirmed or user does not have an email
     if (user.get('isEmailConfirmed') || !user.get('email')){
       this.transitionTo('/');
+    }
+  },
+  actions: {
+    sendEmail: function() {
+      Ember.$.get('/auth/resend/confirm')
+      .then((res) => {
+        if (res.isSuccess) {
+          this.set('emailSuccess', true);
+        }
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'emailErrors');
+      });
     }
   }
 });
