@@ -11,6 +11,8 @@
 
 ## DEAD CODE
 - isSmallHeader in dashboard-workspaces-list.js
+- menuClosed in problem-list-container.js
+
 
 ## NEEDS REFACTOR
 - server/middleware/access/answers.js
@@ -19,6 +21,7 @@
 - responses_new_submission_route.js seems clunky
 - form-info.scss
 - scss to be mobile-first
+- application_controller vs. CurrentUserMixin vs. application_route
 
 ## UNSURE OF FUNCTION
 - app/templates/workspace/submission.hbs v. app/templates/components/workspace-submission.hbs
