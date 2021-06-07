@@ -98,6 +98,15 @@ const getCurrentUrl = async function(webdriver) {
   return url;
 };
 
+const existsElement = async function(webDriver, selector) {
+  try {
+    await webDriver.findElement(By.css(selector));
+  } catch (error) {
+    return false;
+  }
+  return true;
+};
+
 const isElementVisible = async function (webDriver, selector) {
   let isVisible = false;
   try {
@@ -658,7 +667,7 @@ function getSelectizeSingleText(webDriver, selector) {
 //   }
 // }
 
-
+module.exports.existsElement = existsElement;
 module.exports.getWebElements = getWebElements;
 module.exports.getWebElementValue = getWebElementValue;
 module.exports.getWebElementTooltip = getWebElementTooltip;
