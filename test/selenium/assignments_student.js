@@ -38,7 +38,7 @@ describe('Assignments as Student', async function () {
 
         describe('Visiting assignments page', function () {
           before(async function () {
-            await helpers.findAndClickElement(driver, css.topBar.assignments);
+            await helpers.findAndClickElement(driver, assignmentLink);
             await helpers.waitForSelector(driver, css.assignmentsStudent.ownList);
           });
           it('should display list of assignments', async function() {
