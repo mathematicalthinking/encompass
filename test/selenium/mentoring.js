@@ -7,7 +7,7 @@
 // at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
 // REQUIRE MODULES
-const {Builder, By, until} = require('selenium-webdriver');
+const {Builder, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const moment = require('moment');
 
