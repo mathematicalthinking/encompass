@@ -140,7 +140,14 @@ describe('Problems Info', async function () {
         if (!isStudent) {
           describe('Visiting problem info', function () {
             before(async function () {
-              await helpers.waitForAndClickElement(driver, topLink);
+              // await helpers.waitForAndClickElement(driver, topLink);
+              let options = {
+                selector: 'a',
+                urlToWaitFor: `${helpers.host}/#/problems`,
+                timeout: 10000
+              };
+          
+              await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
             });
 
             describe(`Checking the following is always visible`, function () {
@@ -396,8 +403,14 @@ describe('Problems Info', async function () {
             before(async function () {
               await helpers.findAndClickElement(driver, '.remove-icon');
               await helpers.waitForRemoval(driver, '#problem-info');
-
-              await helpers.waitForAndClickElement(driver, topLink);
+              // await helpers.waitForAndClickElement(driver, topLink);
+              let options = {
+                selector: 'a',
+                urlToWaitFor: `${helpers.host}/#/problems`,
+                timeout: 10000
+              };
+          
+              await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
               await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
               // await driver.sleep(5000);
@@ -673,7 +686,14 @@ describe('Problems Info', async function () {
 
           describe('General problem info testing', function() {
             before(async function () {
-              await helpers.waitForAndClickElement(driver, topLink);
+              // await helpers.waitForAndClickElement(driver, topLink);
+              let options = {
+                selector: 'a',
+                urlToWaitFor: `${helpers.host}/#/problems`,
+                timeout: 10000
+              };
+          
+              await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
               await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
               await driver.sleep(500);

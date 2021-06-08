@@ -4,6 +4,9 @@
 //     Creating a response:
 // TimeoutError: Could not find Response Sent in DOM
 // Wait timed out after 8116ms
+
+//For some reason student1 is not able to click "save", doing so manually passes all tests
+
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
 
@@ -607,7 +610,7 @@ describe('Parent Workspace creation and updating', function() {
         await swalDriver.verifyToast(toastText);
 
         secondFolder = await helpers.getWebWelementByCss(driver, '.dropZone');
-        expect(createdFolder).to.exist;
+        expect(secondFolder).to.exist;
       });
 
       it('Deleting second folder', async function() {
@@ -861,7 +864,7 @@ describe('Parent Workspace creation and updating', function() {
 
             await helpers.waitForTextInDom(driver, successText);
             expect(
-              await helpers.isElementVisible(
+              await helpers.existsElement(
                 driver,
                 css.responseInfo.mentorReplyView.unreadIcon
               )
