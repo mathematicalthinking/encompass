@@ -1,3 +1,29 @@
+// 1) Users
+// Logged in as an admin user
+//   "before all" hook in "Logged in as an admin user":
+// TimeoutError: Waiting for element to be located By(css selector, #users-home)
+// Wait timed out after 8151ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 2) Users
+// Logged in as a pd admin user
+//   Visiting the users list home page
+//     "before all" hook for "should display a welcome page":
+// TimeoutError: Waiting for element to be located By(css selector, #user-home)
+// Wait timed out after 8203ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 3) Users
+// Logged in as a teacher
+//   Visiting the users list home page
+//     "before all" hook for "should display a welcome page":
+// TimeoutError: Waiting for element to be located By(css selector, #user-home)
+// Wait timed out after 8186ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;

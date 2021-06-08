@@ -1,3 +1,5 @@
+//all tests pending, no pass, no fail
+
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
 const expect = require('chai').expect;

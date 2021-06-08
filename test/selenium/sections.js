@@ -1,3 +1,140 @@
+// 1) Sections
+// As PD Admin
+//   Visiting sections page
+//     "before all" hook for "should display list of user's own sections":
+// TimeoutError: Waiting for element to be located By(css selector, ul.your-sections)
+// Wait timed out after 8153ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 2) Sections
+// As PD Admin
+//   Visiting Morty's Math 101
+//     "before all" hook for "should display the section details":
+// TimeoutError: Waiting for element to be located By(css selector, form[data-test="section-info-form"])
+// Wait timed out after 8161ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 3) Sections
+// As PD Admin
+//   Create section
+//     Clicking link from section-info
+//       should display new section form:
+// TimeoutError: Waiting for URL to be "http://localhost:8082/#/sections/new"
+// Wait timed out after 5046ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 4) Sections
+// As Teacher
+//   Visiting sections page
+//     "before all" hook for "should display list of user's own sections":
+// TimeoutError: Waiting for element to be located By(css selector, ul.your-sections)
+// Wait timed out after 8165ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 5) Sections
+// As Admin
+//   Visiting sections page
+//     "before all" hook for "should display list of user's own sections":
+// TimeoutError: Waiting for element to be located By(css selector, ul.your-sections)
+// Wait timed out after 8163ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 6) Sections
+// As Admin
+//   Visiting Drexel University
+//     "before all" hook for "should display the section details":
+// TimeoutError: Waiting for element to be located By(css selector, form[data-test="section-info-form"])
+// Wait timed out after 8169ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 7) Sections
+// As Admin
+//   Create section
+//     Clicking link from section-info
+//       should display new section form:
+// TimeoutError: Waiting for URL to be "http://localhost:8082/#/sections/new"
+// Wait timed out after 5039ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 8) Sections
+// As Student
+//   Visiting sections page
+//     "before all" hook for "should display list of user's own sections":
+// TimeoutError: Waiting for element to be located By(css selector, ul.your-sections)
+// Wait timed out after 8180ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 9) Sections
+// As Student
+//   Visiting Summer's Algebra 2 1st Period
+//     "before all" hook for "should display the section details":
+// TimeoutError: Waiting for element to be located By(css selector, form[data-test="section-info-form"])
+// Wait timed out after 8167ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 10) Sections
+// As Student
+//   Create section
+//     Navigating directly
+//       should redirect to sections/home:
+
+// AssertionError: expected 'http://localhost:8082/#/sections' to deeply equal 'http://localhost:8082/#/sections/home'
+// + expected - actual
+
+// -http://localhost:8082/#/sections
+// +http://localhost:8082/#/sections/home
+
+// at Context.<anonymous> (test/selenium/sections.js:178:64)
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 11) Sections
+// As Teacher acting as Student
+//   Visiting sections page
+//     "before all" hook for "should display list of user's own sections":
+// TimeoutError: Waiting for element to be located By(css selector, ul.your-sections)
+// Wait timed out after 8164ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 12) Sections
+// As Teacher acting as Student
+//   Visiting Summer's Algebra 2 1st Period
+//     "before all" hook for "should display the section details":
+// TimeoutError: Waiting for element to be located By(css selector, form[data-test="section-info-form"])
+// Wait timed out after 8185ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 13) Sections
+// As Teacher acting as Student
+//   Create section
+//     Navigating directly
+//       should redirect to sections/home:
+
+// AssertionError: expected 'http://localhost:8082/#/sections' to deeply equal 'http://localhost:8082/#/sections/home'
+// + expected - actual
+
+// -http://localhost:8082/#/sections
+// +http://localhost:8082/#/sections/home
+
+// at Context.<anonymous> (test/selenium/sections.js:178:64)
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
 // REQUIRE MODULES
 const {Builder, until} = require('selenium-webdriver');
 const expect = require('chai').expect;

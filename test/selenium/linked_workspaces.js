@@ -1,3 +1,4 @@
+//failed once then passed? Login showed 404 first time then not a problem...
 // REQUIRE MODULES
 const {Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;

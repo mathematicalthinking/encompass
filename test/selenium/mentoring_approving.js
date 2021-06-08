@@ -1,3 +1,7 @@
+//Fails:
+//    Visting Responses List
+// 1) "before all" hook for "should display mentoring tab and display count"
+//TimeoutError: Waiting for element to be located By(css selector, #response-list-tabs span.mentoring)
 // REQUIRE MODULES
 const {Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;

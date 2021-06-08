@@ -1,3 +1,22 @@
+// Visiting a submission with selections
+// ✓ should have a respond link
+// Visiting a submission response url
+// ✓ should advertise being a new response
+// ✓ should be addressed to the student
+// should have buttons
+//   ✓ Save button should be visible
+// should display a summary and a more details link
+//   ✓ submission link should be visible
+//   - should display summary
+//   - should display details after clicking more details
+// Saving this response
+//   - should be able to edit the text
+//   ✓ should let us save and take us to a new URL (372ms)
+
+
+// 6 passing (7s)
+// 3 pending
+
 // REQUIRE MODULES
 const {Builder, By, until} = require('selenium-webdriver');
 const expect = require('chai').expect;

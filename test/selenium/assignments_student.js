@@ -1,3 +1,25 @@
+// 1) Assignments as Student
+// As Student
+//   Submitting response to assignment
+//     should succesfully create answer:
+// ElementNotInteractableError: element not interactable
+// (Session info: chrome=91.0.4472.77)
+// at Object.throwDecodedError (node_modules/selenium-webdriver/lib/error.js:517:15)
+// at parseHttpResponse (node_modules/selenium-webdriver/lib/http.js:671:13)
+// at Executor.execute (node_modules/selenium-webdriver/lib/http.js:597:28)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+// at async thenableWebDriverProxy.execute (node_modules/selenium-webdriver/lib/webdriver.js:731:17)
+// at async Context.<anonymous> (test/selenium/assignments_student.js:181:15)
+
+// 2) Assignments as Student
+// As Student
+//   Submitting response to assignment
+//     Viewing most recent submission
+//       "before all" hook for "should display correct brief summary":
+// TypeError: Cannot read property 'click' of undefined
+// at Context.<anonymous> (test/selenium/assignments_student.js:191:30)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
 // REQUIRE MODULES
 const {Builder,} = require('selenium-webdriver');
 const expect = require('chai').expect;

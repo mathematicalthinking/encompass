@@ -1,3 +1,30 @@
+// 1) Problems New
+// As PD Admin
+//   Visiting problems new page
+//     "before all" hook in "Visiting problems new page":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8194ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 2) Problems New
+// As Teacher
+//   Visiting problems new page
+//     "before all" hook in "Visiting problems new page":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8163ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 3) Problems New
+// As Admin
+//   Visiting problems new page
+//     "before all" hook in "Visiting problems new page":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8182ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;

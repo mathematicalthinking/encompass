@@ -1,3 +1,87 @@
+// 1) Problems Info
+// As PD Admin
+//   Visiting problem info
+//     "before all" hook in "Visiting problem info":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8167ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 2) Problems Info
+// As PD Admin
+//   Visiting problem info to edit
+//     "before all" hook in "Visiting problem info to edit":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8164ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 3) Problems Info
+// As PD Admin
+//   General problem info testing
+//     "before all" hook for "cancel button should stop editing view":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8170ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 4) Problems Info
+// As Teacher
+//   Visiting problem info
+//     "before all" hook in "Visiting problem info":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8211ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 5) Problems Info
+// As Teacher
+//   Visiting problem info to edit
+//     "before all" hook in "Visiting problem info to edit":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8172ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 6) Problems Info
+// As Teacher
+//   General problem info testing
+//     "before all" hook for "cancel button should stop editing view":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8168ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 7) Problems Info
+// As Admin
+//   Visiting problem info
+//     "before all" hook in "Visiting problem info":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8186ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 8) Problems Info
+// As Admin
+//   Visiting problem info to edit
+//     "before all" hook in "Visiting problem info to edit":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8031ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 9) Problems Info
+// As Admin
+//   General problem info testing
+//     "before all" hook for "cancel button should stop editing view":
+// TimeoutError: Unable to locate element by selector: #problems-home
+// Wait timed out after 8179ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at runMicrotasks (<anonymous>)
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
 // REQUIRE MODULES
 const {
   Builder

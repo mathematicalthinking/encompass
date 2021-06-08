@@ -1,3 +1,29 @@
+// 1) Problems
+// As PD Admin
+//   Visiting problems main page
+//     "before all" hook for "should display side list of filter options":
+// TimeoutError: Waiting for element to be located By(css selector, #problem-list-container)
+// Wait timed out after 8177ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 2) Problems
+// As Teacher
+//   Visiting problems main page
+//     "before all" hook for "should display side list of filter options":
+// TimeoutError: Waiting for element to be located By(css selector, #problem-list-container)
+// Wait timed out after 8125ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+// 3) Problems
+// As Admin
+//   Visiting problems main page
+//     "before all" hook for "should display side list of filter options":
+// TimeoutError: Waiting for element to be located By(css selector, #problem-list-container)
+// Wait timed out after 8173ms
+// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
+
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;

@@ -1,3 +1,9 @@
+// 1) Parent Workspace creation and updating
+// Creating markup in child workspaces
+//   Marking up as student1
+//     Creating a response:
+// TimeoutError: Could not find Response Sent in DOM
+// Wait timed out after 8116ms
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
 
