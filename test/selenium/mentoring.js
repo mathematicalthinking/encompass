@@ -163,7 +163,7 @@ describe('Mentoring Interactions', function() {
 
   describe('Visting Responses List', function() {
     before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.responses);
+      await helpers.findAndClickElement(driver, 'a[href="#/responses');
       await helpers.waitForUrlMatch(driver, /\/#\/responses/);
     });
 
