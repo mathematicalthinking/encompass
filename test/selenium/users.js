@@ -78,7 +78,7 @@ describe('Users', function() {
     let user = helpers.admin;
     before(async function () {
       await helpers.login(driver, host, user);
-      await helpers.waitForSelector(driver, css.topBar.users);
+      await helpers.waitForSelector(driver, 'a[href="#/users"]');
     });
 
     function validateUsersPage() {
@@ -296,7 +296,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users/home`, {selector: '#user-home'});
+        await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {
@@ -381,7 +381,7 @@ describe('Users', function() {
       await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
-      await helpers.findAndClickElement(driver, css.topBar.users);
+      await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
     });
 
     function validateUsersPage() {
@@ -543,7 +543,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users/home`, {selector: '#user-home'});
+        await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {
@@ -717,7 +717,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users/home`, {selector: '#user-home'});
+        await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {
