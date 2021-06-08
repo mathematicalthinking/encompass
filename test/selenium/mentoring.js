@@ -101,7 +101,7 @@ describe('Mentoring Interactions', function() {
     driver.quit();
   });
 
-  describe('On Home page', function() {
+  xdescribe('On Home page', function() {
     it('should have 1 visible response notification', async function() {
       let numNtfs = 1;
       await helpers.waitForElementToHaveText(driver, css.topBar.responseNtf, numNtfs.toString());
@@ -111,7 +111,13 @@ describe('Mentoring Interactions', function() {
 
   describe('Visting Responses List', function() {
     before(async function() {
-      await helpers.findAndClickElement(driver, 'a[href="#/responses');
+      let options = {
+        selector: css.responsesList.submitterTab,
+        urlToWaitFor: `${helpers.host}/#/responses`,
+        timeout: 10000
+      };
+  
+      await helpers.navigateAndWait(driver, `${helpers.host}/#/responses`, options );
       await helpers.waitForUrlMatch(driver, /\/#\/responses/);
     });
 
