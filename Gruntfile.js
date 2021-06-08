@@ -77,7 +77,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/responses.js"],
+        src: ["test/selenium/mentoring_approving.js"],
       },
       travis: {
         options: {
