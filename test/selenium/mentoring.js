@@ -6,58 +6,6 @@
 // at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
 // at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
-// 2) Mentoring Interactions
-// Visting Responses List
-//   should display solver tab and display count:
-// TimeoutError: Wait timed out after 8190ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-// 3) Mentoring Interactions
-// Visting Responses List
-//   should have one response thread in list:
-// TimeoutError: Wait timed out after 8178ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-// 4) Mentoring Interactions
-// Visting Responses List
-//   should dispaly correct sort-bar items:
-
-// AssertionError: expected false to deeply equal true
-// + expected - actual
-
-// -false
-// +true
-
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/test/selenium/mentoring.js:52:37
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-// at async Promise.all (index 1)
-// at async Context.<anonymous> (test/selenium/mentoring.js:133:6)
-
-// 5) Mentoring Interactions
-// Visting Responses List
-//   should display correct information about thread:
-// AssertionError: expected undefined to deeply equal 'mtgstudent 1 - MTG Congruent Rectangle'
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/test/selenium/mentoring.js:67:34
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-// at async Promise.all (index 0)
-// at async Context.<anonymous> (test/selenium/mentoring.js:145:7)
-
-// 6) Mentoring Interactions
-// Visting Responses List
-//   should indicate that thread has unread reply:
-// TimeoutError: Wait timed out after 8002ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-// 7) Mentoring Interactions
-// Viewing response in paneled view
-//   "before all" hook for "should display submission view":
-// TimeoutError: Waiting for URL to contain "/responses/submission/5c6ec5eba89be9751158ce08?responseId=5c6eca77a89be9751158ce0c"
-// Wait timed out after 8186ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
 // REQUIRE MODULES
 const {Builder, By, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
