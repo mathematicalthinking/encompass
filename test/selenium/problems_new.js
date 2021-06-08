@@ -1,29 +1,4 @@
-// 1) Problems New
-// As PD Admin
-//   Visiting problems new page
-//     "before all" hook in "Visiting problems new page":
-// TimeoutError: Unable to locate element by selector: #problems-home
-// Wait timed out after 8194ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-// 2) Problems New
-// As Teacher
-//   Visiting problems new page
-//     "before all" hook in "Visiting problems new page":
-// TimeoutError: Unable to locate element by selector: #problems-home
-// Wait timed out after 8163ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-// 3) Problems New
-// As Admin
-//   Visiting problems new page
-//     "before all" hook in "Visiting problems new page":
-// TimeoutError: Unable to locate element by selector: #problems-home
-// Wait timed out after 8182ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
+//TODO switch to navigating with navbar line 47
 
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
@@ -67,16 +42,17 @@ describe('Problems New', async function () {
         });
 
         if (!isStudent) {
-          describe('Visiting problems new page', function () {
-            before(async function () {
-              await helpers.waitForAndClickElement(driver, topLink);
-              await helpers.waitForSelector(driver, css.problemPageSelectors.problemContainer);
-
-            });
             describe('Clicking on problem new page', function () {
               before(async function () {
-                await helpers.waitForAndClickElement(driver, topLink);
-                await helpers.waitForAndClickElement(driver, css.topBar.problemsNew);
+                // await helpers.waitForAndClickElement(driver, topLink);
+                // await helpers.waitForAndClickElement(driver, css.topBar.problemsNew);
+                let options = {
+                  selector: 'a',
+                  urlToWaitFor: `${helpers.host}/#/problems/new`,
+                  timeout: 10000
+                };
+            
+                await helpers.navigateAndWait(driver, `${helpers.host}/#/problems/new`, options );
               });
 
               it('should open problem new page from topbar', async function () {
@@ -322,7 +298,6 @@ describe('Problems New', async function () {
 
 
             });
-          });
         }
 
       });
