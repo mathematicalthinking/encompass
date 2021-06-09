@@ -1,22 +1,3 @@
-// 1) Visiting Workspaces
-// should land us at /workspaces:
-// TimeoutError: Element a.workspaces not visible
-// Wait timed out after 8009ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-// 2) Visiting Workspaces
-// should display 7 workspaces:
-
-// AssertionError: expected 0 to deeply equal 7
-// + expected - actual
-
-// -0
-// +7
-
-// at Context.<anonymous> (test/selenium/workspaces.js:47:29)
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
 // REQUIRE MODULES
 const {Builder, By, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
