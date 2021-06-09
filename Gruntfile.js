@@ -9,11 +9,11 @@
 /*
  * MAIN GRUNT COMMANDS:
  * grunt - this builds the app and runs in 8080
- * // deprecated grunt serve-test - this builds and runs the test server env in 8082
  * grunt serve-seed - this builds and runs the test server env in 8082
  * grunt tests - this runs all tests (run this in another tab after grunt serve-test)
  * grunt testEndToEnd - this runs the e2e (selenium) tests
  * grunt testApi - runs only the api (backend) tests
+ * see test/README.md for important info
  */
 
 /*jshint camelcase: false */
@@ -77,7 +77,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/workspaces.js"],
+        src: ["test/selenium/*.js"],
       },
       travis: {
         options: {
