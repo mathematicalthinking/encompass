@@ -22,7 +22,7 @@ describe('Users', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   function clearUsername (driver) {

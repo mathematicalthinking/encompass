@@ -47,7 +47,7 @@ describe('Assignment Info as Teacher', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   describe('Navigating to assignment info', function() {

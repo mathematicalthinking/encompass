@@ -30,7 +30,7 @@ xdescribe('Workspaces New', async function() {
             return helpers.login(driver, host, user);
           });
         after(function() {
-          driver.quit();
+          return driver.quit();
         });
 
 

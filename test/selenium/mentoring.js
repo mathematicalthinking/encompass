@@ -98,7 +98,7 @@ describe('Mentoring Interactions', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   xdescribe('On Home page', function() {

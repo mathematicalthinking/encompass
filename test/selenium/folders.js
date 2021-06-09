@@ -27,7 +27,7 @@ describe('Folders', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
   describe('Visiting a ESI 2014 Wednesday Reflection', function() {
     before(async function() {

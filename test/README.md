@@ -40,138 +40,30 @@ Sections
 # Last Run
 
 
-  702 passing (11m)
-  132 pending
-  16 failing
+  1) Comments
+       Visiting a Selection in ESI 2014 Wednesday Reflection
+         should clear out the comment field:
+     AssertionError: Target cannot be null or undefined.
+      at Context.<anonymous> (test/selenium/comments.js:59:80)
 
-  1) Assignments as Student
-       As Teacher acting as Student
-         Submitting response to assignment
-           should display errors if empty form is submitted:
-     TimeoutError: Wait timed out after 8126ms
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+  2) Comments
+       Visiting a Selection in ESI 2014 Wednesday Reflection
+         should show the comment:
+     AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+      at Context.<anonymous> (test/selenium/comments.js:75:23)
 
-  2) Folders
-       Visiting a ESI 2014 Wednesday Reflection
-         "before all" hook for "should display the folder name":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  3) Linking multiple workspaces to one assignment
-       Linking new workspace to assignment
-         "before all" hook in "Linking new workspace to assignment":
+  3) Comments
+       "after all" hook in "Comments":
      Error: Server was killed with SIGTERM
       at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
       at runMicrotasks (<anonymous>)
       at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
   4) Linking multiple workspaces to one assignment
-       Visiting assignment page
-         "before all" hook for "should display 3 linkedWorkspaces":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  5) Linking multiple workspaces to one assignment
-       Revising from responses page
-         For original linked workspace
-           "before all" hook in "For original linked workspace":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  6) Linking multiple workspaces to one assignment
-       Revising from responses page
-         For newly linked workspace
-           "before all" hook in "For newly linked workspace":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  7) Mentoring Interactions
-       Visting Responses List
-         "before all" hook for "should display solver tab and display count":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  8) Mentoring Interactions
-       Viewing response in paneled view
-         "before all" hook for "should display submission view":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  9) Responses
-       Visiting a submission with selections
-         "before all" hook for "should have a respond link":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  10) Responses
-       Visiting a submission response url
-         "before all" hook for "should advertise being a new response":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  11) Workspace info / settings interactions
-       Navigating to workspace info page
-         "before all" hook for "should show workspace settings container":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  12) Workspace info / settings interactions
-       Changing workspace name
-         "before all" hook for "should display success toast message":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  13) Workspace info / settings interactions
-       Toggling allow automatic updates
-         Toggling from yes to no
-           "before all" hook for "should display success toast message":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  14) Workspace info / settings interactions
-       Toggling allow automatic updates
-         Toggling from no to yes
-           "before all" hook for "should display success toast message":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  15) Workspace info / settings interactions
-       Setting Linked Assignment
-         "before all" hook for "should display success toast message":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  16) Workspace info / settings interactions
-       Adding / removing collaborators
-         "before all" hook for "should successfully add the user as collab":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
+       Linking new workspace to assignment
+         Setting Linked Assignment
+           should still display linked assignment name after page refresh:
+     AssertionError: expected '' to include 'Summer\'s Org Problem / Sep 6th 2018'
+      at Context.<anonymous> (test/selenium/linked_workspaces.js:89:98)
       at runMicrotasks (<anonymous>)
       at processTicksAndRejections (internal/process/task_queues.js:97:5)

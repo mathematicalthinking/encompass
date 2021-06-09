@@ -78,7 +78,7 @@ describe('Mentoring / Approving Interactions', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   // TODO add test to expect that going to workspaces should default to collab tab

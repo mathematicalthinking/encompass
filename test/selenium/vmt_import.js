@@ -36,7 +36,7 @@ xdescribe('Importing VMT Work', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   describe('Visiting VMT Import Page', function() {

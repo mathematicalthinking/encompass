@@ -22,7 +22,7 @@ describe('Home Page', function () {
     await dbSetup.prepTestDb();
   });
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   it('should load without error', async function () {

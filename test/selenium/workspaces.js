@@ -24,7 +24,7 @@ describe('Visiting Workspaces', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   it('should land us at /workspaces', async function() {

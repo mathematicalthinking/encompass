@@ -22,7 +22,7 @@ describe('Forgot Password', function () {
     await dbSetup.prepTestDb();
   });
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   describe('Forgot Password Form', function() {

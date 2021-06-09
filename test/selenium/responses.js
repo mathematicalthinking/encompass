@@ -27,7 +27,7 @@ describe('Responses', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   describe('Visiting a submission with selections', function() {

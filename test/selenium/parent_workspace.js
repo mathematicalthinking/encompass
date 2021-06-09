@@ -290,7 +290,7 @@ describe('Parent Workspace creation and updating', function() {
   }
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   it('should create assignment successfully', function() {

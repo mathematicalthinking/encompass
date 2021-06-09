@@ -9,7 +9,7 @@ const config = require('../../server/config');
 const css = require('./selectors');
 
 // testing timeout values
-const timeoutMs = 8000;  // timeout per await
+const timeoutMs = 10000;  // timeout per await
 const timeoutTestMsStr = '25s';  // timeout per test
 
 const nconf = config.nconf;

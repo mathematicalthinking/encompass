@@ -36,7 +36,7 @@ describe('Linking multiple workspaces to one assignment', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   async function openEditMenu() {

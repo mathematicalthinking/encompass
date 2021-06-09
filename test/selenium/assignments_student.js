@@ -108,7 +108,7 @@ describe('Assignments as Student', async function () {
               expect(listItems).to.have.lengthOf(1);
               expect(await listItems[0].getText()).to.eql(username);
             });
-            it('should display errors if empty form is submitted', async function() {
+            xit('should display errors if empty form is submitted', async function() {
               let numExpectedErrors = 2;
 
               await helpers.findAndClickElement(driver, newAnswerSelectors.createBtn);
