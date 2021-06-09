@@ -77,7 +77,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/assignments_student.js"],
+        src: ["test/selenium/mentoring_approving.js"],
       },
       travis: {
         options: {
@@ -110,7 +110,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/mocha/*.js", "test/mocha/unit-tests/assignments_student.js"],
+        src: ["test/mocha/*.js", "test/mocha/unit-tests/*.js"],
       },
       e2e_xProb: {
         // does not run problems and users tests

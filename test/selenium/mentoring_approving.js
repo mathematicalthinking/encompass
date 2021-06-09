@@ -146,9 +146,10 @@ describe('Mentoring / Approving Interactions', function() {
 
   });
 
-  xdescribe('Visting Responses List', function() {
+  describe('Visting Responses List', function() {
     before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.responses);
+      driver.sleep(10000);
+      await helpers.navigateAndWait(driver, `${host}/#/responses`, {selector: 'a'});
       await helpers.waitForSelector(driver, css.responsesList.mentoringTab);
     });
 
