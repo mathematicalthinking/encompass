@@ -175,8 +175,7 @@ describe('Sections', async function () {
 
         describe('Visiting sections page', function () {
           before(async function () {
-            await helpers.findAndClickElement(driver, css.topBar.sections);
-            await helpers.waitForSelector(driver, 'ul.your-sections');
+            await helpers.navigateAndWait(driver, `${helpers.host}/#/sections`, {selector: 'ul.your-sections'});
           });
           it('should display list of user\'s own sections', async function () {
             expect(await helpers.getWebElements(driver, 'ul.your-sections a')).to.have.lengthOf(sections.own.count);
@@ -312,13 +311,12 @@ describe('Sections', async function () {
             if (isStudent) {
               it(`should redirect to sections/home`, async function() {
                 await helpers.waitForSelector(driver, css.sectionHome);
-                expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/#/sections/home`);
+                expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/#/sections`);
               });
             } else {
               it(`should display new section form`, async function() {
                 try {
-                  await driver.wait(until.urlIs(url));
-                  expect(await helpers.isElementVisible(driver, css.newSection.form)).to.be.true;
+                  await helpers.navigateAndWait(driver, `${helpers.host}/#/sections/new`, {selector: css.newSection.form} );
                 }catch(err) {
                   throw(err);
                 }
