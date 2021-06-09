@@ -47,9 +47,7 @@ describe('Visiting Workspaces', function() {
   });
 
   it('should land us at /workspaces', async function() {
-    await helpers.waitForAndClickElement(driver, css.topBar.workspaces);
-    await helpers.waitForSelector(driver, '#workspace-list-container');
-    expect(await helpers.getCurrentUrl(driver)).to.equal(`${host}/#/workspaces`);
+    await helpers.navigateAndWait(driver, `${host}/#/workspaces`, {selector: '#workspace-list-container'});
   });
 
   it('should display 7 workspaces', async function() {

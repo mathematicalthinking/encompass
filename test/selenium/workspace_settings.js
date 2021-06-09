@@ -1,23 +1,3 @@
-// 1) Workspace info / settings interactions
-// Setting Linked Assignment
-//   should display no after page refresh:
-// AssertionError: expected '' to include 'MTG Period 1 SCR'
-// at Context.<anonymous> (test/selenium/workspace_settings.js:182:90)
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-// 2) Workspace info / settings interactions
-// Adding / removing collaborators
-//   should display new collab after page refresh:
-
-// AssertionError: expected false to deeply equal true
-// + expected - actual
-
-// -false
-// +true
-
-// at Context.<anonymous> (test/selenium/workspace_settings.js:221:102)
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
 // REQUIRE MODULES
 const { Builder, } = require('selenium-webdriver');
 const expect = require('chai').expect;
