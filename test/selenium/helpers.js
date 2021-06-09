@@ -224,11 +224,7 @@ const waitForAndClickElement = function (webDriver, selector, timeout = timeoutM
       .then((locatedEl) => {
         return webDriver.wait(until.elementIsVisible(locatedEl), timeout, `Element ${selector} not visible`)
         .then((visibleEl) => {
-          return visibleEl.getText()
-          .then((text) => {
-            // console.log('clicking btn with text: ', text);
             return visibleEl.click();
-          });
         });
       })
       .catch((err) => {
