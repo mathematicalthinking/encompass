@@ -79,6 +79,7 @@ describe('Linking multiple workspaces to one assignment', function() {
       });
 
       it('should display Linked Assignment name ', async function() {
+        await driver.sleep(1000);
         expect(await helpers.findAndGetText(driver, wsInfoSelectors.settings.linkedAssnText)).to.contain(assignment.name);
 
       });

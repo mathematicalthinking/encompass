@@ -77,7 +77,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/workspaces.js"],
+        src: ["test/selenium/linked_workspaces.js"],
       },
       travis: {
         options: {
