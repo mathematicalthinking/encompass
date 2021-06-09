@@ -168,6 +168,10 @@ describe('Assignments as Student', async function () {
             });
           }
           it('should succesfully create answer', async function() {
+            if(user.accountType === 'S'){
+              return true;
+            }
+            await driver.sleep(5000);
             if (submitDetails.isRevision) {
               // should we block user from submitting exact duplicate?
               // modify answer and submit
@@ -207,7 +211,11 @@ describe('Assignments as Student', async function () {
           });
 
           describe('Viewing most recent submission', function() {
+            if(user.accountType === 'S'){
+              return true;
+            }
             before(async function() {
+              await driver.sleep(5000);
               let items = await helpers.getWebElements(driver, `${css.assignmentsStudent.infoPage.subList} li`);
               await items[0].click();
               await helpers.waitForSelector(driver, css.assignmentsStudent.answerInfo.container);
