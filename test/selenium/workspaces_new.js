@@ -1,3 +1,5 @@
+//TODO THIS WORKS COMPLETELY DIFFERENLTY NOW
+
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
 const expect = require('chai').expect;
@@ -13,10 +15,10 @@ let url = `${host}/#/workspaces/new`;
 
 xdescribe('Workspaces New', async function() {
   this.timeout(helpers.timeoutTestMsStr);
-  async function runTests(users) {
+  function runTests(users) {
     function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle, _id, username } = user;
-      xdescribe(`As ${testDescriptionTitle}`, function() {
+      describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
 
         let driver = null;
@@ -35,20 +37,20 @@ xdescribe('Workspaces New', async function() {
         describe('Clicking topbar link', function() {
           if (accountType === 'S' || actingRole === 'student') {
             it('should redirect to homepage', async function() {
-              await helpers.findAndClickElement(driver, css.topBar.workspaces);
-              await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
+              await helpers.navigateAndWait(driver, `${host}/#/workspaces`, {});
+              await helpers.navigateAndWait(driver, `${host}/#/workspaces/new`, {});
 
               await helpers.waitForUrlMatch(driver, /\//);
 
               expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be.true;
-              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.false;
+              expect(await helpers.isElementVisible(driver, "#filter-list-side")).to.be.false;
             });
           } else {
             it(`should display new workspace creation form`, async function() {
-              await helpers.findAndClickElement(driver, css.topBar.workspaces);
-              await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
+              await helpers.navigateAndWait(driver, `${host}/#/workspaces`, {selector: '#workspace-list-container'});
+              await helpers.navigateAndWait(driver, `${host}/#/workspaces/new`, {selector: '#workspace-new-container'});
               await helpers.waitForUrlMatch(driver, /workspaces\/new/);
-              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
+              expect(await helpers.isElementVisible(driver, "#filter-list-side")).to.be.true;
             });
           }
         });
@@ -64,14 +66,14 @@ xdescribe('Workspaces New', async function() {
               await helpers.waitForUrlMatch(driver, /\//);
 
               expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be.true;
-              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.false;
+              expect(await helpers.isElementVisible(driver, "#filter-list-side")).to.be.false;
             });
           } else {
             it(`should display new workspace creation form`, async function() {
               let regex = new RegExp(url);
               await helpers.waitForUrlMatch(driver, regex);
 
-              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
+              expect(await helpers.isElementVisible(driver, "#filter-list-side")).to.be.true;
             });
           }
         });
@@ -235,10 +237,9 @@ xdescribe('Workspaces New', async function() {
       });
     }
 
-    for (let user of Object.keys(users)) {
-      // eslint-disable-next-line no-await-in-loop
-      await _runTests(users[user]);
-    }
+    return Promise.all(Object.keys(users).map(user=>{
+      _runTests(users[user]);
+    }));
   }
   await runTests(testUsers);
 });
@@ -258,3 +259,4 @@ xdescribe('Workspaces New', async function() {
 //       expect(await helpers.getWebElements(driver, 'section.third.folders select>option')).to.have.lengthOf.at.least(3);
 //     });
 //   });
+

@@ -9,7 +9,7 @@ const config = require('../../server/config');
 const css = require('./selectors');
 
 // testing timeout values
-const timeoutMs = 8000;  // timeout per await
+const timeoutMs = 10000;  // timeout per await
 const timeoutTestMsStr = '25s';  // timeout per test
 
 const nconf = config.nconf;
@@ -96,6 +96,15 @@ const getCurrentUrl = async function(webdriver) {
     console.log(err);
   }
   return url;
+};
+
+const existsElement = async function(webDriver, selector) {
+  try {
+    await webDriver.findElement(By.css(selector));
+  } catch (error) {
+    return false;
+  }
+  return true;
 };
 
 const isElementVisible = async function (webDriver, selector) {
@@ -215,11 +224,7 @@ const waitForAndClickElement = function (webDriver, selector, timeout = timeoutM
       .then((locatedEl) => {
         return webDriver.wait(until.elementIsVisible(locatedEl), timeout, `Element ${selector} not visible`)
         .then((visibleEl) => {
-          return visibleEl.getText()
-          .then((text) => {
-            // console.log('clicking btn with text: ', text);
             return visibleEl.click();
-          });
         });
       })
       .catch((err) => {
@@ -658,7 +663,7 @@ function getSelectizeSingleText(webDriver, selector) {
 //   }
 // }
 
-
+module.exports.existsElement = existsElement;
 module.exports.getWebElements = getWebElements;
 module.exports.getWebElementValue = getWebElementValue;
 module.exports.getWebElementTooltip = getWebElementTooltip;

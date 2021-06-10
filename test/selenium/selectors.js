@@ -14,18 +14,18 @@ module.exports = {
   topBar: {
     login: "li[data-test=login]",
     signup: "li[data-test=signup]",
-    workspaces: "a.menu.workspaces",
+    workspaces: "a.workspaces",
     responses: "a.menu.responses",
     users: "#users-home",
     logout: `a[href="#/logout"]`,
     problems: "#problems-home",
     workspacesNew: "a.workspaces-new",
-    home: "a.menu.home",
+    home: "a.home",
     problemsNew: "a.menu.problems-new",
     sections: "#sections-home",
     sectionsNew: "a.menu.sections-new",
     usersNew: "a.menu.users-new",
-    assignments: "a.menu.assignments",
+    assignments: "a.assignments",
     responseNtf: 'li[data-test="topbar-responses"] .circle-ntf span',
     vmtImport: 'a.menu.vmt-import',
   },
@@ -126,11 +126,11 @@ module.exports = {
     filterCriteria: {
       list: "ol.filter-criteria",
       inputs: {
-        teacher: "li.ws-filter.teacher select",
-        assignment: "li.ws-filter.assignment select",
-        problem: 'li.ws-filter input[type="select-one"]',
-        section: "li.ws-filter.section select",
-        date: "#dateRange"
+        teacher: "#select-add-teacher-selectized",
+        assignment: "#select-add-assignment-selectized",
+        problem: '#select-add-problem-selectized',
+        section: "#select-add-section-selectized",
+        date: "#startDate"
       },
       fixedInputs: {
         teacher: "li.ws-filter.teacher p"

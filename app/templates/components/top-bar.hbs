@@ -70,10 +70,10 @@
           {{#each do as |item|}}
             {{#if item.restricted}}
               {{#unless currentUser.isStudent}}
-                {{#link-to item.link}}{{item.text}}{{/link-to}}
+                {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
               {{/unless}}
             {{else}}
-              {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
             {{/if}}
           {{/each}}
         </div>
@@ -89,10 +89,10 @@
           {{#each find as |item|}}
             {{#if item.restricted}}
               {{#unless currentUser.isStudent}}
-                {{#link-to item.link}}{{item.text}}{{/link-to}}
+                {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
               {{/unless}}
             {{else}}
-              {{#link-to item.link}}{{item.text}}{{/link-to}}
+              {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
             {{/if}}
           {{/each}}
         </div>

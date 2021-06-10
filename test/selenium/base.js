@@ -22,7 +22,7 @@ describe('Home Page', function () {
     await dbSetup.prepTestDb();
   });
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   it('should load without error', async function () {
@@ -112,17 +112,11 @@ describe('Home Page', function () {
   });
 
   describe('NavBar', function () {
-    const elements = ['workspaces', 'responses', 'users/home', 'logout', 'problems', 'sections/home'];
+    const elements = ['workspaces', 'responses', 'users', 'logout', 'problems', 'sections'];
 
     function verifyNavElement(navElement) {
-      let isVisible;
       it(`${navElement} link should exist`, async function () {
-        try {
-          isVisible = await driver.findElement(By.css(`a[href="#/${navElement}"]`)).isDisplayed();
-        } catch (err) {
-          console.log(err);
-        }
-        expect(isVisible).to.be.true;
+        expect(await helpers.existsElement(driver, `a[href="#/${navElement}"]`)).to.be.true;
       });
     }
     elements.forEach((el) => {

@@ -27,7 +27,7 @@ describe('Signup form', function () {
     await helpers.waitForSelector(driver, css.signup.form);
   });
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
   describe('Displaying form', async function () {
     function verifySignupForm() {

@@ -78,7 +78,7 @@ describe('Mentoring / Approving Interactions', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   // TODO add test to expect that going to workspaces should default to collab tab
@@ -143,7 +143,8 @@ describe('Mentoring / Approving Interactions', function() {
 
   describe('Visting Responses List', function() {
     before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.responses);
+      driver.sleep(10000);
+      await helpers.navigateAndWait(driver, `${host}/#/responses`, {selector: 'a'});
       await helpers.waitForSelector(driver, css.responsesList.mentoringTab);
     });
 
