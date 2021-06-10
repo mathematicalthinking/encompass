@@ -77,7 +77,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/users.js"],
+        src: ["test/selenium/*.js"],
       },
       travis: {
         options: {
@@ -786,8 +786,7 @@ module.exports = function (grunt) {
     - apiTests - runs the api MochaTest (backend mocha/chai tets)
     - jasmineTests - NEED TO BE REPLACED
   */
-  grunt.registerTask("MochaTests", ["endToEndTests"]);
-  // grunt.registerTask("MochaTests", ["endToEndTests", "apiTests"]);
+  grunt.registerTask("MochaTests", ["endToEndTests", "apiTests"]);
   grunt.registerTask("jqunit", ["qunit_junit", "qunit"]);
   grunt.registerTask("endToEndTests", ["mochaTest:e2e"]);
   grunt.registerTask("travis", ["mochaTest:travis", "apiTests"]);

@@ -37,33 +37,5 @@ Responses        X    X
 Sections
 
 
-# Last Run
-
-
-  1) Comments
-       Visiting a Selection in ESI 2014 Wednesday Reflection
-         should clear out the comment field:
-     AssertionError: Target cannot be null or undefined.
-      at Context.<anonymous> (test/selenium/comments.js:59:80)
-
-  2) Comments
-       Visiting a Selection in ESI 2014 Wednesday Reflection
-         should show the comment:
-     AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
-      at Context.<anonymous> (test/selenium/comments.js:75:23)
-
-  3) Comments
-       "after all" hook in "Comments":
-     Error: Server was killed with SIGTERM
-      at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/remote/index.js:248:24
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  4) Linking multiple workspaces to one assignment
-       Linking new workspace to assignment
-         Setting Linked Assignment
-           should still display linked assignment name after page refresh:
-     AssertionError: expected '' to include 'Summer\'s Org Problem / Sep 6th 2018'
-      at Context.<anonymous> (test/selenium/linked_workspaces.js:89:98)
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+# Flaky Tests
+- linked_workspaces.js: returning to login results in 404 sometimes 'For newly linked workspaces'
