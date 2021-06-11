@@ -78,7 +78,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/reset_password.js"],
+        src: ["test/selenium/*.js"],
       },
       travis: {
         options: {
