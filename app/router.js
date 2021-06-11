@@ -87,6 +87,11 @@ Encompass.Router.map(function() {
     this.route("new");
   });
 
+  this.route("metrics", function(){
+    this.route("problem");
+    this.route("workspace");
+  });
+
   // ANSWERS ROUTE
   this.route("answers", function(){
     this.route("answer", {resetNamespace: true, path: '/:answerId'}, function() {

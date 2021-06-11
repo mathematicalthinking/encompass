@@ -1,0 +1,4 @@
+<h2>index</h2>
+{{#each model as |workspace|}}
+  <p>{{#link-to "metrics.workspace"}}{{workspace.name}}{{/link-to}}</p>
+{{/each}}
