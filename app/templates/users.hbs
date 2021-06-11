@@ -1,17 +1,17 @@
 <div id="user-list">
-  {{#if currentUser.isAdmin}}
-    {{user-list-admin store=store currentUser=currentUser users=model.users organization=model.organiztions toUserInfo="toUserInfo"}}
+  {{#if model.currentUser.isAdmin}}
+    {{user-list-admin store=store currentUser=model.currentUser users=model.users organization=model.organiztions}}
   {{/if}}
 
-  {{#if currentUser.isTeacher}}
-    {{user-list-teacher store=store currentUser=currentUser users=model.users organization=model.organiztions toUserInfo="toUserInfo"}}
+  {{#if model.currentUser.isTeacher}}
+    {{user-list-teacher store=store currentUser=model.currentUser users=model.users organization=model.organiztions}}
   {{/if}}
 
-  {{#if currentUser.isPdAdmin}}
-      {{user-list-pd store=store currentUser=currentUser users=model.users organization=model.organiztions toUserInfo="toUserInfo"}}
+  {{#if model.currentUser.isPdAdmin}}
+      {{user-list-pd store=store currentUser=model.currentUser users=model.users organization=model.organiztions}}
   {{/if}}
 </div>
-{{#if currentUser.isStudent}}
+{{#if model.currentUser.isStudent}}
     <div class="centered">FORBIDDEN</div>
 {{/if}}
 
