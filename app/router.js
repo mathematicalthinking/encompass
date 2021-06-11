@@ -89,7 +89,7 @@ Encompass.Router.map(function() {
 
   this.route("metrics", function(){
     this.route("problem");
-    this.route("workspace");
+    this.route("workspace", {path: '/workspace/:workspace_id'});
   });
 
   // ANSWERS ROUTE
