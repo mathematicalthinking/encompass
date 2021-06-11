@@ -21,5 +21,9 @@ Encompass.UsersRoute = Ember.Route.extend({
       organizations: this.get('store').findAll('organization'),
     });
   },
-
+  actions: {
+    toUserInfo: function (user) {
+      this.transitionTo('user', user);
+    },
+  }
 });

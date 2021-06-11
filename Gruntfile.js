@@ -78,7 +78,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/*.js"],
+        src: ["test/selenium/users.js"],
       },
       travis: {
         options: {

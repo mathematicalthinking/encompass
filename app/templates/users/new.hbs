@@ -1,12 +1,12 @@
 <div id="user-new">
   {{#if model.currentUser.isAdmin}}
-    {{user-new-admin currentUser=model.currentUser store=store  organizations=model.organizations}}
+    {{user-new-admin currentUser=model.currentUser store=store  organizations=model.organizations toUserInfo="toUserInfo"}}
   {{/if}}
   {{#if model.currentUser.isPdAdmin}}
-    {{user-new-pd currentUser=model.currentUser store=store organizations=model.organizations}}
+    {{user-new-pd currentUser=model.currentUser store=store organizations=model.organizations toUserInfo="toUserInfo"}}
   {{/if}}
   {{#if model.currentUser.isTeacher}}
-    {{user-new-teacher currentUser=model.currentUser store=store organizations=model.organizations}}
+    {{user-new-teacher currentUser=model.currentUser store=store organizations=model.organizations toUserInfo="toUserInfo"}}
   {{/if}}
   {{#if model.currentUser.isStudent}}
       <div class="centered">FORBIDDEN</div>
