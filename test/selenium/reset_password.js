@@ -102,7 +102,7 @@ describe('Resetting Password', function () {
 
         it('should let user log in with new password', async function() {
           await helpers.findAndClickElement(driver, css.topBar.logout);
-          await helpers.waitForSelector(driver, ".auth-form-input")
+          await helpers.waitForSelector(driver, ".auth-form-input");
           await helpers.findInputAndType(driver, css.login.username, user.username);
           await helpers.findInputAndType(driver, css.login.password, user.newPassword);
           await helpers.findAndClickElement(driver, css.login.submit);
