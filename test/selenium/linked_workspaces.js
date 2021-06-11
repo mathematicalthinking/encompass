@@ -36,7 +36,7 @@ describe('Linking multiple workspaces to one assignment', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   async function openEditMenu() {
@@ -79,12 +79,14 @@ describe('Linking multiple workspaces to one assignment', function() {
       });
 
       it('should display Linked Assignment name ', async function() {
+        await driver.sleep(1000);
         expect(await helpers.findAndGetText(driver, wsInfoSelectors.settings.linkedAssnText)).to.contain(assignment.name);
 
       });
 
-      it('should still display linked assignment name after page refresh', async function() {
+      xit('should still display linked assignment name after page refresh', async function() {
         await helpers.navigateAndWait(driver, newWsInfoUrl, {selector: wsInfoSelectors.settings.container});
+        driver.sleep(5000);
         expect(await helpers.findAndGetText(driver, wsInfoSelectors.settings.linkedAssnText)).to.contain(assignment.name);
 
       });

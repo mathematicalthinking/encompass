@@ -26,7 +26,7 @@ describe('Confirm Email', function () {
     await dbSetup.prepTestDb();
   });
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   describe('Invalid token', function() {

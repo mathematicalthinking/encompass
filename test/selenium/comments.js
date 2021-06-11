@@ -27,8 +27,8 @@ describe('Comments', function() {
     }
   });
 
-  after(() => {
-    driver.quit();
+  after(function(){
+    return driver.quit();
   });
 
   describe('Visiting a Selection in ESI 2014 Wednesday Reflection', function() {

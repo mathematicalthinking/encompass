@@ -55,7 +55,7 @@ describe('Workspace info / settings interactions', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   async function openEditMenu() {

@@ -25,7 +25,7 @@ describe('Resetting Password', function () {
     await dbSetup.prepTestDb();
   });
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
   describe('Invalid token', function() {
     before(async function() {

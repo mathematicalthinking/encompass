@@ -1,3 +1,5 @@
+//TODO set up mock VMT server data
+
 // REQUIRE MODULES
 const {Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
@@ -16,7 +18,7 @@ let user = {
   name: 'jean-luc picard',
 };
 
-describe('Importing VMT Work', function() {
+xdescribe('Importing VMT Work', function() {
 
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
@@ -34,7 +36,7 @@ describe('Importing VMT Work', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
 
   describe('Visiting VMT Import Page', function() {
@@ -61,9 +63,8 @@ describe('Importing VMT Work', function() {
         expect(await helpers.isElementVisible(driver, css.vmtImport.search.container)).to.eql(true);
       });
 
-      it('searching for nonexistant room name should yield no results', async function() {
+      it('searching for nonexistent room name should yield no results', async function() {
         await helpers.findInputAndType(driver, searchInput, 'bogusname');
-        console.log('ater type');
         let roomsMsg = css.vmtImport.noRoomsResult;
         let activitiesMsg = css.vmtImport.noActivitiesResult;
 
