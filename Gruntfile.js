@@ -17,6 +17,7 @@
  */
 
 /*jshint camelcase: false */
+// eslint-disable-next-line no-redeclare
 /*global module:false */
 module.exports = function (grunt) {
   /*
@@ -77,7 +78,7 @@ module.exports = function (grunt) {
           clearCacheFilter: (key) => true,
           noFail: false,
         },
-        src: ["test/selenium/*.js"],
+        src: ["test/selenium/reset_password.js"],
       },
       travis: {
         options: {

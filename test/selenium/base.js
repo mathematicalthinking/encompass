@@ -1,7 +1,6 @@
 // REQUIRE MODULES
 const {
-  Builder,
-  By
+  Builder
 } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
@@ -91,8 +90,6 @@ describe('Home Page', function () {
 
     it('should redirect to homepage after logging in', async function () {
       let url;
-      let greeting;
-
       try {
         await helpers.clearElement(driver, css.login.username);
         await helpers.clearElement(driver, css.login.password);
@@ -100,14 +97,12 @@ describe('Home Page', function () {
         await helpers.findInputAndType(driver, css.login.password, helpers.admin.password);
         await helpers.findAndClickElement(driver, css.login.submit);
 
-        await helpers.waitForSelector(driver, 'a.menu.logout');
-        greeting = await helpers.findAndGetText(driver, '#current-username');
+        await helpers.waitForSelector(driver, 'a.nav__logout');
         url = await helpers.getCurrentUrl(driver);
       } catch (err) {
         console.log(err);
       }
       expect(url).to.equal(`${host}/`);
-      // expect(greeting).to.equal(`${helpers.admin.name}`);
     });
   });
 
