@@ -68,7 +68,7 @@ Encompass.Router.map(function() {
   });
   // USERS PARENT ROUTE
   this.route("users", function(){
-    this.route("user", {resetNamespace: true, path: '/:username'});
+    this.route("user", {resetNamespace: true, path: '/:user_id'});
     this.route("new");
   });
   // IMPORT ROUTE
