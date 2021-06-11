@@ -1,0 +1,21 @@
+<div id="user-list">
+  {{#if currentUser.isAdmin}}
+    {{user-list-admin store=store currentUser=currentUser users=model.users organization=model.organiztions toUserInfo="toUserInfo"}}
+  {{/if}}
+
+  {{#if currentUser.isTeacher}}
+    {{user-list-teacher store=store currentUser=currentUser users=model.users organization=model.organiztions toUserInfo="toUserInfo"}}
+  {{/if}}
+
+  {{#if currentUser.isPdAdmin}}
+      {{user-list-pd store=store currentUser=currentUser users=model.users organization=model.organiztions toUserInfo="toUserInfo"}}
+  {{/if}}
+</div>
+{{#if currentUser.isStudent}}
+    <div class="centered">FORBIDDEN</div>
+{{/if}}
+
+
+<div class="list-outlet users">
+  {{outlet}}
+</div>

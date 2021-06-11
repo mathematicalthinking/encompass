@@ -21,8 +21,4 @@ Encompass.UsersRoute = Ember.Route.extend({
     });
   },
 
-  renderTemplate: function(){
-    this.render('users/users');
-  }
-
 });

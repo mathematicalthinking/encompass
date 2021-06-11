@@ -19,6 +19,7 @@
 - scss to be mobile-first
 - application_controller vs. CurrentUserMixin vs. application_route
 - auth routes
+- users route
 
 ## UNSURE OF FUNCTION
 - app/templates/workspace/submission.hbs v. app/templates/components/workspace-submission.hbs
