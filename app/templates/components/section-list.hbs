@@ -15,7 +15,7 @@
       <ul class="your-sections">
         {{#if yourSections}}
           {{#each yourSections as |section|}}
-            <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+            <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
           <li>You have no classes</li>
@@ -26,7 +26,7 @@
       <ul class="collab-sections">
         {{#if collabSections}}
           {{#each collabSections as |section|}}
-            <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+            <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
             <li>You don't belong to any classes yet</li>
@@ -39,7 +39,7 @@
       <ul class="your-sections">
         {{#if studentSections}}
           {{#each studentSections as |section|}}
-            <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+            <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
             <li>You don't belong to any classes yet</li>
@@ -52,7 +52,7 @@
       <ul class="org-sections">
         {{#if orgSections}}
           {{#each orgSections as |section|}}
-          <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+          <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
           <li>{{currentUser.organization.name}} does not have any classes yet</li>
@@ -66,7 +66,7 @@
       <ul class="all-sections">
         {{#if allSections}}
           {{#each allSections as |section|}}
-          <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+          <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{/if}}
       </ul>

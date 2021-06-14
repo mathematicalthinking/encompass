@@ -21,7 +21,7 @@ Encompass.Router.map(function() {
   });
   // SECTIONS ROUTE
   this.route("sections", function(){
-    this.route("section", {resetNamespace: true, path: '/:section_id'});
+    this.route("section", { path: '/:section_id' });
     this.route("new");
   });
 
