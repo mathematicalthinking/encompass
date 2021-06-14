@@ -1,5 +1,9 @@
+
 Encompass.SectionsRoute = Encompass.AuthenticatedRoute.extend({
   model: function () {
-    return this.get('store').findAll('section');
+    return Ember.RSVP.hash({
+      sections: this.get('store').findAll('section'),
+      currentUser: this.modelFor('application')
+    });
   },
 });
