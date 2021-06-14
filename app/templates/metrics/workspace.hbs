@@ -6,7 +6,13 @@
 <p {{action "setContent" "submissions" model.submissions}}>submissions: {{model.submissionsLength}}</p>
 {{#data-viz title=heading}}
   {{#each content as |item|}}
-    <p>{{item}}</p>
+    {{#if item.text}}
+      <p>{{item.text}}</p>
+    {{else if item.name}}
+      <p>{{item.name}}</p>
+    {{else}}
+      <p>{{#link-to "metrics.submission" item.submissionId}}{{item.student}}{{/link-to}}</p>
+    {{/if}}
   {{/each}}
 {{/data-viz}}
 <p>{{#link-to "metrics"}}back{{/link-to}}</p>
