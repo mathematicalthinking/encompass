@@ -4,10 +4,6 @@ Encompass.SectionRoute = Encompass.AuthenticatedRoute.extend({
     return section;
   },
 
-  renderTemplate: function () {
-    this.render('sections/section');
-  },
-
   actions: {
     toSectionList: function () {
       this.transitionTo('sections');
