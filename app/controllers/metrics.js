@@ -1,6 +1,7 @@
 Encompass.Controller = Ember.Controller.extend({
   heading: null,
   content: null,
+  showingSelections: false,
   actions: {
     setContent: function(name, data){
       this.set('heading', name);
@@ -8,7 +9,7 @@ Encompass.Controller = Ember.Controller.extend({
       console.log(data);
     },
     showHighlights: function(){
-      console.log("highlighting");
+      this.toggleProperty('showingSelections');
     }
   }
 });
