@@ -108,7 +108,7 @@
       </li>
     {{/unless}}
     <li id="current-username" class="nav__user">
-      {{#link-to "user" currentUser.username}}
+      {{#link-to 'users.user' currentUser.username}}
         <img
           src={{currentUser.avatar}}
           alt={{currentUser.username}}

@@ -69,7 +69,7 @@
                 {{#if currentUser.isStudent}}
                   {{teacher.username}}
                 {{else}}
-                  {{#link-to 'user' teacher}} {{teacher.username}} {{/link-to}}
+                  {{#link-to 'users.user' teacher}} {{teacher.username}} {{/link-to}}
                 {{/if}}
 
                 {{#unless cantEdit}}
@@ -128,10 +128,10 @@
                 {{#if currentUser.isStudent}}
                   {{student.username}}
                 {{else}}
-                  {{#link-to 'user' student}} {{student.username}} {{/link-to}}
+                  {{#link-to 'users.user' student}} {{student.username}} {{/link-to}}
                 {{/if}}
                 {{#unless cantEdit}}
-                  {{#link-to 'user' student}} {{/link-to}}
+                  {{#link-to 'users.user' student}} {{/link-to}}
                   {{#if isEditingStudents}}
                     <button class="trash-button" {{action 'removeStudent' student}}>
                       <i class="far fa-times-circle" aria-hidden="true"></i>

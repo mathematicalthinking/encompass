@@ -23,7 +23,7 @@ Encompass.UsersRoute = Ember.Route.extend({
   },
   actions: {
     toUserInfo: function (user) {
-      this.transitionTo('user', user);
+      this.transitionTo('user.user', user);
     },
   }
 });

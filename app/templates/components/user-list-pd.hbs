@@ -25,7 +25,7 @@
       <h2>Your account</h2>
       <ul class="listing your-account">
         <li class="{{if currentUser.isAuthorized 'is-authorized'}} {{if currentUser.isAdmin 'is-admin'}}">
-          {{#link-to 'user' currentUser classNames='user'}}{{currentUser.username}}{{/link-to}}
+          {{#link-to 'users.user' currentUser classNames='user'}}{{currentUser.username}}{{/link-to}}
         </li>
       </ul>
 
@@ -34,7 +34,7 @@
         {{#if unauthUsers}}
           {{#each unauthUsers as |user|}}
             <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+            {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
             </li>
           {{/each}}
         {{else}}
@@ -47,7 +47,7 @@
         {{#if teacherUsers}}
           {{#each teacherUsers as |user|}}
           <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+            {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
           </li>
           {{/each}}
         {{else}}
@@ -59,7 +59,7 @@
       <ul class="listing student-users">
         {{#if studentUsers}} {{#each studentUsers as |user|}}
         <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
         </li>
         {{/each}} {{else}}
         <li>There are no students yet</li>

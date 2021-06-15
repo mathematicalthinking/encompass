@@ -108,7 +108,7 @@
                 <span class="show-reason" {{action 'toggleShowFlagReason'}}>Hide</span>
                 <div class="flag-reason">
                   <p class="reason"><strong>Reason:</strong> {{problem.flagReason.reason}}</p>
-                  <p class="details">By {{#link-to 'user' flaggedBy.username}}{{flaggedBy.username}}{{/link-to}} on {{format-date
+                  <p class="details">By {{#link-to 'users.user' flaggedBy.username}}{{flaggedBy.username}}{{/link-to}} on {{format-date
                     problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
                 </div>
               {{else}}
@@ -255,7 +255,7 @@
         {{#if currentUser.isAdmin}}
         <p class="info-content-label">Created By</p>
         <div class="info-content-block creator">
-          <p>{{#link-to 'user' problem.createdBy.username}}{{problem.createdBy.username}}{{/link-to}}</p>
+          <p>{{#link-to 'users.user' problem.createdBy.username}}{{problem.createdBy.username}}{{/link-to}}</p>
         </div>
         {{/if}}
       {{/if}}

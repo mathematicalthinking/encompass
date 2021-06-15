@@ -312,7 +312,7 @@ describe('Users', function() {
 
       describe('clicking on your own account', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.admin.username.toLowerCase()}"]`);
+          await helpers.findAndClickElement(driver, `a[href="#/users/${helpers.admin.username.toLowerCase()}"]`);
           await helpers.waitForSelector(driver, '#user-info');
         });
         validateUsersPage();
