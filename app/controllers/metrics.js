@@ -6,6 +6,9 @@ Encompass.Controller = Ember.Controller.extend({
       this.set('heading', name);
       this.set('content', data);
       console.log(data);
+    },
+    showHighlights: function(){
+      console.log("highlighting");
     }
   }
 });
