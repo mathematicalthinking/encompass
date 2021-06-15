@@ -1,3 +1,26 @@
 <h1>Submissions</h1>
 <button {{action "showHighlights"}}>Highlight Selections</button>
 <p>{{model.student}}</p>
+
+<div id="submission">
+  <p>------------------------------------</p>
+  <p>short answer</p>
+  <p>{{model.shortAnswer}}</p>
+  <p>------------------------------------</p>
+  <p>long answer</p>
+  <p>{{model.longAnswer}}</p>
+  <p>------------------------------------</p>
+  <p>answer</p>
+  <p>{{model.answer.answer}}</p>
+  <p>------------------------------------</p>
+  <p>explanation</p>
+  <p>{{model.answer.explanation}}</p>
+  <p>------------------------------------</p>
+</div>
+<p>selections</p>
+{{#each model.selections as |selection|}}
+  <p>------------------------------------</p>
+  <p>{{selection.text}}</p>
+  <p>------------------------------------</p>
+  <p>{{selection.coordinate}}</p>
+{{/each}}
