@@ -1,7 +1,7 @@
   <tr>
     <td class="inner">{{#link-to 'workspace.work' workspace.id classNames='link'}}{{workspace.name}}{{/link-to}}</td>
     {{#if myAssignment.section.name}}
-    <td>{{#link-to 'section' myAssignment.section.sectionId
+    <td>{{#link-to 'sections.section' myAssignment.section.sectionId
       classNames='link'}}{{myAssignment.section.name}}{{/link-to}}</td>
     {{else}}
     <td>N/A</td>
