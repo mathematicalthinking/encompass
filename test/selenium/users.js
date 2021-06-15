@@ -312,7 +312,7 @@ describe('Users', function() {
 
       describe('clicking on your own account', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href="#/users/${helpers.admin.username.toLowerCase()}"]`);
+          await helpers.findAndClickElement(driver, `.your-account li a`);
           await helpers.waitForSelector(driver, '#user-info');
         });
         validateUsersPage();
@@ -550,7 +550,7 @@ describe('Users', function() {
 
       describe('clicking on your own account', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.pdAdmin.username}"]`);
+          await helpers.findAndClickElement(driver, `.your-account li a`);
           await helpers.waitForSelector(driver, 'div#user-info');
         });
         validateUsersPage();
@@ -718,7 +718,7 @@ describe('Users', function() {
 
       describe('clicking on your own account', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.regUser.username}"]`);
+          await helpers.findAndClickElement(driver, `.your-account li a`);
           await helpers.waitForSelector(driver, 'div#user-info');
         });
         await validateUsersPage();
