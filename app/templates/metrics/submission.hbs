@@ -1,12 +1,20 @@
 <h1>Submissions</h1>
-<button {{action "showHighlights"}}>Highlight Selections</button>
-<button {{action "printInfo"}}>print info</button>
+<button {{action "handleToggle" "showSelections"}}>Show Selections</button>
+<button {{action "handleToggle" "showFolders"}}>Show Folders</button>
 <p>{{model.student}}</p>
 {{#if model.selections}}
   <p>has selections</p>
 {{/if}}
-{{#if showingSelections}}
-  <p>showing selections</p>
+{{#if showSelections}}
+<p>selections</p>
+{{#each model.selections as |selection|}}
+  <p>------------------------------------</p>
+  <p>text</p>
+  <p>{{selection.text}}</p>
+  <p>------------------------------------</p>
+  <p>coordinates</p>
+  <p>{{selection.coordinates}}</p>
+{{/each}}
 {{/if}}
 
 <div id="submission">
@@ -24,16 +32,11 @@
   <p>{{html-to-text model.answer.explanation}}</p>
   <p>------------------------------------</p>
 </div>
-<p>selections</p>
-{{#each model.selections as |selection|}}
+{{#if showFolders}}
   <p>------------------------------------</p>
-  <p>{{selection.text}}</p>
+  <p>folders:</p>
   <p>------------------------------------</p>
-  <p>{{selection.coordinates}}</p>
-{{/each}}
-<p>------------------------------------</p>
-<p>folders:</p>
-<p>------------------------------------</p>
-{{#each model.folders as |folder|}}
-  <p>{{folder.name}}</p>
-{{/each}}
+  {{#each model.folders as |folder|}}
+    <p>{{folder.name}}</p>
+  {{/each}}
+{{/if}}
