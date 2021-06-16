@@ -85,7 +85,6 @@ describe('Sections', async function () {
 
                 await helpers.findAndClickElement(driver, css.sectionInfo.editButtons.students);
 
-                await driver.sleep(500);
                 let addUserInput = 'input#select-add-student-selectized';
                 await helpers.waitForSelector(driver, addUserInput);
 
@@ -96,9 +95,7 @@ describe('Sections', async function () {
 
               it('new student should persist after page refresh', async function() {
                 await driver.get(`${host}/#/assignments`);
-                await driver.sleep(2000);
                 await driver.get(`${host}/#/sections/${sectionDetails._id}`);
-                await driver.sleep(2000);
                 expect(await helpers.isTextInDom(driver, usernameLinkSelector)).to.eql(true);
               });
             });
