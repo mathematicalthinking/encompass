@@ -1,6 +1,7 @@
 <h1>Submissions</h1>
 <button {{action "handleToggle" "showSelections"}}>Show Selections</button>
 <button {{action "handleToggle" "showFolders"}}>Show Folders</button>
+<button {{action "handleToggle" "showComments"}}>Show Comments</button>
 <p>{{model.student}}</p>
 {{#if model.selections}}
   <p>has selections</p>
@@ -38,5 +39,16 @@
   <p>------------------------------------</p>
   {{#each model.folders as |folder|}}
     <p>{{folder.name}}</p>
+  {{/each}}
+{{/if}}
+{{#if showComments}}
+  <p>------------------------------------</p>
+  <p>comments:</p>
+  <p>------------------------------------</p>
+  {{#each model.comments as |comment|}}
+  <p>------------------------------------</p>
+    <p>{{comment.label}}</p>
+    <p>{{comment.text}}</p>
+  <p>------------------------------------</p>
   {{/each}}
 {{/if}}
