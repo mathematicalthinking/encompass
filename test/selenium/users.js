@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder } = require('selenium-webdriver');
+const { Builder, By } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
@@ -238,6 +238,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
+        await driver.sleep(8000);
         expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('muzzy');
       });
     }
@@ -328,21 +329,24 @@ describe('Users', function() {
 
       describe('authorizing a user', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/muzzy"]`);
+          const link = await driver.findElement(By.linkText("muzzy"));
+          link.click();
         });
         await changeAuth();
       });
 
       describe("changing a user's account type", async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/nope"]`);
+          const link = await driver.findElement(By.linkText("nope"));
+          link.click();
         });
         await changeAccountType();
       });
 
       describe('manually authorize a users email', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/superuser"]`);
+          const link = await driver.findElement(By.linkText("superuser"));
+          link.click();
         });
         await confirmEmail();
       });
@@ -566,21 +570,24 @@ describe('Users', function() {
 
       describe('authorizing a user', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/bunny"]`);
+          const link = await driver.findElement(By.linkText("bunny"));
+          link.click();
         });
         await changeAuth();
       });
 
      describe("changing a user's account type", async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/eeyore"]`);
+          const link = await driver.findElement(By.linkText("eeyore"));
+          link.click();
         });
         await changeAccountType();
       });
 
       describe('manually authorize a user\'s email', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/perryu"]`);
+          const link = await driver.findElement(By.linkText("perryu"));
+          link.click();
         });
         await confirmEmail();
       });
@@ -734,7 +741,8 @@ describe('Users', function() {
 
       describe('unauthorizing a user', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/mystudent"]`);
+          const link = await driver.findElement(By.linkText("mystudent"));
+          link.click();
         });
         await changeAuth();
       });
