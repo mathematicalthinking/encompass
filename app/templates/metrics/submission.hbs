@@ -1,5 +1,6 @@
 <h1>Submissions</h1>
 <button {{action "showHighlights"}}>Highlight Selections</button>
+<button {{action "printInfo"}}>print info</button>
 <p>{{model.student}}</p>
 {{#if model.selections}}
   <p>has selections</p>
@@ -20,7 +21,7 @@
   <p>{{model.answer.answer}}</p>
   <p>------------------------------------</p>
   <p>explanation</p>
-  <p>{{model.answer.explanation}}</p>
+  <p>{{html-to-text model.answer.explanation}}</p>
   <p>------------------------------------</p>
 </div>
 <p>selections</p>
@@ -29,4 +30,10 @@
   <p>{{selection.text}}</p>
   <p>------------------------------------</p>
   <p>{{selection.coordinate}}</p>
+{{/each}}
+<p>------------------------------------</p>
+<p>folders:</p>
+<p>------------------------------------</p>
+{{#each model.folders as |folder|}}
+  <p>{{folder.name}}</p>
 {{/each}}

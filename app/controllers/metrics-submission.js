@@ -12,5 +12,8 @@ Encompass.MetricsSubmissionController = Ember.Controller.extend({
       let answer = this.model.get('answer');
       console.log('answer.problem', answer.get('problem'));
     },
+    printInfo: function(){
+      console.log('folders', this.model.get('folders'));
+    }
   }
 });
