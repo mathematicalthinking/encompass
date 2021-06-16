@@ -1,6 +1,10 @@
 <p>{{model.title}}</p>
 <button {{action "toggleProblemText"}}>Show Problem Text</button>
+<button {{action "findWorkspaces"}}>Find Workspaces</button>
 {{#if showProblemText}}
   {{html-to-text model.text}}
 {{/if}}
+{{#each relevantWorkspaces as |workspace|}}
+  <p>{{workspace.name}}</p>
+{{/each}}
 <p>{{#link-to "metrics"}}back{{/link-to}}</p>
