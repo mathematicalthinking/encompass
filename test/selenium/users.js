@@ -93,7 +93,6 @@ describe('Users', function() {
         let username = `muzzy`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
-        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
         await helpers.waitForTextInDom(driver, 'Missing required fields');
@@ -185,7 +184,6 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
-        // await driver.sleep(1000);
         await helpers.waitForTextInDom(driver, 'Email address has already been used');
         await helpers.waitForElementToHaveText(driver, 'div.error-box', 'Email address has already been used');
 
@@ -215,17 +213,13 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(1000);
         await helpers.waitForSelector(driver, '.error-text');
         await helpers.waitForTextInDom(driver, 'Username already exists');
         expect(await helpers.findAndGetText(driver, '.error-text')).to.contain('Username already exists');
         await clearUsername(driver);
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
-        await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(1000);
         await helpers.waitForSelector(driver, '#user-info', 7000);
         expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newstudent');
       });
@@ -238,7 +232,6 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(8000);
         expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('muzzy');
       });
     }
@@ -247,13 +240,9 @@ describe('Users', function() {
       it('should change a teacher to an admin', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await driver.sleep(500);
         await helpers.selectOption(driver, 'my-select', 'Admin');
-        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep(500);
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(3000);
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
     }
@@ -264,7 +253,6 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(5000);
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }
@@ -356,7 +344,6 @@ describe('Users', function() {
 
   describe('Logged in as a pd admin user', function () {
     before(async function () {
-      await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
       await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
@@ -399,7 +386,6 @@ describe('Users', function() {
         let username = `bunny`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
-        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
@@ -459,7 +445,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(1000);
+
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('bunny');
       });
 
@@ -503,7 +489,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep(100);
+
         await helpers.waitForSelector(driver, 'button.edit-user');
       });
     }
@@ -514,7 +500,6 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(3000);
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }
@@ -597,7 +582,6 @@ describe('Users', function() {
 
   describe('Logged in as a teacher', function() {
     before(async function() {
-      await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.regUser);
       await helpers.findAndClickElement(driver, css.topBar.users);
