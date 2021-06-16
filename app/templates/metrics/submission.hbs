@@ -12,13 +12,13 @@
 <div id="submission">
   <p>------------------------------------</p>
   <p>short answer</p>
-  <p>{{model.shortAnswer}}</p>
+  <p>{{html-to-text model.shortAnswer}}</p>
   <p>------------------------------------</p>
   <p>long answer</p>
-  <p>{{model.longAnswer}}</p>
+  <p>{{html-to-text model.longAnswer}}</p>
   <p>------------------------------------</p>
   <p>answer</p>
-  <p>{{model.answer.answer}}</p>
+  <p>{{html-to-text model.answer.answer}}</p>
   <p>------------------------------------</p>
   <p>explanation</p>
   <p>{{html-to-text model.answer.explanation}}</p>
@@ -29,7 +29,7 @@
   <p>------------------------------------</p>
   <p>{{selection.text}}</p>
   <p>------------------------------------</p>
-  <p>{{selection.coordinate}}</p>
+  <p>{{selection.coordinates}}</p>
 {{/each}}
 <p>------------------------------------</p>
 <p>folders:</p>
