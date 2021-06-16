@@ -1,3 +1,6 @@
 <p>{{model.title}}</p>
-{{html-to-text model.text}}
+<button {{action "toggleProblemText"}}>Show Problem Text</button>
+{{#if showProblemText}}
+  {{html-to-text model.text}}
+{{/if}}
 <p>{{#link-to "metrics"}}back{{/link-to}}</p>
