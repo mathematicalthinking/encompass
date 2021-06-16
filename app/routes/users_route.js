@@ -20,5 +20,5 @@ Encompass.UsersRoute = Ember.Route.extend({
       users: this.get('store').findAll('user'),
       organizations: this.get('store').findAll('organization'),
     });
-  }
+  },
 });

@@ -1,6 +1,7 @@
 Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
   elementId: 'user-new-teacher',
   alert: Ember.inject.service('sweet-alert'),
+  routing: Ember.inject.service('-routing'),
   errorMessage: null,
   username: '',
   password: '',
@@ -65,7 +66,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
           if (res.username) {
             this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
-            return this.sendAction('toUserInfo', res);
+            return this.get('routing').router.transitionTo("users.user", res.id);
           }
           if (res.message === 'There already exists a user with that username') {
             this.set('usernameError', this.get('usernameErrors.taken'));
@@ -84,7 +85,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
     },
 
     cancelNew: function () {
-      this.sendAction('toUserHome');
+      this.get('routing').router.transitionTo("users");
     },
 
   }
