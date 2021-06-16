@@ -1,4 +1,9 @@
 <h2>index</h2>
-{{#each model as |workspace|}}
+<h3>workspaces</h3>
+{{#each model.workspaces as |workspace|}}
   <p>{{#link-to "metrics.workspace" workspace.id}}{{workspace.name}}{{/link-to}}</p>
+{{/each}}
+<h3>problems</h3>
+{{#each model.problems as |problem|}}
+  <p>{{#link-to "metrics.problem" problem.id}}{{problem.title}}{{/link-to}}</p>
 {{/each}}
