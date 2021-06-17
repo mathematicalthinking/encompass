@@ -67,7 +67,6 @@ describe('Linking multiple workspaces to one assignment', function() {
         await openEditMenu();
         let input = await helpers.getWebElements(driver, wsInfoSelectors.settings.linkedAssnInput);
         await input[0].sendKeys(assignment.name.slice(0,2));
-        await driver.sleep(1000);
         await helpers.waitForAndClickElement(driver, 'div.option.active');
 
         expect(await helpers.findAndGetText(driver, wsInfoSelectors.settings.linkedAssnText)).to.contain(assignment.name);
@@ -79,14 +78,12 @@ describe('Linking multiple workspaces to one assignment', function() {
       });
 
       it('should display Linked Assignment name ', async function() {
-        await driver.sleep(1000);
         expect(await helpers.findAndGetText(driver, wsInfoSelectors.settings.linkedAssnText)).to.contain(assignment.name);
 
       });
 
       xit('should still display linked assignment name after page refresh', async function() {
         await helpers.navigateAndWait(driver, newWsInfoUrl, {selector: wsInfoSelectors.settings.container});
-        driver.sleep(5000);
         expect(await helpers.findAndGetText(driver, wsInfoSelectors.settings.linkedAssnText)).to.contain(assignment.name);
 
       });
@@ -128,7 +125,6 @@ describe('Linking multiple workspaces to one assignment', function() {
         await helpers.findAndClickElement(driver, 'button.new-response');
         await helpers.waitForSelector(driver, 'div.response-title');
         await helpers.findAndClickElement(driver,'button.save-response');
-        await driver.sleep(1000);
       });
     });
   });
