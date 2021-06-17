@@ -19,8 +19,6 @@ const fsAccess = require('../../middleware/access/foldersets');
 
 const { isNil } = require('../../utils/objects');
 
-const { resolveParentUpdates } = require('./parentWorkspaceApi');
-
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};

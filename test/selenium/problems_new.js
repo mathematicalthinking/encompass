@@ -12,7 +12,6 @@ const css = require('./selectors');
 
 const host = helpers.host;
 const testUsers = require('./fixtures/users');
-const topLink = css.topBar.problems;
 
 describe('Problems New', async function () {
   function runTests(users) {

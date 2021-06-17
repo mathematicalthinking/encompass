@@ -364,7 +364,7 @@ const createDefaultProblemsFromVmtRooms = function(user, rooms) {
   }
   let roomsWithProblem = rooms.map(async (room) => {
 
-    let { image, instructions, name } = room;
+    let { instructions, name } = room;
 
     let text = instructions || 'Unedited VMT import';
 
@@ -381,6 +381,7 @@ const createDefaultProblemsFromVmtRooms = function(user, rooms) {
       contexts: ['VMT'],
     });
 
+    // eslint-disable-next-line require-atomic-updates
     room.problem = problem;
     return room;
   });

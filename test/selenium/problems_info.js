@@ -13,11 +13,8 @@ const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
-const SwalDriver = require('./utilities/sweet_alert');
-
 const host = helpers.host;
 const testUsers = require('./fixtures/users');
-const topLink = css.topBar.problems;
 
 describe('Problems Info', async function () {
   function runTests(users) {
@@ -38,7 +35,6 @@ describe('Problems Info', async function () {
       describe(`As ${testDescriptionTitle}`, function () {
         this.timeout(helpers.timeoutTestMsStr);
         let driver = null;
-        let swalDriver;
 
         before(async function () {
           driver = new Builder()
@@ -48,7 +44,6 @@ describe('Problems Info', async function () {
             width: 1580,
             height: 1080
           });
-          swalDriver = new SwalDriver(driver);
           await dbSetup.prepTestDb();
           return helpers.login(driver, host, user);
         });
