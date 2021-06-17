@@ -2,6 +2,7 @@
 <button {{action "handleToggle" "showSelections"}}>Show Selections</button>
 <button {{action "handleToggle" "showFolders"}}>Show Folders</button>
 <button {{action "handleToggle" "showComments"}}>Show Comments</button>
+<button {{action "handleToggle" "showResponses"}}>Show Responses</button>
 <p>{{model.student}}</p>
 {{#if model.selections}}
   <p>has selections</p>
@@ -50,5 +51,14 @@
     <p>{{comment.label}}</p>
     <p>{{comment.text}}</p>
   <p>------------------------------------</p>
+  {{/each}}
+{{/if}}
+{{#if showResponses}}
+  <p>------------------------------------</p>
+  <p>responses:</p>
+  <p>------------------------------------</p>
+  {{#each model.responses as |response|}}
+    <p>{{responses.createdBy.username}}</p>
+    <p>{{response.text}}</p>
   {{/each}}
 {{/if}}
