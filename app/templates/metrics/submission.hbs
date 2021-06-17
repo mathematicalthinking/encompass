@@ -48,6 +48,7 @@
   <p>------------------------------------</p>
   {{#each model.comments as |comment|}}
   <p>------------------------------------</p>
+    <p>{{comment.createdBy.username}}</p>
     <p>{{comment.label}}</p>
     <p>{{comment.text}}</p>
   <p>------------------------------------</p>
@@ -58,7 +59,8 @@
   <p>responses:</p>
   <p>------------------------------------</p>
   {{#each model.responses as |response|}}
-    <p>{{responses.createdBy.username}}</p>
+    <p>{{response.createdBy.username}}</p>
     <p>{{response.text}}</p>
+    <p>workspace: {{response.workspace.name}}</p>
   {{/each}}
 {{/if}}
