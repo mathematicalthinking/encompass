@@ -1,10 +1,14 @@
 <p>{{model.title}}</p>
 <button {{action "toggleProblemText"}}>Show Problem Text</button>
 <button {{action "findWorkspaces"}}>Find Workspaces</button>
+<button {{action "findSubmissions"}}>Find Submissions</button>
 {{#if showProblemText}}
   {{html-to-text model.text}}
 {{/if}}
 {{#each relevantWorkspaces as |workspace|}}
   <p>{{workspace.name}}</p>
+{{/each}}
+{{#each problemSubmissions as |submission|}}
+  <p>{{html-to-text submission.shortAnswer}}</p>
 {{/each}}
 <p>{{#link-to "metrics"}}back{{/link-to}}</p>
