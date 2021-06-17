@@ -74,7 +74,8 @@ switch(process.env.NODE_ENV) {
 console.log(`database name: '${dbConf.name}'`);
 
 mongoose.connect(`mongodb://${dbConf.host}:27017/${dbConf.name}`, {
-  useMongoClient: true
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 
 console.info(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
