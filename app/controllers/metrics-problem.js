@@ -10,11 +10,15 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
       console.log('finding');
     },
     findSubmissions: function(){
-      fetch(`/api/submissions`)
-        .then(res=>res.json())
-        .then(({submissions})=>{
-          this.set('problemSubmissions', submissions.filter(s=>s.publication.puzzle.puzzleId === this.get('model.puzzleId')));
-        });
+      this.get('store').query('answer', {
+        filterBy: {
+          problem: this.get('model.id')
+        }
+      }).then(res => {
+        this.set('problemSubmissions', res.data);
+      });
     }
   }
 });
+
+// /api/answers?didConfirmLargeRequest=true&filterBy%5Bproblem%5D=5bac0800ea4c0a230b2c81b0&filterBy%5BstartDate%5D=2003-06-04&filterBy%5BendDate%5D=2021-06-17&filterBy%5BisVmtOnly%5D=false&filterBy%5BisTrashedOnly%5D=false
