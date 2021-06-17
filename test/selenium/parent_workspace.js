@@ -44,7 +44,6 @@ describe('Parent Workspace creation and updating', function() {
 
   let student1WorkspaceHref;
   let student2WorkspaceHref;
-  let student3WorkspaceHref;
 
   function getWsInfoHref(wsHref) {
 
@@ -70,7 +69,7 @@ describe('Parent Workspace creation and updating', function() {
   });
 
   async function createAssignment(assignmentDetails, assignmentNewUrl=`${host}/#/assignments/new`) {
-    let { name, section, problem, linkedWsName, parentWsName } = assignmentDetails;
+    let { section, problem, linkedWsName, parentWsName } = assignmentDetails;
     let inputSelectors = css.assignmentsNew.inputs;
 
     let linkedNameInput= css.assignmentsTeacher.linkedWorkspaces.nameInput;
@@ -340,8 +339,6 @@ describe('Parent Workspace creation and updating', function() {
                 student1WorkspaceHref = obj.href;
               } else if (obj.name === student2.linkedWs.name) {
                 student2WorkspaceHref = obj.href;
-              } else {
-                student3WorkspaceHref = obj.href;
               }
             });
           });
@@ -485,7 +482,6 @@ describe('Parent Workspace creation and updating', function() {
       let student = student1;
       let selectionsCount = 0;
       let taggingsCount = 0;
-      let foldersCount = 0;
       let commentsCount = 0;
 
       let selectionLinkSel = wsSelectors.selections.selectionLink;
@@ -511,7 +507,6 @@ describe('Parent Workspace creation and updating', function() {
           await helpers.waitForElementToHaveText(driver, wsSelectors.studentItem, studentToMarkup.username);
           await toggleSelectingInput.click();
 
-          let selectableArea = await helpers.waitForSelector(driver, wsSelectors.selectableArea.container);
         }catch(err) {
           throw(err);
         }
@@ -633,9 +628,8 @@ describe('Parent Workspace creation and updating', function() {
 
       it('Creating a response', async function() {
         try {
-          let successText = 'Response Sent';
           await helpers.findAndClickElement(driver, wsSelectors.newResponse);
-          await driver.sleep(1000);
+
           await helpers.waitForAndClickElement(driver, css.responsesNew.saveBtn);
 
           // await helpers.waitForTextInDom(driver, successText);
@@ -740,7 +734,6 @@ describe('Parent Workspace creation and updating', function() {
         let student = student2;
         let selectionsCount = 0;
         let taggingsCount = 0;
-        let foldersCount = 0;
 
         let selectionLinkSel = wsSelectors.selections.selectionLink;
         let studentToMarkup = student1;
