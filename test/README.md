@@ -42,4 +42,4 @@ Sections
 - testing for metrics route
 
 # Flaky Tests
-- linked_workspaces.js: returning to login results in 404 sometimes 'For newly linked workspaces'
+- returning to login randomly results in 404 but clicking the logout button puts it back on track
