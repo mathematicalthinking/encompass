@@ -1,7 +1,6 @@
 // REQUIRE MODULES
 const {Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
-const moment = require('moment');
 // REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
