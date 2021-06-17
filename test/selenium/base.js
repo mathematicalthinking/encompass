@@ -67,19 +67,16 @@ describe('Home Page', function () {
 
     it('should display incorrect password if wrong password submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
-      await driver.sleep('600');
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.password)).to.be.true;
     });
 
     it('should remove incorrect password error', async function () {
       await helpers.findInputAndType(driver, css.login.username, 'q');
-      await driver.sleep('600');
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.password)).to.be.false;
     });
 
     it('should display incorrect username if wrong username submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
-      await driver.sleep('600');
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.username)).to.be.true;
     });
 
