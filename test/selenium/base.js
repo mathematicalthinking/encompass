@@ -67,6 +67,7 @@ describe('Home Page', function () {
 
     it('should display incorrect password if wrong password submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
+      await driver.sleep(2000);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.password)).to.be.true;
     });
 
