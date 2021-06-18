@@ -83,7 +83,7 @@ These global colors are defined [here](https://github.com/mathematicalthinking/e
 ## Project Leads and Contact Info
 
 - [Steve Weimer: (Project Director)](https://www.21pstem.org/steve-weimar)
-- [Crispina Muriel (Fullstack Dev)](https://www.21pstem.org/copy-of-kylie-doyle)
+- [Tim Leonard (Fullstack Dev)](https://www.21pstem.org/copy-of-greg-folk)
 
 ### Repositories
 
