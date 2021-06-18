@@ -253,7 +253,7 @@ xdescribe('Importing VMT Work', function() {
         });
 
         xdescribe('Associated Problem', function() {
-          let problemLink;
+          
         });
 
       });

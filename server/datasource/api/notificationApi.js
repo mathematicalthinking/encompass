@@ -101,7 +101,6 @@ const postNotification = (req, res, next) => {
 
 const putNotification = async (req, res, next) => {
   try {
-    let user = userAuth.requireUser(req);
 
     let id = req.params.id;
 

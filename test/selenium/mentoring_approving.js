@@ -143,7 +143,6 @@ describe('Mentoring / Approving Interactions', function() {
 
   describe('Visting Responses List', function() {
     before(async function() {
-      driver.sleep(10000);
       await helpers.navigateAndWait(driver, `${host}/#/responses`, {selector: 'a'});
       await helpers.waitForSelector(driver, css.responsesList.mentoringTab);
     });

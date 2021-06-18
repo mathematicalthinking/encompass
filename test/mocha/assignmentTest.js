@@ -136,7 +136,7 @@ describe('Assignment CRUD operations by account type', function() {
       if (username === 'pdadmin') {
         describe('Changing Assignment Section', function() {
           let {assignment: assn, newSection} = fixtures.pdAdmin.toModify;
-          let { section: oldSectionId, students: oldStudentIds, teachers: oldTeacherIds } = assn;
+          let { section: oldSectionId, students: oldStudentIds } = assn;
 
           assn.section = newSection._id;
 

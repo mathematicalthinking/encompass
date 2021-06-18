@@ -1,6 +1,7 @@
 Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
   elementId: 'user-new-pd',
   alert: Ember.inject.service('sweet-alert'),
+  routing: Ember.inject.service('-routing'),
   errorMessage: null,
   username: '',
   password: '',
@@ -106,7 +107,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         .then((res) => {
           if (res.username) {
             this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
-            return this.sendAction('toUserInfo', res.username);
+            return this.get('routing').router.transitionTo("users.user", res.id);
           }
           if (res.message === 'There already exists a user with that username') {
             this.set('usernameError', this.get('usernameErrors.taken'));
@@ -124,7 +125,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     },
 
     cancelNew: function () {
-      this.sendAction('toUserHome');
+      this.get('routing').router.transitionTo("users");
     },
 
     resetErrors(e) {

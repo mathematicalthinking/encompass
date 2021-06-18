@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder } = require('selenium-webdriver');
+const { Builder, By } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
@@ -93,7 +93,6 @@ describe('Users', function() {
         let username = `muzzy`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
-        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
         await helpers.waitForTextInDom(driver, 'Missing required fields');
@@ -185,7 +184,6 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
-        // await driver.sleep(1000);
         await helpers.waitForTextInDom(driver, 'Email address has already been used');
         await helpers.waitForElementToHaveText(driver, 'div.error-box', 'Email address has already been used');
 
@@ -215,17 +213,13 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(1000);
         await helpers.waitForSelector(driver, '.error-text');
         await helpers.waitForTextInDom(driver, 'Username already exists');
         expect(await helpers.findAndGetText(driver, '.error-text')).to.contain('Username already exists');
         await clearUsername(driver);
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
-        await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep(1000);
         await helpers.waitForSelector(driver, '#user-info', 7000);
         expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newstudent');
       });
@@ -246,13 +240,9 @@ describe('Users', function() {
       it('should change a teacher to an admin', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await driver.sleep(500);
         await helpers.selectOption(driver, 'my-select', 'Admin');
-        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep(500);
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(3000);
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
     }
@@ -263,7 +253,6 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(5000);
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }
@@ -312,7 +301,7 @@ describe('Users', function() {
 
       describe('clicking on your own account', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.admin.username.toLowerCase()}"]`);
+          await helpers.findAndClickElement(driver, `.your-account li a`);
           await helpers.waitForSelector(driver, '#user-info');
         });
         validateUsersPage();
@@ -328,21 +317,24 @@ describe('Users', function() {
 
       describe('authorizing a user', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/muzzy"]`);
+          const link = await driver.findElement(By.linkText("muzzy"));
+          link.click();
         });
         await changeAuth();
       });
 
       describe("changing a user's account type", async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/nope"]`);
+          const link = await driver.findElement(By.linkText("nope"));
+          link.click();
         });
         await changeAccountType();
       });
 
       describe('manually authorize a users email', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/superuser"]`);
+          const link = await driver.findElement(By.linkText("superuser"));
+          link.click();
         });
         await confirmEmail();
       });
@@ -352,7 +344,6 @@ describe('Users', function() {
 
   describe('Logged in as a pd admin user', function () {
     before(async function () {
-      await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
       await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
@@ -395,7 +386,6 @@ describe('Users', function() {
         let username = `bunny`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
-        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
@@ -455,7 +445,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(1000);
+
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('bunny');
       });
 
@@ -499,7 +489,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep(100);
+
         await helpers.waitForSelector(driver, 'button.edit-user');
       });
     }
@@ -510,7 +500,6 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(3000);
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }
@@ -550,7 +539,7 @@ describe('Users', function() {
 
       describe('clicking on your own account', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.pdAdmin.username}"]`);
+          await helpers.findAndClickElement(driver, `.your-account li a`);
           await helpers.waitForSelector(driver, 'div#user-info');
         });
         validateUsersPage();
@@ -566,21 +555,24 @@ describe('Users', function() {
 
       describe('authorizing a user', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/bunny"]`);
+          const link = await driver.findElement(By.linkText("bunny"));
+          link.click();
         });
         await changeAuth();
       });
 
      describe("changing a user's account type", async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/eeyore"]`);
+          const link = await driver.findElement(By.linkText("eeyore"));
+          link.click();
         });
         await changeAccountType();
       });
 
       describe('manually authorize a user\'s email', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/perryu"]`);
+          const link = await driver.findElement(By.linkText("perryu"));
+          link.click();
         });
         await confirmEmail();
       });
@@ -590,7 +582,6 @@ describe('Users', function() {
 
   describe('Logged in as a teacher', function() {
     before(async function() {
-      await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.regUser);
       await helpers.findAndClickElement(driver, css.topBar.users);
@@ -718,7 +709,7 @@ describe('Users', function() {
 
       describe('clicking on your own account', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.regUser.username}"]`);
+          await helpers.findAndClickElement(driver, `.your-account li a`);
           await helpers.waitForSelector(driver, 'div#user-info');
         });
         await validateUsersPage();
@@ -734,7 +725,8 @@ describe('Users', function() {
 
       describe('unauthorizing a user', async function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/mystudent"]`);
+          const link = await driver.findElement(By.linkText("mystudent"));
+          link.click();
         });
         await changeAuth();
       });

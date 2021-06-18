@@ -12,20 +12,19 @@ const css = require('./selectors');
 
 const host = helpers.host;
 const testUsers = require('./fixtures/users');
-const topLink = css.topBar.problems;
 
 const SwalDriver = require('./utilities/sweet_alert');
 
-const handleRetries = function (driver, fetchPromise, numRetries) {
-  console.log('inside handleRetries function');
-  numRetries = 'undefined' === typeof numRetries ? 1 : numRetries;
-  return fetchPromise().catch(function(err) {
-    if (numRetries > 0) {
-      return handleRetries(driver, fetchPromise, numRetries-1);
-    }
-    throw err;
-  });
-};
+// const handleRetries = function (driver, fetchPromise, numRetries) {
+//   console.log('inside handleRetries function');
+//   numRetries = 'undefined' === typeof numRetries ? 1 : numRetries;
+//   return fetchPromise().catch(function(err) {
+//     if (numRetries > 0) {
+//       return handleRetries(driver, fetchPromise, numRetries-1);
+//     }
+//     throw err;
+//   });
+// };
 
 describe('Problems', async function () {
   function runTests(users) {

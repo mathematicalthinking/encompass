@@ -1,6 +1,7 @@
 Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
   elementId: 'user-new-admin',
   alert: Ember.inject.service('sweet-alert'),
+  routing: Ember.inject.service('-routing'),
   errorMessage: null,
   username: '',
   password: '',
@@ -178,9 +179,10 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           newUserData.organization = org;
           return this.createNewUser(newUserData)
             .then((res) => {
+              console.log(res);
               if (res.username) {
                 this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
-                return this.sendAction('toUserInfo', res.username);
+                return this.get('routing').router.transitionTo("users.user", res.id);
               }
               if (res.message === 'There already exists a user with that username') {
                 this.set('usernameError', this.get('usernameErrors.taken'));
@@ -201,7 +203,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     },
 
     cancelNew: function () {
-      this.sendAction('toUserHome');
+      this.get('routing').router.transitionTo("users");
     },
 
      setOrg(org) {

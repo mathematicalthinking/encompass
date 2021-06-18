@@ -17,6 +17,7 @@
  */
 
 /*jshint camelcase: false */
+// eslint-disable-next-line no-redeclare
 /*global module:false */
 module.exports = function (grunt) {
   /*

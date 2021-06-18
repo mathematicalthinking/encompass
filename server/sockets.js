@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const socketInit = require('./socketInit');
 
 module.exports = function () {

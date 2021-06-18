@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 /* eslint-disable complexity */
 /* eslint-disable max-depth */
 /**
@@ -65,7 +66,7 @@ function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
   }
 
   const dataMap = {};
-  const { submissions, folders, selections, comments, feedback } = permissions;
+  const { submissions, folders, selections, comments } = permissions;
 
   // filter submissions to requestedIds
   if (_.propertyOf(submissions)('all') !== true) {
@@ -168,76 +169,76 @@ function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
   * @throws {MongoError} Data retrieval failed
   * @todo This should really accept a node-style callback
   */
-function getWorkspace(id, user, specialPermissions, callback, doCheckAllowedResponses) {
-  models.Workspace.findById(id)
-    .populate('selections')
-    .populate('submissions')
-    .populate('folders')
-    .populate('taggings')
-    .populate('responses')
-    .exec(function(err, ws){
-    if(err) {
-      throw err;
-    }
-    if(!ws) {
-      return callback();
-    }
+// function getWorkspace(id, user, specialPermissions, callback, doCheckAllowedResponses) {
+//   models.Workspace.findById(id)
+//     .populate('selections')
+//     .populate('submissions')
+//     .populate('folders')
+//     .populate('taggings')
+//     .populate('responses')
+//     .exec(function(err, ws){
+//     if(err) {
+//       throw err;
+//     }
+//     if(!ws) {
+//       return callback();
+//     }
 
-    const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, ws);
-    _.each(restrictedDataMap, (val, key) => {
-      if (ws[key]) {
-        ws[key] = val;
-      }
-    });
+//     const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, ws);
+//     _.each(restrictedDataMap, (val, key) => {
+//       if (ws[key]) {
+//         ws[key] = val;
+//       }
+//     });
 
-    var data = {
-      workspace: ws
-    };
+//     var data = {
+//       workspace: ws
+//     };
 
-    var dataMap = {
-      'selections':  'selection',
-      'submissions': 'submission',
-      'folders':     'folder',
-      'taggings':     'tagging',
-      'responses': 'response',
-    };
+//     var dataMap = {
+//       'selections':  'selection',
+//       'submissions': 'submission',
+//       'folders':     'folder',
+//       'taggings':     'tagging',
+//       'responses': 'response',
+//     };
 
-    var relatedData = {
-      'selections':  [],
-      'submissions': [],
-      'folders':     [],
-      'taggings':    [],
-      'responses': [],
-//      'workspace': {},
-//      'createdBy': {}
-    };
+//     var relatedData = {
+//       'selections':  [],
+//       'submissions': [],
+//       'folders':     [],
+//       'taggings':    [],
+//       'responses': [],
+// //      'workspace': {},
+// //      'createdBy': {}
+//     };
 
-    //this would probably be better done as an aggregate?
-    //we're just massaging the data into an ember friendly format for side-loading
-    _.keys(relatedData).forEach(function(key){
-      if(ws[key]){ //array
-        var idBag = [];
-        ws[key].forEach(function(item){
-          relatedData[key].push(item);//[ws[key]._id] = comment[key];
-          idBag.push(item._id);
-        });
-        ws[key] = idBag;
-      } else {
-        logger.error('workspace ' + ws._id + ' missing ' + key);
-        delete ws[key];
-      }
-    });
+//     //this would probably be better done as an aggregate?
+//     //we're just massaging the data into an ember friendly format for side-loading
+//     _.keys(relatedData).forEach(function(key){
+//       if(ws[key]){ //array
+//         var idBag = [];
+//         ws[key].forEach(function(item){
+//           relatedData[key].push(item);//[ws[key]._id] = comment[key];
+//           idBag.push(item._id);
+//         });
+//         ws[key] = idBag;
+//       } else {
+//         logger.error('workspace ' + ws._id + ' missing ' + key);
+//         delete ws[key];
+//       }
+//     });
 
-    _.keys(relatedData).forEach(function(key){
-      var modelName = key;
-      if(dataMap[key]) {
-        modelName = dataMap[key];
-      }
-      data[modelName] = _.values(relatedData[key]);
-    });
-            callback(data);
-  });
-}
+//     _.keys(relatedData).forEach(function(key){
+//       var modelName = key;
+//       if(dataMap[key]) {
+//         modelName = dataMap[key];
+//       }
+//       data[modelName] = _.values(relatedData[key]);
+//     });
+//             callback(data);
+//   });
+// }
 
 /**
   * @private
@@ -419,7 +420,7 @@ function filterRequestedWorkspaceData(user, results) {
         // eslint-disable-next-line no-unused-vars
 
         if (areSubmissionRestrictions) {
-          const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
+          const [specialPermissions] = access.get.workspace(user, populatedWs);
           const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs, isBasicStudentAccess);
           // val is array of populated Docs, but we just need Ids
           _.each(restrictedDataMap, (val, key) => {

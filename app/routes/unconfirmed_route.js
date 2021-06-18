@@ -11,5 +11,5 @@ Encompass.UnconfirmedRoute = Ember.Route.extend({
     if (user.get('isEmailConfirmed') || !user.get('email')){
       this.transitionTo('/');
     }
-  }
+  },
 });

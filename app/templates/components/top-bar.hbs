@@ -1,107 +1,102 @@
 {{#link-to "index"}}
-  <h1 id="encompass-logo" class="al_logo">Drexel | EnCoMPASS</h1>
+  <h1 id="encompass-logo" class="nav__logo">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 
-<div class="clear_r"></div>
-
 {{#if user.isAuthenticated}}
-  <ul class="al_nav menu-toggle" id="main-nav">
-    <li class="menu-items" id="home-btn">
-      <div class="dropdown-skinny">
-        {{#link-to "index" }}my work{{/link-to}}
+  <ul class="nav__list">
+    <li class="nav__item nav--full">
+      <div class="nav--skinny">
+        {{#link-to "index" classNames="nav__link nav--parent"}}my work{{/link-to}}
       </div>
     </li>
     {{#unless currentUser.isStudent}}
-      <li class="menu-items">
-        <div class="dropdown dropdown-skinny">
-          {{#link-to "index" }}
+      <li class="nav__item">
+        <div class="nav__dropdown nav--skinny">
+          {{#link-to "index" classNames="nav__link nav--parent"}}
             make
             <i class="fa fa-caret-down caret-down"></i>
           {{/link-to}}
-          <div class="dropdown-content">
-            {{#link-to "assignments.new" }}
+          <div class="nav__content">
+            {{#link-to "assignments.new" classNames="nav__link"}}
               assignment
             {{/link-to}}
-            <div class="parent-dropdown">
-              <div class="dropdown dropdown-skinny">
-                {{#link-to "workspaces.new" }}
+            <div class="nav__dropdown-inner">
+                {{#link-to "workspaces.new" classNames="nav__link"}}
                   workspace
                   <i class="fa fa-caret-right caret-right spacing"></i>
                 {{/link-to}}
-              </div>
-              <div
-                id="dropdown-hidden"
-                class="dropdown-content dropdown-right dropdown-hidden"
-              >
-                {{#link-to "workspaces.new" }}
+              <div class="nav__dropdown-right nav__dropdown--hidden">
+                {{#link-to "workspaces.new" classNames="nav__link"}}
                   new
                 {{/link-to}}
-                {{#link-to "import" }}
+                {{#link-to "import" classNames="nav__link"}}
                   import
                 {{/link-to}}
-                {{#link-to "workspaces.copy" }}
+                {{#link-to "workspaces.copy" classNames="nav__link"}}
                   copy
                 {{/link-to}}
-                {{#link-to "vmt.import" }}
+                {{#link-to "vmt.import" classNames="nav__link"}}
                   vmt
                 {{/link-to}}
               </div>
             </div>
-            {{#link-to "problems.new" }}
+            {{#link-to "problems.new" classNames="nav__link"}}
               problem
             {{/link-to}}
-            {{#link-to "sections.new" }}
+            {{#link-to "sections.new" classNames="nav__link"}}
               class
             {{/link-to}}
-            {{#link-to "users.new" }}
+            {{#link-to "users.new" classNames="nav__link"}}
               users
             {{/link-to}}
           </div>
         </div>
       </li>
     {{/unless}}
-    <li class="menu-items">
-      <div class="dropdown dropdown-wide">
-        {{#link-to "index" }}
+    <li class="nav__item">
+      <div class="nav__dropdown nav--wide">
+        {{#link-to "index" classNames="nav__link nav--parent"}}
           do
           <i class="fa fa-caret-down caret-down"></i>
         {{/link-to}}
-        <div class="dropdown-content">
+        <div class="nav__content">
           {{#each do as |item|}}
             {{#if item.restricted}}
               {{#unless currentUser.isStudent}}
-                {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
+                {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
               {{/unless}}
             {{else}}
-              {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
+              {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
             {{/if}}
           {{/each}}
         </div>
       </div>
     </li>
-    <li class="menu-items">
-      <div class="dropdown dropdown-skinny">
-        {{#link-to "index" }}
+    <li class="nav__item">
+      <div class="nav__dropdown nav--skinny">
+        {{#link-to "index" classNames="nav__link nav--parent"}}
           find
           <i class="fa fa-caret-down caret-down"></i>
         {{/link-to}}
-        <div class="dropdown-content">
+        <div class="nav__content">
           {{#each find as |item|}}
             {{#if item.restricted}}
               {{#unless currentUser.isStudent}}
-                {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
+                {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
               {{/unless}}
             {{else}}
-              {{#link-to item.link classNames=item.link}}{{item.text}}{{/link-to}}
+              {{#link-to item.link classNames="nav__link"}}{{item.text}}{{/link-to}}
             {{/if}}
           {{/each}}
         </div>
       </div>
     </li>
-    <li class="menu-items" id="logout-btn">
-      {{#link-to "logout" classNames="menu logout"}}
-        <i class="fas fa-power-off logout-icon"></i>
-        <span id="logout-text">log out</span>
+    </ul>
+    <ul class="nav__auth">
+    <li class="nav__btn-logout">
+      {{#link-to "logout" classNames="nav__logout"}}
+        <i class="fas fa-power-off nav__icon"></i>
+        <span class="nav__text">log out</span>
       {{/link-to}}
     </li>
     {{#unless isStudentAccount}}
@@ -112,15 +107,15 @@
         </span>
       </li>
     {{/unless}}
-    <li id="current-username">
-      {{#link-to "user" currentUser.username}}
+    <li id="current-username" class="nav__user">
+      {{#link-to 'users.user' currentUser.username}}
         <img
           src={{currentUser.avatar}}
           alt={{currentUser.username}}
         />
       {{/link-to}}
     </li>
-    <li id="user-image">
+    <li id="user-image" class="nav__img-user">
       <img id="menu-button" src={{user.avatar}} alt="" />
       {{#if newNotifications}}
         {{circle-ntf displayCount=newNotifications.length}}
@@ -168,6 +163,7 @@
       </li>
     </ul>
   </div>
+  <div id="status"></div>
 
 {{else}}
   <nav id="topbar-unauth">

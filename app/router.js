@@ -21,8 +21,7 @@ Encompass.Router.map(function() {
   });
   // SECTIONS ROUTE
   this.route("sections", function(){
-    this.route("section", {resetNamespace: true, path: '/:sectionId'}, function() {
-    });
+    this.route("section", { path: '/:section_id' });
     this.route("new");
   });
 
@@ -68,7 +67,7 @@ Encompass.Router.map(function() {
   });
   // USERS PARENT ROUTE
   this.route("users", function(){
-    this.route("user", {resetNamespace: true, path: '/:username'});
+    this.route("user", {path: '/:user_id'});
     this.route("new");
   });
   // IMPORT ROUTE

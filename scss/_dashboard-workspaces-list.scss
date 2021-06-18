@@ -3,6 +3,11 @@
 @import "mixins";
 @import "responsive-font-size";
 
+td,
+    th {
+      border: 1px solid grey;
+    }
+
 .assignments-list {
   table {
     margin-left: 5px;
@@ -12,6 +17,7 @@
     td,
     th {
       padding: 8px;
+      border: 1px solid grey;
     }
 
     th {

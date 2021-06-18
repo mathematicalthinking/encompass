@@ -36,6 +36,10 @@ Taggings              X
 Responses        X    X
 Sections
 
+## TODO
+- remove diver.sleep from tests and change to blocking awaiting selectors (will cut total test time in half)
+- testing for dashboard
+- testing for metrics route
 
 # Flaky Tests
-- linked_workspaces.js: returning to login results in 404 sometimes 'For newly linked workspaces'
+- returning to login randomly results in 404 but clicking the logout button puts it back on track

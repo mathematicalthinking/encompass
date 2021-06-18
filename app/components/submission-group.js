@@ -13,6 +13,8 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
   classNames: ['workspace-flex-item', 'submission'],
   isHidden: false,
 
+  infoToolTipText: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
+
   currentStudent: Ember.computed.alias('submission.student'),
   currentStudentDisplayName: Ember.computed.alias('submission.studentDisplayName'),
   firstThread: Ember.computed.alias('submissionThreadHeads.firstObject'),

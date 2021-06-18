@@ -24,7 +24,6 @@ describe('Response CRUD operations by account type', async function() {
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
       const { accessibleResponsesCount, inaccessibleResponse, accessibleResponse } = user.responses;
-      const isStudent = accountType === 'S' || actingRole === 'student';
 
       before(async function(){
         try {

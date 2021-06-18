@@ -1,11 +1,6 @@
 Encompass.HomePageComponent =
   Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  elementId: 'homepage',
-  className: ['homepage', 'index'],
-  classNameBindings: ['isSmallHeader:small', 'isHidden:hide'],
-  isSmallHeader: false,
-  isHidden: false,
-  openMenu: false,
+  classNames: ['home'],
   toggleRoleErrors: [],
   alert: Ember.inject.service('sweet-alert'),
 
@@ -22,15 +17,6 @@ Encompass.HomePageComponent =
   },
 
   actions: {
-    largeHeader: function() {
-      this.set('isSmallHeader', false);
-    },
-    smallHeader: function() {
-      this.set('isSmallHeader', true);
-    },
-    toggleMenu: function () {
-      // console.log('toggle called', this.openMenu);
-    },
     showToggleModal: function () {
       this.get('alert').showModal('question', 'Are you sure you want to switch roles?', 'If you are currently modifying or creating a new record, you will lose all unsaved progress', 'Ok')
       .then((result) => {

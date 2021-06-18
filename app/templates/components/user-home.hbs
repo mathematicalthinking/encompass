@@ -1,7 +1,0 @@
-{{#if currentUser.isAuthorized}}
-  <h1>Welcome to the Users Page</h1>
-  <p>Users in bold are authorized & Users in italics are awaiting email confirmation</p>
-  <p>Click on a username to see more info about their account and edit them</p>
-  <p class="or">Or</p>
-  {{#link-to 'users.new' id="user-new-link" class="new-link-btn"}}<span>Create New User</span>{{/link-to}}
-{{/if}}

@@ -47,54 +47,5 @@ Encompass.ApplicationRoute = Ember.Route.extend(Encompass.MtAuthMixin, { //the a
     }else if(!user.get('isAuthz')) {
       this.transitionTo('unauthorized');
     }
-  },
-
-  actions: {
-    // TODO: Remove all the modal stuff
-    openModal: function(modalName, model) {
-      if(model) {
-        this.controllerFor(modalName).set('model', model);
-      }
-      return this.render(modalName, {
-        into: 'application',
-        outlet: 'modal'
-      });
-    },
-
-    closeModal: function() {
-      return this.disconnectOutlet({
-        outlet: 'modal',
-        parentView: 'application'
-      });
-    },
-
-    openPanel: function(panelName, model) {
-      if(model) {
-        this.controllerFor(panelName).set('model', model);
-      }
-      return this.render(panelName, {
-        into: 'application',
-        outlet: 'modal'
-      });
-    },
-
-    closePanel: function() {
-      return this.disconnectOutlet({
-        outlet: 'modal',
-        parentView: 'application'
-      });
-    },
-
-    doneTour: function() {
-      var user = this.get('model');
-      user.set('seenTour', new Date());
-      user.save();
-      guiders.hideAll();
-    },
-
-    reloadPage: function() {
-      window.location.reload();
-    }
-
   }
 });

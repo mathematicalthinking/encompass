@@ -1,4 +1,3 @@
-/*global _:false */
 Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: ['workspace-info-collaborators'],
   utils: Ember.inject.service('utility-methods'),

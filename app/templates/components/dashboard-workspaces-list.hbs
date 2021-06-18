@@ -3,13 +3,13 @@
 {{#if user.isStudent}}
   <div class="header-space">
     <span class="toggle-role header-space" {{action 'showToggleModal' }}>
-      <span class="header-home al_wtf_link">Student Work to Review (switch to teacher role)</span>
+      <span class="home__header home--link">Student Work to Review (switch to teacher role)</span>
     </span>
   </div>
 
 {{/if}}
 {{#unless user.isStudent}}
-<h2 class="header-home">{{#link-to 'workspaces.index'}}Student Work to Review{{/link-to}}</h2>
+<h2 class="home__header">{{#link-to 'workspaces.index' classNames="home--link"}}Student Work to Review{{/link-to}}</h2>
   <table class="max-width">
     <tr>
       <td>

@@ -16,13 +16,9 @@ Encompass.UsersRoute = Ember.Route.extend({
   },
   model: function () {
     return Ember.RSVP.hash({
+      currentUser: this.modelFor('application'),
       users: this.get('store').findAll('user'),
       organizations: this.get('store').findAll('organization'),
     });
   },
-
-  renderTemplate: function(){
-    this.render('users/users');
-  }
-
 });

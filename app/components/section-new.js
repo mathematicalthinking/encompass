@@ -2,6 +2,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   elementId: 'section-new',
   className: ['sections'],
   alert: Ember.inject.service('sweet-alert'),
+  routing: Ember.inject.service('-routing'),
   createdSection: null,
   createRecordErrors: [],
   teacher: null,
@@ -144,7 +145,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         let name = section.get('name');
         this.get('alert').showToast('success', `${name} created`, 'bottom-end', 3000, false, null);
         that.set('createdSection', section);
-        that.sendAction('toSectionInfo', section);
+        this.get('routing').router.transitionTo("sections.section", section.id);
       })
       .catch((err) => {
         that.handleErrors(err, 'createRecordErrors', sectionData);
@@ -169,7 +170,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     cancel: function() {
-      this.sendAction('toSectionsHome');
+      this.get('routing').router.transitionTo("sections");
     }
   }
 });

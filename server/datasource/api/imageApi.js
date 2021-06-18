@@ -18,10 +18,6 @@ const fs = require('fs');
 
 //REQUIRE PDF2PIC DEPENDANCIES
 const { fromPath } = require("pdf2pic");
-const { mkdirsSync } = require("fs-extra");
-const rimraf = require("rimraf");
-
-const pdfParse = require('pdf-parse');
 
 const { isNonEmptyString } = require('../../utils/objects');
 

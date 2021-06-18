@@ -1,7 +1,7 @@
 /*global _:false */
 Encompass.WorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  elementId: 'workspace-filter',
-
+  elementId: 'filter-list-side',
+  classNames: ["flex-item-full", "filter-options", "collapse"],
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   primaryFilterInputs: Ember.computed.alias('filter.primaryFilters.inputs'),
   secondaryFilter: Ember.computed.alias('primaryFilter.secondaryFilters'),

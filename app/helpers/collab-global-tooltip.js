@@ -1,4 +1,3 @@
-/*global _:false */
 Encompass.CollabGlobalTooltipHelper = Ember.Helper.helper( function(args){
   let [val] = args;
 

@@ -1,4 +1,3 @@
-/*global _:false */
 Encompass.SubmissionViewerListComponent = Ember.Component.extend({
   elementId: 'submission-viewer-list',
   scrollBottom: true,

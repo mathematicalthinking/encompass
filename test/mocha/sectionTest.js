@@ -182,7 +182,7 @@ if (!isStudent) {
 
     // this test is flaky
     // find better way to do this
-    xit('should add section object to new teacher\'s sections array', async function() {
+    xit('should add section object to new teacher\'s sections array', function() {
       return getAPIResourceById(agent, 'users', modifiableSection.teacherToAdd)
       .then((results) => {
         let sections = results.body.user.sections;

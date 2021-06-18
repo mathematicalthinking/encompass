@@ -79,30 +79,24 @@ describe('Sections', async function () {
                 rick: ['pdadmin','5b7321ee59a672806ec903d5', 'pdadmin'],
                 pdadmin: ['drex','5b1e7bf9a5d2157ef4c911a6', 'drex']
               };
-              let usernameLinkSelector = `a[href="#/users/${hash[username][2]}"]`;
+              let usernameLinkSelector = `${hash[username][2]}`;
               it('clicking on edit students should bring up menus', async function() {
                 expect(await helpers.isElementVisible(driver, css.sectionInfo.editButtons.students)).to.eql(true);
 
                 await helpers.findAndClickElement(driver, css.sectionInfo.editButtons.students);
 
-                await driver.sleep(500);
                 let addUserInput = 'input#select-add-student-selectized';
                 await helpers.waitForSelector(driver, addUserInput);
 
                 await helpers.selectSingleSelectizeItem(driver, addUserInput , hash[username][0], hash[username][1], {willInputClearOnSelect: true, toastText: 'Student Added'});
 
-                await helpers.waitForSelector(driver, usernameLinkSelector);
-
-                expect(await helpers.isElementVisible(driver, usernameLinkSelector));
+                expect(await helpers.isTextInDom(driver, usernameLinkSelector)).to.eql(true);
               });
 
               it('new student should persist after page refresh', async function() {
                 await driver.get(`${host}/#/assignments`);
-                await driver.sleep(2000);
                 await driver.get(`${host}/#/sections/${sectionDetails._id}`);
-                await driver.sleep(2000);
-                await helpers.waitForSelector(driver, usernameLinkSelector);
-                expect(await helpers.isElementVisible(driver, usernameLinkSelector));
+                expect(await helpers.isTextInDom(driver, usernameLinkSelector)).to.eql(true);
               });
             });
           }
