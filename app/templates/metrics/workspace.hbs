@@ -1,18 +1,21 @@
-<p>{{model.name}}</p>
-<p {{action "setContent" "folders" model.folders}}>folders: {{model.foldersLength}}</p>
-<p {{action "setContent" "comments" model.comments}}>comments: {{model.commentsLength}}</p>
-<p {{action "setContent" "responses" model.responses}}>responses: {{model.responsesLength}}</p>
-<p {{action "setContent" "selections" model.selections}}>selections: {{model.selectionsLength}}</p>
-<p {{action "setContent" "submissions" model.submissions}}>submissions: {{model.submissionsLength}}</p>
-{{#data-viz title=heading}}
-  {{#each content as |item|}}
-    {{#if item.text}}
-      <p>{{item.text}}</p>
-    {{else if item.name}}
-      <p>{{item.name}}</p>
-    {{else}}
-      <p>{{#link-to "metrics.submission" item.submissionId}}{{item.student}}{{/link-to}}</p>
-    {{/if}}
-  {{/each}}
-{{/data-viz}}
-<p>{{#link-to "metrics"}}back{{/link-to}}</p>
+<div class="metrics__container">
+  <p>{{#link-to "metrics"}}back{{/link-to}}</p>
+  <p>{{model.name}}</p>
+  <p {{action "setContent" "folders" model.folders}}>folders: {{model.foldersLength}}</p>
+  <p {{action "setContent" "comments" model.comments}}>comments: {{model.commentsLength}}</p>
+  <p {{action "setContent" "responses" model.responses}}>responses: {{model.responsesLength}}</p>
+  <p {{action "setContent" "selections" model.selections}}>selections: {{model.selectionsLength}}</p>
+  <p {{action "setContent" "submissions" model.submissions}}>submissions: {{model.submissionsLength}}</p>
+  {{#data-viz title=heading}}
+    {{#each content as |item|}}
+      {{#if item.text}}
+        <p>{{item.text}}</p>
+      {{else if item.name}}
+        <p>{{item.name}}</p>
+      {{else}}
+        <p>{{#link-to "metrics.submission" item.submissionId}}{{item.student}}{{/link-to}}</p>
+      {{/if}}
+    {{/each}}
+  {{/data-viz}}
+  <p>{{#link-to "metrics"}}back{{/link-to}}</p>
+</div>

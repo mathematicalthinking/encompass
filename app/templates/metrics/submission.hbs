@@ -1,66 +1,74 @@
-<h1>Submissions</h1>
-<button {{action "handleToggle" "showSelections"}}>Show Selections</button>
-<button {{action "handleToggle" "showFolders"}}>Show Folders</button>
-<button {{action "handleToggle" "showComments"}}>Show Comments</button>
-<button {{action "handleToggle" "showResponses"}}>Show Responses</button>
-<p>{{model.student}}</p>
-{{#if model.selections}}
-  <p>has selections</p>
-{{/if}}
-{{#if showSelections}}
-<p>selections</p>
-{{#each model.selections as |selection|}}
-  <p>------------------------------------</p>
-  <p>text</p>
-  <p>{{selection.text}}</p>
-  <p>------------------------------------</p>
-  <p>coordinates</p>
-  <p>{{selection.coordinates}}</p>
-{{/each}}
-{{/if}}
+<p>{{#link-to "metrics"}}back{{/link-to}}</p>
+<div class="metrics__container">
+  <h1>Submissions</h1>
+  <button {{action "handleToggle" "showSelections"}}>Show Selections</button>
+  <button {{action "handleToggle" "showFolders"}}>Show Folders</button>
+  <button {{action "handleToggle" "showComments"}}>Show Comments</button>
+  <button {{action "handleToggle" "showResponses"}}>Show Responses</button>
+  <p>{{model.student}}</p>
+  <p>in workspaces:</p>
+  {{#each model.workspaces as |workspace|}}
+    <p>{{workspace.name}}</p>
+  {{/each}}
+  {{#if model.selections}}
+    <p>has selections</p>
+  {{/if}}
+  {{#if showSelections}}
+  <p>selections</p>
+  {{#each model.selections as |selection|}}
+    <p>------------------------------------</p>
+    <p>text</p>
+    <p>{{selection.text}}</p>
+    <p>------------------------------------</p>
+    <p>coordinates</p>
+    <p>{{selection.coordinates}}</p>
+  {{/each}}
+  {{/if}}
 
-<div id="submission">
-  <p>------------------------------------</p>
-  <p>short answer</p>
-  <p>{{html-to-text model.shortAnswer}}</p>
-  <p>------------------------------------</p>
-  <p>long answer</p>
-  <p>{{html-to-text model.longAnswer}}</p>
-  <p>------------------------------------</p>
-  <p>answer</p>
-  <p>{{html-to-text model.answer.answer}}</p>
-  <p>------------------------------------</p>
-  <p>explanation</p>
-  <p>{{html-to-text model.answer.explanation}}</p>
-  <p>------------------------------------</p>
+  <div id="submission">
+    <p>------------------------------------</p>
+    <p>short answer</p>
+    <p>{{html-to-text model.shortAnswer}}</p>
+    <p>------------------------------------</p>
+    <p>long answer</p>
+    <p>{{html-to-text model.longAnswer}}</p>
+    <p>------------------------------------</p>
+    <p>answer</p>
+    <p>{{html-to-text model.answer.answer}}</p>
+    <p>------------------------------------</p>
+    <p>explanation</p>
+    <p>{{html-to-text model.answer.explanation}}</p>
+    <p>------------------------------------</p>
+  </div>
+  {{#if showFolders}}
+    <p>------------------------------------</p>
+    <p>folders:</p>
+    <p>------------------------------------</p>
+    {{#each model.folders as |folder|}}
+      <p>{{folder.name}}</p>
+    {{/each}}
+  {{/if}}
+  {{#if showComments}}
+    <p>------------------------------------</p>
+    <p>comments:</p>
+    <p>------------------------------------</p>
+    {{#each model.comments as |comment|}}
+    <p>------------------------------------</p>
+      <p>{{comment.createdBy.username}}</p>
+      <p>{{comment.label}}</p>
+      <p>{{comment.text}}</p>
+    <p>------------------------------------</p>
+    {{/each}}
+  {{/if}}
+  {{#if showResponses}}
+    <p>------------------------------------</p>
+    <p>responses:</p>
+    <p>------------------------------------</p>
+    {{#each model.responses as |response|}}
+      <p>{{response.createdBy.username}}</p>
+      <p>{{response.text}}</p>
+      <p>workspace: {{response.workspace.name}}</p>
+    {{/each}}
+  {{/if}}
 </div>
-{{#if showFolders}}
-  <p>------------------------------------</p>
-  <p>folders:</p>
-  <p>------------------------------------</p>
-  {{#each model.folders as |folder|}}
-    <p>{{folder.name}}</p>
-  {{/each}}
-{{/if}}
-{{#if showComments}}
-  <p>------------------------------------</p>
-  <p>comments:</p>
-  <p>------------------------------------</p>
-  {{#each model.comments as |comment|}}
-  <p>------------------------------------</p>
-    <p>{{comment.createdBy.username}}</p>
-    <p>{{comment.label}}</p>
-    <p>{{comment.text}}</p>
-  <p>------------------------------------</p>
-  {{/each}}
-{{/if}}
-{{#if showResponses}}
-  <p>------------------------------------</p>
-  <p>responses:</p>
-  <p>------------------------------------</p>
-  {{#each model.responses as |response|}}
-    <p>{{response.createdBy.username}}</p>
-    <p>{{response.text}}</p>
-    <p>workspace: {{response.workspace.name}}</p>
-  {{/each}}
-{{/if}}
+<p>{{#link-to "metrics"}}back{{/link-to}}</p>
