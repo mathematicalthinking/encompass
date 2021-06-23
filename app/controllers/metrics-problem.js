@@ -7,7 +7,14 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
       this.toggleProperty('showProblemText');
     },
     findWorkspaces: function(){
-      console.log('finding');
+      this.get('store').query('workspace', {
+        filterBy: {
+          'submissionSet.criteria.puzzle.puzzleId': this.get('model.id')
+        }
+      }).then(res=>{
+        console.log(res);
+        this.set('relevantWorkspaces', res);
+      });
     },
     findSubmissions: function(){
       this.get('store').query('answer', {

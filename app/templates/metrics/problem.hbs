@@ -10,6 +10,6 @@
   <p>{{workspace.name}}</p>
 {{/each}}
 {{#each problemSubmissions as |submission|}}
-  <p>{{html-to-text submission.answer}}</p>
+  <p>{{html-to-text submission.answer}} - {{submission.id}}</p>
 {{/each}}
 <p>{{#link-to "metrics"}}back{{/link-to}}</p>
