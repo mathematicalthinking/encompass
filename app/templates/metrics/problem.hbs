@@ -2,12 +2,13 @@
 <p>{{model.title}}</p>
 <button {{action "toggleProblemText"}}>Show Problem Text</button>
 <button {{action "findWorkspaces"}}>Find Workspaces</button>
+<button {{action "findWorkspaces2"}}>Find Workspaces2</button>
 <button {{action "findSubmissions"}}>Find Submissions</button>
 {{#if showProblemText}}
   {{html-to-text model.text}}
 {{/if}}
 {{#each relevantWorkspaces as |workspace|}}
-  <p>{{workspace.name}}</p>
+  <p>{{#link-to "metrics.workspace" workspace}}{{workspace.name}}{{/link-to}}</p>
 {{/each}}
 {{#each problemSubmissions as |submission|}}
   <p>{{html-to-text submission.answer}} - {{submission.id}}</p>
