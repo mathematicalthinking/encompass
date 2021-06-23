@@ -1,6 +1,7 @@
 <div class="metrics__container">
   <p>{{#link-to "metrics"}}back{{/link-to}}</p>
   <p>{{model.name}}</p>
+  <button {{action "generateWordMap"}}>Generate Wordcloud</button>
   <p {{action "setContent" "folders" model.folders}}>folders: {{model.foldersLength}}</p>
   <p {{action "setContent" "comments" model.comments}}>comments: {{model.commentsLength}}</p>
   <p {{action "setContent" "responses" model.responses}}>responses: {{model.responsesLength}}</p>
