@@ -1483,9 +1483,7 @@ async function getWorkspaces(req, res, next) {
 
   let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
   //if users hiddenWorkspaces is not an empty array add $nin
-  if(filterBy['submissionSet.criteria.puzzle.puzzleId'] && !isNaN(Number(filterBy['submissionSet.criteria.puzzle.puzzleId']))){
-    filterBy['submissionSet.criteria.puzzle.puzzleId'] = Number(filterBy['submissionSet.criteria.puzzle.puzzleId']);
-  }
+
   if (filterBy) {
     let { all, includeFromOrg } = filterBy;
 

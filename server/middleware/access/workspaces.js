@@ -178,6 +178,9 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
     filter.$and.push({_id: ids });
   }
   if (isNonEmptyObject(filterBy)) {
+    if(filterBy["submissionSet.criteria.puzzle.puzzleId"] && !isNaN(Number(filterBy["submissionSet.criteria.puzzle.puzzleId"]))){
+      filterBy["submissionSet.criteria.puzzle.puzzleId"] = Number(filterBy["submissionSet.criteria.puzzle.puzzleId"]);
+    }
     filter.$and.push(filterBy);
   }
 
