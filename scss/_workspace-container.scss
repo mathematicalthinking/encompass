@@ -56,7 +56,6 @@
 
   .ws-header {
     @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
-    position: relative;
     top: 20px;
     margin: 20px;
     line-height: normal;
