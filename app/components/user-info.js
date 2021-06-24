@@ -214,6 +214,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
         if (org) {
           user.set('organization', org);
+          user.save();
         }
         if (orgReq) {
           user.set('organizationRequest', orgReq);
