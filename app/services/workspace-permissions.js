@@ -21,8 +21,8 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   isInPdAdminDomain(ws) {
-    if (!this.isPdAdmin()) {
-      return false;
+    if (this.isPdAdmin()) {
+      return true;
     }
     let utils = this.get('utils');
 
