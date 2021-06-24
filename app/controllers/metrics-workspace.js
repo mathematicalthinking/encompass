@@ -1,30 +1,30 @@
 Encompass.MetricsWorkspaceController = Ember.Controller.extend({
   heading: null,
   content: null,
-  wordMap: {},
+  list: [],
   actions: {
     setContent: function(name, data){
       this.set('heading', name);
       this.set('content', data);
     },
     generateWordMap: function(){
+      const ignore = ['the', 'and', 'of', 'in', 'on', 'into', 'to', 'a', 'is', 'that', 'you', 'i', 'was', 'would', 'at', 'your', 'my', 'for', 'but', 'it', 'if', 'or', '', 'this', 'what'];
       const result = {};
       this.get("model.comments").mapBy('text').forEach(comment=>comment.replace(/[:\(\)",!\?\.]/gm, '').split(/\s/g).forEach((word)=>{
-        if(result[word.toLowerCase()]){
+        if(result[word.toLowerCase()] && !ignore.includes(word.toLowerCase())){
           result[word.toLowerCase()]++;
-        } else {
+        } else if(!ignore.includes(word.toLowerCase())) {
           result[word.toLowerCase()] = 1;
         }
       }));
       this.get("model.responses").mapBy('text').forEach(comment=>comment.replace(/[:\(\)",!\?\.]/gm, '').split(/\s/g).forEach((word)=>{
-        if(result[word.toLowerCase()]){
+        if(result[word.toLowerCase()] && !ignore.includes(word.toLowerCase())){
           result[word.toLowerCase()]++;
-        } else {
+        } else if(!ignore.includes(word.toLowerCase())) {
           result[word.toLowerCase()] = 1;
         }
       }));
-      let array = Object.keys(result).map(key=>[key, result[key]]);
-      console.log(array);
+      this.set('list', Object.keys(result).map(key=>[key, result[key]]));
     }
   }
 });
