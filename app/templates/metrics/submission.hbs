@@ -14,15 +14,15 @@
     <p>has selections</p>
   {{/if}}
   {{#if showSelections}}
-  <p>selections</p>
-  {{#each model.selections as |selection|}}
-    <p>------------------------------------</p>
-    <p>text</p>
-    <p>{{selection.text}}</p>
-    <p>------------------------------------</p>
-    <p>coordinates</p>
-    <p>{{selection.coordinates}}</p>
-  {{/each}}
+    <p>selections</p>
+    {{#each model.selections as |selection|}}
+        <p>------------------------------------</p>
+        <p>text</p>
+        <p>{{selection.text}}</p>
+        <p>------------------------------------</p>
+        <p>coordinates</p>
+        <p>{{selection.coordinates}}</p>
+    {{/each}}
   {{/if}}
 
   <div id="submission">
