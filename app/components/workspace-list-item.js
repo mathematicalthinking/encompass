@@ -48,6 +48,9 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
 
 
   actions: {
+    assignWorkspace(){
+      console.log("assign workspace");
+    },
     toggleShowMoreMenu() {
       let isShowing = this.get('showMoreMenu');
       this.set('showMoreMenu', !isShowing);
