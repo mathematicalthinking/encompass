@@ -8,8 +8,23 @@ Encompass.MetricsWorkspaceController = Ember.Controller.extend({
       this.set('content', data);
     },
     generateWordMap: function(){
-      const comments = this.get("model.comments").mapBy('text').map(comment=>comment.split(' '));
-      console.log(comments);
+      const result = {};
+      this.get("model.comments").mapBy('text').forEach(comment=>comment.replace(/[:\(\)",!\?\.]/gm, '').split(/\s/g).forEach((word)=>{
+        if(result[word.toLowerCase()]){
+          result[word.toLowerCase()]++;
+        } else {
+          result[word.toLowerCase()] = 1;
+        }
+      }));
+      this.get("model.responses").mapBy('text').forEach(comment=>comment.replace(/[:\(\)",!\?\.]/gm, '').split(/\s/g).forEach((word)=>{
+        if(result[word.toLowerCase()]){
+          result[word.toLowerCase()]++;
+        } else {
+          result[word.toLowerCase()] = 1;
+        }
+      }));
+      let array = Object.keys(result).map(key=>[key, result[key]]);
+      console.log(array);
     }
   }
 });
