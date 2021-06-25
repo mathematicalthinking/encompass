@@ -3,6 +3,10 @@ Encompass.MetricsSubmissionController = Ember.Controller.extend({
   showFolders: false,
   showComments: false,
   showResponses: false,
+  workspaceId: Ember.computed('model', function(){
+    const [id] = this.get('model.workspaces').mapBy('id');
+    return id;
+  }),
   actions: {
     handleToggle: function(prop){
       this.set('showSelections', false);

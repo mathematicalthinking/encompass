@@ -1,4 +1,4 @@
-<p>{{#link-to "metrics"}}back{{/link-to}}</p>
+<p>{{#link-to "metrics.workspace" workspaceId}}back to workspace{{/link-to}}</p>
 <div class="metrics__container">
   <h1>Submissions</h1>
   <button {{action "handleToggle" "showSelections"}}>Report Selections</button>
@@ -98,4 +98,4 @@
     <p>{{if model.longAnswer (html-to-text model.longAnswer) (html-to-text model.answer.explanation)}}</p>
   </div>
 </div>
-<p>{{#link-to "metrics"}}back{{/link-to}}</p>
+<p>{{#link-to "metrics.workspace" workspaceId}}back to workspace{{/link-to}}</p>
