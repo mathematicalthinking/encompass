@@ -1,3 +1,10 @@
 .metrics__container{
   padding: 25px;
 }
+
+.metrics__table{
+  border: 1px solid black;
+  td,th {
+    border: 1px solid black;
+  }
+}
