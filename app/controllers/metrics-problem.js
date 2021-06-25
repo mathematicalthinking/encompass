@@ -1,7 +1,7 @@
 Encompass.MetricsProblemController = Ember.Controller.extend({
   showProblemText: false,
   relevantWorkspaces: [],
-  problemSubmissions: [],
+  problemAnswers: [],
   actions: {
     toggleProblemText: function () {
       this.toggleProperty("showProblemText");
@@ -13,7 +13,6 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
         },
       })
       .then((res) => {
-        console.log(res);
         this.set("relevantWorkspaces", res);
       });
     },
@@ -23,7 +22,6 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
           'submissionSet.criteria.puzzle.puzzleId': this.get('model.puzzleId')
         }
       }).then(res=>{
-        console.log(res);
         this.set('relevantWorkspaces', res);
       });
     },
@@ -36,8 +34,7 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
           didConfirmLargeRequest: true,
         })
         .then((res) => {
-          console.log(res);
-          this.set("problemSubmissions", res);
+          this.set("problemAnswers", res);
         });
     },
   },

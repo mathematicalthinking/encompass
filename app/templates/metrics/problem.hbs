@@ -13,7 +13,7 @@
       workspace
     }}{{workspace.name}}{{/link-to}}</p>
 {{/each}}
-{{#each problemSubmissions as |submission|}}
-  <p>{{html-to-text submission.answer}} - {{submission.id}}</p>
+{{#each problemAnswers as |answer|}}
+  <p>{{answer.answer}} - {{answer.student}}</p>
 {{/each}}
 <p>{{#link-to "metrics"}}back{{/link-to}}</p>

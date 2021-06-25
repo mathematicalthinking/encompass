@@ -10,7 +10,7 @@
   {{#data-viz title=heading}}
     {{#each content as |item|}}
       {{#if item.text}}
-        <p>{{item.text}}</p>
+        <p>{{html-to-text item.text}}</p>
       {{else if item.name}}
         <p>{{item.name}}</p>
       {{else}}

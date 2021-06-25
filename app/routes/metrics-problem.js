@@ -3,7 +3,7 @@ Encompass.MetricsProblemRoute = Ember.Route.extend({
     willTransition(){
       this.controller.set('showProblemText', false);
       this.controller.set('relevantWorkspaces', []);
-      this.controller.set('problemSubmissions', []);
+      this.controller.set('problemAnswers', []);
     }
   }
 });
