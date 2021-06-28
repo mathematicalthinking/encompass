@@ -1,11 +1,17 @@
 Encompass.MetricsWorkspaceController = Ember.Controller.extend({
-  heading: null,
-  content: null,
-  list: [],
+  showSelections: false,
+  showFolders: false,
+  showComments: false,
+  showResponses: false,
+  showSubmissions: false,
   actions: {
-    setContent: function(name, data){
-      this.set('heading', name);
-      this.set('content', data);
+    handleToggle: function(prop){
+      this.set('showSelections', false);
+      this.set('showFolders', false);
+      this.set('showComments', false);
+      this.set('showResponses', false);
+      this.set('showSubmissions', false);
+      this.set(prop, true);
     },
     generateWordMap: function(){
       const ignore = ['the', 'and', 'of', 'in', 'on', 'into', 'to', 'a', 'is', 'that', 'you', 'i', 'was', 'would', 'at', 'your', 'my', 'for', 'but', 'it', 'if', 'or', '', 'this', 'what', 'she', 'he', 'off', 'be', 'is', 'are', 'was', 'have', 'can', 'did', 'we', 'me', 'our', 'very', 'which', 'had', 'not', 'do'];
