@@ -53,7 +53,13 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
       for(let section of this.get('sections.content')){
         options[section.id] = section._data.name;
       }
-      console.log(options);
+      this.get('alert').showPromptSelect('Assign Workspace to class', options, "Choose a class")
+        .then((res)=>{
+          if(res.value){
+            let chosenClass = this.get('sections.content').filter(section=>section.id===res.value);
+            console.log(chosenClass);
+          }
+        });
     },
     toggleShowMoreMenu() {
       let isShowing = this.get('showMoreMenu');
