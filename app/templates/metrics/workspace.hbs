@@ -36,7 +36,7 @@
             <td>
               <ul>
                 {{#each selection.comments as |comment|}}
-                  <li>{{comment.text}}</li>
+                  <li>{{comment.text}} - {{comment.createdBy.username}}</li>
                 {{/each}}
               </ul>
             </td>
