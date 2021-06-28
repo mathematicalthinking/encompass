@@ -49,7 +49,11 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
 
   actions: {
     assignWorkspace(){
-      console.log("assign workspace");
+      let options = {};
+      for(let section of this.get('sections.content')){
+        options[section.id] = section._data.name;
+      }
+      console.log(options);
     },
     toggleShowMoreMenu() {
       let isShowing = this.get('showMoreMenu');
