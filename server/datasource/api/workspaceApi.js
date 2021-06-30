@@ -2569,6 +2569,7 @@ function buildSubmissionSetAndSubmissionsMap(originalWs) {
 
 async function cloneWorkspace(req, res, next) {
   try {
+    console.log(req);
     const user = userAuth.requireUser(req);
     // check if user has permission to copy this workspace
     const copyWorkspaceRequest = req.body.copyWorkspaceRequest;

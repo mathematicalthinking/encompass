@@ -48,6 +48,63 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
 
 
   actions: {
+    assignWorkspace(){
+      let workspace = this.get('workspace');
+      let workspaceName = this.get('workspace.name');
+      let options = {};
+      for(let section of this.get('sections.content')){
+        options[section.id] = section._data.name;
+      }
+      this.get('alert').showPromptSelect('Assign Workspace to class', options, "Choose a class")
+        .then((res)=>{
+          if(res.value){
+            this.get('store').findRecord('section', res.value).then((section)=>section.get("students").forEach((student)=>{
+              const displayName = student.get('displayName');
+              let copyWorkspaceRequest = {
+                createDate: new Date(),
+                isTrashed: false,
+                lastModifiedDate: new Date(),
+                name: `${displayName}: ${workspaceName}`,
+                mode: 'private',
+                submissionOptions: { all: true },
+                folderOptions: { folderSetOptions: { doCreateFolderSet: false }, none: true },
+                selectionOptions: { none: true },
+                commentOptions: { none: true },
+                responseOptions: { none: true },
+                permissionOptions: {},
+                copyWorkspaceError: null,
+                createdBy: this.get('currentUser'),
+                lastModifiedBy: this.get('currentUser'),
+                owner: student,
+                originalWsId: workspace,
+                createdWorkspace: null,
+                createdFolderSet: null
+              };
+              console.log(copyWorkspaceRequest);
+              let copyRequest = this.get('store').createRecord('copyWorkspaceRequest', copyWorkspaceRequest);
+              copyRequest.save()
+              .then((result) => {
+                const error = result.get('copyWorkspaceError');
+                if (error) {
+                  console.log(error);
+                  return;
+                }
+                const createdWorkspace = result.get('createdWorkspace');
+      
+                if (createdWorkspace) {
+                  console.log('success!');
+                } else {
+                  // something went wrong?
+                  console.log('Sorry, there was an unknown error.');
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            }));
+          }
+        });
+    },
     toggleShowMoreMenu() {
       let isShowing = this.get('showMoreMenu');
       this.set('showMoreMenu', !isShowing);

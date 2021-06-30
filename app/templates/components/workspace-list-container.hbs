@@ -158,11 +158,11 @@
           <div class="sort-bar-item more"></div>
         </div>
         {{#if showList}}
-          {{workspace-list isSearching=isSearchingWorkspaces workspaces=displayWorkspaces metadata=workspacesMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store toWorkspaceInfo="toWorkspaceInfo" toCopyWorkspace=(action "toCopyWorkspace")
+          {{workspace-list sections=sections isSearching=isSearchingWorkspaces workspaces=displayWorkspaces metadata=workspacesMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store toWorkspaceInfo="toWorkspaceInfo" toCopyWorkspace=(action "toCopyWorkspace")
           }}
         {{/if}}
         {{#if showGrid}}
-          {{workspace-list isSearching=isSearchingWorkspaces store=store workspaces=displayWorkspaces metadata=workspacesMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions
+          {{workspace-list sections=sections isSearching=isSearchingWorkspaces store=store workspaces=displayWorkspaces metadata=workspacesMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions
           toWorkspaceInfo="toWorkspaceInfo" toCopyWorkspace=(action "toCopyWorkspace")
           }}
         {{/if}}
