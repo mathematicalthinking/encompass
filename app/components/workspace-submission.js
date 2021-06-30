@@ -26,10 +26,6 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return (making || showing) && !transitioning && !this.switching;
   }),
 
-  shouldCheck: Ember.computed('makingSelection', function() {
-    return this.get('makingSelection');
-  }),
-
   areNoSelections: function() {
     return this.get('canSeeSelections') && !this.get('workspaceSelections.length') > 0;
   }.property('workspaceSelections.[]', 'canSeeSelections'),

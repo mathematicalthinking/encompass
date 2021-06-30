@@ -7,7 +7,7 @@
     {{#if this.canSelect}}
       <div class="submission-row-item  toggle-selecting">
         <label class="makingSelection">
-          {{input name="is-selecting" type="checkbox" checked=shouldCheck click=(action "toggleSelecting")}}
+          {{input name="is-selecting" type="checkbox" checked=makingSelection click=(action "toggleSelecting")}}
           Selecting
         </label>
       </div>
