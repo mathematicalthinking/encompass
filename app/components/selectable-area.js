@@ -85,7 +85,8 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
   didUpdateAttrs: function() {
     let highlighting = this.selectionHighlighting;
     let tagging = this.imageTagging;
-
+    highlighting.enableSelection();
+    tagging.enable();
     let currentSelsLength = this.get('currentSelections.length');
     let attrSelsLength = this.get('sels.length');
 
@@ -98,7 +99,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     //submission was changed
     if (this.get('currSubId') !== this.get('model.id')) {
       this.imageTagging.removeAllTags();
-      this.set('makingSelection', false);
+      // this.set('makingSelection', false);
       this.set('showingSelections', false);
       return this.sendAction('handleTransition', true);
     }
