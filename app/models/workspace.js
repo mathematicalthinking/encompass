@@ -116,5 +116,4 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   doAllowSubmissionUpdates: DS.attr('boolean', { defaultValue: true }),
   doOnlyUpdateLastViewed: DS.attr('boolean', {defaultValue: false}),
   doAutoUpdateFromChildren: DS.attr('boolean', {defaultValue: false}),
-
 });

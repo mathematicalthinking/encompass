@@ -41,12 +41,17 @@
         {{workspace.responsesLength}}
       </div>
     </div>
-        <div class="card-row">
+    <div class="card-row">
       <div class="row-label">
         Taggings
       </div>
       <div class="row-value taggings">
         {{workspace.taggingsLength}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        {{#link-to "metrics.workspace" workspace}}View Reports{{/link-to}}
       </div>
     </div>
 

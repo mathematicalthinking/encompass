@@ -1,0 +1,158 @@
+<div class="metrics__container">
+  <p>{{#link-to "metrics"}}back{{/link-to}}</p>
+  <p>{{model.name}}</p>
+  <button {{action "generateWordMap"}}>Generate Wordcloud</button>
+  
+  <p {{action "handleToggle" "showFolders"}}>folders: {{model.foldersLength}}</p>
+  <p {{action "handleToggle" "showComments"}}>comments: {{model.commentsLength}}</p>
+  <p {{action "handleToggle" "showResponses"}}>responses: {{model.responsesLength}}</p>
+  <p {{action "handleToggle" "showSelections"}}>selections: {{model.selectionsLength}}</p>
+  <p {{action "handleToggle" "showSubmissions"}}>submissions: {{model.submissionsLength}}</p>
+  {{#if showSelections}}
+    <p>selections</p>
+    <table class="metrics__table">
+      <thead>
+        <tr>
+          <th>
+            Student
+          </th>
+          <th>
+            Selected By
+          </th>
+          <th>
+            selected text
+          </th>
+          <th>
+            comments
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.selections as |selection|}}
+          <tr>
+            <td>{{selection.submission.student}}</td>
+            <td>{{selection.createdBy.username}}</td>
+            <td>{{selection.text}}</td>
+            <td>
+              <ul>
+                {{#each selection.comments as |comment|}}
+                  <li>{{comment.text}} - {{comment.createdBy.username}}</li>
+                {{/each}}
+              </ul>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+  {{#if showFolders}}
+    <table class="metrics__table">
+      <thead>
+        <tr>
+          <th>
+            Label
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.folders as |folder|}}
+          <tr>
+            <td>{{folder.name}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+  {{#if showComments}}
+    <table class="metrics__table">
+      <thead>
+        <tr>
+          <th>
+            Created By
+          </th>
+          <th>
+            Label
+          </th>
+          <th>
+            Text
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.comments as |comment|}}
+          <tr>
+            <td>{{comment.createdBy.username}}</td>
+            <td>{{comment.label}}</td>
+            <td>{{comment.text}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+  {{#if showResponses}}
+    <table class="metrics__table">
+      <thead>
+        <tr>
+          <th>
+            Created By
+          </th>
+          <th>
+            Text
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.responses as |response|}}
+          <tr>
+            <td>{{response.createdBy.username}}</td>
+            <td>{{html-to-text response.text}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+  {{#if showSubmissions}}
+    <table class="metrics__table">
+      <thead>
+        <tr>
+          <th>
+            Student
+          </th>
+          <th>
+            Answer
+          </th>
+          <th>
+            Explanation
+          </th>
+          <th>
+            Selections and Comments
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.submissions as |submission|}}
+          <tr>
+            <td>{{#link-to "metrics.submission" submission}}{{submission.student}}{{/link-to}}</td>
+            <td>{{if submission.shortAnswer submission.shortAnswer submission.answer.answer}}</td>
+            <td>{{if submission.longAnswer (html-to-text submission.longAnswer) (html-to-text submission.answer.explanation)}}</td>
+            <td>
+              <ul>
+                {{#each submission.selections as |selection|}}
+                  <li>{{selection.text}}
+                    <ul>
+                      {{#each selection.comments as |comment|}}
+                        <li><em>{{comment.text}}</em> - {{comment.createdBy.username}}</li>
+                      {{/each}}
+                    </ul>
+                  </li>
+                {{/each}}
+              </ul>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+  <p>{{#link-to "metrics"}}back{{/link-to}}</p>
+  {{wordcloud-container list=list}}
+</div>

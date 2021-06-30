@@ -1,0 +1,19 @@
+<p>{{#link-to "metrics"}}back{{/link-to}}</p>
+<p>{{model.title}}</p>
+<button {{action "toggleProblemText"}}>Show Problem Text</button>
+<button {{action "findWorkspaces"}}>Find Workspaces</button>
+<button {{action "findWorkspaces2"}}>Find Workspaces2</button>
+<button {{action "findSubmissions"}}>Find Submissions</button>
+{{#if showProblemText}}
+  {{html-to-text model.text}}
+{{/if}}
+{{#each relevantWorkspaces as |workspace|}}
+  <p>{{#link-to
+      "metrics.workspace"
+      workspace
+    }}{{workspace.name}}{{/link-to}}</p>
+{{/each}}
+{{#each problemAnswers as |answer|}}
+  <p>{{answer.answer}} - {{answer.student}}</p>
+{{/each}}
+<p>{{#link-to "metrics"}}back{{/link-to}}</p>

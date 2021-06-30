@@ -130,6 +130,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     if (isShowing !== this.get('showing')) {
       if (isShowing) {
         // toggled from NOT showing selections to now showing selections
+        console.log("showing!!");
         this.set('showing', true);
         highlighting.highlightAllSelections();
         tagging.showAllTags();
