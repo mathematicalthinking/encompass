@@ -43,6 +43,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       selection.selectionType = 'selection';
       this.sendAction('addSelection', selection);
     });
+    this.selectionHighlighting.enableSelection();
 
     // set up the ImageTagging object
     this.imageTagging = new window.ImageTagging({
@@ -55,6 +56,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       tag.selectionType = 'image-tag';
       this.sendAction('addSelection', tag, isUpdateOnly);
     });
+    this.imageTagging.enable();
 
     this.selectionHighlighting.loadSelections(this.get('selections'));
     this.imageTagging.loadTags(this.get('imgTags'));

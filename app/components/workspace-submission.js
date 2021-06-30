@@ -10,7 +10,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 
-  makingSelection: false,
+  makingSelection: true,
   showingSelections: false,
   isTransitioning: false,
   isDirty: false,
