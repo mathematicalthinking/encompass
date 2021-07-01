@@ -1,13 +1,21 @@
+<header>
+  <p>Looking at workspace:</p>
+  <h3>{{model.name}}</h3>
+  <p>Owner:</p>
+  <h3>{{model.owner.displayName}}</h3>
+  <p>Last Updated:</p>
+  <h3>{{model.lastModifiedDate}}</h3>
+</header>
 <div class="metrics__container">
   <p>{{#link-to "metrics"}}back{{/link-to}}</p>
-  <p>{{model.name}}</p>
-  <button {{action "generateWordMap"}}>Generate Wordcloud</button>
-  
-  <p {{action "handleToggle" "showFolders"}}>folders: {{model.foldersLength}}</p>
-  <p {{action "handleToggle" "showComments"}}>comments: {{model.commentsLength}}</p>
-  <p {{action "handleToggle" "showResponses"}}>responses: {{model.responsesLength}}</p>
-  <p {{action "handleToggle" "showSelections"}}>selections: {{model.selectionsLength}}</p>
-  <p {{action "handleToggle" "showSubmissions"}}>submissions: {{model.submissionsLength}}</p>
+  <div class="metrics__container metrics--flex">
+    <button {{action "generateWordMap"}} class="primary-button">Generate Wordcloud</button>
+    <button {{action "handleToggle" "showFolders"}} class="primary-button">folders: {{model.foldersLength}}</button>
+    <button {{action "handleToggle" "showComments"}} class="primary-button">comments: {{model.commentsLength}}</button>
+    <button {{action "handleToggle" "showResponses"}} class="primary-button">responses: {{model.responsesLength}}</button>
+    <button {{action "handleToggle" "showSelections"}} class="primary-button">selections: {{model.selectionsLength}}</button>
+    <button {{action "handleToggle" "showSubmissions"}} class="primary-button">submissions: {{model.submissionsLength}}</button>
+  </div>
   {{#if showSelections}}
     <p>selections</p>
     <table class="metrics__table">
@@ -132,7 +140,7 @@
       <tbody>
         {{#each model.submissions as |submission|}}
           <tr>
-            <td>{{#link-to "metrics.submission" submission}}{{submission.student}}{{/link-to}}</td>
+            <td>{{#link-to "metrics.submission" submission classNames="metrics__link"}}{{submission.student}}{{/link-to}}</td>
             <td>{{if submission.shortAnswer submission.shortAnswer submission.answer.answer}}</td>
             <td>{{if submission.longAnswer (html-to-text submission.longAnswer) (html-to-text submission.answer.explanation)}}</td>
             <td>
