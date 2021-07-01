@@ -1,5 +1,6 @@
 .metrics__container{
-  padding: 25px;
+  width: 90%;
+  margin: 30px auto;
 }
 
 .metrics__table{
@@ -11,4 +12,24 @@
     list-style: unset;
     list-style-position: inside;
   }
+}
+
+.metrics__card{
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.metrics__list-item{
+  margin: 10px 0;
+}
+
+.metrics__link:hover{
+  text-decoration: underline;
+}
+
+.metrics--flex{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
