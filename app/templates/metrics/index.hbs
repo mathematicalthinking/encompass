@@ -1,11 +1,22 @@
-<div class="metrics__container">
-  <h2>index</h2>
-  <h3>workspaces</h3>
-  {{#each model.workspaces as |workspace|}}
-    <p>{{#link-to "metrics.workspace" workspace.id}}{{workspace.name}}{{/link-to}}</p>
-  {{/each}}
-  <h3>problems</h3>
-  {{#each model.problems as |problem|}}
-    <p>{{#link-to "metrics.problem" problem.id}}{{problem.title}}{{/link-to}}</p>
-  {{/each}}
+<header class="metrics__header">
+  <h3>Choose a workspace or problem below</h3>
+  <p>You can also go to the info page of a workspace you'd like to get reports for.</p>
+</header>
+<div class="metrics__container metrics--flex">
+  <div class="metrics__card">
+    <h4>Workspaces</h4>
+    <ul class="metrics__list">
+      {{#each model.workspaces as |workspace|}}
+        <li class="metrics__list-item">{{#link-to "metrics.workspace" workspace.id classNames="metrics__link"}}{{workspace.name}}{{/link-to}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <div class="metrics__card">
+    <h4>Problems</h4>
+    <ul class="metrics__list">
+      {{#each model.problems as |problem|}}
+        <li class="metrics__list-item">{{#link-to "metrics.problem" problem.id classNames="metrics__link"}}{{problem.title}}{{/link-to}}</li>
+      {{/each}}
+    </ul>
+  </div>
 </div>
