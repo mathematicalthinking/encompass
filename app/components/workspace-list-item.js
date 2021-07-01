@@ -59,42 +59,43 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
         .then((res)=>{
           if(res.value){
             this.get('store').findRecord('section', res.value).then((section)=>{
-              Promise.all(section.get("students").map((student)=>{
-              const displayName = student.get('displayName');
-              let copyWorkspaceRequest = {
-                createDate: new Date(),
-                isTrashed: false,
-                lastModifiedDate: new Date(),
-                name: `${displayName || "Copy of"}: ${workspaceName}`,
-                mode: 'private',
-                submissionOptions: { all: true },
-                folderOptions: { folderSetOptions: { doCreateFolderSet: false }, none: true },
-                selectionOptions: { none: true },
-                commentOptions: { none: true },
-                responseOptions: { none: true },
-                permissionOptions: {},
-                copyWorkspaceError: null,
-                createdBy: this.get('currentUser'),
-                lastModifiedBy: this.get('currentUser'),
-                owner: student,
-                originalWsId: workspace,
-                createdWorkspace: null,
-                createdFolderSet: null
-              };
-              let copyRequest = this.get('store').createRecord('copyWorkspaceRequest', copyWorkspaceRequest);
-              return copyRequest.save();
-            })).then((results) => {
-              let errors = results.filter((result)=>result.get('copyWorkspaceError')).map((result)=>result.get('copyWorkspaceError'));
-              if(results.some((result)=>result.get('copyWorkspaceError'))){
-                this.get('alert').showToast('error', errors[0], 'bottom-end', 5000);
-              } else {
-                this.get('alert').showToast('success', 'Workspaces Created', 'bottom-end', 5000);
-              }
-            })
-            .catch((err) => {
-              this.get('alert').showToast('error', 'Workspace Error', 'bottom-end', 5000);
-              console.log(err);
-            });
+              Promise.all(section.get("students").map((student)=>student.get('displayName'))).then((displayNames)=>{
+                Promise.all(section.get("students").map((student, index)=>{
+                  let copyWorkspaceRequest = {
+                    createDate: new Date(),
+                    isTrashed: false,
+                    lastModifiedDate: new Date(),
+                    name: `${displayNames[index] || "Copy of"}: ${workspaceName}`,
+                    mode: 'private',
+                    submissionOptions: { all: true },
+                    folderOptions: { folderSetOptions: { doCreateFolderSet: false }, none: true },
+                    selectionOptions: { none: true },
+                    commentOptions: { none: true },
+                    responseOptions: { none: true },
+                    permissionOptions: {},
+                    copyWorkspaceError: null,
+                    createdBy: this.get('currentUser'),
+                    lastModifiedBy: this.get('currentUser'),
+                    owner: student,
+                    originalWsId: workspace,
+                    createdWorkspace: null,
+                    createdFolderSet: null
+                  };
+                  let copyRequest = this.get('store').createRecord('copyWorkspaceRequest', copyWorkspaceRequest);
+                  return copyRequest.save();
+                })).then((results) => {
+                  let errors = results.filter((result)=>result.get('copyWorkspaceError')).map((result)=>result.get('copyWorkspaceError'));
+                  if(results.some((result)=>result.get('copyWorkspaceError'))){
+                    this.get('alert').showToast('error', errors[0], 'bottom-end', 5000);
+                  } else {
+                    this.get('alert').showToast('success', 'Workspaces Created', 'bottom-end', 5000);
+                  }
+                })
+                .catch((err) => {
+                  this.get('alert').showToast('error', 'Workspace Error', 'bottom-end', 5000);
+                  console.log(err);
+                });
+              });
           });
           }
         });
