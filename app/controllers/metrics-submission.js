@@ -3,9 +3,18 @@ Encompass.MetricsSubmissionController = Ember.Controller.extend({
   showFolders: false,
   showComments: false,
   showResponses: false,
+  ws: '',
+
   workspaceId: Ember.computed('model', function(){
     const [id] = this.get('model.workspaces').mapBy('id');
     return id;
+  }),
+  workspaceName: Ember.computed('model', function(){
+    this.get('model.workspaces')
+      .then((res)=>{
+        let [name] = res.mapBy('name');
+        this.set('ws', name);
+    });
   }),
   actions: {
     handleToggle: function(prop){

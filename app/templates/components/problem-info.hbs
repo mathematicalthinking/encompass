@@ -31,6 +31,7 @@
         {{/if}}
       </div>
       <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
+      <div class="subheading">{{#link-to "metrics.problem" problem}}See Reports{{/link-to}}</div>
     </div>
     <div class="info-menu">
       <button class="tab-link general {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
