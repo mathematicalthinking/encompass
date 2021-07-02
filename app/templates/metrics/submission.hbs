@@ -1,11 +1,16 @@
+{{log workspaceName}}
+<header>
+  <h3>{{model.student}}'s Submission in {{ws}}</h3>
+</header>
 <p>{{#link-to "metrics.workspace" workspaceId}}back to workspace{{/link-to}}</p>
 <div class="metrics__container">
-  <h1>Submissions</h1>
-  <button {{action "handleToggle" "showSelections"}}>Report Selections</button>
-  <button {{action "handleToggle" "showFolders"}}>Report Folders</button>
-  <button {{action "handleToggle" "showComments"}}>Report Comments</button>
-  <button {{action "handleToggle" "showResponses"}}>Report Responses</button>
-  <p>{{model.student}}</p>
+  <div class="metrics__container metrics--flex">
+    <button {{action "handleToggle" "showSelections"}} class="primary-button">Report Selections</button>
+    <button {{action "handleToggle" "showFolders"}} class="primary-button">Report Folders</button>
+    <button {{action "handleToggle" "showComments"}} class="primary-button">Report Comments</button>
+    <button {{action "handleToggle" "showResponses"}} class="primary-button">Report Responses</button>
+  </div>
+  <div class="metrcis__container">
   {{#if showSelections}}
     <p>selections</p>
     <table class="metrics__table">
@@ -26,6 +31,7 @@
     </table>
   {{/if}}
   {{#if showFolders}}
+    <p>Folders</p>
     <table class="metrics__table">
       <thead>
         <tr>
@@ -44,6 +50,7 @@
     </table>
   {{/if}}
   {{#if showComments}}
+    <p>Comments</p>
     <table class="metrics__table">
       <thead>
         <tr>
@@ -70,6 +77,7 @@
     </table>
   {{/if}}
   {{#if showResponses}}
+    <p>Created By</p>
     <table class="metrics__table">
       <thead>
         <tr>
@@ -91,11 +99,16 @@
       </tbody>
     </table>
   {{/if}}
-  <div id="submission">
+  </div>
+  <div class="metrics__container" id="submission">
+    <div class="metrics__card">
     <h3>answer</h3>
-    <p>{{if model.shortAnswer model.shortAnswer model.answer.answer}}</p>
+      <p>{{if model.shortAnswer model.shortAnswer model.answer.answer}}</p>
+    </div>
+    <div class="metrics__card">
     <h3>explanation</h3>
-    <p>{{if model.longAnswer (html-to-text model.longAnswer) (html-to-text model.answer.explanation)}}</p>
+      <p>{{if model.longAnswer (html-to-text model.longAnswer) (html-to-text model.answer.explanation)}}</p>
+    </div>
   </div>
 </div>
 <p>{{#link-to "metrics.workspace" workspaceId}}back to workspace{{/link-to}}</p>
