@@ -1,10 +1,14 @@
 Encompass.MetricsProblemController = Ember.Controller.extend({
   showProblemText: false,
+  showWorkspaces: false,
+  showAnswers: false,
   relevantWorkspaces: [],
   problemAnswers: [],
   actions: {
     toggleProblemText: function () {
       this.toggleProperty("showProblemText");
+      this.set('showWorkspaces', false);
+      this.set("showAnswers", false);
     },
     findWorkspaces: function () {
       this.get("store").query("workspace", {
@@ -14,6 +18,9 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
       })
       .then((res) => {
         this.set("relevantWorkspaces", res);
+        this.set("showAnswers", false);
+        this.set("showWorkspaces", true);
+        this.set("showProblemText", false);
       });
     },
     findWorkspaces2: function(){
@@ -23,6 +30,9 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
         }
       }).then(res=>{
         this.set('relevantWorkspaces', res);
+        this.set("showAnswers", false);
+        this.set("showWorkspaces", true);
+        this.set("showProblemText", false);
       });
     },
     findSubmissions: function () {
@@ -35,6 +45,9 @@ Encompass.MetricsProblemController = Ember.Controller.extend({
         })
         .then((res) => {
           this.set("problemAnswers", res);
+          this.set("showAnswers", true);
+          this.set("showWorkspaces", false);
+          this.set("showProblemText", false);
         });
     },
   },
