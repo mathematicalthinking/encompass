@@ -12,6 +12,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
   isTouchScreen: Ember.computed.alias('application.isTouchScreen'),
 
   init: function() {
+    console.log(this.get('canSelect'));
     this._super(...arguments);
     this.setupTagging();
   },
