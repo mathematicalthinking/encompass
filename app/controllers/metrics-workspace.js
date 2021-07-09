@@ -4,7 +4,11 @@ Encompass.MetricsWorkspaceController = Ember.Controller.extend({
   showComments: false,
   showResponses: false,
   showSubmissions: false,
+  showAll: false,
   actions: {
+    toggleShowAll: function(){
+      this.toggleProperty('showAll');
+    },
     handleToggle: function(prop){
       this.set('showSelections', false);
       this.set('showFolders', false);
