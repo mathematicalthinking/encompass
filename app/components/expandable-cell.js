@@ -1,9 +1,10 @@
 Encompass.ExpandableCellComponent = Ember.Component.extend({
-  expanded: false,
+  expanded: Ember.computed.or('showAll', 'showThis'),
+  showThis: false,
   tagName: '',
   actions:{
     toggleExpand(){
-      this.toggleProperty('expanded');
+      this.toggleProperty('showThis');
     }
   }
 });
