@@ -1,23 +1,20 @@
 import LoggedOutRoute from './_logged_out_route';
+import { action } from '@ember/object';
 
-export default LoggedOutRoute.extend({
-  queryParams: 'oauthError',
+export default class LoginRoute extends LoggedOutRoute {
   beforeModel(transition) {
-    this._super(...arguments);
-    if (transition.intent) {
+    if (transition.intent.queryParams) {
       this.oauthError = transition.intent.queryParams.oauthError;
     }
-  },
+  }
 
-  model: function () {
+  model() {
     return {
       oauthError: this.oauthError,
     };
-  },
+  }
 
-  actions: {
-    toHome: function () {
-      window.location.href = '/';
-    },
-  },
-});
+  @action toHome() {
+    window.location.href = '/';
+  }
+}
