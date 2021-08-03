@@ -1,5 +1,4 @@
 import Route from '@ember/routing/route';
-import MtAuthMixin from '../../mixins/mt_auth_mixin';
 
 /**
  * # Logged Out Route
@@ -7,7 +6,7 @@ import MtAuthMixin from '../../mixins/mt_auth_mixin';
  * @author Daniel Kelly
  * @since 1.0.2
  */
-export default Route.extend(MtAuthMixin, {
+export default Route.extend({
   beforeModel() {
     this.authenticate();
     this._super(...arguments);
