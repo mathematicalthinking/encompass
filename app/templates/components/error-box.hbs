@@ -1,6 +1,6 @@
 <p>
-  <span class="error-text">{{error}}</span>
-  {{#if showDismiss}}
-    <button class="dismiss"{{action 'closeError' error}}><i class="fas fa-times"></i></button>
+  <span class="error-text">{{this.error}}</span>
+  {{#if this.showDismiss}}
+    <button class="dismiss"{{action 'closeError' this.error}}><i class="fas fa-times"></i></button>
   {{/if}}
 </p>

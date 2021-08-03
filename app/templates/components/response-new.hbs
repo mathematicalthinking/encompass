@@ -2,11 +2,11 @@
   <div class="top-row">
     <p class="response-date">{{format-date todaysDate 'Do MMM YYYY'}}</p>
     <p class="response-link">
-      {{#link-to 'workspace.submission' model.workspace model.submission classNames="submission"}}
+      <LinkTo @route="workspace.submission" @models={{array model.workspace model.submission}} @classNames="submission">
         <span class="simptip-position-left simptip-smooth" data-tooltip="View Submission in Workspace">
           <i class="fas fa-external-link-alt"></i>
         </span>
-      {{/link-to}}
+      </LinkTo>
     </p>
   </div>
   <div class="response-title">
@@ -42,7 +42,7 @@
           <ul class="response-listing">
           {{#each existingResponses as |response|}}
             <li>
-              <span class="create-date">{{format-date response.createDate  'l h:mm a'}}</span>  {{{response.shortText}}}... {{#link-to 'responses.submission' submission.id (query-params responseId=response.id)}} View{{/link-to}}
+              <span class="create-date">{{format-date response.createDate  'l h:mm a'}}</span>  {{{response.shortText}}}... <LinkTo @route="responses.submission" @model={{submission.id}} @query={{hash responseId=response.id}}> View</LinkTo>
             </li>
           {{/each}}
           </ul>
@@ -63,13 +63,13 @@
             <ul class="selections-list">
             {{#each filteredSelections as |selection|}}
               <li class="selections-list-item">
-                {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}
+                <LinkTo @route="workspace.submission.selection" @models={{array selection.workspace selection.submission selection}}>
                   {{#if selection.imageTagLink}}
                     <img src={{selection.imageTagLink}} alt={{selection.text}}>
                   {{else}}
                     {{selection.text}}
                   {{/if}}
-                {{/link-to}}
+                </LinkTo>
               </li>
             {{/each}}
             </ul>
@@ -84,8 +84,8 @@
             <ul class="comments-list">
             {{#each filteredComments as |comment|}}
               <li class="comments-list-item">
-                {{#link-to 'workspace.submission.selection' comment.workspace comment.submission comment.selection}}
-                "{{comment.text}}"{{/link-to}}
+                <LinkTo @route="workspace.submission.selection" @models={{array comment.workspace comment.submission comment.selection}}>
+                "{{comment.text}}"</LinkTo>
               </li>
             {{/each}}
             </ul>
@@ -102,30 +102,30 @@
           {{else}}
           there aren't
          {{/if}}
-           any selections or comments for this submission. You can go back to the {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}} and create some selections and comments.
+           any selections or comments for this submission. You can go back to the <LinkTo @route="workspace.submission" @models={{array model.workspace model.submission}}>submission</LinkTo> and create some selections and comments.
         </p>
       {{/if}}
     </div>
     <div class="response-compose">
       <p class="response-header">Message</p>
 
-      {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=replyText}}
+      <QuillContainer @onEditorChange={{action "updateQuillText"}} @attrSectionId={{quillEditorId}} @startingText={{replyText}} />
 
       {{#if showNoteField}}
         <div class="approve-note">
           <p class="response-header">Note to Approver</p>
-          {{textarea class="approver-note" id="response-note" value=replyNote}}
+          <Textarea class="approver-note" @id="response-note" @value={{replyNote}} />
         </div>
       {{/if}}
     </div>
     {{#if emptyReplyError}}
-      {{error-box error='Message body cannot be blank' showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+      <ErrorBox @error="Message body cannot be blank" @showDismiss={{true}} @resetError={{action (mut emptyReplyError) null}} />
     {{/if}}
     {{#if quillTooLongError}}
-      {{error-box error=quillTooLongErrorMsg showDismiss=true resetError=(action (mut quillTooLongError) null)}}
+      <ErrorBox @error={{quillTooLongErrorMsg}} @showDismiss={{true}} @resetError={{action (mut quillTooLongError) null}} />
     {{/if}}
     {{#if doShowLoadingMessage}}
-      {{loading-elem}}
+      <LoadingElem />
     {{/if}}
     <div class="submit-buttons button-row">
       <button class="primary-button save-response" {{action 'saveResponse'}}>{{submitButtonText}}</button>

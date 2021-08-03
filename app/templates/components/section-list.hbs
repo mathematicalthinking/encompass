@@ -1,21 +1,21 @@
 <section class="list-side">
   <header class="list-header">
     <h1>Classes</h1>
-    {{#if currentUser.isStudent}}
+    {{#if this.currentUser.isStudent}}
     {{else}}
-      {{#link-to 'sections.new' id='new-section-link' class="new-link-btn"}}<span>Create New Class</span><i class="fas fa-plus"></i>{{/link-to}}
+      <LinkTo @route="sections.new" @id="new-section-link" class="new-link-btn"><span>Create New Class</span><i class="fas fa-plus"></i></LinkTo>
     {{/if}}
     <div class="clear"></div>
   </header>
 
   <section>
     <nav class="list-box">
-      {{#unless currentUser.isStudent}}
-      <h2>{{currentUser.username}}'s Classes</h2>
+      {{#unless this.currentUser.isStudent}}
+      <h2>{{this.currentUser.username}}'s Classes</h2>
       <ul class="your-sections">
-        {{#if yourSections}}
-          {{#each yourSections as |section|}}
-            <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+        {{#if this.yourSections}}
+          {{#each this.yourSections as |section|}}
+            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
           <li>You have no classes</li>
@@ -24,9 +24,9 @@
 
       <h2>Classes you belong to</h2>
       <ul class="collab-sections">
-        {{#if collabSections}}
-          {{#each collabSections as |section|}}
-            <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+        {{#if this.collabSections}}
+          {{#each this.collabSections as |section|}}
+            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
             <li>You don't belong to any classes yet</li>
@@ -34,12 +34,12 @@
       </ul>
       {{/unless}}
 
-   {{#if currentUser.isStudent}}
+   {{#if this.currentUser.isStudent}}
       <h2>Your Classes</h2>
       <ul class="your-sections">
-        {{#if studentSections}}
-          {{#each studentSections as |section|}}
-            <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+        {{#if this.studentSections}}
+          {{#each this.studentSections as |section|}}
+            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
             <li>You don't belong to any classes yet</li>
@@ -47,12 +47,12 @@
       </ul>
     {{/if}}
 
-    {{#if currentUser.isPdAdmin}}
+    {{#if this.currentUser.isPdAdmin}}
       <h2>{{currentUser.organization.name}}'s Classes</h2>
       <ul class="org-sections">
         {{#if orgSections}}
           {{#each orgSections as |section|}}
-          <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+          <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
           <li>{{currentUser.organization.name}} does not have any classes yet</li>
@@ -60,13 +60,13 @@
       </ul>
     {{/if}}
 
-    {{#unless currentUser.isStudent}}
-    {{#if currentUser.isAdmin}}
+    {{#unless this.currentUser.isStudent}}
+    {{#if this.currentUser.isAdmin}}
       <h2>All Classes</h2>
       <ul class="all-sections">
-        {{#if allSections}}
-          {{#each allSections as |section|}}
-          <li>{{#link-to 'sections.section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+        {{#if this.allSections}}
+          {{#each this.allSections as |section|}}
+          <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{/if}}
       </ul>
@@ -76,3 +76,7 @@
     </nav>
   </section>
 </section>
+
+<div class="list-outlet">
+  {{outlet}}
+</div>

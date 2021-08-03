@@ -1,27 +1,29 @@
-Encompass.VmtRoomListItemComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default Component.extend({
   classNames: ['vmt-room-list-item'],
 
   isExpanded: false,
 
-  isSelected: function() {
-    let ids = this.get('selectedRoomIds') || [];
-    return ids.includes(this.get('room._id'));
-  }.property('selectedRoomIds.[]', 'room._id'),
+  isSelected: computed('selectedRoomIds.[]', 'room._id', function () {
+    let ids = this.selectedRoomIds || [];
+    return ids.includes(this.room._id);
+  }),
 
-  encodedImageUri: function() {
-    if (!this.get('room.image')) {
+  encodedImageUri: computed('room.image', function () {
+    if (!this.room.image) {
       return '';
     }
-    return encodeURI(this.get('room.image'));
-   }.property('room.image'),
+    return encodeURI(this.room.image);
+  }),
 
   actions: {
     expandImage() {
-      this.set('isExpanded', !this.get('isExpanded'));
+      this.set('isExpanded', !this.isExpanded);
     },
     onSelect() {
-      this.get('onSelect')(this.get('room'));
-    }
-  }
-
+      this.onSelect(this.room);
+    },
+  },
 });

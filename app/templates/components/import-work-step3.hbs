@@ -5,10 +5,10 @@
   </span>
 </p>
 <p class="sub-input-label">Supported files are jpeg, png or pdf. Multipage pdfs will convert each page into a single image.</p>
-{{image-upload class="form-file" handleUploadResults=(action "updateCurrentFiles") filesToBeUploaded=selectedFiles acceptMultiple=true doResetFilesAfterUpload=true}}
+<ImageUpload @class="form-file" @handleUploadResults={{action "updateCurrentFiles"}} @filesToBeUploaded={{selectedFiles}} @acceptMultiple={{true}} @doResetFilesAfterUpload={{true}} />
 
 {{#if missingFiles}}
-  {{error-box error="You must upload at least one file to continue" resetError=(action (mut missingFiles) null) showDismiss=true}}
+  <ErrorBox @error="You must upload at least one file to continue" @resetError={{action (mut missingFiles) null}} @showDismiss={{true}} />
 {{/if}}
 
 {{#if uploadedFiles}}

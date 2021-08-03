@@ -1,25 +1,33 @@
-Encompass.VmtRoomListComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default Component.extend({
   classNames: ['vmt-room-list'],
 
   classNameBindings: ['isSubList:sub-list'],
 
-  labelText:function() {
-    if (this.get('customLabel')) {
-      return this.get('customLabel');
-    }
-    if (this.get('isSubList')) {
-      let activityName = this.get('parentActivity.name') || '';
+  labelText: computed(
+    'customLabel',
+    'isSubList',
+    'parentActivity',
+    function () {
+      if (this.customLabel) {
+        return this.customLabel;
+      }
+      if (this.isSubList) {
+        let activityName = this.parentActivity.name || '';
 
-      return `Rooms Belonging to Activity ${activityName}`;
+        return `Rooms Belonging to Activity ${activityName}`;
+      }
+      return 'VMT Rooms';
     }
-    return 'VMT Rooms';
-  }.property('customLabel', 'isSubList', 'parentActivity'),
+  ),
 
   actions: {
     onItemSelect(room) {
-      if (this.get('onItemSelect')) {
-        this.get('onItemSelect')(room);
-     }
-    }
-  }
+      if (this.onItemSelect) {
+        this.onItemSelect(room);
+      }
+    },
+  },
 });

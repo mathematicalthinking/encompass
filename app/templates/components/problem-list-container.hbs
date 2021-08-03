@@ -1,54 +1,34 @@
 <div class="flex-container-full">
   <div class="flex-item-full filter-options collapse" id="filter-list-side">
-    {{problem-filter
-      store=store
-      onUpdate=(action "triggerFetch")
-      triggerShowTrashed=(action "triggerShowTrashed")
-      filter=filter
-      primaryFilter=primaryFilter
-      adminFilterSelect=adminFilterSelect
-      orgs=model.organizations
-      categoriesFilter=categoriesFilter
-      doIncludeSubCategories=doIncludeSubCategories
-      toggleTrashed=toggleTrashed
-      sendtoApplication="sendtoApplication"
-      }}
+    <ProblemFilter @showCategoryList={{this.showCategoryList}} @categoryTree={{this.categoryTree}} @store={{this.store}} @onUpdate={{action "triggerFetch"}} @triggerShowTrashed={{action "triggerShowTrashed"}} @filter={{this.filter}} @primaryFilter={{this.primaryFilter}} @adminFilterSelect={{this.adminFilterSelect}} @orgs={{this.model.organizations}} @categoriesFilter={{this.categoriesFilter}} @doIncludeSubCategories={{this.doIncludeSubCategories}} @toggleTrashed={{this.toggleTrashed}} @sendtoApplication="sendtoApplication" />
   </div>
 
   <div class="flex-item-full list-view">
     <div class="list-container">
       <h1>Problems</h1>
       <div class="searchbar">
-        {{search-bar
-        onSearch=(action "searchProblems")
-        showFilter=true
-        searchOptions=searchOptions
-        basePlaceholder="Search problems"
-        inputValue=searchInputValue
-        clearSearchResults=(action "clearSearchResults")
-        selectedCriterion=searchCriterion
-        }}
+        <SearchBar @onSearch={{action "searchProblems"}} @showFilter={{true}} @searchOptions={{this.searchOptions}} @basePlaceholder="Search problems" @inputValue={{this.searchInputValue}} @clearSearchResults={{action "clearSearchResults"}} @selectedCriterion={{this.searchCriterion}} />
 
-        {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}
+        <LinkTo @route="problems.new" @id="problem-new-link" class="new-link-btn">
           <i class="fas fa-plus" title="Create new problem"></i>
-        {{/link-to}}
+        </LinkTo>
       </div>
     </div>
     <div class="results-list">
       <div class="results-info">
         <div class="results-message">
-          {{{listResultsMessage}}}
+          {{{this.listResultsMessage}}}
         </div>
         <div class="side-icons">
           <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh problem list"></i>
           <span class="layout-icons">
-          {{#if showList}}
-            <img src="/images/grid.svg" alt="grid" class="grid-icon" {{action 'setGrid'}} title="Show in grid view">
-            <img src="/images/list-active.svg" alt="list" class="list-icon" {{action 'setList'}} title="Currently in list view">
+          {{#if this.showList}}
+            <img src="../assets/images/grid.svg" alt="grid" class="grid-icon" {{action 'setGrid'}} title="Show in grid view">
+            <img src="../assets//images/list-active.svg" alt="list" class="list-icon" {{action 'setList'}} title="Currently in list view">
           {{/if}}
-          {{#if showGrid}}
-            <img src="/images/grid-active.svg" alt="grid" class="grid-icon" {{action 'setGrid'}} title="Currently in grid view">
-            <img src="/images/list.svg" alt="list" class="list-icon" {{action 'setList'}} title="Show in list view">
+          {{#if this.showGrid}}
+            <img src="../assets/images/grid-active.svg" alt="grid" class="grid-icon" {{action 'setGrid'}} title="Currently in grid view">
+            <img src="../assets/images/list.svg" alt="list" class="list-icon" {{action 'setList'}} title="Show in list view">
           {{/if}}
           </span>
         </div>
@@ -59,47 +39,25 @@
             Privacy <i class="fas fa-filter sort-icon"></i>
             <span class="hover-menu" id="privacy-menu">
               <ul>
-                {{#each privacySettingOptions as |option|}}
+                {{#each this.privacySettingOptions as |option|}}
+                {{log option}}
                 <li>
-                  {{radio-filter
-                    labelName=option.label
-                    labelIcon=option.icon
-                    inputValue=option.value
-                    isChecked=option.isChecked
-                    groupName="privacy"
-                    onClick=(action "updatePrivacySetting")
-                    groupValue=selectedPrivacySetting}}
+                  <RadioFilter @labelName={{option.label}} @labelIcon={{option.icon}} @inputValue={{option.value}} @isChecked={{option.isChecked}} @groupName="privacy" @onClick={{action "updatePrivacySetting"}} @groupValue={{this.selectedPrivacySetting}} />
                 </li>
                 {{/each}}
               </ul>
             </span>
           </div>
-          {{toggle-control
-            classToAdd="sort-bar-item name"
-            onUpdate=(action "updateSortCriterion")
-            initialState=1
-            options=sortOptions.title
-            label="Title"
-            parentProp=sortCriterion
-            type="title"
-            activeType=sortCriterion.type}}
+          <ToggleControl @classToAdd="sort-bar-item name" @onUpdate={{action "updateSortCriterion"}} @initialState={{1}} @options={{this.sortOptions.title}} @label="Title" @parentProp={{this.sortCriterion}} @type="title" @activeType={{this.sortCriterion.type}} />
           <div class="sort-bar-item description">
             Description
           </div>
-          {{toggle-control
-            classToAdd="sort-bar-item date"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.createDate
-            label="Date"
-            type="date"
-            activeType=sortCriterion.type
-            }}
+          <ToggleControl @classToAdd="sort-bar-item date" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.createDate}} @label="Date" @type="date" @activeType={{this.sortCriterion.type}} />
           <div class="sort-bar-item status">
             Status <i class="fas fa-filter sort-icon"></i>
             <span class="hover-menu checkbox">
               <ul>
-                {{#each statusOptionsList as |option|}}
+                {{#each this.statusOptionsList as |option|}}
                   <li>
                     <label>
                       <input type="checkbox" checked={{option.isChecked}} name={{option.name}} value={{option.value}} onclick={{action "updateStatusFilter" option.value}}>
@@ -118,17 +76,14 @@
           <div class="sort-bar-item action"></div>
           <div class="sort-bar-item more"></div>
         </div>
-        {{#if showList}}
-          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store toProblemInfo="toProblemInfo" refreshList=(action "refreshList")
-          }}
+        {{#if this.showList}}
+          <ProblemList @currentUser={{this.currentUser}} @isSearching={{this.isSearchingProblems}} @problems={{this.displayProblems}} @metadata={{this.problemsMetadata}} @isList={{true}} @isGrid={{false}} @moreMenuOptions={{this.moreMenuOptions}} @store={{this.store}} @toProblemInfo="toProblemInfo" @refreshList={{action "refreshList"}} />
         {{/if}}
-        {{#if showGrid}}
-          {{problem-list isSearching=isSearchingProblems store=store problems=displayProblems metadata=problemsMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions
-          toProblemInfo="toProblemInfo" refreshList=(action "refreshList")
-          }}
+        {{#if this.showGrid}}
+          <ProblemList @currentUser={{this.currentUser}} @isSearching={{this.isSearchingProblems}} @store={{this.store}} @problems={{this.displayProblems}} @metadata={{this.problemsMetadata}} @isList={{false}} @isGrid={{true}} @moreMenuOptions={{this.moreMenuOptions}} @toProblemInfo="toProblemInfo" @refreshList={{action "refreshList"}} />
         {{/if}}
 
-        {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}
+        <PaginationControl @details={{this.problemsMetadata}} @initiatePageChange={{action "initiatePageChange"}} />
       </div>
     </div>
   </div>
@@ -137,6 +92,16 @@
 <div class="toggle-filter-menu">
   <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
 </div>
+
+{{#if this.showCategoryList}}
+<div id="category-list-modal">
+  <div class="modal-content">
+    <h4>Select a Category</h4>
+    <button class="close" {{action 'closeModal' }}><i class="fas fa-times"></i></button>
+    <CategoriesMenu @categories={{this.categoryTree}} @store={{this.store}} @addCategories="searchCategory" />
+  </div>
+</div>
+{{/if}}
 
 <div class="list-outlet hidden" id="outlet">
   {{outlet}}

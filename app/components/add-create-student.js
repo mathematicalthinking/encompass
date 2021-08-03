@@ -1,4 +1,11 @@
-Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import { isEmpty } from '@ember/utils';
+import $ from 'jquery';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(ErrorHandlingMixin, {
   elementId: 'add-create-student',
   isUsingDefaultPassword: false,
   fieldType: 'password',
@@ -6,7 +13,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
   createUserErrors: [],
   findUserErrors: [],
   updateSectionErrors: [],
-  alert: Ember.inject.service('sweet-alert'),
+  alert: service('sweet-alert'),
 
   clearCreateInputs: function () {
     let fields = ['username', 'firstName', 'lastName', 'password'];
@@ -22,9 +29,9 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     }
   },
 
-  initialStudentOptions: function() {
-    let peeked = this.get('store').peekAll('user').toArray();
-    let currentStudents = this.get('students').toArray();
+  initialStudentOptions: computed('students.[]', function () {
+    let peeked = this.store.peekAll('user').toArray();
+    let currentStudents = this.students.toArray();
     let filtered = [];
 
     if (peeked && currentStudents) {
@@ -32,26 +39,20 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       return filtered.map((obj) => {
         return {
           id: obj.get('id'),
-          username: obj.get('username')
+          username: obj.get('username'),
         };
       });
     }
     return filtered;
-
-  }.property('students.[]'),
+  }),
 
   createStudent: function (info) {
     const that = this;
     // info is object with username, password, name?
-    let {
-      username,
-      password,
-      firstName,
-      lastName,
-    } = info;
+    let { username, password, firstName, lastName } = info;
 
-    let organization = this.get('organization');
-    let sectionId = this.get('section').id;
+    let organization = this.organization;
+    let sectionId = this.section.id;
     let sectionRole = 'student';
     let currentUser = that.get('currentUser');
 
@@ -72,17 +73,19 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     if (organization) {
       createUserData.organization = organization.id;
     } else {
-      createUserData.organization = this.get('currentUser.organization.id');
+      createUserData.organization = this.currentUser.organization.id;
     }
 
-    return Ember.$.post({
-        url: '/auth/signup',
-        data: createUserData
-      })
+    return $.post({
+      url: '/auth/signup',
+      data: createUserData,
+    })
       .then((res) => {
         that.removeMessages('createUserErrors');
         if (res.message) {
-          if (res.message === 'There already exists a user with that username') {
+          if (
+            res.message === 'There already exists a user with that username'
+          ) {
             that.set('usernameAlreadyExists', true);
           } else {
             this.set('createUserErrors', [res.message]);
@@ -92,14 +95,24 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
           this.set('existingUser', res.user);
         } else {
           let userId = res._id;
-          let section = this.get('section');
+          let section = this.section;
           let students = section.get('students');
-          return this.store.findRecord('user', userId)
+          return this.store
+            .findRecord('user', userId)
             .then((user) => {
               students.pushObject(user); //add student to students aray
-              section.save().then(() => {
+              section
+                .save()
+                .then(() => {
                   that.clearCreateInputs();
-                  this.get('alert').showToast('success', 'Student Created', 'bottom-end', 3000, false, null);
+                  this.alert.showToast(
+                    'success',
+                    'Student Created',
+                    'bottom-end',
+                    3000,
+                    false,
+                    null
+                  );
                 })
                 .catch((err) => {
                   that.handleErrors(err, 'updateSectionErrors', section);
@@ -112,7 +125,6 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       })
       .catch((err) => {
         that.handleErrors(err, 'createUserErrors', createUserData);
-
       });
   },
 
@@ -129,7 +141,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
 
   actions: {
     showPassword: function () {
-      let isShowingPassword = this.get('showingPassword');
+      let isShowingPassword = this.showingPassword;
       if (!isShowingPassword) {
         this.set('showingPassword', true);
         this.set('fieldType', 'text');
@@ -140,29 +152,37 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     },
 
     addExistingStudent: function () {
-      let student = this.get('existingUser');
+      let student = this.existingUser;
       if (!student) {
         return;
       }
-      let students = this.get('students');
-      this.store.findRecord('user', student._id).then((user) => {
-        this.removeMessages('findUserErrors');
-        if (!students.includes(user)) {
-          students.pushObject(user);
+      let students = this.students;
+      this.store
+        .findRecord('user', student._id)
+        .then((user) => {
+          this.removeMessages('findUserErrors');
+          if (!students.includes(user)) {
+            students.pushObject(user);
 
-          this.clearAddExistingUser();
-          this.clearCreateInputs();
-          this.get('section').save()
-          .then(() => {
-            this.get('alert').showToast('success', 'Student added', 'bottom-end', 3000, false, null);
-          });
-        } else {
-          this.set('userAlreadyInSection', true);
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'findUserErrors');
-      });
+            this.clearAddExistingUser();
+            this.clearCreateInputs();
+            this.section.save().then(() => {
+              this.alert.showToast(
+                'success',
+                'Student added',
+                'bottom-end',
+                3000,
+                false,
+                null
+              );
+            });
+          } else {
+            this.set('userAlreadyInSection', true);
+          }
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'findUserErrors');
+        });
     },
 
     exitAddExistingUsername: function () {
@@ -171,15 +191,15 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     },
 
     validateCreateStudent: function () {
-      const username = this.get('username');
+      const username = this.username;
       let password;
 
-      const isUsingDefaultPassword = this.get('isUsingDefaultPassword');
+      const isUsingDefaultPassword = this.isUsingDefaultPassword;
 
       if (isUsingDefaultPassword) {
-        password = this.get('sectionPassword');
+        password = this.sectionPassword;
       } else {
-        password = this.get('password');
+        password = this.password;
       }
 
       if (!username || !password) {
@@ -187,19 +207,19 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
         return;
       }
 
-      const students = this.get('students');
+      const students = this.students;
 
-      if (!Ember.isEmpty(students.findBy('username', username))) {
+      if (!isEmpty(students.findBy('username', username))) {
         this.set('userAlreadyInSection', true);
         return;
       }
 
-      if (this.get('incorrectUsername')) {
+      if (this.incorrectUsername) {
         return;
       }
 
-      const firstName = this.get('firstName');
-      const lastName = this.get('lastName');
+      const firstName = this.firstName;
+      const lastName = this.lastName;
 
       const ret = {
         username,
@@ -211,7 +231,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     },
 
     usernameValidate() {
-      var username = this.get('username');
+      var username = this.username;
       if (username) {
         var usernamePattern = new RegExp(/^[a-z0-9_]{3,30}$/);
         var usernameTest = usernamePattern.test(username);
@@ -230,7 +250,11 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     },
 
     checkError: function () {
-      let errors = ['usernameAlreadyExists', 'userAlreadyInSection', 'isMissingCredentials'];
+      let errors = [
+        'usernameAlreadyExists',
+        'userAlreadyInSection',
+        'isMissingCredentials',
+      ];
 
       for (let error of errors) {
         if (this.get(error)) {
@@ -241,27 +265,36 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
 
     updateSectionPassword: function () {
       this.set('isEditingSectionPassword', false);
-      let section = this.get('section');
+      let section = this.section;
       if (section.get('hasDirtyAttributes')) {
-        section.save().then(() => {
-          this.get('alert').showToast('success', 'Class Password Updated', 'bottom-end', 3000, false, null);
-          this.removeMessages('updateSectionErrors');
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors');
-        });
+        section
+          .save()
+          .then(() => {
+            this.alert.showToast(
+              'success',
+              'Class Password Updated',
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+            this.removeMessages('updateSectionErrors');
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateSectionErrors');
+          });
       }
     },
-    updateStudents: function(val, $item) {
+    updateStudents: function (val, $item) {
       if (!val) {
         return;
       }
-      let user = this.get('store').peekRecord('user', val);
+      let user = this.store.peekRecord('user', val);
       if (!user) {
         return;
       }
 
-      let students = this.get('students');
+      let students = this.students;
 
       // adding
       if (students.includes(user)) {
@@ -271,15 +304,23 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       }
       students.addObject(user);
 
-      this.get('section').save()
+      this.section
+        .save()
         .then(() => {
-          this.get('alert').showToast('success', 'Student Added', 'bottom-end', 3000, false, null);
+          this.alert.showToast(
+            'success',
+            'Student Added',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
           // clear selectize
           this.clearSelectizeInput('select-add-student');
         })
         .catch((err) => {
           this.handleErrors(err, 'updateSectionErrors');
         });
-    }
-  }
+    },
+  },
 });

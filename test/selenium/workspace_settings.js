@@ -31,7 +31,7 @@ let assignmentToLink = {
   name: 'MTG Period 1 SCR'
 };
 
-let wsInfoUrl = `${host}/#/workspaces/${workspaceInfo._id}/info`;
+let wsInfoUrl = `${host}/workspaces/${workspaceInfo._id}/info`;
 
 let collabToAdd = {
   username: 'mtgstudent2',

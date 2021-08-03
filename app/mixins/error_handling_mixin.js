@@ -1,37 +1,38 @@
-// throughout app
-Encompass.ErrorHandlingMixin = Ember.Mixin.create({
+import Mixin from '@ember/object/mixin';
+import { inject as service } from '@ember/service';
 
-  alert: Ember.inject.service('sweet-alert'),
-//only found here
-  isAdapterError: function(err) {
+export default Mixin.create({
+  alert: service('sweet-alert'),
+
+  isAdapterError: function (err) {
     if (!err) {
       return;
     }
     return err.isAdapterError === true;
   },
-// only found here
-  isRecordInvalid: function(rec) {
+
+  isRecordInvalid: function (rec) {
     if (!rec) {
       return;
     }
     return rec.get('isValid') === false;
   },
-//only found here
-  setErrorMessages: function(err, propName) {
+
+  setErrorMessages: function (err, propName) {
     if (!err || !propName) {
       return;
     }
 
     let errors = err.errors;
     if (!errors || !Array.isArray(errors)) {
-      this.set(propName, ["Unknown Error"]);
+      this.set(propName, ['Unknown Error']);
       return;
     }
-    let details = errors.map(e => e.detail);
+    let details = errors.map((e) => e.detail);
     this.set(propName, details);
   },
-//throughout app
-  handleErrors: function(err, propName, record=null, records=[]) {
+
+  handleErrors: function (err, propName, record = null, records = []) {
     this.setErrorMessages(err, propName);
 
     if (record) {
@@ -47,14 +48,13 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
       });
     }
   },
-//throughout app
-  removeMessages: function(...errors) {
 
+  removeMessages: function (...errors) {
     for (let e of errors) {
       this._removeMessages(e);
     }
   },
-  _removeMessages: function(err) {
+  _removeMessages: function (err) {
     if (!err) {
       return;
     }
@@ -79,7 +79,6 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
 
   // extracts first error detail from errors array and uses
   // sweet-alert to display toast
-  //only in response-approver-reply.js
   displayErrorToast(err, recordsToRollback) {
     if (!err) {
       return;
@@ -95,7 +94,9 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
       }
     }
 
-    let records = Array.isArray(recordsToRollback) ? recordsToRollback : [recordsToRollback];
+    let records = Array.isArray(recordsToRollback)
+      ? recordsToRollback
+      : [recordsToRollback];
 
     records.forEach((rec) => {
       if (this.isRecordInvalid(rec)) {
@@ -103,8 +104,7 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
       }
     });
 
-    this.get('alert').showToast('error', msg, 'bottom-end', 5000, false, null);
-
+    this.alert.showToast('error', msg, 'bottom-end', 5000, false, null);
   },
 
   actions: {
@@ -113,7 +113,6 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
         return;
       }
       this.get(prop).removeObject(err);
-    }
+    },
   },
-
 });

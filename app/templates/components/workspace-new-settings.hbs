@@ -9,10 +9,10 @@
       </span>
     </p>
     <div class="single-text-input-container">
-      {{input id="ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
+      <Input @id="ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
     </div>
   {{#each workspaceNameErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut workspaceNameErrors) null}} />
   {{/each}}
   </div>
 
@@ -23,21 +23,9 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{selectize-input
-      store=store
-      inputId="owner-select"
-      initialOptions=ownerOptions
-      maxItems=1
-      onItemAdd=(action "updateSelectizeSingle")
-      onItemRemove=(action "updateSelectizeSingle")
-      labelField="username"
-      valueField="id"
-      searchField="username"
-      model="user"
-      propToUpdate="selectedOwner"
-      placeholder="Search by username to choose as owner"}}
+    <SelectizeInput @store={{this.store}} @inputId="owner-select" @initialOptions={{ownerOptions}} @maxItems={{1}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @propToUpdate="selectedOwner" @placeholder="Search by username to choose as owner" />
     {{#each ownerErrors as |error|}}
-      {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut ownerErrors) null}} />
     {{/each}}
   </div>
 
@@ -48,9 +36,9 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{radio-group options=modeInputs selectedValue=selectedMode}}
+    <RadioGroup @options={{modeInputs}} @selectedValue={{selectedMode}} />
     {{#each privacySettingErrors as |error|}}
-      {{error-box error=error showDismiss=true resetError=(action (mut privacySettingErrors) null)}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut privacySettingErrors) null}} />
     {{/each}}
   </div>
 
@@ -61,22 +49,9 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{selectize-input
-      store=store
-      inputId="folderset-select"
-      initialOptions=folderSetOptions
-      maxItems=1
-      onItemAdd=(action "updateSelectizeSingle")
-      onItemRemove=(action "updateSelectizeSingle")
-      labelField="name"
-      valueField="id"
-      searchField="name"
-      model="folder-set"
-      propToUpdate="selectedFolderSet"
-      placeholder="Select a Folder Set"
-    }}
+    <SelectizeInput @store={{this.store}} @inputId="folderset-select" @initialOptions={{folderSetOptions}} @maxItems={{1}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @valueField="id" @searchField="name" @model="folder-set" @propToUpdate="selectedFolderSet" @placeholder="Select a Folder Set" />
     {{#each folderSetErrors as |error|}}
-      {{error-box error=error showDismiss=true resetError=(action (mut folderSetErrors) null)}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut folderSetErrors) null}} />
     {{/each}}
   </div>
 
@@ -87,13 +62,13 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{radio-group options=submissionSettingsInputs selectedValue=selectedSubmissionSettings}}
+    <RadioGroup @options={{submissionSettingsInputs}} @selectedValue={{selectedSubmissionSettings}} />
   </div>
-  {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users isEditing=isEditingPermissions selectedCollaborator = unsavedCollaborator initialCollabOptions=initialCollabOptions selectedCollaborators=selectedCollaborators}}
+  <WsNewSettingsPermissions @permissions={{workspacePermissions}} @store={{this.store}} @users={{users}} @isEditing={{isEditingPermissions}} @selectedCollaborator={{unsavedCollaborator}} @initialCollabOptions={{initialCollabOptions}} @selectedCollaborators={{selectedCollaborators}} />
 
   <div class="create-ws-error">
     {{#if createWorkspaceError}}
-      {{error-box error=createWorkspaceError showDismiss=true resetError=(action (mut createWorkspaceError) null)}}
+      <ErrorBox @error={{createWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut createWorkspaceError) null}} />
     {{/if}}
   </div>
 

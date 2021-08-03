@@ -4,7 +4,7 @@
 const dbSetup = require('../data/restore');
 const config = require('../../server/config');
 const nconf = config.nconf;
-const port = nconf.get('testPort');
+const port = nconf.get('clientPort');
 const host = `http://localhost:${port}`;
 
 const admin = {

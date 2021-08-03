@@ -1,26 +1,29 @@
-Encompass.SocketLoaderComponent = Ember.Component.extend({
-  tagName: '',
-  socketIo: Ember.inject.service('socket-io'),
+import Component from '@ember/component';
+import { observer } from '@ember/object';
+import { alias } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
+  socketIo: service('socket-io'),
   didReceiveAttrs() {
-    if (this.get('currentUser') && !this.get('currentUser.isGuest')) {
-      this.get('socketIo').setupSocket(this.get('currentUser'));
+    if (this.currentUser && !this.currentUser.isGuest) {
+      this.socketIo.setupSocket(this.currentUser);
     }
     this._super(...arguments);
   },
 
-  checkUserSocketId: function() {
-    let user = this.get('currentUser');
+  checkUserSocketId: observer('socketId', 'currentUser.socketId', function () {
+    let user = this.currentUser;
     if (!user) {
       return;
     }
-    let socketId = this.get('socketId');
+    let socketId = this.socketId;
 
     if (socketId !== user.get('socketId')) {
       user.set('socketId', socketId);
       user.save();
     }
+  }),
 
-  }.observes('socketId', 'currentUser.socketId'),
-
-  socketId: Ember.computed.alias('socketIo.socket.id'),
+  socketId: alias('socketIo.socket.id'),
 });

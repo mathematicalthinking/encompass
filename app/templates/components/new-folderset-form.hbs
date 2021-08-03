@@ -6,10 +6,10 @@
     </span>
   </p>
   <div class="single-text-input-container">
-    {{input id="folderset-name" class="single-text-input" type="text" value=name placeholder="Provide a name for the new folder set"}}
+    <Input @id="folderset-name" class="single-text-input" @type="text" @value={{name}} placeholder="Provide a name for the new folder set" />
   </div>
   {{#each nameErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut nameErrors) null)}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut nameErrors) null}} />
   {{/each}}
 </div>
 
@@ -20,8 +20,8 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  {{radio-group options=privacyInputs selectedValue=privacySetting}}
+  <RadioGroup @options={{privacyInputs}} @selectedValue={{privacySetting}} />
   {{#each privacyErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut privacyErrors) null)}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut privacyErrors) null}} />
   {{/each}}
 </div>

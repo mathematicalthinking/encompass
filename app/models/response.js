@@ -1,35 +1,40 @@
-Encompass.Response = DS.Model.extend(Encompass.Auditable, {
-  persisted:  Ember.computed.bool('id'),
-  text:       DS.attr('string'),
+import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
+import { computed } from '@ember/object';
+import { alias, bool } from '@ember/object/computed';
+import Auditable from '../models/_auditable_mixin';
+
+export default Model.extend(Auditable, {
+  persisted: bool('id'),
+  text: attr('string'),
   // the original response the user was given (should be based on the selections and comments below)
-  original:   DS.attr('string'),
+  original: attr('string'),
   // who the response is for
-  recipient: DS.belongsTo('user', { inverse: null }),
+  recipient: belongsTo('user', { inverse: null }),
   // where did this response originate from?
-  source:     DS.attr('string'), //submission, folder, workspace
-  submission: DS.belongsTo('submission', {async: true}), //if available
-  workspace:  DS.belongsTo('workspace'),  //if available
+  source: attr('string'), //submission, folder, workspace
+  submission: belongsTo('submission', { async: true }), //if available
+  workspace: belongsTo('workspace'), //if available
   // the selections and comments originally used
-  selections: DS.hasMany('selection', {async: true}),
-  comments:   DS.hasMany('comment', {async: true}),
-  student:    Ember.computed.alias('submission.student'),
-  powId:      Ember.computed.alias('submission.powId'),
-  isStatic:   Ember.computed.alias('submission.isStatic'),
-  responseType: DS.attr('string'),
-  note: DS.attr('string'),
-  status: DS.attr('string'),
-  priorRevision: DS.belongsTo('response', { inverse: null }), // objectId of mentor reply that was revised in response to approve reply
-  reviewedResponse: DS.belongsTo('response', { inverse: null }), // objectId of the mentor response that was source of approver reply
-  approvedBy: DS.belongsTo('user', {inverse: null}),
-  wasReadByRecipient: DS.attr('boolean', { defaultValue: false }),
-  wasReadByApprover: DS.attr('boolean', { defaultValue: false }),
-  isApproverNoteOnly: DS.attr('boolean', { defaultValue: false}),
-  unapprovedBy: DS.belongsTo('user', { invers: null }),
-  originalResponse: DS.belongsTo('response', {inverse: null}),
-  shortText: function() {
-    if (typeof this.get('text') !== 'string') {
+  selections: hasMany('selection', { async: true }),
+  comments: hasMany('comment', { async: true }),
+  student: alias('submission.student'),
+  powId: alias('submission.powId'),
+  isStatic: alias('submission.isStatic'),
+  responseType: attr('string'),
+  note: attr('string'),
+  status: attr('string'),
+  priorRevision: belongsTo('response', { inverse: null }), // objectId of mentor reply that was revised in response to approve reply
+  reviewedResponse: belongsTo('response', { inverse: null }), // objectId of the mentor response that was source of approver reply
+  approvedBy: belongsTo('user', { inverse: null }),
+  wasReadByRecipient: attr('boolean', { defaultValue: false }),
+  wasReadByApprover: attr('boolean', { defaultValue: false }),
+  isApproverNoteOnly: attr('boolean', { defaultValue: false }),
+  unapprovedBy: belongsTo('user', { invers: null }),
+  originalResponse: belongsTo('response', { inverse: null }),
+  shortText: computed('text', function () {
+    if (typeof this.text !== 'string') {
       return '';
     }
-    return this.get('text').slice(0, 100);
-  }.property('text'),
+    return this.text.slice(0, 100);
+  }),
 });

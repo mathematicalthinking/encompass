@@ -36,7 +36,7 @@ describe('Comments', function() {
     let saveButton;
     before(async function() {
       try {
-        await driver.get(`${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38e83b48b12793f0010de`);
+        await driver.get(`${host}/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38e83b48b12793f0010de`);
         saveButton = await driver.wait(until.elementLocated(By.css(commentsCss.save)), 5000);
       }catch(err) {
         console.log(err);
@@ -63,6 +63,7 @@ describe('Comments', function() {
       let text;
       let newComment;
       try{
+        await driver.sleep(10000);
         let paragraphs = await helpers.getWebElements(driver, commentsCss.commentText);
         if (!_.isEmpty(paragraphs)) {
           newComment = paragraphs[paragraphs.length - 1];

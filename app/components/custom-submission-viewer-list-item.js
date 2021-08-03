@@ -1,14 +1,17 @@
-Encompass.CustomSubmissionViewerListItemComponent = Ember.Component.extend({
-  elementId: ['custom-submission-viewer-list-item'],
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 
-  isChecked: function() {
-    return this.get('selectedSubmissionIds').includes(this.get('submission.id'));
-  }.property('selectedSubmissionIds.[]'),
+export default Component.extend({
+  tagName: '',
+  elementId: () => ['custom-submission-viewer-list-item'],
+
+  isChecked: computed('selectedSubmissionIds.[]', 'submission.id', function () {
+    return this.selectedSubmissionIds.includes(this.submission.id);
+  }),
 
   actions: {
-    onSelect: function() {
-      this.get('onSelect')(this.get('submission.id'));
-    }
-  }
-
+    onSelect: function () {
+      this.onSelect(this.submission.id);
+    },
+  },
 });

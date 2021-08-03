@@ -1,0 +1,351 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 1131px) {
+  #workspace-list-container {
+    .sort-bar-item, .item-section {
+      &.comments {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 1401px) {
+  #workspace-list-container {
+    .sort-bar-item, .item-section {
+      &.responses {
+        display: none;
+      }
+    }
+  }
+}
+
+#workspace-list-container {
+  .sort-bar-item, .item-section {
+    font-size: .8em;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
+      font-size: .7em;
+      position: relative;
+      top: -1px;
+    }
+    &:hover {
+      cursor: pointer;
+      color: black;
+    }
+    &.mode {
+      @include flex-item(1, center, .05 0 auto);
+      width: 5%;
+      &:hover {
+        cursor: pointer;
+        color: black;
+        .hover-menu {
+          display: inline;
+        }
+      }
+    }
+    &.info-item {
+      @include flex-item(2, center, .02 0 auto);
+      width: 2%;
+      text-align: left;
+      overflow: visible;
+    }
+    &.name {
+      @include flex-item(3, center, .23 0 auto);
+      width: 23%;
+      text-align: left;
+    }
+    &.last-viewed {
+      @include flex-item(4, center, .08 0 auto);
+      width: 8%;
+    }
+    &.submissions {
+      @include flex-item(5, center, .08 0 auto);
+      width: 8%;
+    }
+    &.selections {
+      @include flex-item(6, center, .07 0 auto);
+      width: 7%;
+    }
+    &.comments {
+      @include flex-item(7, center, .07 0 auto);
+      width: 7%;
+    }
+    &.responses {
+      @include flex-item(8, center, .07 0 auto);
+      width: 7%;
+    }
+    &.owner {
+      @include flex-item(9, center, .08 0 auto);
+      width: 8%;
+    }
+    &.editors {
+      @include flex-item(10, center, .06 0 auto);
+      width: 6%;
+    }
+    &.more {
+      @include flex-item(11, center, .01 0 auto);
+      width: 1%;
+      text-align: left;
+      overflow: visible;
+    }
+  }
+  .item-section {
+    font-size: 1em;
+  }
+
+  #layout-view {
+    &.grid-view {
+      .sort-bar {
+        background-color: $background-body;
+        max-width: 1000px;
+        @include flex-container(auto, auto, row, wrap, center, center, center);
+        .sort-bar-item {
+          text-align: center;
+          min-width: fit-content;
+          margin: 0 10px;
+          &.mode {
+            @include flex-item(1, center, .07 0 auto);
+            width: 7%;
+          }
+          &.name {
+            @include flex-item(2, center, .15 0 auto);
+            width: 15%;
+          }
+          &.last-viewed {
+            @include flex-item(3, center, .10 0 auto);
+            width: 10%;
+          }
+          &.submissions {
+            @include flex-item(4, center, .10 0 auto);
+            width: 10%;
+          }
+          &.selections {
+            @include flex-item(5, center, .10 0 auto);
+            width: 10%;
+          }
+          &.comments {
+            @include flex-item(6, center, .10 0 auto);
+            width: 10%;
+          }
+          &.responses {
+            @include flex-item(7, center, .10 0 auto);
+            width: 10%;
+          }
+          &.editors {
+            @include flex-item(8, center, .10 0 auto);
+            width: 10%;
+          }
+          &.info-item, &.owner, &.more {
+            display: none;
+          }
+        }
+      }
+      #workspace-list {
+        width: inherit;
+        .main-list {
+          @include flex-container(auto, auto, row, wrap, center, center, center);
+        }
+        .workspace-list-item {
+          @include flex-item(1, auto, 1 1 auto);
+          width: 600px;
+          .item-card-container {
+            margin: 5px;
+            box-shadow: $box-shadow;
+            border-radius: 5px;
+            padding: 10px;
+            display: block;
+            @include flex-container(auto, hidden, column, wrap, space-between, stretch, stretch);
+            &:hover {
+              background-color: $list-hover-color;
+            }
+            .item-card {
+              &.row-1 {
+                @include flex-item(1, auto, 1 0 auto);
+                padding: 15px 10px;
+                .privacy {
+                  text-align: left;
+                  float: left;
+                  .privacy-icon {
+                    margin-right: 5px;
+                    font-size: 1.2em;
+                  }
+                  .date {
+                    margin-left: 10px;
+                    position: relative;
+                    top: -3px;
+                  }
+                }
+                .more {
+                  float: right;
+                  font-size: 1em;
+                  margin-top: 5px;
+                  cursor: pointer;
+                }
+              }
+              &.row-2 {
+                @include flex-item(2, auto, 1 0 auto);
+                padding: 20px 15px 15px 15px;
+                a {
+                  color: black;
+                  &.active {
+                    font-weight: $bolder-font-weight;
+                    background-color: $background-body !important;
+                  }
+                }
+                text-transform: capitalize;
+                overflow-y: hidden;
+              }
+              &.row-3 {
+                @include flex-item(3, auto, 1 0 auto);
+                padding: 0px 15px 15px 15px;
+                a {
+                  &.active {
+                    font-weight: $bolder-font-weight;
+                    background-color: $background-body !important;
+                  }
+                }
+              }
+              &.row-4 {
+                @include flex-item(4, auto, 1 0 auto);
+                padding: 15px 10px 20px 10px;
+                .workspace-stats {
+                  text-align: center;
+                  @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
+                  li {
+                    @include flex-item(1, auto, 1 0 auto);
+                    line-height: 2em;
+                    min-width: 100px;
+                    .stat-header {
+                      color: black;
+                    }
+                    .stat-number {
+                      font-weight: $light-font-weight;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#workspace-new-settings {
+  padding: 20px;
+  h1 {
+    margin: 20px 0;
+    font-size: 2em;
+    color: $dark-font-color;
+    font-weight: $main-font-weight;
+    width: 100%;
+  }
+  .back-button {
+    background-color: $cancel-color;
+    color: $primary-font-color;
+    padding: 10px 10px 10px 5px;
+    font-size: .8em;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    i {
+      margin: 0 5px 0 10px;
+    }
+  }
+}
+.create-ws-content {
+  margin: 30px 40px 0 40px;
+  .input-label {
+    color: $dark-font-color;
+    font-size: 1.2em;
+    i {
+      color: $primary-font-color;
+      font-size: .9em;
+    }
+  }
+  .ws-new {
+    margin-bottom: 30px;
+  }
+  .primary-button {
+    float: left;
+    margin-bottom: 40px;
+  }
+  .single-text-input-container {
+    max-width: 600px;
+  }
+  .selectize-comp {
+    max-width: 600px;
+  }
+  .error-box {
+    margin-top: 0px;
+    max-width: 538px;
+  }
+
+  .create-ws-error {
+    .error-box {
+      margin-top: 15px;
+      max-width: 538px;
+    }
+  }
+}
+
+#ws-new-settings-permissions {
+  .global-permissions {
+    margin: 20px 0 20px 20px;
+    .radio-group-label {
+      font-size: 1.1em;
+      margin-bottom: 10px;
+      i {
+        margin-left: 15px;
+        font-size: .9em;
+      }
+    }
+    .sub-input-label {
+      font-size: .9em;
+      margin-left: 20px;
+    }
+  }
+  .button-container {
+    display: block;
+    margin: 15px 0;
+    .secondary-button {
+      background-color: $accent-color;
+      color: white;
+      // background-color: $cancel-color;
+      // color: $primary-font-color;
+      border-radius: 3px;
+      border: 0;
+      padding: 8px 10px;
+      font-size: .75em;
+      margin-right: 10px;
+      &.cancel-button {
+        background-color: $cancel-color;
+        color: $primary-font-color;
+      }
+    }
+  }
+  .added-collab {
+    margin: 30px 0 30px 20px;
+    li {
+      margin: 10px;
+      .fa-edit {
+        margin-left: 15px;
+      }
+      .fa-minus-circle {
+        color: $error-color;
+        margin-left: 15px;
+      }
+    }
+  }
+}
+
+
+

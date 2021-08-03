@@ -1,0 +1,15 @@
+<div class="auth-toggle">
+  {{#if shouldShowLogin}}
+  <button {{action 'changeComponent'}}>Sign up</button>
+  {{else}}
+  <button {{action 'changeComponent'}}>Log in</button>
+  {{/if}}
+</div>
+
+
+{{#if shouldShowLogin}}
+  <LogIn />
+{{else}}
+  <SignUp />
+{{/if}}
+{{outlet}}

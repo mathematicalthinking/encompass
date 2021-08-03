@@ -1,10 +1,20 @@
-Encompass.Tagging = DS.Model.extend(Ember.Copyable, Encompass.Auditable, {
-  workspace: DS.belongsTo('workspace', {async: false}),
-  selection: DS.belongsTo('selection'),
-  folder: DS.belongsTo('folder'),
-  originalTagging: DS.belongsTo('tagging', {inverse: null}),
+import Model, { belongsTo } from '@ember-data/model';
+import Ember from 'ember';
+import Auditable from '../models/_auditable_mixin';
 
-  copy: function(deep) {
+
+
+
+
+
+
+export default Model.extend(Ember.Copyable, Auditable, {
+  workspace: belongsTo('workspace', { async: false }),
+  selection: belongsTo('selection'),
+  folder: belongsTo('folder'),
+  originalTagging: belongsTo('tagging', { inverse: null }),
+
+  copy: function (deep) {
     var clone = this.toJSON();
 
     delete clone.id;

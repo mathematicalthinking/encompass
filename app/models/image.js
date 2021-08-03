@@ -1,22 +1,25 @@
-Encompass.Image = DS.Model.extend(Encompass.Auditable, {
-  imageId: Ember.computed.alias('id'),
-  encoding: DS.attr('string'),
-  mimetype: DS.attr('string'),
-  imageData: DS.attr('string'),
-  sourceUrl: DS.attr('string'),
-  originalname: DS.attr('string'),
-  pdfPageNum: DS.attr('number'),
+import Model, { attr } from '@ember-data/model';
+import { computed } from '@ember/object';
+import { alias } from '@ember/object/computed';
+import Auditable from '../models/_auditable_mixin';
 
-  pdfFileDisplay: function() {
+export default Model.extend(Auditable, {
+  imageId: alias('id'),
+  encoding: attr('string'),
+  mimetype: attr('string'),
+  imageData: attr('string'),
+  sourceUrl: attr('string'),
+  originalname: attr('string'),
+  pdfPageNum: attr('number'),
 
-  }.property('pdfPageNum', ),
+  pdfFileDisplay: computed('pdfPageNum', function () {}),
 
-  fileNameDisplay: function() {
-    let num = this.get('pdfPageNum');
+  fileNameDisplay: computed('originalname', 'pdfPageNum', function () {
+    let num = this.pdfPageNum;
     if (typeof num === 'number') {
-      return `${this.get('originalname')} (pg. ${num})`;
+      return `${this.originalname} (pg. ${num})`;
     }
 
-    return this.get('originalname');
-  }.property('originalname', 'pdfPageNum'),
+    return this.originalname;
+  }),
 });

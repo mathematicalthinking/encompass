@@ -1,299 +1,397 @@
-Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
-  utils: Ember.inject.service('utility-methods'),
-  store: Ember.inject.service(),
+import Model, { attr, hasMany } from '@ember-data/model';
+import { computed } from '@ember/object';
+import { gt } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import CurrentUserMixin from '../mixins/current_user_mixin';
 
-  submissions: DS.hasMany('submission'),
-  responses: DS.hasMany('response'),
-  workspaceName: DS.attr('string'),
-  problemTitle: DS.attr('string'),
-  uniqueIdentifier: DS.attr(),
-  threadType: DS.attr('string'), // submitter, mentor, approver
-  studentDisplay: DS.attr('string'),
-  mentors: DS.attr(),
-  isNewThread: DS.attr('boolean', { defaultValue: false }),
-  hasNewRevision: Ember.computed.gt('newRevisions.length', 0),
+export default Model.extend(CurrentUserMixin, {
+  utils: service('utility-methods'),
+  store: service(),
 
-  inNeedOfRevisions: Ember.computed.gt('needsRevisionResponses.length', 0),
-  isWaitingForApproval: Ember.computed.gt('pendingApprovalResponses.length', 0),
-  hasDraft: Ember.computed.gt('draftResponses.length', 0),
-  hasUnreadReply: Ember.computed.gt('unreadResponses.length', 0),
-  hasUnmentoredRevisions: Ember.computed.gt('unmentoredRevisions.length', 0),
-  hasNewlyApprovedReply: Ember.computed.gt('newlyApprovedReplies.length', 0),
+  submissions: hasMany('submission'),
+  responses: hasMany('response'),
+  workspaceName: attr('string'),
+  problemTitle: attr('string'),
+  uniqueIdentifier: attr(),
+  threadType: attr('string'), // submitter, mentor, approver
+  studentDisplay: attr('string'),
+  mentors: attr(),
+  isNewThread: attr('boolean', { defaultValue: false }),
+  hasNewRevision: gt('newRevisions.length', 0),
 
-  relatedNewNtfs: function() {
-    return this.get('newNotifications').filter((ntf) => {
-      if (ntf.get('primaryRecordType') !== 'response') {
-        return false;
-      }
-      let responseId = this.get('utils').getBelongsToId(ntf, 'response');
-      let subId = this.get('utils').getBelongsToId(ntf, 'submission');
+  inNeedOfRevisions: gt('needsRevisionResponses.length', 0),
+  isWaitingForApproval: gt('pendingApprovalResponses.length', 0),
+  hasDraft: gt('draftResponses.length', 0),
+  hasUnreadReply: gt('unreadResponses.length', 0),
+  hasUnmentoredRevisions: gt('unmentoredRevisions.length', 0),
+  hasNewlyApprovedReply: gt('newlyApprovedReplies.length', 0),
 
-      let foundResponse = this.get('cleanResponses').find((response) => {
-        return response.get('id') === responseId;
+  relatedNewNtfs: computed(
+    'cleanResponses.[]',
+    'newNotifications.[]',
+    'sortdRevisions',
+    'sortedRevisions',
+    function () {
+      return this.newNotifications.filter((ntf) => {
+        if (ntf.get('primaryRecordType') !== 'response') {
+          return false;
+        }
+        let responseId = this.utils.getBelongsToId(ntf, 'response');
+        let subId = this.utils.getBelongsToId(ntf, 'submission');
+
+        let foundResponse = this.cleanResponses.find((response) => {
+          return response.get('id') === responseId;
+        });
+
+        if (foundResponse) {
+          return true;
+        }
+        return this.sortedRevisions.find((sub) => {
+          return sub.get('id') === subId;
+        });
       });
+    }
+  ),
 
-      if (foundResponse) {
-        return true;
+  newNtfCount: computed.reads('relatedNewNtfs.length'),
+
+  sortPriority: computed(
+    'threadType',
+    'hasDraft',
+    'hasUnreadReply',
+    'hasUnmentoredRevisions',
+    'hasNewlyApprovedReply',
+    'hasNewRevision',
+    'isWaitingForApproval',
+    'inNeedOfRevisions',
+    function () {
+      let threadType = this.threadType;
+      if (threadType === 'submitter') {
+        return this.getSubmitterPriority();
       }
-      return this.get('sortedRevisions').find((sub) => {
-        return sub.get('id') === subId;
-      });
-    });
-  }.property('newNotifications.[]', 'cleanResponses.[]', 'sortdRevisions'),
-
-  newNtfCount: function() {
-    return this.get('relatedNewNtfs.length');
-  }.property('relatedNewNtfs.[]'),
-
-  sortPriority: function() {
-    let threadType = this.get('threadType');
-    if (threadType === 'submitter') {
-      return this.getSubmitterPriority();
+      if (threadType === 'mentor') {
+        return this.getMentoringPriority();
+      }
+      if (threadType === 'approver') {
+        return this.getApprovingPriority();
+      }
+      return 0;
     }
-    if (threadType === 'mentor') {
-      return this.getMentoringPriority();
-    }
-    if (threadType === 'approver') {
-      return this.getApprovingPriority();
-    }
-    return 0;
-  }.property('threadType', 'hasDraft', 'hasUnreadReply', 'hasUnmentoredRevisions', 'hasNewlyApprovedReply', 'hasNewRevision', 'isWaitingForApproval', 'inNeedOfRevisions'),
+  ),
 
-  getApprovingPriority: function() {
+  getApprovingPriority: function () {
     let sum = 0;
-    if (this.get('hasDraft')) {
+    if (this.hasDraft) {
       sum += 100;
     }
-    if (this.get('isWaitingForApproval')) {
+    if (this.isWaitingForApproval) {
       sum += 50;
     }
 
-    if (this.get('hasUnreadReply')) {
+    if (this.hasUnreadReply) {
       sum += 10;
     }
 
-    if (this.get('inNeedOfRevisions')) {
+    if (this.inNeedOfRevisions) {
       sum += 1;
     }
     return sum;
   },
 
-  getSubmitterPriority: function() {
+  getSubmitterPriority: function () {
     let sum = 0;
-    if (this.get('hasUnreadReply')) {
+    if (this.hasUnreadReply) {
       sum += 10;
     }
     return sum;
   },
 
-  getMentoringPriority: function() {
+  getMentoringPriority: function () {
     let sum = 0;
 
-    if (this.get('hasDraft')) {
+    if (this.hasDraft) {
       sum += 500;
     }
-    if (this.get('inNeedOfRevisions')) {
+    if (this.inNeedOfRevisions) {
       sum += 300;
     }
-    if (this.get('hasNewRevision')) {
+    if (this.hasNewRevision) {
       sum += 100;
     }
-    if (this.get('hasUnmentoredRevisions')) {
+    if (this.hasUnmentoredRevisions) {
       sum += 25;
     }
 
-    if (this.get('hasUnreadReply')) {
+    if (this.hasUnreadReply) {
       sum += 10;
     }
-    if (this.get('hasNewlyApprovedReply')) {
+    if (this.hasNewlyApprovedReply) {
       sum += 5;
     }
 
-    if (this.get('isWaitingForApproval')) {
+    if (this.isWaitingForApproval) {
       sum += 1;
     }
     return sum;
   },
 
-  isActionNeeded: function() {
-    let type = this.get('threadType');
+  isActionNeeded: computed(
+    'hasUnreadReply',
+    'hasDraft',
+    'isWaitingForApproval',
+    'inNeedOfRevisions',
+    'hasNewRevision',
+    'threadType',
+    function () {
+      let type = this.threadType;
 
-    if (this.get('hasUnreadReply') || this.get('hasDraft')) {
-      return true;
+      if (this.hasUnreadReply || this.hasDraft) {
+        return true;
+      }
+      if (type === 'mentor') {
+        return this.inNeedOfRevisions || this.hasNewRevision;
+      }
+
+      if (type === 'approver') {
+        return this.isWaitingForApproval;
+      }
     }
-    if (type === 'mentor') {
-      return this.get('inNeedOfRevisions') || this.get('hasNewRevision');
+  ),
+
+  cleanResponses: computed('responses.content.@each.isTrashed', function () {
+    return this.responses.content.rejectBy('isTrashed').sortBy('createDate');
+  }),
+
+  unreadResponses: computed(
+    'cleanResponses.@each.wasReadByRecipient',
+    'currentUser.id',
+    function () {
+      return this.cleanResponses.filter((response) => {
+        let recipientId = this.utils.getBelongsToId(response, 'recipient');
+        return (
+          !response.get('wasReadByRecipient') &&
+          recipientId === this.currentUser.id
+        );
+      });
     }
+  ),
 
-    if (type === 'approver') {
-      return this.get('isWaitingForApproval');
+  draftResponses: computed.filterBy('cleanResponses', 'status', 'draft'),
+
+  needsRevisionResponses: computed.filterBy(
+    'cleanResponses',
+    'status',
+    'needsRevisions'
+  ),
+
+  pendingApprovalResponses: computed.filterBy(
+    'cleanResponses',
+    'status',
+    'pendingApproval'
+  ),
+
+  latestReply: computed.reads('cleanResponses.lastObject'),
+
+  sortedRevisions: computed('submissions.content.[]', function () {
+    return this.submissions.content.sortBy('createDate');
+  }),
+
+  newRevisions: computed(
+    'newNotifications.[]',
+    'sortedRevisions.[]',
+    function () {
+      let newWorkNtfs = this.newNotifications.filterBy(
+        'notificationType',
+        'newWorkToMentor'
+      );
+
+      let newSubIds = newWorkNtfs
+        .map((ntf) => {
+          return this.utils.getBelongsToId(ntf, 'submission');
+        })
+        .compact()
+        .uniq();
+      return this.sortedRevisions.filter((sub) => {
+        return newSubIds.includes(sub.get('id'));
+      });
     }
+  ),
 
-  }.property('hasUnreadReply', 'hasDraft', 'isWaitingForApproval', 'inNeedOfRevisions', 'hasNewRevision', 'threadType'),
-
-  cleanResponses: function() {
-    return this.get('responses.content').rejectBy('isTrashed').sortBy('createDate');
-  }.property('responses.content.@each.isTrashed'),
-
-  unreadResponses: function() {
-    return this.get('cleanResponses').filter((response) => {
-      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
-      return !response.get('wasReadByRecipient') && recipientId === this.get('currentUser.id');
-    });
-  }.property('cleanResponses.@each.wasReadByRecipient'),
-
-  draftResponses: function() {
-    return this.get('cleanResponses').filterBy('status', 'draft');
-  }.property('cleanResponses.@each.status'),
-
-  needsRevisionResponses: function() {
-    return this.get('cleanResponses').filterBy('status', 'needsRevisions');
-  }.property('cleanResponses.@each.status'),
-
-  pendingApprovalResponses: function() {
-    return this.get('cleanResponses').filterBy('status', 'pendingApproval');
-  }.property('cleanResponses.@each.status'),
-
-  latestReply: function() {
-    return this.get('cleanResponses.lastObject');
-  }.property('cleanResponses.[]'),
-
-  sortedRevisions: function() {
-    return this.get('submissions.content').sortBy('createDate');
-  }.property('submissions.content.[]'),
-
-  newRevisions: function() {
-    let newWorkNtfs = this.get('newNotifications').filterBy('notificationType', 'newWorkToMentor');
-
-    let newSubIds = newWorkNtfs.map((ntf) => {
-      return this.get('utils').getBelongsToId(ntf, 'submission');
-    }).compact().uniq();
-    return this.get('sortedRevisions').filter((sub) => {
-      return newSubIds.includes(sub.get('id'));
-    });
-
-  }.property('newNotifications.[]', 'sortedRevisions.[]'),
-
-  yourMentorReplies: function() {
-    return this.get('cleanResponses').filter((response) => {
-      let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
-      return response.get('responseType') === 'mentor' && creatorId === this.get('currentUser.id');
-    });
-  }.property('cleanResponses.@each.responseType'),
-
-  newlyApprovedReplies: function() {
-    let newlyApprovedNtfs = this.get('newNotifications').filterBy('notificationType', 'newlyApprovedReply');
-
-    let newResponseIds = newlyApprovedNtfs.map((ntf) => {
-      return this.get('utils').getBelongsToId(ntf, 'response');
-    }).compact().uniq();
-
-    let newlyApprovedReplies = this.get('cleanResponses').filter((response) => {
-      let existingId = response.get('id');
-      return newResponseIds.includes(existingId);
-    }).compact();
-
-    return newlyApprovedReplies;
-  }.property('newNotifications.@each.notificationType', 'cleanresponses.[]'),
-
-  unmentoredRevisions: function() {
-    if (this.get('threadType') !== 'mentor') {
-      return [];
+  yourMentorReplies: computed(
+    'cleanResponses.@each.responseType',
+    'currentUser.id',
+    function () {
+      return this.cleanResponses.filter((response) => {
+        let creatorId = this.utils.getBelongsToId(response, 'createdBy');
+        return (
+          response.get('responseType') === 'mentor' &&
+          creatorId === this.currentUser.id
+        );
+      });
     }
-    let mentoredRevisionIds = this.get('yourMentorReplies').map((response) => {
-      return this.get('utils').getBelongsToId(response, 'submission');
-    }).compact().uniq();
+  ),
 
-    let latestReplyDate = this.get('yourLatestMentorReply.createDate');
+  newlyApprovedReplies: computed(
+    'cleanResponses',
+    'cleanresponses.[]',
+    'newNotifications.@each.notificationType',
+    function () {
+      let newlyApprovedNtfs = this.newNotifications.filterBy(
+        'notificationType',
+        'newlyApprovedReply'
+      );
 
-   return this.get('sortedRevisions').filter((submission) => {
-      return !mentoredRevisionIds.includes(submission.get('id')) && submission.get('createDate') > latestReplyDate;
-   });
- }.property('yourMentorReplies.[]', 'sortedRevisions.@each.createDate', 'threadType', 'yourLatestMentorReply.createDate'),
+      let newResponseIds = newlyApprovedNtfs
+        .map((ntf) => {
+          return this.utils.getBelongsToId(ntf, 'response');
+        })
+        .compact()
+        .uniq();
 
-  latestRevision: function() {
-    return this.get('sortedRevisions.lastObject');
-  }.property('sortedRevisions.[]'),
+      let newlyApprovedReplies = this.cleanResponses
+        .filter((response) => {
+          let existingId = response.get('id');
+          return newResponseIds.includes(existingId);
+        })
+        .compact();
 
-  highestPriorityStatus: function() {
-    if (this.get('hasDraft')) {
-      return 'hasDraft';
+      return newlyApprovedReplies;
     }
+  ),
 
-    if (this.get('hasNewRevision')) {
-      return 'hasNewRevision';
+  unmentoredRevisions: computed(
+    'yourMentorReplies.[]',
+    'sortedRevisions.@each.createDate',
+    'threadType',
+    'yourLatestMentorReply.createDate',
+    function () {
+      if (this.threadType !== 'mentor') {
+        return [];
+      }
+      let mentoredRevisionIds = this.yourMentorReplies
+        .map((response) => {
+          return this.utils.getBelongsToId(response, 'submission');
+        })
+        .compact()
+        .uniq();
+
+      let latestReplyDate = this.yourLatestMentorReply.createDate;
+
+      return this.sortedRevisions.filter((submission) => {
+        return (
+          !mentoredRevisionIds.includes(submission.get('id')) &&
+          submission.get('createDate') > latestReplyDate
+        );
+      });
     }
+  ),
 
-    if (this.get('hasUnmentoredRevisions')) {
-      return 'hasUnmentoredRevisions';
+  latestRevision: computed.reads('sortedRevisions.lastObject'),
+
+  highestPriorityStatus: computed(
+    'hasDraft',
+    'hasUnreadReply',
+    'isWaitingForApproval',
+    'hasNewRevision',
+    'hasUnmentoredRevisions',
+    'inNeedOfRevisions',
+    'hasNewlyApprovedReply',
+    function () {
+      if (this.hasDraft) {
+        return 'hasDraft';
+      }
+
+      if (this.hasNewRevision) {
+        return 'hasNewRevision';
+      }
+
+      if (this.hasUnmentoredRevisions) {
+        return 'hasUnmentoredRevisions';
+      }
+
+      if (this.hasUnreadReply) {
+        return 'hasUnreadReply';
+      }
+
+      if (this.isWaitingForApproval) {
+        return 'isWaitingForApproval';
+      }
+      if (this.inNeedOfRevisions) {
+        return 'inNeedOfRevisions';
+      }
+
+      if (this.hasNewlyApprovedReply) {
+        return 'hasNewlyApprovedReply';
+      }
+
+      return 'upToDate';
     }
+  ),
 
-    if (this.get('hasUnreadReply')) {
-      return 'hasUnreadReply';
+  highestPriorityResponse: computed(
+    'draftResponses.lastObject',
+    'highestPriorityStatus',
+    'latestReply',
+    'needsRevisionResponses.lastObject',
+    'newlyApprovedReplies.lastObject',
+    'pendingApprovalResponses.lastObject',
+    'unreadResponses.lastObject',
+    function () {
+      let status = this.highestPriorityStatus;
+
+      if (status === 'hasDraft') {
+        return this.draftResponses.lastObject;
+      }
+
+      if (status === 'hasNewRevision') {
+        return null;
+      }
+
+      if (status === 'hasUnmentoredRevisions') {
+        return null;
+      }
+
+      if (status === 'hasUnreadReply') {
+        return this.unreadResponses.lastObject;
+      }
+
+      if (status === 'isWaitingForApproval') {
+        return this.pendingApprovalResponses.lastObject;
+      }
+
+      if (status === 'inNeedOfRevisions') {
+        return this.needsRevisionResponses.lastObject;
+      }
+
+      if (status === 'hasNewlyApprovedReply') {
+        return this.newlyApprovedReplies.lastObject;
+      }
+
+      return this.latestReply;
     }
+  ),
 
-    if (this.get('isWaitingForApproval')) {
-      return 'isWaitingForApproval';
+  highestPrioritySubmission: computed(
+    'hasNewRevision',
+    'hasUnmentoredRevisions',
+    'highestPriorityStatus',
+    'newRevisions',
+    'unmentoredRevisions.lastObject',
+    function () {
+      if (this.hasNewRevision) {
+        return this.newRevisions.sortBy('createDate').get('lastObject');
+      }
+
+      if (this.hasUnmentoredRevisions) {
+        return this.unmentoredRevisions.lastObject;
+      }
     }
-    if (this.get('inNeedOfRevisions')) {
-      return 'inNeedOfRevisions';
+  ),
+
+  yourLatestMentorReply: computed(
+    'yourMentorReplies.@each.createDate',
+    function () {
+      return this.yourMentorReplies.sortBy('createDate').get('lastObject');
     }
-
-    if (this.get('hasNewlyApprovedReply')) {
-      return 'hasNewlyApprovedReply';
-    }
-
-    return 'upToDate';
-
-  }.property('hasDraft', 'hasUnreadReply', 'isWaitingForApproval', 'hasNewRevision', 'hasUnmentoredRevisions', 'inNeedOfRevisions', 'hasNewlyApprovedReply'),
-
-  highestPriorityResponse: function() {
-    let status = this.get('highestPriorityStatus');
-
-    if (status === 'hasDraft') {
-      return this.get('draftResponses.lastObject');
-    }
-
-    if (status === 'hasNewRevision') {
-      return null;
-    }
-
-    if (status === 'hasUnmentoredRevisions') {
-      return null;
-    }
-
-    if (status === 'hasUnreadReply') {
-      return this.get('unreadResponses.lastObject');
-    }
-
-    if (status === 'isWaitingForApproval') {
-      return this.get('pendingApprovalResponses.lastObject');
-    }
-
-    if (status === 'inNeedOfRevisions') {
-      return this.get('needsRevisionResponses.lastObject');
-    }
-
-    if (status === 'hasNewlyApprovedReply') {
-      return this.get('newlyApprovedReplies.lastObject');
-    }
-
-    return this.get('latestReply');
-
-  }.property('highestPriorityStatus'),
-
-  highestPrioritySubmission: function() {
-    if (this.get('hasNewRevision')) {
-      return this.get('newRevisions').sortBy('createDate').get('lastObject');
-    }
-
-    if (this.get('hasUnmentoredRevisions')) {
-      return this.get('unmentoredRevisions.lastObject');
-    }
-  }.property('highestPriorityStatus'),
-
-  yourLatestMentorReply: function() {
-    return this.get('yourMentorReplies').sortBy('createDate').get('lastObject');
-  }.property('yourMentorReplies.@each.createDate'),
-
+  ),
 });

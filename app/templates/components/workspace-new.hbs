@@ -9,8 +9,7 @@
 </nav> --}}
 
 {{#if isPows}}
-  {{workspace-new-pows model=model store=store}}
+  <WorkspaceNewPows @model={{model}} @store={{this.store}} />
   {{else}}
-  {{workspace-new-enc model=model store=store toWorkspaces="toWorkspaces"
-  toWorkspace="toWorkspace"}}
+  <WorkspaceNewEnc @model={{model}} @store={{this.store}} @toWorkspaces="toWorkspaces" @toWorkspace="toWorkspace" />
 {{/if}}

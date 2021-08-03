@@ -7,18 +7,12 @@
 </p>
 
 <div class="submission-permissions">
-{{radio-group options=submissionItems selectedValue=submissions}}
+<RadioGroup @options={{submissionItems}} @selectedValue={{submissions}} />
 {{#if closedCustomView}}
   <span class="show-viewer" {{action (mut showCustomSubmissionViewer) true}}>Show Viewer</span>
 {{/if}}
   {{#if showCustomSubmissions}}
-    {{custom-submission-viewer-list submissions=submissionsPool
-      selectedSubmissionIds=customSubmissionIds
-      onSelect=(action "updateCustomSubs")
-      onSelectAll=(action "selectAllSubmissions")
-      onUnselectAll=(action "deselectAllSubmissions")
-      showView=showCustomSubmissionViewer
-    }}
+    <CustomSubmissionViewerList @submissions={{submissionsPool}} @selectedSubmissionIds={{customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @showView={{showCustomSubmissionViewer}} />
     {{!-- <ul>
     {{#each workspace.submissions.content as |submission|}}
       <li>
@@ -31,7 +25,7 @@
 </div>
 
 <div class="global-permissions">
-  {{radio-group options=globalItems selectedValue=global}}
+  <RadioGroup @options={{globalItems}} @selectedValue={{global}} />
   {{#if showCustom}}
   <div class="custom-global-permissions">
     <p class="input-label">
@@ -40,16 +34,16 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{radio-group options=selectionItems selectedValue=selections}}
-    {{radio-group options=commentItems selectedValue=comments}}
-    {{radio-group options=folderItems selectedValue=folders}}
-    {{radio-group options=feedbackItems selectedValue=feedback}}
+    <RadioGroup @options={{selectionItems}} @selectedValue={{selections}} />
+    <RadioGroup @options={{commentItems}} @selectedValue={{comments}} />
+    <RadioGroup @options={{folderItems}} @selectedValue={{folders}} />
+    <RadioGroup @options={{feedbackItems}} @selectedValue={{feedback}} />
   </div>
   {{/if}}
 </div>
 
 {{#if saveError}}
-  {{error-box error="Sorry, something went wrong. Please try again." resetError=(action (mut saveError) null) showDismiss=true}}
+  <ErrorBox @error="Sorry, something went wrong. Please try again." @resetError={{action (mut saveError) null}} @showDismiss={{true}} />
 {{/if}}
 
 <button class="primary-button cancel-button" {{action (mut selectedUser) null}}>Cancel</button>

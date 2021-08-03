@@ -1,0 +1,82 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.action_button {
+  background:$accent-yellow;
+  padding: 10px 15px;
+  display: inline-block;
+  zoom: 1;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: $accent-color;
+  color: white;
+  padding: 10px 22px;
+  display: inline-block;
+  text-align: center;
+  border: 0;
+  font-size: .8em;
+  border-radius: 3px;
+  font-weight: $main-font-weight;
+  cursor: pointer;
+  letter-spacing: .05em;
+  &:hover {
+    background: darken($accent-color, 10);
+    box-shadow: $button-shadow;
+  }
+}
+
+.approve-button {
+  background-color: $success-color;
+  color: white;
+  padding: 10px 22px;
+  display: inline-block;
+  text-align: center;
+  border: 0;
+  font-size: .8em;
+  border-radius: 3px;
+  font-weight: $main-font-weight;
+  cursor: pointer;
+  letter-spacing: .05em;
+}
+
+.delete-button {
+  background: $error-color;
+  color: white;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background: $cancel-color;
+  color: $primary-font-color;
+  cursor: pointer;
+  &:hover {
+    background: darken($cancel-color, 5);
+    box-shadow: $button-shadow;
+  }
+}
+
+.restore-button {
+  background: $success-color;
+  color: white;
+  cursor: pointer;
+}
+
+.button-row {
+  margin-top: 10px;
+  button:nth-child(1) {
+    margin-right: 5px;
+  }
+  button:nth-child(2) {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  button:nth-child(3) {
+    margin-left: 5px;
+  }
+}

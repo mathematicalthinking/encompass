@@ -1,0 +1,129 @@
+{{!-- <h2>Create a Workspace from EnCoMPASS Submissions</h2> --}}
+
+<form class="flex-container workspace-form properForm" id='encImportForm'>
+  <div class="flex-item">
+    <div>
+      <h4>Filter Criteria <span class="required-star">*</span></h4>
+      <p class="info">We either need a date range or at least one of teacher, assignment, problem, or class in order to create a workspace.</p>
+    </div>
+    <ol class="filter-criteria">
+      <li class="ws-filter teacher">
+        <label for="teacher">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.teacher}}>Teacher </span>
+        </label>
+        {{#if currentUser.isTeacher}}
+        <p class="workspace-info">{{currentUser.username}}</p>
+        {{else}}
+        <MySelect @selectedValue={{selectedTeacher}} @content={{teacherPool}} @optionLabelPath="username" @prompt="Please select
+        a username" @action={{action (mut selectedTeacher)}} />
+        {{/if}}
+      </li>
+      <li class="ws-filter assignment">
+        <label for="assignment">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.assignment}}>Assignment </span>
+        </label>
+        <MySelect @content={{model.assignments}} @optionLabelPath="problem.title" @prompt="Please select an assignment" @action={{action (mut selectedAssignment)}} />
+      </li>
+      <li class="ws-filter problem">
+        <label for="problem">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.problem}}>Problem </span>
+        </label>
+        {{#if selectedProblem}}
+        <p>{{selectedProblem.title}} <i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
+        {{else}}
+
+        <SelectizeInput @store={{this.store}} @inputId="select-add-problem" @isAsync={{true}} @maxItems={{1}} @onItemAdd={{action "setSelectedProblem"}} @labelField="title" @searchField="title" @valueField="id" @model="problem" @queryParamsKey="title" @topLevelQueryParams="filterBy" @placeholder="Start typing a problem title..." @preload="focus" />
+        {{#each problemFormErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+        {{/each}}
+        {{/if}}
+      </li>
+      <li class="ws-filter section">
+        <label for="section">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.class}}>Class </span>
+        </label>
+        <MySelect @content={{model.sections}} @optionLabelPath="name" @prompt="Please select a class" @action={{action (mut selectedSection)}} />
+      </li>
+      <li class="ws-filter date">
+        <label for="startDate">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.dateRange}}>Date Range</span>
+        </label>
+        <Input @id="dateRange" @name="daterange" @type="text" @value={{dateRange}} />
+      </li>
+    </ol>
+  </div>
+
+  <div class="flex-item">
+    <div>
+      <h4>Workspace Settings</h4>
+      <p class="info">Workspace settings can always be changed after creation from the workspace info page.</p>
+    </div>
+    <ol class="workspace-settings">
+      <li class="ws-settings owner">
+        <label for="owner">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.owner}}>Owner</span> <span class="required-star">*</span>
+        </label>
+        {{#if currentUser.isTeacher}}
+        <p class="workspace-info">{{currentUser.username}}</p>
+        {{else}}
+        <MySelect @selectedValue={{selectedOwner}} @content={{teacherPool}} @optionLabelPath="username" @prompt="Please select an
+        owner" @action={{action (mut selectedOwner)}} />
+        {{/if}}
+      </li>
+      <li class="ws-settings name">
+        <label for="name">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.name}}>Workspace Name </span>
+        </label>
+        <Input @id="requestedName" @type="text" @value={{requestedName}} placeholder="Give your workspace a name (optional)" />
+      </li>
+
+      <li class="ws-settings folders">
+        <label for="folders">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.folders}}>Folders</span>
+        </label>
+        <MySelect @content={{model.folderSets}} @optionLabelPath="name" @prompt="Please select a folder set" @action={{action (mut selectedFolderSet)}} />
+      </li>
+
+      <li class="mode">
+        <label for="privacy">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.privacy}}>Privacy Setting </span> <span class="required-star">*</span>
+        </label>
+        <input type="radio" checked={{is-equal mode "private"}} required="true" name="mode" value="private" onclick={{action "radioSelect" "private"}}>
+        <label class="radio-label">Private</label>
+        <input type="radio" checked={{is-equal mode "public"}} required="true" name="mode" value="public" onclick={{action "radioSelect" "public"}}>
+        <label class="radio-label">Public</label>
+      </li>
+    </ol>
+  </div>
+
+</form>
+
+  <div class="error-messages">
+    {{#if missingRequiredFields}}
+    <p class="error-box animated fadeIn">Please fill in all required fields <button class="dismiss"
+        {{action 'closeError'}}>x</button></p>
+    {{/if}}
+
+    {{#if isEmptyAnswerSet}}
+    <p class="error-box animated fadeIn">Sorry, no answers were found matching your criteria <button class="dismiss"
+        {{action 'closeError'}}>x</button></p>
+    {{/if}}
+  </div>
+
+{{#if createdWorkspace}}
+  <p class="success-message">Success!</p>
+{{/if}}
+
+
+{{#each findRecordErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+{{#each wsRequestErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+
+<button class="action_button create-ws" {{action "buildCriteria"}}>Create</button>
+{{#if isRequestInProgress}}
+  <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
+{{/if}}
+

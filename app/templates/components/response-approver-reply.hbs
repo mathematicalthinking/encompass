@@ -28,15 +28,15 @@
   <div class="compose-reply-container">
     <p class="info">{{replyHeadingText}}</p>
     <div class="compose-approver-reply">
-      {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}
+      <QuillContainer @onEditorChange={{action "updateQuillText"}} @attrSectionId={{quillEditorId}} @startingText={{editRevisionText}} />
       {{#if emptyReplyError}}
-        {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+        <ErrorBox @error="Message body cannot be empty." @showDismiss={{true}} @resetError={{action (mut emptyReplyError) null}} />
       {{/if}}
       {{#if quillTooLongError}}
-        {{error-box error=quillTooLongErrorMsg showDismiss=true resetError=(action (mut quillTooLongError) null)}}
+        <ErrorBox @error={{quillTooLongErrorMsg}} @showDismiss={{true}} @resetError={{action (mut quillTooLongError) null}} />
       {{/if}}
       {{#each saveRecordErrors as |err|}}
-        {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
+        <ErrorBox @error={{err}} @showDismiss={{true}} @resetError={{action (mut recordCreateErrors) null}} />
       {{/each}}
       <div class="submit-buttons button-row">
         {{#if isRevisingApproverReply}}
@@ -70,7 +70,7 @@
     <img src="/images/no-message.svg" alt="No Replies">
   {{/if}}
 {{#if doShowLoadingMessage}}
-  {{loading-elem}}
+  <LoadingElem />
 {{/if}}
 {{#if displayReply}}
   <div class="display-approver-reply">
@@ -79,13 +79,7 @@
         <span class="reply-time">{{format-date displayReply.createDate 'h:mm a'}}</span>
       </p>
       {{#if sortedApproverReplies}}
-        {{bread-crumbs
-          items=sortedApproverReplies
-          onSelect=(action "setReplyToView")
-          titleTextPath="shortText"
-          selectedItem=displayReply
-          infoToolTipText=revisionsToolTip
-          }}
+        <BreadCrumbs @items={{sortedApproverReplies}} @onSelect={{action "setReplyToView"}} @titleTextPath="shortText" @selectedItem={{displayReply}} @infoToolTipText={{revisionsToolTip}} />
       {{/if}}
     </div>
     <div class="reply-users">
@@ -121,16 +115,16 @@
 
     {{#if isEditingApproverReply}}
       <div class="reply-revise">
-      {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}
+      <QuillContainer @onEditorChange={{action "updateQuillText"}} @attrSectionId={{quillEditorId}} @startingText={{editRevisionText}} />
       </div>
       {{#if emptyReplyError}}
-        {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+        <ErrorBox @error="Message body cannot be empty." @showDismiss={{true}} @resetError={{action (mut emptyReplyError) null}} />
       {{/if}}
       {{#if quillTooLongError}}
-        {{error-box error=quillTooLongErrorMsg showDismiss=true resetError=(action (mut quillTooLongError) null)}}
+        <ErrorBox @error={{quillTooLongErrorMsg}} @showDismiss={{true}} @resetError={{action (mut quillTooLongError) null}} />
       {{/if}}
       {{#each saveRecordErrors as |err|}}
-        {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
+        <ErrorBox @error={{err}} @showDismiss={{true}} @resetError={{action (mut recordCreateErrors) null}} />
       {{/each}}
     {{else}}
       <div class="reply-content {{if isOldFormatDisplayResponse "old-format"}}">

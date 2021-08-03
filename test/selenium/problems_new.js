@@ -47,11 +47,11 @@ describe('Problems New', async function () {
                 // await helpers.waitForAndClickElement(driver, css.topBar.problemsNew);
                 let options = {
                   selector: 'a',
-                  urlToWaitFor: `${helpers.host}/#/problems/new`,
+                  urlToWaitFor: `${helpers.host}/problems/new`,
                   timeout: 10000
                 };
             
-                await helpers.navigateAndWait(driver, `${helpers.host}/#/problems/new`, options );
+                await helpers.navigateAndWait(driver, `${helpers.host}/problems/new`, options );
               });
 
               it('should open problem new page from topbar', async function () {

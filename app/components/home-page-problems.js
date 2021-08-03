@@ -1,63 +1,81 @@
-Encompass.HomePageProblemsComponent = Ember.Component.extend(
-  Encompass.CurrentUserMixin,
-  {
-    utils: Ember.inject.service("utility-methods"),
+import Component from '@ember/component';
+import { computed, observer } from '@ember/object';
+import { inject as service } from '@ember/service';
+import CurrentUserMixin from '../mixins/current_user_mixin';
 
-    // didReceiveAttrs: function () {
-    //   this.filterAssignments();
-    // },
+export default Component.extend(CurrentUserMixin, {
+  utils: service('utility-methods'),
 
-    filterAssignments: function () {
-      let currentUser = this.get("currentUser");
+  // didReceiveAttrs: function () {
+  //   this.filterAssignments();
+  // },
+
+  filterAssignments: observer(
+    'assignments.@each.isTrashed',
+    'currentUser.isStudent',
+    function () {
+      let currentUser = this.currentUser;
       let filtered = this.assignments.filter((assignment) => {
-        return assignment.id && !assignment.get("isTrashed");
+        return assignment.id && !assignment.get('isTrashed');
       });
-      filtered = filtered.sortBy("createDate").reverse();
-      if (currentUser.get("accountType") === "S") {
+      filtered = filtered.sortBy('createDate').reverse();
+      if (currentUser.get('accountType') === 'S') {
         // what is this if block for?
         // console.log('current user is a student');
       }
       // let currentDate = new Date();
-      this.set("assignmentList", filtered);
-    }.observes("assignments.@each.isTrashed", "currentUser.isStudent"),
+      this.set('assignmentList', filtered);
+    }
+  ),
 
-    yourList: function () {
-      let currentUser = this.get("currentUser");
+  yourList: computed(
+    'assignments.@each.isTrashed',
+    'currentUser.isStudent',
+    function () {
+      let currentUser = this.currentUser;
       let yourList = this.assignments.filter((assignment) => {
-        let userId = currentUser.get("id");
-        let assigmentCreatorId = this.get("utils").getBelongsToId(
+        let userId = currentUser.get('id');
+        let assigmentCreatorId = this.utils.getBelongsToId(
           assignment,
-          "createdBy"
+          'createdBy'
         );
-        return userId === assigmentCreatorId && !assignment.get("isTrashed");
+        return userId === assigmentCreatorId && !assignment.get('isTrashed');
       });
-      return yourList.sortBy("createDate").reverse();
-    }.property("assignments.@each.isTrashed", "currentUser.isStudent"),
+      return yourList.sortBy('createDate').reverse();
+    }
+  ),
 
-    adminList: function () {
-      let currentUser = this.get("currentUser");
-      let adminList = this.get("assignmentList").filter((assignment) => {
-        let userId = currentUser.get("id");
-        let assigmentCreatorId = this.get("utils").getBelongsToId(
+  adminList: computed(
+    'assignments.@each.isTrashed',
+    'currentUser.isStudent',
+    function () {
+      let currentUser = this.currentUser;
+      let adminList = this.assignmentList.filter((assignment) => {
+        let userId = currentUser.get('id');
+        let assigmentCreatorId = this.utils.getBelongsToId(
           assignment,
-          "createdBy"
+          'createdBy'
         );
-        return userId !== assigmentCreatorId && !assignment.get("isTrashed");
+        return userId !== assigmentCreatorId && !assignment.get('isTrashed');
       });
-      return adminList.sortBy("createDate").reverse();
-    }.property("assignments.@each.isTrashed", "currentUser.isStudent"),
+      return adminList.sortBy('createDate').reverse();
+    }
+  ),
 
-    pdList: function () {
-      let currentUser = this.get("currentUser");
-      let pdList = this.get("assignmentList").filter((assignment) => {
-        let userId = currentUser.get("id");
-        let assigmentCreatorId = this.get("utils").getBelongsToId(
+  pdList: computed(
+    'assignments.@each.isTrashed',
+    'currentUser.isStudent',
+    function () {
+      let currentUser = this.currentUser;
+      let pdList = this.assignmentList.filter((assignment) => {
+        let userId = currentUser.get('id');
+        let assigmentCreatorId = this.utils.getBelongsToId(
           assignment,
-          "createdBy"
+          'createdBy'
         );
-        return userId !== assigmentCreatorId && !assignment.get("isTrashed");
+        return userId !== assigmentCreatorId && !assignment.get('isTrashed');
       });
-      return pdList.sortBy("createDate").reverse();
-    }.property("assignments.@each.isTrashed", "currentUser.isStudent"),
-  }
-);
+      return pdList.sortBy('createDate').reverse();
+    }
+  ),
+});

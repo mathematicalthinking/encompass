@@ -8,92 +8,92 @@
     <tr>
       <td>Username <span class="required-star">*</span></td>
       <td>
-        <input type="text" class="user-username" value={{username}} onblur={{action 'usernameValidate' value="target.value"}} onfocus={{action 'resetErrors'}} />
+        <input type="text" class="user-username" value={{this.username}} onblur={{action 'usernameValidate' value="target.value"}} onfocus={{action 'resetErrors'}} />
       </td>
     </tr>
     <tr>
       <td>Password <span class="required-star">*</span></td>
       <td>
-        <input type="password" class="user-password" value={{password}} onblur={{action 'passwordValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
+        <input type="password" class="user-password" value={{this.password}} onblur={{action 'passwordValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
       <td>First Name</td>
       <td>
-        {{input type="text" value=firstName classNames='user-first-name'}}
+        <Input @type="text" @value={{this.firstName}} @classNames="user-first-name" />
       </td>
     </tr>
     <tr>
       <td>Last Name</td>
       <td>
-        {{input type="text" value=lastName classNames='user-last-name'}}
+        <Input @type="text" @value={{this.lastName}} @classNames="user-last-name" />
       </td>
     </tr>
     <tr>
       <td>Email
-          {{#if isEmailRequired}}
+          {{#if this.isEmailRequired}}
             <span class="required-star">*</span>
           {{/if}}
       </td>
       <td>
-        <input type="text" class="user-email" value={{email}} onblur={{action 'emailValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
+        <input type="text" class="user-email" value={{this.email}} onblur={{action 'emailValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
       <td>Organization <span class="required-star">*</span></td>
       <td>
-        {{twitter-typeahead dataList=organizations minLength=0 onSelect="setOrg" optionLabelPath="name" setSelectedValueOnChange=true}}
+        <TwitterTypeahead @dataList={{this.organizations}} @minLength={{0}} @onSelect="setOrg" @optionLabelPath="name" @setSelectedValueOnChange={{true}} />
       </td>
     </tr>
     <tr>
       <td>Location</td>
       <td>
-        {{input type="text" value=location classNames='user-location'}}
+        <Input @type="text" @value={{this.location}} @classNames="user-location" />
       </td>
     </tr>
     <tr>
       <td>Account Type <span class="required-star">*</span></td>
       <td>
-        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType)) cannotBeNull=true classNames='user-account-type'}}
+        <MySelect @selectedValue={{this.selectedType}} @prompt="Select Account Type" @content={{this.accountTypes}} @action={{action (mut this.selectedType)}} @cannotBeNull={{true}} @classNames="user-account-type" />
       </td>
     </tr>
     <tr>
       <td>Authorized <span class="required-star">*</span></td>
       <td>
-        {{input type="checkbox" checked=isAuthorized value=isAuthorized classNames='user-isAuth'}}
+        <Input @type="checkbox" @checked={{this.isAuthorized}} @classNames="user-isAuth" />
       </td>
     </tr>
   </table>
 
-  {{#if usernameError}}
-    {{error-box error=usernameError showDismiss=true resetError=(action (mut usernameError) null)}}
+  {{#if this.usernameError}}
+    <ErrorBox @error={{this.usernameError}} @showDismiss={{true}} @resetError={{action (mut this.usernameError) null}} />
   {{/if}}
 
-  {{#if emailError}}
-    {{error-box error=emailError showDismiss=true resetError=(action (mut emailError) null)}}
+  {{#if this.emailError}}
+    <ErrorBox @error={{this.emailError}} @showDismiss={{true}} @resetError={{action (mut this.emailError) null}} />
   {{/if}}
 
-  {{#if passwordError}}
-    {{error-box error=passwordError showDismiss=true resetError=(action (mut passwordError) null)}}
+  {{#if this.passwordError}}
+    <ErrorBox @error={{this.passwordError}} @showDismiss={{true}} @resetError={{action (mut this.passwordError) null}} />
   {{/if}}
 
-  {{#if noSpacesError}}
-    {{error-box error="Passwords cannot contain spaces" showDismiss=true resetError=(action (mut noSpacesError) null)}}
+  {{#if this.noSpacesError}}
+    <ErrorBox @error="Passwords cannot contain spaces" @showDismiss={{true}} @resetError={{action (mut this.noSpacesError) null}} />
   {{/if}}
 
-  {{#if missingAccountType}}
-    {{error-box error="Missing account type" showDismiss=true resetError=(action (mut missingAccountType) null)}}
+  {{#if this.missingAccountType}}
+    <ErrorBox @error="Missing account type" @showDismiss={{true}} @resetError={{action (mut this.missingAccountType) null}} />
   {{/if}}
 
-  {{#if errorMessage}}
-    {{error-box error="Missing required fields" showDismiss=true resetError=(action (mut errorMessage) null)}}
+  {{#if this.errorMessage}}
+    <ErrorBox @error="Missing required fields" @showDismiss={{true}} @resetError={{action (mut this.errorMessage) null}} />
   {{/if}}
 
-  {{#each createOrgErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" "createOrgErrors" error )}}
+  {{#each this.createOrgErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "createOrgErrors" error}} />
   {{/each}}
-  {{#each createUserErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" "createUserErrors" error)}}
+  {{#each this.createUserErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "createUserErrors" error}} />
   {{/each}}
 
 

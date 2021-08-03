@@ -1,32 +1,38 @@
 /* eslint-disable complexity */
-Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUserMixin, {
-  utils: Ember.inject.service('utility-methods'),
+import Service, { inject as service } from '@ember/service';
+
+export default Service.extend({
+  currentUser: null,
+  setUser(user) {
+    this.set('currentUser', user);
+  },
+  utils: service('utility-methods'),
 
   isAdmin() {
-    return this.get('currentUser.isAdmin');
+    return this.currentUser.isAdmin;
   },
 
   isPdAdmin() {
-    return this.get('currentUser.isPdAdmin');
+    return this.currentUser.isPdAdmin;
   },
 
   isOwner(ws) {
-    let ownerId = this.get('utils').getBelongsToId(ws, 'owner');
-    return ownerId === this.get('currentUser.id');
+    let ownerId = this.utils.getBelongsToId(ws, 'owner');
+    return ownerId === this.currentUser.id;
   },
 
   isCreator(ws) {
-    let creatorId = this.get('utils').getBelongsToId(ws, 'createdBy');
-    return creatorId === this.get('currentUser.id');
+    let creatorId = this.utils.getBelongsToId(ws, 'createdBy');
+    return creatorId === this.currentUser.id;
   },
 
   isInPdAdminDomain(ws) {
-    if (this.isPdAdmin()) {
-      return true;
+    if (!this.isPdAdmin()) {
+      return false;
     }
-    let utils = this.get('utils');
+    let utils = this.utils;
 
-    let userOrgId = utils.getBelongsToId(this.get('currentUser'), 'organization');
+    let userOrgId = utils.getBelongsToId(this.currentUser, 'organization');
     let wsOrgId = utils.getBelongsToId(ws, 'organization');
 
     return userOrgId === wsOrgId;
@@ -37,7 +43,12 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   hasOwnerPrivileges(ws) {
-    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws);
+    return (
+      this.isAdmin() ||
+      this.isOwner(ws) ||
+      this.isCreator(ws) ||
+      this.isInPdAdminDomain(ws)
+    );
   },
 
   canCopy(ws) {
@@ -53,19 +64,25 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return false;
     }
 
-   let approvers = ws.get('feedbackAuthorizers') || [];
-   return approvers.includes(this.get('currentUser.id'));
+    let approvers = ws.get('feedbackAuthorizers') || [];
+    return approvers.includes(this.currentUser.id);
   },
 
   canApproveFeedback(ws) {
     if (!ws || ws.workspaceType === 'parent') {
       return false;
     }
-    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isFeedbackApprover(ws) || this.isInPdAdminDomain(ws);
+    return (
+      this.isAdmin() ||
+      this.isOwner(ws) ||
+      this.isCreator(ws) ||
+      this.isFeedbackApprover(ws) ||
+      this.isInPdAdminDomain(ws)
+    );
   },
 
   canEdit(ws, recordType, requiredPermissionLevel) {
-    const utils = this.get('utils');
+    const utils = this.utils;
 
     if (!utils.isNonEmptyObject(ws)) {
       return false;
@@ -85,7 +102,12 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       }
     }
 
-    if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {
+    if (
+      this.isAdmin() ||
+      this.isOwner(ws) ||
+      this.isCreator(ws) ||
+      this.isInPdAdminDomain(ws)
+    ) {
       return true;
     }
 
@@ -106,7 +128,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return false;
     }
 
-    const userPermissions = wsPermissions.findBy('user', this.get('currentUser.id'));
+    const userPermissions = wsPermissions.findBy('user', this.currentUser.id);
     if (!utils.isNonEmptyObject(userPermissions)) {
       return false;
     }
@@ -145,5 +167,4 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
 
     return permissionLevel >= requiredPermissionLevel;
   },
-
 });

@@ -28,7 +28,7 @@ describe('Visiting Workspaces', function() {
   });
 
   it('should land us at /workspaces', async function() {
-    await helpers.navigateAndWait(driver, `${host}/#/workspaces`, {selector: '#workspace-list-container'});
+    await helpers.navigateAndWait(driver, `${host}/workspaces`, {selector: '#workspace-list-container'});
   });
 
   it('should display 7 workspaces', async function() {
@@ -55,7 +55,7 @@ describe('Visiting Workspaces', function() {
       }catch(err) {
         console.log(err);
       }
-      expect(url).to.equal(`${host}/#/workspaces/${workspaceId}/submissions/53e36522729e9ef59ba7f4de`);
+      expect(url).to.equal(`${host}/workspaces/${workspaceId}/submissions/53e36522729e9ef59ba7f4de`);
     });
 
     it('should display submission navigation arrows, and revision links', async function() {
@@ -241,7 +241,7 @@ describe('Visiting Workspaces', function() {
   describe('Visiting a Folder from ESI 2014', function() {
     before(function() {
       // casper.start(host + '/devonly/fakelogin/casper');
-      // casper.thenOpen(host + '/#/workspaces/543e96757112056b290001fa/work');
+      // casper.thenOpen(host + '/workspaces/543e96757112056b290001fa/work');
       // casper.waitForSelector('span.submission_count');
     });
 

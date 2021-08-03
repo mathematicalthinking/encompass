@@ -1,7 +1,15 @@
-Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { equal } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   elementId: 'vmt-import-container',
 
-  alert: Ember.inject.service('sweet-alert'),
+  alert: service('sweet-alert'),
 
   vmtUsername: null,
   vmtUserId: null,
@@ -16,38 +24,35 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
 
   currentStep: { value: 1 },
 
-  showSelectRooms: Ember.computed.equal('currentStep.value', 1),
-  showCreateWs: Ember.computed.equal('currentStep.value', 2),
-  showReview: Ember.computed.equal('currentStep.value', 3),
+  showSelectRooms: equal('currentStep.value', 1),
+  showCreateWs: equal('currentStep.value', 2),
+  showReview: equal('currentStep.value', 3),
 
   selectedRooms: null,
   mostRecentSearchResults: null,
 
-  maxSteps: function () {
-    return this.get('steps.length') - 1;
-  }.property('steps'),
+  maxSteps: computed('steps', function () {
+    return this.steps.length - 1;
+  }),
 
-  detailsItems: function() {
+  detailsItems: computed('selectedRooms.[]', 'workspaceName', function () {
     return [
       {
         label: 'Selected Rooms',
-        displayValue: this.get('selectedRooms.length'),
+        displayValue: this.selectedRooms.length,
         emptyValue: 'No Rooms',
         propName: 'selectedRooms.length',
-        associatedStep: 1
+        associatedStep: 1,
       },
       {
         label: 'Created Workspace',
-        displayValue: this.get('workspaceName'),
+        displayValue: this.workspaceName,
         emptyValue: 'No Workspace',
         propName: 'workspaceName',
-        associatedStep: 2
+        associatedStep: 2,
       },
     ];
-  }.property(
-    'selectedRooms.[]',
-    'workspaceName',
-  ),
+  }),
 
   actions: {
     goToStep(stepValue) {
@@ -55,12 +60,12 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
         return;
       }
 
-      this.set('currentStep', this.get('steps')[stepValue]);
+      this.set('currentStep', this.steps[stepValue]);
     },
 
     changeStep(direction) {
-      let currentStep = this.get('currentStep.value');
-      let maxStep = this.get('maxSteps');
+      let currentStep = this.currentStep.value;
+      let maxStep = this.maxSteps;
       if (direction === 1) {
         if (currentStep === maxStep) {
           return;
@@ -71,17 +76,17 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
         if (currentStep === 1) {
           return;
         }
-        this.set('currentStep', this.get('steps')[currentStep - 1]);
+        this.set('currentStep', this.steps[currentStep - 1]);
       }
     },
 
     setSelectedRooms(rooms, searchResults) {
       this.set('selectedRooms', rooms);
       this.set('mostRecentSearchResults', searchResults);
-      this.set('currentStep', this.get('steps')[2]);
+      this.set('currentStep', this.steps[2]);
     },
 
-    toggleMenu: function() {
+    toggleMenu: function () {
       $('#filter-list-side').toggleClass('collapse');
       $('#arrow-icon').toggleClass('fa-rotate-180');
       $('#filter-list-side').addClass('animated slideInLeft');
@@ -90,50 +95,59 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
       this.set('mostRecentSearchResults', results);
     },
     prepareReview() {
-      this.set('currentStep', this.get('steps')[3]);
+      this.set('currentStep', this.steps[3]);
     },
     uploadAnswers() {
       this.set('isUploadingAnswer', true);
-      let rooms = this.get('selectedRooms');
+      let rooms = this.selectedRooms;
 
       if (!rooms) {
-        return this.set('invalidRoomsError', 'At least one room must be selected');
+        return this.set(
+          'invalidRoomsError',
+          'At least one room must be selected'
+        );
       }
-      let importRequest = this.get('store').createRecord('vmt-import-request', {
-        workspaceOwner: this.get('workspaceOwner'),
-        workspaceName: this.get('workspaceName'),
-        workspaceMode: this.get('workspaceMode'),
-        folderSet: this.get('folderSet'),
-        doCreateWorkspace: this.get('doCreateWs'),
+      let importRequest = this.store.createRecord('vmt-import-request', {
+        workspaceOwner: this.workspaceOwner,
+        workspaceName: this.workspaceName,
+        workspaceMode: this.workspaceMode,
+        folderSet: this.folderSet,
+        doCreateWorkspace: this.doCreateWs,
         vmtRooms: rooms,
-        permissionObjects: this.get('permissionObjects') || [],
+        permissionObjects: this.permissionObjects || [],
       });
-      importRequest.save()
+      importRequest
+        .save()
         .then((results) => {
           this.set('isUploadingAnswer', false);
           if (results.get('createdWorkspace.content')) {
             this.set('createdWorkspace', results.get('createdWorkspace'));
             this.sendAction('toWorkspaces', results.get('createdWorkspace'));
 
-            this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 4000, false, null);
+            this.alert.showToast(
+              'success',
+              'Workspace Created',
+              'bottom-end',
+              4000,
+              false,
+              null
+            );
             return;
           }
           this.set('uploadedAnswers', results.get('createdAnswers'));
         })
-      .catch((err) => {
-        this.set('isUploadingAnswer', false);
-        this.handleErrors(err, 'postErrors');
-      });
+        .catch((err) => {
+          this.set('isUploadingAnswer', false);
+          this.handleErrors(err, 'postErrors');
+        });
     },
 
     importWork: function () {
-      if (this.get('assignmentName')) {
+      if (this.assignmentName) {
         this.send('createAssignment');
       } else {
         this.send('uploadAnswers');
       }
     },
-
-  }
-
+  },
 });

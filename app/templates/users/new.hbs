@@ -1,14 +1,2 @@
-<div id="user-new">
-  {{#if model.currentUser.isAdmin}}
-    {{user-new-admin currentUser=model.currentUser store=store  organizations=model.organizations toUserInfo="toUserInfo"}}
-  {{/if}}
-  {{#if model.currentUser.isPdAdmin}}
-    {{user-new-pd currentUser=model.currentUser store=store organizations=model.organizations toUserInfo="toUserInfo"}}
-  {{/if}}
-  {{#if model.currentUser.isTeacher}}
-    {{user-new-teacher currentUser=model.currentUser store=store organizations=model.organizations toUserInfo="toUserInfo"}}
-  {{/if}}
-  {{#if model.currentUser.isStudent}}
-      <div class="centered">FORBIDDEN</div>
-  {{/if}}
-</div>
+<UserNew @store={{this.store}} @organizations={{this.model.organizations}} @currentUser={{this.model.currentUser}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
+

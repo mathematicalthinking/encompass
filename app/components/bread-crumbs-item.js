@@ -1,35 +1,46 @@
 /*global _:false */
-Encompass.BreadCrumbsItemComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import moment from 'moment';
+
+export default Component.extend({
+  tagName: '',
   classNames: ['bread-crumbs-item'],
 
-  isSelected: function() {
-    return _.isEqual(this.get('item'), this.get('selectedItem'));
-  }.property('selectedItem'),
+  isSelected: computed('item', 'selectedItem', function () {
+    return _.isEqual(this.item, this.selectedItem);
+  }),
 
-  isStarredItem: function() {
-    return this.get('starredItemsList').includes(this.get('item'));
-  }.property('starredItemsList.[]', 'item'),
+  isStarredItem: computed('starredItemsList.[]', 'item', function () {
+    return this.starredItemsList.includes(this.item);
+  }),
 
-  titleText: function() {
-    if (_.isString(this.get('itemTitleText'))) {
-      return this.get('itemTitleText');
+  titleText: computed(
+    'itemTitleText',
+    'titleTextPath',
+    'item',
+    'item.createDate',
+    function () {
+      if (_.isString(this.itemTitleText)) {
+        return this.itemTitleText;
+      }
+      if (this.item.createDate) {
+        return moment(this.item.createDate).format('MMM Do YYYY h:mm A');
+      }
+      if (_.isString(this.titleTextPath) && _.isObject(this.item)) {
+        let path = `item.${this.titleTextPath}`;
+        return this.get(path);
+      }
+      return '';
     }
-    if (this.get('item.createDate')) {
-      return moment(this.get('item.createDate')).format('MMM Do YYYY h:mm A');
-    }
-    if (_.isString(this.get('titleTextPath')) && _.isObject(this.get('item'))) {
-      let path = `item.${this.get('titleTextPath')}`;
-      return this.get(path);
-    }
-    return '';
-  }.property('itemTitleText', 'titleTextPath', 'item', 'item.createDate'),
+  ),
 
   actions: {
     onSelect(item) {
-      if (!item || this.get('isSelected')) {
+      if (!item || this.isSelected) {
         return;
       }
-      this.get('onSelect')(item);
-    }
-  }
+      this.onSelect(item);
+    },
+  },
 });

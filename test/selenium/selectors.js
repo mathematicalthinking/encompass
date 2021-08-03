@@ -17,7 +17,7 @@ module.exports = {
     workspaces: "a.workspaces",
     responses: "a.menu.responses",
     users: "#users-home",
-    logout: `a[href="#/logout"]`,
+    logout: `a[href="/logout"]`,
     problems: "#problems-home",
     workspacesNew: "a.workspaces-new",
     home: "a.home",
@@ -33,7 +33,7 @@ module.exports = {
     username: "input[name=username]",
     password: "input[name=password]",
     submit: "button[type=submit]",
-    google: `a[href="http://localhost:3003/oauth/google?redirectURL=http://localhost:8082"]`,
+    google: `a[href="http://localhost:3002/oauth/google?redirectURL=http://localhost:8081"]`,
     signup: "p[data-test=auth-signup] > a",
   },
   signup: {
@@ -298,7 +298,7 @@ module.exports = {
     problemMenuTab: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
     problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block div.quill-container section#editor div.ql-editor',
     problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author div.input-container input#author',
-    problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block #my-select',
+    problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block .my-select',
     problemStatusFixed: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
     problemCategoryItem: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item',
     problemCategoryRemove: 'button.remove-cat',
@@ -326,7 +326,7 @@ module.exports = {
   assignmentsStudent: {
     ownList: 'ul.your-assignments',
     infoPage: {
-      container: 'section.assignment-info-student',
+      container: 'section',
       submitBtn: 'button.primary-button',
       pastSubsHeader: '#past-submissions-header',
       subList: 'ol.submission-list'
@@ -442,7 +442,7 @@ module.exports = {
       saveEdit: '#workspace-info-settings > div > div.card-content > div.card-row.button-row > button:nth-child(2)',
       editName: '#edit-name-input',
       nameText: '#workspace-info-settings > div > div.card-content > div:nth-child(1) > div.row-value',
-      autoUpdateSelect: 'div[data-test="allow-updates"] > #my-select > select',
+      autoUpdateSelect: 'div[data-test="allow-updates"] > .my-select > select',
       autoUpdateText: 'div[data-test="allow-updates"]',
       updateSuccessText: 'Workspace Updated',
       linkedAssnInput: '#linked-assignment-select-selectized',

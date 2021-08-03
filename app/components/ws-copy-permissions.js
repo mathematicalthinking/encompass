@@ -1,19 +1,23 @@
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 /*global _:false */
-Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
   elementId: 'ws-copy-permissions',
-  utils: Ember.inject.service('utility-methods'),
-  alert: Ember.inject.service('sweet-alert'),
+  utils: service('utility-methods'),
+  alert: service('sweet-alert'),
 
   didReceiveAttrs() {
     // set already saved permissions in case user went back to previous step and then came back to permissions
-    const newWsPermissions = this.get('newWsPermissions');
+    const newWsPermissions = this.newWsPermissions;
     if (_.isArray(newWsPermissions)) {
       let copy = [...newWsPermissions];
       // find record in store based off id in order to display username in collab list
       copy.forEach((obj) => {
         let user = obj.user;
         if (_.isString(user)) {
-          let record = this.get('store').peekRecord('user', user);
+          let record = this.store.peekRecord('user', user);
           if (record) {
             obj.user = record;
           }
@@ -32,9 +36,9 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
     this._super(...arguments);
   },
 
-  initialCollabOptions: function() {
-    let peeked = this.get('store').peekAll('user');
-    let collabs = this.get('selectedCollaborators');
+  initialCollabOptions: computed('selectedCollaborators', function () {
+    let peeked = this.store.peekAll('user');
+    let collabs = this.selectedCollaborators;
 
     if (!_.isObject(peeked)) {
       return [];
@@ -45,22 +49,22 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
     return filtered.map((obj) => {
       return {
         id: obj.get('id'),
-        username: obj.get('username')
+        username: obj.get('username'),
       };
     });
-  }.property('selectedCollaborators'),
+  }),
 
-  selectedCollaborators: function() {
+  selectedCollaborators: computed('permissions.[]', 'newWsOwner', function () {
     let hash = {};
-    let newWsOwnerId = this.get('newWsOwner.id');
+    let newWsOwnerId = this.newWsOwner.id;
 
     // no reason to set owner as a collaborator
     if (newWsOwnerId) {
       hash[newWsOwnerId] = true;
     }
-    const permissions = this.get('permissions');
+    const permissions = this.permissions;
 
-    if (!this.get('utils').isNonEmptyArray(permissions)) {
+    if (!this.utils.isNonEmptyArray(permissions)) {
       return hash;
     }
     permissions.forEach((permission) => {
@@ -72,7 +76,7 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
       }
     });
     return hash;
-  }.property('permissions.[]', 'newWsOwner'),
+  }),
   actions: {
     setCollaborator(val, $item) {
       if (!val) {
@@ -84,16 +88,16 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
         this.set('selectedCollaborator', null);
         return;
       }
-      const user = this.get('store').peekRecord('user', val);
+      const user = this.store.peekRecord('user', val);
       this.set('selectedCollaborator', user);
     },
     removeCollab(permissionObj) {
-      if (this.get('utils').isNonEmptyObject(permissionObj)) {
-        this.get('permissions').removeObject(permissionObj);
+      if (this.utils.isNonEmptyObject(permissionObj)) {
+        this.permissions.removeObject(permissionObj);
       }
     },
     editCollab(permissionObj) {
-      const utils = this.get('utils');
+      const utils = this.utils;
       if (utils.isNonEmptyObject(permissionObj)) {
         const user = permissionObj.user;
         if (utils.isNonEmptyObject(user)) {
@@ -102,10 +106,10 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
       }
     },
     savePermissions(permissionsObject) {
-      if (!this.get('utils').isNonEmptyObject(permissionsObject)) {
+      if (!this.utils.isNonEmptyObject(permissionsObject)) {
         return;
       }
-      const permissions = this.get('permissions');
+      const permissions = this.permissions;
       // check if user already is in array
       let existingObj = permissions.findBy('user', permissionsObject.user);
 
@@ -114,7 +118,7 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
         permissions.removeObject(existingObj);
       }
 
-      this.get('permissions').addObject(permissionsObject);
+      this.permissions.addObject(permissionsObject);
 
       // clear selectedCollaborator
       // clear selectize input
@@ -128,31 +132,34 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
     },
     next() {
       // check if user is in middle of editing a collab
-      const selectedCollaborator = this.get('selectedCollaborator');
+      const selectedCollaborator = this.selectedCollaborator;
       if (!selectedCollaborator) {
-        this.get('onProceed')(this.get('permissions'));
+        this.onProceed(this.permissions);
         return;
       }
       let title = 'Are you sure you want to proceed?';
-      let text = `You are currently in the process of editing permissions for ${selectedCollaborator.get('username')}. You will lose any unsaved changes if you continue.`;
+      let text = `You are currently in the process of editing permissions for ${selectedCollaborator.get(
+        'username'
+      )}. You will lose any unsaved changes if you continue.`;
 
-      return this.get('alert').showModal('warning', title, text, 'Proceed')
+      return this.alert
+        .showModal('warning', title, text, 'Proceed')
         .then((result) => {
           if (result.value) {
             // clear values and then proceed
             this.set('selectedCollaborator', null);
             this.$('select#collab-select')[0].selectize.clear();
-            this.get('onProceed')(this.get('permissions'));
+            this.onProceed(this.permissions);
             return;
           }
         });
     },
 
     back() {
-      this.get('onBack')(-1);
+      this.onBack(-1);
     },
     isShowingCustom: function () {
       console.log('is showing custom function called');
-    }
-  }
+    },
+  },
 });

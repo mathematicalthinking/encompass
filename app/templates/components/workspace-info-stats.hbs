@@ -6,7 +6,7 @@
         Submissions
       </div>
       <div class="row-value submissions">
-        {{workspace.submissionsLength}}
+        {{this.workspace.submissionsLength}}
       </div>
     </div>
     <div class="card-row">
@@ -14,7 +14,7 @@
         Selections
       </div>
       <div class="row-value selections">
-        {{workspace.selectionsLength}}
+        {{this.workspace.selectionsLength}}
       </div>
     </div>
     <div class="card-row">
@@ -22,7 +22,7 @@
         Folders
       </div>
       <div class="row-value folders">
-        {{workspace.foldersLength}}
+        {{this.workspace.foldersLength}}
       </div>
     </div>
     <div class="card-row">
@@ -30,7 +30,7 @@
         Comments
       </div>
       <div class="row-value comments">
-        {{workspace.commentsLength}}
+        {{this.workspace.commentsLength}}
       </div>
     </div>
     <div class="card-row">
@@ -38,20 +38,15 @@
         Responses
       </div>
       <div class="row-value responses">
-        {{workspace.responsesLength}}
+        {{this.workspace.responsesLength}}
       </div>
     </div>
-    <div class="card-row">
+        <div class="card-row">
       <div class="row-label">
         Taggings
       </div>
       <div class="row-value taggings">
-        {{workspace.taggingsLength}}
-      </div>
-    </div>
-    <div class="card-row">
-      <div class="row-label">
-        {{#link-to "metrics.workspace" workspace}}View Reports{{/link-to}}
+        {{this.workspace.taggingsLength}}
       </div>
     </div>
 

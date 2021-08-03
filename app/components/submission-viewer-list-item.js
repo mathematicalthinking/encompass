@@ -1,96 +1,150 @@
-Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
-  elementId: ['submission-viewer-list-item'],
-  alert: Ember.inject.service('sweet-alert'),
-  student: Ember.computed.alias('answer.student'),
-  isVmt: Ember.computed.alias('answer.isVmt'),
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { alias } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
+  alert: service('sweet-alert'),
+  student: alias('answer.student'),
+  isVmt: alias('answer.isVmt'),
 
   didReceiveAttrs() {
     this._super(...arguments);
   },
 
-  ellipsisMenuOptions: function() {
+  ellipsisMenuOptions: computed('answer.id', 'answer.isTrashed', function () {
     let moreMenuOptions = [];
 
-    if (!this.get('answer.isTrashed')) {
-      moreMenuOptions.push({label: 'Delete', value: 'delete', action: 'deleteAnswer', icon: 'fas fa-trash'},
-      );
+    if (!this.answer.isTrashed) {
+      moreMenuOptions.push({
+        label: 'Delete',
+        value: 'delete',
+        action: 'deleteAnswer',
+        icon: 'fas fa-trash',
+      });
     } else {
-      moreMenuOptions.push({label: 'Restore', value: 'restore', action: 'restoreAnswer', icon: 'fas fa-undo'},
-      );
+      moreMenuOptions.push({
+        label: 'Restore',
+        value: 'restore',
+        action: 'restoreAnswer',
+        icon: 'fas fa-undo',
+      });
     }
     return moreMenuOptions;
-  }.property('answer.id', 'answer.isTrashed'),
+  }),
 
-  isChecked: function() {
-   let id = this.get('answer.id');
-   let prop = `selectedMap.${id}`;
-   return this.get(prop);
-  }.property('answer.id', 'selectedMap'),
+  isChecked: computed('answer.id', 'selectedMap', function () {
+    let id = this.answer.id;
+    let prop = `selectedMap.${id}`;
+    return this.get(prop);
+  }),
 
-  revisionCount: function() {
-    let student = this.get('student');
-    let threads = this.get('threads');
+  revisionCount: computed('threads', 'student', function () {
+    let student = this.student;
+    let threads = this.threads;
     if (threads) {
-      let work = threads.get(student);
+      let work = threads[student];
       if (work) {
         return work.length;
       }
     }
-    return  0;
-  }.property('threads', 'student'),
+    return 0;
+  }),
 
   actions: {
-    onSelect: function() {
-      this.get('onSelect')(this.get('answer'), this.get('isChecked'));
+    onSelect: function () {
+      this.onSelect(this.answer, this.isChecked);
     },
     deleteAnswer: function () {
-      let answer = this.get('answer');
+      let answer = this.answer;
       //need to check if the answer has a thread, if it does, ask if they want to delete all reivisions as well
 
-      this.get('alert').showModal('warning', 'Are you sure you want to delete this submission', 'This submission will no longer be accesible to all users', 'Yes').then((result) => {
-        if (result.value) {
-          answer.set('isTrashed', true);
-          answer.save().then((answer) => {
-            this.get('alert').showToast('success', 'Submission Deleted', 'bottom-end', 4000, true, 'Undo')
-            .then((results) => {
-              if (results.value) {
-                answer.set('isTrashed', false);
-                answer.save().then(() => {
-                  this.get('alert').showToast('success', 'Submission Restored', 'bottom-end', 3000, false, null);
+      this.alert
+        .showModal(
+          'warning',
+          'Are you sure you want to delete this submission',
+          'This submission will no longer be accesible to all users',
+          'Yes'
+        )
+        .then((result) => {
+          if (result.value) {
+            answer.set('isTrashed', true);
+            answer.save().then((answer) => {
+              this.alert
+                .showToast(
+                  'success',
+                  'Submission Deleted',
+                  'bottom-end',
+                  4000,
+                  true,
+                  'Undo'
+                )
+                .then((results) => {
+                  if (results.value) {
+                    answer.set('isTrashed', false);
+                    answer.save().then(() => {
+                      this.alert.showToast(
+                        'success',
+                        'Submission Restored',
+                        'bottom-end',
+                        3000,
+                        false,
+                        null
+                      );
+                    });
+                  }
                 });
-              }
             });
-          });
-        }
-      });
+          }
+        });
     },
-    restoreAnswer: function() {
-      let answer = this.get('answer');
+    restoreAnswer: function () {
+      let answer = this.answer;
       //need to check if the answer has a thread, if it does, ask if they want to delete all reivisions as well
 
-      this.get('alert').showModal('warning', 'Are you sure you want to restore this submission', 'This submission will be searchable by other users', 'Yes').then((result) => {
-        if (result.value) {
-          answer.set('isTrashed', false);
-          answer.save().then((answer) => {
-            this.get('alert').showToast('success', 'Submission Restored', 'bottom-end', 4000, true, 'Undo')
-            .then((results) => {
-              if (results.value) {
-                answer.set('isTrashed', true);
-                answer.save().then(() => {
-                  this.get('alert').showToast('success', 'Submission Deleted', 'bottom-end', 3000, false, null);
+      this.alert
+        .showModal(
+          'warning',
+          'Are you sure you want to restore this submission',
+          'This submission will be searchable by other users',
+          'Yes'
+        )
+        .then((result) => {
+          if (result.value) {
+            answer.set('isTrashed', false);
+            answer.save().then((answer) => {
+              this.alert
+                .showToast(
+                  'success',
+                  'Submission Restored',
+                  'bottom-end',
+                  4000,
+                  true,
+                  'Undo'
+                )
+                .then((results) => {
+                  if (results.value) {
+                    answer.set('isTrashed', true);
+                    answer.save().then(() => {
+                      this.alert.showToast(
+                        'success',
+                        'Submission Deleted',
+                        'bottom-end',
+                        3000,
+                        false,
+                        null
+                      );
+                    });
+                  }
                 });
-              }
             });
-          });
-        }
-      });
+          }
+        });
     },
 
     toggleShowMoreMenu() {
-      let isShowing = this.get('showMoreMenu');
+      let isShowing = this.showMoreMenu;
       this.set('showMoreMenu', !isShowing);
     },
-
-  }
-
+  },
 });

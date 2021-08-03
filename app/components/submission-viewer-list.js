@@ -1,4 +1,9 @@
-Encompass.SubmissionViewerListComponent = Ember.Component.extend({
+/*global _:false */
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import $ from 'jquery';
+
+export default Component.extend({
   elementId: 'submission-viewer-list',
   scrollBottom: true,
 
@@ -6,32 +11,36 @@ Encompass.SubmissionViewerListComponent = Ember.Component.extend({
     this._super(...arguments);
   },
 
-  answersSelectedHash: function() {
-    let hash = {};
+  answersSelectedHash: computed(
+    'answers.[]',
+    'selectedAnswers.[]',
+    function () {
+      let hash = {};
 
-    this.get('answers').forEach((answer) => {
-      let isSelected = this.get('selectedAnswers').includes(answer);
-      hash[answer.get('id')] = isSelected;
-    });
-    return hash;
-  }.property('answers.[]', 'selectedAnswers.[]'),
+      this.answers.forEach((answer) => {
+        let isSelected = this.selectedAnswers.includes(answer);
+        hash[answer.get('id')] = isSelected;
+      });
+      return hash;
+    }
+  ),
 
   actions: {
-    onSelect: function(answer, isChecked) {
-      this.get('onSelect')(answer, isChecked);
+    onSelect: function (answer, isChecked) {
+      this.onSelect(answer, isChecked);
     },
     superScroll: function () {
       //should only show scroll option after the user scrolls a little
-      if (!this.get('scrollBottom')) {
-        $("html, body").animate({
-          scrollTop: 0
+      if (!this.scrollBottom) {
+        $('html, body').animate({
+          scrollTop: 0,
         });
       } else {
-        $("html, body").animate({
-          scrollTop: $(document).height() - $(window).height()
+        $('html, body').animate({
+          scrollTop: $(document).height() - $(window).height(),
         });
       }
-      this.set('scrollBottom', !this.get('scrollBottom'));
+      this.set('scrollBottom', !this.scrollBottom);
     },
-  }
+  },
 });

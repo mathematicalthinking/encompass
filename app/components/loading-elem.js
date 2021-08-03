@@ -1,10 +1,12 @@
-Encompass.LoadingElemComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default Component.extend({
   classNames: 'loading-elem',
 
   defaultMessage: 'Request in progress. Thank you for your patience!',
 
-  loadingText: function() {
-    return this.get('loadingMessage') || this.get('defaultMessage');
-  }.property('loadingMessage', 'defaultMessage'),
-
+  loadingText: computed('loadingMessage', 'defaultMessage', function () {
+    return this.loadingMessage || this.defaultMessage;
+  }),
 });

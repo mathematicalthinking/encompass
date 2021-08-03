@@ -1,43 +1,65 @@
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 /* eslint-disable complexity */
-Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import { equal, gt } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import moment from 'moment';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+
+export default Component.extend(CurrentUserMixin, {
   elementId: 'responses-list',
 
-  utils: Ember.inject.service('utility-methods'),
-  isShowAll: Ember.computed.equal('currentFilter', 'all'),
+  utils: service('utility-methods'),
+  isShowAll: equal('currentFilter', 'all'),
 
   showAllFilter: false,
 
-  isShowSubmitter: Ember.computed.equal('currentFilter', 'submitter'),
-  isShowMentoring: Ember.computed.equal('currentFilter', 'mentoring'),
-  isShowApproving: Ember.computed.equal('currentFilter', 'approving'),
+  isShowSubmitter: equal('currentFilter', 'submitter'),
+  isShowMentoring: equal('currentFilter', 'mentoring'),
+  isShowApproving: equal('currentFilter', 'approving'),
 
-  showSubmitterTab: Ember.computed.gt('submitterThreads.length', 0),
-  showMentoringTab: Ember.computed.gt('mentoringThreads.length', 0),
-  showApprovingTab: Ember.computed.gt('approvingThreads.length', 0),
+  showSubmitterTab: gt('submitterThreads.length', 0),
+  showMentoringTab: gt('mentoringThreads.length', 0),
+  showApprovingTab: gt('approvingThreads.length', 0),
 
   currentFilter: 'submitter',
   sortParam: 'newest',
 
   noResponsesMessage: 'No responses found',
 
-  showStudentColumn: Ember.computed.equal('isShowMentoring', true),
+  showStudentColumn: equal('isShowMentoring', true),
 
   statusMap: {
-    'approved': 'APPROVED',
-    'pendingApproval': 'PENDING APPROVAL',
-    'needsRevisions': 'NEEDS REVISIONS',
-    'superceded': 'SUPERCEDED',
+    approved: 'APPROVED',
+    pendingApproval: 'PENDING APPROVAL',
+    needsRevisions: 'NEEDS REVISIONS',
+    superceded: 'SUPERCEDED',
   },
 
   threadsPerPage: 50,
 
   didReceiveAttrs() {
-    this.set('storeThreads', this.get('store').peekAll('response-thread'));
+    this.set('storeThreads', this.store.peekAll('response-thread'));
 
     let list = [
-      {name: 'submitterResponses', actionCount : this.get('actionSubmitterThreads.length'), allCount: this.get('submitterThreads.length'), currentFilter: 'submitter'},
-      {name: 'mentoringResponses', actionCount: this.get('actionMentoringThreads.length'), allCount: this.get('mentoringThreads.length'), currentFilter: 'mentoring'},
-      {name: 'approvingResponses', actionCount: this.get('actionApprovingThreads.length'), allCount: this.get('approvingThreads.length'), currentFilter: 'approving'}
+      {
+        name: 'submitterResponses',
+        actionCount: this.actionSubmitterThreads.length,
+        allCount: this.submitterThreads.length,
+        currentFilter: 'submitter',
+      },
+      {
+        name: 'mentoringResponses',
+        actionCount: this.actionMentoringThreads.length,
+        allCount: this.mentoringThreads.length,
+        currentFilter: 'mentoring',
+      },
+      {
+        name: 'approvingResponses',
+        actionCount: this.actionApprovingThreads.length,
+        allCount: this.approvingThreads.length,
+        currentFilter: 'approving',
+      },
     ];
 
     // ascending
@@ -48,241 +70,275 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     this._super(...arguments);
   },
 
-  currentMetadata: function() {
-    let filter = this.get('currentFilter');
-    if (filter === 'submitter') {
-      return this.get('meta.submitter');
-    }
-    if (filter === 'mentoring') {
-      return this.get('meta.mentoring');
-    }
-    if (filter === 'approving') {
-      return this.get('meta.approving');
-    }
-  }.property('currentFilter', 'meta.{submitter,mentoring,approving}'),
-
-
-  newThreads: function() {
-    return this.get('storeThreads').filterBy('isNewThread');
-  }.property('storeThreads.[]'),
-
-  allThreads: function() {
-    let newThreads = this.get('newThreads') || [];
-    let threads = this.get('threads');
-    newThreads.forEach((thread) => {
-      threads.addObject(thread);
-    });
-    return threads.rejectBy('isTrashed');
-  }.property('threads.@each.isTrashed', 'newThreads.@each.isTrashed'),
-
-  mentoringThreads: function() {
-    return this.get('allThreads').filterBy('threadType', 'mentor');
-  }.property('allThreads.[]'),
-
-  approvingThreads: function() {
-    return this.get('allThreads').filterBy('threadType', 'approver');
-  }.property('allThreads.[]'),
-
-  submitterThreads: function() {
-    return this.get('allThreads').filterBy('threadType', 'submitter');
-  }.property('allThreads.[]'),
-
-  actionSubmitterThreads: function() {
-    return this.get('submitterThreads').filterBy('isActionNeeded');
-  }.property('submitterThreads.@each.isActionNeeded'),
-
-  actionMentoringThreads: function() {
-    return this.get('mentoringThreads').filterBy('isActionNeeded');
-  }.property('mentoringThreads.@each.isActionNeeded'),
-
-  actionApprovingThreads: function() {
-    return this.get('approvingThreads').filterBy('isActionNeeded');
-  }.property('approvingThreads.@each.isActionNeeded'),
-
-  sortedApprovingThreads: function() {
-    return this.get('approvingThreads')
-    .sort((a, b) => {
-      let aPriority = a.get('sortPriority');
-      let bPriority = b.get('sortPriority');
-
-      if (aPriority === bPriority) {
-        let aDate = moment(a.get('latestReply.createDate'));
-        let bDate = moment(b.get('latestReply.createDate'));
-
-        return bDate - aDate;
+  currentMetadata: computed(
+    'currentFilter',
+    'meta.{submitter,mentoring,approving}',
+    function () {
+      let filter = this.currentFilter;
+      if (filter === 'submitter') {
+        return this.meta.submitter;
       }
+      if (filter === 'mentoring') {
+        return this.meta.mentoring;
+      }
+      if (filter === 'approving') {
+        return this.meta.approving;
+      }
+    }
+  ),
 
-      return bPriority - aPriority;
+  newThreads: computed('storeThreads.[]', function () {
+    return this.storeThreads.filterBy('isNewThread');
+  }),
 
-    });
-  }.property('approvingThreads.@each.{sortPriority,latestReply}'),
+  allThreads: computed(
+    'threads.@each.isTrashed',
+    'newThreads.@each.isTrashed',
+    function () {
+      let newThreads = this.newThreads || [];
+      let threads = this.threads;
+      newThreads.forEach((thread) => {
+        threads.addObject(thread);
+      });
+      return threads.rejectBy('isTrashed');
+    }
+  ),
 
-  sortedSubmitterThreads: function() {
-    return this.get('submitterThreads').sort((a,b)=> {
-      let aPriority = a.get('sortPriority');
-      let bPriority = b.get('sortPriority');
+  mentoringThreads: computed('allThreads.[]', function () {
+    return this.allThreads.filterBy('threadType', 'mentor');
+  }),
 
-      if (aPriority === bPriority) {
-        let aDate = moment(a.get('latestReply.createDate'));
-        let bDate = moment(b.get('latestReply.createDate'));
+  approvingThreads: computed('allThreads.[]', function () {
+    return this.allThreads.filterBy('threadType', 'approver');
+  }),
 
-        if (aDate === bDate) {
-          aDate = moment(a.get('latestRevision.createDate'));
-          bDate = moment(b.get('latestRevision.createDate'));
+  submitterThreads: computed('allThreads.[]', function () {
+    return this.allThreads.filterBy('threadType', 'submitter');
+  }),
+
+  actionSubmitterThreads: computed(
+    'submitterThreads.@each.isActionNeeded',
+    function () {
+      return this.submitterThreads.filterBy('isActionNeeded');
+    }
+  ),
+
+  actionMentoringThreads: computed(
+    'mentoringThreads.@each.isActionNeeded',
+    function () {
+      return this.mentoringThreads.filterBy('isActionNeeded');
+    }
+  ),
+
+  actionApprovingThreads: computed(
+    'approvingThreads.@each.isActionNeeded',
+    function () {
+      return this.approvingThreads.filterBy('isActionNeeded');
+    }
+  ),
+
+  sortedApprovingThreads: computed(
+    'approvingThreads.@each.{sortPriority,latestReply}',
+    function () {
+      return this.approvingThreads.sort((a, b) => {
+        let aPriority = a.get('sortPriority');
+        let bPriority = b.get('sortPriority');
+
+        if (aPriority === bPriority) {
+          let aDate = moment(a.get('latestReply.createDate'));
+          let bDate = moment(b.get('latestReply.createDate'));
+
+          return bDate - aDate;
         }
-        return bDate - aDate;
-      }
 
-      return bPriority - aPriority;
+        return bPriority - aPriority;
+      });
+    }
+  ),
 
-    });
-  }.property('submitterThreads.@each.{sortPriority,latestReply,latestRevision}'),
+  sortedSubmitterThreads: computed(
+    'submitterThreads.@each.{sortPriority,latestReply,latestRevision}',
+    function () {
+      return this.submitterThreads.sort((a, b) => {
+        let aPriority = a.get('sortPriority');
+        let bPriority = b.get('sortPriority');
 
-  sortedMentoringThreads: function() {
-    return this.get('mentoringThreads').sort((a,b)=> {
-      let aPriority = a.get('sortPriority');
-      let bPriority = b.get('sortPriority');
-      if (aPriority === bPriority) {
-        let aDate = moment(a.get('latestReply.createDate'));
-        let bDate = moment(b.get('latestReply.createDate'));
-        if ((!aDate && !bDate) || aDate === bDate) {
-          aDate = moment(a.get('latestRevision.createDate'));
-          bDate = moment(b.get('latestRevision.createDate'));
+        if (aPriority === bPriority) {
+          let aDate = moment(a.get('latestReply.createDate'));
+          let bDate = moment(b.get('latestReply.createDate'));
+
+          if (aDate === bDate) {
+            aDate = moment(a.get('latestRevision.createDate'));
+            bDate = moment(b.get('latestRevision.createDate'));
+          }
+          return bDate - aDate;
         }
-        return bDate - aDate;
-      }
 
-      return bPriority - aPriority;
+        return bPriority - aPriority;
+      });
+    }
+  ),
 
-    });
-  }.property('mentoringThreads.@each.{sortPriority,latestReply,latestRevision}'),
+  sortedMentoringThreads: computed(
+    'mentoringThreads.@each.{sortPriority,latestReply,latestRevision}',
+    function () {
+      return this.mentoringThreads.sort((a, b) => {
+        let aPriority = a.get('sortPriority');
+        let bPriority = b.get('sortPriority');
+        if (aPriority === bPriority) {
+          let aDate = moment(a.get('latestReply.createDate'));
+          let bDate = moment(b.get('latestReply.createDate'));
+          if ((!aDate && !bDate) || aDate === bDate) {
+            aDate = moment(a.get('latestRevision.createDate'));
+            bDate = moment(b.get('latestRevision.createDate'));
+          }
+          return bDate - aDate;
+        }
 
-  areThreads: Ember.computed.gt('allThreads.length', 0),
+        return bPriority - aPriority;
+      });
+    }
+  ),
 
-  isAdmin: function() {
-    return this.get('currentUser.isAdmin') && !this.get('currentUser.isStudent');
+  areThreads: gt('allThreads.length', 0),
+
+  isAdmin: () => this.currentUser.isAdmin && !this.currentUser.isStudent,
+
+  showMentorHeader: computed('currentFilter', function () {
+    return this.currentFilter !== 'mentoring';
+  }),
+
+  showStudentHeader: computed('currentFilter', function () {
+    return this.currentFilter !== 'submitter';
+  }),
+
+  fetchThreads(threadType, page, limit = this.threadsPerPage) {
+    return this.store
+      .query('responseThread', {
+        threadType,
+        page,
+        limit,
+      })
+      .then((results) => {
+        let meta = results.get('meta.meta');
+        this.set('threads', results.toArray());
+        this.set('meta', meta);
+        if (this.isLoadingNewPage) {
+          this.set('isLoadingNewPage', false);
+        }
+      });
   },
 
-  showMentorHeader: function() {
-    return this.get('currentFilter') !== 'mentoring';
-  }.property('currentFilter'),
+  submitterThreadsCount: computed('submitterThreads.[]', function () {
+    return this.submitterThreads.length;
+  }),
 
-  showStudentHeader: function() {
-    return this.get('currentFilter') !== 'submitter';
-  }.property('currentFilter'),
+  mentoringThreadsCount: computed('mentoringThreads.[]', function () {
+    return this.mentoringThreads.length;
+  }),
 
+  approvingThreadsCount: computed('approvingThreads.[]', function () {
+    return this.approvingThreads.length;
+  }),
 
+  displayThreads: computed(
+    'currentFilter',
+    'allThreads.[]',
+    'sortedSubmitterThreads.[]',
+    'sortedMentoringThreads.[],',
+    'sortedApprovingThreads.[]',
+    function () {
+      let val = this.currentFilter;
 
-
-  fetchThreads(threadType, page, limit=this.get('threadsPerPage')) {
-    return this.get('store').query('responseThread', {
-      threadType,
-      page,
-      limit
-    })
-    .then((results) => {
-      let meta = results.get('meta.meta');
-      this.set('threads', results.toArray());
-      this.set('meta', meta);
-      if (this.get('isLoadingNewPage')) {
-        this.set('isLoadingNewPage', false);
-      }
-    });
-  },
-
-  submitterThreadsCount: function() {
-    return this.get('submitterThreads.length');
-  }.property('submitterThreads.[]'),
-
-  mentoringThreadsCount: function() {
-    return this.get('mentoringThreads.length');
-  }.property('mentoringThreads.[]'),
-
-  approvingThreadsCount: function() {
-    return this.get('approvingThreads.length');
-  }.property('approvingThreads.[]'),
-
-  displayThreads: function() {
-    let val = this.get('currentFilter');
-
-    if (!this.get('areThreads')) {
-      return [];
-    }
-
-    let submitterCount = this.get('submitterThreadsCount');
-    let mentoringCount = this.get('mentoringThreadsCount');
-    let approvingCount = this.get('approvingThreadsCount');
-
-    if (val === 'submitter') {
-      if (submitterCount > 0) {
-        return this.get('sortedSubmitterThreads');
+      if (!this.areThreads) {
+        return [];
       }
 
-      return mentoringCount >= approvingCount ? this.get('sortedMentoringThreads') : this.get('sortedApprovingThreads');
+      let submitterCount = this.submitterThreadsCount;
+      let mentoringCount = this.mentoringThreadsCount;
+      let approvingCount = this.approvingThreadsCount;
 
-    }
-    if (val === 'mentoring') {
-      if (mentoringCount  > 0) {
-        return this.get('sortedMentoringThreads');
+      if (val === 'submitter') {
+        if (submitterCount > 0) {
+          return this.sortedSubmitterThreads;
+        }
+
+        return mentoringCount >= approvingCount
+          ? this.sortedMentoringThreads
+          : this.sortedApprovingThreads;
+      }
+      if (val === 'mentoring') {
+        if (mentoringCount > 0) {
+          return this.sortedMentoringThreads;
+        }
+
+        return approvingCount >= submitterCount
+          ? this.sortedApprovingThreads
+          : this.sortedSubmitterThreads;
       }
 
-      return approvingCount >= submitterCount ? this.get('sortedApprovingThreads') : this.get('sortedSubmitterThreads');
-
-    }
-
-    if (val === 'approving') {
-      if (approvingCount > 0) {
-        return this.get('sortedApprovingThreads');
+      if (val === 'approving') {
+        if (approvingCount > 0) {
+          return this.sortedApprovingThreads;
+        }
+        return mentoringCount >= submitterCount
+          ? this.sortedMentoringThreads
+          : this.sortedSubmitterThreads;
       }
-      return mentoringCount >= submitterCount ? this.get('sortedMentoringThreads') : this.get('sortedSubmitterThreads');
 
+      if (val === 'all') {
+        return this.allThreads;
+      }
     }
+  ),
 
-    if (val === 'all') {
-      return this.get('allThreads');
-    }
-  }.property('currentFilter', 'allThreads.[]', 'sortedSubmitterThreads.[]', 'sortedMentoringThreads.[],', 'sortedApprovingThreads.[]'),
-
-  submitterCounter: function() {
-    let count = this.get('actionSubmitterThreads.length');
+  submitterCounter: computed('actionSubmitterThreads.[]', function () {
+    let count = this.actionSubmitterThreads.length;
 
     if (count > 0) {
       return `(${count})`;
     }
     return '';
-  }.property('actionSubmitterThreads.[]'),
+  }),
 
-  mentoringCounter: function() {
-    let count = this.get('actionMentoringThreads.length');
-
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }.property('actionMentoringThreads.[]'),
-
-  approvingCounter: function() {
-    let count = this.get('actionApprovingThreads.length');
+  mentoringCounter: computed('actionMentoringThreads.[]', function () {
+    let count = this.actionMentoringThreads.length;
 
     if (count > 0) {
       return `(${count})`;
     }
     return '';
-  }.property('actionApprovingThreads.[]'),
+  }),
 
-  showStatusColumn: function() {
-    return this.get('currentFilter') === 'mentoring' || this.get('currentFilter') === 'approving' || this.get('currentFilter') === 'all';
-  }.property('currentFilter'),
+  approvingCounter: computed('actionApprovingThreads.[]', function () {
+    let count = this.actionApprovingThreads.length;
+
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }),
+
+  showStatusColumn: computed('currentFilter', function () {
+    return (
+      this.currentFilter === 'mentoring' ||
+      this.currentFilter === 'approving' ||
+      this.currentFilter === 'all'
+    );
+  }),
 
   doesHaveUnreadReply(responses) {
-      if (!responses) {
-        return false;
-      }
-      let unreadReply = responses.find((response) => {
-        let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
-        return !response.get('wasReadByRecipient') && recipientId === this.get('currentUser.id');
-      });
-      return !this.get('utils').isNullOrUndefined(unreadReply);
+    if (!responses) {
+      return false;
+    }
+    let unreadReply = responses.find((response) => {
+      let recipientId = this.utils.getBelongsToId(response, 'recipient');
+      return (
+        !response.get('wasReadByRecipient') &&
+        recipientId === this.currentUser.id
+      );
+    });
+    return !this.utils.isNullOrUndefined(unreadReply);
   },
 
   areUnreadNotesOnly(responses) {
@@ -290,8 +346,10 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       return false;
     }
     let unreadReplies = responses.filter((response) => {
-      let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
-      return !response.get('wasReadByRecipient') && creatorId === this.get('currentUser.id');
+      let creatorId = this.utils.getBelongsToId(response, 'createdBy');
+      return (
+        !response.get('wasReadByRecipient') && creatorId === this.currentUser.id
+      );
     });
 
     if (unreadReplies.get('length') === 0) {
@@ -309,8 +367,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     let reply = responses.find((response) => {
       return response.get('status') === 'needsRevisions';
     });
-    return !this.get('utils').isNullOrUndefined(reply);
-},
+    return !this.utils.isNullOrUndefined(reply);
+  },
 
   isWaitingForApproval(responses) {
     if (!responses) {
@@ -319,7 +377,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     let reply = responses.find((response) => {
       return response.get('status') === 'pendingApproval';
     });
-    return !this.get('utils').isNullOrUndefined(reply);
+    return !this.utils.isNullOrUndefined(reply);
   },
 
   doesHaveDraft(responses) {
@@ -329,7 +387,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     let reply = responses.find((response) => {
       return response.get('status') === 'draft';
     });
-    return !this.get('utils').isNullOrUndefined(reply);
+    return !this.utils.isNullOrUndefined(reply);
   },
 
   actions: {
@@ -344,7 +402,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
     showAllResponses() {
       this.set('currentFilter', 'all');
-
     },
     toSubmissionResponse(sub) {
       this.sendAction('toSubmissionResponse', sub.get('id'));
@@ -357,7 +414,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
 
     initiatePageChange(page) {
-      let currentFilter = this.get('currentFilter');
+      let currentFilter = this.currentFilter;
       let threadType;
 
       if (currentFilter === 'submitter') {
@@ -372,6 +429,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
       this.set('isLoadingNewPage', true);
       this.fetchThreads(threadType, page);
-    }
-  }
+    },
+  },
 });

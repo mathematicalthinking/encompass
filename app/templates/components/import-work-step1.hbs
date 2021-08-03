@@ -4,29 +4,12 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  <p class="sub-input-label">Start typing the name of the problem of which you would like to add existing work. If your problem does not exist yet, create one {{#link-to 'problems.new' classNames='new-link'}}here{{/link-to}}.</p>
-  {{selectize-input
-    store=store
-    inputId="select-problem"
-    isAsync=true
-    maxItems=1
-    initialItems=initialProblemItem
-    onItemAdd=(action "setSelectedProblem")
-    onItemRemove=(action "setSelectedProblem")
-    labelField="title"
-    searchField="title"
-    valueField="id"
-    model="problem"
-    queryParamsKey="query"
-    searchCriterion="title"
-    topLevelQueryParams="searchBy"
-    placeholder="Search for problems by title..."
-    preload="focus"
-  }}
+  <p class="sub-input-label">Start typing the name of the problem of which you would like to add existing work. If your problem does not exist yet, create one <LinkTo @route="problems.new" @classNames="new-link">here</LinkTo>.</p>
+  <SelectizeInput @store={{this.store}} @inputId="select-problem" @isAsync={{true}} @maxItems={{1}} @initialItems={{initialProblemItem}} @onItemAdd={{action "setSelectedProblem"}} @onItemRemove={{action "setSelectedProblem"}} @labelField="title" @searchField="title" @valueField="id" @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @placeholder="Search for problems by title..." @preload="focus" />
 
 
 {{#if missingProblem}}
-  {{error-box error="Please select a problem" resetError=(action (mut missingProblem) null) showDismiss=true}}
+  <ErrorBox @error="Please select a problem" @resetError={{action (mut missingProblem) null}} @showDismiss={{true}} />
 {{/if}}
 
 <div class="nav-btn-container">

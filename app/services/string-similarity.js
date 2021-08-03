@@ -1,6 +1,14 @@
 /*global _:false */
-Encompass.StringSimilarityService = Ember.Service.extend({
-  compareTwoStrings (str1, str2) {
+import Service from '@ember/service';
+
+
+
+
+
+
+
+export default Service.extend({
+  compareTwoStrings(str1, str2) {
     if (!str1.length && !str2.length) { // if both are empty strings
       return 1;
     }
@@ -32,7 +40,7 @@ Encompass.StringSimilarityService = Ember.Service.extend({
     return intersection * 2 / union;
   },
 
-  findBestMatch (mainString, targetStrings) {
+  findBestMatch(mainString, targetStrings) {
     if (!this.areArgsValid(mainString, targetStrings)) {
       throw new Error('Bad arguments: First argument should be a string, second should be an array of strings');
     }
@@ -41,11 +49,11 @@ Encompass.StringSimilarityService = Ember.Service.extend({
     return { ratings, bestMatch };
   },
 
-  flattenDeep (arr) {
-    return Array.isArray(arr) ? arr.reduce((a, b) => a.concat(this.flattenDeep(b)) , []) : [arr];
+  flattenDeep(arr) {
+    return Array.isArray(arr) ? arr.reduce((a, b) => a.concat(this.flattenDeep(b)), []) : [arr];
   },
 
-  areArgsValid (mainString, targetStrings) {
+  areArgsValid(mainString, targetStrings) {
     if (typeof mainString !== 'string') {
       return false;
     }
@@ -61,7 +69,7 @@ Encompass.StringSimilarityService = Ember.Service.extend({
     return true;
   },
 
-  letterPairs (str) {
+  letterPairs(str) {
     const pairs = [];
     for (let i = 0, max = str.length - 1; i < max; i++) {
       pairs[i] = str.substring(i, i + 2);
@@ -69,7 +77,7 @@ Encompass.StringSimilarityService = Ember.Service.extend({
     return pairs;
   },
 
-  wordLetterPairs (str) {
+  wordLetterPairs(str) {
     const pairs = str.toUpperCase().split(' ').map(this.letterPairs);
     return this.flattenDeep(pairs);
   },

@@ -1,6 +1,14 @@
-Encompass.FormatDateHelper = Ember.Helper.helper(function (args) {
+import { helper as buildHelper } from '@ember/component/helper';
+import moment from 'moment';
+
+
+
+
+
+
+export default buildHelper(function (args) {
   // args is array of arguments passed in from template
-  let [ date, format, doUseRelativeTime ] = args;
+  let [date, format, doUseRelativeTime] = args;
 
   if (!date) {
     return 'N/A';

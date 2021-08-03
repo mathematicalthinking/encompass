@@ -1,8 +1,16 @@
-Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+import Component from '@ember/component';
+import { computed, observer } from '@ember/object';
+import { later } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   elementId: 'image-upload',
 
-  alert: Ember.inject.service('sweet-alert'),
-  store: Ember.inject.service(),
+  alert: service('sweet-alert'),
+  store: service(),
 
   isHidden: false,
   //uploadedFiles: null,
@@ -18,24 +26,24 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   didReceiveAttrs() {
     let acceptableFileTypes = 'image/png,image/jpeg,application/pdf';
-    if (this.get('isPdfOnly')) {
+    if (this.isPdfOnly) {
       acceptableFileTypes = 'application/pdf';
     }
     this.set('acceptableFileTypes', acceptableFileTypes);
   },
 
   returnSizeDisplay(bytes) {
-    if(bytes < 1024) {
+    if (bytes < 1024) {
       return bytes + ' bytes';
-    } else if(bytes >= 1024 && bytes < 1048576) {
-      return (bytes/1024).toFixed(1) + 'KB';
-    } else if(bytes >= 1048576) {
-      return (bytes/1048576).toFixed(1) + 'MB';
+    } else if (bytes >= 1024 && bytes < 1048576) {
+      return (bytes / 1024).toFixed(1) + 'KB';
+    } else if (bytes >= 1048576) {
+      return (bytes / 1048576).toFixed(1) + 'MB';
     }
   },
 
   getOverSizedFileMsg(fileSize, fileName) {
-    let limit = this.get('singleFileSizeLimit');
+    let limit = this.singleFileSizeLimit;
 
     let actualDisplay = this.returnSizeDisplay(fileSize);
     let limitDisplay = this.returnSizeDisplay(limit);
@@ -43,83 +51,90 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return `The file ${fileName} (${actualDisplay}) was not accepted due to exceeding the size limit of ${limitDisplay}`;
   },
 
-  overPdfLimitMsg: function() {
-    let limit = this.get('totalPdfSizeLimit');
-    let actual = this.get('totalPdfSize');
+  overPdfLimitMsg: computed('totalPdfSizeLimit', 'totalPdfSize', function () {
+    let limit = this.totalPdfSizeLimit;
+    let actual = this.totalPdfSize;
     let actualDisplay = this.returnSizeDisplay(actual);
     let limitDisplay = this.returnSizeDisplay(limit);
 
     return `Sorry, the total size of your PDF uploads (${actualDisplay}) exceeds the maximum of ${limitDisplay}`;
-  }.property('totalPdfSizeLimit', 'totalPdfSize'),
+  }),
 
-  overImageLimitMsg: function() {
-    let limit = this.get('totalImageSizeLimit');
-    let actual = this.get('totalImageSize');
-    let actualDisplay = this.returnSizeDisplay(actual);
-    let limitDisplay = this.returnSizeDisplay(limit);
+  overImageLimitMsg: computed(
+    'totalImageSizeLimit',
+    'totalImageSize',
+    function () {
+      let limit = this.totalImageSizeLimit;
+      let actual = this.totalImageSize;
+      let actualDisplay = this.returnSizeDisplay(actual);
+      let limitDisplay = this.returnSizeDisplay(limit);
 
-    return `Sorry, the total size of your image uploads (${actualDisplay}) exceeds the maximum of ${limitDisplay}`;
-  }.property('totalImageSizeLimit', 'totalImageSize'),
+      return `Sorry, the total size of your image uploads (${actualDisplay}) exceeds the maximum of ${limitDisplay}`;
+    }
+  ),
 
-  handleLoadingMessage: function() {
+  handleLoadingMessage: observer('isUploading', function () {
     const that = this;
-    if (!this.get('isUploading')) {
+    if (!this.isUploading) {
       this.set('showLoadingMessage', false);
       return;
     }
-    Ember.run.later(function() {
+    later(function () {
       if (that.isDestroyed || that.isDestroying) {
         return;
       }
       that.set('showLoadingMessage', that.get('isUploading'));
     }, 500);
-
-  }.observes('isUploading'),
+  }),
 
   uploadImage: function (currentUser, formData) {
     const that = this;
-    return Ember.$.post({
+    return $.post({
       url: '/image',
       processData: false,
       contentType: false,
       // createdBy: currentUser,
-      data: formData
-    }).then((res) => {
-      let images = res.images;
-      that.set('uploadedImages', images);
-      that.get('store').pushPayload({images});
+      data: formData,
+    })
+      .then((res) => {
+        let images = res.images;
+        that.set('uploadedImages', images);
+        that.get('store').pushPayload({ images });
 
-      return res.images;
-    }).catch((err) => {
-      that.set('isUploading', false);
-      that.handleErrors(err, 'uploadErrors', err);
-      return err;
-    });
+        return res.images;
+      })
+      .catch((err) => {
+        that.set('isUploading', false);
+        that.handleErrors(err, 'uploadErrors', err);
+        return err;
+      });
   },
 
   uploadPdf: function (currentUser, formData) {
     const that = this;
-    return Ember.$.post({
+    return $.post({
       url: '/pdf',
       processData: false,
       contentType: false,
       data: formData,
       // createdBy: currentUser
-    }).then(function (res) {
-      let images = res.images;
-      that.set('uploadedPdfs', images);
-      that.get('store').pushPayload({images});
-      return res.images;
-    }).catch((err) => {
-      that.set('isUploading', false);
-      that.handleErrors(err, 'uploadErrors', err);
-      return;
-    });
+    })
+      .then(function (res) {
+        let images = res.images;
+        that.set('uploadedPdfs', images);
+        that.get('store').pushPayload({ images });
+        return res.images;
+      })
+      .catch((err) => {
+        that.set('isUploading', false);
+        that.handleErrors(err, 'uploadErrors', err);
+        return;
+      });
   },
 
-  totalPdfSize: function() {
+  totalPdfSize: computed('filesToBeUploaded', function () {
     let total = 0;
-    let files = this.get('filesToBeUploaded');
+    let files = this.filesToBeUploaded;
     if (!files) {
       return total;
     }
@@ -130,11 +145,11 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
     }
     return total;
-  }.property('filesToBeUploaded'),
+  }),
 
-  totalImageSize: function() {
+  totalImageSize: computed('filesToBeUploaded', function () {
     let total = 0;
-    let files = this.get('filesToBeUploaded');
+    let files = this.filesToBeUploaded;
     if (!files) {
       return total;
     }
@@ -145,15 +160,19 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
     }
     return total;
-  }.property('filesToBeUploaded'),
+  }),
 
-  isOverPdfLimit: function() {
-    return this.get('totalPdfSize') > this.get('totalPdfSizeLimit');
-  }.property('totalPdfSize', 'totalPdfSizeLimit'),
+  isOverPdfLimit: computed('totalPdfSize', 'totalPdfSizeLimit', function () {
+    return this.totalPdfSize > this.totalPdfSizeLimit;
+  }),
 
-  isOverImageLimit: function() {
-    return this.get('totalImageSize') > this.get('totalImageSizeLimit');
-  }.property('totalImageSize', 'totalImageSizeLimit'),
+  isOverImageLimit: computed(
+    'totalImageSize',
+    'totalImageSizeLimit',
+    function () {
+      return this.totalImageSize > this.totalImageSizeLimit;
+    }
+  ),
 
   resetFileInput() {
     let input = this.$('input.image-upload');
@@ -164,7 +183,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   actions: {
-    uploadImages: function() {
+    uploadImages: function () {
       const that = this;
       const currentUser = that.get('currentUser');
       const uploadData = that.get('filesToBeUploaded');
@@ -173,7 +192,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('missingFilesError', true);
         return;
       }
-      if (this.get('isOverPdfLimit') || this.get('isOverImageLimit')) {
+      if (this.isOverPdfLimit || this.isOverImageLimit) {
         this.set('isUploading', false);
         this.set('isOverSizeLimit', true);
         return;
@@ -188,9 +207,12 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       for (let f of uploadData) {
         let fileSize = f.size;
-        if (fileSize > this.get('singleFileSizeLimit')) {
+        if (fileSize > this.singleFileSizeLimit) {
           this.set('isUploading', false);
-          this.set('overSizedFileError', this.getOverSizedFileMsg(f.size, f.name));
+          this.set(
+            'overSizedFileError',
+            this.getOverSizedFileMsg(f.size, f.name)
+          );
           this.set('filesToBeUploaded', null);
           return;
         } else if (f.type === 'application/pdf') {
@@ -207,35 +229,49 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
           if (pdfCount > 0) {
             return this.uploadPdf(currentUser, pdfFormData).then((res) => {
               let results;
-              if (this.get('uploadedPdfs') && this.get('uploadedImages')) {
-                results = this.get('uploadedPdfs').concat(this.get('uploadedImages'));
+              if (this.uploadedPdfs && this.uploadedImages) {
+                results = this.uploadedPdfs.concat(this.uploadedImages);
                 this.set('isUploading', false);
                 let fileModifier = results.length === 1 ? 'file' : 'files';
 
                 let msg = `Uploaded ${results.length} ${fileModifier} successfully`;
-                this.get('alert').showToast('success', msg, 'bottom-end', 3000, false, null);
-                if (this.get('handleUploadResults')) {
-                  this.get('handleUploadResults')(results);
+                this.alert.showToast(
+                  'success',
+                  msg,
+                  'bottom-end',
+                  3000,
+                  false,
+                  null
+                );
+                if (this.handleUploadResults) {
+                  this.handleUploadResults(results);
                 }
                 this.set('uploadResults', results);
-                if (this.get('doResetFilesAfterUpload')) {
-                 this.resetFileInput();
+                if (this.doResetFilesAfterUpload) {
+                  this.resetFileInput();
                 }
               }
             });
           } else {
             this.set('isUploading', false);
 
-            let images = this.get('uploadedImages');
+            let images = this.uploadedImages;
             let fileModifier = images.length === 1 ? 'file' : 'files';
 
             let msg = `Uploaded ${images.length} ${fileModifier} successfully`;
-            this.get('alert').showToast('success', msg, 'bottom-end', 3000, false, null);
-            if (this.get('handleUploadResults')) {
-              this.get('handleUploadResults')(images);
+            this.alert.showToast(
+              'success',
+              msg,
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+            if (this.handleUploadResults) {
+              this.handleUploadResults(images);
             }
-            this.set('uploadResults', this.get('uploadedImages'));
-            if (this.get('doResetFilesAfterUpload')) {
+            this.set('uploadResults', this.uploadedImages);
+            if (this.doResetFilesAfterUpload) {
               this.resetFileInput();
             }
           }
@@ -244,17 +280,17 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return this.uploadPdf(currentUser, pdfFormData).then((res) => {
           this.set('isUploading', false);
 
-          let pdfs = this.get('uploadedPdfs');
+          let pdfs = this.uploadedPdfs;
 
           let fileModifier = pdfs.length === 1 ? 'file' : 'files';
 
           let msg = `Uploaded ${pdfs.length} ${fileModifier} successfully`;
-          this.get('alert').showToast('success', msg, 'bottom-end', 3000, false, null);
-          if (this.get('handleUploadResults')) {
-            this.get('handleUploadResults')(pdfs);
+          this.alert.showToast('success', msg, 'bottom-end', 3000, false, null);
+          if (this.handleUploadResults) {
+            this.handleUploadResults(pdfs);
           }
-          this.set('uploadResults', this.get('uploadedPdfs'));
-          if (this.get('doResetFilesAfterUpload')) {
+          this.set('uploadResults', this.uploadedPdfs);
+          if (this.doResetFilesAfterUpload) {
             this.resetFileInput();
           }
         });
@@ -262,17 +298,14 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     updateFiles(event) {
-      if (this.get('missingFilesError')) {
+      if (this.missingFilesError) {
         this.set('missingFilesError', false);
       }
 
       this.set('filesToBeUploaded', event.target.form.firstElementChild.files);
-      if (this.get('storeFiles')) {
-        this.get('storeFiles')(event.target.form.firstElementChild.files);
+      if (this.storeFiles) {
+        this.storeFiles(event.target.form.firstElementChild.files);
       }
     },
-  }
+  },
 });
-
-
-

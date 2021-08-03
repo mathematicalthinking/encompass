@@ -4,17 +4,7 @@
       <h2>Summary</h2>
       <ul class="primary-filter-list">
         {{#each detailsItems as |item|}}
-          {{details-list-item
-          label = item.label
-          displayValue = item.displayValue
-          emptyValue = item.emptyValue
-          propName = item.propName
-          children = item.children
-          isArray = item.isArray
-          editValue = (action "goToStep")
-          associatedStep=item.associatedStep
-          currentStep=currentStep.value
-          }}
+          <DetailsListItem @label={{item.label}} @displayValue={{item.displayValue}} @emptyValue={{item.emptyValue}} @propName={{item.propName}} @children={{item.children}} @isArray={{item.isArray}} @editValue={{action "goToStep"}} @associatedStep={{item.associatedStep}} @currentStep={{currentStep.value}} />
         {{/each}}
       </ul>
     </div>
@@ -51,37 +41,36 @@
         {{!-- <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5> --}}
 
         {{#if showSelectWorkspace}}
-          {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
+          <WsCopyWorkspace @showLoadingSubmissions={{showLoadingSubmissions}} @loadSubmissionErrors={{loadSubmissionErrors}} @store={{this.store}} @workspaceToCopy={{workspaceToCopy}} @selectedWorkspace={{selectedWorkspace}} @fromWorkspaceList={{fromWorkspaceList}} @onProceed={{action "setOriginalWorkspace"}} />
         {{/if}}
 
         {{#if showSelectConfig}}
-          {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
+          <WsCopyConfig @workspace={{workspaceToCopy}} @submissionThreads={{submissionThreads}} @newWsConfig={{newWsConfig}} @copyConfig={{copyConfig}} @onProceed={{action "setConfig"}} @onBack={{action "changeStep"}} />
         {{/if}}
 
         {{#if showOwnerSettings}}
-          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") existingFolderSet=existingFolderSet
-          }}
+          <WsCopyOwnerSettings @newWsOwner={{newWsOwner}} @newWsMode={{newWsMode}} @newWsName={{newWsName}} @newFolderSetOptions={{newFolderSetOptions}} @workspace={{selectedWorkspace}} @store={{this.store}} @modeInputs={{modeInputs}} @onProceed={{action "setOwnerSettings"}} @folderSetInputs={{folderSetInputs}} @folderSets={{model.folderSets}} @isCopyingFolders={{isCopyingFolders}} @onBack={{action "changeStep"}} @existingFolderSet={{existingFolderSet}} />
         {{/if}}
 
         {{#if showPermissions}}
-          {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+          <WsCopyPermissions @submissionsPool={{submissionsPool}} @workspace={{workspaceToCopy}} @newWsPermissions={{newWsPermissions}} @store={{this.store}} @newWsOwner={{newWsOwner}} @onProceed={{action "setPermissions"}} @onBack={{action "changeStep"}} />
         {{/if}}
 
         {{#if showReview}}
-          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}}
+          <WsCopyReview @showLoadingMessage={{showRequestLoading}} @mode={{newWsMode}} @owner={{newWsOwner}} @name={{newWsName}} @workspace={{workspaceToCopy}} @onProceed={{action "createCopyRequest"}} @onBack={{action "changeStep"}} @recordCounts={{recordCounts}} />
         {{/if}}
       </div>
 
 
       {{#if customConfigError}}
-        {{error-box error="Sorry, something went wrong processing your custom configuration." showDismiss=true resetError=(action (mut customConfigError) null)}}
+        <ErrorBox @error="Sorry, something went wrong processing your custom configuration." @showDismiss={{true}} @resetError={{action (mut customConfigError) null}} />
       {{/if}}
       {{#if copyWorkspaceError}}
-        {{error-box error=copyWorkspaceError showDismiss=true resetError=(action (mut copyWorkspaceError) null)}}
+        <ErrorBox @error={{copyWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut copyWorkspaceError) null}} />
       {{/if}}
 
       {{#each serverErrors as |error|}}
-        {{error-box error=error showDismiss=true}}
+        <ErrorBox @error={{error}} @showDismiss={{true}} />
       {{/each}}
     </div>
   </div>

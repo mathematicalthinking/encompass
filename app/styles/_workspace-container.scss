@@ -1,0 +1,858 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+
+
+// is this necessary?
+@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
+  #workspace-container {
+    .comment-flex-item.tri-paneled {
+      &.filter {
+        .filter-label {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+#workspace-container {
+  background-color: $filter-list-background-color;
+  height: calc(100vh - 75px);
+
+  .toggle-display {
+    position: absolute;
+    left: 0px;
+    top: 100px;
+    z-index: 205;
+    display: unset;
+    .hidden {
+      display: none;
+    }
+    button {
+      height: 50px;
+      width: 25px;
+      background-color: $filter-list-background-color;
+      position: fixed;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      color: lighten($primary-font-color, 20%);
+      &:focus {
+        outline: none;
+      }
+      padding-left: 3px;
+      cursor: pointer;
+    }
+    &.comments {
+      left: calc(100% - 23px);
+    }
+    img {
+      height: 20px;
+      width: 20px;
+      color: black;
+    }
+  }
+
+  .ws-header {
+    @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
+    position: relative;
+    top: 20px;
+    margin: 20px;
+    line-height: normal;
+    background-color: $filter-list-background-color;
+
+    h2 {
+      display: inline-block;
+      font-weight: 300;
+      font-size: 1.5em;
+    }
+
+    .ws-meta {
+      order: 1;
+    }
+    aside {
+      order: 2;
+      margin-left: auto;
+    }
+
+  }
+
+  .workspace-flex-container {
+    @include flex-container(null, null, row, wrap, center, flex-start, flex-start);
+    width: 100%;
+    .hidden {
+      display: none;
+    }
+
+    &:first-child {
+      margin-left: 20px;
+    }
+
+    &.no-folders {
+      #folder-list {
+        display: none;
+      }
+    }
+
+    &.no-comments {
+      #comment-list {
+        display: none;
+      }
+    }
+
+    &.no-responses {
+      #workspace-submission-comp {
+        .selection-controls {
+          padding: 10px;
+        }
+      }
+    }
+
+    &.no-selections {
+      &.no-responses {
+        #workspace-submission-comp {
+          .selection-controls {
+            @include flex-container(null, null, row, wrap, center, center, center);
+            .problem-link {
+              max-width: 80%;
+            }
+
+            .problem-link-text {
+              display: inline;
+            }
+          }
+        }
+      }
+
+      #workspace-submission-comp {
+        .selection-controls {
+          @include flex-container(null, null, row, wrap, center, center, center);
+        }
+        .submission-row-item {
+          &.selection-toggles {
+            display: none;
+          }
+        }
+        #selections-header {
+          display: none;
+        }
+        #submission_selections {
+          display: none;
+        }
+
+        #al_submission {
+          height: calc(100% - 38px);
+        }
+      }
+
+    }
+
+    .workspace-flex-item {
+      background-color: white;
+      // box-shadow: $box-shadow;
+      // border-radius: 3px;
+      // margin: 20px;
+      // padding: 0px 17px;
+      height: calc(100vh - 215px);
+
+    }
+
+    .workspace-flex-item.folders{
+      @include flex-item(1, flex-start, 1 1 auto);
+      background-color: darken($filter-list-background-color, 10);
+      width: 17%;
+      min-width: 230px;
+      max-width: 500px;
+
+      &.is-editing {
+        width: 50%;
+      }
+    }
+    .workspace-flex-item.submission{
+      @include flex-item(2, flex-start, 4 1 auto);
+      @include flex-container(null, null, column, nowrap, flex-start, flex-start, flex-start);
+
+      width: 40%;
+      min-width: 447px;
+      // border: 2px solid red;
+      .submission-header {
+        padding: 5px 0;
+        font-size: 1.1em;
+        color: black;
+        font-weight: 300;
+        margin-left: 10px;
+      }
+
+      &.is-first-child {
+        margin-left: 25px;
+      }
+      &.is-last-child {
+        margin-right: 25px;
+      }
+
+      &.is-only-child {
+        margin-left: 25px;
+        margin-right: 25px;
+      }
+
+    }
+    .workspace-flex-item.comments{
+      @include flex-item(3, flex-start, 2 1 auto);
+      background-color: $filter-list-background-color;
+      header {
+        background-color: darken($filter-list-background-color, 10);
+        text-indent: 10px;
+        margin-bottom: 10px;
+      }
+
+      .compose-comment {
+        margin-left: 15px;
+        margin-bottom: 10px;
+        margin-right: 15px;
+      }
+
+      width: 23%;
+      min-width: 320px;
+      max-width: 500px;
+
+    }
+
+    .submission-row {
+      @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
+
+      &.nav {
+        @include flex-item(1, flex-start, initial);
+        @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
+        width: 100%;
+        border-bottom: 1px solid #d3d3d3;
+      }
+
+      &.selection-controls {
+        @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
+        border-bottom: 1px solid #d3d3d3;
+        background-color: white;
+      }
+
+      .submission-row-item {
+        margin: 0 10px;
+
+        &.students-revisions {
+          @include flex-item(1, center, auto);
+        }
+
+        &.students {
+          @include flex-item(1, flex-start, initial);
+          position: relative;
+          margin: 2px;
+          width: 15em;
+          line-height: 2em;
+          display:inline-block;
+          vertical-align: middle;
+          .selectize-comp {
+            display: inline-block;
+            width: 100%;
+          }
+          .selectize-input {
+            position: relative;
+            background: none;
+            box-shadow: none;
+            font-weight: $main-font-weight;
+            font-size: .8em;
+            color: black;
+            vertical-align: middle;
+            padding: 4px 4px;
+
+            .item {
+              max-width:80%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+          .selectize-dropdown-content {
+            .option {
+              text-overflow: ellipsis;
+            }
+          }
+        }
+
+        &.revisions {
+          @include flex-item(2, flex-start, auto);
+          display: inline-block;
+        }
+
+        &.arrows {
+          @include flex-item(2, center, initial);
+
+         a {
+          background: none;
+          padding: 5px;
+         }
+          margin-left: auto;
+        }
+
+        &.selection-toggles {
+          @include flex-item(1, center, 0 1 auto);
+          @include flex-container(null, null, row, nowrap, flex-start, flex-start, center)
+        }
+        &.problem-link {
+          @include flex-item(2, center, auto);
+          max-width: 35%;
+          text-align: center;
+          a {
+            color: $accent-color;
+          }
+        }
+        &.new-response {
+          @include flex-item(3, center, 0 1 auto);
+          margin: auto;
+        }
+      }
+     }
+
+  }
+
+  #folder-list {
+    @include flex-container(null, null, column, nowrap, flex-start, flex-start, flex-start);
+    header {
+      @include flex-item(1, flex-start, initial);
+      text-indent: 10px;
+      width: 100%;
+    }
+    h2 {
+      display: inline-block;
+      font-size: 1.4em;
+    }
+
+    &.hidden {
+      display: none;
+    }
+    .dropTarget {
+      @include flex-item(2, flex-start, auto);
+      text-indent: 10px;
+      background-color: $filter-list-background-color;
+      height: calc(100% - 50px);
+      width: 100%;
+      overflow: hidden;
+      overflow-y: auto;
+    }
+    #al_folders_modify {
+      position: relative;
+    }
+
+    .folderItem {
+      line-height: 50px;
+    }
+
+    .folder.draggable {
+      @include flex-container(null, null, row, nowrap, flex-start, center, flex-start);
+
+      .toggle-icon {
+        @include flex-item(1,flex-start, auto);
+
+        align-self: center;
+        i {
+          font-size: x-large;
+          margin-right: 15px;
+        }
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        .folder-name.bolder {
+          font-weight: $bolder-font-weight;
+          font-size: 1.1em;
+        }
+      }
+
+      aside {
+        @include flex-item(2,flex-end, initial);
+        align-self: center;
+        margin-left: 5px;
+        .show-folder {
+          background-color: $soft-yellow;
+          width: 30px;
+          line-height: 30px;
+          border-radius: 50%;
+          text-align: center;
+          text-indent: initial;
+          font-size: 1em;
+          color: $primary-font-color;
+          border: 1px solid $filter-list-border-color;
+          margin-right: 5px;
+
+          &.many-taggings {
+            font-size: 0.9em;
+          }
+
+          &.contains-current-submission {
+            font-weight: $bolder-font-weight;
+          }
+          &.contains-current-selection {
+            background-color: $pale-accent;
+          }
+        }
+      }
+
+      .move-folder {
+        @include flex-item(1, flex-start, initial);
+      }
+
+      .delete-folder {
+        @include flex-item(2, flex-start, initial);
+      }
+
+      .edit-folder-name {
+        @include flex-item(3, flex-start, auto);
+        input {
+          width: 80%;
+        }
+      }
+
+    }
+
+    .folders-modify {
+      @include flex-item(3, flex-start, initial);
+      @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
+      background: linear-gradient(#d3d3d3, #d3d3d3) no-repeat center/1px 100%;
+      background-color: ($filter-list-background-color);
+      height: 50px;
+      border-top:1px solid #d3d3d3;
+      width: 100%;
+      i {
+        margin-left: 5px;
+      }
+      .folders-modify-item {
+        text-align: center;
+        line-height: 50px;
+        &.add {
+          @include flex-item(1, center, auto);
+        }
+
+        &.edit {
+          @include flex-item(2, center, auto);
+
+        }
+      }
+
+    }
+  }
+
+  #submission-group {
+    #workspace-submission-comp {
+      @include flex-item(2, flex-start, auto);
+      width: 100%;
+      // height: calc(100% - 52px);
+      background-color: $filter-list-background-color;
+
+      &.is-selecting {
+        .non-selectable-sub {
+          display: none;
+        }
+      }
+
+      &.expanded-selections {
+        #submission_selections {
+          height: calc(100% - 40% - 35px - 56px);
+        }
+
+        #al_submission {
+          height: calc(40%);
+        }
+      }
+
+      &.selections-hidden {
+        #submission_selections {
+         display: none;
+        }
+        #al_submission {
+          height: calc(100% - 56px - 28px - 27px);
+        }
+      }
+    }
+    #al_submission {
+      margin-bottom: 0;
+      height: calc(100% - 211px);
+      overflow-y: auto;
+    }
+
+    #confirm-text-sel {
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .expand-selections {
+      display: inline-block;
+      img {
+        height: 25px;
+        width: 25px;
+        cursor: pointer;
+      }
+    }
+    .hide-show-selections {
+      display: inline-block;
+    }
+    #submission_selections {
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 125px;
+      width: 100%;
+      border-top:1px solid #d3d3d3;
+      background: white;
+
+      .selection_text {
+        background-color: $soft-yellow;
+        &.active {
+          border-bottom: 1px solid $filter-list-border-color;
+          background-color: $pale-accent;
+         }
+      }
+
+      li {
+        display: inline-block;
+        line-height: 1em;
+        margin: 2px 0px;
+      }
+
+      &.no-selections {
+        height: 75px;
+      }
+
+      .draggable-selection {
+        @include flex-container(null, null, row, wrap, flex-start, flex-start, flex-start);
+
+      }
+
+      .undraggable-selection {
+        .selectionLink {
+          &.image-tag {
+            margin: 2px;
+          }
+        }
+      }
+
+      .selectionLink {
+        @include flex-item(1, flex-start, auto);
+        display: inline-block;
+
+        span {
+          padding: 2px;
+        }
+
+        &.image-tag {
+          position: relative;
+          z-index: 1;
+
+          a.active {
+            background: none;
+           }
+
+          &.is-selected {
+            border: 2px solid $pale-accent;
+            box-shadow: $box-shadow;
+          }
+
+          &:hover .overlay {
+            opacity: .2;
+          }
+
+          .overlay {
+            position: absolute;
+            z-index: 2;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: black;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            transition: .5s ease;
+            button {
+              border: none;
+              background: none;
+              i {
+                color: white;
+                font-size: 3em;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+              }
+              &:focus {
+                outline: none;
+              }
+            }
+          }
+        }
+      }
+
+      .selection-actions {
+        @include flex-item(2, flex-start, auto);
+        display: inline-block;
+        width: 20px;
+        align-self: flex-end;
+
+        span {
+          padding: 0px 1px;
+        }
+
+        i {
+          display: block;
+        }
+      }
+    }
+
+    #workspace-submission-comp.no-selections {
+      #al_submission {
+        height: calc(100% - 161px)
+      }
+    }
+  }
+
+  // #submission-group.multi-line-nav {
+  //   #workspace-submission-comp {
+  //     height:calc(100% - 102px);
+  //   }
+  // }
+
+
+
+}
+
+#al_folders .subfolders { list-style-position: inside; margin-left:15px; }
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 460px) {
+  #workspace-container {
+    .workspace-flex-container {
+      .workspace-flex-item.submission {
+        min-width: 350px;
+      }
+      .workspace-flex-item.folders {
+        max-width: 350px;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 682px) {
+  #workspace-container {
+    .ws-header {
+      aside {
+        margin-left: 0;
+        display: inline-block;
+      }
+    }
+  }
+}
+
+#workspace-container {
+  .workspace-flex-item.tri-paneled {
+    // fitting all 3
+    @media screen and (min-width: 1260px) and (max-width: 1322px) {
+      .submission-row-item  {
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+    // fitting all 3
+    @media screen and (min-width: 1032px) and (max-width: 1259px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+
+    @media screen and (min-width: $screen-xs-min) and (max-width: 1031px) {
+      &.submission {
+        margin-bottom: 25px;
+      }
+      &.folders {
+        margin-bottom: 25px;
+      }
+      &.comments {
+        margin: 50px;
+      }
+
+      .submission-row-item  {
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+
+  // only fitting folders and submission
+    @media screen and (min-width: $screen-xs-min) and (max-width: 815px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+    // only fitting folders
+    @media screen and (min-width: $screen-xs-min) and (max-width: 691px) {
+      &.submission {
+        margin: 10px;
+        border: 1px solid black;
+      }
+      &.folders {
+        margin-bottom: 25px;
+        border: 1px solid black;
+      }
+      &.comments {
+        margin: 10px;
+        padding-right: 15px;
+      }
+    }
+  }
+
+  .workspace-flex-item.submission.bi-paneled {
+    // folders hidden
+    &.is-first-child {
+      @media screen and (min-width: 811px) and (max-width: 1099px) {
+        .submission-row-item  {
+          &.students {
+            width: 10em;
+          }
+          &.toggle-show {
+            .showing-label {
+              display: none;
+            }
+          }
+        }
+      }
+
+      @media screen and (min-width: 811px) and (max-width: 920px) {
+        .submission-row-item  {
+          .problem-link-text {
+            display: none;
+          }
+        }
+      }
+    }
+    // comments hidden
+    &.is-last-child {
+      @media screen and (min-width: 717px) and (max-width: 947px) {
+        .submission-row-item  {
+          &.students {
+            width: 10em;
+          }
+          &.toggle-show {
+            .showing-label {
+              display: none;
+            }
+          }
+        }
+      }
+
+      @media screen and (min-width: 717px) and (max-width: 836px) {
+        .submission-row-item  {
+          .problem-link-text {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  .workspace-flex-item.bi-paneled {
+    // one per row
+    // folders hidden
+    @media screen and (min-width: $screen-xs-min) and (max-width: 810px) {
+      &.comments {
+        margin-bottom: 50px;
+        .display-list li {
+          margin-right: 15px;
+        }
+      }
+      &.submission.is-first-child {
+        margin-bottom: 50px;
+        border: 1px solid black;
+        margin-right: 25px;
+          .submission-row-item  {
+            &.students {
+              width: 10em;
+            }
+            &.toggle-show {
+              .showing-label {
+                display: none;
+              }
+            }
+            .problem-link-text {
+              display: none;
+            }
+          }
+      }
+    }
+    // comments hidden
+    @media screen and (min-width: $screen-xs-min) and (max-width: 745px) {
+      &.folders {
+        margin-bottom: 50px;
+        border: 1px solid black;
+      }
+
+      &.submission.is-last-child {
+        margin-left: 25px;
+        margin-bottom: 50px;
+        border: 1px solid black;
+
+        .submission-row-item  {
+          &.students {
+            width: 10em;
+          }
+          &.toggle-show {
+            .showing-label {
+              display: none;
+            }
+          }
+          .problem-link-text {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  .workspace-flex-item.submission.is-only-child {
+    @media screen and (min-width: $screen-xs-min) and (max-width: 799px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+    @media screen and (min-width: $screen-xs-min) and (max-width: 621px) {
+      .submission-row-item  {
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+  }
+}
+

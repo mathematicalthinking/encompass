@@ -25,13 +25,12 @@
     <div class="info-main">
       <div class="heading">
         {{#if isEditing}}
-          {{input name="title" id="title" type="text" value=problemName}}
+          <Input @name="title" @id="title" @type="text" @value={{problemName}} />
         {{else}}
           {{{problem.title}}}
         {{/if}}
       </div>
       <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
-      <div class="subheading">{{#link-to "metrics.problem" problem}}See Reports{{/link-to}}</div>
     </div>
     <div class="info-menu">
       <button class="tab-link general {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
@@ -44,7 +43,7 @@
         <p class="info-content-label">Problem Statement</p>
         <div class="info-content-block statement large-content">
           {{#if isEditing}}
-            {{quill-container onEditorChange=(action "updateQuillText") startingText=problem.text}}
+            <QuillContainer @onEditorChange={{action "updateQuillText"}} @startingText={{problem.text}} />
           {{else}}
             {{{problem.text}}}
           {{/if}}
@@ -54,11 +53,11 @@
           <div class="info-content-block author">
             {{#if problem.author}}
               <div class="input-container">
-                {{input name="author" id="author" type="text" value=author}}
+                <Input @name="author" @id="author" @type="text" @value={{author}} />
               </div>
             {{else}}
               <div class="input-container">
-                {{input name="author" id="author" type="text" placeholder="Add author" value=author}}
+                <Input @name="author" @id="author" @type="text" placeholder="Add author" @value={{author}} />
               </div>
             {{/if}}
           </div>
@@ -94,8 +93,7 @@
               <svg height="20" width="20">
                 <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
               </svg>
-              {{my-select cannotBeNull=true selectedValue=problem.status content=problemStatusOptions
-              action=(action (mut problemStatus)) isDisabled=isReadOnly}}
+              <MySelect @cannotBeNull={{true}} @selectedValue={{problem.status}} @content={{problemStatusOptions}} @action={{action (mut problemStatus)}} @isDisabled={{isReadOnly}} />
             {{/if}}
           {{else}}
             <svg height="20" width="20">
@@ -109,7 +107,7 @@
                 <span class="show-reason" {{action 'toggleShowFlagReason'}}>Hide</span>
                 <div class="flag-reason">
                   <p class="reason"><strong>Reason:</strong> {{problem.flagReason.reason}}</p>
-                  <p class="details">By {{#link-to 'users.user' flaggedBy.username}}{{flaggedBy.username}}{{/link-to}} on {{format-date
+                  <p class="details">By <LinkTo @route="users.user" @model={{flaggedBy.id}}>{{flaggedBy.username}}</LinkTo> on {{format-date
                     problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
                 </div>
               {{else}}
@@ -143,7 +141,7 @@
                 <div class="button-row-list">
                   <button class="cancel-button" {{action 'showCategories'}}>Hide Categories</button>
                 </div>
-                {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+                <CategoriesMenu @categories={{categoryTree}} @store={{this.store}} @addCategories="addCategories" />
               {{/if}}
             {{else}}
               {{#unless showCategories}}
@@ -156,7 +154,7 @@
                   <button class="cancel-button" {{action 'showCategories'}}>Hide Categories</button>
                 </div>
                 {{#if categoryTree}}
-                  {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+                  <CategoriesMenu @categories={{categoryTree}} @store={{this.store}} @addCategories="addCategories" />
                 {{/if}}
               {{/if}}
             {{/if}}
@@ -178,19 +176,7 @@
         <p class="info-content-label">Problem Keywords</p>
         <div class="info-content-block keywords">
           {{#if isEditing}}
-            {{selectize-input
-            inputId="select-edit-keywords"
-            onItemAdd=(action "updateKeywords")
-            onItemRemove=(action "updateKeywords")
-            maxItems=5
-            create=true
-            createFilter=keywordFilter
-            persist=false
-            initialItems=problem.keywords
-            initialOptions=keywordSelectOptions
-            labelField="label"
-            valueField="value"
-          }}
+            <SelectizeInput @inputId="select-edit-keywords" @onItemAdd={{action "updateKeywords"}} @onItemRemove={{action "updateKeywords"}} @maxItems={{5}} @create={{true}} @createFilter={{keywordFilter}} @persist={{false}} @initialItems={{problem.keywords}} @initialOptions={{keywordSelectOptions}} @labelField="label" @valueField="value" />
             {{else}}
               {{#if problem.keywords}}
                 <ul>
@@ -213,8 +199,8 @@
           {{#if isEditing}}
           <div class="info-content-block additional">
             <div class="input-container">
-              {{textarea class="additional-info-area" value=additionalInfo rows="4" placeholder="Additional info..."}}
-              {{input id="additionalInfo" type="hidden" value=additionalInfo }}
+              <Textarea class="additional-info-area" @value={{additionalInfo}} @rows="4" placeholder="Additional info..." />
+              <Input @id="additionalInfo" @type="hidden" @value={{additionalInfo}} />
             </div>
           </div>
           {{else}}
@@ -242,7 +228,7 @@
               <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
             {{else}}
               <div class="input-container" id="image-upload">
-                {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true}}
+                <ImageUpload @filesToBeUploaded={{filesToBeUploaded}} @hideSubmit={{true}} />
               </div>
             {{/if}}
           {{/if}}
@@ -250,13 +236,13 @@
         {{#if problem.origin}}
           <p class="info-content-label">Problem Origin</p>
           <div class="info-content-block origin">
-            <p>{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
+            <p><LinkTo @route="problem" @model={{problem.origin.id}}>{{problem.origin.title}}</LinkTo></p>
           </div>
         {{/if}}
         {{#if currentUser.isAdmin}}
         <p class="info-content-label">Created By</p>
         <div class="info-content-block creator">
-          <p>{{#link-to 'users.user' problem.createdBy.username}}{{problem.createdBy.username}}{{/link-to}}</p>
+          <p><LinkTo @route="users.user" @model={{problem.createdBy.id}}>{{problem.createdBy.username}}</LinkTo></p>
         </div>
         {{/if}}
       {{/if}}
@@ -267,7 +253,7 @@
           {{#if isEditing}}
             <div class="input-container" id="copyright-container">
               <span id="icon">&copy;</span>
-              {{input name="copyright" id="copyright" type="text" value=copyrightNotice placeholder="Add Copyright Notice"}}
+              <Input @name="copyright" @id="copyright" @type="text" @value={{copyrightNotice}} placeholder="Add Copyright Notice" />
             </div>
           {{else}}
             {{#if problem.copyrightNotice}}
@@ -281,7 +267,7 @@
         <div class="info-content-block sharing">
           {{#if isEditing}}
             <div class="input-container">
-              {{input name="sharing" id="sharing" type="text" value=sharingAuth placeholder="Add Sharing Authorization"}}
+              <Input @name="sharing" @id="sharing" @type="text" @value={{sharingAuth}} placeholder="Add Sharing Authorization" />
             </div>
           {{else}}
             {{#if problem.sharingAuth}}
@@ -365,24 +351,24 @@
     </div>
   </section>
   {{#if isMissingRequiredFields}}
-    {{error-box error="Please fill in all required fields" showDismiss=true}}
+    <ErrorBox @error="Please fill in all required fields" @showDismiss={{true}} />
   {{/if}}
 
   {{#each updateProblemErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut updateProblemErrors) null)}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut updateProblemErrors) null}} />
   {{/each}}
   {{#each imageUploadErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut imageUploadErrors) null)}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut imageUploadErrors) null}} />
   {{/each}}
   {{#each createRecordErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut createRecordErrors) null)}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut createRecordErrors) null}} />
   {{/each}}
   {{#each findRecordErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut findRecordErrors) null)}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut findRecordErrors) null}} />
   {{/each}}
 
   {{#if showAssignment}}
-    {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
+    <AssignmentNew @cancel={{action (mut showAssignment) null}} @fromProblemInfo={{true}} @problems={{problemList}} @selectedProblem={{problem}} @sections={{sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
   {{/if}}
 </div>
 

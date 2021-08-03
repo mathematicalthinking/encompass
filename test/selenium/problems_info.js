@@ -58,11 +58,11 @@ describe('Problems Info', async function () {
               // await helpers.waitForAndClickElement(driver, topLink);
               let options = {
                 selector: 'a',
-                urlToWaitFor: `${helpers.host}/#/problems`,
+                urlToWaitFor: `${helpers.host}/problems`,
                 timeout: 10000
               };
           
-              await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
+              await helpers.navigateAndWait(driver, `${helpers.host}/problems`, options );
             });
 
             describe(`Checking the following is always visible`, function () {
@@ -321,11 +321,11 @@ describe('Problems Info', async function () {
               // await helpers.waitForAndClickElement(driver, topLink);
               let options = {
                 selector: 'a',
-                urlToWaitFor: `${helpers.host}/#/problems`,
+                urlToWaitFor: `${helpers.host}/problems`,
                 timeout: 10000
               };
           
-              await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
+              await helpers.navigateAndWait(driver, `${helpers.host}/problems`, options );
               await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
               // await driver.sleep(5000);
@@ -604,11 +604,11 @@ describe('Problems Info', async function () {
               // await helpers.waitForAndClickElement(driver, topLink);
               let options = {
                 selector: 'a',
-                urlToWaitFor: `${helpers.host}/#/problems`,
+                urlToWaitFor: `${helpers.host}/problems`,
                 timeout: 10000
               };
           
-              await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
+              await helpers.navigateAndWait(driver, `${helpers.host}/problems`, options );
               await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
               await driver.sleep(500);

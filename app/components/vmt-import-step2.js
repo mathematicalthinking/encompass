@@ -1,99 +1,115 @@
-Encompass.VmtImportStep2Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+
+export default Component.extend(CurrentUserMixin, {
   elementId: 'vmt-import-step2',
 
-  alert: Ember.inject.service('sweet-alert'),
-  utils: Ember.inject.service('utility-methods'),
+  alert: service('sweet-alert'),
+  utils: service('utility-methods'),
 
   selectedRooms: null,
   selectedActivities: null,
   searchResults: null,
 
   didReceiveAttrs() {
-    if (this.get('existingSelectedRooms')) {
-      this.set('selectedRooms', this.get('existingSelectedRooms'));
-    } else if (this.get('selectedRooms') === null) {
+    if (this.existingSelectedRooms) {
+      this.set('selectedRooms', this.existingSelectedRooms);
+    } else if (this.selectedRooms === null) {
       this.set('selectedRooms', []);
     }
 
-    if (this.get('existingSelectedActivities')) {
-      this.set('selectedActivities', this.get('existingSelectedActivities'));
-    } else if (this.get('selectedActivities') === null) {
+    if (this.existingSelectedActivities) {
+      this.set('selectedActivities', this.existingSelectedActivities);
+    } else if (this.selectedActivities === null) {
       this.set('selectedActivities', []);
     }
 
-    if (this.get('mostRecentSearchResults')) {
-      this.set('searchResults', this.get('mostRecentSearchResults'));
+    if (this.mostRecentSearchResults) {
+      this.set('searchResults', this.mostRecentSearchResults);
     }
-
   },
 
   willDestroyComponent() {
     // store previous results on import-vmt-container for when user hits back
-    if (this.get('searchResults')) {
-      this.get('setPreviousSearchResults')(this.get('searchResults'));
+    if (this.searchResults) {
+      this.setPreviousSearchResults(this.searchResults);
     }
   },
 
-  selectedRoomIds: function() {
-    let rooms = this.get('selectedRooms') || [];
+  selectedRoomIds: computed('selectedRooms.[]', function () {
+    let rooms = this.selectedRooms || [];
     return rooms.mapBy('_id');
-  }.property('selectedRooms.[]'),
+  }),
 
-  selectedActivityIds: function() {
-    let activities = this.get('selectedActivities') || [];
+  selectedActivityIds: computed('selectedActivities.[]', function () {
+    let activities = this.selectedActivities || [];
     return activities.mapBy('_id');
-  }.property('selectedActivities.[]'),
+  }),
 
-  showList: function() {
-    return this.get('utils').isNonEmptyObject(this.get('displayResults'));
-  }.property('displayResults'),
+  showList: computed('displayResults', function () {
+    return this.utils.isNonEmptyObject(this.displayResults);
+  }),
 
-  displayResults: function() {
-    return this.get('searchResults') || this.get('previousResults');
-  }.property('searchResults', 'previousResults'),
+  displayResults: computed('searchResults', 'previousResults', function () {
+    return this.searchResults || this.previousResults;
+  }),
 
   actions: {
     handleSearchResults(results) {
       this.set('searchResults', results);
     },
     onRoomSelect(room) {
-      let isAlreadySelected = this.get('selectedRoomIds').includes(room._id);
+      let isAlreadySelected = this.selectedRoomIds.includes(room._id);
 
       if (isAlreadySelected) {
-        this.get('selectedRooms').removeObject(room);
+        this.selectedRooms.removeObject(room);
         return;
       }
-      this.get('selectedRooms').addObject(room);
+      this.selectedRooms.addObject(room);
     },
 
     onActivitySelect(activity) {
       let rooms = activity.rooms;
-      let areRooms = this.get('utils').isNonEmptyArray(rooms);
+      let areRooms = this.utils.isNonEmptyArray(rooms);
 
-      let isAlreadySelected = this.get('selectedActivityIds').includes(activity._id);
+      let isAlreadySelected = this.selectedActivityIds.includes(activity._id);
 
       if (isAlreadySelected) {
-        this.get('selectedActivities').removeObject(activity);
+        this.selectedActivities.removeObject(activity);
         if (areRooms) {
-          this.get('selectedRooms').removeObjects(rooms);
+          this.selectedRooms.removeObjects(rooms);
         }
         return;
       }
 
       if (!areRooms && !isAlreadySelected) {
-        return this.get('alert').showToast('error', 'This activity does not have any rooms', 'bottom-end', 3000, false, null);
+        return this.alert.showToast(
+          'error',
+          'This activity does not have any rooms',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
       }
-      this.get('selectedActivities').pushObject(activity);
-      this.get('selectedRooms').addObjects(rooms);
-
+      this.selectedActivities.pushObject(activity);
+      this.selectedRooms.addObjects(rooms);
     },
 
     next() {
-      if (!this.get('selectedRooms.length') > 0 ) {
-        return this.get('alert').showToast('error', 'Please select at least one room or activity to proceed', 'bottom-end', 3000, false, null);
+      if (!this.selectedRooms.length > 0) {
+        return this.alert.showToast(
+          'error',
+          'Please select at least one room or activity to proceed',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
       }
-      this.get('onProceed')(this.get('selectedRooms'), this.get('searchResults'));
-    }
-  }
-
+      this.onProceed(this.selectedRooms, this.searchResults);
+    },
+  },
 });

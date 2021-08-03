@@ -9,7 +9,7 @@ const css = require('./selectors');
 const fixtures = require('./fixtures/forgot_password');
 
 const host = helpers.host;
-const url = `${host}/#/auth/forgot`;
+const url = `${host}/auth/forgot`;
 const messages = fixtures.messages;
 
 describe('Forgot Password', function () {
@@ -55,7 +55,7 @@ describe('Forgot Password', function () {
       describe('Submitting Empty Form', function() {
         before(async function() {
           await helpers.findAndClickElement(driver, css.forgotPassword.submit);
-        await helpers.waitForSelector(driver, css.general.errorMessage);
+          await helpers.waitForSelector(driver, css.general.errorMessage);
         });
 
         it('should display error message', async function() {

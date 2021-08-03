@@ -4,17 +4,7 @@
       <h2>Summary</h2>
       <ul class="primary-filter-list">
         {{#each detailsItems as |item|}}
-          {{details-list-item
-          label = item.label
-          displayValue = item.displayValue
-          emptyValue = item.emptyValue
-          propName = item.propName
-          children = item.children
-          isArray = item.isArray
-          editValue = (action "goToStep")
-          associatedStep=item.associatedStep
-          currentStep=currentStep.value
-          }}
+          <DetailsListItem @label={{item.label}} @displayValue={{item.displayValue}} @emptyValue={{item.emptyValue}} @propName={{item.propName}} @children={{item.children}} @isArray={{item.isArray}} @editValue={{action "goToStep"}} @associatedStep={{item.associatedStep}} @currentStep={{currentStep.value}} />
         {{/each}}
       </ul>
     </div>
@@ -43,33 +33,26 @@
 
       <div class="step-content">
         {{#if showSelectRooms}}
-          {{vmt-import-step2
-            store=store
-            onBack=(action "changeStep")
-            onProceed=(action "setSelectedRooms")
-            existingSelectedRooms=selectedRooms
-            previousResults=mostRecentSearchResults
-            existingSelectedActivities=selectedActivities
-          }}
+          <VmtImportStep2 @store={{this.store}} @onBack={{action "changeStep"}} @onProceed={{action "setSelectedRooms"}} @existingSelectedRooms={{selectedRooms}} @previousResults={{mostRecentSearchResults}} @existingSelectedActivities={{selectedActivities}} />
         {{/if}}
 
         {{#if showCreateWs}}
-          {{import-work-step5 users=users selectedOwner=selectedOwner selectedFolderSet=selectedFolderSet doCreateWs=doCreateWs selectedMode=selectedMode folderSets=folderSets store=store answers=selectedRooms workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet onBack=(action "changeStep") onProceed=(action "prepareReview")}}
+          <ImportWorkStep5 @users={{users}} @selectedOwner={{selectedOwner}} @selectedFolderSet={{selectedFolderSet}} @doCreateWs={{doCreateWs}} @selectedMode={{selectedMode}} @folderSets={{folderSets}} @store={{this.store}} @answers={{selectedRooms}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @onBack={{action "changeStep"}} @onProceed={{action "prepareReview"}} />
         {{/if}}
 
         {{#if showReview}}
-          {{vmt-import-step4 store=store answers=selectedRooms workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers createdWorkspace=createdWorkspace onBack=(action "changeStep") onProceed=(action "importWork")}}
+          <VmtImportStep4 @store={{this.store}} @answers={{selectedRooms}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @isUploadingAnswer={{isUploadingAnswer}} @isCreatingWorkspace={{isCreatingWorkspace}} @uploadedAnswers={{uploadedAnswers}} @createdWorkspace={{createdWorkspace}} @onBack={{action "changeStep"}} @onProceed={{action "importWork"}} />
         {{/if}}
       </div>
 
     {{#each findRecordErrors as |error|}}
-      {{error-box error=error showDismiss=true}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
     {{#each postErrors as |error|}}
-      {{error-box error=error showDismiss=true}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
     {{#each createAnswerErrors as |error|}}
-      {{error-box error=error showDismiss=true}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
     </div>
   </div>

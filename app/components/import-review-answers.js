@@ -1,7 +1,14 @@
-Encompass.ImportReviewAnswersComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   actions: {
-    formatAnswers: function() {
-      this.get('uploadAnswers')();
+    formatAnswers: function () {
+      this.uploadAnswers();
     },
 
     radioSelect: function (value) {

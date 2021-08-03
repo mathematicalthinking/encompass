@@ -1,48 +1,48 @@
-{{#if isList}}
+{{#if this.isList}}
   <div class="item-container" id="container">
     <div class="item-section mode">
-      {{{public-private workspace.mode}}}
+      {{{public-private this.workspace.mode}}}
     </div>
     <div class="item-section info-item">
-      {{#link-to 'workspace.info' workspace.id}}
+      <LinkTo @route="workspace.info" @model={{this.workspace.id}}>
       <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
-      {{/link-to}}
+      </LinkTo>
     </div>
     <div class="item-section name">
-      {{#link-to 'workspace.work' workspace.id class="workspace-name"}}
-        <span class={{if workspace.isTrashed 'strikethrough'}}>{{{workspace.name}}}</span>
-      {{/link-to}}
+      <LinkTo @route="workspace.work" @model={{this.workspace.id}} class="workspace-name">
+        <span class={{if this.workspace.isTrashed 'strikethrough'}}>{{{this.workspace.name}}}</span>
+      </LinkTo>
     </div>
     <div class="item-section last-viewed">
-      {{#link-to 'workspace.work' workspace.id class="workspace-last-viewed"}}
-        {{format-date workspace.lastModifiedDateComp 'L'}}
-      {{/link-to}}
+      <LinkTo @route="workspace.work" @model={{this.workspace.id}} class="workspace-last-viewed">
+        {{format-date this.workspace.lastModifiedDateComp 'L'}}
+      </LinkTo>
     </div>
     <div class="item-section submissions">
-      {{workspace.submissionsLength}}
+      {{this.workspace.submissionsLength}}
     </div>
     <div class="item-section selections">
-      {{workspace.selectionsLength}}
+      {{this.workspace.selectionsLength}}
     </div>
     <div class="item-section comments">
-      {{workspace.commentsLength}}
+      {{this.workspace.commentsLength}}
     </div>
     <div class="item-section responses">
-      {{workspace.responsesLength}}
+      {{this.workspace.responsesLength}}
     </div>
     <div class="item-section owner">
-      {{workspace.owner.username}}
+      {{this.workspace.owner.username}}
     </div>
     <div class="item-section editors">
-      {{workspace.collaborators.length}}
+      {{this.workspace.collaborators.length}}
     </div>
     <div class="item-section more" {{action "toggleShowMoreMenu"}}>
       <i class="fas fa-ellipsis-v more-menu"></i>
-      {{#if showMoreMenu}}
+      {{#if this.showMoreMenu}}
       <span class="click-menu">
         <ul>
-          {{#if ellipsisMenuOptions}}
-          {{#each ellipsisMenuOptions as |option|}}
+          {{#if this.ellipsisMenuOptions}}
+          {{#each this.ellipsisMenuOptions as |option|}}
           <li {{action option.action}}>
             <label>
               <span class="icon-text">{{option.label}}</span>
@@ -60,20 +60,20 @@
   </div>
 {{/if}}
 
-{{#if isGrid}}
+{{#if this.isGrid}}
   <div class="item-card-container">
     <div class="item-card row-1">
       <div class="item-card privacy">
-        <span class="privacy-icon">{{{public-private workspace.mode}}}</span>
-        <span class="date">{{format-date workspace.lastModifiedDateComp 'L'}}</span>
+        <span class="privacy-icon">{{{public-private this.workspace.mode}}}</span>
+        <span class="date">{{format-date this.workspace.lastModifiedDateComp 'L'}}</span>
       </div>
       <div class="item-card more" {{action "toggleShowMoreMenu"}}>
         <i class="fas fa-ellipsis-v more-menu"></i>
-        {{#if showMoreMenu}}
+        {{#if this.showMoreMenu}}
         <span class="click-menu">
           <ul>
-            {{#if ellipsisMenuOptions}}
-            {{#each ellipsisMenuOptions as |option|}}
+            {{#if this.ellipsisMenuOptions}}
+            {{#each this.ellipsisMenuOptions as |option|}}
             <li {{action option.action}}>
               <label>
                 <span class="icon-text">{{option.label}}</span>
@@ -91,17 +91,17 @@
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
-        {{#link-to 'workspace.work' workspace.id class="workspace-name"}}
-          <span class={{if workspace.isTrashed 'strikethrough'}}>{{{workspace.name}}}</span>
-            {{#link-to 'workspace.info' workspace.id}}
+        <LinkTo @route="workspace.work" @model={{this.workspace.id}} class="workspace-name">
+          <span class={{if this.workspace.isTrashed 'strikethrough'}}>{{{this.workspace.name}}}</span>
+            <LinkTo @route="workspace.info" @model={{this.workspace.id}}>
               <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
-            {{/link-to}}
-        {{/link-to}}
+            </LinkTo>
+        </LinkTo>
       </div>
     </div>
     <div class="item-card row-3">
       <div class="item-card description">
-        {{{workspace.owner.username}}}
+        {{{this.workspace.owner.username}}}
       </div>
     </div>
     <div class="item-card row-4">
@@ -109,23 +109,23 @@
         <ul class="workspace-stats">
           <li>
             <p class="stat-header">Submissions</p>
-            <p class="stat-number">{{workspace.submissionsLength}}</p>
+            <p class="stat-number">{{this.workspace.submissionsLength}}</p>
           </li>
           <li>
             <p class="stat-header">Selections</p>
-            <p class="stat-number">{{workspace.selectionsLength}}</p>
+            <p class="stat-number">{{this.workspace.selectionsLength}}</p>
           </li>
           <li>
             <p class="stat-header">Comments</p>
-            <p class="stat-number">{{workspace.commentsLength}}</p>
+            <p class="stat-number">{{this.workspace.commentsLength}}</p>
           </li>
           <li>
             <p class="stat-header">Responses</p>
-            <p class="stat-number">{{workspace.responsesLength}}</p>
+            <p class="stat-number">{{this.workspace.responsesLength}}</p>
           </li>
           <li>
             <p class="stat-header">Collaborators</p>
-            <p class="stat-number">{{workspace.editorsLength}}</p>
+            <p class="stat-number">{{this.workspace.editorsLength}}</p>
           </li>
         </ul>
       </div>

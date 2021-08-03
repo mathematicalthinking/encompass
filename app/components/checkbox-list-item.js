@@ -1,23 +1,26 @@
-Encompass.CheckboxListItemComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default Component.extend({
   classNames: ['checkbox-list-item'],
 
-  isSelected: function() {
-    let items = this.get('selectedItems') || [];
-    return items.includes(this.get('item'));
-  }.property('selectedItems.[]', 'item'),
+  isSelected: computed('selectedItems.[]', 'item', function () {
+    let items = this.selectedItems || [];
+    return items.includes(this.item);
+  }),
 
-  value: function() {
-    return this.get('item.id');
-  }.property('item.id'),
+  value: computed('item.id', function () {
+    return this.item.id;
+  }),
 
-  displayValue: function() {
-    let propName = `item.${this.get('displayProp')}`;
+  displayValue: computed('item', 'displayProp', function () {
+    let propName = `item.${this.displayProp}`;
     return this.get(propName);
-  }.property('item', 'displayProp'),
+  }),
 
   actions: {
     onSelect() {
-      this.get('onSelect')(this.get('item'), this.get('isSelected'));
-    }
-  }
+      this.onSelect(this.item, this.isSelected);
+    },
+  },
 });

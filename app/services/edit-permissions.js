@@ -1,45 +1,50 @@
-Encompass.EditPermissionsService = Ember.Service.extend(Encompass.CurrentUserMixin, {
-  utils: Ember.inject.service('utility-methods'),
+import { computed } from '@ember/object';
+import { alias, equal } from '@ember/object/computed';
+import Service, { inject as service } from '@ember/service';
 
-  user: Ember.computed.alias('currentUser'),
-  userId: Ember.computed.alias('user.id'),
-  userOrg: Ember.computed.alias('user.organization'),
-  accountType: Ember.computed.alias('user.accountType'),
-  actingRole: Ember.computed.alias('user.actingRole'),
-  isAdmin: Ember.computed.equal('accountType', 'A'),
-  isPdAdmin: Ember.computed.equal('accountType', 'P'),
-  isTeacher: Ember.computed.equal('accountType', 'T'),
-  isStudent: Ember.computed.equal('accountType', 'S'),
-  isPseudoStudent: Ember.computed.equal('actingRole', 'S'),
+export default Service.extend({
+  utils: service('utility-methods'),
+  user: null,
+  setUser(user) {
+    this.set('user', user);
+  },
+  userId: alias('user.id'),
+  userOrg: alias('user.organization'),
+  accountType: alias('user.accountType'),
+  actingRole: alias('user.actingRole'),
+  isAdmin: equal('accountType', 'A'),
+  isPdAdmin: equal('accountType', 'P'),
+  isTeacher: equal('accountType', 'T'),
+  isStudent: equal('accountType', 'S'),
+  isPseudoStudent: equal('actingRole', 'S'),
 
-  userOrgId: function() {
-   return this.get('utils').getBelongsToId(this.get('user'), 'organization');
-  }.property('user'),
+  userOrgId: computed('user', function () {
+    return this.utils.getBelongsToId(this.user, 'organization');
+  }),
 
-  isActingAdmin: function() {
-    return !this.get('isPseudoStudent') && this.get('isAdmin');
-  }.property('isPseudoStudent', 'isAdmin'),
+  isActingAdmin: computed('isPseudoStudent', 'isAdmin', function () {
+    return !this.isPseudoStudent && this.isAdmin;
+  }),
 
-  isActingPdAdmin: function() {
-    return !this.get('isPseudoStudent') && this.get('isPdAdmin');
-  }.property('isPseudoStudent', 'isPdAdmin'),
+  isActingPdAdmin: computed('isPseudoStudent', 'isPdAdmin', function () {
+    return !this.isPseudoStudent && this.isPdAdmin;
+  }),
 
-  isCreator: function(record, user=this.get('user')) {
+  isCreator: function (record, user = this.user) {
     if (!user || !record) {
       return;
     }
-    return this.get('utils').getBelongsToId(record, 'createdBy') === this.get('userId');
+    return this.utils.getBelongsToId(record, 'createdBy') === this.userId;
   },
 
-  doesRecordBelongToOrg(record, orgId=this.get('userOrgId')) {
+  doesRecordBelongToOrg(record, orgId = this.userOrgId) {
     if (!record || !orgId) {
       return;
     }
-    return this.get('utils').getBelongsToId(record, 'organization') === orgId;
+    return this.utils.getBelongsToId(record, 'organization') === orgId;
   },
 
   isRecordInPdDomain(record) {
-    return this.get('isActingPdAdmin') && this.doesRecordBelongToOrg(record);
-  }
-
+    return this.isActingPdAdmin && this.doesRecordBelongToOrg(record);
+  },
 });

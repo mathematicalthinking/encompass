@@ -1,9 +1,16 @@
-Encompass.WorkspaceNewComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   elementId: 'workspace-new',
   isPows: false,
 
   actions: {
-    toggleView: function(view) {
+    toggleView: function (view) {
       if (view === 'pows') {
         this.set('isPows', true);
       } else {
@@ -11,11 +18,11 @@ Encompass.WorkspaceNewComponent = Ember.Component.extend({
       }
     },
 
-    toWorkspaces: function(workspaceId, submissionId) {
+    toWorkspaces: function (workspaceId, submissionId) {
       this.sendAction('toWorkspaces', workspaceId, submissionId);
     },
 
-    toWorkspace: function(id) {
+    toWorkspace: function (id) {
       this.sendAction('toWorkspace', id);
     }
   }

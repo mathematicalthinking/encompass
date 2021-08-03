@@ -1,18 +1,26 @@
-Encompass.ProblemListComponent = Ember.Component.extend( {
+import { alias } from '@ember/object/computed';
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   elementId: 'problem-list',
   classNames: ['problem-list', 'left-list'],
-  containerData: Ember.computed.alias("parentView"),
-  containerActions: Ember.computed.alias("parentView.actions"),
+  containerData: alias("parentView"),
+  containerActions: alias("parentView.actions"),
 
   dataLoadErrors: [],
 
 
-  didReceiveAttrs: function() {
+  didReceiveAttrs: function () {
     // ['problems', 'metadata', 'currentUser']
     // set initial results from route
   },
 
-  init: function() {
+  init: function () {
     this._super(...arguments);
   },
   actions: {
@@ -20,7 +28,7 @@ Encompass.ProblemListComponent = Ember.Component.extend( {
       this.sendAction("toProblemInfo", problem);
     },
     refreshList() {
-      this.get('refreshList')();
+      this.refreshList();
     }
   }
 

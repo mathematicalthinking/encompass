@@ -1,3 +1,8 @@
+import Component from '@ember/component';
+// import EmberMap from '@ember/map';
+import { computed, observer } from '@ember/object';
+import { alias, equal, gte, or, sort } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
 /**
  * Passed in by template:
  * - submissions
@@ -6,25 +11,36 @@
  * - currentUser - only used to pass on to submissions
  * - currentWorkspace - only used to pass on to submissions
  */
-Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  elementId: 'submission-group',
+import { isEqual } from '@ember/utils';
+import $ from 'jquery';
+import moment from 'moment';
 
-  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden', 'isFirstChild:is-first-child', 'isLastChild:is-last-child', 'isOnlyChild', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled', 'isNavMultiLine:multi-line-nav'],
+export default Component.extend({
+  elementId: 'submission-group',
+  utils: service('utility-methods'),
+  classNameBindings: [
+    'makingSelection:al_makeselect',
+    'isHidden:hidden',
+    'isFirstChild:is-first-child',
+    'isLastChild:is-last-child',
+    'isOnlyChild',
+    'isBipaneled:bi-paneled',
+    'isTripaneled:tri-paneled',
+    'isNavMultiLine:multi-line-nav',
+  ],
   classNames: ['workspace-flex-item', 'submission'],
   isHidden: false,
 
-  infoToolTipText: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
-
-  currentStudent: Ember.computed.alias('submission.student'),
-  currentStudentDisplayName: Ember.computed.alias('submission.studentDisplayName'),
-  firstThread: Ember.computed.alias('submissionThreadHeads.firstObject'),
-  lastThread: Ember.computed.alias('submissionThreadHeads.lastObject'),
-  manyRevisions: Ember.computed.gte('currentRevisions.length', 10),
+  currentStudent: alias('submission.student'),
+  currentStudentDisplayName: alias('submission.studentDisplayName'),
+  firstThread: alias('submissionThreadHeads.firstObject'),
+  lastThread: alias('submissionThreadHeads.lastObject'),
+  manyRevisions: gte('currentRevisions.length', 10),
   showStudents: false,
   switching: false,
 
   init() {
-    this.set('onNavResize', this.get('handleNavHeight').bind(this));
+    this.set('onNavResize', this.handleNavHeight.bind(this));
     this._super(...arguments);
   },
 
@@ -32,8 +48,7 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
     let revisionsNavHeight = this.$('#submission-nav').height();
     this.set('isNavMultiLine', revisionsNavHeight > 52);
 
-    $(window).on('resize', this.get('onNavResize'));
-
+    $(window).on('resize', this.onNavResize);
   },
 
   didUpdateAttrs() {
@@ -41,176 +56,193 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
     if (studentSelectize) {
       let currentValue = studentSelectize.selectize.getValue();
 
-      let currentSubmissionId = this.get('initialStudentItem.firstObject');
-      if (this.get('initialStudentItem.firstObject') !== currentValue) {
+      let currentSubmissionId = this.initialStudentItem.firstObject;
+      if (this.initialStudentItem.firstObject !== currentValue) {
         studentSelectize.selectize.setValue([currentSubmissionId], true);
       }
     }
   },
 
   willDestroyElement() {
-    $(window).off('resize', this.get('onNavResize'));
+    $(window).off('resize', this.onNavResize);
   },
 
-  currentRevision: function() {
-    if (!this.get('currentRevisions') || !this.get('currentRevisionIndex')) {
-      return null;
+  currentRevision: computed(
+    'currentRevisions.[]',
+    'currentRevisionIndex',
+    function () {
+      if (!this.currentRevisions || !this.currentRevisionIndex) {
+        return null;
+      }
+      return this.currentRevisions.objectAt(this.currentRevisionIndex - 1);
     }
-    return this.get('currentRevisions').objectAt(this.get('currentRevisionIndex') - 1);
-  }.property('currentRevisions.[]', 'currentRevisionIndex'),
+  ),
 
   //TODO Use the new thread.threadId property on submissions
-  submissionThreads: function() {
-    let threads = Ember.Map.create();
-
-    let sortedSubs = this.get('submissions').sortBy('student');
-
-    sortedSubs.forEach((sub) => {
-      let student = sub.get('student');
-
-      let thread = threads.get(student);
-
-      if (!thread) {
-        threads.set(student, this.studentWork(student));
-      }
-    });
-
+  submissionThreads: computed('submissions.[]', function () {
+    let threads = {};
+    console.log(threads);
+    this.submissions
+      .sortBy('student')
+      .getEach('student')
+      .uniq()
+      .forEach((student) => {
+        if (!threads[student]) {
+          const answers = this.studentWork(student);
+          threads[student] = answers;
+        }
+      });
     return threads;
-  }.property('submissions.[]'),
+  }),
 
-  studentWork: function(student) {
-    return this.get('submissions')
-      .filterBy('student', student)
-      .sortBy('createDate');
+  studentWork: function (student) {
+    return this.submissions.filterBy('student', student).sortBy('createDate');
   },
 
-  submissionThreadHeads: function() {
+  submissionThreadHeads: computed('submissionThreads.[]', function () {
     var pointers = [];
-    var threads = this.get('submissionThreads');
+    var threads = this.submissionThreads;
 
-    threads.forEach(function(submissions, student) {
-      pointers.pushObject( submissions.get('lastObject') );
+    Object.keys(threads).forEach(function (student) {
+      pointers.pushObject(threads[student].get('lastObject'));
     });
 
     return pointers;
-  }.property('submissionThreads.[]'),
+  }),
 
-  currentRevisions: function() {
-    var dateTime  = 'l h:mm';
-    var thread    = this.get('currentThread');
+  currentRevisions: computed('currentThread', function () {
+    var dateTime = 'l h:mm';
+    var thread = this.currentThread;
     var revisions = [];
 
-    if(thread) {
-      revisions = thread.map(function(submission, index, thread) {
+    if (thread) {
+      revisions = thread.map(function (submission, index, thread) {
         return {
-          index: index+1, // Because arrays are zero-indexed
+          index: index + 1, // Because arrays are zero-indexed
           label: moment(submission.get('createDate')).format(dateTime),
           revision: submission,
-          thread: thread.get('lastObject')
+          thread: thread.get('lastObject'),
         };
       });
     }
     return revisions;
-  }.property('currentThread'),
+  }),
 
-  currentThread: function() {
-    return this.get('submissionThreads')
-      .get( this.get('currentStudent') );
-  }.property('submission'),
+  currentThread: computed('submission', function () {
+    return this.submissionThreads[this.currentStudent];
+  }),
 
-  prevThread: function() {
-    const currentThread = this.get('currentThread');
+  prevThread: computed('currentThread', 'firstThread', function () {
+    const currentThread = this.currentThread;
     const ix = currentThread.indexOf(this.submission);
     if (currentThread.length > 1) {
-      if (!Ember.isEqual(this.submission, currentThread[currentThread.length - 1])) {
+      if (!isEqual(this.submission, currentThread[currentThread.length - 1])) {
         return currentThread[ix + 1];
       }
     }
 
-    var thread = this.get('currentThread.lastObject');
-    if(thread === this.get('firstThread')) {
-      return this.get('lastThread');
+    var thread = this.currentThread.lastObject;
+    if (thread === this.firstThread) {
+      return this.lastThread;
     }
-     var prevIndex = this.get('submissionThreadHeads').indexOf(thread) - 1;
-     var prev = this.get('submissionThreadHeads').objectAt(prevIndex);
+    var prevIndex = this.submissionThreadHeads.indexOf(thread) - 1;
+    var prev = this.submissionThreadHeads.objectAt(prevIndex);
     return prev;
-  }.property('currentThread', 'firstThread'),
+  }),
 
-  nextThread: function() {
-    const currentThread = this.get('currentThread');
-    const ix = currentThread.indexOf(this.submission);
-    if (currentThread.length > 1) {
-      if (!Ember.isEqual(this.submission, currentThread[0])) {
-        return currentThread[ix - 1];
+  nextThread: computed(
+    'submission',
+    'currentThread',
+    'lastThread',
+    function () {
+      const currentThread = this.currentThread;
+      const ix = currentThread.indexOf(this.submission);
+      if (currentThread.length > 1) {
+        if (!isEqual(this.submission, currentThread[0])) {
+          return currentThread[ix - 1];
+        }
       }
+      var thread = this.currentThread.lastObject;
+
+      if (thread === this.lastThread) {
+        return this.firstThread;
+      }
+
+      var nextIndex = this.submissionThreadHeads.indexOf(thread) + 1;
+      var next = this.submissionThreadHeads.objectAt(nextIndex);
+
+      return next;
     }
-    var thread = this.get('currentThread.lastObject');
+  ),
 
-    if(thread === this.get('lastThread')) {
-      return this.get('firstThread');
-    }
-
-    var nextIndex = this.get('submissionThreadHeads').indexOf(thread) + 1;
-    var next = this.get('submissionThreadHeads').objectAt(nextIndex);
-
-    return next;
-  }.property('submission', 'currentThread', 'lastThread'),
-
-  currentRevisionIndex: function() {
-    const revisions = this.get('currentRevisions');
+  currentRevisionIndex: computed('submission', function () {
+    const revisions = this.currentRevisions;
     if (!revisions || revisions.get('length') === 0) {
       return 0;
     }
-    const currentSubmissionId = this.get('submission.id');
+    const currentSubmissionId = this.submission.id;
     if (revisions.length === 1) {
       return 1;
     }
 
-    return revisions.filter((rev) => {
-      return Ember.isEqual(rev.revision.id, currentSubmissionId);
-      }).objectAt(0).index;
-  }.property('submission'),
+    return revisions
+      .filter((rev) => {
+        return isEqual(rev.revision.id, currentSubmissionId);
+      })
+      .objectAt(0).index;
+  }),
 
   sortCriteria: ['student', 'createDate:desc'],
-  sortedSubmissions: Ember.computed.sort('submissions', 'sortCriteria'),
+  sortedSubmissions: sort('submissions', 'sortCriteria'),
 
-  currentSubmissionIndex: function() {
-    return this.get('sortedSubmissions').indexOf(this.submission) + 1;
-  }.property('submissionThreads.[]', 'submission'),
+  currentSubmissionIndex: computed(
+    'submissionThreads.[]',
+    'submission',
+    function () {
+      return this.sortedSubmissions.indexOf(this.submission) + 1;
+    }
+  ),
 
-  modelChanged: function() {
+  modelChanged: observer('submission', function () {
     this.set('switching', true);
-  }.observes('submission'),
+  }),
 
-  mentoredRevisions: function() {
-    return this.get('currentRevisions').filter((revisionObj) => {
-      let sub = revisionObj.revision;
+  mentoredRevisions: computed(
+    'responses.[]',
+    'currentRevisions.@each.submission',
+    function () {
+      return this.currentRevisions.filter((revisionObj) => {
+        let sub = revisionObj.revision;
 
-      let responseIds = this.get('utils').getHasManyIds(sub, 'responses');
+        let responseIds = this.utils.getHasManyIds(sub, 'responses');
 
-      return this.get('responses').find((response) => {
-        return responseIds.includes(response.get('id'));
+        return this.responses.find((response) => {
+          return responseIds.includes(response.get('id'));
+        });
       });
-    });
-  }.property('responses.[]', 'currentRevisions.@each.submission'),
+    }
+  ),
 
-  isFirstChild: function() {
-    let classname = this.get('containerLayoutClass');
+  revisionsToolTip:
+    'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
+
+  isFirstChild: computed('containerLayoutClass', function () {
+    let classname = this.containerLayoutClass;
     return classname === 'hsc';
-  }.property('containerLayoutClass'),
+  }),
 
-  isLastChild: function() {
-    let classname = this.get('containerLayoutClass');
+  isLastChild: computed('containerLayoutClass', function () {
+    let classname = this.containerLayoutClass;
     return classname === 'fsh';
-  }.property('containerLayoutClass'),
+  }),
 
-  isOnlyChild: function() {
-    let classname = this.get('containerLayoutClass');
+  isOnlyChild: computed('containerLayoutClass', function () {
+    let classname = this.containerLayoutClass;
     return classname === 'hsh';
-  }.property('containerLayoutClass'),
+  }),
 
-  isBipaneled: Ember.computed.or('isFirstChild', 'isLastChild'),
-  isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
+  isBipaneled: or('isFirstChild', 'isLastChild'),
+  isTripaneled: equal('containerLayoutClass', 'fsc'),
 
   handleNavHeight() {
     let height = this.$('#submission-nav').height();
@@ -219,46 +251,53 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
     this.set('ownHeight', ownHeight);
 
     let isNowMultiLine = height > 52;
-    let wasMultiLine = this.get('isNavMultiLine');
+    let wasMultiLine = this.isNavMultiLine;
 
     if (isNowMultiLine !== wasMultiLine) {
       this.set('isNavMultiLine', isNowMultiLine);
     }
   },
-  studentSelectOptions: function() {
-    return this.get('submissionThreadHeads').map((sub) => {
+  studentSelectOptions: computed('submissionThreadHeads', function () {
+    return this.submissionThreadHeads.map((sub) => {
       return {
         name: sub.get('studentDisplayName'),
         id: sub.get('id'),
       };
     });
-  }.property('submissionThreadHeads'),
-  initialStudentItem: function() {
-    let currentStudent = this.get('submission.student');
-    let threadHead = this.get('submissionThreadHeads').findBy('student', currentStudent);
-    return [threadHead.get('id')];
-  }.property('submission', 'submissionThreadHeads.[]'),
+  }),
+  initialStudentItem: computed(
+    'submission',
+    'submissionThreadHeads.[]',
+    function () {
+      let currentStudent = this.submission.student;
+      let threadHead = this.submissionThreadHeads.findBy(
+        'student',
+        currentStudent
+      );
+      return [threadHead.get('id')];
+    }
+  ),
 
   actions: {
-    toggleStudentList: function() {
-      this.set('showStudents', !this.get('showStudents'));
+    toggleStudentList: function () {
+      this.set('showStudents', !this.showStudents);
     },
 
     /**
      * This action will be sent to this component from the workspace-submission component.
      */
-    addSelection: function( selection, isUpdateOnly ){
-      this.sendAction( 'addSelection', selection, isUpdateOnly );
+    addSelection: function (selection, isUpdateOnly) {
+      this.sendAction('addSelection', selection, isUpdateOnly);
     },
 
     /**
      * This action will be sent to this component from the workspace-submission component.
      */
-    deleteSelection: function( selection ){
-      this.sendAction( 'deleteSelection', selection );
+    deleteSelection: function (selection) {
+      this.sendAction('deleteSelection', selection);
     },
     toNewResponse(subId, wsId) {
-      this.get('toNewResponse')(subId, wsId);
+      this.toNewResponse(subId, wsId);
     },
     setCurrentSubmission(currentRevision) {
       if (!currentRevision) {
@@ -268,25 +307,24 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
       if (!submission) {
         return;
       }
-      this.get('toSubmission')(submission);
+      this.toSubmission(submission);
     },
     onStudentSelect(submissionId) {
-      let submission = this.get('submissionThreadHeads').findBy('id', submissionId);
-      this.get('toSubmission')(submission);
+      let submission = this.submissionThreadHeads.findBy('id', submissionId);
+      this.toSubmission(submission);
     },
 
     onStudentBlur() {
       let studentSelectize = this.$('#student-select')[0];
 
       if (studentSelectize) {
-      let currentValue = studentSelectize.selectize.getValue();
+        let currentValue = studentSelectize.selectize.getValue();
 
-      let currentSubmissionId = this.get('initialStudentItem.firstObject');
-      if (this.get('initialStudentItem.firstObject') !== currentValue) {
-        studentSelectize.selectize.setValue([currentSubmissionId], true);
+        let currentSubmissionId = this.initialStudentItem.firstObject;
+        if (this.initialStudentItem.firstObject !== currentValue) {
+          studentSelectize.selectize.setValue([currentSubmissionId], true);
+        }
       }
-    }
-    }
-  }
+    },
+  },
 });
-

@@ -1,26 +1,36 @@
-Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
-  problemId: Ember.computed.alias('id'),
-  title: DS.attr('string'),
-  puzzleId: DS.attr('number'),
-  text: DS.attr('string'),
-  imageUrl: DS.attr('string'),
-  sourceUrl: DS.attr('string'),
-  image: DS.belongsTo('image', { inverse: null} ),
-  origin: DS.belongsTo('problem', { inverse: null }),
-  modifiedBy: DS.belongsTo('user', { inverse: null }),
-  organization: DS.belongsTo('organization', { inverse: null }),
-  additionalInfo: DS.attr('string'),
-  privacySetting: DS.attr('string'),
-  categories: DS.hasMany('category', { inverse: null }),
-  keywords: DS.attr(),
-  copyrightNotice: DS.attr('string'),
-  sharingAuth: DS.attr('string'),
-  author: DS.attr('string'),
-  error: DS.attr('string'),
-  isUsed: DS.attr('boolean'),
-  status: DS.attr('string'),
-  flagReason: DS.attr(),
-  isForEdit: DS.attr('boolean', { defaultValue: false }),
-  isForAssignment: DS.attr('boolean', {defaultValue: false}),
-  contexts: DS.attr(),
+import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
+import { alias } from '@ember/object/computed';
+import Auditable from '../models/_auditable_mixin';
+
+
+
+
+
+
+
+export default Model.extend(Auditable, {
+  problemId: alias('id'),
+  title: attr('string'),
+  puzzleId: attr('number'),
+  text: attr('string'),
+  imageUrl: attr('string'),
+  sourceUrl: attr('string'),
+  image: belongsTo('image', { inverse: null }),
+  origin: belongsTo('problem', { inverse: null }),
+  modifiedBy: belongsTo('user', { inverse: null }),
+  organization: belongsTo('organization', { inverse: null }),
+  additionalInfo: attr('string'),
+  privacySetting: attr('string'),
+  categories: hasMany('category', { inverse: null }),
+  keywords: attr(),
+  copyrightNotice: attr('string'),
+  sharingAuth: attr('string'),
+  author: attr('string'),
+  error: attr('string'),
+  isUsed: attr('boolean'),
+  status: attr('string'),
+  flagReason: attr(),
+  isForEdit: attr('boolean', { defaultValue: false }),
+  isForAssignment: attr('boolean', { defaultValue: false }),
+  contexts: attr(),
 });

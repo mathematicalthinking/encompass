@@ -1,37 +1,21 @@
 <header>
-  <h2>{{workspace.name}}</h2>
-  <span class="link">{{#link-to 'workspace.work'}}Back to Workspace{{/link-to}}</span>
+  <h2>{{this.workspace.name}}</h2>
+  <span class="link"><LinkTo @route="workspace.work">Back to Workspace</LinkTo></span>
   <div class="clear"></div>
 </header>
 
 <div class="workspace-info-container">
-  {{#unless isShowingCustomViewer}}
-    {{workspace-info-settings store=store workspace=workspace canEdit=canEdit isEditing=isEditing users=users linkedAssignment=workspace.linkedAssignment.content
-    childWorkspaces=workspace.childWorkspaces.content
-    }}
+  {{#unless this.isShowingCustomViewer}}
+    <WorkspaceInfoSettings @store={{this.store}} @workspace={{this.workspace}} @canEdit={{this.canEdit}} @isEditing={{this.isEditing}} @users={{this.users}} @linkedAssignment={{this.workspace.linkedAssignment.content}} @childWorkspaces={{this.workspace.childWorkspaces.content}} />
   {{/unless}}
 
-  {{workspace-info-collaborators store=store workspace=workspace originalCollaborators=originalCollaborators isShowingCustomViewer=isShowingCustomViewer customSubmissionIds=customSubmissionIds globalItems=globalItems initialCollabOptions=initialCollabOptions selectedCollaborators=selectedCollaborators
-  showRemoveSelf=showRemoveSelfAsCollab
-  canEdit=canEditCollaborators
-  isParentWorkspace=isParentWorkspace
-  linkedAssignment=workspace.linkedAssignment.content
-  students=workspace.linkedAssignment.students.content
-  childWorkspaces=workspace.childWorkspaces.content
-  }}
+  <WorkspaceInfoCollaborators @store={{this.store}} @workspace={{this.workspace}} @originalCollaborators={{this.originalCollaborators}} @isShowingCustomViewer={{this.isShowingCustomViewer}} @customSubmissionIds={{this.customSubmissionIds}} @globalItems={{this.globalItems}} @initialCollabOptions={{this.initialCollabOptions}} @selectedCollaborators={{this.selectedCollaborators}} @showRemoveSelf={{this.showRemoveSelfAsCollab}} @canEdit={{this.canEditCollaborators}} @isParentWorkspace={{this.isParentWorkspace}} @linkedAssignment={{this.workspace.linkedAssignment.content}} @students={{this.workspace.linkedAssignment.students.content}} @childWorkspaces={{this.workspace.childWorkspaces.content}} />
 
-  {{#unless isShowingCustomViewer}}
-    {{workspace-info-stats workspace=workspace}}
+  {{#unless this.isShowingCustomViewer}}
+    <WorkspaceInfoStats @workspace={{this.workspace}} />
   {{/unless}}
 
-  {{#if isShowingCustomViewer}}
-    {{custom-submission-viewer-list
-    submissions=workspace.submissions.content
-    selectedSubmissionIds=customSubmissionIds
-    onSelect=(action "updateCustomSubs")
-    onSelectAll=(action "selectAllSubmissions")
-    onUnselectAll=(action "deselectAllSubmissions")
-    showView=isShowingCustomViewer
-    }}
+  {{#if this.isShowingCustomViewer}}
+    <CustomSubmissionViewerList @submissions={{this.workspace.submissions.content}} @selectedSubmissionIds={{this.customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @showView={{this.isShowingCustomViewer}} />
   {{/if}}
 </div>

@@ -1,8 +1,8 @@
-<li class="{{if isSelected "active-crumb"}}" {{action "onSelect" item}}>
-  <abbr title="{{unbound titleText}}">
-    {{displayValue}}
+<li class="{{if this.isSelected "active-crumb"}}" {{action "onSelect" this.item}}>
+  <abbr title="{{unbound this.titleText}}">
+    {{this.displayValue}}
   </abbr>
-  {{#if isStarredItem}}
+  {{#if this.isStarredItem}}
     <span class="required-star">*</span>
   {{/if}}
 </li>

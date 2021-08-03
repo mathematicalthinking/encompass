@@ -1,7 +1,16 @@
 /*global _:false */
-Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
+import { inject as service } from '@ember/service';
+
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   elementId: 'ws-new-settings-permissions',
-  utils: Ember.inject.service('utility-methods'),
+  utils: service('utility-methods'),
   globalPermissionValue: 'viewOnly',
   globalItems: {
     groupName: 'globalPermissionValue',
@@ -29,11 +38,11 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
         label: 'Approver',
         value: 'approver',
         moreInfo: 'This user can add, delete or modify selections, comments, and folders. They can directly send their own feedback and approve feedback created by other users'
-      },    ]
+      },]
   },
   buildPermissionsObject() {
-    const user = this.get('selectedCollaborator');
-    const globalSetting = this.get('globalPermissionValue');
+    const user = this.selectedCollaborator;
+    const globalSetting = this.globalPermissionValue;
 
     let submissionOptions = {
       all: true
@@ -101,17 +110,17 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
         this.set('selectedCollaborator', null);
         return;
       }
-      const user = this.get('store').peekRecord('user', val);
+      const user = this.store.peekRecord('user', val);
       this.set('selectedCollaborator', user);
       this.set('isEditing', true);
     },
     removeCollab(permissionObj) {
-      if (this.get('utils').isNonEmptyObject(permissionObj)) {
-        this.get('permissions').removeObject(permissionObj);
+      if (this.utils.isNonEmptyObject(permissionObj)) {
+        this.permissions.removeObject(permissionObj);
       }
     },
     editCollab(permissionObj) {
-      const utils = this.get('utils');
+      const utils = this.utils;
       if (utils.isNonEmptyObject(permissionObj)) {
         const user = permissionObj.user;
         if (utils.isNonEmptyObject(user)) {
@@ -124,10 +133,10 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
     savePermissions() {
       const permissionsObject = this.buildPermissionsObject();
 
-      if (!this.get('utils').isNonEmptyObject(permissionsObject)) {
+      if (!this.utils.isNonEmptyObject(permissionsObject)) {
         return;
       }
-      const permissions = this.get('permissions');
+      const permissions = this.permissions;
       // check if user already is in array
       let existingObj = permissions.findBy('user', permissionsObject.user);
 
@@ -136,7 +145,7 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
         permissions.removeObject(existingObj);
       }
 
-      this.get('permissions').addObject(permissionsObject);
+      this.permissions.addObject(permissionsObject);
 
       // clear selectedCollaborator
       // clear selectize input

@@ -1,4 +1,15 @@
-Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.VmtHostMixin, Encompass.ErrorHandlingMixin, {
+import $ from 'jquery';
+import Component from '@ember/component';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import VmtHostMixin from '../mixins/vmt-host';
+
+
+
+
+
+
+export default Component.extend(CurrentUserMixin, VmtHostMixin, ErrorHandlingMixin, {
   classNames: ['vmt-search'],
 
   searchConstraints: {
@@ -13,7 +24,7 @@ Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
   actions: {
     submitSearch() {
-      let searchText = this.get('searchText');
+      let searchText = this.searchText;
 
       let trimmed = typeof searchText === 'string' ? searchText.trim() : '';
 
@@ -24,27 +35,27 @@ Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
       let url = `${vmtHost}/enc/search?resourceName=${trimmed}`;
 
-      Ember.$.get({
+      $.get({
         url,
         xhrFields: {
           withCredentials: true
-       }
+        }
         // headers
       })
-      .then((results) => {
-        /*
-        {
-          activities: [],
-          rooms: [],
-        }
-        */
-        if (this.get('handleSearchResults')) {
-          this.get('handleSearchResults')(results);
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'searchErrors');
-      });
+        .then((results) => {
+          /*
+          {
+            activities: [],
+            rooms: [],
+          }
+          */
+          if (this.handleSearchResults) {
+            this.handleSearchResults(results);
+          }
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'searchErrors');
+        });
     }
   }
 

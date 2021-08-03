@@ -1,46 +1,53 @@
-Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  utils: Ember.inject.service('utility-methods'),
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(ErrorHandlingMixin, {
+  utils: service('utility-methods'),
 
   currentAssignment: null,
 
-  currentProblem: function() {
-    let assignment = this.get('currentAssignment');
+  currentProblem: computed('currentAssignment.problem.content', function () {
+    let assignment = this.currentAssignment;
     if (!assignment) {
       return null;
     }
     return assignment.get('problem.content');
-  }.property('currentAssignment.problem.content'),
+  }),
 
-  currentSection: function() {
-    let assignment = this.get('currentAssignment');
+  currentSection: computed('currentAssignment.section.content', function () {
+    let assignment = this.currentAssignment;
     if (!assignment) {
       return null;
     }
     return assignment.get('section.content');
-  }.property('currentAssignment.section.content'),
+  }),
 
-  assignmentStudents: function() {
-    let assignment = this.get('currentAssignment');
-    if (!assignment) {
-      return [];
-    }
-    return assignment.get('students.content');
-
-  }.property('currentAssignment.students.content'),
-
-  didReceiveAttrs: function() {
-    if (this.get('assignment.id') !== this.get('currentAssignment.id')) {
-      this.set('currentAssignment', this.get('assignment'));
+  assignmentStudents: computed(
+    'currentAssignment.students.content',
+    function () {
+      let assignment = this.currentAssignment;
+      if (!assignment) {
+        return [];
       }
+      return assignment.get('students.content');
+    }
+  ),
+
+  didReceiveAttrs: function () {
+    if (this.assignment.id !== this.currentAssignment.id) {
+      this.set('currentAssignment', this.assignment);
+    }
   },
 
   actions: {
-    toAssignments: function() {
+    toAssignments: function () {
       this.sendAction('toAssignments');
     },
 
-    toAnswerInfo: function(answer) {
+    toAnswerInfo: function (answer) {
       this.sendAction('toAnswerInfo', answer);
     },
-  }
+  },
 });

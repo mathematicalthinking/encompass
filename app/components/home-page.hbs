@@ -1,0 +1,30 @@
+
+{{#if this.user.isStudent}}
+  <div id="welcome"  class="al_wtf home header-home">
+    <h1>Welcome student, {{user.displayName}}!</h1>
+        <h1 class="header-home header-font">My Work Landing Page</h1>
+        <h2 class="header-home"><LinkTo @route="assignments">Problems to Solve</LinkTo></h2>
+        {{!-- <DashboardAssignmentsList @store={{this.store}} @user={{user}} @assignments={{assignments}} /> --}}
+        <h2 class="header-home"><LinkTo @route="workspaces.index">Student Work to Review</LinkTo></h2>
+        <h2 class="header-home"><LinkTo @route="responses"> Mentoring/Approving</LinkTo></h2>
+  </div>
+
+
+{{else}}
+ <div id="welcome" class="al_wtf home  header-home">
+  {{#if this.user.isAuthenticated}}
+    <h1 class="header-home">My Work Landing Page</h1>
+    <h2 class="header-home"><LinkTo @route="assignments">Problems to Solve</LinkTo></h2>
+    <DashboardAssignmentsList @assignments={{@assignments}} @user={{@user}} />
+    <h2 class="header-home"><LinkTo @route="workspaces.index">Student Work to Review</LinkTo></h2>
+    <h2 class="header-home"><LinkTo @route="assignments">My Class' Work</LinkTo></h2>
+    <h2 class="header-home"><LinkTo @route="responses"> Mentoring/Approving</LinkTo></h2>
+    <p class="footer">EnCoMPASS version 2.3.0 last updated on 02/18/2021.</p>
+  {{else}}
+    <h2>It looks like you are not logged in</h2>
+    <p>Please login <LinkTo @route="auth.login">here</LinkTo></p>
+    <p>New to EnCoMPASS, sign up <LinkTo @route="auth.signup">here</LinkTo></p>
+  {{/if}}
+</div>
+
+{{/if}}

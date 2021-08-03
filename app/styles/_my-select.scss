@@ -1,0 +1,20 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.my-select {
+  width: 90%;
+  // @include flex-inline-container(auto, null, row, no-wrap, center, center, stretch);
+  // width: 100%;
+  // border: 1px solid red;
+  // select {
+  //   @include flex-item(1, center, .9 0 auto);
+  //   border: 1px solid green;
+  //   width: 90%;
+  // }
+  // .cancel-icon {
+  //   @include flex-item(2, center, .1 0 auto);
+  //   border: 1px solid blue;
+  //   width: 10%;
+  // }
+}

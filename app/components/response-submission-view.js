@@ -1,6 +1,10 @@
-Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import CurrentUserMixin from '../mixins/current_user_mixin';
 
-  utils: Ember.inject.service('utility-methods'),
+export default Component.extend(CurrentUserMixin, {
+  utils: service('utility-methods'),
 
   elementId: 'response-submission-view',
   isShortExpanded: true,
@@ -15,120 +19,135 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (this.get('submission.id') !== this.get('currentSubmissionId')) {
-      this.set('currentSubmissionId', this.get('submission.id'));
+    if (this.submission.id !== this.currentSubmissionId) {
+      this.set('currentSubmissionId', this.submission.id);
       this.set('isRevising', false);
     }
-    if (this.get('studentSubmissions')) {
-      this.set('submissionList', this.get('studentSubmissions'));
+    if (this.studentSubmissions) {
+      this.set('submissionList', this.studentSubmissions);
     }
 
-    if (this.get('response')) {
-      if (this.get('primaryResponse.id') !== this.get('response.id')) {
+    if (this.response) {
+      if (this.primaryResponse.id !== this.response.id) {
         // response route changed, set submission to the responses submission
 
-        this.set('submissionToView', this.get('submission'));
-        this.set('primaryResponse', this.get('response'));
-
+        this.set('submissionToView', this.submission);
+        this.set('primaryResponse', this.response);
       }
     }
   },
 
-  isOwnSubmission: function() {
-    return this.get('submission.creator.studentId') === this.get('currentUser.id');
-  }.property('submission.creator.studentId'),
+  isOwnSubmission: computed('submission.creator.studentId', function () {
+    return this.submission.creator.studentId === this.currentUser.id;
+  }),
 
-  canRevise: function() {
-    return !this.get('isParentWorkspace') && this.get('isOwnSubmission');
-  }.property('isOwnSubmission', 'isParentWorkspace'),
+  canRevise: computed('isOwnSubmission', 'isParentWorkspace', function () {
+    return !this.isParentWorkspace && this.isOwnSubmission;
+  }),
 
-  showButtonRow: function() {
-    return this.get('canRevise');
-  }.property('canRevise'),
+  showButtonRow: computed('canRevise', function () {
+    return this.canRevise;
+  }),
 
-  displaySubmission: function() {
-    return this.get('submission');
-  }.property('submission', 'submissionToView'),
-  sortedStudentSubmissions: function() {
-    return this.get('submissionList').sortBy('createDate');
-  }.property('submissionList.[]'),
+  displaySubmission: computed('submission', 'submissionToView', function () {
+    return this.submission;
+  }),
+  sortedStudentSubmissions: computed('submissionList.[]', function () {
+    return this.submissionList.sortBy('createDate');
+  }),
 
-  mentoredRevisions: function() {
-    return this.get('submissionList').filter((sub) => {
-      let responseIds = this.get('utils').getHasManyIds(sub, 'responses');
+  mentoredRevisions: computed(
+    'wsResponses.[]',
+    'submissionList.[]',
+    function () {
+      return this.submissionList.filter((sub) => {
+        let responseIds = this.utils.getHasManyIds(sub, 'responses');
 
-      return this.get('wsResponses').find((response) => {
-        return responseIds.includes(response.get('id'));
+        return this.wsResponses.find((response) => {
+          return responseIds.includes(response.get('id'));
+        });
       });
-    });
-  }.property('wsResponses.[]', 'submissionList.[]'),
+    }
+  ),
 
-  revisionsToolTip: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
+  revisionsToolTip:
+    'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
 
   actions: {
     openProblem() {
-      let problemId = this.get('submission.answer.problem.id');
+      let problemId = this.submission.answer.problem.id;
 
       if (!problemId) {
         return;
       }
 
       var getUrl = window.location;
-      var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+      var baseUrl =
+        getUrl.protocol +
+        '//' +
+        getUrl.host +
+        '/' +
+        getUrl.pathname.split('/')[1];
 
-      window.open(`${baseUrl}#/problems/${problemId}`, 'newwindow', 'width=1200, height=700');
+      window.open(
+        `${baseUrl}#/problems/${problemId}`,
+        'newwindow',
+        'width=1200, height=700'
+      );
     },
     toggleProperty: function (p) {
       this.toggleProperty(p);
     },
     startRevising() {
-      if (!this.get('isRevising')) {
-        this.set('revisedBriefSummary', this.get('submission.answer.answer'));
+      if (!this.isRevising) {
+        this.set('revisedBriefSummary', this.submission.answer.answer);
         this.set('isRevising', true);
-
       }
     },
     cancelRevising() {
-      if (this.get('isRevising')) {
+      if (this.isRevising) {
         this.set('isRevising', false);
         this.set('revisedBriefSummary', '');
         this.set('revisedExplanation', '');
-
       }
     },
     insertQuillContent(selector, options) {
-      if (!this.get('isRevising')) {
+      if (!this.isRevising) {
         return;
       }
       // eslint-disable-next-line no-unused-vars
       const quill = new window.Quill(selector, options);
 
-      let explanation = this.get('submission.answer.explanation');
+      let explanation = this.submission.answer.explanation;
 
-      let students = this.get('submission.answer.students');
-      this.set('contributors', students.map(s => s));
+      let students = this.submission.answer.students;
+      this.set(
+        'contributors',
+        students.map((s) => s)
+      );
 
       this.$('.ql-editor').html(explanation);
     },
     toSubmissionFromAnswer(answer) {
-      this.get('store').queryRecord('submission', {
-        filterBy: {
-          answer: answer.get('id')
-        }
-      })
-      .then((sub) => {
-        if (!this.get('isDestroyed') && !this.get('isDestroying')) {
+      this.store
+        .queryRecord('submission', {
+          filterBy: {
+            answer: answer.get('id'),
+          },
+        })
+        .then((sub) => {
+          if (!this.isDestroyed && !this.isDestroying) {
+            this.send('cancelRevising');
+            this.sendRevisionNotices(this.submission, sub);
+            this.onSubChange(sub);
+          }
+        })
+        .catch(() => {
           this.send('cancelRevising');
-          this.get('sendRevisionNotices')(this.get('submission'), sub);
-          this.get('onSubChange')(sub);
-        }
-      })
-      .catch(() => {
-        this.send('cancelRevising');
-      });
+        });
     },
     setDisplaySubmission(sub) {
-      this.get('onSubChange')(sub);
-    }
-  }
+      this.onSubChange(sub);
+    },
+  },
 });

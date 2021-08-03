@@ -1,13 +1,21 @@
-Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { isEmpty } from '@ember/utils';
+import $ from 'jquery';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(ErrorHandlingMixin, {
   classNames: ['forgot-page'],
   postErrors: [],
 
-  validateEmail: function() {
-    var email = this.get('email');
+  validateEmail: function () {
+    var email = this.email;
     if (!email) {
       return false;
     }
-    var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
+    var emailPattern = new RegExp(
+      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+    );
     var emailTest = emailPattern.test(email);
 
     if (emailTest === false) {
@@ -17,21 +25,20 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandli
     if (emailTest === true) {
       return true;
     }
-
   },
-  isEmailValid: function() {
-    if (!this.get('isEmailDirty') && !Ember.isEmpty(this.get('email'))) {
+  isEmailValid: computed('email', function () {
+    if (!this.isEmailDirty && !isEmpty(this.email)) {
       this.set('isEmailDirty', true);
     }
     return this.validateEmail();
-  }.property('email'),
-
-  // We don't want error being displayed when form loads initially
-  isEmailInvalid: Ember.computed('isEmailValid', 'isEmailDirty', function() {
-    return this.get('isEmailDirty') && !this.get('isEmailValid') && !Ember.isEmpty(this.get('email'));
   }),
 
-  clearFields: function() {
+  // We don't want error being displayed when form loads initially
+  isEmailInvalid: computed('isEmailValid', 'isEmailDirty', function () {
+    return this.isEmailDirty && !this.isEmailValid && !isEmpty(this.email);
+  }),
+
+  clearFields: function () {
     const fields = ['email', 'username'];
     for (let field of fields) {
       this.set(field, null);
@@ -39,9 +46,9 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandli
   },
 
   actions: {
-    handleRequest: function() {
-      const email = this.get('email');
-      const username = this.get('username');
+    handleRequest: function () {
+      const email = this.email;
+      const username = this.username;
 
       if (!email && !username) {
         this.set('missingRequiredFields', true);
@@ -56,12 +63,12 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandli
       const that = this;
       const forgotPasswordData = {
         email,
-        username
+        username,
       };
 
-      return Ember.$.post({
+      return $.post({
         url: '/auth/forgot',
-        data: forgotPasswordData
+        data: forgotPasswordData,
       })
         .then((res) => {
           if (res.isSuccess) {
@@ -75,8 +82,13 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandli
           this.handleErrors(err, 'postErrors');
         });
     },
-    resetMessages: function() {
-      const messages = ['forgotPasswordErr', 'missingRequiredFields', 'tooMuchData', 'resetEmailSent'];
+    resetMessages: function () {
+      const messages = [
+        'forgotPasswordErr',
+        'missingRequiredFields',
+        'tooMuchData',
+        'resetEmailSent',
+      ];
 
       for (let message of messages) {
         if (this.get(message)) {
@@ -84,5 +96,5 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandli
         }
       }
     },
-  }
+  },
 });

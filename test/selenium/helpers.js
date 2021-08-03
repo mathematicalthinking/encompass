@@ -5,7 +5,7 @@ const sharp = require('sharp');
 const path = require('path');
 
 // REQUIRE FILES
-const config = require('../../server/config');
+const config = require('../../app_server/config');
 const css = require('./selectors');
 
 // testing timeout values
@@ -13,10 +13,10 @@ const timeoutMs = 10000;  // timeout per await
 const timeoutTestMsStr = '25s';  // timeout per test
 
 const nconf = config.nconf;
-const port = nconf.get('testPort');
+const port = nconf.get('clientPort');
 const host = `http://localhost:${port}`;
 
-const loginUrl = `${host}/#/auth/login`;
+const loginUrl = `${host}/auth/login`;
 
 const admin = {
   username: 'Rick', // case insensitive

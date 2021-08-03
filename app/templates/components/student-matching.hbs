@@ -27,7 +27,7 @@
       <h2>Student Submissions</h2>
       <div class="student-matching">
         {{#each answers as |answer|}}
-          {{student-matching-answer answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
+          <StudentMatchingAnswer @answer={{answer}} @selectedSection={{selectedSection}} @checkStatus={{action "checkStatus"}} />
         {{/each}}
       </div>
     </div>

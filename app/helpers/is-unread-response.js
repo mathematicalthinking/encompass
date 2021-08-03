@@ -1,5 +1,12 @@
 // use to indicate unread responses or responses that need approval or revisions for now
-Encompass.IsUnreadResponseHelper = Ember.Helper.helper( function(args){
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (args) {
   let [response, currentUser] = args;
 
   if (!response || !currentUser) {

@@ -16,14 +16,7 @@
 </div>
 
 {{#if areRoomsExpanded}}
-  {{vmt-room-list
-    rooms=activity.rooms
-    showCheckbox=showCheckbox
-    selectedRoomIds=selectedRoomIds
-    onItemSelect=(action "onRoomSelect")
-    isSubList=true
-    parentActivity=activity
-  }}
+  <VmtRoomList @rooms={{activity.rooms}} @showCheckbox={{showCheckbox}} @selectedRoomIds={{selectedRoomIds}} @onItemSelect={{action "onRoomSelect"}} @isSubList={{true}} @parentActivity={{activity}} />
 {{/if}}
 
 {{#if isExpanded}}

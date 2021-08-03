@@ -4,26 +4,26 @@
   <ul class="filter-options">
     <li>
       <label for="mine">Mine</label>
-      {{input id="mine" type="checkbox" checked=filter.mine change=(action "updateFilter")}}
+      <Input @id="mine" @type="checkbox" @checked={{filter.mine}} @change={{action "updateFilter"}} />
 
     </li>
     <li>
       <label for="everyone">Public</label>
-      {{input id="everyone" checked=filter.everyone change=(action "updateFilter") type="checkbox" }}
+      <Input @id="everyone" @checked={{filter.everyone}} @change={{action "updateFilter"}} @type="checkbox" />
 
     </li>
     <li>
       <label for="organization">Org</label>
-      {{input id="organization" type="checkbox" checked=filter.organization change=(action "updateFilter")}}
+      <Input @id="organization" @type="checkbox" @checked={{filter.organization}} @change={{action "updateFilter"}} />
     </li>
     {{#if currentUser.isAdmin}}
       <li>
         <label for="unshared">Private</label>
-        {{input id="unshared" type="checkbox" checked=filter.unshared change=(action "updateFilter")}}
+        <Input @id="unshared" @type="checkbox" @checked={{filter.unshared}} @change={{action "updateFilter"}} />
       </li>
       <li>
         <label for="private-pows">Private PoWs</label>
-        {{input id="privatePows" type="checkbox" checked=filter.privatePows change=(action "updateFilter")}}
+        <Input @id="privatePows" @type="checkbox" @checked={{filter.privatePows}} @change={{action "updateFilter"}} />
       </li>
     {{/if}}
   </ul>
@@ -31,13 +31,7 @@
 
   <div class="sort-by">
     <h5>Sort By</h5>
-    {{my-select
-      content=sortOptions
-      optionLabelPath="name"
-      cannotBeNull=true
-      selectedValue=sortCriterion
-      action=(action "updateSortCriterion")
-    }}
+    <MySelect @content={{sortOptions}} @optionLabelPath="name" @cannotBeNull={{true}} @selectedValue={{sortCriterion}} @action={{action "updateSortCriterion"}} />
   </div>
 
 </div>

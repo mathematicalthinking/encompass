@@ -4,9 +4,9 @@
     <i class="fas fa-info-circle info-icon"></i>
   </span>
 </p>
-{{radio-group options=useClass selectedValue=selectedValue}}
+<RadioGroup @options={{useClass}} @selectedValue={{selectedValue}} />
 
-<p class="sub-input-label">If you want, you can create a new class {{#link-to 'sections.new' classNames="new-link"}}here{{/link-to}}</p>
+<p class="sub-input-label">If you want, you can create a new class <LinkTo @route="sections.new" @classNames="new-link">here</LinkTo></p>
 
 {{#if selectingClass}}
   <p class="input-label class">
@@ -16,28 +16,11 @@
     </span>
   </p>
   {{!-- <p class="sub-input-label">If this work was completed by members of a class, select the existing class you would like to use or you can create one {{#link-to 'sections.new' classNames='new-link'}}here{{/link-to}}.</p> --}}
-  {{selectize-input
-    store=store
-    inputId="select-class"
-    isAsync=true
-    maxItems=1
-    initialItems=initialSectionItem
-    onItemAdd=(action "setSelectedSection")
-    onItemRemove=(action "setSelectedSection")
-    labelField="name"
-    searchField="name"
-    valueField="id"
-    model="section"
-    queryParamsKey="query"
-    searchCriterion="name"
-    topLevelQueryParams="searchBy"
-    placeholder="Search for classes by name..."
-    preload="focus"
-  }}
+  <SelectizeInput @store={{this.store}} @inputId="select-class" @isAsync={{true}} @maxItems={{1}} @initialItems={{initialSectionItem}} @onItemAdd={{action "setSelectedSection"}} @onItemRemove={{action "setSelectedSection"}} @labelField="name" @searchField="name" @valueField="id" @model="section" @queryParamsKey="query" @searchCriterion="name" @topLevelQueryParams="searchBy" @placeholder="Search for classes by name..." @preload="focus" />
 {{/if}}
 
 {{#if missingSection}}
-  {{error-box error="Please select a class or no class" resetError=(action (mut missingSection) null) showDismiss=true}}
+  <ErrorBox @error="Please select a class or no class" @resetError={{action (mut missingSection) null}} @showDismiss={{true}} />
 {{/if}}
 
 <div class="nav-btn-container">

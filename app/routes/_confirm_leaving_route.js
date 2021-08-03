@@ -6,23 +6,31 @@
  It cleans up it's window event binding
  It also currently marks 'editing' false on the controller (room for improvement)
 */
-Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
-  alert: Ember.inject.service('sweet-alert'),
+import Mixin from '@ember/object/mixin';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
 
-  confirmText: 'You have unsaved changes which you may lose.  Are you sure you want to leave?',
+export default Mixin.create({
+  alert: service('sweet-alert'),
+
+  confirmText:
+    'You have unsaved changes which you may lose.  Are you sure you want to leave?',
 
   activate: function () {
     var route = this;
-    $(window).on('beforeunload.' + route.get('controllerName') + '.confirm', function () {
-      if (route.controller.get('confirmLeaving')) {
-        return route.get('confirmText');
+    $(window).on(
+      'beforeunload.' + route.controllerName + '.confirm',
+      function () {
+        if (route.controller.get('confirmLeaving')) {
+          return route.confirmText;
+        }
       }
-    });
+    );
   },
 
-  deactivate: function() {
+  deactivate: function () {
     var route = this;
-    $(window).off('beforeunload.' + route.get('controllerName') + '.confirm');
+    $(window).off('beforeunload.' + route.controllerName + '.confirm');
   },
 
   actions: {
@@ -30,25 +38,31 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
       this.sendAction('doConfirmLeaving', value);
     },
 
-    willTransition: function(transition) {
-      var controller = this.get('controller');
-      if (controller.get('confirmLeaving')) {
+    willTransition: function (transition) {
+      var controller = this.controller;
+      if (controller.confirmLeaving) {
         transition.abort();
-        this.get('alert').showModal('question', 'Are you sure you want to leave?', 'Any progress will not be saved', 'Yes')
-        .then((result) => {
-          if (result.value) {
-            controller.set('editing', false);
-            controller.set('confirmLeaving', false);
-            transition.retry();
-          } else if (result.dismiss === "cancel") {
-            if (window.history) {
-              window.history.forward();
+        this.alert
+          .showModal(
+            'question',
+            'Are you sure you want to leave?',
+            'Any progress will not be saved',
+            'Yes'
+          )
+          .then((result) => {
+            if (result.value) {
+              controller.set('editing', false);
+              controller.set('confirmLeaving', false);
+              transition.retry();
+            } else if (result.dismiss === 'cancel') {
+              if (window.history) {
+                window.history.forward();
+              }
             }
-          }
-        });
+          });
       }
 
-      // if (controller.get('confirmLeaving') && !window.confirm(this.get('confirmText'))) {
+      // if (controller.get('confirmLeaving') && !window.confirm(this.confirmText)) {
       //   if (window.history) {
       //     window.history.forward();
       //   }
@@ -62,7 +76,6 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
       //     //2: reinforce that people are leaving the editing mode
       //   return true;
       // }
-    }
-  }
-
+    },
+  },
 });

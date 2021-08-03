@@ -1,71 +1,84 @@
-Encompass.UndraggableSelectionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  utils: Ember.inject.service('utility-methods'),
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { alias, equal, not } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import moment from 'moment';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+
+export default Component.extend(CurrentUserMixin, {
+  utils: service('utility-methods'),
 
   classNames: ['undraggable-selection'],
   isExpanded: false,
 
-  workspaceType: Ember.computed.alias('selection.workspace.workspaceType'),
+  workspaceType: alias('selection.workspace.workspaceType'),
 
-  isParentWorkspace: Ember.computed.equal('workspaceType', 'parent'),
+  isParentWorkspace: equal('workspaceType', 'parent'),
 
-  isImage: function() {
-    return this.get('selection.imageTagLink.length') > 0;
-  }.property('selection.imageTagLink'),
+  isImage: computed.gt('selection.imageTagLink.length', 0),
 
-  isText: Ember.computed.not('isImage'),
+  isText: not('isImage'),
 
-  isVmtClip: function() {
-    return this.get('selection.vmtInfo.startTime') >= 0 &&
-    this.get('selection.vmtInfo.endTime') >= 0;
-  }.property('selection.vmtInfo.{startTime,endTime}'),
+  isVmtClip: computed('selection.vmtInfo.{startTime,endTime}', function () {
+    return (
+      this.selection.vmtInfo.startTime >= 0 &&
+      this.selection.vmtInfo.endTime >= 0
+    );
+  }),
 
-  linkToClassName: function() {
-    if (this.get('isImage')) {
+  linkToClassName: computed('isImage', function () {
+    if (this.isImage) {
       return 'selection-image';
     }
     return 'selection_text';
-  }.property('isImage'),
+  }),
 
-  isSelected: function() {
-    return this.get('selection.id') === this.get('currentSelection.id');
-  }.property('selection', 'currentSelection'),
-  titleText: function() {
-    if (!this.get('isVmtClip')) {
-      let createDate;
-      if (this.get('isParentWorkspace')) {
-        createDate = this.get('selection.originalSelection.createDate');
-      } else {
-        createDate = this.get('selection.createDate');
-
+  isSelected: computed('currentSelection.id', 'selection.id', function () {
+    return this.selection.id === this.currentSelection.id;
+  }),
+  titleText: computed(
+    'isParentWorkspace',
+    'isVmtClip',
+    'selection.createDate',
+    'selection.originalSelection.createDate',
+    'selection.vmtInfo.{endTime,startTime}',
+    function () {
+      if (!this.isVmtClip) {
+        let createDate;
+        if (this.isParentWorkspace) {
+          createDate = this.selection.originalSelection.createDate;
+        } else {
+          createDate = this.selection.createDate;
+        }
+        let displayDate;
+        displayDate = moment(createDate).format('l h:mm');
+        return `Created ${displayDate}`;
       }
-      let displayDate;
-      displayDate = moment(createDate).format('l h:mm');
-      return `Created ${displayDate}`;
+      let startTime = this.selection.vmtInfo.startTime;
+      let endTime = this.selection.vmtInfo.endTime;
+
+      return `${this.utils.getTimeStringFromMs(startTime)} -
+              ${this.utils.getTimeStringFromMs(endTime)}`;
     }
-    let startTime = this.get('selection.vmtInfo.startTime');
-    let endTime = this.get('selection.vmtInfo.endTime');
+  ),
 
-    return `${this.get('utils').getTimeStringFromMs(startTime)} -
-            ${this.get('utils').getTimeStringFromMs(endTime)}`;
-  }.property('isVmtClip', 'selection.createDate', 'isParentWorkspace', 'selection.originalSelection'),
-
-  overlayIcon: function() {
-    if (!this.get('isImage')) {
+  overlayIcon: computed('isImage', 'isVmtClip', 'isVmtClip}', function () {
+    if (!this.isImage) {
       return '';
     }
 
-    if (this.get('isVmtClip')) {
+    if (this.isVmtClip) {
       return 'fas fa-play';
     }
     return 'fas fa-expand';
-  }.property('isVmtClip}', 'isImage'),
+  }),
 
   actions: {
     expandImage() {
-      if (this.get('isVmtClip')) {
+      if (this.isVmtClip) {
         return;
       }
-      this.set('isExpanded', !this.get('isExpanded'));
-    }
-  }
+      this.set('isExpanded', !this.isExpanded);
+    },
+  },
 });

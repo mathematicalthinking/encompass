@@ -61,11 +61,11 @@ describe('Problems', async function () {
               // await helpers.findAndClickElement(driver, topLink);
               let options = {
                 selector: 'a',
-                urlToWaitFor: `${helpers.host}/#/problems`,
+                urlToWaitFor: `${helpers.host}/problems`,
                 timeout: 10000
               };
           
-              await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
+              await helpers.navigateAndWait(driver, `${helpers.host}/problems`, options );
               if (!isStudent) {
                 await helpers.waitForSelector(driver, css.problemPageSelectors.problemContainer);
               }
@@ -274,7 +274,7 @@ describe('Problems', async function () {
 
                 it('should have two search options', async function () {
                   if (!isStudent) {
-                    await helpers.findAndClickElement(driver, '#my-select select');
+                    await helpers.findAndClickElement(driver, '.my-select select');
                     await helpers.findAndClickElement(driver, 'option[value="title"]');
                     await helpers.findAndClickElement(driver, 'option[value="general"]');
                   }
@@ -335,7 +335,7 @@ describe('Problems', async function () {
                   if (!isStudent) {
                     let resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problem whose title contains "zebra"`;
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
-                    await helpers.findAndClickElement(driver, '#my-select select');
+                    await helpers.findAndClickElement(driver, '.my-select select');
                     await helpers.findAndClickElement(driver, 'option[value="title"]');
                     await helpers.findInputAndType(driver, '.search-field', 'Zebra', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
@@ -375,7 +375,7 @@ describe('Problems', async function () {
                 it('should show results when searching specific word in description', async function () {
                   if (!isStudent) {
                     let resultsMsg = `Based off your filter criteria, we found 1 problem that contains "graphton"`;
-                    await helpers.findAndClickElement(driver, '#my-select select');
+                    await helpers.findAndClickElement(driver, '.my-select select');
                     await helpers.findAndClickElement(driver, 'option[value="general"]');
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
                     await helpers.findAndClickElement(driver, 'svg.clear');
@@ -431,11 +431,11 @@ describe('Problems', async function () {
                 before(async function () {
                   let options = {
                     selector: 'a',
-                    urlToWaitFor: `${helpers.host}/#/problems`,
+                    urlToWaitFor: `${helpers.host}/problems`,
                     timeout: 10000
                   };
               
-                  await helpers.navigateAndWait(driver, `${helpers.host}/#/problems`, options );
+                  await helpers.navigateAndWait(driver, `${helpers.host}/problems`, options );
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, '.refresh-icon');
                   }

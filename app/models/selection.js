@@ -1,25 +1,38 @@
-Encompass.Selection = DS.Model.extend(Encompass.Auditable, {
-  selectionId: Ember.computed.alias('id'),
-  text: DS.attr('string'),
-  coordinates: DS.attr('string'),
-  taggings: DS.hasMany('tagging', {async: true}),
-  comments: DS.hasMany('comment', {async: true}),
-  submission: DS.belongsTo('submission', {async: true}),
-  workspace: DS.belongsTo('workspace', {async: false}),
-  relativeCoords: DS.attr(),
-  relativeSize: DS.attr(),
-  folders: function() {
-    return this.get('taggings').filterBy('isTrashed', false).getEach('folder').toArray();
-  }.property('taggings.@each.isTrashed', 'taggings.[]'),
-  link: function() {
-    return '#/workspaces/' + this.get('workspace.id') +
-      '/submissions/' + this.get('submission.id') +
-      '/selections/' + this.get('id');
+import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
+import { computed } from '@ember/object';
+import { alias } from '@ember/object/computed';
+import Auditable from '../models/_auditable_mixin';
+
+export default Model.extend(Auditable, {
+  selectionId: alias('id'),
+  text: attr('string'),
+  coordinates: attr('string'),
+  taggings: hasMany('tagging', { async: true }),
+  comments: hasMany('comment', { async: true }),
+  submission: belongsTo('submission', { async: true }),
+  workspace: belongsTo('workspace', { async: false }),
+  relativeCoords: attr(),
+  relativeSize: attr(),
+  folders: computed('taggings.@each.isTrashed', 'taggings.[]', function () {
+    return this.taggings
+      .filterBy('isTrashed', false)
+      .getEach('folder')
+      .toArray();
+  }),
+  link: computed('workspace', 'submission', 'id', function () {
+    return (
+      '#/workspaces/' +
+      this.workspace.id +
+      '/submissions/' +
+      this.submission.id +
+      '/selections/' +
+      this.id
+    );
     //https://github.com/emberjs/ember.js/pull/4718
     //ENC-526
-  }.property('workspace', 'submission', 'id'),
-  imageSrc: DS.attr('string'),
-  imageTagLink: DS.attr('string'),
-  vmtInfo: DS.attr(''),
-  originalSelection: DS.belongsTo('selection', {inverse: null}),
+  }),
+  imageSrc: attr('string'),
+  imageTagLink: attr('string'),
+  vmtInfo: attr(''),
+  originalSelection: belongsTo('selection', { inverse: null }),
 });

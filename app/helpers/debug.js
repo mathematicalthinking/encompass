@@ -1,4 +1,11 @@
-Encompass.DebugHelper = Ember.Helper.helper(function(optionalValue) {
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (optionalValue) {
   console.log("Current Context");
   console.log("====================");
   console.log(this);

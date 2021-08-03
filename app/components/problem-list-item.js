@@ -1,74 +1,78 @@
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { alias } from '@ember/object/computed';
 /*global _:false */
-Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import { inject as service } from '@ember/service';
+import _ from 'underscore';
+
+export default Component.extend({
   classNames: ['problem-list-item'],
   classNameBindings: ['isPublic', 'isPrivate', 'isOrg', 'isPows'],
-  privacySetting: Ember.computed.alias('problem.privacySetting'),
-  puzzleId: Ember.computed.alias('problem.puzzleId'),
-  alert: Ember.inject.service('sweet-alert'),
-  permissions: Ember.inject.service('problem-permissions'),
-  canEdit: Ember.computed.alias('writePermissions.canEdit'),
-  canDelete: Ember.computed.alias('writePermissions.canDelete'),
-  canAssign: Ember.computed.alias('writePermissions.canAssign'),
-  recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
+  privacySetting: alias('problem.privacySetting'),
+  puzzleId: alias('problem.puzzleId'),
+  alert: service('sweet-alert'),
+  permissions: service('problem-permissions'),
+  canEdit: alias('writePermissions.canEdit'),
+  canDelete: alias('writePermissions.canDelete'),
+  canAssign: alias('writePermissions.canAssign'),
+  recommendedProblems: alias('currentUser.organization.recommendedProblems'),
   iconFillOptions: {
     approved: '#35A853',
     pending: '#FFD204',
-    flagged: '#EB5757'
+    flagged: '#EB5757',
   },
   flagOptions: {
-    'inappropiate': 'Inappropriate Content',
-    'ip': 'Intellectual Property Concern',
-    'substance': 'Lacking Substance',
-    'other': 'Other Reason'
+    inappropiate: 'Inappropriate Content',
+    ip: 'Intellectual Property Concern',
+    substance: 'Lacking Substance',
+    other: 'Other Reason',
   },
 
   didReceiveAttrs: function () {
-    let problem = this.get('problem');
-    this.set('writePermissions', this.get('permissions').writePermissions(problem));
+    let problem = this.problem;
+    this.set('writePermissions', this.permissions.writePermissions(problem));
   },
 
-  isPublic: function() {
-    return this.get('privacySetting') === 'E';
-  }.property('problem.privacySetting'),
+  isPublic: computed('problem.privacySetting', function () {
+    return this.privacySetting === 'E';
+  }),
 
-  isOrg: function() {
-    return this.get('privacySetting') === 'O';
-  }.property('problem.privacySetting'),
+  isOrg: computed('problem.privacySetting', function () {
+    return this.privacySetting === 'O';
+  }),
 
-  isPrivate: function() {
-    return this.get('privacySetting') === 'M';
-  }.property('problem.privacySetting'),
+  isPrivate: computed('problem.privacySetting', function () {
+    return this.privacySetting === 'M';
+  }),
 
-  isPows: function() {
-    return this.get('puzzleId') !== null && this.get('puzzleId') !== undefined;
-  }.property('problem.puzzleId'),
+  isPows: computed('problem.puzzleId', function () {
+    return this.puzzleId !== null && this.puzzleId !== undefined;
+  }),
 
-  statusIconFill: function() {
-    let status = this.get('problem.status');
+  statusIconFill: computed('problem.status', function () {
+    let status = this.problem.status;
 
-    return this.get('iconFillOptions')[status];
-  }.property('problem.status'),
+    return this.iconFillOptions[status];
+  }),
 
-  isRecommended: function () {
-    let problem = this.get('problem');
-    let recommendedProblems = this.get('recommendedProblems') || [];
+  isRecommended: computed('problem.id', 'recommendedProblems.[]', function () {
+    let problem = this.problem;
+    let recommendedProblems = this.recommendedProblems || [];
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
       return false;
     }
-  }.property('problem.id', 'recommendedProblems.[]'),
+  }),
 
-
-
-  ellipsisMenuOptions: function() {
-    let canDelete = this.get('canDelete');
-    let canAssign = this.get('canAssign');
-    let moreMenuOptions = this.get('moreMenuOptions');
-    let isAdmin = this.get('currentUser.isAdmin');
+  ellipsisMenuOptions: computed('problem.id', 'problem.status', function () {
+    let canDelete = this.canDelete;
+    let canAssign = this.canAssign;
+    let moreMenuOptions = this.moreMenuOptions;
+    let isAdmin = this.currentUser.isAdmin;
     let options = moreMenuOptions.slice();
-    let status = this.get('problem.status');
-    let deleted = this.get('problem.isTrashed');
+    let status = this.problem.status;
+    let deleted = this.problem.isTrashed;
 
     if (!canDelete) {
       // dont show delete or edit option
@@ -95,7 +99,7 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       options = _.filter(options, (option) => {
         return !option.adminOnly;
       });
-      if (status === "approved") {
+      if (status === 'approved') {
         options = _.filter(options, (option) => {
           return !_.contains(['assign'], option.value);
         });
@@ -122,62 +126,68 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     }
 
     return options;
-  }.property('problem.id', 'problem.status'),
+  }),
 
+  actionButton: computed(
+    'problem.isTrashed',
+    'problem.status',
+    'problem.privacySetting',
+    function () {
+      let actionBtn = {};
+      let isAdmin = this.currentUser.isAdmin;
+      let isPdAdmin = this.currentUser.isPdAdmin;
+      let problem = this.problem;
 
-  actionButton: function () {
-    let actionBtn = {};
-    let isAdmin = this.get('currentUser.isAdmin');
-    let isPdAdmin = this.get('currentUser.isPdAdmin');
-    let problem = this.get('problem');
-
-    if (isAdmin) {
-      if (problem.get('isTrashed')) {
-        actionBtn.function = "restoreProblem";
-        actionBtn.name = "Restore";
-      } else {
-        actionBtn.function = "confirmStatusUpdate";
-        if (problem.get('status') === 'approved') {
-          actionBtn.name = "Flag";
-          actionBtn.argument1 = "title";
-          actionBtn.argument2 = "flagged";
+      if (isAdmin) {
+        if (problem.get('isTrashed')) {
+          actionBtn.function = 'restoreProblem';
+          actionBtn.name = 'Restore';
         } else {
-          actionBtn.name = "Approve";
-          actionBtn.argument1 = "title";
-          actionBtn.argument2 = "approved";
-        }
-      }
-    } else {
-      if (isPdAdmin) {
-        if (problem.get('privacySetting') !== "E" && problem.get('status') !== 'approved') {
-          actionBtn.function = "confirmStatusUpdate";
-          actionBtn.name = "Approve";
-          actionBtn.argument1 = "title";
-          actionBtn.argument2 = "approved";
-        } else {
-          if (problem.get('status') !== 'flagged') {
-            actionBtn.function = "assignProblem";
-            actionBtn.name = "Assign";
+          actionBtn.function = 'confirmStatusUpdate';
+          if (problem.get('status') === 'approved') {
+            actionBtn.name = 'Flag';
+            actionBtn.argument1 = 'title';
+            actionBtn.argument2 = 'flagged';
           } else {
-            actionBtn.function = "addToMyProblems";
-            actionBtn.name = "Copy";
+            actionBtn.name = 'Approve';
+            actionBtn.argument1 = 'title';
+            actionBtn.argument2 = 'approved';
           }
         }
       } else {
-        actionBtn.function = "assignProblem";
-        actionBtn.name = "Assign";
+        if (isPdAdmin) {
+          if (
+            problem.get('privacySetting') !== 'E' &&
+            problem.get('status') !== 'approved'
+          ) {
+            actionBtn.function = 'confirmStatusUpdate';
+            actionBtn.name = 'Approve';
+            actionBtn.argument1 = 'title';
+            actionBtn.argument2 = 'approved';
+          } else {
+            if (problem.get('status') !== 'flagged') {
+              actionBtn.function = 'assignProblem';
+              actionBtn.name = 'Assign';
+            } else {
+              actionBtn.function = 'addToMyProblems';
+              actionBtn.name = 'Copy';
+            }
+          }
+        } else {
+          actionBtn.function = 'assignProblem';
+          actionBtn.name = 'Assign';
+        }
       }
+      return actionBtn;
     }
-    return actionBtn;
-  }.property('problem.isTrashed', 'problem.status', 'problem.privacySetting'),
-
+  ),
 
   actions: {
     showStatusOptions() {
       this.set('showAdminStatusMenu', true);
     },
     toggleShowMoreMenu() {
-      let isShowing = this.get('showMoreMenu');
+      let isShowing = this.showMoreMenu;
       this.set('showMoreMenu', !isShowing);
     },
     confirmStatusUpdate(record, displayKey, value) {
@@ -191,31 +201,59 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
         action = 'mark as pending';
       }
       display = record.get(displayKey);
-      this.get('alert').showModal('warning', `Are you sure you want to mark ${display} as ${value}`, null, `Yes, ${action}`)
-      .then((result) => {
-        if (result.value) {
-          if (value === 'flagged') {
-            this.get('alert').showPromptSelect('Flag Reason', this.get('flagOptions'), 'Select a reason')
-            .then((result) => {
-              if (result.value) {
-                if (result.value === 'other') {
-                  this.get('alert').showPrompt('text', 'Other Flag Reason', 'Please provide a brief explanation for why this problem should be flagged.', 'Flag')
-                  .then((result) => {
-                    if (result.value) {
-                      this.send('updateStatus', record, value, displayKey, result.value);
+      this.alert
+        .showModal(
+          'warning',
+          `Are you sure you want to mark ${display} as ${value}`,
+          null,
+          `Yes, ${action}`
+        )
+        .then((result) => {
+          if (result.value) {
+            if (value === 'flagged') {
+              this.alert
+                .showPromptSelect(
+                  'Flag Reason',
+                  this.flagOptions,
+                  'Select a reason'
+                )
+                .then((result) => {
+                  if (result.value) {
+                    if (result.value === 'other') {
+                      this.alert
+                        .showPrompt(
+                          'text',
+                          'Other Flag Reason',
+                          'Please provide a brief explanation for why this problem should be flagged.',
+                          'Flag'
+                        )
+                        .then((result) => {
+                          if (result.value) {
+                            this.send(
+                              'updateStatus',
+                              record,
+                              value,
+                              displayKey,
+                              result.value
+                            );
+                          }
+                        });
+                    } else {
+                      this.send(
+                        'updateStatus',
+                        record,
+                        value,
+                        displayKey,
+                        result.value
+                      );
                     }
-                  });
-                } else {
-                  this.send('updateStatus', record, value, displayKey, result.value);
-                }
-              }
-            });
-          } else {
-            this.send('updateStatus', record, value, displayKey);
-
+                  }
+                });
+            } else {
+              this.send('updateStatus', record, value, displayKey);
+            }
           }
-        }
-      });
+        });
     },
     updateStatus(record, value, displayKey, reason) {
       let msg;
@@ -231,87 +269,129 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       record.set('status', value);
       if (reason) {
         let flagReason = {
-          flaggedBy: this.get('currentUser.id'),
+          flaggedBy: this.currentUser.id,
           reason: reason,
           flaggedDate: new Date(),
         };
         record.set('flagReason', flagReason);
       }
-      record.save()
-      .then((record) => {
-        this.get('alert').showToast('success', msg, 'bottom-end', 5000, false, null);
-        if (this.get('showMoreMenu')) {
-          this.set('showMoreMenu', false);
-        }
-      })
-      .catch((err) => {
-        let message = err.errors[0].detail;
-          this.get('alert').showToast('error', `${message}`, 'bottom-end', 4000, false, null);
+      record
+        .save()
+        .then((record) => {
+          this.alert.showToast('success', msg, 'bottom-end', 5000, false, null);
+          if (this.showMoreMenu) {
+            this.set('showMoreMenu', false);
+          }
+        })
+        .catch((err) => {
+          let message = err.errors[0].detail;
+          this.alert.showToast(
+            'error',
+            `${message}`,
+            'bottom-end',
+            4000,
+            false,
+            null
+          );
           this.handleErrors(err, 'flagErrors', record);
-      });
-
+        });
     },
     reportProblem() {
-      this.send('confirmStatusUpdate', this.get('problem'), 'title', 'flagged');
+      this.send('confirmStatusUpdate', this.problem, 'title', 'flagged');
     },
     restoreProblem: function () {
-      let problem = this.get('problem');
-      this.get('alert').showModal('warning', 'Are you sure you want to restore this problem?', null, 'Yes, restore')
-      .then((result) => {
-        if (result.value) {
-          problem.set('isTrashed', false);
-          problem.save().then(() => {
-            this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
-            this.get('refreshList')();
-          });
-        }
-      });
+      let problem = this.problem;
+      this.alert
+        .showModal(
+          'warning',
+          'Are you sure you want to restore this problem?',
+          null,
+          'Yes, restore'
+        )
+        .then((result) => {
+          if (result.value) {
+            problem.set('isTrashed', false);
+            problem.save().then(() => {
+              this.alert.showToast(
+                'success',
+                'Problem Restored',
+                'bottom-end',
+                3000,
+                false,
+                null
+              );
+              this.refreshList();
+            });
+          }
+        });
     },
     deleteProblem: function () {
-      let problem = this.get('problem');
-      this.get('alert').showModal('warning', 'Are you sure you want to delete this problem?', null, 'Yes, delete it')
-      .then((result) => {
-        if (result.value) {
-          problem.set('isTrashed', true);
-          // this.sendAction('toProblemList');
-          problem.save().then((problem) => {
-            if (this.get('showMoreMenu')) {
-              this.set('showMoreMenu', false);
-            }
-            this.get('alert').showToast('success', 'Problem Deleted', 'bottom-end', 5000, true, 'Undo')
-            .then((result) => {
-              if (result.value) {
-                problem.set('isTrashed', false);
-                problem.save().then(() => {
-                  this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
-                  // window.history.back();
-                });
-              }
-            });
-          }).catch((err) => {
-            this.handleErrors(err, 'updateProblemErrors', problem);
-          });
-        }
-      });
+      let problem = this.problem;
+      this.alert
+        .showModal(
+          'warning',
+          'Are you sure you want to delete this problem?',
+          null,
+          'Yes, delete it'
+        )
+        .then((result) => {
+          if (result.value) {
+            problem.set('isTrashed', true);
+            // this.sendAction('toProblemList');
+            problem
+              .save()
+              .then((problem) => {
+                if (this.showMoreMenu) {
+                  this.set('showMoreMenu', false);
+                }
+                this.alert
+                  .showToast(
+                    'success',
+                    'Problem Deleted',
+                    'bottom-end',
+                    5000,
+                    true,
+                    'Undo'
+                  )
+                  .then((result) => {
+                    if (result.value) {
+                      problem.set('isTrashed', false);
+                      problem.save().then(() => {
+                        this.alert.showToast(
+                          'success',
+                          'Problem Restored',
+                          'bottom-end',
+                          3000,
+                          false,
+                          null
+                        );
+                        // window.history.back();
+                      });
+                    }
+                  });
+              })
+              .catch((err) => {
+                this.handleErrors(err, 'updateProblemErrors', problem);
+              });
+          }
+        });
     },
     assignProblem() {
       // this.set('creatingAssignment', true);
       // send to parent to handle?
-      let problem = this.get('problem');
+      let problem = this.problem;
       problem.set('isForAssignment', true);
       this.send('toProblemInfo', problem);
-
     },
     editProblem() {
       // send to parent to handle?
-      let problem = this.get('problem');
+      let problem = this.problem;
       problem.set('isForEdit', true);
       this.send('toProblemInfo', problem);
     },
 
-
     addToMyProblems: function () {
-      let problem = this.get('problem');
+      let problem = this.problem;
       let originalTitle = problem.get('title');
       let title = 'Copy of ' + originalTitle;
       let text = problem.get('text');
@@ -320,10 +400,10 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       let isPublic = problem.get('isPublic');
       let image = problem.get('image');
       let imageUrl = problem.get('imageUrl');
-      let createdBy = this.get('currentUser');
+      let createdBy = this.currentUser;
       let categories = problem.get('categories');
       let status = problem.get('status');
-      let currentUser = this.get('currentUser');
+      let currentUser = this.currentUser;
       let keywords = problem.get('keywords');
       let organization = currentUser.get('organization');
       let copyright = problem.get('copyrightNotice');
@@ -341,33 +421,47 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
         createdBy: createdBy,
         image: image,
         organization: organization,
-        privacySetting: "M",
+        privacySetting: 'M',
         copyrightNotice: copyright,
         sharingAuth: sharingAuth,
         status: status,
         createDate: new Date(),
-        keywords: keywords
+        keywords: keywords,
       });
 
-      newProblem.save()
+      newProblem
+        .save()
         .then((problem) => {
           let name = problem.get('title');
           this.set('savedProblem', problem);
-          this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
-          this.get('refreshList')();
-        }).catch((err) => {
-          this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
+          this.alert.showToast(
+            'success',
+            `${name} added to your problems`,
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+          this.refreshList();
+        })
+        .catch((err) => {
+          this.alert.showToast(
+            'error',
+            `${err}`,
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
           // this.handleErrors(err, 'createRecordErrors', newProblem);
         });
     },
 
     toProblemInfo(problem) {
-      this.get('toProblemInfo')(problem);
+      this.toProblemInfo(problem);
     },
     makePending() {
-      this.send('confirmStatusUpdate', this.get('problem'), 'title', 'pending');
-    }
-  }
-
-
+      this.send('confirmStatusUpdate', this.problem, 'title', 'pending');
+    },
+  },
 });

@@ -1,81 +1,47 @@
-<header id="submission-nav" class="submission-row wsnav">
+<header id="submission-nav" class="submission-row nav">
   <!-- this is needed for click events from popup windows -->
   <ul style="display:none;">
     {{#each this.submissionThreadHeads as |threadHead|}}
-      <li >
-        {{#link-to 'workspace.submission' threadHead}}
+      <li>
+        <LinkTo @route="workspace-submission" @model={{threadHead}}>
           <span class="submissionLink {{threadHead.id}}">
             {{threadHead.studentDisplayName}}
           </span>
-        {{/link-to}}
+        </LinkTo>
       </li>
     {{/each}}
   </ul>
   <div class="submission-row-item students-revisions">
     <div class="submission-row-item students">
-      {{selectize-input
-      inputId="student-select"
-      initialOptions=studentSelectOptions
-      initialItems=initialStudentItem
-      onItemAdd=(action "onStudentSelect")
-      maxItems=1
-      labelField="name"
-      valueField="id"
-      searchField="name"
-      onBlur=(action "onStudentBlur")
-      }}
+      <SelectizeInput @inputId="student-select" @initialOptions={{this.studentSelectOptions}} @initialItems={{this.initialStudentItem}} @onItemAdd={{action "onStudentSelect"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @onBlur={{action "onStudentBlur"}} />
     </div>
     <div class="submission-row-item revisions">
-      {{bread-crumbs
-        items=currentRevisions
-        onSelect=(action "setCurrentSubmission")
-        selectedItem=currentRevision
-        titleTextPath="label"
-        infoToolTipText=infoToolTipText
-        infoToolTipPosition="top"
-        starredItems=mentoredRevisions
-      }}
+      <BreadCrumbs @items={{this.currentRevisions}} @onSelect={{action "setCurrentSubmission"}} @selectedItem={{this.currentRevision}} @titleTextPath="label" @starredItems={{this.mentoredRevisions}} @infoToolTipText={{this.revisionsToolTip}} @infoToolTipPosition="top" />
     </div>
   </div>
 
 	<div class="al_controller submission-row-item arrows">
-    {{#if prevThread.vmtRoomInfo.roomId}}
-      {{#link-to 'workspace.submission' prevThread (query-params vmtRoomId=prevThread.vmtRoomInfo.roomId)}}<span id="leftArrow"><i class="fas fa-arrow-left"></i></span>{{/link-to}}
+    {{#if this.prevThread.vmtRoomInfo.roomId}}
+      <LinkTo @route="workspace-submission" @model={{this.prevThread}} @query={{hash vmtRoomId=this.prevThread.vmtRoomInfo.roomId}}><span id="leftArrow"><i class="fas fa-arrow-left"></i></span></LinkTo>
     {{else}}
-		  {{#link-to 'workspace.submission' prevThread}}<span id="leftArrow"><i class="fas fa-arrow-left"></i></span>{{/link-to}}
+		  <LinkTo @route="workspace-submission" @model={{this.prevThread}}><span id="leftArrow"><i class="fas fa-arrow-left"></i></span></LinkTo>
     {{/if}}
 		<span class="al_number">
       <span class="submission_index">
-        {{currentSubmissionIndex}}
+        {{this.currentSubmissionIndex}}
       </span>
       /
       <span class="submission_count">
-        {{submissions.length}}
+        {{this.submissions.length}}
       </span>
     </span>
-    {{#if nextThread.vmtRoomInfo.roomId}}
-      {{#link-to 'workspace.submission' nextThread (query-params vmtRoomId=nextThread.vmtRoomInfo.roomId)}}<span id="rightArrow"><i class="fas fa-arrow-right"></i></span>{{/link-to}}
+    {{#if this.nextThread.vmtRoomInfo.roomId}}
+      <LinkTo @route="workspace-submission" @model={{this.nextThread}} @query={{hash vmtRoomId=this.nextThread.vmtRoomInfo.roomId}}><span id="rightArrow"><i class="fas fa-arrow-right"></i></span></LinkTo>
     {{else}}
-		  {{#link-to 'workspace.submission' nextThread}}<span id="rightArrow"> <i class="fas fa-arrow-right"></i></span>{{/link-to}}
+		  <LinkTo @route="workspace-submission" @model={{this.nextThread}}><span id="rightArrow"> <i class="fas fa-arrow-right"></i></span></LinkTo>
     {{/if}}
 	</div>
 </header>
 
-{{workspace-submission
-  store=store
-  currentSubmission=submission
-  addSelection=(action "addSelection")
-  deleteSelection=(action "deleteSelection")
-  currentWorkspace=currentWorkspace
-  currentSelection=currentSelection
-  switching=switching
-  toNewResponse=(action "toNewResponse")
-  canRespond=canRespond
-  selections=selections
-  responses=responses
-  canSeeSelections=canSeeSelections
-  isNavMultiLine=isNavMultiLine
-  parentHeight=ownHeight
-  isParentWorkspace=isParentWorkspace
-}}
+<WorkspaceSubmission @store={{this.store}} @currentSubmission={{this.submission}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @switching={{this.switching}} @toNewResponse={{action "toNewResponse"}} @canRespond={{this.canRespond}} @selections={{this.selections}} @responses={{this.responses}} @canSeeSelections={{this.canSeeSelections}} @isNavMultiLine={{this.isNavMultiLine}} @parentHeight={{this.ownHeight}} @isParentWorkspace={{this.isParentWorkspace}} />
 

@@ -1,5 +1,5 @@
 <div class="selectionLink {{if isImage "image-tag"}} {{if isSelected 'is-selected'}}" title="{{titleText}} {{if isParentWorkspace " by "}} {{if isParentWorkspace selection.createdBy.username}}">
-  {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection classNames=linkToClassName}}
+  <LinkTo @route="selection" @models={{array selection.workspace selection.submission selection}} @classNames={{linkToClassName}}>
     {{#if isImage}}
         <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
         <div class="overlay">
@@ -8,7 +8,7 @@
     {{else}}
       {{selection.text}}
     {{/if}}
-  {{/link-to}}
+  </LinkTo>
   {{#unless isImage}}
     <span {{action 'deleteSelection' selection}}><i class="fas fa-minus-circle"></i></span>
   {{/unless}}

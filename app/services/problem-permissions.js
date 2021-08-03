@@ -1,9 +1,11 @@
-Encompass.ProblemPermissionsService = Ember.Service.extend({
-  base: Ember.inject.service('edit-permissions'),
-  isPublic: function(problem) {
+import Service, { inject as service } from '@ember/service';
+
+export default Service.extend({
+  base: service('edit-permissions'),
+  isPublic: function (problem) {
     return problem.get('privacySetting') === 'E';
   },
-  isPrivate: function(problem) {
+  isPrivate: function (problem) {
     return problem.get('privacySetting') === 'M';
   },
 
@@ -20,12 +22,12 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
   },
 
   canDelete(problem) {
-     // undefined if no or bad argument passed in
-     if (!problem) {
+    // undefined if no or bad argument passed in
+    if (!problem) {
       return;
     }
     // if admin return true
-    if (this.get('base.isAdmin')) {
+    if (this.base.isAdmin) {
       return true;
     }
 
@@ -35,7 +37,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     }
 
     // if creator
-    if (this.get('base').isCreator(problem)) {
+    if (this.base.isCreator(problem)) {
       return true;
     }
 
@@ -43,7 +45,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.get('base.isPdAdmin')) {
+    if (!this.base.isPdAdmin) {
       return false;
     }
 
@@ -54,17 +56,16 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     }
 
     // privacy setting can now only be 'O' or 'M'
-    return this.get('base').doesRecordBelongToOrg(problem);
-
+    return this.base.doesRecordBelongToOrg(problem);
   },
 
   canEdit(problem) {
-     // undefined if no or bad argument passed in
-     if (!problem) {
+    // undefined if no or bad argument passed in
+    if (!problem) {
       return;
     }
     // if admin return true
-    if (this.get('base.isAdmin')) {
+    if (this.base.isAdmin) {
       return true;
     }
 
@@ -74,7 +75,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     }
 
     // if creator
-    if (this.get('base').isCreator(problem)) {
+    if (this.base.isCreator(problem)) {
       return true;
     }
 
@@ -82,7 +83,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.get('base.isPdAdmin')) {
+    if (!this.base.isPdAdmin) {
       return false;
     }
 
@@ -94,9 +95,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
 
     // privacy setting can now only be 'O' or 'M'
 
-    return this.get('base').doesRecordBelongToOrg(problem);
-
-
+    return this.base.doesRecordBelongToOrg(problem);
   },
 
   canAssign(problem) {
@@ -105,22 +104,21 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
       return;
     }
     // if admin return true
-    if (this.get('base.isAdmin')) {
+    if (this.base.isAdmin) {
       return true;
     }
 
     return this.isApproved(problem);
-
   },
 
   canPend(problem) {
     if (!problem) {
       return;
     }
-    return this.get('base.isAdmin');
+    return this.base.isAdmin;
   },
 
-  writePermissions(problem, isDeleteSameAsEdit=true) {
+  writePermissions(problem, isDeleteSameAsEdit = true) {
     let ret = {};
 
     let canDelete = this.canDelete(problem);
@@ -137,6 +135,4 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
 
     return ret;
   },
-
-
 });

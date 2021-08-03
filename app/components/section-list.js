@@ -1,61 +1,103 @@
-Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
+  utils: service('utility-methods'),
   elementId: 'section-list',
 
-  cleanSections: function() {
-    return this.get('sections').rejectBy('isTrashed');
-  }.property('sections.@each.isTrashed'),
+  cleanSections: computed('sections.@each.isTrashed', function () {
+    return this.sections.rejectBy('isTrashed');
+  }),
 
   // This sorts all the sections in the database and returns only the ones you created
-  yourSections: function () {
-    let yourSections = this.get('cleanSections').filter((section) => {
-      let creatorId = this.get('utils').getBelongsToId(section, 'createdBy');
-      return creatorId === this.get('currentUser.id');
+  yourSections: computed('cleanSections.[]', 'currentUser.id', function () {
+    let yourSections = this.cleanSections.filter((section) => {
+      let creatorId = this.utils.getBelongsToId(section, 'createdBy');
+      return creatorId === this.currentUser.id;
     });
     return yourSections.sortBy('createDate').reverse();
-  }.property('cleanSections.[]', 'currentUser.id'),
+  }),
 
-  yourTeacherSectionIds: function() {
-    let sections = this.get('currentUser.sections') || [];
-    return sections.filterBy('role', 'teacher').mapBy('sectionId');
-  }.property('currentUser.sections.@each.role'),
+  yourTeacherSectionIds: computed(
+    'currentUser.sections.@each.role',
+    function () {
+      let sections = this.currentUser.sections || [];
+      return sections.filterBy('role', 'teacher').mapBy('sectionId');
+    }
+  ),
 
-  yourStudentSectionIds: function() {
-    let sections = this.get('currentUser.sections') || [];
-    return sections.filterBy('role', 'student').mapBy('sectionId');
-  }.property('currentUser.sections.@each.role'),
+  yourStudentSectionIds: computed(
+    'currentUser.sections.@each.role',
+    function () {
+      let sections = this.currentUser.sections || [];
+      return sections.filterBy('role', 'student').mapBy('sectionId');
+    }
+  ),
 
   // This displays the sections if you are inside the teachers array
   // This works but by default if you create it you are in the teacher's array
-  collabSections: function () {
-    let collabSections = this.get('cleanSections').filter((section) => {
-      let sectionId = section.get('id');
+  collabSections: computed(
+    'cleanSections.[]',
+    'yourTeacherSectionIds.[]',
+    function () {
+      let collabSections = this.cleanSections.filter((section) => {
+        let sectionId = section.get('id');
 
-      return this.get('yourTeacherSectionIds').includes(sectionId) && !this.get('yourSections').includes(section);
-    });
-    return collabSections.sortBy('createDate').reverse();
-  }.property('cleanSections.[]', 'yourTeacherSectionIds.[]'),
+        return (
+          this.yourTeacherSectionIds.includes(sectionId) &&
+          !this.yourSections.includes(section)
+        );
+      });
+      return collabSections.sortBy('createDate').reverse();
+    }
+  ),
 
-  orgSections: function () {
-    let sections = this.get('cleanSections').filter((section) => {
-      let orgId = this.get('utils').getBelongsToId(section, 'organization');
-      let userOrgId = this.get('utils').getBelongsToId(this.get('currentUser'), 'organization');
+  orgSections: computed(
+    'cleanSections.@each.organization',
+    'yourSections.[]',
+    'collabSections.[]',
+    function () {
+      let sections = this.cleanSections.filter((section) => {
+        let orgId = this.utils.getBelongsToId(section, 'organization');
+        let userOrgId = this.utils.getBelongsToId(
+          this.currentUser,
+          'organization'
+        );
 
-      return (orgId === userOrgId) && !this.get('yourSections').includes(section) && !this.get('collabSections').includes(section);
-    });
-    return sections.sortBy('createDate').reverse();
-  }.property('cleanSections.@each.organization', 'yourSections.[]', 'collabSections.[]'),
+        return (
+          orgId === userOrgId &&
+          !this.yourSections.includes(section) &&
+          !this.collabSections.includes(section)
+        );
+      });
+      return sections.sortBy('createDate').reverse();
+    }
+  ),
 
-  studentSections: function () {
-    let sections = this.get('cleanSections').filter((section) => {
-      return this.get('yourStudentSectionIds').includes(section.get('id'));
-    });
-    return sections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed', 'yourStudentSectionIds.[]'),
+  studentSections: computed(
+    'sections.@each.isTrashed',
+    'yourStudentSectionIds.[]',
+    function () {
+      let sections = this.cleanSections.filter((section) => {
+        return this.yourStudentSectionIds.includes(section.get('id'));
+      });
+      return sections.sortBy('createDate').reverse();
+    }
+  ),
 
-  allSections: function () {
-    let sections = this.get('cleanSections').filter((section) => {
-      return !this.get('yourSections').includes(section) && !this.get('collabSections').includes(section);
-    });
-    return sections.sortBy('createDate').reverse();
-  }.property('cleanSections.[]', 'collabSections.[]', 'yourSections.[]'),
+  allSections: computed(
+    'cleanSections.[]',
+    'collabSections.[]',
+    'yourSections.[]',
+    function () {
+      let sections = this.cleanSections.filter((section) => {
+        return (
+          !this.yourSections.includes(section) &&
+          !this.collabSections.includes(section)
+        );
+      });
+      return sections.sortBy('createDate').reverse();
+    }
+  ),
 });

@@ -1,6 +1,10 @@
-Encompass.UserNtfsService = Ember.Service.extend({
-  store: Ember.inject.service(),
-  utils: Ember.inject.service('utility-methods'),
+import { computed } from '@ember/object';
+import Service, { inject as service } from '@ember/service';
+import { map } from 'rsvp';
+
+export default Service.extend({
+  store: service(),
+  utils: service('utility-methods'),
 
   init() {
     this._super(...arguments);
@@ -8,13 +12,12 @@ Encompass.UserNtfsService = Ember.Service.extend({
 
   setupProperties(user) {
     this.set('user', user);
-    this.set('responses', this.get('store').peekAll('response'));
+    this.set('responses', this.store.peekAll('response'));
 
-    this.get('user.notifications')
-      .then((ntfs) => {
-        this.set('notifications', ntfs);
-        this.set('areNtfsLoaded', true);
-      });
+    this.user.notifications.then((ntfs) => {
+      this.set('notifications', ntfs);
+      this.set('areNtfsLoaded', true);
+    });
   },
 
   doesArrayContainObjectById(arr, id) {
@@ -27,37 +30,12 @@ Encompass.UserNtfsService = Ember.Service.extend({
     return foundObject !== undefined;
   },
 
-  trashedResponses: function() {
-   let responses = this.get('responses').filterBy('isTrashed');
-   let relatedNtfs = this.findRelatedNtfs('response', 'response');
-
-   relatedNtfs.forEach((ntf) => {
-    let responseId = this.get('utils').getBelongsToId(ntf, 'response');
-
-    if (this.doesArrayContainObjectById(responses, responseId)) {
-      // clear ntf
-      ntf.set('isTrashed', true);
-      ntf.set('wasSeen', true);
-      ntf.save();
-    }
-   });
-   return responses;
-  }.property('responses.@each.isTrashed'),
-
-  nonTrashedResponses: function() {
-    return this.get('responses').rejectBy('isTrashed');
-  }.property('responses.@each.isTrashed'),
-
-  mentorResponses: function() {
-    return this.get('nonTrashedResponses').filterBy('responseType', 'mentor');
-  }.property('nonTrashedResponses.@each.responseType'),
-
-  supercededReponses: function() {
-    let responses = this.get('nonTrashedResponses').filterBy('status', 'superceded');
+  trashedResponses: computed('responses.@each.isTrashed', function () {
+    let responses = this.responses.filterBy('isTrashed');
     let relatedNtfs = this.findRelatedNtfs('response', 'response');
 
     relatedNtfs.forEach((ntf) => {
-      let responseId = this.get('utils').getBelongsToId(ntf, 'response');
+      let responseId = this.utils.getBelongsToId(ntf, 'response');
 
       if (this.doesArrayContainObjectById(responses, responseId)) {
         // clear ntf
@@ -65,54 +43,113 @@ Encompass.UserNtfsService = Ember.Service.extend({
         ntf.set('wasSeen', true);
         ntf.save();
       }
-     });
+    });
     return responses;
-  }.property('responses.@each.status'),
+  }),
 
-  readByRecipientResponses: function() {
-    let responses = this.get('nonTrashedResponses').filterBy('wasReadByRecipient');
+  nonTrashedResponses: computed('responses.@each.isTrashed', function () {
+    return this.responses.rejectBy('isTrashed');
+  }),
 
-    let relatedNtfs = this.findRelatedNtfs('response', 'response', null, null, 'newReplyNotifications');
+  mentorResponses: computed.filterBy(
+    'nonTrashedResponses',
+    'responseType',
+    'mentor'
+  ),
 
-    // clear any new reply ntfs for responses that have been read
+  supercededReponses: computed(
+    'nonTrashedResponses',
+    'responses.@each.status',
+    function () {
+      let responses = this.nonTrashedResponses.filterBy('status', 'superceded');
+      let relatedNtfs = this.findRelatedNtfs('response', 'response');
 
-    relatedNtfs.forEach((ntf) => {
-      let responseId = this.get('utils').getBelongsToId(ntf, 'response');
+      relatedNtfs.forEach((ntf) => {
+        let responseId = this.utils.getBelongsToId(ntf, 'response');
 
-      if (this.doesArrayContainObjectById(responses, responseId)) {
-        // clear ntf
-        ntf.set('isTrashed', true);
-        ntf.set('wasSeen', true);
-        ntf.save();
-      }
-     });
-     return responses;
-  }.property('responses.@each.wasReadByRecipient'),
+        if (this.doesArrayContainObjectById(responses, responseId)) {
+          // clear ntf
+          ntf.set('isTrashed', true);
+          ntf.set('wasSeen', true);
+          ntf.save();
+        }
+      });
+      return responses;
+    }
+  ),
 
-  approvedMentorReponses: function() {
-    let responses = this.get('mentorResponses').filterBy('status', 'approved');
+  readByRecipientResponses: computed(
+    'nonTrashedResponses',
+    'responses.@each.wasReadByRecipient',
+    function () {
+      let responses = this.nonTrashedResponses.filterBy('wasReadByRecipient');
 
-    let relatedNtfs = this.findRelatedNtfs('response', 'response', 'mentorReplyRequiresApproval', 'response', 'requiresApprovalNotifications');
+      let relatedNtfs = this.findRelatedNtfs(
+        'response',
+        'response',
+        null,
+        null,
+        'newReplyNotifications'
+      );
 
-    // if a response is approved now, clear any old ntfs relating to the response being pending
-    relatedNtfs.forEach((ntf) => {
-      let responseId = this.get('utils').getBelongsToId(ntf, 'response');
+      // clear any new reply ntfs for responses that have been read
 
-      if (this.doesArrayContainObjectById(responses, responseId)) {
-        // clear ntf
-        ntf.set('isTrashed', true);
-        ntf.set('wasSeen', true);
-        ntf.save();
-      }
-     });
-    return responses;
-  }.property('responses.@each.status'),
+      relatedNtfs.forEach((ntf) => {
+        let responseId = this.utils.getBelongsToId(ntf, 'response');
 
-  responseNotifications: function() {
-    return this.get('notifications').filterBy('primaryRecordType', 'response');
-  }.property('newNotifications.[]'),
+        if (this.doesArrayContainObjectById(responses, responseId)) {
+          // clear ntf
+          ntf.set('isTrashed', true);
+          ntf.set('wasSeen', true);
+          ntf.save();
+        }
+      });
+      return responses;
+    }
+  ),
 
-  findRelatedNtfs(primaryRecordType, relatedRecord, ntfType, belongsToType, propertyName) {
+  approvedMentorReponses: computed(
+    'mentorResponses',
+    'responses.@each.status',
+    function () {
+      let responses = this.mentorResponses.filterBy('status', 'approved');
+
+      let relatedNtfs = this.findRelatedNtfs(
+        'response',
+        'response',
+        'mentorReplyRequiresApproval',
+        'response',
+        'requiresApprovalNotifications'
+      );
+
+      // if a response is approved now, clear any old ntfs relating to the response being pending
+      relatedNtfs.forEach((ntf) => {
+        let responseId = this.utils.getBelongsToId(ntf, 'response');
+
+        if (this.doesArrayContainObjectById(responses, responseId)) {
+          // clear ntf
+          ntf.set('isTrashed', true);
+          ntf.set('wasSeen', true);
+          ntf.save();
+        }
+      });
+      return responses;
+    }
+  ),
+
+  responseNotifications: computed.filterBy(
+    'notifications',
+    'primaryRecordType',
+    'response'
+  ),
+
+  findRelatedNtfs(
+    primaryRecordType,
+    relatedRecord,
+    ntfType,
+    belongsToType,
+    propertyName
+  ) {
     if (!primaryRecordType || !relatedRecord) {
       return [];
     }
@@ -125,54 +162,71 @@ Encompass.UserNtfsService = Ember.Service.extend({
 
     let relationshipType = belongsToType || primaryRecordType;
     return baseNtfs.filter((ntf) => {
-      let belongsToId = this.get('utils').getBelongsToId(ntf, relationshipType);
+      let belongsToId = this.utils.getBelongsToId(ntf, relationshipType);
 
       if (ntfType) {
-        return ntf.get('notificationType') === ntfType && belongsToId === relatedRecord.get('id');
+        return (
+          ntf.get('notificationType') === ntfType &&
+          belongsToId === relatedRecord.get('id')
+        );
       }
       return belongsToId === relatedRecord.get('id');
     });
   },
 
-  newNotifications: function() {
-    let base = this.get('notifications') || [];
-    return base.filter((ntf) => {
-      return !ntf.get('wasSeen') && !ntf.get('isTrashed');
-    });
-  }.property('notifications.@each.{isTrashed,wasSeen}'),
+  newNotifications: computed(
+    'notifications.@each.{isTrashed,wasSeen}',
+    function () {
+      let base = this.notifications || [];
+      return base.filter((ntf) => {
+        return !ntf.get('wasSeen') && !ntf.get('isTrashed');
+      });
+    }
+  ),
 
-  newReplyNotifications: function() {
-    return this.get('responseNotifications').filter((ntf) => {
-      let ntfType = ntf.get('notificationType');
-      let isNewReply = ntfType === 'newMentorReply' || ntfType === 'newApproverReply' || 'newlyApprovedReply';
-      return isNewReply;
-    });
-  }.property('responseNotifications.@each.notificationType'),
+  newReplyNotifications: computed(
+    'responseNotifications.@each.notificationType',
+    function () {
+      return this.responseNotifications.filter((ntf) => {
+        let ntfType = ntf.get('notificationType');
+        let isNewReply =
+          ntfType === 'newMentorReply' ||
+          ntfType === 'newApproverReply' ||
+          'newlyApprovedReply';
+        return isNewReply;
+      });
+    }
+  ),
 
-  requiresApprovalNotifications: function() {
-    return this.get('responseNotifications').filterBy('notificationType', 'mentorReplyRequiresApproval');
-  }.property('responseNotifications.@each.notificationType'),
+  requiresApprovalNotifications: computed.filterBy(
+    'responseNotifications',
+    'notificationType',
+    'mentorReplyRequiresApproval'
+  ),
 
-  needsRevisionNotifications: function() {
-    return this.get('responseNotifications').filterBy('notificationType', 'mentorReplyNeedsRevisions');
-  }.property('responseNotifications.@each.notificationType'),
+  needsRevisionNotifications: computed.filterBy(
+    'responseNotifications',
+    'notificationType',
+    'mentorReplyNeedsRevisions'
+  ),
 
-  updatedResponseNotifications: function() {
-    let updatedNtfs = Ember.RSVP.map(this.get('responseNotifications'), (ntf) => {
-      let ntfType = ntf.get('notificationType');
-      if (ntfType === 'newWorkToMentor') {
-        return ntf;
-      }
+  updatedResponseNotifications: computed(
+    'responseNotifications.[]',
+    function () {
+      let updatedNtfs = map(this.responseNotifications, (ntf) => {
+        let ntfType = ntf.get('notificationType');
+        if (ntfType === 'newWorkToMentor') {
+          return ntf;
+        }
 
-      let responseId = this.get('utils').getBelongsToId(ntf, 'response');
-      if (!responseId) {
-        // should not happen, but if does clear ntf
-        ntf.set('wasSeen', true);
-        return ntf.save();
-      }
+        let responseId = this.utils.getBelongsToId(ntf, 'response');
+        if (!responseId) {
+          // should not happen, but if does clear ntf
+          ntf.set('wasSeen', true);
+          return ntf.save();
+        }
 
-      return ntf.get('response')
-        .then((response) => {
+        return ntf.get('response').then((response) => {
           let status = response.get('status');
 
           if (response.get('isTrashed') || status === 'superceded') {
@@ -180,37 +234,38 @@ Encompass.UserNtfsService = Ember.Service.extend({
             return ntf.save();
           }
         });
-    });
+      });
 
-    return window.DS.PromiseArray.create({
-      promise: updatedNtfs
-    });
-  }.property('responseNotifications.[]'),
+      return window.DS.PromiseArray.create({
+        promise: updatedNtfs,
+      });
+    }
+  ),
 
   // observeNtfResponses: function() {
   //   console.log('observing ntf responses');
-  //   this.get('ntfResponses').forEach((response))
+  //   this.ntfResponses.forEach((response))
   // }.observes('ntfResponses')
 
   // updateResponseNtfs: function() {
   //   console.log('observed change to responses');
   //   let ntfsToClear = [];
 
-  //   this.get('trashedResponses').forEach((response) => {
+  //   this.trashedResponses.forEach((response) => {
   //     let relatedNtfs = this.findRelatedNtfs('response', response);
   //     relatedNtfs.forEach((ntf) => {
   //       ntfsToClear.addObject(ntf);
   //     });
   //   });
 
-  //   this.get('supercededResponses').forEach((response) => {
+  //   this.supercededResponses.forEach((response) => {
   //     let relatedNtfs = this.findRelatedNtfs('response', response);
   //     relatedNtfs.forEach((ntf) => {
   //       ntfsToClear.addObject(ntf);
   //     });
   //   });
 
-  //   this.get('readByRecipientResponses').forEach((response) => {
+  //   this.readByRecipientResponses.forEach((response) => {
   //     let relatedNtfs = this.findRelatedNtfs('response', response);
   //     relatedNtfs.forEach((ntf) => {
   //       ntfsToClear.addObject(ntf);
@@ -219,7 +274,5 @@ Encompass.UserNtfsService = Ember.Service.extend({
 
   //   console.log('ntfsToClear!', ntfsToClear);
 
-
   // }.observes('responses.@each.{isTrashed,status,wasReadByRecipient}'),
-
 });
