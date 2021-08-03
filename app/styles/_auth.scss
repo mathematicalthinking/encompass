@@ -1,0 +1,477 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+@media screen and (min-width: 0) and (max-width: 530px) {
+  .login-page, .signup-page {
+    background-color: white;
+  }
+  .login-box, .signup-box {
+    box-shadow: none;
+    position: relative;
+    top: 0;
+  }
+}
+
+@media screen and (min-width: 531px) and (max-width: 100000px) {
+  .login-page, .signup-page {
+    background-color: $filter-list-background-color;
+  }
+  .login-box, .signup-box {
+    box-shadow: $button-shadow;
+    position: relative;
+  }
+  .login-box {
+    top: 8%;
+  }
+  .signup-box {
+    top: 5%;
+  }
+}
+
+// GENERAL STYLING
+.auth-page, .login-page, .signup-page, .forgot-page, .reset-page, .confirm-page {
+  // background-color: $filter-list-background-color;
+  width: 100%;
+  font-family: $primary-font;
+}
+
+.error-message {
+  @include error-message;
+  margin: 20px 0 20px 0;
+}
+
+// LOGIN PAGE SYLING
+.login-page {
+  // padding-top: 3%;
+  height: calc(100vh - 75px);
+  position: absolute;
+  top: 0;
+}
+
+.login-box {
+  margin: 0 auto;
+  max-width: 450px;
+  padding: 30px 30px 0 30px;
+  border-radius: 5px;
+  background-color: white;
+  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
+  .encompass-logo {
+    @include flex-item(1, center, .1 0 auto);
+    max-width: 200px;
+    margin-bottom: 30px;
+  }
+  .form-signin {
+    @include flex-item(2, auto, .6 0 auto);
+  }
+  .auth-form-input {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    padding: 0;
+    max-width: 350px;
+    width: 100%;
+  }
+  input {
+    display: block;
+    width: 100%;
+    font-size: 1em;
+    padding: 10px 0;
+    margin: 0 auto;
+    color: lighten($primary-font-color, 25);
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid $primary-font-color;
+    &:required {
+      box-shadow: none;
+    }
+    &:focus {
+      outline: none;
+      border-bottom: 1px solid black;
+    }
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px white inset;
+    }
+  }
+  .auth-button {
+    @include auth-button;
+    margin-top: 40px;
+  }
+  .bottom-info {
+    @include flex-item(3, auto, .3 0 auto);
+  }
+  .or {
+    margin-top: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+  }
+  .signup-link  {
+    margin-top: 30px;
+    padding-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+  .forgot-link {
+    margin-top: 10px;
+    padding-bottom: 40px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+  .error-box {
+    margin-bottom: 30px;
+  }
+}
+
+// SIGNUP PAGE SYLING
+.signup-page {
+  height: calc(100vh - 75px);
+  position: absolute;
+  top: 0;
+}
+
+
+.signup-box {
+  margin: 0 auto;
+  max-width: 450px;
+  padding: 20px 30px 0 30px;
+  border-radius: 5px;
+  background-color: white;
+  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
+  .encompass-logo {
+    @include flex-item(1, center, .1 0 auto);
+    max-width: 200px;
+    margin-bottom: 20px;
+  }
+  .form-signup {
+    @include flex-item(2, auto, .6 0 auto);
+  }
+  .auth-form-input {
+    margin: 0 auto;
+    margin-bottom: 10px;
+    padding: 0;
+    max-width: 350px;
+    font-size: .9em;
+  }
+  .bottom-info {
+    @include flex-item(3, auto, .3 0 auto);
+  }
+  // #org-select {
+  .selectize-control {
+    .selectize-input {
+      border: 1px solid transparent;
+      border-bottom: 1px solid $primary-font-color;
+      box-shadow: none;
+    }
+  }
+  // }
+  input {
+    display: block;
+    width: 100%;
+    font-size: 1em;
+    padding: 8px 0;
+    margin: 0 auto;
+    background-color: white;
+    border: none;
+    color: lighten($primary-font-color, 25);
+    border-bottom: 1px solid $primary-font-color;
+    margin-bottom: 15px;
+    &:required {
+      box-shadow: none;
+    }
+    &:focus {
+      outline: none;
+      border-bottom: 1px solid black;
+    }
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px white inset;
+    }
+  }
+  #checkbox {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    margin-top: 25px;
+    padding: 0;
+    width: 350px;
+    font-size: .9em;
+    input  {
+      width: 50px;
+      margin-bottom: 0;
+      float: left;
+    }
+    label {
+      float: right;
+      position: relative;
+      left: -55px;
+    }
+    a {
+      @include main-link;
+    }
+  }
+  .auth-button {
+    @include auth-button;
+    margin-top: 20px;
+  }
+  .terms-error, .post-error {
+    margin: 0 auto;
+    padding-top: 10px;
+    width: 350px;
+    font-size: .9em;
+  }
+  .login-link {
+    margin-top: 20px;
+    padding-bottom: 30px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+}
+
+// AUTH PAGE STYLING
+.auth-page {
+  height: 92vh;
+  padding-top: 3vh;
+}
+
+.auth-toggle {
+  margin: 0 auto;
+  width: 500px;
+  button {
+    @include auth-button-toggle;
+  }
+}
+
+// SOCIAL SIGNIN
+.social-signin {
+  margin: 0 auto;
+  margin-top: 20px;
+  max-width: 350px;
+  button {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    color: $primary-font-color;
+    font-size: 1em;
+    font-weight: $bold-font-weight;
+    background-color: white;
+    border: 1px solid $background-color;
+    border-radius: 3px;
+    padding: 8px 0;
+    &:hover {
+      background-color: darken(white, 10%);
+      font-weight: $bolder-font-weight;
+      cursor: pointer;
+    }
+    img {
+      float: left;
+      max-width: 30px;
+      margin-left: 10px;
+      padding: 0;
+    }
+    span {
+      display: block;
+      margin-top: 5px;
+    }
+  }
+}
+
+//FORGOT PASSWORD
+.forgot-page {
+  height: 90vh;
+  padding-top: 12vh;
+  z-index: -1;
+}
+.forgot-box {
+  margin: 0 auto;
+  width: 500px;
+  padding-top: 40px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  .encompass-logo {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    margin-bottom: 10px;
+  }
+  .auth-form-input {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    padding: 0;
+    width: 350px;
+  }
+  input {
+    display: block;
+    width: 350px;
+    font-size: 1em;
+    padding: 10px 0;
+    margin: 0 auto;
+    color: lighten($primary-font-color, 25);
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid $primary-font-color;
+    &:required {
+      box-shadow: none;
+    }
+  }
+  .auth-button {
+    @include auth-button;
+    margin-top: 50px;
+  }
+  .or {
+    margin-top: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+  }
+  .login-link {
+    margin-top: 50px;
+    padding-bottom: 50px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+  .info, .error-message, .success-message {
+    margin-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    font-size: 1em;
+    padding: 20px 50px;
+  }
+}
+
+//RESET PASSWORD
+.reset-page {
+  height: 90vh;
+  padding-top: 12vh;
+  z-index: -1;
+}
+.reset-box {
+  margin: 0 auto;
+  width: 500px;
+  padding: 40px 0;
+  background-color: white;
+  box-shadow: $box-shadow;
+  .encompass-logo {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    margin-bottom: 50px;
+  }
+  .auth-form-input {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    padding: 0;
+    width: 350px;
+  }
+  input {
+    display: block;
+    width: 350px;
+    font-size: 1em;
+    padding: 10px 0;
+    margin: 0 auto;
+    color: lighten($primary-font-color, 25);
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid $primary-font-color;
+    &:required {
+      box-shadow: none;
+    }
+  }
+  .auth-button {
+    @include auth-button;
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
+  .or {
+    margin-top: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+  }
+  .forgot-link {
+    margin-top: 40px;
+    padding-bottom: 40px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+  .info {
+    margin-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+  }
+  .error-message,
+  .success-message {
+    margin-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    font-size: 1em;
+    padding: 20px 50px;
+  }
+}
+
+#un-authorized {
+  #signup-google {
+    margin-top: 100px;
+
+    .info-container {
+      text-align: center;
+      margin-bottom: 50px;
+      font-size: 1.2em;
+    }
+
+
+    .signup-box {
+      padding-bottom: 20px;
+      .auth-button {
+        margin-bottom: 20px;
+      }
+    }
+  }
+
+  p.info{
+    font-size: 1.2em;
+  }
+}
+
+.confirm-page {
+  height: 90vh;
+  padding-top: 12vh;
+  z-index: -1;
+
+  a {
+    @include main-link;
+  }
+
+  .confirm-box {
+    margin: 0 auto;
+    width: 500px;
+    padding: 40px 0;
+    background-color: white;
+    box-shadow: $box-shadow;
+
+    .info {
+      margin-bottom: 20px;
+      font-weight: $light-font-weight;
+      text-align: center;
+      padding: 10px;
+    }
+    .error-message,
+    .success-message {
+      margin-bottom: 20px;
+      font-weight: $light-font-weight;
+      text-align: center;
+      font-size: 1em;
+      padding: 20px 50px;
+    }
+  }
+
+}

@@ -1,15 +1,15 @@
 <header>
   <p>Looking at workspace:</p>
-  <h3>{{model.name}}</h3>
+  <h3>{{this.model.name}}</h3>
   <p>Owner:</p>
-  <h3>{{model.owner.displayName}}</h3>
+  <h3>{{this.model.owner.displayName}}</h3>
   <p>Last Updated:</p>
-  <h3>{{model.lastModifiedDate}}</h3>
+  <h3>{{this.model.lastModifiedDate}}</h3>
 </header>
 <div class="metrics__container">
   <p>{{#link-to "metrics"}}back{{/link-to}}</p>
   <div class="metrics__container metrics--flex">
-    <button {{action "generateWordMap"}} class="primary-button">Generate Wordcloud</button>
+    <button {{action "handleToggle" "showCloud"}} class="primary-button">Generate Wordcloud</button>
     <button {{action "handleToggle" "showFolders"}} class="primary-button">folders: {{model.foldersLength}}</button>
     <button {{action "handleToggle" "showComments"}} class="primary-button">comments: {{model.commentsLength}}</button>
     <button {{action "handleToggle" "showResponses"}} class="primary-button">responses: {{model.responsesLength}}</button>
@@ -113,7 +113,7 @@
         {{#each model.responses as |response|}}
           <tr>
             <td>{{response.createdBy.username}}</td>
-            <td>{{html-to-text response.text}}</td>
+            <td>{{{response.text}}}</td>
           </tr>
         {{/each}}
       </tbody>
@@ -163,5 +163,5 @@
     </table>
   {{/if}}
   <p>{{#link-to "metrics"}}back{{/link-to}}</p>
-  {{wordcloud-container list=list}}
+  <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
 </div>

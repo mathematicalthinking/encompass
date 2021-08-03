@@ -1,19 +1,28 @@
-Encompass.QuillContainerComponent = Ember.Component.extend({
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
+import $ from 'jquery';
+
+
+
+
+
+
+export default Component.extend({
   classNames: ['quill-container'],
-  utils: Ember.inject.service('utility-methods'),
+  utils: service('utility-methods'),
 
   isEmpty: true,
   isOverLengthLimit: false,
 
-  defaultOptions : {
+  defaultOptions: {
     debug: 'false',
     modules: {
       toolbar: [
         ['bold', 'italic', 'underline', 'strike'],
         [{ 'color': [] }, { 'background': [] }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],
+        [{ 'script': 'sub' }, { 'script': 'super' }],
         ['blockquote'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
         ['link', 'image', 'formula']
       ]
     },
@@ -23,14 +32,14 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
   defaultMaxLength: 14680064, // 14MB
 
   didReceiveAttrs() {
-    let attrSectionId = this.get('attrSectionId');
+    let attrSectionId = this.attrSectionId;
     if (!attrSectionId) {
       this.set('sectionId', 'editor');
     } else {
       this.set('sectionId', attrSectionId);
     }
 
-    let limit = this.get('maxLength') || this.get('defaultMaxLength');
+    let limit = this.maxLength || this.defaultMaxLength;
     this.set('lengthLimit', limit);
 
   },
@@ -40,8 +49,8 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
     let selector = `#${elId} section`;
 
     let options;
-    if (!this.get('options')) {
-      options = this.get('defaultOptions');
+    if (!this.options) {
+      options = this.defaultOptions;
     }
     options.bounds = selector;
 
@@ -65,7 +74,7 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
   },
 
   willDestroyElement() {
-    let quill = this.get('quillInstance');
+    let quill = this.quillInstance;
     if (quill) {
       quill.off('text-change');
     }
@@ -73,7 +82,7 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
   },
 
   handleStartingText() {
-    let attrStartingText = this.get('startingText');
+    let attrStartingText = this.startingText;
     let startingText = typeof attrStartingText === 'string' ? attrStartingText : '';
     this.$('.ql-editor').html(startingText);
 
@@ -113,15 +122,15 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
     let isEmpty = !this.isQuillNonEmpty();
     this.set('isEmpty', isEmpty);
 
-    let isOverLengthLimit = replaced.length > this.get('lengthLimit');
+    let isOverLengthLimit = replaced.length > this.lengthLimit;
     this.set('isOverLengthLimit', isOverLengthLimit);
 
-    this.onTextChange(replaced, isEmpty, isOverLengthLimit );
+    this.onTextChange(replaced, isEmpty, isOverLengthLimit);
   },
 
   onTextChange(html, isEmpty, isOverLengthLimit) {
-    if (this.get('onEditorChange')) {
-      this.get('onEditorChange')(html, isEmpty, isOverLengthLimit);
+    if (this.onEditorChange) {
+      this.onEditorChange(html, isEmpty, isOverLengthLimit);
     }
   }
 

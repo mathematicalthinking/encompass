@@ -12,7 +12,7 @@
           <label for="section">
             <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.class}}
+              data-tooltip={{this.tooltips.class}}
             >
               Class
             </span>
@@ -21,34 +21,15 @@
             </span>
           </label>
           <div class="flex-input">
-            {{#if fromSectionInfo}}
+            {{#if this.fromSectionInfo}}
               <p>
-                {{selectedSection.name}}
+                {{this.selectedSection.name}}
               </p>
             {{else}}
-              {{selectize-input
-                inputId="assn-new-section-select"
-                initialOptions=sectionOptions
-                onItemAdd=(action "updateSelectizeSingle")
-                onItemRemove=(action "updateSelectizeSingle")
-                maxItems=1
-                labelField="name"
-                valueField="id"
-                searchField="name"
-                propToUpdate="selectedSection"
-                placeholder="Search for a class by name"
-                model="section"
-                store=store
-              }}
-              {{input required=true type="hidden" value=selectedSection}}
-              {{#each sectionFormErrors as |error|}}
-                {{error-box
-                  error=error
-                  showDismiss=true
-                  resetError=(action
-                    "removeErrorFromArray" "sectionFormErrors" error
-                  )
-                }}
+              <SelectizeInput @inputId="assn-new-section-select" @initialOptions={{this.sectionOptions}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @propToUpdate="selectedSection" @placeholder="Search for a class by name" @model="section" @store={{this.store}} />
+              <Input required={{true}} @type="hidden" @value={{this.selectedSection}} />
+              {{#each this.sectionFormErrors as |error|}}
+                <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "sectionFormErrors" error}} />
               {{/each}}
             {{/if}}
           </div>
@@ -57,7 +38,7 @@
           <label for="text">
             <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.problem}}
+              data-tooltip={{this.tooltips.problem}}
             >
               Problem
             </span>
@@ -65,39 +46,15 @@
               *
             </span>
           </label>
-          {{#if fromProblemInfo}}
+          {{#if this.fromProblemInfo}}
             <p>
-              {{{selectedProblem.title}}}
+              {{this.selectedProblem.title}}
             </p>
           {{else}}
             <div class="flex-input">
-              {{selectize-input
-                store=store
-                inputId="assn-new-problem-select"
-                initialOptions=problemOptions
-                onItemAdd=(action "updateSelectizeSingle")
-                onItemRemove=(action "updateSelectizeSingle")
-                maxItems=1
-                labelField="title"
-                valueField="id"
-                searchField="title"
-                propToUpdate="selectedProblem"
-                placeholder="Search for a problem by title"
-                isAsync=true
-                model="problem"
-                queryParamsKey="query"
-                searchCriterion="title"
-                topLevelQueryParams="searchBy"
-                preload=problemsPreloadValue
-              }}
-              {{#each problemFormErrors as |error|}}
-                {{error-box
-                  error=error
-                  showDismiss=true
-                  resetError=(action
-                    "removeErrorFromArray" "problemFormErrors" error
-                  )
-                }}
+              <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="selectedProblem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
+              {{#each this.problemFormErrors as |error|}}
+                <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "problemFormErrors" error}} />
               {{/each}}
             </div>
           {{/if}}
@@ -106,19 +63,14 @@
           <label for="assignedDate">
             <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.dateAssigned}}
+              data-tooltip={{this.tooltips.dateAssigned}}
             >
               Date Assigned
             </span>
           </label>
           <div class="flex-input">
-            {{input
-              id="assignedDate"
-              name="daterange"
-              type="text"
-              value=assignedDate
-            }}
-            {{#each assignedDateFormErrors as |error|}}
+            <Input @id="assignedDate" @name="daterange" @type="date" @value={{this.assignedDate}} />
+            {{#each this.assignedDateFormErrors as |error|}}
               <p class="error-message">
                 {{error}}
               </p>
@@ -129,29 +81,20 @@
           <label for="dueDate">
             <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.dueDate}}
+              data-tooltip={{this.tooltips.dueDate}}
             >
               Due Date
             </span>
           </label>
           <div class="flex-input">
-            {{input
-              id="dueDate"
-              name="daterange"
-              type="text"
-              value=dueDate
-            }}
-            {{#each dueDateFormErrors as |error|}}
+            <Input @id="dueDate" @name="daterange" @type="date" @value={{this.dueDate}} />
+            {{#each this.dueDateFormErrors as |error|}}
               <p class="error-message">
                 {{error}}
               </p>
             {{/each}}
-            {{#if invalidDateRange}}
-              {{error-box
-                error="Invalid Date Range"
-                showDismiss=true
-                resetError=(action (mut invalidDateRange) null)
-              }}
+            {{#if this.invalidDateRange}}
+              <ErrorBox @error="Invalid Date Range" @showDismiss={{true}} @resetError={{action (mut this.invalidDateRange) null}} />
             {{/if}}
           </div>
         </li>
@@ -159,18 +102,14 @@
           <label for="name">
             <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.name}}
+              data-tooltip={{this.tooltips.name}}
             >
               Assignment Name
             </span>
           </label>
           <div class="flex-input">
-            {{input
-              type="text"
-              placeholder="Give your assignment a name (optional)"
-              value=name
-            }}
-            {{#each nameFormErrors as |error|}}
+            <Input @type="text" placeholder="Give your assignment a name (optional)" @value={{this.name}} />
+            {{#each this.nameFormErrors as |error|}}
               <p class="error-message">
                 {{error}}
               </p>
@@ -181,45 +120,37 @@
           <label for="linkedWorkspaces">
           <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.linkedWorkspaces}}
+              data-tooltip={{this.tooltips.linkedWorkspaces}}
             >
              Create Student Workspaces Now?
             </span>
           </label>
-          {{radio-group options=linkedWsOptions selectedValue=doCreateLinkedWorkspaces}}
+          <RadioGroup @options={{this.linkedWsOptions}} @selectedValue={{this.doCreateLinkedWorkspaces}} />
 
-          {{#if showLinkedWsForm}}
-            {{linked-workspaces-new
-            isDisplayOnly=true
-            students=selectedSection.students.content
-            assignmentName=assignmentNamePreview
-            sectionName=selectedSection.name
-            }}
+          {{#if this.showLinkedWsForm}}
+            <LinkedWorkspacesNew @isDisplayOnly={{true}} @students={{this.selectedSection.students.content}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} />
           {{/if}}
         </li>
-        {{#if doCreateLinkedWorkspaces}}
+        {{#if this.doCreateLinkedWorkspaces}}
         <li class="parent-ws">
           <label for="parentWorkspace">
           <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.parentWorkspace}}
+              data-tooltip={{this.tooltips.parentWorkspace}}
             >
             Create Parent Workspace Now?
             </span>
           </label>
-          {{radio-group options=parentWsOptions selectedValue=doCreateParentWorkspace}}
+          <RadioGroup @options={{this.parentWsOptions}} @selectedValue={{this.doCreateParentWorkspace}} />
 
-          {{#if showParentWsForm}}
-            {{parent-workspace-new
-              isDisplayOnly=true
-              assignmentName=assignmentNamePreview
-            }}
+          {{#if this.showParentWsForm}}
+            <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} />
           {{/if}}
         </li>
         {{/if}}
       </ol>
     </fieldset>
-    {{#if isMissingRequiredFields}}
+    {{#if this.isMissingRequiredFields}}
       <p class="error-message">
         Please provide all required fields.
       </p>
@@ -235,7 +166,7 @@
     Cancel
   </button>
 </section>
-{{#each createRecordErrors as |error|}}
+{{#each this.createRecordErrors as |error|}}
   <p class="error-message">
     {{error}}
   </p>

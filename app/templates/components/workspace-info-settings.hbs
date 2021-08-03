@@ -1,8 +1,8 @@
 <div class="info-card">
   <div class="heading">
     Workspace Settings
-    {{#if canEdit}}
-      {{#unless isEditing}}
+    {{#if this.canEdit}}
+      {{#unless this.isEditing}}
         <span class="heading-icon" data-test="ws-settings-edit" {{action 'editWorkspaceInfo'}}>
           <i class="fas fa-edit"></i>
         </span>
@@ -15,10 +15,10 @@
         Name
       </div>
       <div class="row-value">
-        {{#if isEditing}}
-          {{input type="text" class="text-input" id="edit-name-input" value=workspace.name}}
+        {{#if this.isEditing}}
+          <Input @type="text" class="text-input" @id="edit-name-input" @value={{this.workspace.name}} />
         {{else}}
-          {{workspace.name}}
+          {{this.workspace.name}}
         {{/if}}
       </div>
     </div>
@@ -27,25 +27,10 @@
         Owner
       </div>
       <div class="row-value">
-        {{#if isEditing}}
-          {{selectize-input
-          store=store
-          inputId="owner-select"
-          maxItems=1
-          initialItems=initialOwnerItem
-          onItemAdd=(action "setOwner")
-          onItemRemove=(action "setOwner")
-          labelField="username"
-          valueField="id"
-          searchField="username"
-          model="user"
-          queryParamsKey="usernameSearch"
-          isAsync=true
-          placeholder="Search by username"
-          preload="focus"
-          }}
+        {{#if this.isEditing}}
+          <SelectizeInput @store={{this.store}} @inputId="owner-select" @maxItems={{1}} @initialItems={{this.initialOwnerItem}} @onItemAdd={{action "setOwner"}} @onItemRemove={{action "setOwner"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search by username" @preload="focus" />
         {{else}}
-          {{#link-to 'users.user' workspace.owner.username}}{{workspace.owner.username}}{{/link-to}}
+          <LinkTo @route="users.user" @model={{this.workspace.owner.id}}>{{this.workspace.owner.username}}</LinkTo>
         {{/if}}
       </div>
     </div>
@@ -54,40 +39,24 @@
         Privacy Setting
       </div>
       <div class="row-value">
-        {{#if isEditing}}
-          {{my-select cannotBeNull=true selectedValue=selectedMode content=modes action=(action (mut selectedMode))}}
+        {{#if this.isEditing}}
+          <MySelect @cannotBeNull={{true}} @selectedValue={{this.selectedMode}} @content={{this.modes}} @action={{action (mut this.selectedMode)}} />
         {{else}}
-          {{workspace.mode}}
+          {{this.workspace.mode}}
         {{/if}}
       </div>
     </div>
-    {{#if doShowLinkedAssignment}}
+    {{#if this.doShowLinkedAssignment}}
       <div class="card-row">
         <div class="row-label">
           Linked Assignment
         </div>
         <div data-test="linked-assn" class="row-value">
-          {{#if isEditing}}
-            {{selectize-input
-            store=store
-            inputId="linked-assignment-select"
-            maxItems=1
-            initialItems=initialLinkedAssignmentItem
-            onItemAdd=(action "setLinkedAssignment")
-            onItemRemove=(action "setLinkedAssignment")
-            labelField="name"
-            valueField="id"
-            searchField="name"
-            model="assignment"
-            topLevelQueryParams="filterBy"
-            queryParamsKey="name"
-            isAsync=true
-            placeholder="Search for an assignment by name"
-            preload="focus"
-            }}
+          {{#if this.isEditing}}
+            <SelectizeInput @store={{this.store}} @inputId="linked-assignment-select" @maxItems={{1}} @initialItems={{this.initialLinkedAssignmentItem}} @onItemAdd={{action "setLinkedAssignment"}} @onItemRemove={{action "setLinkedAssignment"}} @labelField="name" @valueField="id" @searchField="name" @model="assignment" @topLevelQueryParams="filterBy" @queryParamsKey="name" @isAsync={{true}} @placeholder="Search for an assignment by name" @preload="focus" />
           {{else}}
-          {{#if linkedAssignment}}
-              {{#link-to 'assignment' linkedAssignment.id}}{{linkedAssignment.name}}{{/link-to}}
+          {{#if this.linkedAssignment}}
+              <LinkTo @route="assignments.assignment" @model={{this.linkedAssignment.id}}>{{this.linkedAssignment.name}}</LinkTo>
             {{else}}
             N/A
             {{/if}}
@@ -100,25 +69,25 @@
         Allow Automatic Submission Updates
       </div>
       <div data-test="allow-updates" class="row-value">
-        {{#if isEditing}}
-          {{my-select cannotBeNull=true selectedValue=selectedAutoUpdateSetting content=yesNoMySelect action=(action (mut selectedAutoUpdateSetting))}}
+        {{#if this.isEditing}}
+          <MySelect @cannotBeNull={{true}} @selectedValue={{this.selectedAutoUpdateSetting}} @content={{this.yesNoMySelect}} @action={{action (mut this.selectedAutoUpdateSetting)}} />
         {{else}}
-          {{yes-no workspace.doAllowSubmissionUpdates}}
+          {{yes-no this.workspace.doAllowSubmissionUpdates}}
         {{/if}}
       </div>
       </div>
-      {{#unless isEditing}}
+      {{#unless this.isEditing}}
         <div class="update-submissions">
           <button {{action "updateWithExistingWork"}} class="primary-button">Update Workspace</button>
           <div class="update-results">
-            {{#if missingLinkedAssignment}}
-              {{error-box error="Please link an assignment first." showDismiss=true resetError=(action (mut missingLinkedAssignment) null)}}
+            {{#if this.missingLinkedAssignment}}
+              <ErrorBox @error="Please link an assignment first." @showDismiss={{true}} @resetError={{action (mut this.missingLinkedAssignment) null}} />
             {{/if}}
-            {{#each updateErrors as |error|}}
-              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'updateErrors' error)}}
+            {{#each this.updateErrors as |error|}}
+              <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "updateErrors" error}} />
             {{/each}}
-            {{#each serverErrors as |error|}}
-              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'serverErrors' error)}}
+            {{#each this.serverErrors as |error|}}
+              <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "serverErrors" error}} />
             {{/each}}
           </div>
 
@@ -126,13 +95,13 @@
       {{/unless}}
     {{/if}}
 
-     {{#if doShowChildWorkspaces}}
+     {{#if this.doShowChildWorkspaces}}
       <div class="card-row">
         <div class="row-label">
          Child Workspaces
         </div>
         <div data-test="child-workspaces" class="row-value">
-          {{#if isEditing}}
+          {{#if this.isEditing}}
             {{!-- {{selectize-input
             store=store
             inputId="linked-assignment-select"
@@ -152,9 +121,9 @@
             }} --}}
           {{else}}
           <ul class="child-workspaces">
-            {{#each childWorkspaces as |ws|}}
+            {{#each this.childWorkspaces as |ws|}}
             <li>
-              {{#link-to 'workspace.work' ws.id}}{{ws.name}}{{/link-to}}
+              <LinkTo @route="workspace.work" @model={{ws.id}}>{{ws.name}}</LinkTo>
             </li>
             {{else}}
            <li>N/A</li>
@@ -170,31 +139,31 @@
       </div>
       <div data-test="allow-updates" class="row-value">
         {{#if isEditing}}
-          {{my-select cannotBeNull=true selectedValue=selectedAutoUpdateSetting content=yesNoMySelect action=(action (mut selectedAutoUpdateSetting))}}
+          <MySelect @cannotBeNull={{true}} @selectedValue={{this.selectedAutoUpdateSetting}} @content={{this.yesNoMySelect}} @action={{action (mut this.selectedAutoUpdateSetting)}} />
         {{else}}
-          {{yes-no workspace.doAutoUpdateFromChildren}}
+          {{yes-no this.workspace.doAutoUpdateFromChildren}}
         {{/if}}
       </div>
       </div>
-      {{#unless isEditing}}
+      {{#unless this.isEditing}}
         <div class="update-submissions">
           <button {{action "updateWithExistingWork"}} class="primary-button" data-test="parent-ws-update">Update Parent Workspace</button>
           <div class="update-results">
-            {{#if missingChildWorkspaces}}
-              {{error-box error="No child workspaces to update from" showDismiss=true resetError=(action (mut missingChildWorkspaces) null)}}
+            {{#if this.missingChildWorkspaces}}
+              <ErrorBox @error="No child workspaces to update from" @showDismiss={{true}} @resetError={{action (mut this.missingChildWorkspaces) null}} />
             {{/if}}
-            {{#each updateErrors as |error|}}
-              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'updateErrors' error)}}
+            {{#each this.updateErrors as |error|}}
+              <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "updateErrors" error}} />
             {{/each}}
-            {{#each serverErrors as |error|}}
-              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'serverErrors' error)}}
+            {{#each this.serverErrors as |error|}}
+              <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "serverErrors" error}} />
             {{/each}}
-            {{#each-in createdParentData as |recordType records|}}
+            {{#each-in this.createdParentData as |recordType records|}}
               {{#if records}}
                 <p class="success-message">Added {{records.length}} {{recordType}}</p>
               {{/if}}
             {{/each-in}}
-            {{#each-in updatedParentData as |recordType records|}}
+            {{#each-in this.updatedParentData as |recordType records|}}
               {{#if records}}
                 <p class="success-message">Updated {{records.length}} {{recordType}}</p>
               {{/if}}
@@ -206,7 +175,7 @@
       {{/unless}}
     {{/if}}
 
-    {{#if isEditing}}
+    {{#if this.isEditing}}
       <div class="card-row button-row">
         <button class="primary-button cancel-button" {{action "stopEditing"}}>Cancel</button>
         <button class="primary-button" {{action 'checkWorkspace'}}>Save</button>

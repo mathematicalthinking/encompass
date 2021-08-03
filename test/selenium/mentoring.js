@@ -113,16 +113,16 @@ describe('Mentoring Interactions', function() {
     before(async function() {
       let options = {
         selector: css.responsesList.submitterTab,
-        urlToWaitFor: `${helpers.host}/#/responses`,
+        urlToWaitFor: `${helpers.host}/responses`,
         timeout: 10000
       };
   
-      await helpers.navigateAndWait(driver, `${helpers.host}/#/responses`, options );
-      await helpers.waitForUrlMatch(driver, /\/#\/responses/);
+      await helpers.navigateAndWait(driver, `${helpers.host}/responses`, options );
+      await helpers.waitForUrlMatch(driver, /\/responses/);
     });
 
     it('should display solver tab and display count', async function() {
-
+      await driver.sleep(8000);
       await helpers.waitForNElements(driver, css.responsesList.submitterTab, 1);
       let submitterTabs = await helpers.getWebElements(driver, css.responsesList.submitterTab);
 
@@ -278,18 +278,18 @@ describe('Mentoring Interactions', function() {
       });
 
       it('linked workspace should have been updated', async function() {
-        let url = `${host}/#/workspaces/${workspaceInfo._id}/work`;
+        let url = `${host}/workspaces/${workspaceInfo._id}/work`;
 
         await helpers.navigateAndWait(driver, url, {selector: 'span.submission_count' } );
         // await driver.get();
         // await helpers.waitForSelector(driver, 'span.submission_count');
 
         // click x button on tour box
-        // await helpers.findAndClickElement(driver, 'div.guiders_x_button');
+        await helpers.findAndClickElement(driver, 'div.guiders_x_button');
 
-        // await helpers.waitForRemoval(driver, 'div#guiders_overlay');
+        await helpers.waitForRemoval(driver, 'div#guiders_overlay');
 
-        await helpers.dismissWorkspaceTour(driver);
+        // await helpers.dismissWorkspaceTour(driver);
 
         return helpers.waitForElementToHaveText(driver,  'span.submission_count', '2');
         // expect(await helpers.findAndGetText(driver,)).to.eql('2');

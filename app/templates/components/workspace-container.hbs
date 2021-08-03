@@ -1,8 +1,8 @@
 <header class="{{makingSelection}}">
   <h2 class="workspace-name">{{currentWorkspace.name}}</h2>
   <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}">by {{currentWorkspace.owner.displayName}} </span>
-  <span class="info">{{#link-to 'workspace.info' workspace}} | info <i class="fa fa-info-circle" aria-hidden="true"></i>
-{{/link-to}}</span>
+  <span class="info"><LinkTo @route="workspace.info" @model={{workspace}}> | info <i class="fa fa-info-circle" aria-hidden="true"></i>
+</LinkTo></span>
   <aside>
   <a id="takeTour" {{action 'startTour'}}>Take Tour</a>
     {{! this needs to be here so the GuideJS can click it when done
@@ -13,48 +13,18 @@
 </header>
 
 {{!-- <div id="al_left"> --}}
-  {{folder-list
-    store=store
-    folders=nonTrashedFolders
-    workspace=currentWorkspace
-    fileSelection="fileSelectionInFolder"
-    currentSubmission=currentSubmission
-    currentSelection=currentSelection
-    taggings=nonTrashedTaggings
-    workspaceSubmissions=currentWorkspace.submissions.content
-    workspaceSelections=nonTrashedSelections
-  }}
+  <FolderList @store={{this.store}} @folders={{nonTrashedFolders}} @workspace={{currentWorkspace}} @fileSelection="fileSelectionInFolder" @currentSubmission={{currentSubmission}} @currentSelection={{currentSelection}} @taggings={{nonTrashedTaggings}} @workspaceSubmissions={{currentWorkspace.submissions.content}} @workspaceSelections={{nonTrashedSelections}} />
 {{!-- </div> --}}
 
 <!--section class="submissions"-->
 {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}}"> --}}
-  {{submission-group
-    store=store
-    canRespond=canRespond
-    submissions=currentWorkspace.submissions.content
-    submission=model
-    addSelection=(action "addSelection")
-    deleteSelection=(action "deleteSelection")
-    currentWorkspace=currentWorkspace
-    toNewResponse=(action "toNewResponse")
-    toSubmission=(action "toSubmission")
-    selections=nonTrashedSelections
-    responses=nonTrashedResponses
-  }}
+  <SubmissionGroup @store={{this.store}} @canRespond={{canRespond}} @submissions={{currentWorkspace.submissions.content}} @submission={{this.model.submission}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{nonTrashedSelections}} @responses={{nonTrashedResponses}} />
 {{!-- </div> --}}
 <!--/section-->
 
 <!--section class="right"-->
 {{!-- <div id="al_right"> --}}
-  {{comment-list
-    store=store
-    comments=nonTrashedComments
-    currentWorkspace=currentWorkspace
-    currentSelection=currentSelection
-    currentSubmission=currentSubmission
-    allowedToComment=permittedToComment
-    resetComment=(action "cancelComment")
-  }}
+  <CommentList @store={{this.store}} @comments={{nonTrashedComments}} @currentWorkspace={{currentWorkspace}} @currentSelection={{currentSelection}} @currentSubmission={{currentSubmission}} @allowedToComment={{permittedToComment}} @resetComment={{action "cancelComment"}} />
 {{!-- </div> --}}
 <!--/section-->
 

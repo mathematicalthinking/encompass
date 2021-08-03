@@ -1,17 +1,25 @@
-Encompass.StudentMatchingComponent = Ember.Component.extend({
+import { isEmpty } from '@ember/utils';
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   matchingStudentsError: null,
   isReadyToReviewAnswers: null,
 
   actions: {
-    reviewAnswers: function() {
-      this.get('reviewSubmissions')();
+    reviewAnswers: function () {
+      this.reviewSubmissions();
     },
-    checkStatus: function() {
-      let answers = this.get('answers');
+    checkStatus: function () {
+      let answers = this.answers;
 
       answers.forEach((ans) => {
         let students = ans.students;
-        if (!students || Ember.isEmpty(students)) {
+        if (!students || isEmpty(students)) {
           this.set('isReadyToReviewAnswers', false);
           return;
         }

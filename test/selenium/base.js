@@ -87,7 +87,6 @@ describe('Home Page', function () {
     });
 
     it('should redirect to homepage after logging in', async function () {
-      let url;
       try {
         await helpers.clearElement(driver, css.login.username);
         await helpers.clearElement(driver, css.login.password);
@@ -96,11 +95,10 @@ describe('Home Page', function () {
         await helpers.findAndClickElement(driver, css.login.submit);
 
         await helpers.waitForSelector(driver, 'a.nav__logout');
-        url = await helpers.getCurrentUrl(driver);
       } catch (err) {
         console.log(err);
       }
-      expect(url).to.equal(`${host}/`);
+      expect(await helpers.getCurrentUrl(driver)).to.equal(`${host}/`);
     });
   });
 
@@ -109,7 +107,7 @@ describe('Home Page', function () {
 
     function verifyNavElement(navElement) {
       it(`${navElement} link should exist`, async function () {
-        expect(await helpers.existsElement(driver, `a[href="#/${navElement}"]`)).to.be.true;
+        expect(await helpers.existsElement(driver, `a[href="/${navElement}"]`)).to.be.true;
       });
     }
     elements.forEach((el) => {
@@ -121,7 +119,7 @@ describe('Home Page', function () {
     it('should redirect to login page after logging out', async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.waitForSelector(driver, css.topBar.login);
-      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/#/auth/login`);
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/auth/login`);
       expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
       expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be.true;
     });

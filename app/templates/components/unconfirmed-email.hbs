@@ -1,0 +1,18 @@
+<div class="info-container">
+  <p class="info">Hi, {{currentUser.displayName}}! Thank you for taking the time to create an EnCoMPASS account.</p>
+
+  <p class="info">In order to start using the EnCoMPASS software, we need to confirm your email address. Please check {{currentUser.email}} for an email containing further instructions.</p>
+
+  <p class="info">If for some reason the email is not delivered, please click the button below to have a new email sent.</p>
+
+  <button class="action_button" {{action "sendEmail"}}>Send New Email</button>
+
+  {{#if emailSuccess}}
+    <p id="resent-confirm" class="success-message">Email sent!</p>
+  {{/if}}
+  {{#each emailErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+</div>
+
+

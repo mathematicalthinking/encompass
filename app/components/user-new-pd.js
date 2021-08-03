@@ -1,7 +1,13 @@
-Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
+import $ from 'jquery';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import UserSignupMixin from '../mixins/user_signup_mixin';
+
+export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
+  router: service('router'),
   elementId: 'user-new-pd',
-  alert: Ember.inject.service('sweet-alert'),
-  routing: Ember.inject.service('-routing'),
+  alert: service('sweet-alert'),
   errorMessage: null,
   username: '',
   password: '',
@@ -22,10 +28,10 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       if (!data) {
         return reject('Invalid data');
       }
-      Ember.$.post({
-          url: '/auth/signup',
-          data: data
-        })
+      $.post({
+        url: '/auth/signup',
+        data: data
+      })
         .then((res) => {
           return resolve(res);
         })
@@ -37,18 +43,18 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
   actions: {
     newUser: function () {
-      var currentUser = this.get('currentUser');
-      var username = this.get('username');
-      var password = this.get('password');
-      var firstName = this.get('firstName');
-      var lastName = this.get('lastName');
-      var email = this.get('email');
+      var currentUser = this.currentUser;
+      var username = this.username;
+      var password = this.password;
+      var firstName = this.firstName;
+      var lastName = this.lastName;
+      var email = this.email;
       var organization = currentUser.get('organization');
       var organizationId = organization.get('id');
-      var location = this.get('location');
-      var accountType = this.get('selectedType');
+      var location = this.location;
+      var accountType = this.selectedType;
       var accountTypeLetter = accountType.charAt(0).toUpperCase();
-      var isAuthorized = this.get('isAuthorized');
+      var isAuthorized = this.isAuthorized;
       var currentUserId = currentUser.get('id');
 
       if (!username || !password || !accountType) {
@@ -102,12 +108,12 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return;
       }
 
-      let newUserData = this.get('newUserData');
+      let newUserData = this.newUserData;
       return this.createNewUser(newUserData)
         .then((res) => {
           if (res.username) {
-            this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
-            return this.get('routing').router.transitionTo("users.user", res.id);
+            this.alert.showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
+            return this.router.transitionTo('users.user', res.id);
           }
           if (res.message === 'There already exists a user with that username') {
             this.set('usernameError', this.get('usernameErrors.taken'));
@@ -125,7 +131,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     },
 
     cancelNew: function () {
-      this.get('routing').router.transitionTo("users");
+      this.sendAction('toUserHome');
     },
 
     resetErrors(e) {

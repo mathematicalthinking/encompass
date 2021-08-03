@@ -1,27 +1,17 @@
 <div class="main-list">
-  {{#each answers as |answer|}}
-      {{submission-viewer-list-item
-        answer=answer
-        selectedAnswerIds=selectedAnswerIds
-        onSelect=(action "onSelect")
-        isList=isList
-        isGrid=isGrid
-        store=store
-        threads=threads
-        selectedMap=answersSelectedHash
-        moreMenuOptions=moreMenuOptions
-      }}
+  {{#each this.answers as |answer|}}
+      <SubmissionViewerListItem @answer={{answer}} @selectedAnswerIds={{selectedAnswerIds}} @onSelect={{action "onSelect"}} @isList={{this.isList}} @isGrid={{this.isGrid}} @store={{this.store}} @threads={{this.threads}} @selectedMap={{this.answersSelectedHash}} @moreMenuOptions={{moreMenuOptions}} />
       {{else}}
       <div class="no-results-container">
         <p class="info">No submissions found</p>
-        <img src="/images/no-results.svg" alt="No results">
+        <img src="../assets/images/no-results.svg" alt="No results">
         <p class="info">Please change the filter criteria</p>
       </div>
     {{/each}}
   </div>
 
   <div class="scroll-icon">
-    {{#if scrollBottom}}
+    {{#if this.scrollBottom}}
       <i class="fas fa-chevron-circle-down" {{action 'superScroll'}}></i>
     {{else}}
       <i class="fas fa-chevron-circle-up" {{action 'superScroll'}}></i>

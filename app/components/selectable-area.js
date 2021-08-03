@@ -4,22 +4,21 @@
  * - makingSelection
  * - showingSelections
  */
-Encompass.SelectableAreaComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import $ from 'jquery';
+
+export default Component.extend({
   elementId: 'selectable-area',
 
-  application: Ember.inject.controller(),
-
-  isTouchScreen: Ember.computed.alias('application.isTouchScreen'),
-
-  init: function() {
+  init: function () {
     this._super(...arguments);
     this.setupTagging();
   },
 
-  didInsertElement: function() {
+  didInsertElement: function () {
     this.set('currSubId', this.get('model.id'));
-    this.set('selecting', this.get('makingSelection'));
-    this.set('showing', this.get('showingSelections'));
+    this.set('selecting', this.makingSelection);
+    this.set('showing', this.showingSelections);
 
     let containerId = 'submission_container';
     let scrollableContainer = 'al_submission';
@@ -33,10 +32,10 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       container.style.position = 'relative';
     }
 
-    // set up the SelectionHighlighting object (from dependencies)
+    // set up the SelectionHighlighting object
     this.selectionHighlighting = new SelectionHighlighting({
       selectableContainerId: containerId,
-      automaticEvent: !this.get('isTouchScreen'),
+      automaticEvent: !this.isTouchScreen,
     });
     this.selectionHighlighting.init((id) => {
       let selection = this.selectionHighlighting.getSelection(id);
@@ -47,7 +46,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     // set up the ImageTagging object
     this.imageTagging = new window.ImageTagging({
       targetContainer: containerId,
-      isCompSelectionMode: this.get('makingSelection'),
+      isCompSelectionMode: this.makingSelection,
       scrollableContainer: scrollableContainer,
     });
     this.imageTagging.onSave((id, isUpdateOnly) => {
@@ -55,55 +54,48 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       tag.selectionType = 'image-tag';
       this.sendAction('addSelection', tag, isUpdateOnly);
     });
-    if(this.get('canSelect')){
-      this.selectionHighlighting.enableSelection();
-      this.imageTagging.enable();
-    }
 
-    this.selectionHighlighting.loadSelections(this.get('selections'));
-    this.imageTagging.loadTags(this.get('imgTags'));
+    this.selectionHighlighting.loadSelections(this.selections);
+    this.imageTagging.loadTags(this.imgTags);
 
-    if (this.get('showingSelections')) {
+    if (this.showingSelections) {
       this.selectionHighlighting.highlightAllSelections();
       this.imageTagging.showAllTags();
     }
-    if (!this.get('makingSelection')) {
+    if (!this.makingSelection) {
       this.selectionHighlighting.disableSelection();
       this.imageTagging.disable();
     }
-    this.get('setupResizeHandler')();
+    this.setupResizeHandler();
 
   },
 
   didReceiveAttrs() {
-    let selections = this.get('sels');
-    let currentSelections = this.get('currentSelections');
+    let selections = this.sels;
+    let currentSelections = this.currentSelections;
     if (!currentSelections) {
       this.set('currentSelections', selections);
     }
     this._super(...arguments);
   },
 
-  didUpdateAttrs: function() {
+  didUpdateAttrs: function () {
     let highlighting = this.selectionHighlighting;
     let tagging = this.imageTagging;
-    if(this.get('canSelect')){
-      highlighting.enableSelection();
-      tagging.enable();
-    }
+
     let currentSelsLength = this.get('currentSelections.length');
     let attrSelsLength = this.get('sels.length');
 
     if (attrSelsLength !== currentSelsLength) {
-      this.set('currentSelections', this.get('sels'));
+      this.set('currentSelections', this.sels);
     }
 
     let wasSelRemoved = currentSelsLength > attrSelsLength;
 
     //submission was changed
-    if (this.get('currSubId') !== this.get('model.id')) {
+    if (this.currSubId !== this.get('model.id')) {
       this.imageTagging.removeAllTags();
-      // this.set('makingSelection', false);
+      this.set('makingSelection', false);
       this.set('showingSelections', false);
       return this.sendAction('handleTransition', true);
     }
@@ -113,14 +105,14 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     }
     this.setupTagging();
 
-    highlighting.loadSelections(this.get('selections'));
+    highlighting.loadSelections(this.selections);
 
-    tagging.loadTags(this.get('imgTags'));
+    tagging.loadTags(this.imgTags);
 
-    let isSelecting = this.get('makingSelection');
-    let isShowing = this.get('showingSelections');
+    let isSelecting = this.makingSelection;
+    let isShowing = this.showingSelections;
 
-    if (isSelecting !== this.get('selecting')) {
+    if (isSelecting !== this.selecting) {
       // toggled from NOT selecting to now selecting
       if (isSelecting) {
         this.set('selecting', true);
@@ -134,10 +126,9 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       }
     }
 
-    if (isShowing !== this.get('showing')) {
+    if (isShowing !== this.showing) {
       if (isShowing) {
         // toggled from NOT showing selections to now showing selections
-        console.log("showing!!");
         this.set('showing', true);
         highlighting.highlightAllSelections();
         tagging.showAllTags();
@@ -148,7 +139,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
         tagging.removeAllTags();
 
       }
-    } else if(isShowing) {
+    } else if (isShowing) {
       // for when switching between submissions while showing selections
       highlighting.highlightAllSelections();
       tagging.showAllTags();
@@ -156,20 +147,20 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
   },
 
-  setupTagging: function() {
+  setupTagging: function () {
     var selections = [];
     var imgTags = [];
 
     if (this.model) {
-      this.model.get('selections').forEach(function(selection) {
+      this.model.get('selections').forEach(function (selection) {
         if (selection.get('isTrashed')) {
           return; // don't include trashed selections
         }
 
         var coordinates = selection.get('coordinates'),
-            arrCoords = [];
+          arrCoords = [];
 
-        if(coordinates) {
+        if (coordinates) {
           arrCoords = coordinates.split(' ');
         }
         if (arrCoords.length === 6) {
@@ -214,7 +205,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
   actions: {
     toggleShow() {
-      this.get('toggleShow')();
+      this.toggleShow();
     }
   }
 

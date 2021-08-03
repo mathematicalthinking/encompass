@@ -1,72 +1,28 @@
-# node files
-node_modules/
-# package_lock.json # using npm-shrinkwrap.json
+# See https://help.github.com/ignore-files/ for more about ignoring files.
 
-# for security
-config.json
+# compiled output
+/dist/
+/tmp/
 
-# build files
-build/.test/*.*
-build/application-prod.js
-build/application.js
-build/common_bundle.js
-dist/**/*
-dependencies/compiled/*.*
-.grunt
-_SpecRunner.html
-error.out
-server.out
-prod.zip
-staging.zip
-prod_env
-staging_env
-error*.txt
+# dependencies
+/bower_components/
+/node_modules/
 
-# conversion files
-errorProblems.txt
-dump/**/*
-server/db_migration/missingPowsSubs.json
+# misc
+/.env*
+/.pnp*
+/.sass-cache
+/.eslintcache
+/connect.lock
+/coverage/
+/libpeerconnection.log
+/npm-debug.log*
+/testem.log
+/yarn-error.log
+*.out
 
-#babel files
-babel/
-
-# public uploads
-# server/public/image_uploads/**
-# build/image_uploads/**
-# dist/image_uploads/**
-
-# mac files
+# ember-try
+/.node_modules.ember-try/
+/bower.json.ember-try
+/package.json.ember-try
 .DS_Store
-
-#vs code
-.vscode
-
-#.exe
-.exe
-
-#env
-.env*
-
-#sass
-.sass-cache
-build/main.css
-build/main.css.map
-
-# why?
-# test/runner.html
-# *.swp
-# *.swo
-# *.~
-
-ChromeDriver.exe
-
-/ChromeDriver
-
-#Common core data
-/Common-Core-Data
-
-# test screenshots
-test/selenium/screenshots
-
-# email creds generated on fly by tests
-ethereal_creds.json

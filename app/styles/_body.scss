@@ -1,0 +1,203 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+
+body {
+  font-family: $primary-font;
+  background: $background-body;
+  color: $primary-font-color;
+  height: 100%;
+  width: 100%;
+}
+
+i {
+  cursor: pointer;
+  &.fas.fa-globe-americas {
+    cursor: default;
+  }
+  &.fas.fa-lock {
+    cursor: default;
+  }
+  &.fas.fa-unlock {
+    cursor: default;
+  }
+}
+
+a {
+  color: $primary-font-color;
+  text-decoration: none;
+}
+
+strong {
+  font-weight: $bolder-font-weight;
+}
+
+textarea {
+  font-family: $primary-font;
+  font-size: 1em;
+}
+
+.card-container {
+  box-shadow: $card-shadow;
+  transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+  max-height: 500px;
+  min-height: 250px;
+  max-width: 600px;
+  min-width: 300px;
+  @include flex-container(100%, null, column, nowrap, center, center, stretch);
+  background-color: white;
+  &:hover {
+    box-shadow: $card-hover;
+    z-index: 0;
+  }
+  .card-title {
+    @include flex-item(1, flex-start, 0 1 auto);
+    width: 100%;
+    font-weight: $light-font-weight;
+    border-bottom: .5px solid $input-border;
+    .card-heading {
+      padding: 18px 15px 15px 15px;
+    }
+  }
+  .card-image {
+    @include flex-item(2, center, 1 1 auto);
+    height: 350px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    &:hover .overlay {
+      opacity: .2;
+    }
+  }
+  .overlay {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: black;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    transition: .5s ease;
+    button {
+      border: none;
+      background: none;
+      i {
+        color: white;
+        font-size: 5em;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+  .card-end {
+    border-top: .5px solid $input-border;
+    @include flex-item(3, center, 1 1 auto);
+    width: 100%;
+    height: 80px;
+    .selectize-comp {
+      margin: 15px;
+      .selectize-control.multi .selectize-input>div {
+        color: white;
+        background-color: $accent-color;
+      }
+    }
+  }
+}
+
+.required-star {
+  color: $error-color;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+  color: $error-color;
+}
+
+#al_body {
+  position: absolute;
+  box-sizing: border-box;
+  top: 75px;
+  left: 0;
+  width: 100%;
+  height: 91vh;
+  font: $primary-font;
+}
+
+
+#al_body .active {
+  background: #e7e7e7;
+  opacity: 1;
+  filter: alpha(opacity=100);
+  font-weight:$bold-font-weight;
+}
+
+#al_body>header {
+  padding: 15px 10px;
+  background: $background-color;
+}
+
+#al_body>header h2 {
+  font-size: 20px;
+  float: left;
+  // display: inline;
+  font-weight: bold;
+}
+
+#al_body>header aside {
+  float: right;
+  // display: inline;
+}
+
+#al_body>header aside a {
+  padding: 7px;
+  margin-left: 5px;
+  background-color: $accent-yellow;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+#al_body header aside a span.al_feedback {
+  width: 24px;
+  height: 12px;
+  background: url(images/sprite-feedback-icon.png) 0 0 no-repeat;
+  display: inline-block;
+}
+
+#al_body>div header {
+  line-height: 50px;
+  // padding: 0 6px;
+}
+
+sub, sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+blockquote {
+  border-left: 4px solid #ccc;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding-left: 16px;
+}
+.ql-editor {
+  white-space: normal!important;
+}

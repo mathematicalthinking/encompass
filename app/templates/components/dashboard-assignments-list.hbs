@@ -1,86 +1,38 @@
-{{#if sortedProblems.length}}
-<h2 class="header-home">{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
-  <table class="max-width">
-    <tr>
-      <td>
-        <div class="table-m">
-        <table class="max-width">
-          <tr id="blue">
-            <th>{{toggle-control
-            classToAdd="sort-bar-item name"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.name
-            label="Problem"
-            parentProp=sortCriterion
-            type="name"
-            activeType=sortCriterion.type}}</th>
-            {{#unless user.isStudent}}
-            <th>{{toggle-control
-            classToAdd="sort-bar-item name"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.class
-            label="Class"
-            parentProp=sortCriterion
-            type="class"
-            activeType=sortCriterion.type}}</th>
-            {{/unless}}
-            <th>{{toggle-control
-            classToAdd="sort-bar-item name"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.assignedDate
-            label="Date Assigned"
-            parentProp=sortCriterion
-            type="assignedDate"
-            activeType=sortCriterion.type}}</th>
-            <th>{{toggle-control
-            classToAdd="sort-bar-item name"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.dueDate
-            label="Date Due"
-            parentProp=sortCriterion
-            type="dueDate"
-            activeType=sortCriterion.type}}</th>
-            <th>{{toggle-control
-            classToAdd="sort-bar-item name"
-            onUpdate=(action "updateSortCriterion")
-            initialState=1
-            options=sortOptions.status
-            label="Status"
-            parentProp=sortCriterion
-            type="status"
-            activeType=sortCriterion.type}}</th>
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
+  <tr>
+    <td>
+      <div style="width:100%; overflow:auto;">
+      <table cellspacing="1" cellpadding="1" border="1" width="100%">
+        <tr id="blue">
+          <th>Problem</th>
+          <th>Class</th>
+          <th>Date Assigned</th>
+          <th>Date Due</th>
+          <th>Status</th>
+        </tr>
+      </table>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="dash-problems al_body" style="width:100%; height:80px; overflow:auto;">
+        <table cellspacing="0" cellpadding="1" border="1" width="100%">
+          {{#each this.yourList as |assignment|}}
+          <tr>
+            <td><LinkTo @route="assignments.assignment" @model={{assignment.id}} @classNames="link">{{assignment.name}}</LinkTo></td>
+            <td><LinkTo @route="sections.section" @model={{assignment.section.id}} @classNames="link">{{assignment.section.name}}</LinkTo></td>
+            <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
+            <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
+            {{#if assignment.answers.content.currentState.length}}
+                <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
+              {{else}}
+                <td>No submissions</td>
+            {{/if}}
           </tr>
+          {{/each}}
         </table>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div class="dash-problems al_body resize" style="max-height:{{calculate-table-height sortedProblems.length}};">
-          <table class="max-width">
-            {{#each sortedProblems as |assignment|}}
-            <tr>
-              <td>{{#link-to 'assignment' assignment.id classNames='link'}}{{assignment.name}}{{/link-to}}</td>
-              {{#unless user.isStudent}}
-              <td>{{#link-to 'sections.section' assignment.section.sectionId classNames='link'}}{{assignment.section.name}}{{/link-to}}</td>
-              {{/unless}}
-              {{log "AD" assignment.assignedDate}}
-              <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
-              <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
-              {{#if assignment.answers.content.currentState.length}}
-                  <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
-                {{else}}
-                  <td>No submissions</td>
-              {{/if}}
-            </tr>
-            {{/each}}
-          </table>
-        </div>
-      </td>
-    </tr>
-  </table>
-{{/if}}
+      </div>
+    </td>
+  </tr>
+</table>

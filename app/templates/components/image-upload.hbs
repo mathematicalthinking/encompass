@@ -9,20 +9,20 @@
 </form>
 
 {{#if missingFilesError}}
-  {{error-box error="Please select files to upload" resetError=(action (mut missingFilesError) null) showDismiss=true}}
+  <ErrorBox @error="Please select files to upload" @resetError={{action (mut missingFilesError) null}} @showDismiss={{true}} />
 {{/if}}
 
 {{#if isOverSizeLimit}}
   {{#if isOverPdfLimit}}
-    {{error-box error=overPdfLimitMsg showDismiss=true}}
+    <ErrorBox @error={{overPdfLimitMsg}} @showDismiss={{true}} />
   {{/if}}
   {{#if isOverImageLimit}}
-    {{error-box error=overImageLimitMsg showDismiss=true}}
+    <ErrorBox @error={{overImageLimitMsg}} @showDismiss={{true}} />
   {{/if}}
 {{/if}}
 
 {{#if overSizedFileError}}
-  {{error-box error=overSizedFileError showDismiss=true resetError=(action (mut overSizedFileError) null)}}
+  <ErrorBox @error={{overSizedFileError}} @showDismiss={{true}} @resetError={{action (mut overSizedFileError) null}} />
 {{/if}}
 
 {{#unless uploadResults}}

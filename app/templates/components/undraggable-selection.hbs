@@ -1,20 +1,20 @@
-<div class="selectionLink {{if isImage "image-tag"}} {{if isSelected 'is-selected'}} {{if isText "selection_text"}}"
-  title="{{titleText}} {{if isParentWorkspace " by "}} {{if isParentWorkspace selection.originalSelection.createdBy.username}} {{if isParentWorkspace " in "}} {{if isParentWorkspace selection.originalSelection.workspace.name}}">
-  {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection classNames=linkToClassName}}
-    {{#if isImage}}
-        <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
+<div class="selectionLink {{if this.isImage "image-tag"}} {{if this.isSelected 'is-selected'}} {{if this.isText "selection_text"}}"
+  title="{{this.titleText}} {{if this.isParentWorkspace " by "}} {{if this.isParentWorkspace this.selection.originalSelection.createdBy.username}} {{if this.isParentWorkspace " in "}} {{if this.isParentWorkspace this.selection.originalSelection.workspace.name}}">
+  <LinkTo @route="selection" @models={{array this.selection.workspace this.selection.submission this.selection}} @classNames={{this.linkToClassName}}>
+    {{#if this.isImage}}
+        <img class="img-tag-thmb" src={{this.selection.imageTagLink}} alt={{this.selection.text}}>
         <div class="overlay">
-          <button {{action 'expandImage'}}><i class={{overlayIcon}}></i></button>
+          <button {{action 'expandImage'}}><i class={{this.overlayIcon}}></i></button>
         </div>
     {{else}}
-      {{selection.text}}
+      {{this.selection.text}}
     {{/if}}
-  {{/link-to}}
+  </LinkTo>
 </div>
 
-{{#if isExpanded}}
+{{#if this.isExpanded}}
   <div class="full-image">
     <i class="fas fa-times" {{action 'expandImage'}}></i>
-    <img src={{selection.imageTagLink}} alt={{selection.text}}>
+    <img src={{this.selection.imageTagLink}} alt={{this.selection.text}}>
   </div>
 {{/if}}

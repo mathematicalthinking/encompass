@@ -1,18 +1,21 @@
-Encompass.CheckboxListComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default Component.extend({
   classNames: ['checkbox-list'],
 
   selectedItems: [],
   isToggledAll: false,
 
-  selectAllLabel: function() {
-    let isOn = this.get('isToggledAll');
+  selectAllLabel: computed('isToggledAll', function () {
+    let isOn = this.isToggledAll;
     return isOn ? 'Deselect All' : 'Select All';
-  }.property('isToggledAll'),
+  }),
 
   didReceiveAttrs() {
-    let initialSelectedItems = this.get('initialSelectedItems');
+    let initialSelectedItems = this.initialSelectedItems;
     if (initialSelectedItems) {
-      this.get('selectedItems').addObjects(initialSelectedItems);
+      this.selectedItems.addObjects(initialSelectedItems);
     }
   },
 
@@ -21,7 +24,7 @@ Encompass.CheckboxListComponent = Ember.Component.extend({
       if (!item) {
         return;
       }
-      let selectedItems = this.get('selectedItems');
+      let selectedItems = this.selectedItems;
       if (wasSelected) {
         selectedItems.removeObject(item);
       } else {
@@ -29,14 +32,13 @@ Encompass.CheckboxListComponent = Ember.Component.extend({
       }
     },
     onToggleAll() {
-     let wasSelected = this.get('isToggledAll');
+      let wasSelected = this.isToggledAll;
       if (wasSelected) {
         this.set('selectedItems', []);
       } else {
-        this.set('selectedItems', this.get('items'));
+        this.set('selectedItems', this.items);
       }
       this.toggleProperty('isToggledAll');
-
-    }
-  }
+    },
+  },
 });

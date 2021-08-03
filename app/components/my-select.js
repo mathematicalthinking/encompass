@@ -1,14 +1,15 @@
-Encompass.MySelectComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+export default Component.extend({
   content: null,
   selectedValue: null,
   optionLabelPath: '',
-  classNames: ['mySelect'],
-  elementId: 'my-select',
+  classNames: ['mySelect', 'my-select'],
 
   // didInitAttrs is deprecated according to Ember docs
-  didInitAttrs: function(attrs) {
+  didInitAttrs: function (attrs) {
     this._super.apply(null, arguments);
-    var content = this.get('content');
+    var content = this.content;
 
     if (!content) {
       this.set('content', []);
@@ -16,8 +17,8 @@ Encompass.MySelectComponent = Ember.Component.extend({
   },
 
   actions: {
-    selectChange: function() {
-      var changeAction = this.get('action');
+    selectChange: function () {
+      var changeAction = this.action;
       var selectedEl = this.$('select')[0];
       var prompt = this.$('#select-prompt');
       var selectedIndex;
@@ -28,7 +29,7 @@ Encompass.MySelectComponent = Ember.Component.extend({
         selectedIndex = selectedEl.selectedIndex;
       }
 
-      var content = this.get('content');
+      var content = this.content;
       var selectedValue = content.objectAt(selectedIndex);
       this.set('selectedValue', selectedValue);
       changeAction(selectedValue);

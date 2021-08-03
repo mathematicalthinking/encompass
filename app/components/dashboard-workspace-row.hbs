@@ -1,0 +1,18 @@
+  <tr>
+    <td class="inner"><LinkTo @route='workspace.work' @model={{@workspace.id}} classNames='link'>{{@workspace.name}}</LinkTo></td>
+    {{#if myAssignment.section.name}}
+    <td><LinkTo @route='sections.section' @model={{myAssignment.section.sectionId}}
+      classNames='link'>{{myAssignment.section.name}}</LinkTo></td>
+    {{else}}
+    <td>N/A</td>
+    {{/if}}
+    <td>{{@workspace.owner.username}}</td>
+    <td>{{format-date myAssignment.assignedDate 'MMM Do YYYY' }}</td>
+    <td>{{format-date myAssignment.dueDate 'MMM Do YYYY' }}</td>
+    {{#if @workspace.submissionsLength}}
+    <td>Submissions: ({{@workspace.submissionsLength}})</td>
+    {{else}}
+    <td>No submissions</td>
+    {{/if}}
+    <td>{{format-date @workspace.lastModifiedDate 'MMM Do YYYY'}}</td>
+  </tr>

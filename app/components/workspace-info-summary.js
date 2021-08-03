@@ -1,4 +1,11 @@
-Encompass.WorkspaceInfoSummaryComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   classNames: ['workspace-info-summary'],
 
 });

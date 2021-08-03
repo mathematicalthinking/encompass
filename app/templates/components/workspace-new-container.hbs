@@ -1,34 +1,17 @@
 <div class="flex-container-full">
-  {{#if showSubmissionViewer}}
+  {{#if this.showSubmissionViewer}}
     <div class="flex-item-full filter-options collapse" id="filter-list-side">
-      {{submissions-filter
-        store=store
-        onSearch=(action "setFilterCriteria")
-        sections=model.sections
-        assignments=model.assignments
-        users = model.users
-        selectedFolderSet=selectedFolderSet
-        selectedAssignment=selectedAssignment
-        selectedSection=selectedSection
-        selectedProblem=selectedProblem
-        selectedStudents=selectedStudents
-        selectedTeacher=selectedTeacher
-        startDate=startDate
-        endDate=endDate
-        isTrashedOnly=toggleTrashed
-      }}
-
-
+      <SubmissionsFilter @store={{this.store}} @onSearch={{action "setFilterCriteria"}} @sections={{this.model.sections}} @assignments={{this.model.assignments}} @users={{this.model.users}} @selectedFolderSet={{this.selectedFolderSet}} @selectedAssignment={{this.selectedAssignment}} @selectedSection={{this.selectedSection}} @selectedProblem={{this.selectedProblem}} @selectedStudents={{this.selectedStudents}} @selectedTeacher={{this.selectedTeacher}} @startDate={{this.startDate}} @endDate={{this.endDate}} @isTrashedOnly={{this.toggleTrashed}} @currentUser={{this.currentUser}} />
 
     </div>
     <div class="flex-item-full list-view">
       <div class="list-container">
         <div class="top-row">
           <h1 class="heading">Submissions</h1>
-        {{#if selectedAnswers.length}}
-          {{#if toggleTrashed}}
+        {{#if this.selectedAnswers.length}}
+          {{#if this.toggleTrashed}}
           <div class="action restore-all">
-            <button class="primary-button animated fadeIn" {{action "restoreAllSelected"}}>Restore {{selectedAnswers.length}} Submissions</button>
+            <button class="primary-button animated fadeIn" {{action "restoreAllSelected"}}>Restore {{this.selectedAnswers.length}} Submissions</button>
           </div>
           {{else}}
           <div class="action">
@@ -43,16 +26,16 @@
           <div class="results-icons">
             <span class="icon-message submissions">
               <i class="fas fa-file"></i>
-              {{sortedAnswers.length}} Submissions
+              {{this.sortedAnswers.length}} Submissions
             </span>
             <span class="icon-message selected">
               <i class="fas fa-check-circle"></i>
-              {{selectedAnswers.length}} Selected
+              {{this.selectedAnswers.length}} Selected
             </span>
-            {{#if submissionThreads.size}}
+            {{#if this.submissionThreads.size}}
               <span class="icon-message students">
                 <i class="fas fa-user"></i>
-                {{submissionThreads.size}} Students
+                {{this.submissionThreads.size}} Students
               </span>
             {{else}}
               <span class="icon-message students">
@@ -61,7 +44,7 @@
             {{/if}}
           </div>
           <div class="side-icons">
-            {{my-select content=revisionsSelectOptions cannotBeNull=true selectedValue=selectedRevisionOption action=(action (mut selectedRevisionOption))}}
+            <MySelect @content={{this.revisionsSelectOptions}} @cannotBeNull={{true}} @selectedValue={{this.selectedRevisionOption}} @action={{action (mut this.selectedRevisionOption)}} />
             <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Submission list"></i>
           </div>
         </div>
@@ -70,60 +53,14 @@
             <div class="sort-bar-item toggle-all">
               <input type="checkbox" onclick={{action "toggleCheckAllAnswers"}}>
             </div>
-            {{
-              toggle-control
-              classToAdd="sort-bar-item student"
-              onUpdate=(action "updateSortCriterion")
-              initialState=1
-              options=sortOptions.student
-              label="Student"
-              parentProp=sortCriterion
-              type="student"
-              activeType=sortCriterion.type
-            }}
-            {{
-              toggle-control
-              classToAdd="sort-bar-item revisions"
-              onUpdate=(action "updateSortCriterion")
-              initialState=0
-              options=sortOptions.revisions
-              label="Revisions"
-              type="revisions"
-              activeType=sortCriterion.type
-            }}
-            {{
-              toggle-control
-              classToAdd="sort-bar-item explanation"
-              onUpdate=(action "updateSortCriterion")
-              initialState=0
-              options=sortOptions.explanation
-              label="Explanation"
-              type="explanation"
-              activeType=sortCriterion.type
-            }}
-            {{
-              toggle-control
-              classToAdd="sort-bar-item section"
-              onUpdate=(action "updateSortCriterion")
-              initialState=0
-              options=sortOptions.section
-              label="Class"
-              type="section"
-              activeType=sortCriterion.type
-            }}
-            {{
-              toggle-control
-              classToAdd="sort-bar-item createDate"
-              onUpdate=(action "updateSortCriterion")
-              initialState=0
-              options=sortOptions.createDate
-              label="Date"
-              type="createDate"
-              activeType=sortCriterion.type
-            }}
+            <ToggleControl @classToAdd="sort-bar-item student" @onUpdate={{action "updateSortCriterion"}} @initialState={{1}} @options={{this.sortOptions.student}} @label="Student" @parentProp={{this.sortCriterion}} @type="student" @activeType={{this.sortCriterion.type}} />
+            <ToggleControl @classToAdd="sort-bar-item revisions" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.revisions}} @label="Revisions" @type="revisions" @activeType={{this.sortCriterion.type}} />
+            <ToggleControl @classToAdd="sort-bar-item explanation" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.explanation}} @label="Explanation" @type="explanation" @activeType={{this.sortCriterion.type}} />
+            <ToggleControl @classToAdd="sort-bar-item section" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.section}} @label="Class" @type="section" @activeType={{this.sortCriterion.type}} />
+            <ToggleControl @classToAdd="sort-bar-item createDate" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.createDate}} @label="Date" @type="createDate" @activeType={{this.sortCriterion.type}} />
             <div class="sort-bar-item more"></div>
           </div>
-          {{#if isFetchingAnswers}}
+          {{#if this.isFetchingAnswers}}
             <div class="loading-message-container">
               <p class="loading-message">Loading submissions</p>
                 <div style="color: #3997EE" class="la-ball-clip-rotate la-3x loading">
@@ -131,30 +68,20 @@
                 </div>
               <p class="loading-message">Thank you for your patience</p>
             </div>
-          {{else if isRequestTooLarge}}
-            {{tooLargeRequestErrorMessage}}
+          {{else if this.isRequestTooLarge}}
+            {{this.tooLargeRequestErrorMessage}}
           {{else}}
-          {{submission-viewer-list answers=sortedAnswers metadata=answersMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store
-            onSelect=(action "updateSelectedAnswers")
-            selectedAnswers=selectedAnswers
-            threads=submissionThreads}}
+          <SubmissionViewerList @answers={{this.sortedAnswers}} @metadata={{this.answersMetadata}} @isList={{true}} @isGrid={{false}} @moreMenuOptions={{this.moreMenuOptions}} @store={{this.store}} @onSelect={{action "updateSelectedAnswers"}} @selectedAnswers={{this.selectedAnswers}} @threads={{this.submissionThreads}} />
           {{/if}}
         </div>
       </div>
     </div>
     {{/if}}
   </div>
-  {{#if showWorkspaceSettingsMenu}}
-    {{workspace-new-settings
-      store=store
-      users=model.users
-      folderSets=model.folderSets
-      onProceed=(action "createWorkspace")
-      onBack=(action "toSearchFilter")
-      createWorkspaceError=createWorkspaceError
-    }}
+  {{#if this.showWorkspaceSettingsMenu}}
+    <WorkspaceNewSettings @store={{this.store}} @users={{this.model.users}} @folderSets={{this.model.folderSets}} @onProceed={{action "createWorkspace"}} @onBack={{action "toSearchFilter"}} @createWorkspaceError={{this.createWorkspaceError}} />
   {{/if}}
-  {{#if showSubmissionViewer}}
+  {{#if this.showSubmissionViewer}}
     <div class="toggle-filter-menu">
     <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
 

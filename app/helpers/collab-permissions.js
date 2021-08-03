@@ -1,4 +1,11 @@
-Encompass.CollabPermissionsHelper = Ember.Helper.helper(function(val) {
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (val) {
   let text;
   val = val[0];
   switch (val) {

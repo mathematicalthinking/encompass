@@ -1,10 +1,17 @@
 /*global _:false */
-Encompass.SelectizeInputComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   showInput: true,
   classNames: ['selectize-comp'],
   didUpdateAttrs() {
     let newPropName = this.propName;
-    let oldPropName = this.get('currentPropName');
+    let oldPropName = this.currentPropName;
 
     let selectizeControl = this.$('select')[0].selectize;
     if (!selectizeControl) {
@@ -20,8 +27,8 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
         this.set('currentPropName', newPropName);
       }
     }
-    const newOptions = this.get('initialOptions');
-    const currentOptions = this.get('options');
+    const newOptions = this.initialOptions;
+    const currentOptions = this.options;
     if ((newOptions && currentOptions) && !_.isEqual(newOptions, currentOptions)) {
       selectizeControl.clearOptions();
       selectizeControl.addOption(newOptions);
@@ -31,16 +38,16 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   },
 
   didReceiveAttrs() {
-    let options = this.get('initialOptions');
-    let items = this.get('initialItems');
+    let options = this.initialOptions;
+    let items = this.initialItems;
 
     if (!options) {
-      if (this.get('model') && this.get('valueField') && this.get('labelField')) {
-        let peeked = this.get('store').peekAll(this.get('model'));
+      if (this.model && this.valueField && this.labelField) {
+        let peeked = this.store.peekAll(this.model);
         if (peeked) {
           options = peeked.map((record) => {
-            let valueField = this.get('valueField');
-            let labelField = this.get('labelField');
+            let valueField = this.valueField;
+            let labelField = this.labelField;
             return {
               [valueField]: record.get(valueField),
               [labelField]: record.get(labelField)
@@ -54,7 +61,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     this.set('options', options);
     this.set('items', items);
 
-    if (_.isUndefined(this.get('currentPropName'))) {
+    if (_.isUndefined(this.currentPropName)) {
       this.set('currentPropName', this.propName);
     }
 
@@ -66,8 +73,8 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     // }
     if (!this.propsToMap) {
       let propsToMap = [];
-      propsToMap.addObject(this.get('labelField'));
-      propsToMap.addObject(this.get('valueField'));
+      propsToMap.addObject(this.labelField);
+      propsToMap.addObject(this.valueField);
       this.set('propsToMap', propsToMap);
     }
 
@@ -92,10 +99,10 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   // useEmberObjectsAsync
 
   didInsertElement() {
-    let options = this.get('optionsHash');
-    let id = this.get('inputId');
+    let options = this.optionsHash;
+    let id = this.inputId;
     this.$(`#${id}`).selectize(options);
-    if (this.get('isDisabled')) {
+    if (this.isDisabled) {
       this.$('select')[0].selectize.disable();
     }
     this._super(...arguments);
@@ -104,12 +111,12 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   configureOptionsHash() {
     let hash = {
       valueField: this.valueField || 'id',
-      labelField:  this.labelField || 'id',
+      labelField: this.labelField || 'id',
       searchField: this.searchField || 'id',
-      options: this.get('options') || [],
+      options: this.options || [],
       maxItems: this.maxItems || null,
       maxOptions: this.maxOptions || 1000,
-      items: this.get('items') || [],
+      items: this.items || [],
       create: this.create || false,
       persist: this.persist || false,
       createFilter: this.createFilter || null,
@@ -117,16 +124,16 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     };
 
     let that = this;
-    let propToUpdate = this.get('propToUpdate');
+    let propToUpdate = this.propToUpdate;
 
     if (this.onItemAdd) {
-      hash.onItemAdd = function(value, $item) {
+      hash.onItemAdd = function (value, $item) {
         that.get('onItemAdd')(value, $item, propToUpdate, that.get('model'));
       };
     }
 
     if (this.onItemRemove) {
-      hash.onItemRemove = function(value) {
+      hash.onItemRemove = function (value) {
         that.get('onItemRemove')(value, null, propToUpdate);
       };
     }
@@ -136,26 +143,26 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     }
 
     if (this.isAsync) {
-      hash.load = this.get('addItemsSelectize').bind(this);
+      hash.load = this.addItemsSelectize.bind(this);
     }
 
     return hash;
 
   },
 
-  addItemsSelectize: function(query, callback) {
-    if (this.get('doFetch') === false) {
+  addItemsSelectize: function (query, callback) {
+    if (this.doFetch === false) {
       return callback();
     }
     if (!query.length) {
-      if (!this.get('preload')) {
+      if (!this.preload) {
         return callback();
       }
       // to preload results
       query = ' ';
     }
 
-    let key = this.get('queryParamsKey');
+    let key = this.queryParamsKey;
     /*
       for api that is expecting searchBy to be in shape:
       searchBy: {
@@ -163,11 +170,11 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
         criterion: string
       }
     */
-    let searchCriterion = this.get('searchCriterion');
+    let searchCriterion = this.searchCriterion;
     let queryParams = {};
-    let topLevelQueryParams = this.get('topLevelQueryParams');
-    let secondaryFilters = this.get('secondaryFilters');
-    let customQueryParams = this.get('customQueryParams');
+    let topLevelQueryParams = this.topLevelQueryParams;
+    let secondaryFilters = this.secondaryFilters;
+    let customQueryParams = this.customQueryParams;
 
     if (customQueryParams) {
       // use custom params object passed in
@@ -198,7 +205,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       };
     }
 
-    let model = this.get('model');
+    let model = this.model;
 
     this.store.query(model, queryParams)
       .then((results) => {
@@ -207,8 +214,8 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
         this.set('metaData', meta);
 
         let resultsArray = results.toArray();
-        let selectedItemsHash = this.get('selectedItemsHash');
-        let valueField = this.get('valueField');
+        let selectedItemsHash = this.selectedItemsHash;
+        let valueField = this.valueField;
         // filter out already selected items
         if (_.isObject(selectedItemsHash) && _.isString(valueField)) {
           resultsArray = resultsArray.reject((record) => {
@@ -218,16 +225,16 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
 
         // if we want the ember objects
         // was having issues with this though
-        if (this.get('useEmberObjectsAsync')) {
+        if (this.useEmberObjectsAsync) {
           return callback(resultsArray);
         }
 
         let mapped = _.map(resultsArray, (item) => {
           let obj = {};
 
-          let propsToMap = this.get('propsToMap');
+          let propsToMap = this.propsToMap;
           _.each(propsToMap, (prop) => {
-              obj[prop] = item.get(prop);
+            obj[prop] = item.get(prop);
           });
 
           return obj;

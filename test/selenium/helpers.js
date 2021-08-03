@@ -5,7 +5,7 @@ const sharp = require('sharp');
 const path = require('path');
 
 // REQUIRE FILES
-const config = require('../../server/config');
+const config = require('../../app_server/config');
 const css = require('./selectors');
 
 // testing timeout values
@@ -13,10 +13,10 @@ const timeoutMs = 10000;  // timeout per await
 const timeoutTestMsStr = '25s';  // timeout per test
 
 const nconf = config.nconf;
-const port = nconf.get('testPort');
+const port = nconf.get('clientPort');
 const host = `http://localhost:${port}`;
 
-const loginUrl = `${host}/#/auth/login`;
+const loginUrl = `${host}/auth/login`;
 
 const admin = {
   username: 'Rick', // case insensitive
@@ -329,18 +329,22 @@ const createFilterList = function (isStudent, isAdmin, filterList, removeChildre
   return filterOptions;
 };
 
-const selectOption = async function (webDriver, selector, item, isByCss) {
+const selectOption = async function (
+  webDriver,
+  selector,
+  item,
+  isByCss = false
+) {
   try {
     let selectList;
     if (isByCss) {
       selectList = await webDriver.findElement(By.css(selector));
     } else {
-    selectList = await webDriver.findElement(By.id(selector));
-
+      selectList = await webDriver.findElement(By.id(selector));
     }
-  await selectList.click();
-  let el = await selectList.findElement(By.css(`option[value="${item}"]`));
-  await el.click();
+    await selectList.click();
+    let el = await selectList.findElement(By.css(`option[value="${item}"]`));
+    await el.click();
     return true;
   } catch (err) {
     console.log(err);
@@ -555,7 +559,7 @@ const waitForAttributeToEql = function(webDriver, webElement, attributeName, exp
 };
 
 const logout = function(webDriver) {
-  let loginRegex = new RegExp('/#/auth/login');
+  let loginRegex = new RegExp('/auth/login');
   return findAndClickElement(webDriver, css.topBar.logout)
     .then(() => {
       return waitForUrlMatch(webDriver, loginRegex);

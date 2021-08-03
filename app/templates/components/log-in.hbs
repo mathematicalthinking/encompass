@@ -1,48 +1,54 @@
 <div class="login-box">
 
-  <img src="images/logo-encompass.png" class="encompass-logo" alt="encompass logo">
+  <img src="../assets/images/logo-encompass.gif" class="encompass-logo" alt="encompass logo">
 
   <form class="form-signin">
     <div class="auth-form-input">
-      {{#if missingCredentials}}
-        {{error-box error="Incorrect username or password" showDismiss=true}}
+      {{#if this.missingCredentials}}
+      <ErrorBox @error="Incorrect username or password" @showDismiss={{true}} />
       {{/if}}
 
       <label for="username">Username:</label>
-      {{input class="form-control" name="username" id="username" required=true type="text" value=username action="resetErrors" on="key-down"}}
+      <Input class="form-control" @name="username" @id="username" @required={{true}} @type="text" @value={{this.username}}
+        {{on "keydown" this.resetErrors}} />
 
-      {{#if incorrectUsername}}
-        {{error-box error="Incorrect Username" showDismiss=true}}
+      {{#if this.incorrectUsername}}
+      <ErrorBox @error="Incorrect Username" @showDismiss={{true}} />
       {{/if}}
     </div>
 
     <div class="auth-form-input">
       <label for="password">Password:</label>
-      {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down"}}
+      <Input class="form-control" @name="password" @id="password" @required={{true}} @type="password" @value={{this.password}}
+        {{on "keydown" this.resetErrors}} />
 
-      {{#if incorrectPassword}}
-        {{error-box error="Incorrect Password" showDismiss=true}}
+      {{#if this.incorrectPassword}}
+      <ErrorBox @error="Incorrect Password" @showDismiss={{true}} />
       {{/if}}
 
-      {{#if oauthErrorMsg}}
-        {{error-box error=oauthErrorMsg showDismiss=true}}
+      {{#if this.oauthErrorMsg}}
+      <ErrorBox @error={{this.oauthErrorMsg}} @showDismiss={{true}} />
       {{/if}}
 
     </div>
 
-    <button class="auth-button" type="submit" {{action 'login'}}>Log In</button>
-    {{#each postErrors as |error|}}
-      {{error-box error=error showDismiss=true}}
+    <button class="auth-button" type="submit" {{action 'login' }}>Log In</button>
+    {{#each this.postErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
   </form>
 
   <div class="bottom-info">
     <p class="or">Or</p>
 
-    {{social-signin}}
+    <SocialSignin />
 
-    <p class="signup-link" data-test="auth-signup"> New to EnCoMPASS? {{#link-to 'auth.signup' classNames='signup-link'}}Sign up now{{/link-to}}</p>
-    <p class="forgot-link">Forgot Password? {{#link-to 'auth.forgot' classNames='forgot-link'}}Request password reset{{/link-to}}</p>
+    <p class="signup-link" data-test="auth-signup"> New to EnCoMPASS? <LinkTo @route="auth.signup"
+        @classNames="signup-link">Sign up now</LinkTo>
+    </p>
+    <p class="forgot-link">Forgot Password? <LinkTo @route="auth.forgot" @classNames="forgot-link">Request password
+        reset</LinkTo>
+    </p>
 
   </div>
 </div>

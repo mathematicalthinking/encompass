@@ -1,25 +1,9 @@
 <div class="collab-container">
   <div class="collab-name">
-    {{selectize-input
-      store=store
-      inputId="collab-select"
-      maxItems=1
-      initialOptions=initialCollabOptions
-      selectedItemsHash=selectedCollaborators
-      onItemAdd=(action "setCollab")
-      onItemRemove=(action "setCollab")
-      labelField="username"
-      valueField="id"
-      searchField="username"
-      model="user"
-      queryParamsKey="usernameSearch"
-      isAsync=true
-      placeholder="Search by username"
-      preload="focus"
-    }}
+    <SelectizeInput @store={{this.store}} @inputId="collab-select" @maxItems={{1}} @initialOptions={{initialCollabOptions}} @selectedItemsHash={{selectedCollaborators}} @onItemAdd={{action "setCollab"}} @onItemRemove={{action "setCollab"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search by username" @preload="focus" />
   </div>
   <div class= "collab-settings global">
-    {{radio-group options=globalItems selectedValue=globalPermissionValue}}
+    <RadioGroup @options={{globalItems}} @selectedValue={{globalPermissionValue}} />
   </div>
 
     <div class="collab-settings">
@@ -29,7 +13,7 @@
             Submissions
           </div>
           <div class="row-value">
-            {{my-select cannotBeNull=true selectedValue=submissions content=submissionPermissions optionLabelPath="display" action=(action (mut submissions))}}
+            <MySelect @cannotBeNull={{true}} @selectedValue={{submissions}} @content={{submissionPermissions}} @optionLabelPath="display" @action={{action (mut submissions)}} />
             {{#if (is-equal submissions.value 'custom')}}
               <span class="submission-count">{{customSubmissionIds.length}} submissions selected</span>
               {{#if isShowingCustomViewer}}
@@ -45,8 +29,7 @@
             Selections
           </div>
           <div class="row-value">
-            {{my-select cannotBeNull=true selectedValue=selections content=mainPermissions optionLabelPath="display"
-            action=(action (mut selections))}}
+            <MySelect @cannotBeNull={{true}} @selectedValue={{selections}} @content={{mainPermissions}} @optionLabelPath="display" @action={{action (mut selections)}} />
           </div>
         </div>
         <div class="card-row">
@@ -54,8 +37,7 @@
             Comments
           </div>
           <div class="row-value">
-            {{my-select cannotBeNull=true selectedValue=comments content=mainPermissions optionLabelPath="display"
-            action=(action (mut comments))}}
+            <MySelect @cannotBeNull={{true}} @selectedValue={{comments}} @content={{mainPermissions}} @optionLabelPath="display" @action={{action (mut comments)}} />
           </div>
         </div>
         <div class="card-row">
@@ -63,8 +45,7 @@
             Folders
           </div>
           <div class="row-value">
-            {{my-select cannotBeNull=true selectedValue=folders content=mainPermissions optionLabelPath="display"
-            action=(action (mut folders))}}
+            <MySelect @cannotBeNull={{true}} @selectedValue={{folders}} @content={{mainPermissions}} @optionLabelPath="display" @action={{action (mut folders)}} />
           </div>
         </div>
         <div class="card-row">
@@ -72,18 +53,17 @@
             Feedback
           </div>
           <div class="row-value">
-            {{my-select cannotBeNull=true selectedValue=feedback content=feedbackPermissions optionLabelPath="display"
-            action=(action (mut feedback))}}
+            <MySelect @cannotBeNull={{true}} @selectedValue={{feedback}} @content={{feedbackPermissions}} @optionLabelPath="display" @action={{action (mut feedback)}} />
           </div>
         </div>
         {{#if missingUserError}}
           <div class="card-row">
-            {{error-box error="Please select a user" resetError=(action (mut missingUserError) null) showDismiss=true}}
+            <ErrorBox @error="Please select a user" @resetError={{action (mut missingUserError) null}} @showDismiss={{true}} />
           </div>
         {{/if}}
         {{#if existingUserError}}
           <div class="card-row">
-            {{error-box error="Collaborator already exists. Edit permissions below" resetError=(action (mut existingUserError) null) showDismiss=true}}
+            <ErrorBox @error="Collaborator already exists. Edit permissions below" @resetError={{action (mut existingUserError) null}} @showDismiss={{true}} />
           </div>
         {{/if}}
       {{/if}}

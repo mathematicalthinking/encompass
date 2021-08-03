@@ -11,7 +11,7 @@ const css = require('./selectors');
 const testUsers = require('./fixtures/users');
 
 const host = helpers.host;
-let url = `${host}/#/workspaces/new`;
+let url = `${host}/workspaces/new`;
 
 xdescribe('Workspaces New', async function() {
   this.timeout(helpers.timeoutTestMsStr);
@@ -37,8 +37,8 @@ xdescribe('Workspaces New', async function() {
         describe('Clicking topbar link', function() {
           if (accountType === 'S' || actingRole === 'student') {
             it('should redirect to homepage', async function() {
-              await helpers.navigateAndWait(driver, `${host}/#/workspaces`, {});
-              await helpers.navigateAndWait(driver, `${host}/#/workspaces/new`, {});
+              await helpers.navigateAndWait(driver, `${host}/workspaces`, {});
+              await helpers.navigateAndWait(driver, `${host}/workspaces/new`, {});
 
               await helpers.waitForUrlMatch(driver, /\//);
 
@@ -47,8 +47,8 @@ xdescribe('Workspaces New', async function() {
             });
           } else {
             it(`should display new workspace creation form`, async function() {
-              await helpers.navigateAndWait(driver, `${host}/#/workspaces`, {selector: '#workspace-list-container'});
-              await helpers.navigateAndWait(driver, `${host}/#/workspaces/new`, {selector: '#workspace-new-container'});
+              await helpers.navigateAndWait(driver, `${host}/workspaces`, {selector: '#workspace-list-container'});
+              await helpers.navigateAndWait(driver, `${host}/workspaces/new`, {selector: '#workspace-new-container'});
               await helpers.waitForUrlMatch(driver, /workspaces\/new/);
               expect(await helpers.isElementVisible(driver, "#filter-list-side")).to.be.true;
             });
@@ -99,7 +99,7 @@ xdescribe('Workspaces New', async function() {
                 }
               });
 
-              describe('Workspace Settings', function() {
+              xdescribe('Workspace Settings', function() {
                 const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
                 const fixedInputs = css.newWorkspaceEnc.workspaceSettings.fixedInputs;
                 for (let input of Object.keys(inputs)) {
@@ -129,7 +129,7 @@ xdescribe('Workspaces New', async function() {
                 expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.create));
               });
 
-              describe('teacher pool', function() {
+              xdescribe('teacher pool', function() {
                 let selectors = css.newWorkspaceEnc.filterCriteria;
                 let teacherSel = selectors.inputs.teacher;
                 let test;
@@ -164,7 +164,7 @@ xdescribe('Workspaces New', async function() {
 
                 }
               });
-              describe('owner pool', function() {
+              xdescribe('owner pool', function() {
                 let selectors = css.newWorkspaceEnc.workspaceSettings;
                 let ownerSel = selectors.inputs.owner;
                 let test;

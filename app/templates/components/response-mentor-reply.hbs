@@ -1,27 +1,9 @@
 {{#if isCreating}}
-  {{response-new
-    store=store
-    isCreating=isCreating
-    submission=submission
-    model=responseNewModel
-    recipient=recipient
-    newReplyStatus=newReplyStatus
-    newReplyType="mentor"
-    onSaveSuccess=(action "onSaveSuccess")
-    canDirectSend=canDirectSend
-    submissionResponses=mentorReplies
-    handleResponseThread=(action "handleNewMentorReply")
-  }}
+  <ResponseNew @store={{this.store}} @isCreating={{isCreating}} @submission={{submission}} @model={{responseNewModel}} @recipient={{recipient}} @newReplyStatus={{newReplyStatus}} @newReplyType="mentor" @onSaveSuccess={{action "onSaveSuccess"}} @canDirectSend={{canDirectSend}} @submissionResponses={{mentorReplies}} @handleResponseThread={{action "handleNewMentorReply"}} />
 {{else}}
   {{#if sortedMentorReplies}}
     <div class="mentor-replies">
-      {{bread-crumbs
-        items=sortedMentorReplies
-        onSelect=(action "setDisplayMentorReply")
-        titleTextPath="shortText"
-        selectedItem=displayResponse
-        infoToolTipText=revisionsToolTip
-      }}
+      <BreadCrumbs @items={{sortedMentorReplies}} @onSelect={{action "setDisplayMentorReply"}} @titleTextPath="shortText" @selectedItem={{displayResponse}} @infoToolTipText={{revisionsToolTip}} />
     </div>
         <div class="response-info">
       {{#if displayResponse}}
@@ -74,7 +56,7 @@
           </p>
           <div class="response-text-container">
             {{#if isComposing}}
-              {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}
+              <QuillContainer @onEditorChange={{action "updateQuillText"}} @attrSectionId={{quillEditorId}} @startingText={{editRevisionText}} />
             {{else}}
               <div class="response-text {{if isOldFormatDisplayResponse "old-format"}}">
                 {{{displayResponse.text}}}
@@ -85,7 +67,7 @@
             <div class="response-note-container">
               <p class="response-header">Note for Approver</p>
               {{#if showApproverNoteInput}}
-                {{textarea class="edit-note" name="mentor-approver-note" value=editRevisionNote}}
+                <Textarea class="edit-note" @name="mentor-approver-note" @value={{editRevisionNote}} />
               {{/if}}
               {{#if showDisplayNote}}
                 <div class="response-note">
@@ -100,10 +82,10 @@
       {{/if}}
     </div>
   {{#if emptyReplyError}}
-    {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+    <ErrorBox @error="Message body cannot be empty." @showDismiss={{true}} @resetError={{action (mut emptyReplyError) null}} />
   {{/if}}
   {{#if quillTooLongError}}
-    {{error-box error=quillTooLongErrorMsg showDismiss=true resetError=(action (mut quillTooLongError) null)}}
+    <ErrorBox @error={{quillTooLongErrorMsg}} @showDismiss={{true}} @resetError={{action (mut quillTooLongError) null}} />
   {{/if}}
   <div class="mentor-reply-actions button-row">
     {{#if showRevise}}
@@ -118,7 +100,7 @@
   </div>
 
   {{#if doShowLoadingMessage}}
-    {{loading-elem}}
+    <LoadingElem />
   {{/if}}
   {{#if isComposing}}
     <div class="submit-buttons button-row">

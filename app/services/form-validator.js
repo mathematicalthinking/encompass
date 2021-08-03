@@ -1,36 +1,42 @@
-Encompass.FormValidatorService = Ember.Service.extend({
+import { computed } from '@ember/object';
+import { not } from '@ember/object/computed';
+import Service from '@ember/service';
+import { isEmpty } from '@ember/utils';
+import $ from 'jquery';
+
+export default Service.extend({
   formId: null,
   inputs: [],
   requiredInputs: null,
   invalidInputs: null,
   isPristine: null, // if user has not interacted with form yet
-  isDirty: Ember.computed.not('isPristine'), // if user has interacted
+  isDirty: not('isPristine'), // if user has interacted
   isSubmitted: null, // true if user has tried to submit form
 
-  setupListeners: function(formId) {
+  setupListeners: function (formId) {
     var that = this;
     const $reqs = this.getRequiredInputs(formId);
-    $reqs.each(function() {
-      $(this).change(function() {
-         that.reqInputOnChange($(this));
-       });
-     });
+    $reqs.each(function () {
+      $(this).change(function () {
+        that.reqInputOnChange($(this));
+      });
+    });
   },
 
-  reqInputOnChange: function($el) {
-    const id = this.get('formId');
+  reqInputOnChange: function ($el) {
+    const id = this.formId;
     const $invalidInputs = this.getInvalidInputs(id);
     this.set('invalidInputs', $invalidInputs);
-    if (this.get('isPristine')) {
+    if (this.isPristine) {
       this.set('isPristine', false);
     }
-    this.get('isValid');
-    if (this.get('isSubmitted')) {
+    this.isValid;
+    if (this.isSubmitted) {
       this.handleRequiredInputErrors($el);
     }
   },
 
-  handleRequiredInputErrors: function($el) {
+  handleRequiredInputErrors: function ($el) {
     let isElInvalid;
 
     if ($el.is(':radio')) {
@@ -44,7 +50,7 @@ Encompass.FormValidatorService = Ember.Service.extend({
         $radioSet.toggleClass('required-error', false);
       }
     } else {
-      isElInvalid = Ember.isEmpty($el.val());
+      isElInvalid = isEmpty($el.val());
       if (isElInvalid) {
         $el.toggleClass('required-error', true);
       } else {
@@ -52,14 +58,14 @@ Encompass.FormValidatorService = Ember.Service.extend({
       }
     }
 
-    this.get('checkForm')();
+    this.checkForm();
   },
 
   init() {
     this._super(...arguments);
   },
 
-  initialize: function(formId, isMissing) {
+  initialize: function (formId, isMissing) {
     this.set('formId', formId);
     this.set('isPristine', true);
     this.set('isSubmitted', false);
@@ -67,71 +73,71 @@ Encompass.FormValidatorService = Ember.Service.extend({
     this.setupListeners(formId);
   },
 
-  isValid: function() {
-    if(this.get('isPristine')) {
+  isValid: computed('invalidInputs.[]', 'isPristine', function () {
+    if (this.isPristine) {
       return false;
     }
-    const id = this.get('formId');
+    const id = this.formId;
     const $invalids = this.getInvalidInputs(id);
 
-    return this.get('isDirty') && Ember.isEmpty($invalids);
-  }.property('invalidInputs.[]', 'isPristine'),
-
-  isInvalid: Ember.computed('isDirty', 'isValid', function() {
-    return this.get('isDirty') && !this.get('isValid');
+    return this.isDirty && isEmpty($invalids);
   }),
 
-  isMissingRequiredFields: function(id) {
+  isInvalid: computed('isDirty', 'isValid', function () {
+    return this.isDirty && !this.isValid;
+  }),
+
+  isMissingRequiredFields: function (id) {
     return this.getInvalidInputs(id).length > 0;
   },
 
-  getInputs: function(formId) {
+  getInputs: function (formId) {
     const $form = $(formId);
-    let $inputs = $form.find("input");
+    let $inputs = $form.find('input');
     return $inputs;
   },
 
-  getRequiredInputs: function(formId) {
+  getRequiredInputs: function (formId) {
     const $form = $(formId);
     if (!$form) {
       return;
     }
-    let reqs = $form.find("input[required]");
+    let reqs = $form.find('input[required]');
 
     this.set('requiredInputs', reqs);
     return reqs;
   },
 
-  getInvalidInputs: function(formId) {
-    let $invalids = this.getRequiredInputs(formId)
-      .filter(function(ix, inp) {
-        let val = $(this).val();
-        return Ember.isEmpty(val);
-      });
-      this.set('invalidInputs', $invalids);
-      return $invalids;
+  getInvalidInputs: function (formId) {
+    let $invalids = this.getRequiredInputs(formId).filter(function (ix, inp) {
+      let val = $(this).val();
+      return isEmpty(val);
+    });
+    this.set('invalidInputs', $invalids);
+    return $invalids;
   },
   // run on form submit
-  validate: function(formId) {
+  validate: function (formId) {
     var that = this;
+    // eslint-disable-next-line no-undef
     return new Promise((resolve, reject) => {
       let ret = {};
       if (!formId) {
         return reject(new Error('Invalid form id!'));
       }
 
-      if (!this.get('isSubmitted')) {
+      if (!this.isSubmitted) {
         this.set('isSubmitted', true);
       }
 
-      ret.isValid = this.get('isValid');
+      ret.isValid = this.isValid;
 
       if (ret.isValid) {
         return resolve(ret);
       }
       // else form is Invalid; handle errors
       ret.invalidInputs = this.getInvalidInputs(formId);
-      ret.invalidInputs.each(function() {
+      ret.invalidInputs.each(function () {
         that.handleRequiredInputErrors($(this));
       });
 
@@ -139,11 +145,11 @@ Encompass.FormValidatorService = Ember.Service.extend({
     });
   },
 
-  clearForm: function() {
+  clearForm: function () {
     this.set('isPristine', true);
-    let $inputs = this.getInputs(this.get('formId'));
-    $inputs.each(function() {
-      if($(this).is(':radio') || $(this).is(':checkbox')) {
+    let $inputs = this.getInputs(this.formId);
+    $inputs.each(function () {
+      if ($(this).is(':radio') || $(this).is(':checkbox')) {
         $(this).prop('checked', false);
       } else if ($(this).is(':text')) {
         $(this).val('');
@@ -151,5 +157,5 @@ Encompass.FormValidatorService = Ember.Service.extend({
         $(this).val(null);
       }
     });
-  }
+  },
 });

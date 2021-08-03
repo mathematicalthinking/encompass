@@ -1,7 +1,15 @@
-Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { later } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
+import moment from 'moment';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(ErrorHandlingMixin, {
   elementId: 'assignment-info-student',
 
-  utils: Ember.inject.service('utility-methods'),
+  utils: service('utility-methods'),
 
   formattedDueDate: null,
   formattedAssignedDate: null,
@@ -11,10 +19,10 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   loadAnswerErrors: [],
 
   didReceiveAttrs() {
-    let assignment = this.get('assignment');
+    let assignment = this.assignment;
 
     if (assignment) {
-      if (this.get('displayedAnswer')) {
+      if (this.displayedAnswer) {
         this.set('displayedAnswer', null);
       }
 
@@ -28,84 +36,88 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
         this.set('formattedDueDate', moment(dueDate).format(dateTime));
       }
       if (assignedDate) {
-        this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
+        this.set(
+          'formattedAssignedDate',
+          moment(assignedDate).format(dateTime)
+        );
       }
     }
 
     this._super(...arguments);
   },
 
-  workspacesToUpdateIds: function() {
-    return this.get('utils').getHasManyIds(this.get('assignment'), 'linkedWorkspaces');
-  }.property('assignment.linkedWorkspaces.[]'),
+  workspacesToUpdateIds: computed(
+    'assignment.linkedWorkspaces.[]',
+    function () {
+      return this.utils.getHasManyIds(this.assignment, 'linkedWorkspaces');
+    }
+  ),
 
-  isComposing: function() {
-    return this.get('isRevising') || this.get('isResponding');
-  }.property('isRevising', 'isResponding'),
+  isComposing: computed('isRevising', 'isResponding', function () {
+    return this.isRevising || this.isResponding;
+  }),
 
-  showReviseButton: function() {
-    return !this.get('isComposing') && this.get('sortedList.length') > 0;
-  }.property('isComposing', 'sortedList.[]'),
+  showReviseButton: computed('isComposing', 'sortedList.[]', function () {
+    return !this.isComposing && this.get('sortedList.length') > 0;
+  }),
 
-  showRespondButton: function() {
-    return !this.get('isComposing') && this.get('sortedList.length') === 0;
-  }.property('isComposing', 'sortedList.[]'),
+  showRespondButton: computed('isComposing', 'sortedList.[]', function () {
+    return !this.isComposing && this.get('sortedList.length') === 0;
+  }),
 
-  sortedList: function() {
-    if (!this.get('answerList')) {
+  sortedList: computed('answerList.[]', function () {
+    if (!this.answerList) {
       return [];
     }
-    return this.get('answerList').sortBy('createDate').reverse();
-  }.property('answerList.[]'),
+    return this.answerList.sortBy('createDate').reverse();
+  }),
 
-  priorAnswer: function() {
-    return this.get('sortedList').get('firstObject');
-  }.property('sortedList.[]'),
+  priorAnswer: computed('sortedList.[]', function () {
+    return this.sortedList.get('firstObject');
+  }),
 
-  toggleResponse: function() {
-    if (this.get('isResponding')) {
+  toggleResponse: function () {
+    if (this.isResponding) {
       this.set('isResponding', false);
-    } else if (this.get('isRevising')) {
+    } else if (this.isRevising) {
       this.set('isRevising', false);
     }
   },
 
   actions: {
-    beginAssignmentResponse: function() {
+    beginAssignmentResponse: function () {
       this.set('isResponding', true);
-      Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
+      later(() => {
+        $('html, body').animate({ scrollTop: $(document).height() });
       }, 100);
     },
 
-    reviseAssignmentResponse: function() {
+    reviseAssignmentResponse: function () {
       this.set('isRevising', true);
 
-      Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
+      later(() => {
+        $('html, body').animate({ scrollTop: $(document).height() });
       }, 100);
     },
 
-    toAnswerInfo: function(answer) {
+    toAnswerInfo: function (answer) {
       this.sendAction('toAnswerInfo', answer);
     },
 
-    displayAnswer: function(answer) {
+    displayAnswer: function (answer) {
       this.set('displayedAnswer', answer);
-      Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
+      later(() => {
+        $('html, body').animate({ scrollTop: $(document).height() });
       }, 100);
     },
 
-    handleCreatedAnswer: function(answer) {
+    handleCreatedAnswer: function (answer) {
       this.toggleResponse();
-      this.get('answerList').addObject(answer);
+      this.answerList.addObject(answer);
     },
 
-    cancelResponse: function() {
+    cancelResponse: function () {
       this.toggleResponse();
-
     },
-  }
-
+  },
 });

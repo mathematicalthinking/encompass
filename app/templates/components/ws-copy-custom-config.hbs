@@ -36,17 +36,7 @@
           </span>
         </label>
         {{#if showStudentSubmissionInput}}
-          {{selectize-input
-          inputId="submissions-by-student"
-          initialOptions=studentSelectOptions
-          maxItems=studentSelectOptions.length
-          onItemAdd=(action "updateMultiSelect")
-          onItemRemove=(action "updateMultiSelect")
-          labelField="label"
-          valueField="value"
-          searchField="label"
-          propToUpdate="submissionStudents"
-          placeholder="Add students"}}
+          <SelectizeInput @inputId="submissions-by-student" @initialOptions={{studentSelectOptions}} @maxItems={{studentSelectOptions.length}} @onItemAdd={{action "updateMultiSelect"}} @onItemRemove={{action "updateMultiSelect"}} @labelField="label" @valueField="value" @searchField="label" @propToUpdate="submissionStudents" @placeholder="Add students" />
         {{/if}}
       </li>
       <li class="radio-group-item">
@@ -67,12 +57,7 @@
     </ul>
 
   {{#if showCustomSubmissions}}
-    {{custom-submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds
-      onSelect=(action "updateCustomSubs")
-      onSelectAll=(action "selectAllSubmissions")
-      onUnselectAll=(action "deselectAllSubmissions")
-      showView=showCustomSubmissionViewer
-    }}
+    <CustomSubmissionViewerList @submissions={{workspace.submissions.content}} @selectedSubmissionIds={{customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @showView={{showCustomSubmissionViewer}} />
   {{/if}}
   {{#if noSubmissionsToCopy}}
     <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>

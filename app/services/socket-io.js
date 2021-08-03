@@ -1,68 +1,71 @@
 /*global io:false */
 /*global _:false */
-Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
-  store: Ember.inject.service(),
-  alert: Ember.inject.service('sweet-alert'),
-  utils: Ember.inject.service('utility-methods'),
+import Service, { inject as service } from '@ember/service';
+
+export default Service.extend({
+  currentUser: service('current-user').user,
+  store: service(),
+  alert: service('sweet-alert'),
+  utils: service('utility-methods'),
 
   init() {
     this._super(...arguments);
   },
 
   setupListeners() {
-    const socket = this.get('socket');
-    const utils = this.get('utils');
+    const socket = this.socket;
+    const utils = this.utils;
 
     if (!socket) {
       return;
     }
 
     socket.on('NEW_NOTIFICATION', (data) => {
-     _.each(data, (val, key) => {
-      if (val) {
-        this.get('store').pushPayload(
-          {
-            [key]: val
-          }
-        );
+      _.each(data, (val, key) => {
+        if (val) {
+          this.store.pushPayload(
+            {
+              [key]: val
+            }
+          );
+        }
+      });
+
+
+      let ntf = data.notifications[0];
+      if (!ntf) {
+        return;
       }
-     });
 
+      let recordType = ntf.primaryRecordType;
 
-     let ntf = data.notifications[0];
-     if (!ntf) {
-       return;
-     }
+      if (recordType === 'response') {
+        if (ntf.notificationType === 'newWorkToMentor') {
+          // special case, associated submission, not response
+          if (data.submissions && data.submissions[0]) {
+            let subId = data.submissions[0]._id;
 
-     let recordType = ntf.primaryRecordType;
+            if (subId) {
+              let newRevision = this.store.peekRecord('submission', subId);
 
-     if (recordType === 'response') {
-       if (ntf.notificationType === 'newWorkToMentor') {
-         // special case, associated submission, not response
-         if (data.submissions && data.submissions[0]) {
-           let subId = data.submissions[0]._id;
+              if (newRevision) {
 
-           if (subId) {
-             let newRevision = this.get('store').peekRecord('submission', subId);
+                let uniqueId = ntf.workspace + ntf.createdBy;
+                let existingThread = this.findExistingResponseThread('mentor', uniqueId);
 
-             if (newRevision) {
+                // should always be existing thread
+                if (existingThread) {
+                  existingThread.get('submissions').addObject(newRevision);
+                }
+              }
+            }
+          }
+        } else if (data.responses && data.responses[0]) {
+          this.handleResponseNtf(ntf, data.responses[0], data.workspaceName);
 
-               let uniqueId = ntf.workspace + ntf.createdBy;
-               let existingThread = this.findExistingResponseThread('mentor', uniqueId);
-
-               // should always be existing thread
-               if (existingThread) {
-                 existingThread.get('submissions').addObject(newRevision);
-               }
-             }
-           }
-         }
-       } else if (data.responses && data.responses[0]) {
-        this.handleResponseNtf(ntf, data.responses[0], data.workspaceName);
-
-       }
-     }
-     // check if we need to clear any now outdated notifications
+        }
+      }
+      // check if we need to clear any now outdated notifications
 
       this.triggerToast(ntf);
     });
@@ -75,8 +78,8 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
         doSetAsSeen
       }
       */
-      if (this.get('utils').isValidMongoId(data.notificationId)) {
-        let peeked = this.get('store').peekRecord('notification', data.notificationId);
+      if (this.utils.isValidMongoId(data.notificationId)) {
+        let peeked = this.store.peekRecord('notification', data.notificationId);
         if (!peeked) {
           return;
         }
@@ -84,7 +87,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
         let doSave = data.doTrash || data.doSetAsSeen;
 
         if (!doSave) {
-          this.get('store').unloadRecord(peeked);
+          this.store.unloadRecord(peeked);
           return;
         }
         if (data.doTrash) {
@@ -107,14 +110,14 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
         return;
       }
 
-      let peeked = this.get('store').peekRecord(data.recordType, data.recordIdToClear);
+      let peeked = this.store.peekRecord(data.recordType, data.recordIdToClear);
 
       if (!peeked) {
         return;
       }
 
       if (recordType === 'response') {
-        this.get('store').peekAll('response-thread').forEach((thread) => {
+        this.store.peekAll('response-thread').forEach((thread) => {
           let responseIds = utils.getHasManyIds(thread, 'responses');
           let doesContainResponse = responseIds.includes(peeked.get('id'));
 
@@ -125,7 +128,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
         });
       }
 
-      this.get('store').unloadRecord(peeked);
+      this.store.unloadRecord(peeked);
 
 
     });
@@ -133,7 +136,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
       if (data) {
         let recordType = data.recordType;
 
-        this.get('store').pushPayload({
+        this.store.pushPayload({
           [recordType]: data.updatedRecord
         });
       }
@@ -150,9 +153,9 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
 
     user.set('socketId', socket.id);
     user.save()
-    .then(() => {
-      this.setupListeners();
-    });
+      .then(() => {
+        this.setupListeners();
+      });
   },
 
   triggerToast(ntf) {
@@ -167,7 +170,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
       let notificationType = ntf.notificationType;
       toastText = `You have received a ${notificationType} notification.`;
     }
-    this.get('alert').showToast('info', toastText, 'top-end', 3000, false, null);
+    this.alert.showToast('info', toastText, 'top-end', 3000, false, null);
     return;
   },
 
@@ -175,10 +178,10 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
 
     let { notificationType } = ntf;
     let workspaceId = newResponseObj.workspace;
-    let newResponse = this.get('store').peekRecord('response', newResponseObj._id);
-    let submission = this.get('store').peekRecord('submission', newResponseObj.submission);
+    let newResponse = this.store.peekRecord('response', newResponseObj._id);
+    let submission = this.store.peekRecord('submission', newResponseObj.submission);
 
-    let responseCreatorId = this.get('utils').getBelongsToId(newResponse, 'createdBy');
+    let responseCreatorId = this.utils.getBelongsToId(newResponse, 'createdBy');
     let problemTitle;
     let studentIdentifier; // encUserId or pows username
     let studentDisplay;
@@ -194,28 +197,28 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
       }
     }
 
-   if (notificationType === 'newMentorReply') {
-    let uniqueId = `srt${workspaceId}`;
-     let existingThread = this.findExistingResponseThread('submitter', uniqueId);
-     if (existingThread) {
-       existingThread.get('responses').addObject(newResponse);
-     } else {
+    if (notificationType === 'newMentorReply') {
+      let uniqueId = `srt${workspaceId}`;
+      let existingThread = this.findExistingResponseThread('submitter', uniqueId);
+      if (existingThread) {
+        existingThread.get('responses').addObject(newResponse);
+      } else {
 
-       // create new thread
-       let newThread = this.get('store').createRecord('response-thread', {
-         threadType: 'submitter',
-         uniqueIdentifier: workspaceId,
-         workspaceName,
-         mentors: [responseCreatorId],
-         problemTitle,
-         id: uniqueId,
-         isNewThread: true,
-         studentDisplay,
-       });
-       newThread.get('submissions').addObject(submission);
-       newThread.get('responses').addObject(newResponse);
-     }
-   }
+        // create new thread
+        let newThread = this.store.createRecord('response-thread', {
+          threadType: 'submitter',
+          uniqueIdentifier: workspaceId,
+          workspaceName,
+          mentors: [responseCreatorId],
+          problemTitle,
+          id: uniqueId,
+          isNewThread: true,
+          studentDisplay,
+        });
+        newThread.get('submissions').addObject(submission);
+        newThread.get('responses').addObject(newResponse);
+      }
+    }
 
     if (notificationType === 'newApproverReply') {
       // identifier is object with workspaceId and studentId
@@ -237,7 +240,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
         existingThread.get('responses').addObject(newResponse);
       } else {
         // create new approver thread
-        let newThread = this.get('store').createRecord('response-thread',{
+        let newThread = this.store.createRecord('response-thread', {
           threadType: 'approver',
           id: uniqueId,
           workspaceName,
@@ -254,7 +257,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
   },
 
   findExistingResponseThread(threadType, uniqueIdentifier) {
-    let peekedResponseThreads = this.get('store').peekAll('response-thread').toArray();
+    let peekedResponseThreads = this.store.peekAll('response-thread').toArray();
     if (!peekedResponseThreads) {
       return;
     }

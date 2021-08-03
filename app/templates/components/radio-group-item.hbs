@@ -1,9 +1,9 @@
 <label>
-  <input type="radio" checked={{isSelected}} required={{isRequired}} name={{name}} value={{value}} onclick={{action "onClick" value}}>
+  <input type="radio" checked={{this.isSelected}} required={{this.isRequired}} name={{this.name}} value={{this.value}} onclick={{action "onClick" this.value}}>
   <span>
-    {{label}}
-    {{#if moreInfo}}
-      <span class="simptip-position-right simptip-smooth" data-tooltip="{{moreInfo}}">
+    {{this.label}}
+    {{#if this.moreInfo}}
+      <span class="simptip-position-right simptip-smooth" data-tooltip="{{this.moreInfo}}">
         <i class="far fa-question-circle info-icon"></i>
       </span>
     {{/if}}

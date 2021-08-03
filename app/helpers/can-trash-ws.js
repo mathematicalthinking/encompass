@@ -1,5 +1,12 @@
-Encompass.CanTrashWsHelper = Ember.Helper.helper( function(args) {
-  let [ user, ws ] = args;
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (args) {
+  let [user, ws] = args;
 
   if (!user || !ws) {
     return false;

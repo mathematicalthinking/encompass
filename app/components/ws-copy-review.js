@@ -1,13 +1,20 @@
-Encompass.WsCopyReviewComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   elementId: 'ws-copy-review',
   createDate: Date.now(),
 
   actions: {
     next() {
-      this.get('onProceed')();
+      this.onProceed();
     },
     back() {
-      this.get('onBack')(-1);
+      this.onBack(-1);
     }
   }
 

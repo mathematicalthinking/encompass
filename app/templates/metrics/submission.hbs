@@ -2,7 +2,7 @@
 <header>
   <h3>{{model.student}}'s Submission in {{ws}}</h3>
 </header>
-<p>{{#link-to "metrics.workspace" workspaceId}}back to workspace{{/link-to}}</p>
+<p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
   <div class="metrics__container metrics--flex">
     <button {{action "handleToggle" "showSelections"}} class="primary-button">Report Selections</button>
@@ -93,7 +93,7 @@
         {{#each model.responses as |response|}}
           <tr>
             <td>{{response.createdBy.username}}</td>
-            <td>{{html-to-text response.text}}</td>
+            <td>{{{response.text}}}</td>
           </tr>
         {{/each}}
       </tbody>
@@ -107,8 +107,8 @@
     </div>
     <div class="metrics__card">
     <h3>explanation</h3>
-      <p>{{if model.longAnswer (html-to-text model.longAnswer) (html-to-text model.answer.explanation)}}</p>
+      <p>{{if model.longAnswer model.longAnswer model.answer.explanation}}</p>
     </div>
   </div>
 </div>
-<p>{{#link-to "metrics.workspace" workspaceId}}back to workspace{{/link-to}}</p>
+<p><LinkTo @route="metrics">back</LinkTo></p>

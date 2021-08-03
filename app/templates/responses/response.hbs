@@ -1,16 +1,1 @@
-{{response-container
-  store=store
-  response=model.response
-  submission=model.submission
-  workspace=model.workspace
-  submissions=model.submissions
-  notifications=model.notifications
-  toResponseInfo="toResponseInfo"
-  toResponse="toResponse"
-  responses=model.responses
-  toResponses="toResponses"
-  toResponse="toResponse"
-  toResponseSubmission="toResponseSubmission"
-  toNewResponse="toNewResponse"
-  storeResponses=model.allResponses
-}}
+<ResponseContainer @store={{this.store}} @response={{model.response}} @submission={{model.submission}} @workspace={{model.workspace}} @submissions={{model.submissions}} @notifications={{model.notifications}} @toResponseInfo="toResponseInfo" @toResponse="toResponse" @responses={{model.responses}} @toResponses="toResponses" @toResponse="toResponse" @toResponseSubmission="toResponseSubmission" @toNewResponse="toNewResponse" @storeResponses={{model.allResponses}} />

@@ -1,17 +1,20 @@
 /*global _:false */
-Encompass.RadioGroupItemComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default Component.extend({
   classNames: ['radio-group-item'],
 
-  isSelected: function() {
-    const selectedValue = this.get('selectedValue');
-    const value = this.get('value');
+  isSelected: computed('selectedValue', 'value', function () {
+    const selectedValue = this.selectedValue;
+    const value = this.value;
 
     return _.isEqual(selectedValue, value);
-  }.property('selectedValue', 'value'),
+  }),
 
   actions: {
     onClick(val) {
-      this.get('onClick')(val);
-    }
-  }
+      this.onClick(val);
+    },
+  },
 });

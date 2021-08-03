@@ -1,9 +1,16 @@
-Encompass.ProblemPermissionsService = Ember.Service.extend({
-  base: Ember.inject.service('edit-permissions'),
-  isPublic: function(problem) {
+import Service, { inject as service } from '@ember/service';
+
+
+
+
+
+
+export default Service.extend({
+  base: service('edit-permissions'),
+  isPublic: function (problem) {
     return problem.get('privacySetting') === 'E';
   },
-  isPrivate: function(problem) {
+  isPrivate: function (problem) {
     return problem.get('privacySetting') === 'M';
   },
 
@@ -20,8 +27,8 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
   },
 
   canDelete(problem) {
-     // undefined if no or bad argument passed in
-     if (!problem) {
+    // undefined if no or bad argument passed in
+    if (!problem) {
       return;
     }
     // if admin return true
@@ -35,7 +42,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     }
 
     // if creator
-    if (this.get('base').isCreator(problem)) {
+    if (this.base.isCreator(problem)) {
       return true;
     }
 
@@ -54,13 +61,13 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     }
 
     // privacy setting can now only be 'O' or 'M'
-    return this.get('base').doesRecordBelongToOrg(problem);
+    return this.base.doesRecordBelongToOrg(problem);
 
   },
 
   canEdit(problem) {
-     // undefined if no or bad argument passed in
-     if (!problem) {
+    // undefined if no or bad argument passed in
+    if (!problem) {
       return;
     }
     // if admin return true
@@ -74,7 +81,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     }
 
     // if creator
-    if (this.get('base').isCreator(problem)) {
+    if (this.base.isCreator(problem)) {
       return true;
     }
 
@@ -94,7 +101,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
 
     // privacy setting can now only be 'O' or 'M'
 
-    return this.get('base').doesRecordBelongToOrg(problem);
+    return this.base.doesRecordBelongToOrg(problem);
 
 
   },
@@ -120,7 +127,7 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     return this.get('base.isAdmin');
   },
 
-  writePermissions(problem, isDeleteSameAsEdit=true) {
+  writePermissions(problem, isDeleteSameAsEdit = true) {
     let ret = {};
 
     let canDelete = this.canDelete(problem);

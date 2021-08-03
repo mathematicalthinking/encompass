@@ -23,67 +23,16 @@
 
 <div class="response-flex-container ">
   <div class="response-flex-item submission{{if showApproverReply ' third'}}">
-    {{response-submission-view
-    store=store
-    response=response
-    submission=submission
-    workspace=workspace
-    wsResponses=cleanWorkspaceResponses
-    studentSubmissions=submissions
-    onSubChange=(action "onSubmissionChange")
-    sendRevisionNotices=(action "sendSubmissionRevisionNotices")
-    isParentWorkspace=isParentWorkspace
-    }}
+    <ResponseSubmissionView @store={{this.store}} @response={{response}} @submission={{submission}} @workspace={{workspace}} @wsResponses={{cleanWorkspaceResponses}} @studentSubmissions={{submissions}} @onSubChange={{action "onSubmissionChange"}} @sendRevisionNotices={{action "sendSubmissionRevisionNotices"}} @isParentWorkspace={{isParentWorkspace}} />
   </div>
 
   <div class="response-flex-item mentor {{if showApproverReply 'third'}}">
-    {{response-mentor-reply
-      store=store
-      isCreating=isCreatingNewMentorReply
-      response=response
-      submission=submission
-      workspace=workspace
-      mentorReplies=mentorReplies
-      responseToApprove=responseToApprove
-      displayResponse=mentorReplyDisplayResponse
-      canDirectSend=canDirectSend
-      canApprove=canApprove
-      isOwnMentorReply=isOwnMentorReply
-      onSaveSuccess=(action "onSaveSuccess")
-      onMentorReplySwitch=(action "onMentorReplySwitch")
-      toResponses=(action "toResponses")
-      submissionResponses=nonTrashedResponses
-      canSend=canSend
-      isMentorRecipient=isMentorRecipient
-      isOwnSubmission=isOwnSubmission
-      toNewResponse=(action "toNewResponse")
-      priorMentorRevision=priorMentorRevision
-      iconFillOptions=iconFillOptions
-      toSubmission=(action "onSubmissionChange")
-      handleResponseThread=(action "handleResponseThread")
-      isParentWorkspace=isParentWorkspace
-    }}
+    <ResponseMentorReply @store={{this.store}} @isCreating={{isCreatingNewMentorReply}} @response={{response}} @submission={{submission}} @workspace={{workspace}} @mentorReplies={{mentorReplies}} @responseToApprove={{responseToApprove}} @displayResponse={{mentorReplyDisplayResponse}} @canDirectSend={{canDirectSend}} @canApprove={{canApprove}} @isOwnMentorReply={{isOwnMentorReply}} @onSaveSuccess={{action "onSaveSuccess"}} @onMentorReplySwitch={{action "onMentorReplySwitch"}} @toResponses={{action "toResponses"}} @submissionResponses={{nonTrashedResponses}} @canSend={{canSend}} @isMentorRecipient={{isMentorRecipient}} @isOwnSubmission={{isOwnSubmission}} @toNewResponse={{action "toNewResponse"}} @priorMentorRevision={{priorMentorRevision}} @iconFillOptions={{iconFillOptions}} @toSubmission={{action "onSubmissionChange"}} @handleResponseThread={{action "handleResponseThread"}} @isParentWorkspace={{isParentWorkspace}} />
   </div>
 
   {{#if showApproverReply}}
     <div class="response-flex-item approver third">
-      {{response-approver-reply
-        store=store
-        approverReplies=approverReplies
-        responseToApprove=responseToApprove
-        menteeResponse=menteeResponse
-        workspace=workspace
-        submission=submission
-        canApprove=canApprove
-        isOwnMentorReply=isOwnMentorReply
-        primaryReply=primaryApproverReply
-        isOwnApproverReply=isOwnApproverReply
-        reviewedResponse=reviewedResponse
-        toResponses=(action "toResponses")
-        iconFillOptions=iconFillOptions
-        subResponses=subResponses
-        handleResponseThread=(action "handleResponseThread")
-      }}
+      <ResponseApproverReply @store={{this.store}} @approverReplies={{approverReplies}} @responseToApprove={{responseToApprove}} @menteeResponse={{menteeResponse}} @workspace={{workspace}} @submission={{submission}} @canApprove={{canApprove}} @isOwnMentorReply={{isOwnMentorReply}} @primaryReply={{primaryApproverReply}} @isOwnApproverReply={{isOwnApproverReply}} @reviewedResponse={{reviewedResponse}} @toResponses={{action "toResponses"}} @iconFillOptions={{iconFillOptions}} @subResponses={{subResponses}} @handleResponseThread={{action "handleResponseThread"}} />
     </div>
   {{/if}}
 </div>

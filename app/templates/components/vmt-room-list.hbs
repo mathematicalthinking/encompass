@@ -3,12 +3,7 @@
 <ul>
   {{#each rooms as |room|}}
     <li>
-      {{vmt-room-list-item
-        room=room
-        selectedRoomIds=selectedRoomIds
-        showCheckbox=showCheckbox
-        onSelect=(action "onItemSelect")
-      }}
+      <VmtRoomListItem @room={{room}} @selectedRoomIds={{selectedRoomIds}} @showCheckbox={{showCheckbox}} @onSelect={{action "onItemSelect"}} />
     </li>
   {{else}}
     <li data-test="no-rooms"> No rooms</li>

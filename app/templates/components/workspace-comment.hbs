@@ -1,9 +1,9 @@
 <div class="comment-flex-item text">
   <p>
     {{#if isForCurrentWorkspace}}
-      {{#link-to 'workspace.submission.selection' comment.selection.submission comment.selection classNames="comment comment-text"}}
+      <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array comment.selection.submission comment.selection}} @classNames="comment comment-text">
         {{comment.text}}
-      {{/link-to}}
+      </LinkTo>
     {{else}}
     <a class="newWindow comment-text" target="_blank" href="{{comment.selection.link}}">{{comment.text}}</a>
     {{/if}}

@@ -6,38 +6,20 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  {{selectize-input
-    store=store
-    inputId="select-workspace"
-    isAsync=true
-    maxItems=1
-    initialOptions=initialWorkspaceOptions
-    initialItems=initialWorkspaceItem
-    onItemAdd=(action "setSelectedWorkspace")
-    onItemRemove=(action "setSelectedWorkspace")
-    labelField="name"
-    searchField="name"
-    valueField="id"
-    model="workspace"
-    queryParamsKey="query"
-    searchCriterion="name"
-    topLevelQueryParams="searchBy"
-    placeholder="Search for workspaces by name..."
-    preload="focus"
-  }}
+  <SelectizeInput @store={{this.store}} @inputId="select-workspace" @isAsync={{true}} @maxItems={{1}} @initialOptions={{initialWorkspaceOptions}} @initialItems={{initialWorkspaceItem}} @onItemAdd={{action "setSelectedWorkspace"}} @onItemRemove={{action "setSelectedWorkspace"}} @labelField="name" @searchField="name" @valueField="id" @model="workspace" @queryParamsKey="query" @searchCriterion="name" @topLevelQueryParams="searchBy" @placeholder="Search for workspaces by name..." @preload="focus" />
   {{#if missingWorkspace}}
-    {{error-box error="Please select a workspace." resetError=(action (mut missingWorkspace) null) showDismiss=true}}
+    <ErrorBox @error="Please select a workspace." @resetError={{action (mut missingWorkspace) null}} @showDismiss={{true}} />
   {{/if}}
 </div>
 {{/unless}}
 
 {{#if selectedWorkspace}}
-  {{workspace-info-summary workspace=selectedWorkspace}}
+  <WorkspaceInfoSummary @workspace={{selectedWorkspace}} />
 {{/if}}
 
 
 {{#if tooFewSubmissions}}
-  {{error-box error="Please select a workspace with at least 1 submission." resetError=(action (mut tooFewSubmissions) null) showDismiss=true }}
+  <ErrorBox @error="Please select a workspace with at least 1 submission." @resetError={{action (mut tooFewSubmissions) null}} @showDismiss={{true}} />
 {{/if}}
 {{#if showLoadingSubmissions}}
   <p class="loading-message">Loading submissions... Thank you for your patience.</p>

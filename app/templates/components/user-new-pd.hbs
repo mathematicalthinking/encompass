@@ -8,84 +8,84 @@
     <tr>
       <td>Username <span class="required-star">*</span></td>
       <td>
-        <input type="text" class="user-username" value={{username}} onblur={{action 'usernameValidate' value="target.value"}} onfocus={{action 'resetErrors'}} />
+        <Input @type="text" class="user-username" @value={{this.username}} @focus-out={{action 'usernameValidate' username="target.value"}} @focus-in={{action 'resetErrors'}} />
       </td>
     </tr>
     <tr>
       <td>Password <span class="required-star">*</span></td>
       <td>
-        <input type="password" class="user-password" value={{password}} onblur={{action 'passwordValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
+        <Input @type="password" class="user-password" @value={{this.password}} @focus-out={{action 'passwordValidate' password="target.value"}} @focus-in={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
       <td>First Name</td>
       <td>
-        {{input type="text" value=firstName classNames='user-first-name'}}
+        <Input @type="text" @value={{this.firstName}} @classNames="user-first-name" />
       </td>
     </tr>
     <tr>
       <td>Last Name</td>
       <td>
-        {{input type="text" value=lastName classNames='user-last-name'}}
+        <Input @type="text" @value={{this.lastName}} @classNames="user-last-name" />
       </td>
     </tr>
     <tr>
         <td>Email
-          {{#if isEmailRequired}}
+          {{#if this.isEmailRequired}}
             <span class="required-star">*</span>
           {{/if}}
         </td>
         <td>
-        <input type="text" class="user-email" value={{email}} onblur={{action 'emailValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
+        <Input @type="text" class="user-email" @value={{this.email}} @focus-out={{action 'emailValidate' email="target.value"}} @focus-in={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
       <td>Organization</td>
       <td>
-        {{currentUser.organization.name}}
+        {{this.currentUser.organization.name}}
       </td>
     </tr>
     <tr>
       <td>Location</td>
       <td>
-        {{input type="text" value=location classNames='user-location'}}
+        <Input @type="text" @value={{this.location}} @classNames="user-location" />
       </td>
     </tr>
     <tr>
       <td>Account Type <span class="required-star">*</span></td>
       <td>
-        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes cannotBeNull=true action=(action (mut selectedType))}}
+        <MySelect @selectedValue={{this.selectedType}} @prompt="Select Account Type" @content={{this.accountTypes}} @cannotBeNull={{true}} @action={{action (mut this.selectedType)}} />
       </td>
     </tr>
     <tr>
       <td>Authorized <span class="required-star">*</span></td>
       <td>
-        {{input type="checkbox" checked=isAuthorized value=isAuthorized classNames='user-isAuth'}}
+        <Input @type="checkbox" @checked={{this.isAuthorized}} @classNames="user-isAuth" />
       </td>
     </tr>
   </table>
 
-  {{#if usernameError}}
-    <p class="error-message">{{usernameError}}</p>
+  {{#if this.usernameError}}
+    <p class="error-message">{{this.usernameError}}</p>
   {{/if}}
 
-  {{#if emailError}}
-    <p class="error-message">{{emailError}}</p>
+  {{#if this.emailError}}
+    <p class="error-message">{{this.emailError}}</p>
   {{/if}}
 
-  {{#if passwordError}}
-    <p class="error-message">{{passwordError}}</p>
+  {{#if this.passwordError}}
+    <p class="error-message">{{this.passwordError}}</p>
   {{/if}}
 
-  {{#if noSpacesError}}
+  {{#if this.noSpacesError}}
     <p class="error-message">Passwords cannot contain spaces</p>
   {{/if}}
 
-  {{#if errorMessage}}
+  {{#if this.errorMessage}}
     <p class="error-message">Missing required fields</p>
   {{/if}}
 
-  {{#each createUserErrors as |error|}}
+  {{#each this.createUserErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
 

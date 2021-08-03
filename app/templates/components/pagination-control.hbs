@@ -1,11 +1,11 @@
 
-{{#if showPageNavigation}}
+{{#if this.showPageNavigation}}
   <div class="flex">
     <div class="nav-arrows">
       <div class="nav-left">
     <i {{action "getPage" -1}} class="fas fa-caret-left"></i>
   </div>
-  <div class="page-status"> <p>Page {{details.currentPage}} / {{details.pageCount}}</p></div>
+  <div class="page-status"> <p>Page {{this.details.currentPage}} / {{this.details.pageCount}}</p></div>
 
   <div class="nav-right">
     <i {{action "getPage" 1}} class="fas fa-caret-right"></i>
@@ -14,8 +14,8 @@
 
   <div class="nav-goto">
     <label for="gotoPage">Go to Page</label>
-    {{input class="goto-page" type="number" value=publicGoToPage}}
-    <button {{action "getPage" null publicGoToPage}}>Go</button>
+    <Input class="goto-page" @type="number" @value={{this.publicGoToPage}} />
+    <button {{action "getPage" null this.publicGoToPage}}>Go</button>
   </div>
   </div>
 

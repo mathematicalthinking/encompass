@@ -1,21 +1,23 @@
 /*global _:false */
-Encompass.RadioFilterComponent = Ember.Component.extend({
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default Component.extend({
   classNames: ['radio-filter'],
 
   didReceiveAttrs() {
-
     this._super(...arguments);
   },
 
-  isSelected: function() {
-    let groupValue = this.get('groupValue');
-    let ownValue = this.get('inputValue');
+  isSelected: computed('groupValue', function () {
+    let groupValue = this.groupValue;
+    let ownValue = this.inputValue;
     return _.isEqual(groupValue, ownValue);
-  }.property('groupValue'),
+  }),
 
   actions: {
     onClick(val) {
-      this.get('onClick')(val);
-    }
-  }
+      this.onClick(val);
+    },
+  },
 });

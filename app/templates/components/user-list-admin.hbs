@@ -1,38 +1,24 @@
 <section class="list-side">
   <header class="list-header">
     <h1>Users</h1>
-    {{#link-to 'users.new' id='new-user-link' class="new-link-btn"}}<span class="create-text">Create New User</span><i class="fas fa-plus"></i>{{/link-to}}
+    <LinkTo @route="users.new" @id="new-user-link" class="new-link-btn"><span class="create-text">Create New User</span><i class="fas fa-plus"></i></LinkTo>
   </header>
-
-  {{!-- <section>
-    <fieldset>
-    <p>
-      Select a user from the below
-    </p>
-    <p class="help">
-      Users are automatically created when they visit but may not be authorized.
-      Authorized users are bold.
-      Admin users are red.
-      If you aren't authorized <a href="http://mathforum.org/cgi-bin/mailto.pl?key=92&to=the%20EnCoMPASS%20team">DROP US A NOTE</a>
-    </p>
-    </fieldset>
-  </section> --}}
 
   <section>
     <nav class="list-box">
       <h2>Your account</h2>
       <ul class="listing your-account">
-        <li class="{{if currentUser.isAuthorized 'is-authorized'}} {{if currentUser.isAdmin 'is-admin'}}">
-          {{#link-to 'users.user' currentUser classNames='user'}}{{currentUser.username}}{{/link-to}}
+        <li class="{{if this.currentUser.isAuthorized 'is-authorized'}} {{if this.currentUser.isAdmin 'is-admin'}}">
+          <LinkTo @route="users.user" @model={{this.currentUser.id}} @classNames="user">{{this.currentUser.username}}</LinkTo>
         </li>
       </ul>
 
       <h2>Waiting for Authorization</h2>
       <ul class="listing waiting-auth">
-        {{#if unauthUsers}}
-          {{#each unauthUsers as |user|}}
+        {{#if this.unauthUsers}}
+          {{#each this.unauthUsers as |user|}}
           <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
           </li>
           {{/each}}
         {{else}}
@@ -42,19 +28,19 @@
 
       <h2>Administrators</h2>
       <ul class="listing admin-users">
-        {{#each adminUsers as |user|}}
+        {{#each this.adminUsers as |user|}}
         <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-          {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
+          <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
           </li>
         {{/each}}
       </ul>
 
       <h2>Pd Admins</h2>
       <ul class="listing pd-users">
-        {{#if pdUsers}}
-          {{#each pdUsers as |user|}}
+        {{#if this.pdUsers}}
+          {{#each this.pdUsers as |user|}}
           <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
           </li>
           {{/each}}
         {{else}}
@@ -64,10 +50,10 @@
 
       <h2>Teachers</h2>
       <ul class="listing teacher-users">
-        {{#if teacherUsers}}
-          {{#each teacherUsers as |user|}}
+        {{#if this.teacherUsers}}
+          {{#each this.teacherUsers as |user|}}
           <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
           </li>
           {{/each}}
         {{else}}
@@ -77,10 +63,10 @@
 
       <h2>Students</h2>
       <ul class="listing student-users">
-        {{#if studentUsers}}
-          {{#each studentUsers as |user|}}
+        {{#if this.studentUsers}}
+          {{#each this.studentUsers as |user|}}
           <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
-            {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
           </li>
           {{/each}}
         {{else}}
@@ -89,7 +75,7 @@
       </ul>
 
       <button class="toggle-button" {{action 'showDeletedUsers'}}>
-        {{#if showDeletedUsers}}
+        {{#if this.showDeletedUsers}}
           Hide
         {{else}}
           Show
@@ -97,13 +83,13 @@
           Deleted Users
       </button>
 
-      {{#if showDeletedUsers}}
+      {{#if this.showDeletedUsers}}
       <h2>Deleted Users</h2>
         <ul class="listing">
           {{#if trashedUsers}}
             {{#each trashedUsers as |user|}}
             <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-              {{#link-to 'users.user' user classNames='user'}}{{user.username}}{{/link-to}}
+              <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
             </li>
             {{/each}}
           {{else}}

@@ -1,4 +1,11 @@
-Encompass.CategoriesMenuComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   elementId: 'categories',
 
   // didReceiveAttrs: function () {
@@ -10,7 +17,7 @@ Encompass.CategoriesMenuComponent = Ember.Component.extend({
   actions: {
     addCategory: function (category) {
       let identifier = category.identifier;
-      this.get('store').queryRecord('category', {identifier: identifier}).then((cat) => {
+      this.store.queryRecord('category', { identifier: identifier }).then((cat) => {
         this.sendAction('addCategories', cat);
       });
     },

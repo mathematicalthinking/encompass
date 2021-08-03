@@ -1,7 +1,7 @@
 <div class="confirm-box">
   {{#if isTokenValid}}
     <p class="success-message"> Your email address has been successfully confirmed!</p>
-    <p class="info">You will be notified once an admin has authorized your account. You can also {{#link-to 'auth.login' classNames='login-link'}} log in{{/link-to}} any time to check on the status of your account.</p>
+    <p class="info">You will be notified once an admin has authorized your account. You can also <LinkTo @route="auth.login" @classNames="login-link"> log in</LinkTo> any time to check on the status of your account.</p>
   {{else}}
 
     {{#if isAlreadyConfirmed}}
@@ -16,7 +16,7 @@
     {{/each}}
 
       <p class="info">
-        Please {{#link-to 'auth.login' classNames='login-link'}} log in{{/link-to}} {{loginMessage}}
+        Please <LinkTo @route="auth.login" @classNames="login-link"> log in</LinkTo> {{loginMessage}}
         </p>
   {{/if}}
 </div>

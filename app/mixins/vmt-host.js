@@ -1,5 +1,11 @@
-Encompass.VmtHostMixin = Ember.Mixin.create({
-  //used in vmt-replayer.js and vmt-search.js
+import Mixin from '@ember/object/mixin';
+
+
+
+
+
+
+export default Mixin.create({
   getVmtHost() {
     let hostname = window.location.hostname;
     let vmtUrl;

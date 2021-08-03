@@ -1,7 +1,14 @@
-Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.UserSignupMixin, {
+import { later } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
+import $ from 'jquery';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import UserSignupMixin from '../mixins/user_signup_mixin';
+
+export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
+  router: service('router'),
   elementId: 'user-new-admin',
-  alert: Ember.inject.service('sweet-alert'),
-  routing: Ember.inject.service('-routing'),
+  alert: service('sweet-alert'),
   errorMessage: null,
   username: '',
   password: '',
@@ -24,10 +31,10 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       if (!data) {
         return reject('Invalid data');
       }
-      Ember.$.post({
-          url: '/auth/signup',
-          data: data
-        })
+      $.post({
+        url: '/auth/signup',
+        data: data
+      })
         .then((res) => {
           return resolve(res);
         })
@@ -40,14 +47,14 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   handleOrg: function (org) {
     var that = this;
     return new Promise((resolve, reject) => {
-     if (!org) {
+      if (!org) {
         return reject('Invalid Data');
-     }
+      }
 
-     let orgReq;
+      let orgReq;
       // make sure user did not type in existing org
       if (typeof org === 'string') {
-        let orgs = this.get('organizations');
+        let orgs = this.organizations;
         let matchingOrg = orgs.findBy('name', org);
         if (matchingOrg) {
           this.set('org', matchingOrg);
@@ -78,19 +85,19 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     });
   },
 
-//warn admin they are creating new org
-// When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
+  //warn admin they are creating new org
+  // When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
 
   actions: {
     confirmOrg: function () {
-      let org = this.get('org');
+      let org = this.org;
       if (typeof org === 'string') {
-        let orgs = this.get('organizations');
+        let orgs = this.organizations;
         let matchingOrg = orgs.findBy('name', org);
         if (matchingOrg) {
           this.send('newUser');
         } else {
-          this.get('alert').showModal('question', `Are you sure you want to create ${org}`, null, 'Yes')
+          this.alert.showModal('question', `Are you sure you want to create ${org}`, null, 'Yes')
             .then((result) => {
               if (result.value) {
                 this.send('newUser');
@@ -104,14 +111,14 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     },
 
     newUser: function () {
-      var username = this.get('username');
-      var password = this.get('password');
-      var firstName = this.get('firstName');
-      var lastName = this.get('lastName');
-      var email = this.get('email');
-      var organization = this.get('org');
-      var location = this.get('location');
-      var accountType = this.get('selectedType');
+      var username = this.username;
+      var password = this.password;
+      var firstName = this.firstName;
+      var lastName = this.lastName;
+      var email = this.email;
+      var organization = this.org;
+      var location = this.location;
+      var accountType = this.selectedType;
       var accountTypeLetter;
       if (accountType) {
         accountTypeLetter = accountType.charAt(0).toUpperCase();
@@ -120,8 +127,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         $('.account').show();
         return;
       }
-      var isAuthorized = this.get('isAuthorized');
-      var currentUserId = this.get('currentUser').get('id');
+      var isAuthorized = this.isAuthorized;
+      var currentUserId = this.currentUser.get('id');
 
       if (!username || !password) {
         this.set('errorMessage', true);
@@ -175,14 +182,13 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
       return this.handleOrg(organization)
         .then((org) => {
-          let newUserData = this.get('newUserData');
+          let newUserData = this.newUserData;
           newUserData.organization = org;
           return this.createNewUser(newUserData)
             .then((res) => {
-              console.log(res);
               if (res.username) {
-                this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
-                return this.get('routing').router.transitionTo("users.user", res.id);
+                this.alert.showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
+                return this.router.transitionTo('users.user', res.id);
               }
               if (res.message === 'There already exists a user with that username') {
                 this.set('usernameError', this.get('usernameErrors.taken'));
@@ -203,20 +209,20 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     },
 
     cancelNew: function () {
-      this.get('routing').router.transitionTo("users");
+      this.sendAction('toUserHome');
     },
 
-     setOrg(org) {
+    setOrg(org) {
       //  if (typeof org === 'string') {
       //    this.set('orgReq', org);
       //  } else {
-         this.set('org', org);
+      this.set('org', org);
       //  }
-     },
+    },
 
     closeError: function (error) {
       $(`.${error}`).addClass('fadeOutRight');
-      Ember.run.later(() => {
+      later(() => {
         $(`.${error}`).removeClass('fadeOutRight');
         $(`.${error}`).hide();
       }, 500);

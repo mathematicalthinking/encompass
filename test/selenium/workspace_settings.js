@@ -31,7 +31,7 @@ let assignmentToLink = {
   name: 'MTG Period 1 SCR'
 };
 
-let wsInfoUrl = `${host}/#/workspaces/${workspaceInfo._id}/info`;
+let wsInfoUrl = `${host}/workspaces/${workspaceInfo._id}/info`;
 
 let collabToAdd = {
   username: 'mtgstudent2',
@@ -179,6 +179,7 @@ describe('Workspace info / settings interactions', function() {
 
     it('should display no after page refresh', async function() {
       await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.settings.container});
+      await driver.sleep(5000);
       expect(await helpers.findAndGetText(driver, selectors.settings.linkedAssnText)).to.contain(assignmentToLink.name);
 
     });
@@ -199,7 +200,7 @@ describe('Workspace info / settings interactions', function() {
       await helpers.waitForAndClickElement(driver, 'div.option.active');
 
       expect(await helpers.findAndGetText(driver, usernameText)).to.eql(collabToAdd.username);
-
+      await driver.sleep(500);
       await helpers.findAndClickElement(driver, saveCollab);
 
       await helpers.waitForRemoval(driver, saveCollab);
@@ -218,7 +219,7 @@ describe('Workspace info / settings interactions', function() {
       await helpers.navigateAndWait(driver, wsInfoUrl, {selector: selectors.settings.container});
       let items = await helpers.getWebElements(driver, collabItems);
       expect(items).to.have.lengthOf(1);
-      expect(await helpers.isElementVisible(driver, `a[href="#/users/${collabToAdd.username}"]`)).to.eql(true);
+      expect(await helpers.isTextInDom(driver, collabToAdd.username)).to.eql(true);
 
     });
   });

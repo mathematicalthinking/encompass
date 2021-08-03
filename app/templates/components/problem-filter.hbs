@@ -2,28 +2,20 @@
   <h2>Filter Options</h2>
   <h3>Primary Filters</h3>
   <ul class="primary-filter-list">
-    {{#each primaryFilterOptions as |input|}}
+    {{#each this.primaryFilterOptions as |input|}}
       <li class="filter-{{input.value}}">
-        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon id=input.value}}
-        {{#if (is-equal primaryFilterValue input.value)}}
-          {{#if showAdminFilters}}
-            {{admin-problem-filter
-              filter=adminFilter
-              mainOptions=secondaryFilterOptions
-              secondaryFilter=secondaryFilter
-              onUpdate=(action "onUpdate")
-              orgOptions=orgOptions
-              store=store
-              updateSecondLevel=(action "updateSecondLevel")
-            }}
+        <RadioFilter @groupValue={{this.primaryFilterValue}} @secondaryInputs={{input.secondaryFilters}} @isChecked={{input.isChecked}} @groupName="top-level" @inputValue={{input.value}} @onClick={{action "updateTopLevel"}} @labelName={{input.label}} @labelIcon={{input.icon}} @id={{input.value}} />
+        {{#if (is-equal this.primaryFilterValue input.value)}}
+          {{#if this.showAdminFilters}}
+            <AdminProblemFilter @filter={{this.adminFilter}} @mainOptions={{this.secondaryFilterOptions}} @secondaryFilter={{this.secondaryFilter}} @onUpdate={{action "onUpdate"}} @orgOptions={{this.orgOptions}} @store={{this.store}} @updateSecondLevel={{action "updateSecondLevel"}} />
           {{else}}
           <ul class="secondary-filter-options">
-            {{#each secondaryFilterOptions as |option|}}
-              <li class="checkbox-content {{if (is-in currentValues option.value) 'is-selected'}} {{option.value}}">
+            {{#each this.secondaryFilterOptions as |option|}}
+              <li class="checkbox-content {{if (is-in this.currentValues option.value) 'is-selected'}} {{option.value}}">
                 <label for={{option.value}} class="checkbox-label">
                   <i class="checkbox-icon {{option.icon}}"></i>
                   <span class="checkbox-text">{{option.label}}</span>
-                  {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
+                  <Input @id={{option.value}} @type="checkbox" @checked={{option.isApplied}} @change={{action "updateSecondLevel"}} />
                 </label>
               </li>
             {{/each}}
@@ -36,35 +28,22 @@
   </ul>
 
   <h3 {{action 'toggleCategoryFilters'}} class="category-header">
-    <i class="fas {{if showCategoryFilters 'fa-chevron-down'}}{{unless showCategoryFilters 'fa-chevron-right'}}"></i> Category
+    <i class="fas {{if this.showCategoryFilters 'fa-chevron-down'}}{{unless this.showCategoryFilters 'fa-chevron-right'}}"></i> Category
   </h3>
-  {{#if showCategoryFilters}}
+  {{#if this.showCategoryFilters}}
     <ul class="category-filter-list">
-      {{selectize-input
-        store=store
-        inputId="categories-filter"
-        onItemAdd=(action "addCategorySelectize")
-        maxItems=1
-        labelField="identifier"
-        valueField="id"
-        searchField="identifier"
-        model="category"
-        queryParamsKey="identifier"
-        topLevelQueryParams="searchBy"
-        isAsync=true
-        placeholder="Search categories to add"
-      }}
+      <SelectizeInput @store={{this.store}} @inputId="categories-filter" @onItemAdd={{action "addCategorySelectize"}} @maxItems={{1}} @labelField="identifier" @valueField="id" @searchField="identifier" @model="category" @queryParamsKey="identifier" @topLevelQueryParams="searchBy" @isAsync={{true}} @placeholder="Search categories to add" />
       <li>
         <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
       </li>
       <h5>Selected Category Filters</h5>
       <label class="subfilter">
-        {{input id="toggle-sub-cats" type="checkbox" checked=doIncludeSubCategories change=(action "toggleIncludeSubCats")}}
+        <Input @id="toggle-sub-cats" @type="checkbox" @checked={{this.doIncludeSubCategories}} @change={{action "toggleIncludeSubCats"}} />
         <span>Include Subcategories</span>
       </label>
-        {{#if categoriesFilter}}
+        {{#if this.categoriesFilter}}
         <ul class="selected-cat-list">
-          {{#each categoriesFilter as |category|}}
+          {{#each this.categoriesFilter as |category|}}
             <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
           {{/each}}
         </ul>
@@ -74,18 +53,17 @@
          {{/if}}
     </ul>
   {{/if}}
-  {{#if currentUser.isAdmin}}
-    <h3 {{action 'toggleMoreFilters'}} class="more-header {{if closedMenu 'closed'}}">
-      <i class="fas {{if showMoreFilters 'fa-chevron-down'}}{{unless showMoreFilters 'fa-chevron-right'}}"></i> More
+  {{#if this.currentUser.user.isAdmin}}
+    <h3 {{action 'toggleMoreFilters'}} class="more-header {{if this.closedMenu 'closed'}}">
+      <i class="fas {{if this.showMoreFilters 'fa-chevron-down'}}{{unless this.showMoreFilters 'fa-chevron-right'}}"></i> More
     </h3>
-    {{#if showMoreFilters}}
+    {{#if this.showMoreFilters}}
       <ul class="more-filter-list">
         <h5>Trashed Problems</h5>
         <label class="subfilter">
-          {{input id="toggle-trashed" type="checkbox" checked=showTrashedProblems change=(action "toggleTrashedProblems")}} <span>Show All Trashed Problems</span>
+          <Input @id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedProblems}} @change={{action "toggleTrashedProblems"}} /> <span>Show All Trashed Problems</span>
         </label>
       </ul>
     {{/if}}
   {{/if}}
 </div>
-

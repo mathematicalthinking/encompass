@@ -1,8 +1,12 @@
-Encompass.MetricsRoute = Ember.Route.extend({
-  model(){
-    return Ember.RSVP.hash({
-      workspaces: this.get('store').findAll('workspace'),
-      problems: this.get('store').findAll('problem')
+import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
+import { hash } from 'rsvp';
+export default class MetricsRoute extends Route {
+  @service store;
+  model() {
+    return hash({
+      workspaces: this.store.findAll('workspace'),
+      problems: this.store.findAll('problem'),
     });
-  },
-});
+  }
+}

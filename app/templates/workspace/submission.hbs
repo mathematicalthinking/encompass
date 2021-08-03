@@ -1,11 +1,11 @@
 <div id="workspace-container">
-<header class="{{makingSelection}} ws-header">
+<header class="{{this.makingSelection}} ws-header">
   <div class="ws-meta">
-    <h2 class="workspace-name">{{currentWorkspace.name}}</h2>
-    <span class="info-link">{{#link-to 'workspace.info' workspace}}<i class="fa fa-info-circle" aria-hidden="true"></i>
-      {{/link-to}}
+    <h2 class="workspace-name">{{this.currentWorkspace.name}}</h2>
+    <span class="info-link"><LinkTo @route="workspace.info" @model={{this.currentWorkspace.id}}><i class="fa fa-info-circle" aria-hidden="true"></i>
+      </LinkTo>
     </span>
-    <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}">by {{currentWorkspace.owner.displayName}} </span>
+    <span class="info workspaceOwner {{if this.isMyWorkspace 'isMine' 'notMine'}}">by {{this.currentWorkspace.owner.displayName}} </span>
 
 </div>
   <aside>
@@ -17,79 +17,36 @@
   <div class="clear"></div>
 </header>
 
-<div class="workspace-flex-container {{if cannotSeeFolders 'no-folders'}} {{if cannotSeeComments 'no-comments'}} {{if cannotSeeSelections 'no-selections'}} {{if cannotSeeResponses 'no-responses'}}">
+<div class="workspace-flex-container {{if this.cannotSeeFolders 'no-folders'}} {{if this.cannotSeeComments 'no-comments'}} {{if this.cannotSeeSelections 'no-selections'}} {{if this.cannotSeeResponses 'no-responses'}}">
 {{!-- <div id="al_left" class="workspace-flex-item folders"> --}}
-  {{#if showFoldersToggle}}
+  {{#if this.showFoldersToggle}}
   <div title="Show Folders" class="toggle-display">
     <button {{action 'toggleFolderDisplay'}}><img src="/images/chevrons-right.svg"></button>
   </div>
   {{/if}}
-  {{folder-list
-    store=store
-    folders=nonTrashedFolders
-    workspace=currentWorkspace
-    fileSelection="fileSelectionInFolder"
-    currentSubmission=model
-    currentSelection=currentSelection
-    taggings=nonTrashedTaggings
-    workspaceSubmissions=currentWorkspace.submissions.content
-    workspaceSelections=nonTrashedSelections
-    hideFolders=(action "toggleFolderDisplay")
-    isHidden=areFoldersHidden
-    containerLayoutClass=containerLayoutClass
-    hideComments=(action "toggleCommentDisplay")
-    areCommentsHidden=areCommentsHidden
-  }}
+  <FolderList @store={{this.store}} @folders={{this.nonTrashedFolders}} @workspace={{this.currentWorkspace}} @fileSelection="fileSelectionInFolder" @currentSubmission={{this.model.submission}} @currentSelection={{this.currentSelection}} @taggings={{this.nonTrashedTaggings}} @workspaceSubmissions={{this.currentWorkspace.submissions.content}} @workspaceSelections={{this.nonTrashedSelections}} @hideFolders={{action "toggleFolderDisplay"}} @isHidden={{this.areFoldersHidden}} @containerLayoutClass={{this.containerLayoutClass}} @hideComments={{action "toggleCommentDisplay"}} @areCommentsHidden={{this.areCommentsHidden}} />
 {{!-- </div> --}}
 
 <!--section class="submissions"-->
 {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
-  {{submission-group
-    store=store
-    canRespond=canRespond
-    submissions=currentWorkspace.submissions.content
-    submission=model
-    addSelection=(action "addSelection")
-    deleteSelection=(action "deleteSelection")
-    currentWorkspace=currentWorkspace
-    toNewResponse=(action "toNewResponse")
-    toSubmission=(action "toSubmission")
-    selections=nonTrashedSelections
-    responses=nonTrashedResponses
-    containerLayoutClass=containerLayoutClass
-    canSeeSelections=canSeeSelections
-    currentSelection=currentSelection
-    isParentWorkspace=isParentWorkspace
-  }}
+  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 <!--/section-->
 
 <!--section class="right"-->
 {{!-- <div id="al_right"> --}}
-   {{#if showCommentsToggle}}
+   {{#if this.showCommentsToggle}}
   <div title="Show Comments" class="toggle-display comments">
     <button {{action 'toggleCommentDisplay'}}><img src="/images/chevrons-left.svg"></button>
   </div>
   {{/if}}
-  {{comment-list
-    store=store
-    comments=nonTrashedComments
-    currentWorkspace=currentWorkspace
-    currentSelection=currentSelection
-    currentSubmission=model
-    allowedToComment=permittedToComment
-    resetComment=(action "cancelComment")
-    isHidden=areCommentsHidden
-    hideComments=(action "toggleCommentDisplay")
-    containerLayoutClass=containerLayoutClass
-    isParentWorkspace=isParentWorkspace
-  }}
+  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 </div>
 
 <!--/section-->
 </div>
-{{#if showOverlay}}
+{{#if this.showOverlay}}
 <div class="clear"></div>
 <div {{action 'popupMaskClicked'}} id="al_popup_mask" class="al_popup_close" style="height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;"></div>
 {{/if}}

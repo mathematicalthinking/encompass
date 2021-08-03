@@ -1,11 +1,16 @@
-Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+
+export default Component.extend(CurrentUserMixin, {
   classNames: ['response-submission-thread'],
-  utils: Ember.inject.service('utility-methods'),
+  utils: service('utility-methods'),
 
   statusMap: {
     upToDate: {
       display: 'Up To Date',
-      statusFill: '#35A853'
+      statusFill: '#35A853',
     },
     hasDraft: {
       display: 'Unfinished Draft',
@@ -15,12 +20,12 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     hasNewRevision: {
       display: 'New Revision',
       statusFill: '#3997EE',
-      counterProp: 'newRevisionCounter'
+      counterProp: 'newRevisionCounter',
     },
     hasUnmentoredRevisions: {
       display: 'Unmentored Revision',
       statusFill: '#3997EE',
-      counterProp: 'unmentoredCounter'
+      counterProp: 'unmentoredCounter',
     },
     hasUnreadReply: {
       display: 'Unread Reply',
@@ -35,135 +40,153 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     inNeedOfRevisions: {
       display: 'Needs Revisions',
       statusFill: '#EB5757',
-      counterProp: 'needsRevisionCounter'
-
+      counterProp: 'needsRevisionCounter',
     },
     hasNewlyApprovedReply: {
       display: 'Newly Approved',
       statusFill: '#3997EE',
       counterProp: 'newlyApprovedCounter',
-    }
-
+    },
   },
-  displayStatus: function() {
+  displayStatus: computed('thread.highestPriorityStatus', function () {
     let status = this.get('thread.highestPriorityStatus');
     return this.get('statusMap.' + status);
-  }.property('thread.highestPriorityStatus'),
+  }),
 
-  displayStatusText: function() {
-    let text = this.get('displayStatus.display');
-    return text + ' ' + this.get('currentCounterValue');
-  }.property('displayStatus', 'currentCounterValue'),
-
-  currentCounterValue: function() {
-    let prop = this.get('displayStatus.counterProp');
-    if (!prop) {
-      return '';
+  displayStatusText: computed(
+    'displayStatus',
+    'currentCounterValue',
+    function () {
+      let text = this.get('displayStatus.display');
+      return text + ' ' + this.currentCounterValue;
     }
-    return this.get(prop) || '';
-  }.property('displayStatus.counterProp', 'unreadCounter', 'unmentoredCounter', 'needsRevisionCounter', 'draftCounter', 'newlyApprovedCounter', 'pendingApprovalCounter', 'newRevisionCounter'),
+  ),
 
-  newRevisionCounter: function() {
+  currentCounterValue: computed(
+    'displayStatus.counterProp',
+    'unreadCounter',
+    'unmentoredCounter',
+    'needsRevisionCounter',
+    'draftCounter',
+    'newlyApprovedCounter',
+    'pendingApprovalCounter',
+    'newRevisionCounter',
+    function () {
+      let prop = this.get('displayStatus.counterProp');
+      if (!prop) {
+        return '';
+      }
+      return this.get(prop) || '';
+    }
+  ),
+
+  newRevisionCounter: computed('thread.newRevisions.[]', function () {
     let count = this.get('thread.newRevisions.length');
 
     if (count > 1) {
       return `(${count})`;
     }
     return '';
-  }.property('thread.newRevisions.[]'),
+  }),
 
-  unreadCounter: function() {
+  unreadCounter: computed('unreadResponses.[]', function () {
     let count = this.get('thread.unreadResponses.length');
 
     if (count > 1) {
       return `(${count})`;
     }
     return '';
-  }.property('unreadResponses.[]'),
+  }),
 
-  draftCounter: function() {
+  draftCounter: computed('draftResponses.[]', function () {
     let count = this.get('thread.draftResponses.length');
 
     if (count > 1) {
       return `(${count})`;
     }
     return '';
-  }.property('draftResponses.[]'),
+  }),
 
-  needsRevisionCounter: function() {
-    let count = this.get('thread.needsRevisionResponses.length');
+  needsRevisionCounter: computed(
+    'thread.needsRevisionResponses.[]',
+    function () {
+      let count = this.get('thread.needsRevisionResponses.length');
 
-    if (count > 1) {
-      return `(${count})`;
+      if (count > 1) {
+        return `(${count})`;
+      }
+      return '';
     }
-    return '';
-  }.property('thread.needsRevisionResponses.[]'),
+  ),
 
-  pendingApprovalCounter: function() {
-    let count = this.get('thread.pendingApprovalResponses.length');
+  pendingApprovalCounter: computed(
+    'thread.pendingApprovalResponses.[]',
+    function () {
+      let count = this.get('thread.pendingApprovalResponses.length');
 
-    if (count > 1) {
-      return `(${count})`;
+      if (count > 1) {
+        return `(${count})`;
+      }
+      return '';
     }
-    return '';
-  }.property('thread.pendingApprovalResponses.[]'),
+  ),
 
-  newlyApprovedCounter: function() {
+  newlyApprovedCounter: computed('thread.newlyApprovedReplies.[]', function () {
     let count = this.get('thread.newlyApprovedReplies.length');
 
     if (count > 1) {
       return `(${count})`;
     }
     return '';
-  }.property('thread.newlyApprovedReplies.[]'),
+  }),
 
-  unmentoredCounter: function() {
+  unmentoredCounter: computed('thread.unmentoredRevisions.[]', function () {
     let count = this.get('thread.unmentoredRevisions.length');
 
     if (count > 1) {
       return `(${count})`;
     }
     return '';
-  }.property('thread.unmentoredRevisions.[]'),
+  }),
 
- mentors: function() {
-  let mentorIds = this.get('thread.mentors') || [];
-  return mentorIds.map((id) => {
-    return this.get('store').peekRecord('user', id);
-  })
-  .compact()
-  .uniq();
- }.property('thread.mentors.[]'),
+  mentors: computed('thread.mentors.[]', function () {
+    let mentorIds = this.get('thread.mentors') || [];
+    return mentorIds
+      .map((id) => {
+        return this.store.peekRecord('user', id);
+      })
+      .compact()
+      .uniq();
+  }),
 
- ntfTitleText: function() {
-  let count = this.get('thread.newNtfCount');
-  if (!count) {
-    return '';
-  }
+  ntfTitleText: computed('thread.newNtfCount', function () {
+    let count = this.get('thread.newNtfCount');
+    if (!count) {
+      return '';
+    }
 
-  if (count === 1) {
-    return '1 New Notification';
-  }
-  if (count > 1) {
-    return `${count} New Notifications`;
-  }
- }.property('thread.newNtfCount'),
+    if (count === 1) {
+      return '1 New Notification';
+    }
+    if (count > 1) {
+      return `${count} New Notifications`;
+    }
+  }),
 
   actions: {
-    toSubmissionResponse: function() {
+    toSubmissionResponse: function () {
       let response = this.get('thread.highestPriorityResponse');
       if (response) {
         let responseId = response.get('id');
-        let submissionId = this.get('utils').getBelongsToId(response, 'submission');
-        this.get('toResponse')(submissionId, responseId);
+        let submissionId = this.utils.getBelongsToId(response, 'submission');
+        this.toResponse(submissionId, responseId);
       } else {
         let submission = this.get('thread.highestPrioritySubmission');
         if (!submission) {
-          submission = this.get('latestRevision');
+          submission = this.latestRevision;
         }
-        this.get('toSubmissionResponse')(submission);
+        this.toSubmissionResponse(submission);
       }
-    }
-  }
-
+    },
+  },
 });

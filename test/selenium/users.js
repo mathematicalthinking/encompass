@@ -52,7 +52,7 @@ describe('Users', function() {
     let user = helpers.admin;
     before(async function () {
       await helpers.login(driver, host, user);
-      await helpers.waitForSelector(driver, 'a[href="#/users"]');
+      await helpers.waitForSelector(driver, 'a[href="/users"]');
     });
 
     function validateUsersPage() {
@@ -92,7 +92,7 @@ describe('Users', function() {
       it('should not let you submit form with missing fields', async function () {
         let username = `muzzy`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        await helpers.selectOption(driver, 'my-select', 'Teacher');
+        await helpers.selectOption(driver, '.mySelect', 'Teacher', true);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
         await helpers.waitForTextInDom(driver, 'Missing required fields');
@@ -139,7 +139,7 @@ describe('Users', function() {
         let expectedMsg = `"username" ${helpers.signupErrors.blackListed}`;
 
         await clearAndTypeInput(driver, 'username', badUsername);
-        await helpers.selectOption(driver, 'my-select', 'Pd Admin');
+        await helpers.selectOption(driver, '.mySelect', 'Pd Admin', true);
         await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
         await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.user-email', email);
@@ -181,7 +181,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-email', oldEmail);
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
-        await helpers.selectOption(driver, 'my-select', 'Teacher');
+        await helpers.selectOption(driver, '.mySelect', 'Teacher', true);
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
         await helpers.waitForTextInDom(driver, 'Email address has already been used');
@@ -211,7 +211,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
         await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
-        await helpers.selectOption(driver, 'my-select', 'Student');
+        await helpers.selectOption(driver, '.mySelect', 'Student', true);
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
         await helpers.waitForSelector(driver, '.error-text');
@@ -240,9 +240,10 @@ describe('Users', function() {
       it('should change a teacher to an admin', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await helpers.selectOption(driver, 'my-select', 'Admin');
+        await helpers.selectOption(driver, '.mySelect', 'Admin', true);
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
+        await driver.sleep(5000);
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
     }
@@ -259,7 +260,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
+        await helpers.navigateAndWait(driver, `${host}/users`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {
@@ -310,7 +311,7 @@ describe('Users', function() {
       describe('clicking the Create New User link', function () {
         before(async function () {
           await helpers.findAndClickElement(driver, '#new-user-link');
-          await helpers.waitForSelector(driver, 'div#user-new-admin');
+          await helpers.isElementVisible(driver, 'div#user-new-admin');
         });
         validateNewUserPage();
       });
@@ -346,7 +347,7 @@ describe('Users', function() {
     before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
-      await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
+      await helpers.navigateAndWait(driver, `${host}/users`, {selector: '#user-home'});
     });
 
     function validateUsersPage() {
@@ -385,7 +386,7 @@ describe('Users', function() {
       it('should not let you submit form with missing fields', async function () {
         let username = `bunny`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        await helpers.selectOption(driver, 'my-select', 'Teacher');
+        await helpers.selectOption(driver, '.mySelect', 'Teacher', true);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
@@ -427,7 +428,7 @@ describe('Users', function() {
 
         await helpers.findInputAndType(driver, 'input.user-username', badUsername);
 
-        await helpers.selectOption(driver, 'my-select', 'Teacher');
+        await helpers.selectOption(driver, '.mySelect', 'Teacher', true);
         await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
         await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.user-email', email);
@@ -456,7 +457,7 @@ describe('Users', function() {
         let firstName = `Beyonce`;
         await helpers.findAndClickElement(driver, '#new-user-link');
         await helpers.waitForSelector(driver, 'div#user-new');
-        await helpers.selectOption(driver, 'my-select', 'Student');
+        await helpers.selectOption(driver, '.mySelect', 'Student',true);
         await helpers.findInputAndType(driver, 'input.user-username', oldUsername);
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
@@ -487,7 +488,7 @@ describe('Users', function() {
     function changeAccountType() {
       it('should change a teacher to a student', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
-        await helpers.selectOption(driver, 'my-select', 'Student');
+        await helpers.selectOption(driver, '.mySelect', 'Student', true);
         await helpers.findAndClickElement(driver, 'button.save-user');
 
         await helpers.waitForSelector(driver, 'button.edit-user');
@@ -506,7 +507,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
+        await helpers.navigateAndWait(driver, `${host}/users`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {
@@ -682,7 +683,7 @@ describe('Users', function() {
 
     describe('Visiting the users list home page', function () {
       before(async function () {
-        await helpers.navigateAndWait(driver, `${host}/#/users`, {selector: '#user-home'});
+        await helpers.navigateAndWait(driver, `${host}/users`, {selector: '#user-home'});
       });
 
       it('should display a welcome page', async function () {

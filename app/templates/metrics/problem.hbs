@@ -2,7 +2,7 @@
   <h4>{{model.title}}</h4>
   <p>View details about a problem</p>
 </header>
-<p>{{#link-to "metrics"}}back{{/link-to}}</p>
+<p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
   <div class="metrics__container metrics--flex">
     <button {{action "toggleProblemText"}} class="primary-button">Show Problem Text</button>
@@ -12,7 +12,7 @@
   </div>
   {{#if showProblemText}}
     <div class="metrics__card">
-      {{html-to-text model.text}}
+      {{{model.text}}}
     </div>
   {{/if}}
   {{#if showWorkspaces}}
@@ -43,7 +43,7 @@
       <tbody>
         {{#each relevantWorkspaces as |workspace|}}
           <tr>
-            <td>{{#link-to "metrics.workspace" workspace}}{{workspace.name}}{{/link-to}}</td>
+            <td><LinkTo @route="metrics.workspace" @model={{workspace}}>{{workspace.name}}</LinkTo></td>
             <td>{{workspace.owner.displayName}}</td>
             <td>{{workspace.submissionsLength}}</td>
             <td>{{workspace.selectionsLength}}</td>
@@ -82,4 +82,4 @@
     </table>
   {{/if}}
 </div>
-<p>{{#link-to "metrics"}}back{{/link-to}}</p>
+<p><LinkTo @route="metrics">back</LinkTo></p>

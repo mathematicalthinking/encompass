@@ -86,7 +86,7 @@ describe('Mentoring / Approving Interactions', function() {
   describe('Navigating to workspace submission', function() {
     let wsId = workspaceInfo._id;
     let subId = submissionInfo._id;
-    let url = `${host}/#/workspaces/${wsId}/submissions/${subId}`;
+    let url = `${host}/workspaces/${wsId}/submissions/${subId}`;
     before(async function() {
       // await driver.get(url);
       await helpers.navigateAndWait(driver, url, {selector: css.workspace.newResponse});
@@ -143,7 +143,7 @@ describe('Mentoring / Approving Interactions', function() {
 
   describe('Visting Responses List', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, `${host}/#/responses`, {selector: 'a'});
+      await helpers.navigateAndWait(driver, `${host}/responses`, {selector: 'a'});
       await helpers.waitForSelector(driver, css.responsesList.mentoringTab);
     });
 

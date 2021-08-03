@@ -1,5 +1,13 @@
-//app/components/problem-filter.js and app/components/problem-list-container.js
-Encompass.CategoriesListMixin = Ember.Mixin.create({
-  application: Ember.inject.controller(),
-  selectedCategories: Ember.computed.alias('application.selectedCategories'),
+import { alias } from '@ember/object/computed';
+import { inject as controller } from '@ember/controller';
+import Mixin from '@ember/object/mixin';
+
+
+
+
+
+
+export default Mixin.create({
+  application: controller(),
+  selectedCategories: alias('application.selectedCategories'),
 });

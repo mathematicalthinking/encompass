@@ -52,7 +52,7 @@ describe('Assignment Info as Teacher', function() {
 
   describe('Navigating to assignment info', function() {
     let assignmentId = assignmentInfo._id;
-    let url = `${host}/#/assignments/${assignmentId}`;
+    let url = `${host}/assignments/${assignmentId}`;
     before(async function() {
       let selector = editAssn;
       await helpers.navigateAndWait(driver, url, { selector } );

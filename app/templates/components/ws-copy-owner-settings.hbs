@@ -6,12 +6,12 @@
     </span>
   </p>
   <div class="single-text-input-container">
-    {{input class="single-text-input" id="ws-copy-name" type="text" value=selectedName placeholder="Provide a name for your workspace"}}
+    <Input class="single-text-input" @id="ws-copy-name" @type="text" @value={{selectedName}} placeholder="Provide a name for your workspace" />
   </div>
 </div>
 
 {{#each nameErrors as |error|}}
-  {{error-box error=error showDismiss=true resetError=(action (mut nameErrors) null)}}
+  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut nameErrors) null}} />
 {{/each}}
 
 <div class="ws-copy-input owner">
@@ -21,25 +21,11 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  {{selectize-input
-  store=store
-  inputId="owner-select"
-  initialOptions=initialOwnerOptions
-  initialItems=initialOwnerItem
-  maxItems=1
-  onItemAdd=(action "setOwner")
-  onItemRemove=(action "setOwner")
-  labelField="username"
-  valueField="id"
-  searchField="username"
-  model="user"
-  queryParamsKey="usernameSearch"
-  isAsync=true
-  placeholder="Search users to choose as owner"}}
+  <SelectizeInput @store={{this.store}} @inputId="owner-select" @initialOptions={{initialOwnerOptions}} @initialItems={{initialOwnerItem}} @maxItems={{1}} @onItemAdd={{action "setOwner"}} @onItemRemove={{action "setOwner"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search users to choose as owner" />
 </div>
 
 {{#each ownerErrors as |error|}}
-  {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
+  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut ownerErrors) null}} />
 {{/each}}
 
 <div class="ws-copy-input mode">
@@ -49,11 +35,11 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  {{radio-group options=modeInputs selectedValue=selectedMode}}
+  <RadioGroup @options={{modeInputs}} @selectedValue={{selectedMode}} />
 </div>
 
 {{#each modeErrors as |error|}}
-  {{error-box error=error showDismiss=true resetError=(action (mut modeErrors) null)}}
+  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut modeErrors) null}} />
 {{/each}}
 
 <div class="ws-copy-input folderset">
@@ -83,27 +69,15 @@
     </ul>
 
     {{#if doCreateFolderSet}}
-      {{new-folderset-form nameErrors=folderSetNameErrors privacyErrors=folderSetPrivacySettingErrors name=folderSetName privacySetting=folderSetPrivacy}}
+      <NewFoldersetForm @nameErrors={{folderSetNameErrors}} @privacyErrors={{folderSetPrivacySettingErrors}} @name={{folderSetName}} @privacySetting={{folderSetPrivacy}} />
       {{#if duplicateFolderSetName}}
-        {{error-box error="There already exists a public Folder Set with that name. Please choose a different name." showDismiss=true resetError=(action (mut duplicateFolderSetName) null)}}
+        <ErrorBox @error="There already exists a public Folder Set with that name. Please choose a different name." @showDismiss={{true}} @resetError={{action (mut duplicateFolderSetName) null}} />
       {{/if}}
     {{/if}}
 
     {{else}}
       <p class="sub-input-label">Your workspace will have 0 folders. Select a pre-existing folder set below or continue on without any folders</p>
-      {{selectize-input
-        store=store
-        inputId="folderset-select"
-        maxItems=1
-        initialOptions=initialFolderSetOptions
-        initialItems=initialFolderSetItem
-        onItemAdd=(action "setFolderSet")
-        onItemRemove=(action "setFolderSet")
-        labelField="name"
-        valueField="id"
-        searchField="name"
-        model="folder-set"
-        placeholder="Select a Folder Set"}}
+      <SelectizeInput @store={{this.store}} @inputId="folderset-select" @maxItems={{1}} @initialOptions={{initialFolderSetOptions}} @initialItems={{initialFolderSetItem}} @onItemAdd={{action "setFolderSet"}} @onItemRemove={{action "setFolderSet"}} @labelField="name" @valueField="id" @searchField="name" @model="folder-set" @placeholder="Select a Folder Set" />
     {{/if}}
 </div>
 

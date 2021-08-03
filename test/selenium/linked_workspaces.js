@@ -49,10 +49,10 @@ describe('Linking multiple workspaces to one assignment', function() {
     await helpers.waitForSelector(driver, css.wsInfo.settings.editBtn);
   }
 
-  let newWsBaseUrl = `${host}/#/workspaces/${newLinkedWs._id}`;
+  let newWsBaseUrl = `${host}/workspaces/${newLinkedWs._id}`;
   let newWsInfoUrl = `${newWsBaseUrl}/info`;
 
-  let assignmentInfoUrl = `${host}/#/assignments/${assignment._id}`;
+  let assignmentInfoUrl = `${host}/assignments/${assignment._id}`;
 
   let newWsUrlFirstSub = `${newWsBaseUrl}/submissions/${newLinkedWs.firstSubmissionId}`;
 
@@ -135,7 +135,7 @@ describe('Linking multiple workspaces to one assignment', function() {
     describe('For original linked workspace', function() {
       let workspace = originalLinkedWs;
       let student = workspace.student;
-      let responseUrl = `${host}/#/responses/submission/${student.submissionId}?responseId=${student.responseId}`;
+      let responseUrl = `${host}/responses/submission/${student.submissionId}?responseId=${student.responseId}`;
 
       before(async function() {
         await helpers.login(driver, host, student);
@@ -165,7 +165,7 @@ describe('Linking multiple workspaces to one assignment', function() {
 
         it('linked workspace should have been updated', async function() {
 
-          await driver.get(`${host}/#/workspaces/${workspace._id}/work`);
+          await driver.get(`${host}/workspaces/${workspace._id}/work`);
           await helpers.waitForSelector(driver, 'span.submission_count');
 
           // click x button on tour box
@@ -184,7 +184,7 @@ describe('Linking multiple workspaces to one assignment', function() {
     describe('For newly linked workspace', function() {
       let workspace = newLinkedWs;
       let student = workspace.student;
-      let responseUrl = `${host}/#/responses/submission/${student.submissionId}`;
+      let responseUrl = `${host}/responses/submission/${student.submissionId}`;
 
       before(async function() {
         await helpers.login(driver, host, student);
@@ -219,7 +219,7 @@ describe('Linking multiple workspaces to one assignment', function() {
 
         it('linked workspace should have been updated', async function() {
 
-          await driver.get(`${host}/#/workspaces/${workspace._id}/work`);
+          await driver.get(`${host}/workspaces/${workspace._id}/work`);
           await helpers.waitForSelector(driver, 'span.submission_count');
 
           // click x button on tour box

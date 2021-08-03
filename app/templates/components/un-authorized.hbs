@@ -1,5 +1,5 @@
 {{#if currentUser.needAdditionalInfo}}
-  {{signup-google organizations=organizations }}
+  <SignupGoogle @organizations={{organizations}} />
 {{else}}
   <div class="al_wtf main">
     {{#if currentUser.googleId}}

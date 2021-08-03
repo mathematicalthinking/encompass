@@ -1,24 +1,27 @@
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 /*global _:false */
-Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
   elementId: 'workspace-new-settings',
   workspacePermissions: [],
-  utils: Ember.inject.service('utility-methods'),
-  alert: Ember.inject.service('sweet-alert'),
+  utils: service('utility-methods'),
+  alert: service('sweet-alert'),
   isEditingPermissions: false,
   unsavedCollaborator: null,
   selectedMode: 'private',
   selectedSubmissionSettings: 'all',
 
-  validModeValues: function() {
+  validModeValues: computed('modeInputs', function () {
     const modeInputs = this.get('modeInputs.inputs');
 
-    if (this.get('utils').isNonEmptyArray(modeInputs)) {
-      return modeInputs.map(input => input.value);
+    if (this.utils.isNonEmptyArray(modeInputs)) {
+      return modeInputs.map((input) => input.value);
     }
     return [];
-
-  }.property('modeInputs'),
-  constraints: function() {
+  }),
+  constraints: computed('validModeValues', 'doCreateFolderSet', function () {
     let res = {
       workspaceName: {
         presence: { allowEmpty: false },
@@ -26,20 +29,19 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
       },
 
       owner: {
-        presence: { allowEmpty: false }
+        presence: { allowEmpty: false },
       },
 
       privacySetting: {
         inclusion: {
-          within: this.get('validModeValues'),
-          message: 'must be a valid option.'
-        }
+          within: this.validModeValues,
+          message: 'must be a valid option.',
+        },
       },
     };
 
     return res;
-
-  }.property('validModeValues', 'doCreateFolderSet'),
+  }),
   submissionSettingsInputs: {
     groupName: 'submissionSettings',
     required: true,
@@ -54,69 +56,79 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
         label: 'Most Recent Only',
         moreInfo: 'Workspace will only include submissions of record',
       },
-    ]
+    ],
   },
-  modeInputs: function() {
-    let res = {
-      groupName: 'mode',
-      required: true,
-      inputs: [
-        {
-          value: 'private',
-          label: 'Private',
-          moreInfo: 'Workspace will only be visible to the owner and collaborators',
-        },
-        {
-          value: 'org',
-          label: 'My Org',
-          moreInfo: 'Workspace will be visible to everyone belonging to your org',
-        },
-        {
-          value: 'public',
-          label: 'Public',
-          moreInfo: 'Workspace will be visible to every Encompass user',
-        },
-      ]
-    };
+  modeInputs: computed(
+    'currentUser.isStudent',
+    'currentUser.isAdmin',
+    function () {
+      let res = {
+        groupName: 'mode',
+        required: true,
+        inputs: [
+          {
+            value: 'private',
+            label: 'Private',
+            moreInfo:
+              'Workspace will only be visible to the owner and collaborators',
+          },
+          {
+            value: 'org',
+            label: 'My Org',
+            moreInfo:
+              'Workspace will be visible to everyone belonging to your org',
+          },
+          {
+            value: 'public',
+            label: 'Public',
+            moreInfo: 'Workspace will be visible to every Encompass user',
+          },
+        ],
+      };
 
-    if (this.get('currentUser.isStudent') || !this.get('currentUser.isAdmin') ) {
+      if (
+        this.get('currentUser.isStudent') ||
+        !this.get('currentUser.isAdmin')
+      ) {
+        return res;
+      }
+
+      res.inputs.push({
+        value: 'internet',
+        label: 'Internet',
+        moreInfo:
+          'Workspace will be accesible to any user with a link to the workspace',
+      });
       return res;
     }
+  ),
 
-    res.inputs.push({
-      value: 'internet',
-      label: 'Internet',
-      moreInfo: 'Workspace will be accesible to any user with a link to the workspace',
-    });
-    return res;
-  }.property('currentUser.isStudent', 'currentUser.isAdmin'),
-
-  ownerOptions: function() {
-    if (this.get('users')) {
-      return this.get('users').map((user) => {
+  ownerOptions: computed('users.[]', function () {
+    if (this.users) {
+      return this.users.map((user) => {
         return {
           id: user.get('id'),
-          username: user.get('username')
+          username: user.get('username'),
         };
       });
     }
     return [];
-  }.property('users.[]'),
-  folderSetOptions: function() {
-    if (this.get('folderSets')) {
-      return this.get('folderSets').map((folderSet) => {
+  }),
+  folderSetOptions: computed('folderSets.[]', function () {
+    if (this.folderSets) {
+      return this.folderSets.map((folderSet) => {
         return {
           id: folderSet.get('id'),
-          name:folderSet.get('name')
+          name: folderSet.get('name'),
         };
       });
     }
     return [];
-  }.property('folderSets.[]'),
+  }),
 
-  initialCollabOptions: function() {
-    let peeked = this.get('store').peekAll('user');
-    let collabs = this.get('selectedCollaborators');
+  initialCollabOptions: computed('selectedCollaborators', function () {
+    let peeked = this.store.peekAll('user');
+    let collabs = this.selectedCollaborators;
 
     if (!_.isObject(peeked)) {
       return [];
@@ -127,12 +139,12 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
     return filtered.map((obj) => {
       return {
         id: obj.get('id'),
-        username: obj.get('username')
+        username: obj.get('username'),
       };
     });
-  }.property('selectedCollaborators'),
+  }),
 
-  selectedCollaborators: function() {
+  selectedCollaborators: computed('workspacePermissions.[]', function () {
     let hash = {};
     // let wsOwnerId = this.get('workspace.owner.id');
 
@@ -140,9 +152,9 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
     // if (wsOwnerId) {
     //   hash[wsOwnerId] = true;
     // }
-    const workspacePermissions = this.get('workspacePermissions');
+    const workspacePermissions = this.workspacePermissions;
 
-    if (!this.get('utils').isNonEmptyArray(workspacePermissions)) {
+    if (!this.utils.isNonEmptyArray(workspacePermissions)) {
       return hash;
     }
     workspacePermissions.forEach((obj) => {
@@ -154,14 +166,14 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
       }
     });
     return hash;
-  }.property('workspacePermissions.[]',),
+  }),
   actions: {
     updateSelectizeSingle(val, $item, propToUpdate, model) {
       if (_.isNull($item)) {
         this.set(propToUpdate, null);
         return;
       }
-      let record = this.get('store').peekRecord(model, val);
+      let record = this.store.peekRecord(model, val);
       if (!record) {
         return;
       }
@@ -169,17 +181,27 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
     },
     handleSettings() {
       let errors;
-      const workspaceName = this.get('workspaceName');
-      const owner = this.get('selectedOwner');
-      const privacySetting = this.get('selectedMode');
-      const folderSet = this.get('selectedFolderSet');
-      const permissions = this.get('workspacePermissions');
-      const submissionSettings = this.get('selectedSubmissionSettings');
+      const workspaceName = this.workspaceName;
+      const owner = this.selectedOwner;
+      const privacySetting = this.selectedMode;
+      const folderSet = this.selectedFolderSet;
+      const permissions = this.workspacePermissions;
+      const submissionSettings = this.selectedSubmissionSettings;
 
-      errors = window.validate({workspaceName, owner, privacySetting}, this.get('constraints'));
+      errors = window.validate(
+        { workspaceName, owner, privacySetting },
+        this.constraints
+      );
 
-      if (this.get('utils').isNonEmptyObject(errors)) {
-        this.get('alert').showToast('error', 'Missing required info', 'bottom-end', 3000, false, null);
+      if (this.utils.isNonEmptyObject(errors)) {
+        this.alert.showToast(
+          'error',
+          'Missing required info',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
         for (let key of Object.keys(errors)) {
           let errorProp = `${key}Errors`;
           this.set(errorProp, errors[key]);
@@ -193,30 +215,30 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
         mode: privacySetting,
         folderSet,
         permissionObjects: permissions,
-        submissionSettings
+        submissionSettings,
       };
 
-      if (this.get('isEditingPermissions')) {
+      if (this.isEditingPermissions) {
         // prompt user to confirm they want to proceed
         let username = this.get('unsavedCollaborator.username');
 
         let title = 'Are you sure you want to proceed?';
         let text = `You are currently in the process of editing permissions for ${username}. You will lose any unsaved changes if you continue.`;
 
-        return this.get('alert').showModal('warning', title, text, 'Proceed')
+        return this.alert
+          .showModal('warning', title, text, 'Proceed')
           .then((result) => {
             if (result.value) {
-              this.get('onProceed')(settings);
+              this.onProceed(settings);
               return;
             }
           });
       } else {
-        this.get('onProceed')(settings);
+        this.onProceed(settings);
       }
     },
     back() {
-      this.get('onBack')();
-    }
+      this.onBack();
+    },
   },
-
 });

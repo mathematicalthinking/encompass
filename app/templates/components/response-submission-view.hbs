@@ -1,12 +1,6 @@
 {{#if displaySubmission}}
  <div class="student-submissions">
-    {{bread-crumbs
-      items=sortedStudentSubmissions
-      onSelect=(action "setDisplaySubmission")
-      selectedItem=displaySubmission
-      starredItems=mentoredRevisions
-      infoToolTipText=revisionsToolTip
-    }}
+    <BreadCrumbs @items={{sortedStudentSubmissions}} @onSelect={{action "setDisplaySubmission"}} @selectedItem={{displaySubmission}} @starredItems={{mentoredRevisions}} @infoToolTipText={{revisionsToolTip}} />
   </div>
   <div class="submission-container">
     <div class="workspace-name">
@@ -33,8 +27,7 @@
     </div>
 
     {{#if isRevising}}
-      {{answer-new store=store assignment=displaySubmission.answer.assignment.content isRevision=true priorAnswer=displaySubmission.answer.content section=displaySubmission.answer.section.content problem=displaySubmission.answer.problem.content cancelResponse=(action "cancelRevising") createButtonText="Submit Revision" mainHeaderText="Create New Revision" handleCreatedAnswer=(action "toSubmissionFromAnswer") workspacesToUpdateIds=[workspace.id]
-      }}
+      <AnswerNew @store={{this.store}} @assignment={{displaySubmission.answer.assignment.content}} @isRevision={{true}} @priorAnswer={{displaySubmission.answer.content}} @section={{displaySubmission.answer.section.content}} @problem={{displaySubmission.answer.problem.content}} @cancelResponse={{action "cancelRevising"}} @createButtonText="Submit Revision" @mainHeaderText="Create New Revision" @handleCreatedAnswer={{action "toSubmissionFromAnswer"}} @workspacesToUpdateIds={{[workspace.id]}} />
     {{else}}
       <div class="submission-content-container short">
         {{#if isRevising}}
@@ -49,7 +42,7 @@
         {{/if}}
 
         {{#if isRevising}}
-          {{textarea name="brief-summary" value=revisedBriefSummary}}
+          <Textarea @name="brief-summary" @value={{revisedBriefSummary}} />
         {{else}}
           {{#if isShortExpanded}}
             <div class="submission-content short">
@@ -74,7 +67,7 @@
           </div>
         {{/if}}
         {{#if isRevising}}
-          {{quill-container setup="insertQuillContent"}}
+          <QuillContainer @setup="insertQuillContent" />
         {{else}}
           {{#if isLongExpanded}}
             <div class="submission-content long">

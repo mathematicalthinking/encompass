@@ -1,4 +1,11 @@
-Encompass.AccountTypesHelper = Ember.Helper.helper(function (accountType) {
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (accountType) {
   if (accountType[0] === "A") {
     return 'Admin';
   } else if (accountType[0] === "T") {

@@ -1,51 +1,34 @@
 <div class="flex-container-full">
-    {{workspace-filter
-      store=store
-      onUpdate=(action "triggerFetch")
-      triggerShowTrashed=(action "triggerShowTrashed")
-      triggerShowHidden=(action "triggerShowHidden")
-      toggleTrashed=toggleTrashed
-      toggleHidden=toggleHidden
-      filter=filter
-      primaryFilter=primaryFilter
-      adminFilterSelect=adminFilterSelect
-      orgs=organizations
-    }}
+  <div class="flex-item-full filter-options collapse" id="filter-list-side">
+    <WorkspaceFilter @store={{this.store}} @onUpdate={{action "triggerFetch"}} @triggerShowTrashed={{action "triggerShowTrashed"}} @triggerShowHidden={{action "triggerShowHidden"}} @toggleTrashed={{this.toggleTrashed}} @toggleHidden={{this.toggleHidden}} @filter={{this.filter}} @primaryFilter={{this.primaryFilter}} @adminFilterSelect={{this.adminFilterSelect}} @orgs={{this.organizations}} />
+  </div>
 
   <div class="flex-item-full list-view">
     <div class="list-container">
       <h1>Workspaces</h1>
       <div class="searchbar">
-        {{search-bar
-          onSearch=(action "searchWorkspaces")
-          showFilter=true
-          searchOptions = searchOptions
-          basePlaceholder="Search workspaces"
-          inputValue=searchInputValue
-          clearSearchResults=(action "clearSearchResults")
-          selectedCriterion=searchCriterion
-          }}
+        <SearchBar @onSearch={{action "searchWorkspaces"}} @showFilter={{true}} @searchOptions={{this.searchOptions}} @basePlaceholder="Search workspaces" @inputValue={{this.searchInputValue}} @clearSearchResults={{action "clearSearchResults"}} @selectedCriterion={{this.searchCriterion}} />
 
-        {{#link-to 'workspaces.new' id="workspace-new-link" class="new-link-btn"}}
+        <LinkTo @route="workspaces.new" @id="workspace-new-link" class="new-link-btn">
           <i class="fas fa-plus"></i>
-        {{/link-to}}
+        </LinkTo>
       </div>
     </div>
     <div class="results-list">
       <div class="results-info">
         <div class="results-message">
-          {{{listResultsMessage}}}
+          {{{this.listResultsMessage}}}
         </div>
         <div class="side-icons">
           <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Workspace list"></i>
           <span class="layout-icons">
-          {{#if showList}}
-            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}} title="Show in grid view">
-            <img src="/images/list-active.svg" alt="list" {{action 'setList'}} title="Currently in list view">
+          {{#if this.showList}}
+            <img src="../assets/images/grid.svg" alt="grid" {{action 'setGrid'}} title="Show in grid view">
+            <img src="../assets/images/list-active.svg" alt="list" {{action 'setList'}} title="Currently in list view">
           {{/if}}
-          {{#if showGrid}}
-            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}} title="Currently in grid view">
-            <img src="/images/list.svg" alt="list" {{action 'setList'}} title="Show in list view">
+          {{#if this.showGrid}}
+            <img src="../assets/images/grid-active.svg" alt="grid" {{action 'setGrid'}} title="Currently in grid view">
+            <img src="../assets/images/list.svg" alt="list" {{action 'setList'}} title="Show in list view">
           {{/if}}
           </span>
         </div>
@@ -56,118 +39,33 @@
             Mode <i class="fas fa-filter sort-icon"></i>
             <span class="hover-menu">
               <ul>
-                {{#each modeOptions as |option|}}
+                {{#each this.modeOptions as |option|}}
                 <li>
-                  {{radio-filter
-                    labelName=option.label
-                    labelIcon=option.icon
-                    inputValue=option.value
-                    isChecked=option.isChecked
-                    groupName="mode"
-                    onClick=(action "updateMode")
-                    groupValue=selectedMode
-                  }}
+                  <RadioFilter @labelName={{option.label}} @labelIcon={{option.icon}} @inputValue={{option.value}} @isChecked={{option.isChecked}} @groupName="mode" @onClick={{action "updateMode"}} @groupValue={{this.selectedMode}} />
                 </li>
                 {{/each}}
               </ul>
             </span>
           </div>
-          {{
-            toggle-control
-            classToAdd="sort-bar-item name"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.name
-            label="Workspace Name"
-            parentProp=sortCriterion
-            type="name"
-            activeType=sortCriterion.type
-          }}
-          {{
-            toggle-control
-            classToAdd="sort-bar-item last-viewed"
-            onUpdate=(action "updateSortCriterion")
-            initialState=1
-            options=sortOptions.lastModifiedDate
-            label="Modified"
-            type="lastModifiedDate"
-            activeType=sortCriterion.type
-          }}
-          {{
-            toggle-control
-            classToAdd="sort-bar-item submissions"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.submissions
-            label="Submissions"
-            type="submissions"
-            activeType=sortCriterion.type
-          }}
-          {{
-            toggle-control
-            classToAdd="sort-bar-item selections"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.selections
-            label="Selections"
-            type="selections"
-            activeType=sortCriterion.type
-          }}
-          {{
-            toggle-control
-            classToAdd="sort-bar-item comments"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.comments
-            label="Comments"
-            type="comments"
-            activeType=sortCriterion.type
-          }}
-          {{
-            toggle-control
-            classToAdd="sort-bar-item responses"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.responses
-            label="Responses"
-            type="responses"
-            activeType=sortCriterion.type
-          }}
-          {{
-            toggle-control
-            classToAdd="sort-bar-item owner"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.owner
-            label="Owner"
-            parentProp=sortCriterion
-            type="owner"
-            activeType=sortCriterion.type
-          }}
-          {{
-            toggle-control
-            classToAdd="sort-bar-item editors"
-            onUpdate=(action "updateSortCriterion")
-            initialState=0
-            options=sortOptions.collabs
-            label="Collab"
-            type="collabs"
-            activeType=sortCriterion.type
-          }}
+          <ToggleControl @classToAdd="sort-bar-item name" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.name}} @label="Workspace Name" @parentProp={{this.sortCriterion}} @type="name" @activeType={{this.sortCriterion.type}} />
+          <ToggleControl @classToAdd="sort-bar-item last-viewed" @onUpdate={{action "updateSortCriterion"}} @initialState={{1}} @options={{this.sortOptions.lastModifiedDate}} @label="Modified" @type="lastModifiedDate" @activeType={{this.sortCriterion.type}} />
+          <ToggleControl @classToAdd="sort-bar-item submissions" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.submissions}} @label="Submissions" @type="submissions" @activeType={{this.sortCriterion.type}} />
+          <ToggleControl @classToAdd="sort-bar-item selections" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.selections}} @label="Selections" @type="selections" @activeType={{this.sortCriterion.type}} />
+          <ToggleControl @classToAdd="sort-bar-item comments" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.comments}} @label="Comments" @type="comments" @activeType={{this.sortCriterion.type}} />
+          <ToggleControl @classToAdd="sort-bar-item responses" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.responses}} @label="Responses" @type="responses" @activeType={{this.sortCriterion.type}} />
+          <ToggleControl @classToAdd="sort-bar-item owner" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.owner}} @label="Owner" @parentProp={{this.sortCriterion}} @type="owner" @activeType={{this.sortCriterion.type}} />
+          <ToggleControl @classToAdd="sort-bar-item editors" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{this.sortOptions.collabs}} @label="Collab" @type="collabs" @activeType={{this.sortCriterion.type}} />
           <div class="sort-bar-item info-item"></div>
           <div class="sort-bar-item more"></div>
         </div>
-        {{#if showList}}
-          {{workspace-list sections=sections isSearching=isSearchingWorkspaces workspaces=displayWorkspaces metadata=workspacesMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store toWorkspaceInfo="toWorkspaceInfo" toCopyWorkspace=(action "toCopyWorkspace")
-          }}
+        {{#if this.showList}}
+          <WorkspaceList @currentUser={{this.model.currentUser}} @isSearching={{this.isSearchingWorkspaces}} @workspaces={{this.displayWorkspaces}} @metadata={{this.workspacesMetadata}} @isList={{true}} @isGrid={{false}} @moreMenuOptions={{this.moreMenuOptions}} @store={{this.store}} @toCopyWorkspace={{action "toCopyWorkspace"}} />
         {{/if}}
-        {{#if showGrid}}
-          {{workspace-list sections=sections isSearching=isSearchingWorkspaces store=store workspaces=displayWorkspaces metadata=workspacesMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions
-          toWorkspaceInfo="toWorkspaceInfo" toCopyWorkspace=(action "toCopyWorkspace")
-          }}
+        {{#if this.showGrid}}
+          <WorkspaceList @isSearching={{this.isSearchingWorkspaces}} @store={{this.store}} @workspaces={{this.displayWorkspaces}} @metadata={{this.workspacesMetadata}} @isList={{false}} @isGrid={{true}} @moreMenuOptions={{this.moreMenuOptions}} @toCopyWorkspace={{action "toCopyWorkspace"}} />
         {{/if}}
 
-        {{pagination-control details=workspacesMetadata initiatePageChange=(action "initiatePageChange")}}
+        <PaginationControl @details={{this.workspacesMetadata}} @initiatePageChange={{action "initiatePageChange"}} />
       </div>
     </div>
   </div>

@@ -6,17 +6,17 @@
     </span>
   </p>
   <div>
-    {{input id="parent-ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
+    <Input @id="parent-ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
   </div>
 {{#each workspaceNameErrors as |error|}}
-  {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
+  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut workspaceNameErrors) null}} />
 {{/each}}
 </div>
 
 {{#unless isDisplayOnly}}
   <div class="create-ws-error">
     {{#if createWorkspaceError}}
-      {{error-box error=createWorkspaceError showDismiss=true resetError=(action (mut createWorkspaceError) null)}}
+      <ErrorBox @error={{createWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut createWorkspaceError) null}} />
     {{/if}}
   </div>
 

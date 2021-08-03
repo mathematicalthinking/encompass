@@ -1,15 +1,17 @@
-Encompass.WordcloudContainerComponent = Ember.Component.extend({
-  didUpdateAttrs(){
-    this._super(...arguments);
+import Component from '@glimmer/component';
+import WordCloud from 'wordcloud';
+import { action } from '@ember/object';
+
+export default class WordcloudContainerComponent extends Component {
+  @action generate() {
     const options = {
-      list: this.get('list'),
+      list: this.args.list,
       backgroundColor: '#ffe0e0',
-      weightFactor: function(size){
+      weightFactor: function (size) {
         return size * 10;
       },
       shrinkToFit: true,
     };
-    // eslint-disable-next-line no-undef
-    WordCloud(document.querySelector('.wordcloud'), options);
+    WordCloud('wordcloud', options);
   }
-});
+}

@@ -32,12 +32,12 @@ describe('Parent Workspace creation and updating', function() {
   let radioButtonSelector;
   let swalDriver;
 
-  let assignmentInfoUrlRegEx = new RegExp(`^${host}/#/assignments/[0-9a-fA-F]{24}$`);
+  let assignmentInfoUrlRegEx = new RegExp(`^${host}/assignments/[0-9a-fA-F]{24}$`);
 
-  let workspaceInfoUrlRegEx = new RegExp(`^${host}/#/workspaces/[0-9a-fA-F]{24}/info$`);
+  let workspaceInfoUrlRegEx = new RegExp(`^${host}/workspaces/[0-9a-fA-F]{24}/info$`);
 
-  let assignmentsUrl = `${host}/#/assignments`;
-  let workspacesUrl = `${host}/#/workspaces`;
+  let assignmentsUrl = `${host}/assignments`;
+  let workspacesUrl = `${host}/workspaces`;
 
   let parentWorkspaceHref;
   let parentWorkspaceInfoHref;
@@ -68,7 +68,7 @@ describe('Parent Workspace creation and updating', function() {
     }
   });
 
-  async function createAssignment(assignmentDetails, assignmentNewUrl=`${host}/#/assignments/new`) {
+  async function createAssignment(assignmentDetails, assignmentNewUrl=`${host}/assignments/new`) {
     let { section, problem, linkedWsName, parentWsName } = assignmentDetails;
     let inputSelectors = css.assignmentsNew.inputs;
 

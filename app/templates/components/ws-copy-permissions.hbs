@@ -6,23 +6,7 @@
 </p>
 
 <p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
-  {{selectize-input
-    store=store
-    inputId="collab-select"
-    maxItems=1
-    onItemAdd=(action "setCollaborator")
-    onItemRemove=(action "setCollaborator")
-    initialOptions=initialCollabOptions
-    selectedItemsHash=selectedCollaborators
-    labelField="username"
-    valueField="id"
-    searchField="username"
-    model="user"
-    queryParamsKey="usernameSearch"
-    isAsync=true
-    placeholder="Search for collaborators to add"
-    preload="focus"
-  }}
+  <SelectizeInput @store={{this.store}} @inputId="collab-select" @maxItems={{1}} @onItemAdd={{action "setCollaborator"}} @onItemRemove={{action "setCollaborator"}} @initialOptions={{initialCollabOptions}} @selectedItemsHash={{selectedCollaborators}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search for collaborators to add" @preload="focus" />
 
 {{#if permissions}}
   <div class="collaborator-list">
@@ -39,7 +23,7 @@
 {{/if}}
 
 {{#if selectedCollaborator}}
-  {{ws-permissions-new submissionsPool=submissionsPool workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator stopEditing=(action "stopEditing") isShowingSubView=doHideNavButtons}}
+  <WsPermissionsNew @submissionsPool={{submissionsPool}} @workspace={{workspace}} @onSave={{action "savePermissions"}} @permissions={{permissions}} @selectedUser={{selectedCollaborator}} @stopEditing={{action "stopEditing"}} @isShowingSubView={{doHideNavButtons}} />
 {{/if}}
 
 {{#unless doHideNavButtons}}

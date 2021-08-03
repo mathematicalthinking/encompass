@@ -1,8 +1,17 @@
-Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+import Component from '@ember/component';
+import { computed, observer } from '@ember/object';
+import { not } from '@ember/object/computed';
+import { later } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import { isEqual } from '@ember/utils';
+import $ from 'jquery';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(ErrorHandlingMixin, {
   elementId: 'section-info',
   className: ['section-info'],
-  alert: Ember.inject.service('sweet-alert'),
-  utils: Ember.inject.service('utility-methods'),
+  alert: service('sweet-alert'),
+  utils: service('utility-methods'),
 
   removeTeacherError: null,
   isEditingStudents: false,
@@ -26,23 +35,21 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   init: function () {
     this._super(...arguments);
-    return this.setSectionAttributes().then(() => {
-    });
-
+    return this.setSectionAttributes().then(() => {});
   },
 
   didReceiveAttrs: function () {
-    let section = this.get('currentSection');
-    let didSectionChange = !Ember.isEqual(section, this.section);
+    let section = this.currentSection;
+    let didSectionChange = !isEqual(section, this.section);
     this.set('isEditing', false);
     this.set('isAddingTeacher', false);
 
     if (didSectionChange) {
-      if (this.get('isEditingStudents')) {
+      if (this.isEditingStudents) {
         this.set('isEditingStudents', false);
       }
 
-      if (this.get('isEditingTeachers')) {
+      if (this.isEditingTeachers) {
         this.set('isEditingTeachers', false);
       }
       return this.setSectionAttributes();
@@ -50,7 +57,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   setSectionAttributes: function () {
-    let section = this.get('section');
+    let section = this.section;
     this.set('currentSection', section);
     return Promise.resolve(section.get('students'))
       .then((students) => {
@@ -69,36 +76,47 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
   },
 
-  canEdit: function() {
-    // can only edit if created section, admin, pdadmin, or teacher
+  canEdit: computed(
+    'currentUser.actingRole',
+    'currentUser.accountType',
+    'section.teachers',
+    'section.organization',
+    function () {
+      // can only edit if created section, admin, pdadmin, or teacher
 
-    if (this.get('currentUser.isStudent')) {
+      if (this.get('currentUser.isStudent')) {
+        return false;
+      }
+      if (this.get('currentUser.isAdmin')) {
+        return true;
+      }
+      let creatorId = this.utils.getBelongsToId(this.section, 'createdBy');
+
+      if (creatorId === this.get('currentUser.id')) {
+        return true;
+      }
+
+      let teacherIds = this.section.hasMany('teachers').ids();
+      if (teacherIds.includes(this.get('currentUser.id'))) {
+        return true;
+      }
+
+      if (this.get('currentUser.isPdAdmin')) {
+        let sectionOrgId = this.utils.getBelongsToId(
+          this.section,
+          'organization'
+        );
+        let userOrgId = this.utils.getBelongsToId(
+          this.currentUser,
+          'organization'
+        );
+        return sectionOrgId === userOrgId;
+      }
       return false;
     }
-    if (this.get('currentUser.isAdmin')) {
-      return true;
-    }
-    let creatorId = this.get('utils').getBelongsToId(this.get('section'), 'createdBy');
+  ),
 
-    if (creatorId === this.get('currentUser.id')) {
-      return true;
-    }
-
-    let teacherIds = this.get('section').hasMany('teachers').ids();
-    if (teacherIds.includes(this.get('currentUser.id'))) {
-      return true;
-    }
-
-    if (this.get('currentUser.isPdAdmin')) {
-      let sectionOrgId = this.get('utils').getBelongsToId(this.get('section'), 'organization');
-      let userOrgId = this.get('utils').getBelongsToId(this.get('currentUser'), 'organization');
-      return sectionOrgId === userOrgId;
-    }
-    return false;
-
-  }.property('currentUser.actingRole', 'currentUser.accountType', 'section.teachers', 'section.organization'),
-
-  cantEdit: Ember.computed.not('canEdit'),
+  cantEdit: not('canEdit'),
 
   clearSelectizeInput(id) {
     if (!id) {
@@ -111,27 +129,27 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     selectize.clear();
   },
 
-  scrollIfEditingStudents: function () {
-    if (this.get('isEditingStudents')) {
-      Ember.run.later(() => {
+  scrollIfEditingStudents: observer('isEditingStudents', function () {
+    if (this.isEditingStudents) {
+      later(() => {
         $('html, body').animate({
-          scrollTop: $(document).height()
+          scrollTop: $(document).height(),
         });
       }, 100);
     }
-  }.observes('isEditingStudents'),
+  }),
 
   addTeacherQueryParams: {
     filterBy: {
       accountType: {
-        $ne: 'S'
-      }
-    }
+        $ne: 'S',
+      },
+    },
   },
 
-  initialTeacherOptions: function() {
-    let peeked = this.get('store').peekAll('user').toArray();
-    let currentTeachers = this.get('teacherList').toArray();
+  initialTeacherOptions: computed('teacherList.[]', function () {
+    let peeked = this.store.peekAll('user').toArray();
+    let currentTeachers = this.teacherList.toArray();
     let filtered = [];
 
     if (peeked && currentTeachers) {
@@ -140,59 +158,82 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return filtered.map((obj) => {
         return {
           id: obj.get('id'),
-          username: obj.get('username')
+          username: obj.get('username'),
         };
       });
     }
     return filtered;
-  }.property('teacherList.[]'),
-
+  }),
 
   actions: {
     removeStudent: function (user) {
-      if(!user) {
+      if (!user) {
         return;
       }
 
-      let section = this.get('currentSection');
+      let section = this.currentSection;
       let students = section.get('students');
       let selectedUser = user;
 
       students.removeObject(selectedUser);
 
-      section.save().then((section) => {
-        this.get('alert').showToast('success', 'Student Removed', 'bottom-end', 3000, false, null);
-
-      }).catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors', section);
-      });
+      section
+        .save()
+        .then((section) => {
+          this.alert.showToast(
+            'success',
+            'Student Removed',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors', section);
+        });
     },
 
     removeTeacher: function (user) {
-      let section = this.get('currentSection');
-      let teachers = this.get('teacherList');
+      let section = this.currentSection;
+      let teachers = this.teacherList;
       let teachersLength = teachers.get('length');
 
       if (teachersLength > 1) {
         teachers.removeObject(user);
       } else {
         this.set('removeTeacherError', true);
-        Ember.run.later((() => {
+        later(() => {
           this.set('removeTeacherError', false);
-        }), 3000);
+        }, 3000);
         return;
       }
 
-      section.save().then((section) => {
-        this.get('alert').showToast('success', 'Teacher Removed', 'bottom-end', 3000, false, null);
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors');
-      });
+      section
+        .save()
+        .then((section) => {
+          this.alert.showToast(
+            'success',
+            'Teacher Removed',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors');
+        });
     },
 
     confirmDelete: function () {
-      this.get('alert').showModal('warning', 'Are you sure you want to delete this class?', 'This may interfere with any work you have already created.', 'Yes, delete it')
+      this.alert
+        .showModal(
+          'warning',
+          'Are you sure you want to delete this class?',
+          'This may interfere with any work you have already created.',
+          'Yes, delete it'
+        )
         .then((result) => {
           if (result.value) {
             this.send('deleteSection');
@@ -201,10 +242,19 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     deleteSection: function () {
-      const section = this.get('section');
+      const section = this.section;
       section.set('isTrashed', true);
-      return section.save().then(() => {
-          this.get('alert').showToast('success', 'Class Deleted', 'bottom-end', 3000, false, null);
+      return section
+        .save()
+        .then(() => {
+          this.alert.showToast(
+            'success',
+            'Class Deleted',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
           this.sendAction('toSectionList');
         })
         .catch((err) => {
@@ -218,15 +268,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     showAssignment: function () {
-      return this.store.findAll('problem')
+      return this.store
+        .findAll('problem')
         .then((problems) => {
           this.set('problemList', problems);
           this.set('showAssignment', true);
-          this.get('sectionList').pushObject(this.section);
+          this.sectionList.pushObject(this.section);
 
-          Ember.run.later(() => {
+          later(() => {
             $('html, body').animate({
-              scrollTop: $(document).height()
+              scrollTop: $(document).height(),
             });
           }, 100);
         })
@@ -237,39 +288,59 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     updateSectionName: function () {
       this.set('isEditingName', false);
-      let section = this.get('currentSection');
+      let section = this.currentSection;
       if (section.get('hasDirtyAttributes')) {
-        this.get('currentSection').save().then(() => {
-          this.get('alert').showToast('success', 'Class Name Updated', 'bottom-end', 3000, false, null);
-        }).catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
+        this.currentSection
+          .save()
+          .then(() => {
+            this.alert.showToast(
+              'success',
+              'Class Name Updated',
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateSectionErrors', section);
+          });
       }
     },
     addTeacher: function (val, $item) {
       if (!val) {
         return;
       }
-      let teacher = this.get('store').peekRecord('user', val);
+      let teacher = this.store.peekRecord('user', val);
 
       if (!teacher) {
         return;
       }
 
-      let section = this.get('currentSection');
+      let section = this.currentSection;
 
-      let teachers = this.get('teacherList');
+      let teachers = this.teacherList;
 
       if (!teachers.includes(teacher)) {
         teachers.addObject(teacher);
 
-        section.save().then(() => {
-          this.get('alert').showToast('success', 'Teacher Added', 'bottom-end', 3000, false, null);
-          this.clearSelectizeInput('select-add-teacher');
-        }).catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
+        section
+          .save()
+          .then(() => {
+            this.alert.showToast(
+              'success',
+              'Teacher Added',
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+            this.clearSelectizeInput('select-add-teacher');
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateSectionErrors', section);
+          });
       }
     },
-  }
+  },
 });
