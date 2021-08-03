@@ -1,16 +1,15 @@
 import Route from '@ember/routing/route';
+import { action } from '@ember/object';
 
-export default Route.extend({
-  model: function (params) {
+export default class ConfirmRoute extends Route {
+  model(params) {
     return params.token;
-  },
-  renderTemplate: function () {
+  }
+  renderTemplate() {
     this.render('auth/confirm');
-  },
+  }
 
-  actions: {
-    toHome: function () {
-      window.location.href = '/';
-    },
-  },
-});
+  @action toHome() {
+    window.location.href = '/';
+  }
+}
