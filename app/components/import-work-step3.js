@@ -1,6 +1,11 @@
 import Component from '@ember/component';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
+
+
+
+
+
 export default Component.extend(CurrentUserMixin, {
   elementId: 'import-work-step3',
 
@@ -14,11 +19,12 @@ export default Component.extend(CurrentUserMixin, {
     }
 
     this._super(...arguments);
+
   },
 
   actions: {
     next() {
-      if (this.uploadedFiles.length > 0) {
+      if (this.get('uploadedFiles.length') > 0) {
         this.onProceed(this.uploadedFiles);
       } else {
         this.set('missingFiles', true);
@@ -51,6 +57,7 @@ export default Component.extend(CurrentUserMixin, {
       if (peeked) {
         peeked.destroyRecord();
       }
-    },
-  },
+    }
+  }
 });
+

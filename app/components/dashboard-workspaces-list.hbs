@@ -1,0 +1,101 @@
+
+{{#if @workspaces.length}}
+{{#if @user.isStudent}}
+  <div class="header-space">
+    <span class="toggle-role header-space" {{action 'showToggleModal' }}>
+      <span class="home__header home--link">Student Work to Review (switch to teacher role)</span>
+    </span>
+  </div>
+
+{{/if}}
+{{#unless @user.isStudent}}
+<h2 class="home-header"><LinkTo @route='workspaces.index'>Student Work to Review</LinkTo></h2>
+  <table class="max-width">
+    <tr>
+      <td>
+        <div class="table-header">
+        <table class="table-inner">
+          <tr id="ws-table">
+            <th class="inner">{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.name
+            label="Workspace"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.classes
+            label="Class"
+            parentProp=sortCriterion
+            type="classes"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.owner
+            label="Owner"
+            parentProp=sortCriterion
+            type="owner"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.assignedDate
+            label="Date Assigned"
+            parentProp=sortCriterion
+            type="assignedDate"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.dueDate
+            label="Due Date"
+            parentProp=sortCriterion
+            type="dueDate"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.submissions
+            label="Status"
+            parentProp=sortCriterion
+            type="submissions"
+            activeType=sortCriterion.type}}</th>
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.lastModifiedDate
+            label="Last Modified"
+            parentProp=sortCriterion
+            type="lastModifiedDate"
+            activeType=sortCriterion.type}}</th>
+          </tr>
+        </table>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="dash-workspaces al_body resize" style="max-height:{{calculate-table-height sortedWorkspaces.length}};">
+          <table class="max-width">
+            {{#each this.sortedWorkspaces as |workspace|}}
+              <DashboardWorkspaceRow classNames="ws-table" @workspace={{workspace}} />
+            {{/each}}
+          </table>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+{{/unless}}
+{{/if}}

@@ -5,7 +5,7 @@
     </div>
 
     <div class="item-section name">
-      <LinkTo @route="problem" @model={{this.problem}} class="problem-title">
+      <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
         <span class={{if this.problem.isTrashed 'strikethrough'}}>{{{this.problem.title}}}</span>
         {{#if this.isRecommended}}
           <span><i class="fas fa-star star-icon"></i></span>
@@ -13,7 +13,7 @@
       </LinkTo>
     </div>
     <div class="item-section description">
-      <LinkTo @route="problem" @model={{this.problem}} class="problem-title">
+      <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
         {{{this.problem.text}}}
       </LinkTo>
     </div>
@@ -88,7 +88,7 @@
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
-        <LinkTo @route="problem" @model={{this.problem}} class="problem-title">
+        <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
           <span class={{if this.problem.isTrashed 'strikethrough'}}>{{{this.problem.title}}}</span>
           {{#if this.isRecommended}}
             <span><i class="fas fa-star star-icon"></i></span>
@@ -98,7 +98,7 @@
     </div>
     <div class="item-card row-3">
       <div class="item-card description">
-        <LinkTo @route="problem" @model={{this.problem}} class="problem-title">
+        <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
           {{{this.problem.text}}}
         </LinkTo>
       </div>

@@ -15,7 +15,7 @@ export default Component.extend({
   ellipsisMenuOptions: computed('answer.id', 'answer.isTrashed', function () {
     let moreMenuOptions = [];
 
-    if (!this.answer.isTrashed) {
+    if (!this.get('answer.isTrashed')) {
       moreMenuOptions.push({
         label: 'Delete',
         value: 'delete',
@@ -34,7 +34,7 @@ export default Component.extend({
   }),
 
   isChecked: computed('answer.id', 'selectedMap', function () {
-    let id = this.answer.id;
+    let id = this.get('answer.id');
     let prop = `selectedMap.${id}`;
     return this.get(prop);
   }),

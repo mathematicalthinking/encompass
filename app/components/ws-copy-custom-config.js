@@ -5,9 +5,8 @@ import { alias, equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 
 export default Component.extend({
-  tagName: '',
   elementId: 'ws-copy-custom-config',
-  submissionStudents: () => [],
+  submissionStudents: [],
   utils: service('utility-methods'),
 
   SubmissionIds: alias('customConfig.SubmissionIds'),
@@ -19,14 +18,14 @@ export default Component.extend({
   showStudentSubmissionInput: equal('submissionOptions.byStudent', true),
   selectedAllSubmissions: equal('submissionOptions.all', true),
   selectedCustomSubmission: equal('submissionOptions.custom', true),
-  customSubmissionIds: () => [],
+  customSubmissionIds: [],
 
   showCustomSubmissions: computed(
     'submissionOptions.custom',
     'showCustomSubmissionViewer',
     function () {
       return (
-        this.submissionOptions.custom === true &&
+        this.get('submissionOptions.custom') === true &&
         this.showCustomSubmissionViewer
       );
     }
@@ -37,7 +36,7 @@ export default Component.extend({
     'submissionOptions.custom',
     function () {
       return (
-        this.submissionOptions.custom === true &&
+        this.get('submissionOptions.custom') === true &&
         !this.showCustomSubmissionViewer
       );
     }
@@ -48,27 +47,26 @@ export default Component.extend({
     this._super(...arguments);
   },
   willDestroyElement() {
-    this._super(...arguments);
     if (this.insufficientSubmissions) {
       this.set('insufficientSubmissions', null);
     }
   },
 
   formattedSubmissionOptions: computed(
-    'customSubmissionIds.[]',
-    'submissionOptions.{all,byStudent,custom}',
+    'submissionOptions.all',
     'submissionsFromStudents.[]',
+    'customSubmissionIds.[]',
     function () {
       let submissionOptions = {
         all: true,
       };
 
-      if (this.submissionOptions.all) {
+      if (this.get('submissionOptions.all')) {
         return submissionOptions;
       }
       delete submissionOptions.all;
 
-      if (this.submissionOptions.byStudent) {
+      if (this.get('submissionOptions.byStudent')) {
         submissionOptions.submissionIds = this.submissionsFromStudents.mapBy(
           'id'
         );
@@ -76,7 +74,7 @@ export default Component.extend({
         return submissionOptions;
       }
 
-      if (this.submissionOptions.custom) {
+      if (this.get('submissionOptions.custom')) {
         const customIds = this.customSubmissionIds;
         if (this.utils.isNonEmptyArray(customIds)) {
           submissionOptions.submissionIds = customIds;
@@ -85,23 +83,24 @@ export default Component.extend({
         }
         return submissionOptions;
       }
-      return;
     }
   ),
 
   formattedFolderOptions: computed(
-    'folderOptions.{IncludeStructureOnly,all,includeStructureOnly,none}',
+    'folderOptions.all',
+    'folderOptions.none',
+    'folderOptions.IncludeStructureOnly',
     function () {
       let folderOptions = {
         all: true,
       };
 
-      if (this.folderOptions.all) {
+      if (this.get('folderOptions.all')) {
         folderOptions.includeStructureOnly = false;
         return folderOptions;
       }
 
-      if (this.folderOptions.includeStructureOnly) {
+      if (this.get('folderOptions.includeStructureOnly')) {
         folderOptions.includeStructureOnly = true;
         return folderOptions;
       }
@@ -113,18 +112,20 @@ export default Component.extend({
   ),
 
   formattedSelectionOptions: computed(
-    'selectionOptions.{all,none,custom}',
+    'selectionOptions.all',
+    'selectionOptions.none',
+    'selectionOptions.custom',
     'selectionsFromSubmissions.[]',
     function () {
       let selectionOptions = {
         all: true,
       };
 
-      if (this.selectionOptions.all) {
+      if (this.get('selectionOptions.all')) {
         return selectionOptions;
       }
 
-      if (this.selectionOptions.none) {
+      if (this.get('selectionOptions.none')) {
         selectionOptions.none = true;
         delete selectionOptions.all;
 
@@ -150,11 +151,11 @@ export default Component.extend({
         all: true,
       };
 
-      if (this.commentOptions.all) {
+      if (this.get('commentOptions.all')) {
         return commentOptions;
       }
 
-      if (this.commentOptions.none) {
+      if (this.get('commentOptions.none')) {
         commentOptions.none = true;
         delete commentOptions.all;
 
@@ -178,11 +179,11 @@ export default Component.extend({
         all: true,
       };
 
-      if (this.responseOptions.all) {
+      if (this.get('responseOptions.all')) {
         return responseOptions;
       }
 
-      if (this.responseOptions.none) {
+      if (this.get('responseOptions.none')) {
         responseOptions.none = true;
         delete responseOptions.all;
 
@@ -262,23 +263,25 @@ export default Component.extend({
   }),
 
   submissionsFromStudents: computed(
-    'customSubmissionIds.[]',
-    'doDeselectAll',
-    'doSelectAll',
-    'submissionOptions.{all,byStudent,custom}',
     'submissionStudents.[]',
+    'customSubmissionIds.[]',
+    'submissionOptions.all',
+    'workspace.id',
+    'submissionOptions.custom',
+    'submissionOptions.byStudent',
     'submissionThreads',
-    'workspace.{id,submissions}',
+    'doSelectAll',
+    'doDeselectAll',
     function () {
-      if (this.submissionOptions.all) {
-        return this.workspace.submissions;
+      if (this.get('submissionOptions.all')) {
+        return this.get('workspace.submissions');
       }
-      if (this.submissionOptions.custom) {
+      if (this.get('submissionOptions.custom')) {
         const customIds = this.customSubmissionIds;
         if (!this.utils.isNonEmptyArray(customIds)) {
           return [];
         }
-        return this.workspace.submissions.filter((sub) => {
+        return this.get('workspace.submissions').filter((sub) => {
           return customIds.includes(sub.get('id'));
         });
       }
@@ -295,34 +298,30 @@ export default Component.extend({
   ),
 
   submissionCount: computed(
-    'customSubmissionIds.[]',
     'submissionsFromStudents.[]',
-    'workspace.submissions',
+    'customSubmissionIds.[]',
     function () {
-      return this.workspace.submissions.map((sub) => {
+      return this.get('workspace.submissions').map((sub) => {
         return sub.id;
       });
     }
   ),
 
   foldersCount: computed(
-    'customSubmissionIds.[]',
     'submissionsFromStudents.[]',
-    'workspace.folders',
+    'customSubmissionIds.[]',
     function () {
-      return this.workspace.folders.map((folder) => {
+      return this.get('workspace.folders').map((folder) => {
         return folder.id;
       });
     }
   ),
 
   selectionsFromSubmissions: computed(
-    'customSubmissionIds.[]',
-    'submissionIdsFromStudents',
     'submissionsFromStudents.[]',
-    'workspace.selections',
+    'customSubmissionIds.[]',
     function () {
-      return this.workspace.selections.filter((selection) => {
+      return this.get('workspace.selections').filter((selection) => {
         return this.submissionIdsFromStudents.includes(
           selection.get('submission.content.id')
         );
@@ -331,15 +330,14 @@ export default Component.extend({
   ),
 
   commentsFromSelections: computed(
-    'selectionOptions.none',
     'selectionsFromSubmissions.[]',
-    'workspace.comments',
+    'selectionOptions.none',
     function () {
-      if (this.selectionOptions.none === true) {
+      if (this.get('selectionOptions.none') === true) {
         return [];
       }
 
-      return this.workspace.comments.filter((comment) => {
+      return this.get('workspace.comments').filter((comment) => {
         return this.selectionsFromSubmissions.includes(
           comment.get('selection.content')
         );
@@ -347,17 +345,13 @@ export default Component.extend({
     }
   ),
 
-  responsesFromSubmissions: computed(
-    'submissionsFromStudents.[]',
-    'workspace.responses',
-    function () {
-      return this.workspace.responses.filter((response) => {
-        return this.submissionsFromStudents.includes(
-          response.get('submission.content')
-        );
-      });
-    }
-  ),
+  responsesFromSubmissions: computed('submissionsFromStudents.[]', function () {
+    return this.get('workspace.responses').filter((response) => {
+      return this.submissionsFromStudents.includes(
+        response.get('submission.content')
+      );
+    });
+  }),
 
   submissionIdsFromStudents: computed(
     'submissionsFromStudents.[]',
@@ -449,7 +443,10 @@ export default Component.extend({
       }
     },
     selectAllSubmissions: function () {
-      this.set('customSubmissionIds', this.workspace.submissions.mapBy('id'));
+      this.set(
+        'customSubmissionIds',
+        this.get('workspace.submissions').mapBy('id')
+      );
     },
     deselectAllSubmissions: function () {
       this.set('customSubmissionIds', []);

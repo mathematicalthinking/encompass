@@ -58,11 +58,11 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
 
   showReviseButton: computed('isComposing', 'sortedList.[]', function () {
-    return !this.isComposing && this.sortedList.length > 0;
+    return !this.isComposing && this.get('sortedList.length') > 0;
   }),
 
   showRespondButton: computed('isComposing', 'sortedList.[]', function () {
-    return !this.isComposing && this.sortedList.length === 0;
+    return !this.isComposing && this.get('sortedList.length') === 0;
   }),
 
   sortedList: computed('answerList.[]', function () {

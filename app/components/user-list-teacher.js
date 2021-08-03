@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend({
   elementId: 'user-list-teacher',
@@ -49,7 +50,7 @@ export default Component.extend({
     usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
     let orgUsersNotYou = usersWithOrgs.rejectBy(
       'username',
-      this.currentUser.username
+      this.get('currentUser.username')
     );
     return orgUsersNotYou.sortBy('createDate').reverse();
   }),

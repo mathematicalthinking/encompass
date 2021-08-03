@@ -3,10 +3,12 @@ import { computed } from '@ember/object';
 /*global _:false */
 import { alias, equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+//needed for notification functions
+import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+  currentUser: service('current-user'),
   elementId: 'response-container',
   wsPermissions: service('workspace-permissions'),
   submission: null,
@@ -34,12 +36,12 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         ntf.save();
       }
     });
-    if (this.response.isNew) {
+    if (this.get('response.isNew')) {
       this.set('isCreatingNewMentorReply', true);
       return;
     }
     if (this.primaryResponseType === 'approver') {
-      this.response.reviewedResponse.then((response) => {
+      this.get('response.reviewedResponse').then((response) => {
         if (!this.isDestroying && !this.isDestroyed) {
           this.set('reviewedResponse', response);
         }
@@ -47,7 +49,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     }
 
     if (!this.isMentorRecipient && this.primaryResponseType === 'mentor') {
-      return this.response.priorRevision.then((revision) => {
+      return this.get('response.priorRevision').then((revision) => {
         if (!this.isDestroying && !this.isDestroyed) {
           this.set('priorMentorRevision', revision);
         }
@@ -81,12 +83,15 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     });
 
     if (this.isPrimaryRecipient) {
-      if (!this.response.wasReadByRecipient) {
+      if (!this.get('response.wasReadByRecipient')) {
         this.response.set('wasReadByRecipient', true);
         this.response.save();
       }
-    } else if (this.response.status === 'pendingApproval' && this.canApprove) {
-      if (!this.response.wasReadByApprover) {
+    } else if (
+      this.get('response.status') === 'pendingApproval' &&
+      this.canApprove
+    ) {
+      if (!this.get('response.wasReadByApprover')) {
         this.response.set('wasReadByApprover', true);
         this.response.save();
       }
@@ -105,7 +110,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       return this.cleanStoreResponses.filter((response) => {
         let subId = this.utils.getBelongsToId(response, 'submission');
 
-        if (subId !== this.submission.id) {
+        if (subId !== this.get('submission.id')) {
           return false;
         }
         return !this.nonTrashedResponses.includes(response);
@@ -128,14 +133,18 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       if (this.isOwnSubmission) {
         return 'your';
       }
-      return `${this.submission.student}'s`;
+      return `${this.get('submission.student')}'s`;
     }
   ),
 
   isOwnSubmission: computed(
     'submission.creator.studentId',
-    'currentUser.id',
-    () => this.submission.creator.studentId === this.currentUser.id
+    'currentUser.user.id',
+    function () {
+      return (
+        this.get('submission.creator.studentId') === this.get('currentUser.user.id')
+      );
+    }
   ),
 
   nonTrashedResponses: computed('subResponses.@each.isTrashed', function () {
@@ -155,7 +164,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
           .id();
       } else {
         if (this.mentorReplyDisplayResponse) {
-          reviewedResponseId = this.mentorReplyDisplayResponse.id;
+          reviewedResponseId = this.get('mentorReplyDisplayResponse.id');
         }
       }
 
@@ -194,9 +203,9 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   ),
   isPrimaryRecipient: computed(
     'response.recipient.id',
-    'currentUser.id',
+    'currentUser.user.id',
     function () {
-      return this.response.recipient.id === this.currentUser.id;
+      return this.get('response.recipient.id') === this.get('currentUser.user.id');
     }
   ),
 
@@ -210,9 +219,9 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
 
   isOwnResponse: computed(
     'response.createdBy.id',
-    'currentUser.id',
+    'currentUser.user.id',
     function () {
-      return this.response.createdBy.id === thiscurrentUser.id;
+      return this.get('response.createdBy.id') === this.get('currentUser.user.id');
     }
   ),
 
@@ -224,7 +233,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         return false;
       }
       let creatorId = this.utils.getBelongsToId(reply, 'createdBy');
-      return creatorId === this.currentUser.id;
+      return creatorId === this.get('currentUser.user.id');
     }
   ),
 
@@ -279,7 +288,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
 
   canApprove: computed(
     'workspace',
-    'currentUser',
+    'currentUser.user',
     'workspace.feedbackAuthorizers.[]',
     function () {
       return this.wsPermissions.canApproveFeedback(this.workspace);
@@ -316,11 +325,11 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     }
   ),
 
-  canDirectSend: computed('workspace', 'currentUser', function () {
+  canDirectSend: computed('workspace', 'currentUser.user', function () {
     return this.wsPermissions.canEdit(this.workspace, 'feedback', 2);
   }),
 
-  canSend: computed('workspace', 'currentUser', function () {
+  canSend: computed('workspace', 'currentUser.user', function () {
     return this.wsPermissions.canEdit(this.workspace, 'feedback', 1);
   }),
 
@@ -328,7 +337,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     if (!this.workspace) {
       return [];
     }
-    return this.workspace.feedbackAuthorizers;
+    return this.get('workspace.feedbackAuthorizers');
   }),
 
   existingSubmissionMentors: computed(
@@ -355,7 +364,8 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   cleanWorkspaceResponses: computed('cleanStoreResponses.[]', function () {
     return this.cleanStoreResponses.filter((response) => {
       return (
-        this.utils.getBelongsToId(response, 'workspace') === this.workspace.id
+        this.utils.getBelongsToId(response, 'workspace') ===
+        this.get('workspace.id')
       );
     });
   }),
@@ -394,7 +404,10 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       this.sendAction('toResponseSubmission', sub.get('id'));
     },
     toNewResponse: function () {
-      this.sendAction('toNewResponse', this.submission.id, this.workspace.id);
+      this.sendAction(
+        'toNewResponse',
+        this.get('submission.id', this.get('workspace.id'))
+      );
     },
 
     sendSubmissionRevisionNotices(oldSub, newSub) {
@@ -409,7 +422,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
 
       this.existingSubmissionMentors.forEach((user) => {
         let notification = this.store.createRecord('notification', {
-          createdBy: this.currentUser,
+          createdBy: this.currentUser.user,
           recipient: user,
           notificationType: 'newWorkToMentor',
           primaryRecordType: 'response',
@@ -425,8 +438,8 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       let studentId;
       let mentorId;
       let threadId;
-      let workspaceId = this.workspace.id;
-      let workspaceName = this.workspace.name;
+      let workspaceId = this.get('workspace.id');
+      let workspaceName = this.get('workspace.name');
       // mentorThreadId is workspaceId + studentId
 
       if (threadType === 'mentor') {

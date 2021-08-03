@@ -1,19 +1,19 @@
 /*global _:false */
-import Component from '@ember/component';
-import { observer } from '@ember/object';
 import { alias } from '@ember/object/computed';
+import { observer } from '@ember/object';
 import { inject as service } from '@ember/service';
+import _ from 'underscore';
+import Component from '@ember/component';
 import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  tagName: '',
   elementId: 'problem-new',
   classNames: ['side-info'],
   showGeneral: true,
   filesToBeUploaded: null,
-  createProblemErrors: () => [],
-  imageUploadErrors: () => [],
+  createProblemErrors: [],
+  imageUploadErrors: [],
   isMissingRequiredFields: null,
   isPublic: null,
   privacySetting: null,
@@ -24,7 +24,7 @@ export default Component.extend(ErrorHandlingMixin, {
   approvedProblem: false,
   noLegalNotice: null,
   showCategories: false,
-  keywords: () => [],
+  keywords: [],
 
   init: function () {
     this._super(...arguments);
@@ -51,7 +51,7 @@ export default Component.extend(ErrorHandlingMixin, {
     this.set('keywordFilter', this.createKeywordFilter.bind(this));
   },
 
-  didInsertElement: () => {
+  didInsertElement: function () {
     $('.list-outlet').removeClass('hidden');
   },
 
@@ -80,21 +80,20 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   createProblem: function () {
-    let that = this;
     const problemStatement = this.problemStatement;
-    let createdBy = that.get('currentUser');
-    let title = that.get('problemTitle').trim();
-    let additionalInfo = that.get('additionalInfo');
-    let privacySetting = that.get('privacySetting');
-    let currentUser = that.get('currentUser');
+    let createdBy = this.get('currentUser');
+    let title = this.get('problemTitle').trim();
+    let additionalInfo = this.get('additionalInfo');
+    let privacySetting = this.get('privacySetting');
+    let currentUser = this.get('currentUser');
     let accountType = currentUser.get('accountType');
     let organization = currentUser.get('organization');
     let categories = this.selectedCategories;
-    let copyrightNotice = that.get('copyrightNotice');
-    let sharingAuth = that.get('sharingAuth');
-    let additionalImage = that.get('additionalImage');
-    let author = that.get('author');
-    let keywords = that.get('keywords');
+    let copyrightNotice = this.get('copyrightNotice');
+    let sharingAuth = this.get('sharingAuth');
+    let additionalImage = this.get('additionalImage');
+    let author = this.get('author');
+    let keywords = this.get('keywords');
 
     if (!this.approvedProblem) {
       this.set('noLegalNotice', true);
@@ -118,7 +117,7 @@ export default Component.extend(ErrorHandlingMixin, {
     }
     let status = this.status;
 
-    let createProblemData = that.store.createRecord('problem', {
+    let createProblemData = this.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
       title: title,
@@ -152,25 +151,23 @@ export default Component.extend(ErrorHandlingMixin, {
           createdBy: createdBy,
         })
           .then(function (res) {
-            that.set('uploadResults', res.images);
-            that.store.findRecord('image', res.images[0]._id).then((image) => {
+            this.set('uploadResults', res.images);
+            this.store.findRecord('image', res.images[0]._id).then((image) => {
               createProblemData.set('image', image);
               createProblemData
                 .save()
                 .then((problem) => {
-                  that
-                    .get('alert')
-                    .showToast(
-                      'success',
-                      'Problem Created',
-                      'bottom-end',
-                      4000,
-                      false,
-                      null
-                    );
+                  this.get('alert').showToast(
+                    'success',
+                    'Problem Created',
+                    'bottom-end',
+                    4000,
+                    false,
+                    null
+                  );
                   let parentView = this.parentView;
-                  this.parentActions.refreshList.call(parentView);
-                  that.sendAction('toProblemInfo', problem);
+                  this.get('parentActions.refreshList').call(parentView);
+                  this.sendAction('toProblemInfo', problem);
                 })
                 .catch((err) => {
                   if (
@@ -179,7 +176,7 @@ export default Component.extend(ErrorHandlingMixin, {
                   ) {
                     this.send('showGeneral');
                   }
-                  that.handleErrors(
+                  this.handleErrors(
                     err,
                     'createProblemErrors',
                     createProblemData
@@ -188,7 +185,7 @@ export default Component.extend(ErrorHandlingMixin, {
             });
           })
           .catch(function (err) {
-            that.handleErrors(err, 'imageUploadErrors');
+            this.handleErrors(err, 'imageUploadErrors');
           });
       } else {
         $.post({
@@ -199,25 +196,23 @@ export default Component.extend(ErrorHandlingMixin, {
           createdBy: createdBy,
         })
           .then(function (res) {
-            that.set('uploadResults', res.images);
-            that.store.findRecord('image', res.images[0]._id).then((image) => {
+            this.set('uploadResults', res.images);
+            this.store.findRecord('image', res.images[0]._id).then((image) => {
               createProblemData.set('image', image);
               createProblemData
                 .save()
                 .then((problem) => {
-                  that
-                    .get('alert')
-                    .showToast(
-                      'success',
-                      'Problem Created',
-                      'bottom-end',
-                      4000,
-                      false,
-                      null
-                    );
+                  this.get('alert').showToast(
+                    'success',
+                    'Problem Created',
+                    'bottom-end',
+                    4000,
+                    false,
+                    null
+                  );
                   let parentView = this.parentView;
-                  this.parentActions.refreshList.call(parentView);
-                  that.sendAction('toProblemInfo', problem);
+                  this.get('parentActions.refreshList').call(parentView);
+                  this.sendAction('toProblemInfo', problem);
                 })
                 .catch((err) => {
                   if (
@@ -226,7 +221,7 @@ export default Component.extend(ErrorHandlingMixin, {
                   ) {
                     this.send('showGeneral');
                   }
-                  that.handleErrors(
+                  this.handleErrors(
                     err,
                     'createProblemErrors',
                     createProblemData
@@ -235,7 +230,7 @@ export default Component.extend(ErrorHandlingMixin, {
             });
           })
           .catch(function (err) {
-            that.handleErrors(err, 'imageUploadErrors');
+            this.handleErrors(err, 'imageUploadErrors');
           });
       }
     } else {
@@ -251,8 +246,8 @@ export default Component.extend(ErrorHandlingMixin, {
             null
           );
           let parentView = this.parentView;
-          this.parentActions.refreshList.call(parentView);
-          that.sendAction('toProblemInfo', res);
+          this.get('parentActions.refreshList').call(parentView);
+          this.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
           if (
@@ -261,7 +256,7 @@ export default Component.extend(ErrorHandlingMixin, {
           ) {
             this.send('showGeneral');
           }
-          that.handleErrors(err, 'createProblemErrors', createProblemData);
+          this.handleErrors(err, 'createProblemErrors', createProblemData);
         });
     }
   },

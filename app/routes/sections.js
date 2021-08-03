@@ -1,10 +1,12 @@
 import AuthenticatedRoute from './_authenticated_route';
-import RSVP from 'rsvp';
+import { hash } from 'rsvp';
+import { inject as service } from '@ember/service';
 
-export default AuthenticatedRoute.extend({
-  model: async function () {
+export default class SectionsRoute extends AuthenticatedRoute {
+  @service store;
+  async model() {
     let sections = await this.store.findAll('section');
     let currentUser = this.modelFor('application');
-    return RSVP.hash({ sections, currentUser });
-  },
-});
+    return hash({ sections, currentUser });
+  }
+}

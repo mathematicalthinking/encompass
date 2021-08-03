@@ -3,9 +3,9 @@ import { computed } from '@ember/object';
 /*global _:false */
 import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
+  currentUser: service('current-user'),
   elementId: ['workspace-info-collaborators'],
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
@@ -78,10 +78,10 @@ export default Component.extend(CurrentUserMixin, {
     },
   ],
 
-  modes: computed('currentUser.isAdmin', 'currentUser.isStudent', function () {
+  modes: computed('currentUser.user.isAdmin', 'currentUser.user.isStudent', function () {
     const basic = ['private', 'org', 'public'];
 
-    if (this.currentUser.isStudent || !this.currentUser.isAdmin) {
+    if (this.get('currentUser.user.isStudent') || !this.get('currentUser.user.isAdmin')) {
       return basic;
     }
 
@@ -92,7 +92,7 @@ export default Component.extend(CurrentUserMixin, {
     'workspace.permissions.[]',
     'originalCollaborators.[]',
     function () {
-      let permissions = this.workspace.permissions;
+      let permissions = this.get('workspace.permissions');
       let collabs = this.originalCollaborators;
 
       if (!this.utils.isNonEmptyArray(permissions)) {
@@ -192,9 +192,9 @@ export default Component.extend(CurrentUserMixin, {
     }
     // } else if (submissionsValue === 'userOnly') {
     //   // filter for only submissions that have selectedUser as student
-    //   const subs = this.workspace.submissions.content;
-    //   const selectedUsername = this.selectedUser.username;
-    //   const selectedUserId = this.selectedUser.id;
+    //   const subs = this.get('workspace.submissions.content');
+    //   const selectedUsername = this.get('selectedUser.username');
+    //   const selectedUserId = this.get('selectedUser.id');
     //   if (subs) {
     //     const filtered = subs.filter((sub) => {
     //       return sub.get('creator.studentId') === selectedUserId || sub.get('creator.username') === selectedUsername;
@@ -235,7 +235,7 @@ export default Component.extend(CurrentUserMixin, {
       if (!this.utils.isNonEmptyObject(permissionsObject)) {
         return;
       }
-      const permissions = this.workspace.permissions;
+      const permissions = this.get('workspace.permissions');
       let existingObj = permissions.findBy('user', permissionsObject.user);
 
       this.set('selectedUser', permissionsObject.userObj);
@@ -244,7 +244,7 @@ export default Component.extend(CurrentUserMixin, {
         permissions.removeObject(existingObj);
       }
 
-      let subValue = this.submissions.value;
+      let subValue = this.get('submissions.value');
 
       let newObj = {
         user: existingObj.user,
@@ -293,10 +293,10 @@ export default Component.extend(CurrentUserMixin, {
         newObj.submissions.all = true;
       }
       if (globalSetting === 'custom') {
-        newObj.selections = this.selections.value;
-        newObj.folders = this.folders.value;
-        newObj.comments = this.comments.value;
-        newObj.feedback = this.feedback.value;
+        newObj.selections = this.get('selections.value');
+        newObj.folders = this.get('folders.value');
+        newObj.comments = this.get('comments.value');
+        newObj.feedback = this.get('feedback.value');
 
         if (subValue === 'all') {
           newObj.submissions.all = true;
@@ -330,7 +330,7 @@ export default Component.extend(CurrentUserMixin, {
       if (!utils.isNonEmptyObject(user)) {
         return;
       }
-      const permissions = this.workspace.permissions;
+      const permissions = this.get('workspace.permissions');
 
       if (utils.isNonEmptyArray(permissions)) {
         const objToRemove = permissions.findBy('user', user.get('id'));
@@ -338,7 +338,7 @@ export default Component.extend(CurrentUserMixin, {
           let userDisplay = user.get('username');
           let pronoun = 'their';
 
-          let isSelf = user.get('id') === this.currentUser.id;
+          let isSelf = user.get('id') === this.get('currentUser.user.id');
 
           if (isSelf) {
             userDisplay = 'yourself';
@@ -388,7 +388,7 @@ export default Component.extend(CurrentUserMixin, {
       }
     },
     confirmRemoveSelf() {
-      this.send('removeCollab', this.currentUser);
+      this.send('removeCollab', this.currentUser.user);
     },
   },
 });

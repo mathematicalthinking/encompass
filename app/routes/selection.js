@@ -27,7 +27,7 @@ export default Route.extend({
   shouldDoTour: computed('Encompass.redoTour', function () {
     var user = this.modelFor('application');
     var userSeenTour = user.get('seenTour');
-    var redoTour = this.Encompass.redoTour;
+    var redoTour = this.get('Encompass.redoTour');
     return userSeenTour || redoTour;
   }),
 

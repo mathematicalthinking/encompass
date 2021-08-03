@@ -89,7 +89,7 @@ export default Component.extend(ErrorHandlingMixin, {
     if (organization) {
       this.set('organization', organization);
     } else {
-      this.set('organization', this.currentUser.organization);
+      this.set('organization', this.get('currentUser.organization'));
     }
     if (this.invalidTeacherUsername) {
       this.set('invalidTeacherUsername', null);

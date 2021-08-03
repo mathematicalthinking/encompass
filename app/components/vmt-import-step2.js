@@ -99,7 +99,7 @@ export default Component.extend(CurrentUserMixin, {
     },
 
     next() {
-      if (!this.selectedRooms.length > 0) {
+      if (!this.get('selectedRooms.length') > 0) {
         return this.alert.showToast(
           'error',
           'Please select at least one room or activity to proceed',

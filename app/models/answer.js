@@ -22,7 +22,7 @@ export default Model.extend(Auditable, {
   vmtRoomInfo: attr(),
 
   isVmt: computed('vmtRoomInfo.roomId', function () {
-    let id = this.vmtRoomInfo.roomId;
+    let id = this.get('vmtRoomInfo.roomId');
     let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
 
     return checkForHexRegExp.test(id);
@@ -36,9 +36,9 @@ export default Model.extend(Auditable, {
     'vmtRoomInfo.participants.[]',
     function () {
       if (this.isVmt) {
-        return this.vmtRoomInfo.participants.firstObject || 'Unknown';
+        return this.get('vmtRoomInfo.participants.firstObject') || 'Unknown';
       }
-      const creatorUsername = this.createdBy.username;
+      const creatorUsername = this.get('createdBy.username');
       if (creatorUsername && creatorUsername !== 'old_pows_user') {
         return creatorUsername;
       }

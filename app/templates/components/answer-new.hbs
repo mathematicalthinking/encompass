@@ -46,7 +46,7 @@
             <div class="student-list">
               <ul>
               {{#each this.contributors as |student|}}
-                <li>{{this.student.username}}
+                <li>{{student.username}}
                   {{#unless (is-equal student this.currentUser)}}
                     <i {{action "removeStudent" student}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
                   {{/unless}}

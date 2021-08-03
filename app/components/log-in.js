@@ -16,7 +16,7 @@ export default Component.extend(ErrorHandlingMixin, {
       return 'The provided email address is already associated with an existing account';
     }
   }),
-
+  
   @action
   resetErrors() {
     const errors = [
@@ -34,14 +34,14 @@ export default Component.extend(ErrorHandlingMixin, {
 
   @action
   login() {
-    var username = this.username;
+    var username = this.get('username');
     var usernameTrim;
     if (username) {
       usernameTrim = username.trim();
     } else {
       usernameTrim = '';
     }
-    var password = this.password;
+    var password = this.get('password');
 
     if (!usernameTrim || !password) {
       this.set('missingCredentials', true);

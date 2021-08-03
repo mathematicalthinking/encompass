@@ -6,9 +6,9 @@
  */
 import Route from '@ember/routing/route';
 
-export default Route.extend({
-  model: function () {
-    var workspace = this.modelFor('workspace');
-    return workspace.get('folders');
-  },
-});
+export default class WorkspaceFoldersRoute extends Route {
+  async model() {
+    let { folders } = await this.modelFor('workspace');
+    return folders;
+  }
+}

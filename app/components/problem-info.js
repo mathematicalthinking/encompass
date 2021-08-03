@@ -1,13 +1,13 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+import _ from 'underscore';
 /*global _:false */
 import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(ErrorHandlingMixin, {
   elementId: 'problem-info',
   classNames: ['side-info'],
   isEditing: false,
@@ -74,7 +74,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   },
 
   didUpdateAttrs() {
-    let attrProbId = this.problem.id;
+    let attrProbId = this.get('problem.id');
     let currentId = this.currentProblemId;
     if (!_.isEqual(attrProbId, currentId)) {
       if (this.isEditing) {
@@ -90,7 +90,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   didReceiveAttrs: function () {
     let currentProblemId = this.currentProblemId;
     if (_.isUndefined(currentProblemId)) {
-      this.set('currentProblemId', this.problem.id);
+      this.set('currentProblemId', this.get('problem.id'));
     }
     this.set('isWide', false);
     this.set('showAssignment', false);
@@ -116,10 +116,12 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     let problemFlagReason = problem.get('flagReason');
     if (problemFlagReason) {
       let flaggedBy = problemFlagReason.flaggedBy;
+      if (!flaggedBy) return;
       this.store.findRecord('user', flaggedBy).then((user) => {
         this.set('flaggedBy', user);
       });
     }
+    this._super(...arguments);
   },
 
   willDestroyElement: function () {
@@ -129,7 +131,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   },
 
   statusIconFill: computed('problem.status', function () {
-    let status = this.problem.status;
+    let status = this.get('problem.status');
 
     return this.iconFillOptions[status];
   }),
@@ -155,19 +157,17 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
 
   orgOptions: function () {
     return this.store.findAll('organization').then((orgs) => {
-      let orgList = orgs.get('content');
-      let toArray = orgList.toArray();
-      return toArray.map((org) => {
+      return orgs.map((org) => {
         return {
           id: org.id,
-          name: org._data.name,
+          name: org.name,
         };
       });
     });
   },
 
   keywordSelectOptions: computed('problem.keywords.[]', function () {
-    let keywords = this.problem.keywords;
+    let keywords = this.get('problem.keywords');
     if (!_.isArray(keywords)) {
       return [];
     }
@@ -693,7 +693,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
             null
           );
           let parentView = this.parentView;
-          this.parentActions.refreshList.call(parentView);
+          this.get('parentActions.refreshList').call(parentView);
         })
         .catch((err) => {
           this.alert.showToast(
@@ -881,7 +881,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
 
     addToRecommend: function () {
       let problem = this.problem;
-      let accountType = this.currentUser.accountType;
+      let accountType = this.get('currentUser.accountType');
       if (accountType === 'A') {
         this.orgOptions().then((orgs) => {
           this.set('orgList', orgs);
@@ -1003,7 +1003,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
                 null
               );
               let parentView = this.parentView;
-              this.parentActions.refreshList.call(parentView);
+              this.get('parentActions.refreshList').call(parentView);
             });
           }
         });
@@ -1017,10 +1017,10 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         return;
       }
 
-      let keywords = this.problem.keywords;
+      let keywords = this.get('problem.keywords');
       if (!_.isArray(keywords)) {
         this.problem.set('keywords', []);
-        keywords = this.problem.keywords;
+        keywords = this.get('problem.keywords');
       }
       let isRemoval = _.isNull($item);
 

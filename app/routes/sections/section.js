@@ -1,7 +1,10 @@
 import AuthenticatedRoute from '../_authenticated_route';
 import { hash } from 'rsvp';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 
-export default AuthenticatedRoute.extend({
+export default class SectionsSectionRoute extends AuthenticatedRoute {
+  @service store;
   async model(params) {
     let section = await this.store.findRecord('section', params.section_id);
     const currentUser = await this.modelFor('application');
@@ -9,14 +12,12 @@ export default AuthenticatedRoute.extend({
       section,
       currentUser,
     });
-  },
+  }
 
-  actions: {
-    toSectionList: function () {
-      this.transitionTo('sections');
-    },
-    toAssignmentInfo: function (assignment) {
-      this.transitionTo('assignments.assignment', assignment);
-    },
-  },
-});
+  @action toSectionList() {
+    this.transitionTo('sections');
+  }
+  @action toAssignmentInfo(assignment) {
+    this.transitionTo('assignments.assignment', assignment);
+  }
+}

@@ -35,7 +35,7 @@ export default Component.extend(ErrorHandlingMixin, {
         return;
       }
 
-      const ssoId = this.user.ssoId;
+      const ssoId = this.get('user.ssoId');
 
       const resetPasswordData = {
         password,

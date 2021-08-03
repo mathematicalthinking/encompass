@@ -10,7 +10,7 @@ export default Component.extend({
   }),
 
   value: computed('item.id', function () {
-    return this.item.id;
+    return this.get('item.id');
   }),
 
   displayValue: computed('item', 'displayProp', function () {

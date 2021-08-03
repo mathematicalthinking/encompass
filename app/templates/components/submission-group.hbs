@@ -3,7 +3,7 @@
   <ul style="display:none;">
     {{#each this.submissionThreadHeads as |threadHead|}}
       <li>
-        <LinkTo @route="workspace-submission" @model={{threadHead}}>
+        <LinkTo @route="workspace.submissions.submission" @model={{threadHead}}>
           <span class="submissionLink {{threadHead.id}}">
             {{threadHead.studentDisplayName}}
           </span>
@@ -22,9 +22,9 @@
 
 	<div class="al_controller submission-row-item arrows">
     {{#if this.prevThread.vmtRoomInfo.roomId}}
-      <LinkTo @route="workspace-submission" @model={{this.prevThread}} @query={{hash vmtRoomId=this.prevThread.vmtRoomInfo.roomId}}><span id="leftArrow"><i class="fas fa-arrow-left"></i></span></LinkTo>
+      <LinkTo @route="workspace.submissions.submission" @model={{this.prevThread.id}} @query={{hash vmtRoomId=this.prevThread.vmtRoomInfo.roomId}}><span id="leftArrow"><i class="fas fa-arrow-left"></i></span></LinkTo>
     {{else}}
-		  <LinkTo @route="workspace-submission" @model={{this.prevThread}}><span id="leftArrow"><i class="fas fa-arrow-left"></i></span></LinkTo>
+		  <LinkTo @route="workspace.submissions.submission" @model={{this.prevThread.id}}><span id="leftArrow"><i class="fas fa-arrow-left"></i></span></LinkTo>
     {{/if}}
 		<span class="al_number">
       <span class="submission_index">
@@ -36,9 +36,9 @@
       </span>
     </span>
     {{#if this.nextThread.vmtRoomInfo.roomId}}
-      <LinkTo @route="workspace-submission" @model={{this.nextThread}} @query={{hash vmtRoomId=this.nextThread.vmtRoomInfo.roomId}}><span id="rightArrow"><i class="fas fa-arrow-right"></i></span></LinkTo>
+      <LinkTo @route="workspace.submissions.submission" @model={{this.nextThread.id}} @query={{hash vmtRoomId=this.nextThread.vmtRoomInfo.roomId}}><span id="rightArrow"><i class="fas fa-arrow-right"></i></span></LinkTo>
     {{else}}
-		  <LinkTo @route="workspace-submission" @model={{this.nextThread}}><span id="rightArrow"> <i class="fas fa-arrow-right"></i></span></LinkTo>
+		  <LinkTo @route="workspace.submissions.submission" @model={{this.nextThread.id}}><span id="rightArrow"> <i class="fas fa-arrow-right"></i></span></LinkTo>
     {{/if}}
 	</div>
 </header>

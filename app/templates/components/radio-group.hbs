@@ -10,7 +10,7 @@
 {{#each this.options.inputs as |input|}}
  <ol class="radio-list">
     <li>
-      <RadioGroupItem @selectedValue={{this.selectedValue}} @label={{input.label}} @name={{this.options.groupName}} @isRequired={{this.options.isRequired}} @value={{this.input.value}} @moreInfo={{this.input.moreInfo}} @onClick={{action "setValue"}} />
+      <RadioGroupItem @selectedValue={{this.selectedValue}} @label={{input.label}} @name={{this.options.groupName}} @isRequired={{this.options.isRequired}} @value={{input.value}} @moreInfo={{this.input.moreInfo}} @onClick={{action "setValue"}} />
     </li>
   </ol>
 {{/each}}

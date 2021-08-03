@@ -6,7 +6,7 @@ import { inject as service } from '@ember/service';
 export default Component.extend({
   socketIo: service('socket-io'),
   didReceiveAttrs() {
-    if (this.currentUser && !this.currentUser.isGuest) {
+    if (this.currentUser && !this.get('currentUser.isGuest')) {
       this.socketIo.setupSocket(this.currentUser);
     }
     this._super(...arguments);

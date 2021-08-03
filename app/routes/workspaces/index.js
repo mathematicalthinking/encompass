@@ -1,15 +1,17 @@
 /**
  * # Workspaces Index Route
  * @description Route to view all workspaces
- * @author Amir Tahvildaran <amir@mathforum.org>
+ * @author Amir Tahvildaran <amir@mathforum.org>, Tim Leonard <tleonard@21pstem.org>
  * @since 1.0.0
  */
 import { hash } from 'rsvp';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 
-export default AuthenticatedRoute.extend({
-  model: function () {
-    const store = this.store;
+export default class WorkspacesIndexRoute extends AuthenticatedRoute {
+  @service store;
+  async model() {
     const user = this.modelFor('application');
     let workspaceCriteria = {};
 
@@ -22,8 +24,8 @@ export default AuthenticatedRoute.extend({
     }
     return hash({
       currentUser: user,
-      organizations: store.findAll('organization'),
-      workspaces: store.query('workspace', workspaceCriteria),
+      organizations: await this.store.findAll('organization'),
+      workspaces: await this.store.query('workspace', workspaceCriteria),
     });
     /*
     return store.cache('workspace').then(function(model){
@@ -32,15 +34,13 @@ export default AuthenticatedRoute.extend({
       //stackoverflow.com/questions/24439394/emberjs-override-route-filter-without-global/24439468#24439468
     });
     */
-  },
+  }
 
-  renderTemplate: function () {
+  renderTemplate() {
     this.render('workspaces/workspaces');
-  },
+  }
 
-  actions: {
-    reload: function () {
-      this.refresh();
-    },
-  },
-});
+  @action reload() {
+    this.refresh();
+  }
+}

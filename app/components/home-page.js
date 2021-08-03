@@ -1,10 +1,9 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(ErrorHandlingMixin, {
   tagName: '',
   // elementId: 'homepage',
   className: ['homepage', 'index'],
@@ -24,7 +23,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   notStudent: Ember.computed.not('isStudent'),
 
   didReceiveAttrs: function () {
-    let currentUser = this.currentUser;
+    let currentUser = this.get('user');
     this.set(
       'isStudentAccount',
       currentUser && currentUser.get('accountType') === 'S'
@@ -32,17 +31,8 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   },
 
   actions: {
-    largeHeader: function () {
-      this.set('isSmallHeader', false);
-    },
-    smallHeader: function () {
-      this.set('isSmallHeader', true);
-    },
-    toggleMenu: function () {
-      // console.log('toggle called', this.openMenu);
-    },
     showToggleModal: function () {
-      this.alert
+      this.get('alert')
         .showModal(
           'question',
           'Are you sure you want to switch roles?',
@@ -58,7 +48,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
 
     toggleActingRole: function () {
       // should this action be moved to the application controller?
-      const currentUser = this.currentUser;
+      const currentUser = this.get('user');
 
       // student account types cannot toggle to teacher role
       if (currentUser.get('accountType') === 'S') {
@@ -77,7 +67,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
           this.store.unloadAll('assignment');
           // window location needed to request dashboard data, cannot transitionTo('toHome')
           window.location.href = '/';
-          this.alert.showToast(
+          this.get('alert').showToast(
             'success',
             'Successfully switched roles',
             'bottom-end',

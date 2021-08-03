@@ -1,11 +1,10 @@
-import { computed } from '@ember/object';
+import { computed, observer } from '@ember/object';
 import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
 import $ from 'jquery';
 
 export default Route.extend({
   afterModel: function (model, transition) {
-    console.log('models.workspace.submissions.submission.selections.selection');
     this.controllerFor('workspace').set('currentSelection', model);
   },
 
@@ -28,7 +27,7 @@ export default Route.extend({
   shouldDoTour: computed('Encompass.redoTour', function () {
     var user = this.modelFor('application');
     var userSeenTour = user.get('seenTour');
-    var redoTour = this.Encompass.redoTour;
+    var redoTour = this.get('Encompass.redoTour');
     return userSeenTour || redoTour;
   }),
 

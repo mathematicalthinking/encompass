@@ -1,10 +1,11 @@
-import { inject as controller } from '@ember/controller';
+import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 import { hash } from 'rsvp';
 import AuthenticatedRoute from './_authenticated_route';
 
-export default AuthenticatedRoute.extend({
-  hideOutlet: true,
-  // application: controller(),
+export default class ProblemsRoute extends AuthenticatedRoute {
+  @service store;
+  hideOutlet = true;
 
   // beforeModel: function (transition) {
   //   this._super.apply(this, arguments);
@@ -22,8 +23,7 @@ export default AuthenticatedRoute.extend({
   //     }
   //   }
   // },
-  model: function () {
-    const store = this.store;
+  model() {
     const user = this.modelFor('application');
     let problemCriteria = {};
 
@@ -35,24 +35,15 @@ export default AuthenticatedRoute.extend({
       };
     }
     return hash({
-      organizations: store.findAll('organization'),
-      sections: store.findAll('section'),
-      problems: store.query('problem', problemCriteria),
+      organizations: this.store.findAll('organization'),
+      sections: this.store.findAll('section'),
+      problems: this.store.query('problem', problemCriteria),
       hideOutlet: this.hideOutlet,
       currentUser: user,
     });
-  },
+  }
 
-  renderTemplate: function () {
-    this.render('problems/problems');
-  },
-  actions: {
-    toProblemInfo(problem) {
-      this.transitionTo('problem', problem);
-    },
-    sendtoApplication(categories) {
-      this.application.set('categories', categories);
-      this.application.set('showCategoryList', true);
-    },
-  },
-});
+  @action toProblemInfo(problem) {
+    this.transitionTo('problems.problem', problem.id);
+  }
+}

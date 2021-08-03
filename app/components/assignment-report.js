@@ -23,8 +23,8 @@ export default Component.extend(CurrentUserMixin, {
       obj.username = username;
       items.push(obj);
     });
-    let sortValue = this.sortCriterion.sortParam.param || 'username';
-    let sortDirection = this.sortCriterion.sortParam.direction || 'asc';
+    let sortValue = this.get('sortCriterion.sortParam.param') || 'username';
+    let sortDirection = this.get('sortCriterion.sortParam.direction') || 'asc';
     let sorted = items.sortBy(sortValue);
 
     if (sortDirection === 'desc') {
@@ -117,8 +117,8 @@ export default Component.extend(CurrentUserMixin, {
     'uniqueSubmitters',
     'totalSubmissionsCount',
     function () {
-      let numStudents = this.sortedReportItems.length;
-      let numSubmitters = this.uniqueSubmitters.length;
+      let numStudents = this.get('sortedReportItems.length');
+      let numSubmitters = this.get('uniqueSubmitters.length');
       let numSubmissions = this.totalSubmissionsCount;
 
       let studentNoun = numStudents === 1 ? 'student' : 'students';

@@ -329,18 +329,22 @@ const createFilterList = function (isStudent, isAdmin, filterList, removeChildre
   return filterOptions;
 };
 
-const selectOption = async function (webDriver, selector, item, isByCss) {
+const selectOption = async function (
+  webDriver,
+  selector,
+  item,
+  isByCss = false
+) {
   try {
     let selectList;
     if (isByCss) {
       selectList = await webDriver.findElement(By.css(selector));
     } else {
-    selectList = await webDriver.findElement(By.id(selector));
-
+      selectList = await webDriver.findElement(By.id(selector));
     }
-  await selectList.click();
-  let el = await selectList.findElement(By.css(`option[value="${item}"]`));
-  await el.click();
+    await selectList.click();
+    let el = await selectList.findElement(By.css(`option[value="${item}"]`));
+    await el.click();
     return true;
   } catch (err) {
     console.log(err);
@@ -555,7 +559,7 @@ const waitForAttributeToEql = function(webDriver, webElement, attributeName, exp
 };
 
 const logout = function(webDriver) {
-  let loginRegex = new RegExp('/#/auth/login');
+  let loginRegex = new RegExp('/auth/login');
   return findAndClickElement(webDriver, css.topBar.logout)
     .then(() => {
       return waitForUrlMatch(webDriver, loginRegex);

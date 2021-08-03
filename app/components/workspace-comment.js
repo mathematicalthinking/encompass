@@ -2,9 +2,9 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
+  currentUser: service('current-user'),
   tagName: 'li',
 
   permissions: service('workspace-permissions'),
@@ -26,7 +26,7 @@ export default Component.extend(CurrentUserMixin, {
     'comment',
     function () {
       let workspaceId = this.utils.getBelongsToId(this.comment, 'workspace');
-      return workspaceId === this.currentWorkspace.id;
+      return workspaceId === this.get('currentWorkspace.id');
     }
   ),
 
@@ -35,9 +35,9 @@ export default Component.extend(CurrentUserMixin, {
     return childrenIds.get('length');
   }),
 
-  isOwnComment: computed('comment', 'currentUser.id', function () {
+  isOwnComment: computed('comment', 'currentUser.user.id', function () {
     let creatorId = this.utils.getBelongsToId(this.comment, 'createdBy');
-    return creatorId === this.currentUser.id;
+    return creatorId === this.get('currentUser.user.id');
   }),
 
   canDelete: computed(
@@ -57,7 +57,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   relevanceClass: computed('comment.relevance', function () {
-    return 'relevance-' + this.comment.relevance;
+    return 'relevance-' + this.get('comment.relevance');
   }),
 
   isFromCurrentSelection: computed(
@@ -66,7 +66,7 @@ export default Component.extend(CurrentUserMixin, {
     function () {
       return (
         this.utils.getBelongsToId(this.comment, 'selection') ===
-        this.currentSelection.id
+        this.get('currentSelection.id')
       );
     }
   ),

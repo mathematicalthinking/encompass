@@ -84,24 +84,24 @@ export default Component.extend(ErrorHandlingMixin, {
     function () {
       // can only edit if created section, admin, pdadmin, or teacher
 
-      if (this.currentUser.isStudent) {
+      if (this.get('currentUser.isStudent')) {
         return false;
       }
-      if (this.currentUser.isAdmin) {
+      if (this.get('currentUser.isAdmin')) {
         return true;
       }
       let creatorId = this.utils.getBelongsToId(this.section, 'createdBy');
 
-      if (creatorId === this.currentUser.id) {
+      if (creatorId === this.get('currentUser.id')) {
         return true;
       }
 
       let teacherIds = this.section.hasMany('teachers').ids();
-      if (teacherIds.includes(this.currentUser.id)) {
+      if (teacherIds.includes(this.get('currentUser.id'))) {
         return true;
       }
 
-      if (this.currentUser.isPdAdmin) {
+      if (this.get('currentUser.isPdAdmin')) {
         let sectionOrgId = this.utils.getBelongsToId(
           this.section,
           'organization'

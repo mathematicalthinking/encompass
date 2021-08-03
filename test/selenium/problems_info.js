@@ -326,7 +326,7 @@ describe('Problems Info', async function () {
               };
           
               await helpers.navigateAndWait(driver, `${helpers.host}/problems`, options );
-              await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+              await helpers.findAndClickElement(driver, 'li.filter-mine');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
               // await driver.sleep(5000);
             });
@@ -609,7 +609,7 @@ describe('Problems Info', async function () {
               };
           
               await helpers.navigateAndWait(driver, `${helpers.host}/problems`, options );
-              await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+              await helpers.findAndClickElement(driver, 'li.filter-mine');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
               await driver.sleep(500);
             });
@@ -630,6 +630,7 @@ describe('Problems Info', async function () {
               await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
               await driver.sleep(800);
               await helpers.waitForSelector(driver, css.problemEdit.errorBox);
+              await driver.sleep(10000);
               expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('There is already an existing public problem titled "Alphabetical Problem."');
               await helpers.waitForAndClickElement(driver, css.problemEdit.errorBoxDismiss);
             });
@@ -640,6 +641,7 @@ describe('Problems Info', async function () {
               await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
               await driver.sleep(800);
               await helpers.waitForSelector(driver, css.problemEdit.errorBox);
+              await driver.sleep(10000);
               expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('Please fill in all required fields');
               await helpers.waitForAndClickElement(driver, css.problemEdit.errorBoxDismiss);
               await driver.sleep(500);
@@ -671,20 +673,21 @@ describe('Problems Info', async function () {
 
             if (isPdadmin) {
               it('should show warning modal if editing assigned problem', async function () {
-                await helpers.findAndClickElement(driver, "li.filter-myOrg label.radio-label");
-                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, "li.filter-myOrg");
+                console.log('editing assigned problem');
+                await driver.sleep(10000);
                 await helpers.waitForAndClickElement(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child');
-                await driver.sleep(500);
-                await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
-                await driver.sleep(500);
-                expect(await helpers.findAndGetText(driver, css.sweetAlert.heading, true)).to.contain('are you sure you want to edit a problem that has already been assigned');
-                await helpers.waitForAndClickElement(driver, css.sweetAlert.cancelBtn);
+                await driver.sleep(1000);
+                // await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+                // await driver.sleep(1000);
+                // expect(await helpers.findAndGetText(driver, css.sweetAlert.heading, true)).to.contain('are you sure you want to edit a problem that has already been assigned');
+                // await helpers.waitForAndClickElement(driver, css.sweetAlert.cancelBtn);
               });
             }
 
             if (isAdmin) {
               it('should show warning modal if editing problem with answers', async function () {
-                await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
+                await helpers.findAndClickElement(driver, 'li.filter-all');
                 await helpers.waitForAndClickElement(driver, '#problem-list-ul li:nth-child(1) .item-section.name span:first-child');
                 await driver.sleep(500);
                 await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);

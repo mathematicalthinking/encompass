@@ -20,8 +20,8 @@ export default Controller.extend({
 
   // workspaceSubmissions: Ember.inject.controller(),
   // currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
-  currentUser: alias('workspace.model.currentUser'),
-  currentWorkspace: alias('workspace.model.workspace'),
+  currentUser: service('current-user'),
+  currentWorkspace: alias('workspace.model'),
   currentSelection: alias('workspace.currentSelection'),
   workspaceOwner: alias('currentWorkspace.owner'),
   permissions: service('workspace-permissions'),
@@ -53,7 +53,7 @@ export default Controller.extend({
     'currentWorkspace.owner',
     function () {
       let ownerId = this.utils.getBelongsToId(this.currentWorkspace, 'owner');
-      return this.currentUser.id === ownerId;
+      return this.get('currentUser.id') === ownerId;
     }
   ),
 
@@ -67,35 +67,42 @@ export default Controller.extend({
   nonTrashedSelections: computed(
     'currentWorkspace.selections.content.@each.isTrashed',
     function () {
-      return this.currentWorkspace.selections.content.rejectBy('isTrashed');
+      return this.get('currentWorkspace.selections.content').rejectBy(
+        'isTrashed'
+      );
     }
   ),
 
   nonTrashedTaggings: computed(
     'currentWorkspace.taggings.@each.isTrashed',
     function () {
-      return this.currentWorkspace.taggings.rejectBy('isTrashed');
+      return this.get('currentWorkspace.taggings').rejectBy('isTrashed');
     }
   ),
 
   nonTrashedFolders: computed(
     'currentWorkspace.folders.content.@each.isTrashed',
     function () {
-      return this.currentWorkspace.folders.content.rejectBy('isTrashed');
+      const stuff= this.get('currentWorkspace');
+      return this.get('currentWorkspace.folders.content').rejectBy('isTrashed');
     }
   ),
 
   nonTrashedComments: computed(
     'currentWorkspace.comments.content.@each.isTrashed',
     function () {
-      return this.currentWorkspace.comments.content.rejectBy('isTrashed');
+      return this.get('currentWorkspace.comments.content').rejectBy(
+        'isTrashed'
+      );
     }
   ),
 
   nonTrashedResponses: computed(
     'currentWorkspace.responses.content.@each.isTrashed',
     function () {
-      return this.currentWorkspace.responses.content.rejectBy('isTrashed');
+      return this.get('currentWorkspace.responses.content').rejectBy(
+        'isTrashed'
+      );
     }
   ),
 
@@ -334,7 +341,7 @@ export default Controller.extend({
     },
 
     doneTour: function () {
-      let user = this.currentUser;
+      let user = this.currentUser.user;
       user.set('seenTour', new Date());
       user.save();
     },
@@ -344,12 +351,12 @@ export default Controller.extend({
     },
 
     addSelection: function (selection, isUpdateOnly) {
-      var user = this.currentUser;
+      var user = this.currentUser.user;
       var workspace = this.currentWorkspace;
-      var submission = this.model.submission;
+      var submission = this.model;
       var controller = this;
       var newSelection = null;
-      var alreadyExists = this.model.submission.selections.filterBy(
+      var alreadyExists = this.get('model.selections').filterBy(
         'id',
         selection.id
       );
@@ -450,7 +457,7 @@ export default Controller.extend({
           );
 
           controller.transitionToRoute(
-            'workspace.submission.selection',
+            'workspace.submissions.submission.selections.selection',
             workspace,
             submission,
             newSelection.id
@@ -498,7 +505,7 @@ export default Controller.extend({
           null
         );
 
-        controller.transitionToRoute('workspace.submission', controller.model);
+        controller.transitionToRoute('workspace.submissions.submission', controller.model);
       });
     },
 
@@ -508,7 +515,7 @@ export default Controller.extend({
       });
     },
     toSubmission(submission) {
-      this.transitionToRoute('workspace.submission', submission);
+      this.transitionToRoute('workspace.submissions.submission', submission);
     },
     toggleFolderDisplay() {
       this.toggleProperty('areFoldersHidden');

@@ -3,10 +3,9 @@ import { computed } from '@ember/object';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  tagName: 'div',
   elementId: 'pagination-control',
   showPageNavigation: computed('details.pageCount', function () {
-    let count = this.details.pageCount;
+    let count = this.get('details.pageCount');
     return count && count > 1;
   }),
 
@@ -15,8 +14,8 @@ export default Component.extend(ErrorHandlingMixin, {
   },
   actions: {
     getPage: function (direction, gotoPage = null) {
-      let currentPage = this.details.currentPage;
-      let maxPage = this.details.pageCount;
+      let currentPage = this.get('details.currentPage');
+      let maxPage = this.get('details.pageCount');
       // if user directly inputs a number in go to page input and clicks go
       if (gotoPage) {
         if (gotoPage === currentPage) {

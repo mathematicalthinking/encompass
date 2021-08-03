@@ -103,10 +103,10 @@ export default Component.extend(CurrentUserMixin, {
     'combinedUsers.[]',
     'workspace.collaborators.[]',
     function () {
-      let existingCollabs = this.workspace.collaborators || [];
+      let existingCollabs = this.get('workspace.collaborators') || [];
       let users = this.combinedUsers || [];
-      let ownerId = this.workspace.owner.id;
-      let creatorId = this.workspace.creator.id;
+      let ownerId = this.get('workspace.owner.id');
+      let creatorId = this.get('workspace.creator.id');
       return users.filter((user) => {
         if (ownerId === user.get('id') || creatorId === user.get('id')) {
           return false;
@@ -129,7 +129,7 @@ export default Component.extend(CurrentUserMixin, {
       if (!val) {
         return;
       }
-      let existingCollab = this.workspace.collaborators;
+      let existingCollab = this.get('workspace.collaborators');
       const user = this.store.peekRecord('user', val);
       let alreadyCollab = _.contains(existingCollab, user.get('id'));
 

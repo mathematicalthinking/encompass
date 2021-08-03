@@ -1,6 +1,6 @@
 <div class="flex-container-full">
   <div class="flex-item-full filter-options collapse" id="filter-list-side">
-    <WorkspaceFilter @store={{this.store}} @currentUser={{this.model.currentUser}} @onUpdate={{action "triggerFetch"}} @triggerShowTrashed={{action "triggerShowTrashed"}} @triggerShowHidden={{action "triggerShowHidden"}} @toggleTrashed={{this.toggleTrashed}} @toggleHidden={{this.toggleHidden}} @filter={{this.filter}} @primaryFilter={{this.primaryFilter}} @adminFilterSelect={{this.adminFilterSelect}} @orgs={{this.organizations}} />
+    <WorkspaceFilter @store={{this.store}} @onUpdate={{action "triggerFetch"}} @triggerShowTrashed={{action "triggerShowTrashed"}} @triggerShowHidden={{action "triggerShowHidden"}} @toggleTrashed={{this.toggleTrashed}} @toggleHidden={{this.toggleHidden}} @filter={{this.filter}} @primaryFilter={{this.primaryFilter}} @adminFilterSelect={{this.adminFilterSelect}} @orgs={{this.organizations}} />
   </div>
 
   <div class="flex-item-full list-view">

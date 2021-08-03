@@ -1,0 +1,108 @@
+
+{{#unless @user.isStudent}}
+{{#if this.sortedClasses}}
+<h2 class="home__header"><LinkTo @route='assignments' classNames="home--link">My Class' Work</LinkTo></h2>
+<table class="max-width">
+  <tr>
+    <td>
+      <div class="table-m">
+        <table class="max-width">
+          <tr id="blue-class">
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.name
+            label="Problem"
+            parentProp=sortCriterion
+            type="name"
+            activeType=sortCriterion.type}}</th>
+
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.classes
+            label="Class"
+            parentProp=sortCriterion
+            type="classes"
+            activeType=sortCriterion.type}}</th>
+
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.assignedDate
+            label="Date Assigned"
+            parentProp=sortCriterion
+            type="assignedDate"
+            activeType=sortCriterion.type}}</th>
+
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.dueDate
+            label="Date Due"
+            parentProp=sortCriterion
+            type="dueDate"
+            activeType=sortCriterion.type}}</th>
+
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.submissions
+            label="Submissions"
+            parentProp=sortCriterion
+            type="submissions"
+            activeType=sortCriterion.type}}</th>
+
+            <th>{{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.createDateAnswer
+            label="Submission Date"
+            parentProp=sortCriterion
+            type="createDateAnswer"
+            activeType=sortCriterion.type}}</th>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="dash-classes al_body resize" style="max-height:{{calculate-table-height this.sortedClasses.length}};">
+        <table class="max-width">
+          {{#each this.sortedClasses as |assignment|}}
+          <tr>
+            {{#if assignment.problem.title}}
+              <td>
+                  <LinkTo @route='assignments.assignment' @model={{assignment.id}}
+                  classNames='link'>
+                    {{{assignment.problem.title}}}
+                  </LinkTo>
+              </td>
+            {{else}}
+              <td>N/A</td>
+            {{/if}}
+            <td><LinkTo @route='sections.section' @model={{assignment.section.id}} classNames='link'>{{assignment.section.name}}</LinkTo></td>
+            <td>{{format-date assignment.assignedDate 'MMM Do YYYY' }}</td>
+            <td>{{format-date assignment.dueDate 'MMM Do YYYY' }}</td>
+            {{#if assignment.answers.content.currentState.length}}
+            <td>Submissions: ({{assignment.answers.content.currentState.length}})</td>
+            {{else}}
+            <td>No submissions</td>
+            {{/if}}
+            <td>{{format-date assignment.createDateAnswer 'MMM Do YYYY'}}</td>
+          </tr>
+          {{/each}}
+        </table>
+      </div>
+    </td>
+  </tr>
+</table>
+{{/if}}
+{{/unless}}

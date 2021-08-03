@@ -3,10 +3,10 @@ import { computed } from '@ember/object';
 /*global _:false */
 import { alias, equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(ErrorHandlingMixin, {
+  currentUser: service('current-user'),
   elementId: ['workspace-info-settings'],
   alert: service('sweet-alert'),
   permissions: service('workspace-permissions'),
@@ -24,14 +24,14 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     this._super(...arguments);
   },
 
-  doShowLinkedAssignment: computed('currentUser', 'isParentWs', function () {
+  doShowLinkedAssignment: computed('currentUser.user', 'isParentWs', function () {
     return (
       this.permissions.hasOwnerPrivileges(this.workspace) && !this.isParentWs
     );
   }),
 
   initialOwnerItem: computed('workspace.owner', function () {
-    const owner = this.workspace.owner;
+    const owner = this.get('workspace.owner');
     if (this.utils.isNonEmptyObject(owner)) {
       return [owner.get('id')];
     }
@@ -39,7 +39,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   }),
 
   initialLinkedAssignmentItem: computed('linkedAssignment', function () {
-    let linkedAssignmentId = this.linkedAssignment.id;
+    let linkedAssignmentId = this.get('linkedAssignment.id');
 
     if (linkedAssignmentId) {
       return [linkedAssignmentId];
@@ -47,16 +47,16 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     return [];
   }),
 
-  doShowChildWorkspaces: computed('currentUser', 'isParentWs', function () {
+  doShowChildWorkspaces: computed('currentUser.user', 'isParentWs', function () {
     return (
       this.permissions.hasOwnerPrivileges(this.workspace) && this.isParentWs
     );
   }),
 
-  modes: computed('currentUser.isAdmin', 'currentUser.isStudent', function () {
+  modes: computed('currentUser.user.isAdmin', 'currentUser.user.isStudent', function () {
     const basic = ['private', 'org', 'public'];
 
-    if (this.currentUser.isStudent || !this.currentUser.isAdmin) {
+    if (this.get('currentUser.user.isStudent') || !this.get('currentUser.user.isAdmin')) {
       return basic;
     }
 
@@ -136,7 +136,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         return;
       }
 
-      let linkedAssignmentId = this.linkedAssignment.id;
+      let linkedAssignmentId = this.get('linkedAssignment.id');
 
       if (_.isNull($item)) {
         if (linkedAssignmentId) {
@@ -249,7 +249,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       }
     },
     stopEditing() {
-      console.log('stop editing');
+      console.log("stop editing");
       this.set('isEditing', false);
       this.set('didLinkedAssignmentChange', false);
       this.set('selectedLinkedAssignment', null);
@@ -292,7 +292,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       let newUpdateRequest = this.store.createRecord('updateWorkspaceRequest', {
         workspace: this.workspace,
         linkedAssignment: this.linkedAssignment,
-        createdBy: this.currentUser,
+        createdBy: this.currentUser.user,
         isParentUpdate: this.isParentWs,
       });
       newUpdateRequest

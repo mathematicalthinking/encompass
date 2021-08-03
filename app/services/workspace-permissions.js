@@ -9,21 +9,21 @@ export default Service.extend({
   utils: service('utility-methods'),
 
   isAdmin() {
-    return this.currentUser.isAdmin;
+    return this.get('currentUser.isAdmin');
   },
 
   isPdAdmin() {
-    return this.currentUser.isPdAdmin;
+    return this.get('currentUser.isPdAdmin');
   },
 
   isOwner(ws) {
     let ownerId = this.utils.getBelongsToId(ws, 'owner');
-    return ownerId === this.currentUser.id;
+    return ownerId === this.get('currentUser.id');
   },
 
   isCreator(ws) {
     let creatorId = this.utils.getBelongsToId(ws, 'createdBy');
-    return creatorId === this.currentUser.id;
+    return creatorId === this.get('currentUser.id');
   },
 
   isInPdAdminDomain(ws) {
@@ -43,12 +43,7 @@ export default Service.extend({
   },
 
   hasOwnerPrivileges(ws) {
-    return (
-      this.isAdmin() ||
-      this.isOwner(ws) ||
-      this.isCreator(ws) ||
-      this.isInPdAdminDomain(ws)
-    );
+    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws);
   },
 
   canCopy(ws) {
@@ -65,20 +60,14 @@ export default Service.extend({
     }
 
     let approvers = ws.get('feedbackAuthorizers') || [];
-    return approvers.includes(this.currentUser.id);
+    return approvers.includes(this.get('currentUser.id'));
   },
 
   canApproveFeedback(ws) {
     if (!ws || ws.workspaceType === 'parent') {
       return false;
     }
-    return (
-      this.isAdmin() ||
-      this.isOwner(ws) ||
-      this.isCreator(ws) ||
-      this.isFeedbackApprover(ws) ||
-      this.isInPdAdminDomain(ws)
-    );
+    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isFeedbackApprover(ws) || this.isInPdAdminDomain(ws);
   },
 
   canEdit(ws, recordType, requiredPermissionLevel) {
@@ -102,12 +91,7 @@ export default Service.extend({
       }
     }
 
-    if (
-      this.isAdmin() ||
-      this.isOwner(ws) ||
-      this.isCreator(ws) ||
-      this.isInPdAdminDomain(ws)
-    ) {
+    if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {
       return true;
     }
 
@@ -128,7 +112,7 @@ export default Service.extend({
       return false;
     }
 
-    const userPermissions = wsPermissions.findBy('user', this.currentUser.id);
+    const userPermissions = wsPermissions.findBy('user', this.get('currentUser.id'));
     if (!utils.isNonEmptyObject(userPermissions)) {
       return false;
     }
@@ -167,4 +151,5 @@ export default Service.extend({
 
     return permissionLevel >= requiredPermissionLevel;
   },
+
 });

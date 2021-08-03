@@ -17,8 +17,8 @@ export default Component.extend(CurrentUserMixin, {
     'assignmentName',
     'sectionName',
     function () {
-      let assignmentName = this.assignment.name || this.assignmentName;
-      let sectionName = this.section.name || this.sectionName;
+      let assignmentName = this.get('assignment.name') || this.assignmentName;
+      let sectionName = this.get('section.name') || this.sectionName;
 
       return `${assignmentName} (${sectionName})`;
     }

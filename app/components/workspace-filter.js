@@ -1,10 +1,12 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
 import { alias, equal } from '@ember/object/computed';
 /*global _:false */
 import { isEqual } from '@ember/utils';
 
 export default Component.extend({
+  currentUser: service('current-user'),
   elementId: 'workspace-filter',
   primaryFilterValue: alias('primaryFilter.value'),
   primaryFilterInputs: alias('filter.primaryFilters.inputs'),
@@ -38,7 +40,7 @@ export default Component.extend({
   secondaryFilterOptions: computed(
     'primaryFilter.secondaryFilters.inputs',
     function () {
-      return _.map(this.primaryFilter.secondaryFilters.inputs, (val, key) => {
+      return _.map(this.get('primaryFilter.secondaryFilters.inputs'), (val, key) => {
         return val;
       });
     }

@@ -9,7 +9,7 @@ export default Component.extend({
   alert: service('sweet-alert'),
   permissions: service('workspace-permissions'),
   menuOptions: alias('parentView.moreMenuOptions'),
-
+  store: service(),
   ellipsisMenuOptions: computed(
     'workspace.id',
     'workspace.isTrashed',
@@ -18,7 +18,7 @@ export default Component.extend({
       let ws = this.workspace;
       let currentUser = this.currentUser;
       let hiddenWorkspaces = currentUser.get('hiddenWorkspaces');
-      let deleted = this.workspace.isTrashed;
+      let deleted = this.get('workspace.isTrashed');
       let canDelete = this.permissions.canDelete(ws);
       let canCopy = this.permissions.canCopy(ws);
 
@@ -62,6 +62,59 @@ export default Component.extend({
   ),
 
   actions: {
+    async assignWorkspace(){
+      let sections = await this.store.findAll('section');
+      let workspace = this.get('workspace');
+      let workspaceName = this.get('workspace.name');
+      let options = {};
+      for(let section of sections.toArray()){
+        options[section.id] = section.name;
+      }
+      this.get('alert').showPromptSelect('Assign Workspace to class', options, "Choose a class")
+        .then((res)=>{
+          if(res.value){
+            this.get('store').findRecord('section', res.value).then((section)=>{
+              Promise.all(section.get("students").map((student)=>student.get('displayName'))).then((displayNames)=>{
+                Promise.all(section.get("students").map((student, index)=>{
+                  let copyWorkspaceRequest = {
+                    createDate: new Date(),
+                    isTrashed: false,
+                    lastModifiedDate: new Date(),
+                    name: `${displayNames[index] || "Copy of"}: ${workspaceName}`,
+                    mode: 'private',
+                    submissionOptions: { all: true },
+                    folderOptions: { folderSetOptions: { doCreateFolderSet: false }, none: true },
+                    selectionOptions: { none: true },
+                    commentOptions: { none: true },
+                    responseOptions: { none: true },
+                    permissionOptions: {},
+                    copyWorkspaceError: null,
+                    createdBy: this.get('currentUser'),
+                    lastModifiedBy: this.get('currentUser'),
+                    owner: student,
+                    originalWsId: workspace,
+                    createdWorkspace: null,
+                    createdFolderSet: null
+                  };
+                  let copyRequest = this.get('store').createRecord('copyWorkspaceRequest', copyWorkspaceRequest);
+                  return copyRequest.save();
+                })).then((results) => {
+                  let errors = results.filter((result)=>result.get('copyWorkspaceError')).map((result)=>result.get('copyWorkspaceError'));
+                  if(results.some((result)=>result.get('copyWorkspaceError'))){
+                    this.get('alert').showToast('error', errors[0], 'bottom-end', 5000);
+                  } else {
+                    this.get('alert').showToast('success', 'Workspaces Created', 'bottom-end', 5000);
+                  }
+                })
+                .catch((err) => {
+                  this.get('alert').showToast('error', 'Workspace Error', 'bottom-end', 5000);
+                  console.log(err);
+                });
+              });
+          });
+          }
+        });
+    },
     toggleShowMoreMenu() {
       let isShowing = this.showMoreMenu;
       this.set('showMoreMenu', !isShowing);
@@ -119,7 +172,7 @@ export default Component.extend({
     },
 
     hideWorkspace: function () {
-      let workspaceId = this.workspace.id;
+      let workspaceId = this.get('workspace.id');
       let user = this.currentUser;
       this.alert
         .showModal(

@@ -8,14 +8,14 @@ export default Component.extend({
 
   isSelected: computed('selectedRoomIds.[]', 'room._id', function () {
     let ids = this.selectedRoomIds || [];
-    return ids.includes(this.room._id);
+    return ids.includes(this.get('room._id'));
   }),
 
   encodedImageUri: computed('room.image', function () {
-    if (!this.room.image) {
+    if (!this.get('room.image')) {
       return '';
     }
-    return encodeURI(this.room.image);
+    return encodeURI(this.get('room.image'));
   }),
 
   actions: {

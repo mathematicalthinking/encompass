@@ -56,8 +56,8 @@ export default Component.extend({
     if (studentSelectize) {
       let currentValue = studentSelectize.selectize.getValue();
 
-      let currentSubmissionId = this.initialStudentItem.firstObject;
-      if (this.initialStudentItem.firstObject !== currentValue) {
+      let currentSubmissionId = this.get('initialStudentItem.firstObject');
+      if (this.get('initialStudentItem.firstObject') !== currentValue) {
         studentSelectize.selectize.setValue([currentSubmissionId], true);
       }
     }
@@ -81,15 +81,13 @@ export default Component.extend({
   //TODO Use the new thread.threadId property on submissions
   submissionThreads: computed('submissions.[]', function () {
     let threads = {};
-    console.log(threads);
-    this.submissions
-      .sortBy('student')
+    this.submissions.sortBy('student')
       .getEach('student')
       .uniq()
       .forEach((student) => {
         if (!threads[student]) {
           const answers = this.studentWork(student);
-          threads[student] = answers;
+          threads[student]=answers;
         }
       });
     return threads;
@@ -141,7 +139,7 @@ export default Component.extend({
       }
     }
 
-    var thread = this.currentThread.lastObject;
+    var thread = this.get('currentThread.lastObject');
     if (thread === this.firstThread) {
       return this.lastThread;
     }
@@ -162,7 +160,7 @@ export default Component.extend({
           return currentThread[ix - 1];
         }
       }
-      var thread = this.currentThread.lastObject;
+      var thread = this.get('currentThread.lastObject');
 
       if (thread === this.lastThread) {
         return this.firstThread;
@@ -180,7 +178,7 @@ export default Component.extend({
     if (!revisions || revisions.get('length') === 0) {
       return 0;
     }
-    const currentSubmissionId = this.submission.id;
+    const currentSubmissionId = this.get('submission.id');
     if (revisions.length === 1) {
       return 1;
     }
@@ -269,7 +267,7 @@ export default Component.extend({
     'submission',
     'submissionThreadHeads.[]',
     function () {
-      let currentStudent = this.submission.student;
+      let currentStudent = this.get('submission.student');
       let threadHead = this.submissionThreadHeads.findBy(
         'student',
         currentStudent
@@ -320,8 +318,8 @@ export default Component.extend({
       if (studentSelectize) {
         let currentValue = studentSelectize.selectize.getValue();
 
-        let currentSubmissionId = this.initialStudentItem.firstObject;
-        if (this.initialStudentItem.firstObject !== currentValue) {
+        let currentSubmissionId = this.get('initialStudentItem.firstObject');
+        if (this.get('initialStudentItem.firstObject') !== currentValue) {
           studentSelectize.selectize.setValue([currentSubmissionId], true);
         }
       }

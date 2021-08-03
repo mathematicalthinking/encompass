@@ -7,6 +7,8 @@ import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 export default Component.extend(ErrorHandlingMixin, {
   classNames: ['forgot-page'],
   postErrors: [],
+  username: '',
+  email: '',
 
   validateEmail: function () {
     var email = this.email;

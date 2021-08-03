@@ -14,7 +14,7 @@ export default Model.extend(Auditable, Permission, {
   selections: hasMany('selection', { async: true }),
   comments: hasMany('comment', { async: true }),
   organization: belongsTo('organization'),
-  taggings: hasMany('tagging', { async: false }),
+  taggings: hasMany('tagging', { async: true }),
   lastViewed: attr('date'),
   lastModifiedDate: attr('date'),
   lastViewedDate: computed(function () {
@@ -71,7 +71,7 @@ export default Model.extend(Auditable, Permission, {
   }),
 
   firstSubmissionId: computed('submissions', function () {
-    var firstId = this.data.submissions.firstObject.id;
+    var firstId = this.get('data.submissions.firstObject.id');
     return firstId;
   }),
 
@@ -97,9 +97,9 @@ export default Model.extend(Auditable, Permission, {
 
   submissionDates: computed(function () {
     var loFmt,
-      lo = this.data.submissionSet.description.firstSubmissionDate;
+      lo = this.get('data.submissionSet.description.firstSubmissionDate');
     var hiFmt,
-      hi = this.data.submissionSet.description.lastSubmissionDate;
+      hi = this.get('data.submissionSet.description.lastSubmissionDate');
     if (lo > hi) {
       var tmp = lo;
       lo = hi;

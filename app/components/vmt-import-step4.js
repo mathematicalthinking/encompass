@@ -28,8 +28,8 @@ export default Component.extend({
     'isCreatingWorkspace',
     'createdWorkspace',
     function () {
-      let submission = this.createdWorkspace.submissions.firstObject;
-      let wsId = this.createdWorkspace.id;
+      let submission = this.get('createdWorkspace.submissions.firstObject');
+      let wsId = this.get('createdWorkspace.id');
       return `/#/workspaces/${wsId}/submissions/${submission}`;
     }
   ),

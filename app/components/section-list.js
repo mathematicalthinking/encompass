@@ -14,7 +14,7 @@ export default Component.extend({
   yourSections: computed('cleanSections.[]', 'currentUser.id', function () {
     let yourSections = this.cleanSections.filter((section) => {
       let creatorId = this.utils.getBelongsToId(section, 'createdBy');
-      return creatorId === this.currentUser.id;
+      return creatorId === this.get('currentUser.id');
     });
     return yourSections.sortBy('createDate').reverse();
   }),
@@ -22,7 +22,7 @@ export default Component.extend({
   yourTeacherSectionIds: computed(
     'currentUser.sections.@each.role',
     function () {
-      let sections = this.currentUser.sections || [];
+      let sections = this.get('currentUser.sections') || [];
       return sections.filterBy('role', 'teacher').mapBy('sectionId');
     }
   ),
@@ -30,7 +30,7 @@ export default Component.extend({
   yourStudentSectionIds: computed(
     'currentUser.sections.@each.role',
     function () {
-      let sections = this.currentUser.sections || [];
+      let sections = this.get('currentUser.sections') || [];
       return sections.filterBy('role', 'student').mapBy('sectionId');
     }
   ),

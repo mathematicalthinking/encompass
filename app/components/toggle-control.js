@@ -2,46 +2,40 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 
-export default class ToggleControlComponent extends Component {
-  tagName = '';
-  classNames = [];
-  currentValue = null;
+export default Component.extend({
+  classNames: [],
+  currentValue: null,
 
-  iconClass = computed(
-    'currentState',
-    'currentValue.icon',
-    'isActive',
-    'options',
-    function () {
-      let isActive = this.isActive;
-      let options = this.options;
-      if (!isActive) {
-        return options && options[0] && options[0].icon;
-      }
-      return this.currentValue.icon;
+  iconClass: computed('isActive', 'currentValue', 'currentState', function () {
+    let isActive = this.isActive;
+    let options = this.options;
+    if (!isActive) {
+      return options[0].icon;
     }
-  );
+    return this.get('currentValue.icon');
+  }),
 
   didReceiveAttrs() {
-    super.didReceiveAttrs(...arguments);
     if (this.classToAdd) {
-      this.classNames = [this.classToAdd];
+      this.set('classNames', [this.classToAdd]);
     }
     let activeType = this.activeType;
     let isActive = activeType === this.type;
-    this.isActive = isActive;
+    this.set('isActive', isActive);
 
     if (
       !_.isUndefined(this.initialState) &&
       _.isUndefined(this.currentToggleState)
     ) {
       let options = this.options;
-      this.currentToggleState = this.initialState;
-      this.currentValue = options && options[this.initialState];
+      this.set('currentToggleState', this.initialState);
+      this.set('currentValue', options[this.initialState]);
     }
-  }
 
-  actions = {
+    this._super(...arguments);
+  },
+
+  actions: {
     onToggle() {
       let currentState = this.currentToggleState;
       let newState;
@@ -57,12 +51,12 @@ export default class ToggleControlComponent extends Component {
       }
 
       newVal = options[newState];
-      this.currentValue = newVal;
-      this.currentToggleState = newState;
+      this.set('currentValue', newVal);
+      this.set('currentToggleState', newState);
 
       if (this.onUpdate) {
         this.onUpdate(newVal);
       }
     },
-  };
-}
+  },
+});

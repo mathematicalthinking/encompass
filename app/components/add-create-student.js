@@ -73,7 +73,7 @@ export default Component.extend(ErrorHandlingMixin, {
     if (organization) {
       createUserData.organization = organization.id;
     } else {
-      createUserData.organization = this.currentUser.organization.id;
+      createUserData.organization = this.get('currentUser.organization.id');
     }
 
     return $.post({

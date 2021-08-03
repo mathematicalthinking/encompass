@@ -1,8 +1,13 @@
-import Component from '@ember/component';
-import { equal, not, oneWay, or } from '@ember/object/computed';
-import { run } from '@ember/runloop';
 import { w } from '@ember/string';
 import { isNone } from '@ember/utils';
+import { run } from '@ember/runloop';
+import { not, oneWay, or, equal } from '@ember/object/computed';
+import Component from '@ember/component';
+
+
+
+
+
 
 export default Component.extend({
   canEdit: not('currentUser.isAdmin'),
@@ -28,11 +33,8 @@ export default Component.extend({
       var doPoWImport = this.isPowImport;
 
       run(function () {
-        if (doPoWImport) {
-          controller.send('importWorkspace');
-        } else {
-          controller.send('newWorkspace');
-        }
+        if (doPoWImport) { controller.send('importWorkspace'); }
+        else { controller.send('newWorkspace'); }
       });
     },
 
@@ -51,7 +53,7 @@ export default Component.extend({
 
       var request = this.store.createRecord('newWorkspaceRequest', {
         pdSetName: pdSetName,
-        folderSetName: folderSetName,
+        folderSetName: folderSetName
       });
 
       request.save().then(function (obj) {
@@ -60,14 +62,14 @@ export default Component.extend({
     },
 
     importWorkspace: function () {
-      var importData = {
-        /*jshint camelcase: false */ teacher: this.teacher,
+      var importData = { /*jshint camelcase: false */
+        teacher: this.teacher,
         submitter: this.submitter,
         publication: this.pubId,
         puzzle: this.puzzId,
         class_id: this.course,
         collection: this.newPdSet,
-        folders: this.selectedFolderSet.id,
+        folders: this.get('selectedFolderSet.id'),
         since_date: Date.parse(this.startDate),
         max_date: Date.parse(this.endDate),
       };
@@ -92,13 +94,14 @@ export default Component.extend({
 
       var request = this.store.createRecord('importRequest', importData);
 
+
       request.save().then(function (obj) {
         var result = obj.get('results');
         //var output = "Imported %@1 submissions!".fmt(result.imported);
         var output = `Imported ${result.imported} submissions!`;
 
         if (result.updatedExisting) {
-          output += '\nYou have workspace(s) for these!';
+          output += "\nYou have workspace(s) for these!";
         }
 
         /*
@@ -113,6 +116,6 @@ export default Component.extend({
           }
         }
       });
-    },
-  },
+    }
+  }
 });

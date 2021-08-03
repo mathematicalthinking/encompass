@@ -14,7 +14,7 @@ import { alias, equal, or } from '@ember/object/computed';
  */
 import { run } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
+import CurrentUserMixin from '../../mixins/current_user_mixin';
 
 export default Controller.extend(CurrentUserMixin, {
   workspace: controller(),
@@ -101,8 +101,8 @@ export default Controller.extend(CurrentUserMixin, {
   }),
   /*
     path: function() {
-      var path = [this.model];
-      var ancestor = this.model.parent;
+      var path = [this.get('model')];
+      var ancestor = this.get('model.parent');
   
       while(ancestor) {
         console.log(ancestor.get('parent'));

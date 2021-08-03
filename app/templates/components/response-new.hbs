@@ -2,7 +2,7 @@
   <div class="top-row">
     <p class="response-date">{{format-date todaysDate 'Do MMM YYYY'}}</p>
     <p class="response-link">
-      <LinkTo @route="workspace.submission" @models={{array model.workspace model.submission}} @classNames="submission">
+      <LinkTo @route="workspace.submissions.submission" @models={{array model.workspace model.submission}} @classNames="submission">
         <span class="simptip-position-left simptip-smooth" data-tooltip="View Submission in Workspace">
           <i class="fas fa-external-link-alt"></i>
         </span>
@@ -84,7 +84,7 @@
             <ul class="comments-list">
             {{#each filteredComments as |comment|}}
               <li class="comments-list-item">
-                <LinkTo @route="workspace.submission.selection" @models={{array comment.workspace comment.submission comment.selection}}>
+                <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array comment.workspace comment.submission comment.selection}}>
                 "{{comment.text}}"</LinkTo>
               </li>
             {{/each}}
@@ -102,7 +102,7 @@
           {{else}}
           there aren't
          {{/if}}
-           any selections or comments for this submission. You can go back to the <LinkTo @route="workspace.submission" @models={{array model.workspace model.submission}}>submission</LinkTo> and create some selections and comments.
+           any selections or comments for this submission. You can go back to the <LinkTo @route="workspace.submissions.submission" @models={{array model.workspace model.submission}}>submission</LinkTo> and create some selections and comments.
         </p>
       {{/if}}
     </div>

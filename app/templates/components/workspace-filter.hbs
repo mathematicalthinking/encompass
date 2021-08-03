@@ -3,19 +3,19 @@
   <h3>Primary Filters</h3>
   <ul class="primary-filter-list">
     {{#each this.primaryFilterOptions as |input|}}
-      <li>
-        <RadioFilter @groupValue={{this.primaryFilterValue}} @secondaryInputs={{this.input.secondaryFilters}} @isChecked={{this.input.isChecked}} @groupName="top-level" @inputValue={{this.input.value}} @onClick={{action "updateTopLevel"}} @labelName={{this.input.label}} @labelIcon={{this.input.icon}} />
-        {{#if (is-equal this.primaryFilterValue this.input.value)}}
+      <li class="filter-{{input.value}}">
+        <RadioFilter @groupValue={{this.primaryFilterValue}} @secondaryInputs={{input.secondaryFilters}} @isChecked={{input.isChecked}} @groupName="top-level" @inputValue={{input.value}} @onClick={{action "updateTopLevel"}} @labelName={{input.label}} @labelIcon={{input.icon}} />
+        {{#if (is-equal this.primaryFilterValue input.value)}}
           {{#if this.showAdminFilters}}
             <AdminWorkspaceFilter @filter={{this.adminFilter}} @mainOptions={{this.secondaryFilterOptions}} @secondaryFilter={{this.secondaryFilter}} @onUpdate={{action "onUpdate"}} @orgOptions={{this.orgOptions}} @store={{this.store}} @updateSecondLevel={{action "updateSecondLevel"}} />
           {{else}}
           <ul class="secondary-filter-options">
             {{#each this.secondaryFilterOptions as |option|}}
-              <li class="checkbox-content {{if (is-in this.currentValues this.option.value) 'is-selected'}}">
-                <label for={{this.option.value}} class="checkbox-label">
-                  <i class="checkbox-icon {{this.option.icon}}"></i>
-                  <span class="checkbox-text">{{this.option.label}}</span>
-                  <Input @id={{this.option.value}} @type="checkbox" @checked={{this.option.isApplied}} @change={{action "updateSecondLevel"}} />
+              <li class="checkbox-content {{if (is-in this.currentValues option.value) 'is-selected'}}">
+                <label for={{option.value}} class="checkbox-label">
+                  <i class="checkbox-icon {{option.icon}}"></i>
+                  <span class="checkbox-text">{{option.label}}</span>
+                  <Input @id={{option.value}} @type="checkbox" @checked={{option.isApplied}} @change={{action "updateSecondLevel"}} />
                 </label>
               </li>
             {{/each}}
@@ -35,7 +35,7 @@
         <label class="subfilter">
           <Input @id="toggle-hidden" @type="checkbox" @checked={{this.showHiddenWorkspaces}} @change={{action "toggleHiddenWorkspaces"}} /> <span>Show All Hidden Workspaces</span>
         </label>
-      {{#if this.currentUser.isAdmin}}
+      {{#if this.currentUser.user.isAdmin}}
         <h5>Trashed Workspaces</h5>
         <label class="subfilter">
           <Input @id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedWorkspaces}} @change={{action "toggleTrashedWorkspaces"}} /> <span>Show All Trashed Workspaces</span>

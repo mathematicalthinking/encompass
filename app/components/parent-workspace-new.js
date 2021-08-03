@@ -4,7 +4,6 @@ import { inject as service } from '@ember/service';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(CurrentUserMixin, {
-  tagName: '',
   elementId: 'parent-workspace-new',
   loading: service('loading-display'),
 
@@ -12,7 +11,6 @@ export default Component.extend(CurrentUserMixin, {
   doShowLoadingMessage: false,
 
   didReceiveAttrs() {
-    this._super();
     this.set('workspaceName', this.defaultName);
   },
 
@@ -22,13 +20,13 @@ export default Component.extend(CurrentUserMixin, {
     'assignmentName',
     function () {
       let base = 'Parent Workspace: ';
-      let assignmentName = this.assignment.name || this.assignmentName;
+      let assignmentName = this.get('assignment.name') || this.assignmentName;
 
       if (assignmentName) {
         return base + assignmentName;
       }
 
-      return base + this.currentUser.username;
+      return base + this.get('currentUser.username');
     }
   ),
 

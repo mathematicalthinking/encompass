@@ -1,6 +1,11 @@
 import { belongsTo, attr } from '@ember-data/model';
 import Mixin from '@ember/object/mixin';
 
+
+
+
+
+
 export default Mixin.create({
   createdBy: belongsTo('user', { inverse: null }),
   createDate: attr('date'),

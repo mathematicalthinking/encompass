@@ -18,6 +18,7 @@ import { inject as service } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
+  currentUser: service('current-user'),
   elementId: 'folder-list',
   classNames: ['workspace-flex-item', 'folders'],
   classNameBindings: [
@@ -42,17 +43,17 @@ export default Component.extend(ErrorHandlingMixin, {
     return this.canCreate || this.canEdit || this.canDelete;
   }),
 
-  canCreate: computed('workspace.id', 'currentUser.id', function () {
+  canCreate: computed('workspace.id', 'currentUser.user.id', function () {
     let ws = this.workspace;
     return this.permissions.canEdit(ws, 'folders', 2);
   }),
 
-  canEdit: computed('workspace.id', 'currentUser.id', function () {
+  canEdit: computed('workspace.id', 'currentUser.user.id', function () {
     let ws = this.workspace;
     return this.permissions.canEdit(ws, 'folders', 3);
   }),
 
-  canDelete: computed('workspace.id', 'currentUser.id', function () {
+  canDelete: computed('workspace.id', 'currentUser.user.id', function () {
     let ws = this.workspace;
     return this.permissions.canEdit(ws, 'folders', 3);
   }),

@@ -21,7 +21,7 @@ export default Component.extend({
   },
 
   orgFilterSubOptions: computed('orgFilter', function () {
-    return _.map(this.orgFilter.subFilters.inputs, (val, key) => {
+    return _.map(this.get('orgFilter.subFilters.inputs'), (val, key) => {
       return val;
     });
   }),
@@ -31,13 +31,13 @@ export default Component.extend({
   }),
 
   currentSecondaryFilter: computed('mainFilter', function () {
-    let inputs = this.secondaryFilter.inputs;
+    let inputs = this.get('secondaryFilter.inputs');
     let mainFilter = this.mainFilter;
     return inputs[mainFilter];
   }),
 
   powsFilterOptions: computed('powsFilter', function () {
-    return _.map(this.powsFilter.secondaryFilters.inputs, (val, key) => {
+    return _.map(this.get('powsFilter.secondaryFilters.inputs'), (val, key) => {
       return val;
     });
   }),
@@ -50,13 +50,13 @@ export default Component.extend({
   selectedValues: computed(
     'currentSecondaryFilter.selectedValues.[]',
     function () {
-      return this.currentSecondaryFilter.selectedValues;
+      return this.get('currentSecondaryFilter.selectedValues');
     }
   ),
 
   clearSelectedValues: function () {
     this.set('currentSecondaryFilter.selectedValues', []);
-    // this.onUpdate();
+    // this.get('onUpdate')();
   },
   initialMainFilterItems: computed('mainFilter', function () {
     let val = this.mainFilter;
@@ -77,7 +77,7 @@ export default Component.extend({
     },
     updateSecondLevel(e) {
       let { id } = e.target;
-      let secondaryFilter = this.powsFilter.secondaryFilters;
+      let secondaryFilter = this.get('powsFilter.secondaryFilters');
 
       let targetInput = secondaryFilter.inputs[id];
       if (!targetInput) {
@@ -98,7 +98,7 @@ export default Component.extend({
       //
       secondaryFilter.selectedValues = appliedValues;
       if (this.mainFilter === 'pows') {
-        //  let powSelectedValues = this.powsFilter.selectedValues;
+        //  let powSelectedValues = this.get('powsFilter.selectedValues');
         this.set('powsFilter.selectedValues', appliedValues);
       }
 
@@ -108,7 +108,7 @@ export default Component.extend({
     },
     updateOrgSubFilters(e) {
       let { id } = e.target;
-      let subFilters = this.orgFilter.subFilters;
+      let subFilters = this.get('orgFilter.subFilters');
 
       let targetInput = subFilters.inputs[id];
       if (!targetInput) {

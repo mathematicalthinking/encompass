@@ -10,9 +10,8 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
-import MtAuthMixin from '../mixins/mt_auth_mixin';
 
-export default class Application extends Route.extend(MtAuthMixin) {
+export default class Application extends Route {
   //the application route can't require authentication since it's getting the user
   @service('user-ntfs') userNtfs;
   @service store;

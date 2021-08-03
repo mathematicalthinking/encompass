@@ -1,10 +1,10 @@
-
 {{#if this.user.isStudent}}
   <div id="welcome"  class="al_wtf home header-home">
     <h1>Welcome student, {{user.displayName}}!</h1>
         <h1 class="header-home header-font">My Work Landing Page</h1>
         <h2 class="header-home"><LinkTo @route="assignments">Problems to Solve</LinkTo></h2>
-        {{!-- <DashboardAssignmentsList @store={{this.store}} @user={{user}} @assignments={{assignments}} /> --}}
+        <DashboardAssignmentsList @store={{this.store}} @user={{this.user}} @assignments={{this.assignments}} />
+        <DashboardWorkspacesList @store={{this.store}} @user={{this.user}} @workspaces={{this.workspaces}} @assignments={{this.assignments}} />
         <h2 class="header-home"><LinkTo @route="workspaces.index">Student Work to Review</LinkTo></h2>
         <h2 class="header-home"><LinkTo @route="responses"> Mentoring/Approving</LinkTo></h2>
   </div>
@@ -14,10 +14,11 @@
  <div id="welcome" class="al_wtf home  header-home">
   {{#if this.user.isAuthenticated}}
     <h1 class="header-home">My Work Landing Page</h1>
-    <h2 class="header-home"><LinkTo @route="assignments">Problems to Solve</LinkTo></h2>
-    <DashboardAssignmentsList @assignments={{@assignments}} @user={{@user}} />
-    <h2 class="header-home"><LinkTo @route="workspaces.index">Student Work to Review</LinkTo></h2>
-    <h2 class="header-home"><LinkTo @route="assignments">My Class' Work</LinkTo></h2>
+    <span class="toggle-role" {{action 'showToggleModal' }}>
+      <h2 class="header-home">Problems to Solve (switch to student role)</h2>
+    </span>
+    <DashboardWorkspacesList @store={{this.store}} @user={{this.user}} @workspaces={{this.workspaces}} @assignments={{this.assignments}} />
+    <DashboardClassesList @store={{this.store}} @user={{this.user}} @sections={{this.sections}} @assignments={{this.assignments}} />
     <h2 class="header-home"><LinkTo @route="responses"> Mentoring/Approving</LinkTo></h2>
     <p class="footer">EnCoMPASS version 2.3.0 last updated on 02/18/2021.</p>
   {{else}}

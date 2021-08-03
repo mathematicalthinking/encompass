@@ -32,7 +32,7 @@ describe('Responses', function() {
 
   describe('Visiting a submission with selections', function() {
     before(async function() {
-      let url = `${host}/#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`;
+      let url = `${host}/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`;
       await helpers.navigateAndWait(driver, url, {selector: '.selectionLink'});
     });
 
@@ -120,7 +120,7 @@ describe('Responses', function() {
           await helpers.waitForElementToHaveText(driver, '.ql-editor', greetingText, {useIncludes: true});
 
           await driver.findElement(By.css('button.save-response')).click();
-          await driver.wait(until.urlMatches(/#\/responses\/submission\/[0-9a-f]{24}/), 5000);
+          await driver.wait(until.urlMatches(/\/responses\/submission\/[0-9a-f]{24}/), 5000);
 
           await helpers.waitForSelector(driver, 'span.status-text');
           expect(await helpers.findAndGetText(driver, 'span.status-text')).to.eql('Approved');

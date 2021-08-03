@@ -1,21 +1,22 @@
 import { hash } from 'rsvp';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 
-export default AuthenticatedRoute.extend({
-  beforeModel: function () {
-    this._super.apply(this, arguments);
-
+export default class WorkspacesNewRoute extends AuthenticatedRoute {
+  @service store;
+  beforeModel() {
     const user = this.modelFor('application');
     const isStudent = user.get('isStudent');
 
     if (isStudent) {
       this.transitionTo('/');
     }
-  },
-  model: function () {
+  }
+  model() {
     const currentUser = this.modelFor('application');
     return hash({
-      // pdSets: this.store').findAll('PdSet,
+      // pdSets: this.get('store').findAll('PdSet'),
       currentUser,
       folderSets: this.store.findAll('folder-set'),
       sections: this.store.findAll('section'),
@@ -23,16 +24,13 @@ export default AuthenticatedRoute.extend({
       users: this.store.findAll('user'),
       problems: this.store.findAll('problem'),
     });
-  },
+  }
+  // Created workspaceId and is passed from component to redirect
+  @action toWorkspaces(id) {
+    this.transitionTo('workspace.work', id);
+  }
 
-  actions: {
-    // Created workspaceId and is passed from component to redirect
-    toWorkspaces: function (workspaceId) {
-      this.transitionTo('workspace.work', workspaceId);
-    },
-
-    toWorkspace: function (id) {
-      this.transitionTo('workspace/work', id);
-    },
-  },
-});
+  @action toWorkspace(id) {
+    this.transitionTo('workspace/work', id);
+  }
+}

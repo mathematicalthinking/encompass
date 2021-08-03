@@ -4,10 +4,9 @@ import { computed } from '@ember/object';
 import moment from 'moment';
 
 export default Component.extend({
-  tagName: '',
   classNames: ['bread-crumbs-item'],
 
-  isSelected: computed('item', 'selectedItem', function () {
+  isSelected: computed('selectedItem', function () {
     return _.isEqual(this.item, this.selectedItem);
   }),
 
@@ -24,8 +23,8 @@ export default Component.extend({
       if (_.isString(this.itemTitleText)) {
         return this.itemTitleText;
       }
-      if (this.item.createDate) {
-        return moment(this.item.createDate).format('MMM Do YYYY h:mm A');
+      if (this.get('item.createDate')) {
+        return moment(this.get('item.createDate')).format('MMM Do YYYY h:mm A');
       }
       if (_.isString(this.titleTextPath) && _.isObject(this.item)) {
         let path = `item.${this.titleTextPath}`;

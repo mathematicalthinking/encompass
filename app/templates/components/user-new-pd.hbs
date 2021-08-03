@@ -8,13 +8,13 @@
     <tr>
       <td>Username <span class="required-star">*</span></td>
       <td>
-        <input type="text" class="user-username" value={{this.username}} onblur={{action 'usernameValidate' value="target.value"}} onfocus={{action 'resetErrors'}} />
+        <Input @type="text" class="user-username" @value={{this.username}} @focus-out={{action 'usernameValidate' username="target.value"}} @focus-in={{action 'resetErrors'}} />
       </td>
     </tr>
     <tr>
       <td>Password <span class="required-star">*</span></td>
       <td>
-        <input type="password" class="user-password" value={{this.password}} onblur={{action 'passwordValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
+        <Input @type="password" class="user-password" @value={{this.password}} @focus-out={{action 'passwordValidate' password="target.value"}} @focus-in={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
@@ -36,7 +36,7 @@
           {{/if}}
         </td>
         <td>
-        <input type="text" class="user-email" value={{this.email}} onblur={{action 'emailValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
+        <Input @type="text" class="user-email" @value={{this.email}} @focus-out={{action 'emailValidate' email="target.value"}} @focus-in={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>

@@ -6,18 +6,13 @@
  */
 
 import AuthenticatedRoute from './_authenticated_route';
+import { action } from '@ember/object';
 
-export default AuthenticatedRoute.extend({
-  model: function () {
-    // return this.store').findAll('user;
-  },
-
-  actions: {
-    toCopyWorkspace(workspace) {
-      let workspaceId = workspace.get('id');
-      this.transitionTo('workspaces.copy', {
-        queryParams: { workspace: workspaceId },
-      });
-    },
-  },
-});
+export default class WorkspacesRoute extends AuthenticatedRoute {
+  @action toCopyWorkspace(workspace) {
+    let workspaceId = workspace.get('id');
+    this.transitionTo('workspaces.copy', {
+      queryParams: { workspace: workspaceId },
+    });
+  }
+}

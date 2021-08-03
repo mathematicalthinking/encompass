@@ -14,7 +14,7 @@ export default Component.extend({
   selectedSubmissionSettings: 'all',
 
   validModeValues: computed('modeInputs', function () {
-    const modeInputs = this.modeInputs.inputs;
+    const modeInputs = this.get('modeInputs.inputs');
 
     if (this.utils.isNonEmptyArray(modeInputs)) {
       return modeInputs.map((input) => input.value);
@@ -86,7 +86,10 @@ export default Component.extend({
         ],
       };
 
-      if (this.currentUser.isStudent || !this.currentUser.isAdmin) {
+      if (
+        this.get('currentUser.isStudent') ||
+        !this.get('currentUser.isAdmin')
+      ) {
         return res;
       }
 
@@ -143,7 +146,7 @@ export default Component.extend({
 
   selectedCollaborators: computed('workspacePermissions.[]', function () {
     let hash = {};
-    // let wsOwnerId = this.workspace.owner.id;
+    // let wsOwnerId = this.get('workspace.owner.id');
 
     // no reason to set owner as a collaborator
     // if (wsOwnerId) {
@@ -217,7 +220,7 @@ export default Component.extend({
 
       if (this.isEditingPermissions) {
         // prompt user to confirm they want to proceed
-        let username = this.unsavedCollaborator.username;
+        let username = this.get('unsavedCollaborator.username');
 
         let title = 'Are you sure you want to proceed?';
         let text = `You are currently in the process of editing permissions for ${username}. You will lose any unsaved changes if you continue.`;

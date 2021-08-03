@@ -1,7 +1,7 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { hash, resolve } from 'rsvp';
-import ConfirmLeavingRoute from '../_confirm_leaving_route';
+import ConfirmLeavingRoute from '../../_confirm_leaving_route';
 
 export default Route.extend(ConfirmLeavingRoute, {
   utils: service('utility-methods'),
@@ -11,8 +11,10 @@ export default Route.extend(ConfirmLeavingRoute, {
   },
 
   beforeModel(transition) {
-    let workspaceId = transition.queryParams.workspaceId;
-
+    let workspaceId;
+    if(transition.intent.queryParams){
+      workspaceId = transition.intent.queryParams.workspaceId;
+    }
     if (this.utils.isValidMongoId(workspaceId)) {
       this.set('workspace', this.store.peekRecord('workspace', workspaceId));
     }
@@ -132,6 +134,8 @@ export default Route.extend(ConfirmLeavingRoute, {
   },
   actions: {
     toResponse(submissionId, responseId) {
+      console.log('responses/new/submission submissionId', submissionId);
+      console.log('responses/new/submission responseId', responseId);
       this.transitionTo('responses.submission', submissionId, {
         queryParams: { responseId: responseId },
       });

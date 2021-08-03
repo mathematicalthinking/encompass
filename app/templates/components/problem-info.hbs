@@ -30,7 +30,8 @@
           {{{problem.title}}}
         {{/if}}
       </div>
-      <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
+      <div class="subheading date">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
+      <div class="subheading">{{#link-to "metrics.problem" problem}}See Reports{{/link-to}}</div>
     </div>
     <div class="info-menu">
       <button class="tab-link general {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
@@ -236,7 +237,7 @@
         {{#if problem.origin}}
           <p class="info-content-label">Problem Origin</p>
           <div class="info-content-block origin">
-            <p><LinkTo @route="problem" @model={{problem.origin.id}}>{{problem.origin.title}}</LinkTo></p>
+            <p><LinkTo @route="problems.problem" @model={{problem.origin.id}}>{{problem.origin.title}}</LinkTo></p>
           </div>
         {{/if}}
         {{#if currentUser.isAdmin}}

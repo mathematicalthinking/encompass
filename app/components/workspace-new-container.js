@@ -153,13 +153,13 @@ export default Component.extend(ErrorHandlingMixin, {
       if (!this.isRequestTooLarge) {
         return;
       }
-      let requestedCount = this.answersMetadata.total;
+      let requestedCount = this.get('answersMetadata.total');
       return `Your filter criteria matches ${requestedCount} submissions. At this time we do not support new workspaces with greater than ${this.maximumAnswers} submissions. Please try modifying your criteria.`;
     }
   ),
 
   confirmLargeRequestMessage: computed('answersMetadata.total', function () {
-    let requestedCount = this.answersMetadata.total;
+    let requestedCount = this.get('answersMetadata.total');
     return `Your filter criteria matches ${requestedCount} submissions. Are you sure you want to proceed with viewing the submissions?`;
   }),
 
@@ -194,7 +194,7 @@ export default Component.extend(ErrorHandlingMixin, {
         } else {
           verb = 'contains';
         }
-        let total = this.answersMetadata.total;
+        let total = this.get('answersMetadata.total');
         if (total === 1) {
           countDescriptor = 'submission';
           if (criterion === 'all') {
@@ -210,7 +210,7 @@ export default Component.extend(ErrorHandlingMixin, {
         )} ${countDescriptor} ${typeDescription} "${this.searchQuery}"`;
         return msg;
       }
-      msg = `${this.answersMetadata.total} submissions found`;
+      msg = `${this.get('answersMetadata.total')} submissions found`;
 
       if (this.toggleTrashed) {
         msg = `${msg} - <strong>Displaying Trashed Submissions</strong>`;
@@ -252,7 +252,7 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   getUserOrg() {
-    return this.currentUser.organization.then((org) => {
+    return this.get('currentUser.organization').then((org) => {
       if (org) {
         return org.get('name');
       } else {
@@ -293,7 +293,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
     let doHideOutlet = this.doHideOutlet;
     if (_.isUndefined(doHideOutlet)) {
-      this.set('doHideOutlet', this.model.hideOutlet);
+      this.set('doHideOutlet', this.get('model.hideOutlet'));
     }
     if (this.doHideOutlet === false) {
       this.$('#outlet').removeClass('hidden');
@@ -492,7 +492,7 @@ export default Component.extend(ErrorHandlingMixin, {
     return this.answers.filterBy('student', student).sortBy('createDate');
   },
   sortedAnswers: computed('displayAnswers.[]', 'sortCriterion', function () {
-    let sortParam = this.sortCriterion.sortParam;
+    let sortParam = this.get('sortCriterion.sortParam');
     const defaultSorted = this.displayAnswers;
     if (!sortParam) {
       // default to alphabetical

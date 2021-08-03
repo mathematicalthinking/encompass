@@ -48,7 +48,7 @@ describe('Visiting Workspaces', function() {
   describe('Visiting ESI 2014 Wednesday Reflection', function() {
     it('should render workspace', async function() {
       let url;
-      await helpers.waitForAndClickElement(driver, `a[href="#/workspaces/${workspaceId}/work"]`);
+      await helpers.waitForAndClickElement(driver, `a[href="/workspaces/${workspaceId}/work"]`);
       await helpers.waitForSelector(driver, '#rightArrow');
       try {
         url = await driver.getCurrentUrl();
@@ -186,7 +186,7 @@ describe('Visiting Workspaces', function() {
       before(async function() {
         let submissionId = '53e36522729e9ef59ba7f4de';
         let selectionId = '53e38e83b48b12793f0010de';
-        await helpers.waitForAndClickElement(driver, `a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}"]`);
+        await helpers.waitForAndClickElement(driver, `a[href="/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}"]`);
         await helpers.waitForSelector(driver, 'div#al_feedback_display');
       });
 

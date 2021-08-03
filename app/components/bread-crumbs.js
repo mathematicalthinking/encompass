@@ -11,7 +11,7 @@ export default Component.extend({
   },
 
   lastItemValue: computed('itemsList.length', function () {
-    return this.itemsList.length - 1 || 1;
+    return this.get('itemsList.length') - 1 || 1;
   }),
 
   itemsList: computed('items.[]', function () {
@@ -23,7 +23,7 @@ export default Component.extend({
     if (typeof num !== 'number') {
       num = 10;
     }
-    return this.itemsList.length >= num;
+    return this.get('itemsList.length') >= num;
   }),
 
   showTruncatedView: computed('areManyItems', 'doTruncate', function () {

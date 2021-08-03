@@ -6,8 +6,6 @@ import { inject as service } from '@ember/service';
 export default Mixin.create({
   utils: service('utility-methods'),
   userNtfs: service('user-ntfs'),
-  //needs: 'application',
-  currentUser: alias('application.currentUser'),
 
   areNtfsLoaded: alias('userNtfs.areNtfsLoaded'),
 
@@ -16,32 +14,50 @@ export default Mixin.create({
     'areNtfsLoaded',
     function () {
       if (this.areNtfsLoaded) {
-        return this.userNtfs.newNotifications;
+        return this.get('userNtfs.newNotifications');
       }
       return [];
     }
   ),
 
-  responseNotifications: computed.filterBy(
-    'newNotifications',
-    'primaryRecordType',
-    'response'
-  ),
+  responseNotifications: computed('newNotifications.[]', function () {
+    return this.newNotifications.filterBy('primaryRecordType', 'response');
+  }),
 
-  newReplyNotifications: computed(
-    'currentUser.id',
-    'responseNotifications.[]',
-    function () {
-      return this.responseNotifications.filter((ntf) => {
-        let recipientId = this.utils.getBelongsToId(ntf, 'recipient');
-        let ntfType = ntf.get('notificationType');
-        let isNewReply =
-          ntfType === 'newMentorReply' || ntfType === 'newApproverReply';
+  workspaceNotifications: computed('newNotifications.[]', function () {
+    return this.newNotifications.filterBy('primaryRecordType', 'workspace');
+  }),
 
-        return isNewReply && recipientId === this.currentUser.id;
-      });
-    }
-  ),
+  assignmentNotifications: computed('newNotifications.[]', function () {
+    return this.newNotifications.filterBy('primaryRecordType', 'workspace');
+  }),
+
+  sectionNotifications: computed('newNotifications.[]', function () {
+    return this.newNotifications.filterBy('primaryRecordType', 'section');
+  }),
+
+  problemNotifications: computed('newNotifications.[]', function () {
+    return this.newNotifications.filterBy('primaryRecordType', 'problem');
+  }),
+
+  organizationNotifications: computed('newNotifications.[]', function () {
+    return this.newNotifications.filterBy('primaryRecordType', 'organization');
+  }),
+
+  userNotifications: computed('newNotifications.[]', function () {
+    return this.newNotifications.filterBy('primaryRecordType', 'user');
+  }),
+
+  newReplyNotifications: computed('responseNotifications.[]', function () {
+    return this.responseNotifications.filter((ntf) => {
+      let recipientId = this.utils.getBelongsToId(ntf, 'recipient');
+      let ntfType = ntf.get('notificationType');
+      let isNewReply =
+        ntfType === 'newMentorReply' || ntfType === 'newApproverReply';
+
+      return isNewReply && recipientId === this.get('currentUser.id');
+    });
+  }),
 
   findRelatedNtfs(primaryRecordType, relatedRecord, ntfType, belongsToType) {
     if (!primaryRecordType || !relatedRecord) {

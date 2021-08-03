@@ -13,7 +13,7 @@ import { hash } from 'rsvp';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import { resolve } from 'rsvp';
-import VmtHostMixin from '../mixins/vmt-host';
+import VmtHostMixin from '../../../mixins/vmt-host';
 
 export default Route.extend(VmtHostMixin, {
   alert: service('sweet-alert'),
@@ -22,13 +22,8 @@ export default Route.extend(VmtHostMixin, {
   queryParams: 'vmtRoomId',
 
   async model({ submission_id }) {
-    let currentUser = this.modelFor('application');
-    let { workspace } = await this.modelFor('workspace.submissions');
-    let submission = await workspace.submissions.findBy('id', submission_id);
-    return hash({
-      currentUser,
-      submission,
-    })
+    let submissions = await this.modelFor('workspace.submissions');
+    return await submissions.findBy('id', submission_id);
   },
 
   afterModel(submission, transition) {
@@ -39,8 +34,8 @@ export default Route.extend(VmtHostMixin, {
       let vmtRoomId = room._id;
 
       // so links to selections still work
-      if (transition.intent.name === 'workspace.submission') {
-        this.transitionTo('workspace.submission', submission, {
+      if (transition.intent.name === 'workspace.submissions.submission') {
+        this.transitionTo('workspace.submissions.submission', submission, {
           queryParams: { vmtRoomId },
         });
       }

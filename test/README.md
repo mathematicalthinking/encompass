@@ -32,157 +32,104 @@ Selections            X
 Taggings              X
 Responses        X    X
 Sections
+Problems         X    X       X        X
 
-## TODO
-- remove diver.sleep from tests and change to blocking awaiting selectors (will cut total test time in half)
-- testing for dashboard
-- testing for metrics route
+## 16 out of 22
 
-# Flaky Tests
-- returning to login randomly results in 404 but clicking the logout button puts it back on track
+## assignments_student - all pass 7/24/2021
 
-# confirm_email tests don't route properly
+## assignments_teacher - all pass 7/24/2021
 
-# sections.js
-1) Sections
-       As PD Admin
-         Visiting Morty's Math 101
-           adding a student to class
-             new student should persist after page refresh:
+## base - all pass 7/24/2021
 
-      AssertionError: expected false to deeply equal true
+## comments - all pass 7/24/2021
+
+## confirm_email - all pass 7/26/2021
+
+## folders - all pass 7/24/2021
+
+## forgot_password - all pass 7/26/2021
+
+## linked_workspaces - 4 fail 7/28/2021
+
+## mentoring_approving - 3 fail
+  1) Mentoring / Approving Interactions
+       Navigating to workspace submission
+         should display mentor reply view:
+
+      AssertionError: expected '' to deeply equal 'mentort1'
       + expected - actual
 
-      -false
-      +true
+      +mentort1
       
-      at Context.<anonymous> (test/selenium/sections.js:99:84)
+      at Context.<anonymous> (test/selenium/mentoring_approving.js:110:97)
       at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
-  2) Sections
-       As PD Admin
-         Create section
-           Creating section
-             submitting empty form
-               should display error message(s):
-     TimeoutError: Waiting for element to be located By(css selector, .error-message)
-Wait timed out after 10079ms
+  2) Mentoring / Approving Interactions
+       Submitting response for approval
+         should display new reply with pending approval status:
+     TypeError: Cannot read property 'getText' of undefined
+      at Context.<anonymous> (test/selenium/mentoring_approving.js:136:34)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  3) Mentoring / Approving Interactions
+       Visting Responses List
+         "before all" hook for "should display mentoring tab and display count":
+     TimeoutError: Waiting for element to be located By(css selector, #response-list-tabs span.mentoring)
+Wait timed out after 10151ms
       at /Users/timothyleonard/Documents/21PSTEM/migration/encompass/node_modules/selenium-webdriver/lib/webdriver.js:897:17
       at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
-  3) Sections
-       As PD Admin
-         Create section
-           Creating section
-             submitting valid form
-               should redirect to section-info page after creating:
-
-      AssertionError: expected false to be true
-      + expected - actual
-
-      -false
-      +true
-      
-      at Context.<anonymous> (test/selenium/sections.js:226:75)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  4) Sections
-       As Teacher
-         Visiting Summer's Algebra 2 1st Period
-           adding a student to class
-             new student should persist after page refresh:
-
-      AssertionError: expected false to deeply equal true
-      + expected - actual
-
-      -false
-      +true
-      
-      at Context.<anonymous> (test/selenium/sections.js:99:84)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  5) Sections
-       As Teacher
-         Create section
-           Verify form inputs
-             teacher field should be fixed as current user:
-
-      AssertionError: expected '' to deeply equal 'ssmith'
-      + expected - actual
-
-      +ssmith
-      
-      at Context.<anonymous> (test/selenium/sections.js:116:103)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  6) Sections
-       As Teacher
-         Create section
-           Creating section
-             submitting empty form
-               should display error message(s):
-     TimeoutError: Waiting for element to be located By(css selector, .error-message)
-Wait timed out after 10141ms
-      at /Users/timothyleonard/Documents/21PSTEM/migration/encompass/node_modules/selenium-webdriver/lib/webdriver.js:897:17
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  7) Sections
-       As Admin
-         Visiting Drexel University
-           adding a student to class
-             new student should persist after page refresh:
-
-      AssertionError: expected false to deeply equal true
-      + expected - actual
-
-      -false
-      +true
-      
-      at Context.<anonymous> (test/selenium/sections.js:99:84)
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  8) Sections
-       As Admin
-         Create section
-           Creating section
-             submitting empty form
-               should display error message(s):
-     TimeoutError: Waiting for element to be located By(css selector, .error-message)
-Wait timed out after 10044ms
-      at /Users/timothyleonard/Documents/21PSTEM/migration/encompass/node_modules/selenium-webdriver/lib/webdriver.js:897:17
-      at runMicrotasks (<anonymous>)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-# assignments_student.js
-  1) Assignments as Student
-       As Teacher acting as Student
-         Submitting response to assignment
-           contributors should only contain the submitting student:
-
-      AssertionError: expected '' to deeply equal 'actingstudent'
-      + expected - actual
-
-      +actingstudent
-      
-      at Context.<anonymous> (test/selenium/assignments_student.js:109:55)
-      at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-  2) Assignments as Student
-       As Teacher acting as Student
-         Submitting response to assignment
-           should succesfully create answer:
-     TimeoutError: Waiting for element to be located By(css selector, #past-submissions-header)
-Wait timed out after 10052ms
+## mentoring - 3 fail
+  1) Mentoring Interactions
+       Visting Responses List
+         should indicate that thread has unread reply:
+     TimeoutError: Wait timed out after 10076ms
       at /Users/timothyleonard/Documents/21PSTEM/migration/encompass/node_modules/selenium-webdriver/lib/webdriver.js:897:17
       at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
-  3) Assignments as Student
-       As Teacher acting as Student
-         Submitting response to assignment
-           Viewing most recent submission
-             "before all" hook for "should display correct brief summary":
-     TypeError: Cannot read property 'click' of undefined
-      at Context.<anonymous> (test/selenium/assignments_student.js:197:30)
+  2) Mentoring Interactions
+       Viewing response in paneled view
+         Submitting revision from response page
+           should successfully create revision:
+     TimeoutError: Wait timed out after 10067ms
+      at /Users/timothyleonard/Documents/21PSTEM/migration/encompass/node_modules/selenium-webdriver/lib/webdriver.js:897:17
       at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  3) Mentoring Interactions
+       Viewing response in paneled view
+         Submitting revision from response page
+           linked workspace should have been updated:
+     ElementNotInteractableError: element not interactable
+  (Session info: chrome=92.0.4515.107)
+      at Object.throwDecodedError (node_modules/selenium-webdriver/lib/error.js:517:15)
+      at parseHttpResponse (node_modules/selenium-webdriver/lib/http.js:642:13)
+      at Executor.execute (node_modules/selenium-webdriver/lib/http.js:568:28)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+      at async thenableWebDriverProxy.execute (node_modules/selenium-webdriver/lib/webdriver.js:731:17)
+      at async Context.<anonymous> (test/selenium/mentoring.js:288:9)
+## parent_workspace - all pass 7/29/2021
+- flaky: link showing up in time to continue to workspace
+
+## problems_info - 3 fail
+
+## problems_new - all pass 7/27/2021
+
+## problems - all pass 7/27/2021
+
+## reset_password - all pass 7/24/2021
+
+## responses - all pass 7/24/2021
+
+## sections - all pass 7/24/2021
+- flaky: new student should persist after page refresh
+
+## signup - all pass 7/24/2021
+
+## users - all pass 7/24/2021
+
+## workspace_settings - all pass 7/24/2021
+
+## workspaces_new - all pass 7/24/2021
+
+## workspaces - all pass 7/24/2021

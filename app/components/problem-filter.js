@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import { alias, equal, reads } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+import { alias, equal, reads } from '@ember/object/computed';
 // attrs passed in by parent
 // store
 // onUpdate
@@ -12,8 +12,6 @@ import { isEqual } from '@ember/utils';
 // import CategoriesListMixin from '../mixins/categories_list_mixin';
 
 export default Component.extend({
-  selectedCategories: alias('application.selectedCategories'),
-  tagName: 'div',
   elementId: 'problem-filter',
   currentUser: service('current-user'),
   primaryFilterValue: alias('primaryFilter.value'),
@@ -56,9 +54,12 @@ export default Component.extend({
   secondaryFilterOptions: computed(
     'primaryFilter.secondaryFilters.inputs',
     function () {
-      return _.map(this.primaryFilter.secondaryFilters.inputs, (val, key) => {
-        return val;
-      });
+      return _.map(
+        this.get('primaryFilter.secondaryFilters.inputs'),
+        (val, key) => {
+          return val;
+        }
+      );
     }
   ),
 
@@ -125,7 +126,7 @@ export default Component.extend({
       this.store.query('category', {}).then((queryCats) => {
         let categories = queryCats.get('meta');
         this.set('categoryTree', categories.categories);
-        this.set('showCategoryList', true);
+        this.set('showCategoryList', true)
       });
     },
 

@@ -38,8 +38,8 @@ export default Route.extend(CurrentUserMixin, VmtHostMixin, {
       let vmtRoomId = room._id;
 
       // so links to selections still work
-      if (transition.intent.name === 'workspace.submission') {
-        this.transitionTo('workspace.submission', submission, {
+      if (transition.intent.name === 'workspace.submissions.submission') {
+        this.transitionTo('workspace.submissions.submission', submission, {
           queryParams: { vmtRoomId },
         });
       }

@@ -1,25 +1,28 @@
 import { hash } from 'rsvp';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 
-export default AuthenticatedRoute.extend({
-  beforeModel: function (transition) {
-    this._super.apply(this, arguments);
+export default class WorkspacesCopyRoute extends AuthenticatedRoute {
+  @service store;
+  workspaceToCopy = null;
+  workspaceId = null;
+  beforeModel(transition) {
+    if(transition.intent.queryParams){
+      this.workspaceId = transition.intent.queryParams.workspace;
+    }
+  }
 
-    let workspace = transition.queryParams.workspace;
-    this.set('workspaceId', workspace);
-  },
-
-  model: function () {
+  model() {
     const store = this.store;
-    this.set('workspaceToCopy', this.workspaceId);
+    this.workspaceToCopy = this.workspaceId;
     return hash({
       folderSets: store.findAll('folderSet'),
       workspaceToCopy: this.workspaceId,
     });
-  },
-  actions: {
-    toWorkspace(id) {
-      this.transitionTo('workspace.work', id);
-    },
-  },
-});
+  }
+
+  @action toWorkspace(id) {
+    this.transitionTo('workspace.work', id);
+  }
+}

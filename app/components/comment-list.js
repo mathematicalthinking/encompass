@@ -20,6 +20,7 @@ import moment from 'moment';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
+  currentUser: service('current-user'),
   elementId: 'comment-list',
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
@@ -140,22 +141,22 @@ export default Component.extend(ErrorHandlingMixin, {
       let isSubOnly = this.thisSubmissionOnly;
       let isWsOnly = this.thisWorkspaceOnly;
 
-      let isSearchQuery = this.commentFilterText.length > 0;
+      let isSearchQuery = this.get('commentFilterText.length') > 0;
 
       let doFilter = isSubOnly || isWsOnly;
       if (doFilter) {
         results = this.comments.filter((comment) => {
           let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
 
-          let isYours = creatorId === this.currentUser.id;
+          let isYours = creatorId === this.get('currentUser.user.id');
 
           let subId = this.utils.getBelongsToId(comment, 'submission');
 
-          let doesBelongToSub = subId === this.currentSubmission.id;
+          let doesBelongToSub = subId === this.get('currentSubmission.id');
 
           let workspaceId = this.utils.getBelongsToId(comment, 'workspace');
 
-          let doesBelongToWs = workspaceId === this.currentWorkspace.id;
+          let doesBelongToWs = workspaceId === this.get('currentWorkspace.id');
 
           if (isWsOnly) {
             if (!doesBelongToWs) {
@@ -190,7 +191,7 @@ export default Component.extend(ErrorHandlingMixin, {
           .filter((comment) => {
             let selId = this.utils.getBelongsToId(comment, 'selection');
 
-            return selId === this.currentSelection.id;
+            return selId === this.get('currentSelection.id');
           });
 
         let searchResults = this.searchResults || [];
@@ -213,7 +214,7 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   textContainsTag: computed('tags', function () {
-    return !!this.tags.length;
+    return !!this.get('tags.length');
   }),
 
   tags: computed('newComment', function () {
@@ -282,7 +283,7 @@ export default Component.extend(ErrorHandlingMixin, {
     function () {
       let query = this.commentFilterText;
 
-      let displayCount = this.displayList.length;
+      let displayCount = this.get('displayList.length');
 
       let resultsModifier = displayCount > 1 ? 'comments' : 'comment';
 
@@ -324,7 +325,7 @@ export default Component.extend(ErrorHandlingMixin, {
     'displayList.[]',
     'doShowLoadingMessage',
     function () {
-      return !this.doShowLoadingMessage && this.displayList.length > 0;
+      return !this.doShowLoadingMessage && this.get('displayList.length') > 0;
     }
   ),
 
@@ -368,7 +369,7 @@ export default Component.extend(ErrorHandlingMixin, {
     'currentSelection',
     function () {
       return this.displayList.sort((a, b) => {
-        let currentSelectionId = this.currentSelection.id;
+        let currentSelectionId = this.get('currentSelection.id');
 
         let aSelectionId = this.utils.getBelongsToId(a, 'selection');
         let bSelectionId = this.utils.getBelongsToId(b, 'selection');
@@ -418,7 +419,7 @@ export default Component.extend(ErrorHandlingMixin, {
     },
 
     createComment: function () {
-      let currentUser = this.currentUser;
+      let currentUser = this.currentUser.user;
       let label = this.newCommentLabel;
       let text = this.newComment;
       let useForResponse = this.labels[label].useForResponse;
@@ -590,7 +591,7 @@ export default Component.extend(ErrorHandlingMixin, {
       };
 
       if (this.myCommentsOnly) {
-        options.createdBy = this.currentUser.id;
+        options.createdBy = this.get('currentUser.user.id');
       }
 
       options.page = page || 1;

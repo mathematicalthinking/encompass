@@ -56,7 +56,7 @@ export default Component.extend({
 
   selectedCollaborators: computed('permissions.[]', 'newWsOwner', function () {
     let hash = {};
-    let newWsOwnerId = this.newWsOwner.id;
+    let newWsOwnerId = this.get('newWsOwner.id');
 
     // no reason to set owner as a collaborator
     if (newWsOwnerId) {

@@ -1,7 +1,7 @@
 import { resolve, hash } from 'rsvp';
 import { inject as service } from '@ember/service';
-import AuthenticatedRoute from '../routes/_authenticated_route';
-
+import AuthenticatedRoute from '../_authenticated_route';
+import Ember from 'ember';
 
 export default AuthenticatedRoute.extend({
   utils: service('utility-methods'),
@@ -12,7 +12,11 @@ export default AuthenticatedRoute.extend({
   },
 
   beforeModel(transition) {
-    let responseId = transition.queryParams.responseId;
+    console.log('responses/submission', transition);
+    let responseId;
+    if (transition.intent.queryParams) {
+      responseId = transition.intent.queryParams.responseId;
+    }
     let allResponses = this.store.peekAll('response');
 
     if (this.utils.isValidMongoId(responseId)) {
@@ -57,7 +61,7 @@ export default AuthenticatedRoute.extend({
         });
       })
       .then((hash) => {
-        return hash({
+        return Ember.RSVP.hash({
           submission: hash.submission,
           workspace: hash.workspace,
           submissions: hash.workspace.get('submissions'),

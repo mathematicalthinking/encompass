@@ -19,7 +19,7 @@ Router.map(function () {
   });
   // PROBLEMS PARENT ROUTE
   this.route('problems', function () {
-    this.route('problem', { resetNamespace: true, path: '/:problem_id' });
+    this.route('problem', { path: '/:problem_id' });
     this.route('new');
   });
   // SECTIONS ROUTE
@@ -30,57 +30,38 @@ Router.map(function () {
 
   // WORKSPACES PARENT ROUTE
   this.route('workspaces', function () {
-    this.route('index', { path: '/' });
-    // this.route("mine");
-    // this.route("public");
-    this.route('new');
-    this.route('copy');
+    this.route('index', { path: '/' }); // templates/workspaces/workspaces.hbs
+    this.route('new'); // templates/workspaces/new.hbs
+    this.route('copy'); // templates/workspaces/copy.hbs
     this.route(
       'workspace',
       { resetNamespace: true, path: '/:workspace_id' },
       function () {
-        //this.resource("workspace", {path: '/:workspace_id'}, function(){
-        this.route('info');
-        this.route('work');
-        this.route('folders', { resetNamespace: false }, function () {
-          this.route(
-            'folder',
-            { resetNamespace: true, path: '/:folder_id' },
-            function () {}
-          );
+        this.route('info'); // templates/workspace/info.hbs
+        this.route('work'); // redirects to workspace/workspace? is used as main link, though
+        this.route('folders', function () {
+          this.route('folder', { path: '/:folder_id' });
         });
-        this.route('submissions', { resetNamespace: false }, function () {
+        this.route('submissions', function () {
           this.route('first');
           // this.resource("workspace.submission", {path: '/:submission_id'}, function()
-          this.route(
-            'workspace-submission',
-            { resetNamespace: true, path: '/:submission_id' },
-            function () {
-              this.route('response');
-              this.route('selections', { resetNamespace: true }, function () {
-                this.route(
-                  'selection',
-                  { resetNamespace: true, path: '/:selection_id' },
-                  function () {}
-                );
-              });
-            }
-          );
+          this.route('submission', { path: '/:submission_id' }, function () {
+            this.route('response'); //doesn't do anything?
+            this.route('selections', function () {
+              this.route('selection', { path: '/:selection_id' });
+            });
+          });
         });
       }
     );
   });
   // RESPONSES PARENT ROUTE
   this.route('responses', function () {
-    this.route(
-      'responses.new',
-      { resetNamespace: true, path: '/new' },
-      function () {
-        this.route('submission', { path: '/submission/:submission_id' });
-        this.route('workspace', { path: '/workspace/:workspace_id' });
-        this.route('folder', { path: '/folder/:folder_id' });
-      }
-    );
+    this.route('new', function () {
+      this.route('submission', { path: '/submission/:submission_id' });
+      this.route('workspace', { path: '/workspace/:workspace_id' });
+      this.route('folder', { path: '/folder/:folder_id' });
+    });
     this.route('submission', { path: '/submission/:submission_id' });
     this.route(
       'response',
@@ -123,4 +104,9 @@ Router.map(function () {
   this.route('logout');
   this.route('unconfirmed');
   this.route('unauthorized');
+  this.route('metrics', function () {
+    this.route('problem', { path: 'problem/:problem_id' });
+    this.route('workspace', { path: 'workspace/:workspace_id' });
+    this.route('submission', { path: 'submission/:submission_id' });
+  });
 });

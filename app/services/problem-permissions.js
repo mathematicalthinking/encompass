@@ -1,5 +1,10 @@
 import Service, { inject as service } from '@ember/service';
 
+
+
+
+
+
 export default Service.extend({
   base: service('edit-permissions'),
   isPublic: function (problem) {
@@ -27,7 +32,7 @@ export default Service.extend({
       return;
     }
     // if admin return true
-    if (this.base.isAdmin) {
+    if (this.get('base.isAdmin')) {
       return true;
     }
 
@@ -45,7 +50,7 @@ export default Service.extend({
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.base.isPdAdmin) {
+    if (!this.get('base.isPdAdmin')) {
       return false;
     }
 
@@ -57,6 +62,7 @@ export default Service.extend({
 
     // privacy setting can now only be 'O' or 'M'
     return this.base.doesRecordBelongToOrg(problem);
+
   },
 
   canEdit(problem) {
@@ -65,7 +71,7 @@ export default Service.extend({
       return;
     }
     // if admin return true
-    if (this.base.isAdmin) {
+    if (this.get('base.isAdmin')) {
       return true;
     }
 
@@ -83,7 +89,7 @@ export default Service.extend({
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.base.isPdAdmin) {
+    if (!this.get('base.isPdAdmin')) {
       return false;
     }
 
@@ -96,6 +102,8 @@ export default Service.extend({
     // privacy setting can now only be 'O' or 'M'
 
     return this.base.doesRecordBelongToOrg(problem);
+
+
   },
 
   canAssign(problem) {
@@ -104,18 +112,19 @@ export default Service.extend({
       return;
     }
     // if admin return true
-    if (this.base.isAdmin) {
+    if (this.get('base.isAdmin')) {
       return true;
     }
 
     return this.isApproved(problem);
+
   },
 
   canPend(problem) {
     if (!problem) {
       return;
     }
-    return this.base.isAdmin;
+    return this.get('base.isAdmin');
   },
 
   writePermissions(problem, isDeleteSameAsEdit = true) {
@@ -135,4 +144,6 @@ export default Service.extend({
 
     return ret;
   },
+
+
 });

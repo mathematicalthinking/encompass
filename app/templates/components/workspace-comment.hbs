@@ -1,7 +1,7 @@
 <div class="comment-flex-item text">
   <p>
     {{#if isForCurrentWorkspace}}
-      <LinkTo @route="selection" @models={{array comment.selection.submission comment.selection}} @classNames="comment comment-text">
+      <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array comment.selection.submission comment.selection}} @classNames="comment comment-text">
         {{comment.text}}
       </LinkTo>
     {{else}}

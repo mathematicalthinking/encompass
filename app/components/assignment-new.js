@@ -76,7 +76,7 @@ export default Component.extend(ErrorHandlingMixin, {
   problemsPreloadValue: computed('cachedProblems.[]', function () {
     // if there is at least one problem in the store
     // do not auto fetch problems on focus
-    let length = this.cachedProblems.length;
+    let length = this.get('cachedProblems.length');
     return length > 0 ? undefined : 'focus';
   }),
 
@@ -85,7 +85,7 @@ export default Component.extend(ErrorHandlingMixin, {
     'selectedProblem.title',
     'nameDate',
     function () {
-      let hasName = this.name.length > 0;
+      let hasName = this.get('name.length') > 0;
 
       if (hasName) {
         return this.name;
@@ -94,7 +94,7 @@ export default Component.extend(ErrorHandlingMixin, {
       if (!this.hasProblem) {
         return '';
       }
-      let title = this.selectedProblem.title;
+      let title = this.get('selectedProblem.title');
 
       let nameDate = this.nameDate;
 
@@ -179,9 +179,9 @@ export default Component.extend(ErrorHandlingMixin, {
       // let nameDate = $('#assignedDate')
       //   .data('daterangepicker')
       //   .startDate.format('MMM Do YYYY');
-      let nameDate = new Date(assignedDate);
+      let nameDate = assignedDate ? moment(new Date(assignedDate)).format('MMM Do YYYY') : moment(new Date()).format('MMM Do YYYY');
       let problemTitle = problem.get('title');
-      name = problemTitle + ' / ' + nameDate;
+      name = `${problemTitle} / ${nameDate}`;
     }
     if (assignedDate && dueDate && assignedDate > dueDate) {
       this.set('invalidDateRange', true);
@@ -195,8 +195,8 @@ export default Component.extend(ErrorHandlingMixin, {
       createDate: new Date(),
       section,
       problem,
-      assignedDate: new Date(assignedDate),
-      dueDate: new Date(dueDate),
+      assignedDate: assignedDate ? new Date(assignedDate) : '',
+      dueDate: dueDate ? new Date(dueDate) : '',
       name,
     });
 

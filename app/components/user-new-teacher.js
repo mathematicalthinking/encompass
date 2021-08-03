@@ -1,6 +1,6 @@
-import Component from '@ember/component';
-import { inject as service } from '@ember/service';
 import $ from 'jquery';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import UserSignupMixin from '../mixins/user_signup_mixin';
 
@@ -24,7 +24,7 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
       }
       $.post({
         url: '/auth/signup',
-        data: data,
+        data: data
       })
         .then((res) => {
           return resolve(res);
@@ -34,6 +34,7 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
         });
     });
   },
+
 
   actions: {
     newUser: function () {
@@ -68,27 +69,16 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
 
       return this.createNewUser(newUserData)
         .then((res) => {
+
           if (res.username) {
-            this.alert.showToast(
-              'success',
-              `${res.username} created`,
-              'bottom-end',
-              3000,
-              null,
-              false
-            );
+            this.alert.showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
             return this.router.transitionTo('users.user', res.id);
           }
-          if (
-            res.message === 'There already exists a user with that username'
-          ) {
-            this.set('usernameError', this.usernameErrors.taken);
+          if (res.message === 'There already exists a user with that username') {
+            this.set('usernameError', this.get('usernameErrors.taken'));
             return;
-          } else if (
-            res.message ===
-            'There already exists a user with that email address'
-          ) {
-            this.set('emailError', this.emailErrors.taken);
+          } else if (res.message === 'There already exists a user with that email address') {
+            this.set('emailError', this.get('emailErrors.taken'));
             return;
           } else {
             this.set('createUserErrors', [res.message]);
@@ -97,10 +87,14 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
         .catch((err) => {
           this.handleErrors(err, 'createUserErrors', newUserData);
         });
+
     },
 
     cancelNew: function () {
       this.sendAction('toUserHome');
     },
-  },
+
+  }
 });
+
+

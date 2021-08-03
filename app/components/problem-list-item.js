@@ -1,9 +1,9 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
+import _ from 'underscore';
 /*global _:false */
 import { inject as service } from '@ember/service';
-import _ from 'underscore';
 
 export default Component.extend({
   classNames: ['problem-list-item'],
@@ -50,7 +50,7 @@ export default Component.extend({
   }),
 
   statusIconFill: computed('problem.status', function () {
-    let status = this.problem.status;
+    let status = this.get('problem.status');
 
     return this.iconFillOptions[status];
   }),
@@ -69,10 +69,10 @@ export default Component.extend({
     let canDelete = this.canDelete;
     let canAssign = this.canAssign;
     let moreMenuOptions = this.moreMenuOptions;
-    let isAdmin = this.currentUser.isAdmin;
+    let isAdmin = this.get('currentUser.isAdmin');
     let options = moreMenuOptions.slice();
-    let status = this.problem.status;
-    let deleted = this.problem.isTrashed;
+    let status = this.get('problem.status');
+    let deleted = this.get('problem.isTrashed');
 
     if (!canDelete) {
       // dont show delete or edit option
@@ -134,8 +134,8 @@ export default Component.extend({
     'problem.privacySetting',
     function () {
       let actionBtn = {};
-      let isAdmin = this.currentUser.isAdmin;
-      let isPdAdmin = this.currentUser.isPdAdmin;
+      let isAdmin = this.get('currentUser.isAdmin');
+      let isPdAdmin = this.get('currentUser.isPdAdmin');
       let problem = this.problem;
 
       if (isAdmin) {
@@ -269,7 +269,7 @@ export default Component.extend({
       record.set('status', value);
       if (reason) {
         let flagReason = {
-          flaggedBy: this.currentUser.id,
+          flaggedBy: this.get('currentUser.id'),
           reason: reason,
           flaggedDate: new Date(),
         };

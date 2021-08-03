@@ -29,7 +29,7 @@ export default Component.extend(ErrorHandlingMixin, {
   didReceiveAttrs: function () {
     this.set('isEditing', false);
     let user = this.user;
-    if (user.sections) {
+    if (user.get('sections')) {
       this.getUserSections();
     }
     this.set('org', null);
@@ -92,7 +92,7 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
 
   unconfirmedEmail: computed('user.id', function () {
-    return !this.user.isEmailConfirmed;
+    return !this.get('user.isEmailConfirmed');
   }),
 
   getUserSections: observer('user.id', function () {
@@ -163,8 +163,8 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
 
   authorizedBy: observer('user.isAuthorized', function () {
-    let isAuth = this.user.isAuthorized;
-    let authBy = this.user.authorizedBy.content;
+    let isAuth = this.get('user.isAuthorized');
+    let authBy = this.get('user.authorizedBy.content');
     if (isAuth && !authBy) {
       let user = this.user;
       user.set('authorizedBy', this.currentUser);

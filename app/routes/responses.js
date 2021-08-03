@@ -1,7 +1,6 @@
-import CurrentUserMixin from '../mixins/current_user_mixin';
 import AuthenticatedRoute from './_authenticated_route';
 
-export default AuthenticatedRoute.extend(CurrentUserMixin, {
+export default AuthenticatedRoute.extend({
   model: function () {
     return this.store
       .query('responseThread', {

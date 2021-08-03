@@ -9,14 +9,14 @@ export default Component.extend({
 
   isSelected: computed('activity._id', 'selectedActivityIds.[]', function () {
     let ids = this.selectedActivityIds || [];
-    return ids.includes(this.activity._id);
+    return ids.includes(this.get('activity._id'));
   }),
 
   encodedImageUri: computed('activity.image', function () {
-    if (!this.activity.image) {
+    if (!this.get('activity.image')) {
       return '';
     }
-    return encodeURI(this.activity.image);
+    return encodeURI(this.get('activity.image'));
   }),
 
   expandHideRoomsIcon: computed('areRoomsExpanded', function () {

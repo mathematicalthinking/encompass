@@ -14,7 +14,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   orgFilterSubOptions: computed('orgFilter', function () {
-    return _.map(this.orgFilter.subFilters.inputs, (val, key) => {
+    return _.map(this.get('orgFilter.subFilters.inputs'), (val, key) => {
       return val;
     });
   }),
@@ -24,7 +24,7 @@ export default Component.extend(CurrentUserMixin, {
   }),
 
   currentSecondaryFilter: computed('mainFilter', function () {
-    let inputs = this.secondaryFilter.inputs;
+    let inputs = this.get('secondaryFilter.inputs');
     let mainFilter = this.mainFilter;
     return inputs[mainFilter];
   }),
@@ -37,13 +37,13 @@ export default Component.extend(CurrentUserMixin, {
   selectedValues: computed(
     'currentSecondaryFilter.selectedValues.[]',
     function () {
-      return this.currentSecondaryFilter.selectedValues;
+      return this.get('currentSecondaryFilter.selectedValues');
     }
   ),
 
   clearSelectedValues: function () {
     this.set('currentSecondaryFilter.selectedValues', []);
-    // this.onUpdate();
+    // this.get('onUpdate')();
   },
   initialMainFilterItems: computed('mainFilter', function () {
     let val = this.mainFilter;
@@ -64,7 +64,7 @@ export default Component.extend(CurrentUserMixin, {
     },
     updateOrgSubFilters(e) {
       let { id } = e.target;
-      let subFilters = this.orgFilter.subFilters;
+      let subFilters = this.get('orgFilter.subFilters');
 
       let targetInput = subFilters.inputs[id];
       if (!targetInput) {

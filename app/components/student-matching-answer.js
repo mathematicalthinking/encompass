@@ -13,17 +13,12 @@ export default Component.extend(ErrorHandlingMixin, {
   isExpanded: false,
   selectedIds: [],
 
-  selectizeInputId: computed(
-    'answer.explanationImage.id',
-    'answer.id',
-    function () {
-      let id = this.answer.explanationImage.id || '';
-      return `select-add-student${id}`;
-    }
-  ),
+  selectizeInputId: computed('answer.id', function () {
+    let id = this.get('answer.explanationImage.id') || '';
+    return `select-add-student${id}`;
+  }),
 
   didReceiveAttrs: function () {
-    this._super();
     const section = this.selectedSection;
     const answer = this.answer;
     const image = answer.explanationImage;
@@ -32,10 +27,10 @@ export default Component.extend(ErrorHandlingMixin, {
     this.set('section', section);
     this.set('submission', answer);
 
-    if (!Array.isArray(this.submission.students)) {
+    if (!Array.isArray(this.get('submission.students'))) {
       this.set('submission.students', []);
     }
-    if (!Array.isArray(this.submission.studentNames)) {
+    if (!Array.isArray(this.get('submission.studentNames'))) {
       this.set('submission.studentNames', []);
     }
   },
@@ -44,8 +39,8 @@ export default Component.extend(ErrorHandlingMixin, {
     'submission.students.[]',
     'submission.studentNames.[]',
     function () {
-      let userItems = this.submission.students.mapBy('id');
-      let nameItems = this.submission.studentNames;
+      let userItems = this.get('submission.students').mapBy('id');
+      let nameItems = this.get('submission.studentNames');
       return userItems.pushObjects(nameItems);
     }
   ),
@@ -91,7 +86,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
     // add or remove encompass user from students array on answer object
     if (isMongoId) {
-      creators = this.submission.students;
+      creators = this.get('submission.students');
       userObj = creators.findBy('id', userId);
       if (doRemove) {
         creators.removeObject(userObj);
@@ -100,7 +95,7 @@ export default Component.extend(ErrorHandlingMixin, {
       }
       // add or remove string name from studentNames array on answer object
     } else {
-      creators = this.submission.studentNames;
+      creators = this.get('submission.studentNames');
       userObj = creators.find((name) => {
         return name === userObj;
       });

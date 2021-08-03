@@ -5,7 +5,6 @@ import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 
 export default Component.extend({
-  tagName: '',
   elementId: 'ws-permissions-new',
   utils: service('utility-methods'),
   showCustom: equal('global', 'custom'),
@@ -238,7 +237,7 @@ export default Component.extend({
   customSubmissionIds: [],
 
   didReceiveAttrs() {
-    const selectedUserId = this.selectedUser.id;
+    const selectedUserId = this.get('selectedUser.id');
     const permissions = this.permissions;
     const utils = this.utils;
 
@@ -404,7 +403,10 @@ export default Component.extend({
       }
     },
     selectAllSubmissions: function () {
-      this.set('customSubmissionIds', this.workspace.submissions.mapBy('id'));
+      this.set(
+        'customSubmissionIds',
+        this.get('workspace.submissions').mapBy('id')
+      );
     },
     deselectAllSubmissions: function () {
       this.set('customSubmissionIds', []);

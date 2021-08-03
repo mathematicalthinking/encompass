@@ -1,11 +1,12 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+import _ from 'underscore';
 /*global _:false */
 import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
+  currentUser: service('current-user'),
   elementId: ['workspace-info-collaborators-new'],
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
@@ -78,10 +79,10 @@ export default Component.extend(CurrentUserMixin, {
     },
   ],
 
-  modes: computed('currentUser.isAdmin', 'currentUser.isStudent', function () {
+  modes: computed('currentUser.user.isAdmin', 'currentUser.user.isStudent', function () {
     const basic = ['private', 'org', 'public'];
 
-    if (this.currentUser.isStudent || !this.currentUser.isAdmin) {
+    if (this.get('currentUser.user.isStudent') || !this.get('currentUser.user.isAdmin')) {
       return basic;
     }
 
@@ -176,7 +177,7 @@ export default Component.extend(CurrentUserMixin, {
       if (!val) {
         return;
       }
-      let existingCollab = this.workspace.collaborators;
+      let existingCollab = this.get('workspace.collaborators');
       const user = this.store.peekRecord('user', val);
       let alreadyCollab = _.contains(existingCollab, user.get('id'));
 
@@ -197,10 +198,10 @@ export default Component.extend(CurrentUserMixin, {
       let ws = this.workspace;
       let permissions = ws.get('permissions');
 
-      let subValue = this.submissions.value;
+      let subValue = this.get('submissions.value');
 
       let newObj = {
-        user: this.collabUser.id,
+        user: this.get('collabUser.id'),
         global: this.globalPermissionValue,
         submissions: { all: false, userOnly: false, submissionIds: [] },
       };
@@ -247,10 +248,10 @@ export default Component.extend(CurrentUserMixin, {
         newObj.submissions.all = true;
       }
       if (globalSetting === 'custom') {
-        newObj.selections = this.selections.value || 0;
-        newObj.folders = this.folders.value || 0;
-        newObj.comments = this.comments.value || 0;
-        newObj.feedback = this.feedback.value || 'none';
+        newObj.selections = this.get('selections.value') || 0;
+        newObj.folders = this.get('folders.value') || 0;
+        newObj.comments = this.get('comments.value') || 0;
+        newObj.feedback = this.get('feedback.value') || 'none';
 
         if (subValue === 'all') {
           newObj.submissions.all = true;

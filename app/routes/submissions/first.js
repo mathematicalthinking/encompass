@@ -23,7 +23,7 @@ export default Route.extend({
       let lastRevision = sorted.getEach('student').lastIndexOf(firstStudent);
 
       this.transitionTo(
-        'workspace.submission',
+        'workspace.submissions.submission',
         workspace,
         sorted.objectAt(lastRevision).get('id')
       );

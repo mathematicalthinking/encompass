@@ -38,7 +38,7 @@ export default class IndexRoute extends Route {
     //import workspaces created by current user
     const workspaceCriteria = {
       filterBy: {
-        createdBy: user.id,
+        owner: user.id,
       },
     };
 

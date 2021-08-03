@@ -4,11 +4,10 @@ import { computed } from '@ember/object';
 import { equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import moment from 'moment';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   elementId: 'responses-list',
-
+  currentUser: service('current-user'),
   utils: service('utility-methods'),
   isShowAll: equal('currentFilter', 'all'),
 
@@ -44,20 +43,20 @@ export default Component.extend(CurrentUserMixin, {
     let list = [
       {
         name: 'submitterResponses',
-        actionCount: this.actionSubmitterThreads.length,
-        allCount: this.submitterThreads.length,
+        actionCount: this.get('actionSubmitterThreads.length'),
+        allCount: this.get('submitterThreads.length'),
         currentFilter: 'submitter',
       },
       {
         name: 'mentoringResponses',
-        actionCount: this.actionMentoringThreads.length,
-        allCount: this.mentoringThreads.length,
+        actionCount: this.get('actionMentoringThreads.length'),
+        allCount: this.get('mentoringThreads.length'),
         currentFilter: 'mentoring',
       },
       {
         name: 'approvingResponses',
-        actionCount: this.actionApprovingThreads.length,
-        allCount: this.approvingThreads.length,
+        actionCount: this.get('actionApprovingThreads.length'),
+        allCount: this.get('approvingThreads.length'),
         currentFilter: 'approving',
       },
     ];
@@ -76,13 +75,13 @@ export default Component.extend(CurrentUserMixin, {
     function () {
       let filter = this.currentFilter;
       if (filter === 'submitter') {
-        return this.meta.submitter;
+        return this.get('meta.submitter');
       }
       if (filter === 'mentoring') {
-        return this.meta.mentoring;
+        return this.get('meta.mentoring');
       }
       if (filter === 'approving') {
-        return this.meta.approving;
+        return this.get('meta.approving');
       }
     }
   ),
@@ -202,7 +201,11 @@ export default Component.extend(CurrentUserMixin, {
 
   areThreads: gt('allThreads.length', 0),
 
-  isAdmin: () => this.currentUser.isAdmin && !this.currentUser.isStudent,
+  isAdmin: function () {
+    return (
+      this.get('currentUser.user.isAdmin') && !this.get('currentUser.user.isStudent')
+    );
+  },
 
   showMentorHeader: computed('currentFilter', function () {
     return this.currentFilter !== 'mentoring';
@@ -230,15 +233,15 @@ export default Component.extend(CurrentUserMixin, {
   },
 
   submitterThreadsCount: computed('submitterThreads.[]', function () {
-    return this.submitterThreads.length;
+    return this.get('submitterThreads.length');
   }),
 
   mentoringThreadsCount: computed('mentoringThreads.[]', function () {
-    return this.mentoringThreads.length;
+    return this.get('mentoringThreads.length');
   }),
 
   approvingThreadsCount: computed('approvingThreads.[]', function () {
-    return this.approvingThreads.length;
+    return this.get('approvingThreads.length');
   }),
 
   displayThreads: computed(
@@ -293,7 +296,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   submitterCounter: computed('actionSubmitterThreads.[]', function () {
-    let count = this.actionSubmitterThreads.length;
+    let count = this.get('actionSubmitterThreads.length');
 
     if (count > 0) {
       return `(${count})`;
@@ -302,8 +305,7 @@ export default Component.extend(CurrentUserMixin, {
   }),
 
   mentoringCounter: computed('actionMentoringThreads.[]', function () {
-    let count = this.actionMentoringThreads.length;
-
+    let count = this.get('actionMentoringThreads.length');
     if (count > 0) {
       return `(${count})`;
     }
@@ -311,7 +313,7 @@ export default Component.extend(CurrentUserMixin, {
   }),
 
   approvingCounter: computed('actionApprovingThreads.[]', function () {
-    let count = this.actionApprovingThreads.length;
+    let count = this.get('actionApprovingThreads.length');
 
     if (count > 0) {
       return `(${count})`;
@@ -335,7 +337,7 @@ export default Component.extend(CurrentUserMixin, {
       let recipientId = this.utils.getBelongsToId(response, 'recipient');
       return (
         !response.get('wasReadByRecipient') &&
-        recipientId === this.currentUser.id
+        recipientId === this.get('currentUser.user.id')
       );
     });
     return !this.utils.isNullOrUndefined(unreadReply);
@@ -348,7 +350,8 @@ export default Component.extend(CurrentUserMixin, {
     let unreadReplies = responses.filter((response) => {
       let creatorId = this.utils.getBelongsToId(response, 'createdBy');
       return (
-        !response.get('wasReadByRecipient') && creatorId === this.currentUser.id
+        !response.get('wasReadByRecipient') &&
+        creatorId === this.get('currentUser.user.id')
       );
     });
 

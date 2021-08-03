@@ -9,16 +9,14 @@ import { inject as service } from '@ember/service';
  */
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import VmtHostMixin from '../mixins/vmt-host';
 
 export default Component.extend(
-  CurrentUserMixin,
   ErrorHandlingMixin,
   VmtHostMixin,
   {
-    tagName: '',
+    currentUser: service('current-user'),
     elementId: 'workspace-submission-comp',
     classNameBindings: [
       'areNoSelections:no-selections',
@@ -40,10 +38,9 @@ export default Component.extend(
     isMessageListenerAttached: false,
 
     showSelectableView: computed(
-      'isTransitioning',
       'makingSelection',
       'showingSelections',
-      'switching',
+      'isTransitioning',
       function () {
         let making = this.makingSelection;
         let showing = this.showingSelections;
@@ -52,31 +49,34 @@ export default Component.extend(
       }
     ),
 
-    shouldCheck: computed.reads('makingSelection'),
+    shouldCheck: computed('makingSelection', function () {
+      return this.makingSelection;
+    }),
 
     areNoSelections: computed(
       'workspaceSelections.[]',
       'canSeeSelections',
       function () {
-        return this.canSeeSelections && !this.workspaceSelections.length > 0;
+        return (
+          this.canSeeSelections && !this.get('workspaceSelections.length') > 0
+        );
       }
     ),
 
     didRender: function () {
-      this._super(...arguments);
       if (this.switching) {
         this.set('switching', false);
       }
     },
 
     didReceiveAttrs() {
-      this._super(...arguments);
       let listener = this.onVmtMessage.bind(this);
 
       if (this.isVmt) {
         this.set('vmtListener', listener);
         window.addEventListener('message', listener);
       }
+      this._super(...arguments);
     },
 
     didInsertElement() {
@@ -96,7 +96,7 @@ export default Component.extend(
 
       if (this.isDirty) {
         workspace.set('lastModifiedDate', new Date());
-        workspace.set('lastModifiedBy', this.currentUser);
+        workspace.set('lastModifiedBy', this.currentUser.user);
         doOnlyUpdateLastViewed = false;
       }
       workspace.set('doOnlyUpdateLastViewed', doOnlyUpdateLastViewed);
@@ -111,7 +111,7 @@ export default Component.extend(
       'currentSubmission.id',
       'selections.[]',
       function () {
-        let subId = this.currentSubmission.id;
+        let subId = this.get('currentSubmission.id');
 
         return this.selections.filter((sel) => {
           return subId === this.utils.getBelongsToId(sel, 'submission');
@@ -119,11 +119,16 @@ export default Component.extend(
       }
     ),
 
-    trashedSelections: computed.filterBy('workspaceSelections', 'isTrashed'),
+    trashedSelections: computed(
+      'workspaceSelections.@each.isTrashed',
+      function () {
+        return this.workspaceSelections.filterBy('isTrashed');
+      }
+    ),
 
     canSelect: computed(
       'currentWorkspace.permissions.@each.{global,selections}',
-      'currentUser.id',
+      'currentUser.user.id',
       function () {
         let cws = this.currentWorkspace;
         return this.permissions.canEdit(cws, 'selections', 2);
@@ -132,7 +137,7 @@ export default Component.extend(
 
     canDeleteSelection: computed(
       'currentWorkspace.permissions.@each.{global,selections}',
-      'currentUser.id',
+      'currentUser.user.id',
       function () {
         const workspace = this.currentWorkspace;
         return this.permissions.canEdit(workspace, 'selections', 4);
@@ -145,7 +150,7 @@ export default Component.extend(
       function () {
         return this.responses.filter((response) => {
           let subId = this.utils.getBelongsToId(response, 'submission');
-          return subId === this.currentSubmission.id;
+          return subId === this.get('currentSubmission.id');
         });
       }
     ),
@@ -229,7 +234,7 @@ export default Component.extend(
     }),
     isVmt: computed('currentSubmission.vmtRoomInfo.roomId', function () {
       return this.utils.isValidMongoId(
-        this.currentSubmission.vmtRoomInfo.roomId
+        this.get('currentSubmission.vmtRoomInfo.roomId')
       );
     }),
 
@@ -260,13 +265,13 @@ export default Component.extend(
     },
 
     currentReplayerTime: computed('vmtReplayerInfo.timeElapsed', function () {
-      let ms = this.vmtReplayerInfo.timeElapsed;
+      let ms = this.get('vmtReplayerInfo.timeElapsed');
 
       return this.utils.getTimeStringFromMs(ms);
     }),
 
     maxReplayerTime: computed('vmtReplayerInfo.totalDuration', function () {
-      let ms = this.vmtReplayerInfo.totalDuration;
+      let ms = this.get('vmtReplayerInfo.totalDuration');
       return ms > 0 ? ms : 0;
     }),
 
@@ -296,7 +301,7 @@ export default Component.extend(
 
       if (messageType === 'VMT_ON_REPLAYER_LOAD') {
         // set replayer to current selection start time if applicable
-        let vmtStartTime = this.currentSelection.vmtInfo.startTime;
+        let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
         if (vmtStartTime >= 0 && canSet) {
           this.set('vmtReplayerInfo', vmtReplayerInfo);
           // set replayer to start point but do not auto play
@@ -313,14 +318,24 @@ export default Component.extend(
       'currentSelection.vmtInfo.{startTime,endTime}',
       function () {
         return (
-          this.currentSelection.vmtInfo.startTime >= 0 &&
-          this.currentSelection.vmtInfo.endTime >= 0
+          this.get('currentSelection.vmtInfo.startTime') >= 0 &&
+          this.get('currentSelection.vmtInfo.endTime') >= 0
         );
       }
     ),
 
-    currentClipStartTime: computed.reads('currentSelection.vmtInfo.startTime'),
-    currentClipEndTime: computed.reads('currentSelection.vmtInfo.endTime'),
+    currentClipStartTime: computed(
+      'currentSelection.vmtInfo.startTime',
+      function () {
+        return this.get('currentSelection.vmtInfo.startTime');
+      }
+    ),
+    currentClipEndTime: computed(
+      'currentSelection.vmtInfo.endTime',
+      function () {
+        return this.get('currentSelection.vmtInfo.endTime');
+      }
+    ),
 
     actions: {
       addSelection: function (selection, isUpdateOnly) {
@@ -417,7 +432,6 @@ export default Component.extend(
         }
       },
       handleTransition: function (isBeginning) {
-        this.showSelectableView;
         if (isEmpty(isBeginning)) {
           return;
         }
@@ -427,21 +441,19 @@ export default Component.extend(
           this.set('isTransitioning', false);
         }
       },
-      openProblem: function () {
+      openProblem: async function () {
         let answer = this.currentSubmission.get('answer');
-        let problem = answer.get('problem');
-        let problemId = problem.get('id');
+        let problem = await answer.get('problem');
+        let problemId = await problem.get('id');
 
         let getUrl = window.location;
         let baseUrl =
           getUrl.protocol +
           '//' +
-          getUrl.host +
-          '/' +
-          getUrl.pathname.split('/')[1];
+          getUrl.host
 
         window.open(
-          `${baseUrl}#/problems/${problemId}`,
+          `${baseUrl}/problems/${problemId}`,
           'newwindow',
           'width=1200, height=700'
         );
@@ -492,11 +504,11 @@ export default Component.extend(
 
       onSelectionSelect() {
         if (this.isVmt) {
-          let vmtStartTime = this.currentSelection.vmtInfo.startTime;
+          let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
           if (vmtStartTime >= 0) {
-            let endTime = this.currentSelection.vmtInfo.endTime;
+            let endTime = this.get('currentSelection.vmtInfo.endTime');
             this.setVmtReplayerTime(vmtStartTime, true, endTime);
-            this.set('makingSelections', false);
+            this.set('makingSelection', false);
           }
         }
       },
@@ -510,7 +522,9 @@ export default Component.extend(
           getUrl.pathname.split('/')[1];
 
         window.open(
-          `${baseUrl}#/responses/submission/${this.currentSubmission.id}`,
+          `${baseUrl}#/responses/submission/${this.get(
+            'currentSubmission.id'
+          )}`,
           'newwindow',
           'width=1200, height=700'
         );

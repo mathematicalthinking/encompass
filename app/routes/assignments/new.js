@@ -1,34 +1,27 @@
 import { hash } from 'rsvp';
+import { action } from '@ember/object';
 import AuthenticatedRoute from '../_authenticated_route';
 
-export default AuthenticatedRoute.extend({
-  beforeModel: function () {
-    this._super.apply(this, arguments);
-
+export default class AssignmentsNewRoute extends AuthenticatedRoute {
+  beforeModel() {
     const user = this.modelFor('application');
     const isStudent = user.get('isStudent');
 
     if (isStudent) {
       this.transitionTo('assignments');
     }
-  },
-
-  model: function () {
+  }
+  model() {
     let currentUser = this.modelFor('application');
     return hash({
       currentUser,
       sections: this.store.findAll('section'),
     });
-  },
-  renderTemplate: function () {
-    this.render('assignments/new');
-  },
-  actions: {
-    toAssignmentInfo: function (assignment) {
-      this.transitionTo('assignment', assignment);
-    },
-    toAssignmentsHome: function () {
-      this.transitionTo('assignments');
-    },
-  },
-});
+  }
+  @action toAssignmentInfo(model) {
+    this.transitionTo('assignment', model);
+  }
+  @action toAssignmentsHome() {
+    this.transitionTo('assignments');
+  }
+}

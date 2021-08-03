@@ -1,14 +1,9 @@
 /*global io:false */
 /*global _:false */
 import Service, { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-
-
-
-
-
-export default Service.extend(CurrentUserMixin, {
+export default Service.extend({
+  currentUser: service('current-user').user,
   store: service(),
   alert: service('sweet-alert'),
   utils: service('utility-methods'),

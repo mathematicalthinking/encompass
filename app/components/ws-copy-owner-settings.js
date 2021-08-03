@@ -52,7 +52,7 @@ export default Component.extend(CurrentUserMixin, {
   }),
 
   validModeValues: computed('modeInputs', function () {
-    const modeInputs = this.modeInputs.inputs;
+    const modeInputs = this.get('modeInputs.inputs');
 
     if (this.utils.isNonEmptyArray(modeInputs)) {
       return modeInputs.map((input) => input.value);
@@ -76,7 +76,7 @@ export default Component.extend(CurrentUserMixin, {
     if (utils.isNonEmptyString(newWsName)) {
       this.set('selectedName', newWsName);
     } else if (!utils.isNonEmptyString(this.selectedName)) {
-      this.set('selectedName', `Copy of ${this.workspace.name}`);
+      this.set('selectedName', `Copy of ${this.get('workspace.name')}`);
     }
 
     if (utils.isNonEmptyString(newWsMode)) {
@@ -208,7 +208,7 @@ export default Component.extend(CurrentUserMixin, {
 
       const folderSetOptions = {
         doCreateFolderSet: doCreateFolderSet,
-        existingFolderSetToUse: this.existingFolderSetToUse.id,
+        existingFolderSetToUse: this.get('existingFolderSetToUse.id'),
         name: folderSetName,
         privacySetting: folderSetPrivacySetting,
       };

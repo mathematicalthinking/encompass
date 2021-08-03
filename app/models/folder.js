@@ -12,10 +12,10 @@ export default Model.extend(Auditable, {
   workspace: belongsTo('workspace', { async: true }),
   isTopLevel: attr('boolean'),
   isExpanded: false,
-  sortProperties: () => ['weight', 'name'],
+  sortProperties: ['weight', 'name'],
 
   cleanTaggings: computed('taggings.content.@each.isTrashed', function () {
-    return this.taggings.content.rejectBy('isTrashed');
+    return this.get('taggings.content').rejectBy('isTrashed');
   }),
 
   taggedSelections: computed('cleanTaggings.[]', function () {
@@ -27,16 +27,16 @@ export default Model.extend(Auditable, {
   }),
 
   cleanChildren: computed('children.content.@each.isTrashed', function () {
-    return this.children.content.rejectBy('isTrashed');
+    return this.get('children.content').rejectBy('isTrashed');
   }),
 
-  hasChildren: computed.gt('cleanChildren.length', 0),
+  hasChildren: computed('cleanChildren.[]', function () {
+    return this.get('cleanChildren.length') > 0;
+  }),
 
   childSelections: computed(
     'children.@each._selections',
-    'cleanChildren',
     'cleanSelections.[]',
-    'hasChildren',
     function () {
       let selections = this.cleanSelections;
 
@@ -55,7 +55,9 @@ export default Model.extend(Auditable, {
     }
   ),
 
-  _selections: computed.reads('childSelections'),
+  _selections: computed('childSelections.@each.isTrashed', function () {
+    return this.childSelections;
+  }),
 
   submissions: computed('cleanSelections.@each.submission', function () {
     let results = this.cleanSelections;

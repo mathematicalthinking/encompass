@@ -24,12 +24,12 @@
     <button {{action 'toggleFolderDisplay'}}><img src="/images/chevrons-right.svg"></button>
   </div>
   {{/if}}
-  <FolderList @store={{this.store}} @folders={{this.nonTrashedFolders}} @workspace={{this.currentWorkspace}} @fileSelection="fileSelectionInFolder" @currentSubmission={{this.model.submission}} @currentUser={{this.model.currentUser}} @currentSelection={{this.currentSelection}} @taggings={{this.nonTrashedTaggings}} @workspaceSubmissions={{this.currentWorkspace.submissions.content}} @workspaceSelections={{this.nonTrashedSelections}} @hideFolders={{action "toggleFolderDisplay"}} @isHidden={{this.areFoldersHidden}} @containerLayoutClass={{this.containerLayoutClass}} @hideComments={{action "toggleCommentDisplay"}} @areCommentsHidden={{this.areCommentsHidden}} />
+  <FolderList @store={{this.store}} @folders={{this.nonTrashedFolders}} @workspace={{this.currentWorkspace}} @fileSelection="fileSelectionInFolder" @currentSubmission={{this.model.submission}} @currentSelection={{this.currentSelection}} @taggings={{this.nonTrashedTaggings}} @workspaceSubmissions={{this.currentWorkspace.submissions.content}} @workspaceSelections={{this.nonTrashedSelections}} @hideFolders={{action "toggleFolderDisplay"}} @isHidden={{this.areFoldersHidden}} @containerLayoutClass={{this.containerLayoutClass}} @hideComments={{action "toggleCommentDisplay"}} @areCommentsHidden={{this.areCommentsHidden}} />
 {{!-- </div> --}}
 
 <!--section class="submissions"-->
 {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
-  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model.submission}} @currentUser={{this.model.currentUser}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 <!--/section-->
 
@@ -40,7 +40,7 @@
     <button {{action 'toggleCommentDisplay'}}><img src="/images/chevrons-left.svg"></button>
   </div>
   {{/if}}
-  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentUser={{this.model.currentUser}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 </div>
 

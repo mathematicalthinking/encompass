@@ -1,11 +1,10 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   utils: service('utility-methods'),
-
+  currentUser: service('current-user'),
   elementId: 'response-submission-view',
   isShortExpanded: true,
   isLongExpanded: true,
@@ -19,8 +18,8 @@ export default Component.extend(CurrentUserMixin, {
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (this.submission.id !== this.currentSubmissionId) {
-      this.set('currentSubmissionId', this.submission.id);
+    if (this.get('submission.id') !== this.currentSubmissionId) {
+      this.set('currentSubmissionId', this.get('submission.id'));
       this.set('isRevising', false);
     }
     if (this.studentSubmissions) {
@@ -28,7 +27,7 @@ export default Component.extend(CurrentUserMixin, {
     }
 
     if (this.response) {
-      if (this.primaryResponse.id !== this.response.id) {
+      if (this.get('primaryResponse.id') !== this.get('response.id')) {
         // response route changed, set submission to the responses submission
 
         this.set('submissionToView', this.submission);
@@ -38,7 +37,9 @@ export default Component.extend(CurrentUserMixin, {
   },
 
   isOwnSubmission: computed('submission.creator.studentId', function () {
-    return this.submission.creator.studentId === this.currentUser.id;
+    return (
+      this.get('submission.creator.studentId') === this.get('currentUser.user.id')
+    );
   }),
 
   canRevise: computed('isOwnSubmission', 'isParentWorkspace', function () {
@@ -75,7 +76,7 @@ export default Component.extend(CurrentUserMixin, {
 
   actions: {
     openProblem() {
-      let problemId = this.submission.answer.problem.id;
+      let problemId = this.get('submission.answer.problem.id');
 
       if (!problemId) {
         return;
@@ -100,7 +101,7 @@ export default Component.extend(CurrentUserMixin, {
     },
     startRevising() {
       if (!this.isRevising) {
-        this.set('revisedBriefSummary', this.submission.answer.answer);
+        this.set('revisedBriefSummary', this.get('submission.answer.answer'));
         this.set('isRevising', true);
       }
     },
@@ -118,9 +119,9 @@ export default Component.extend(CurrentUserMixin, {
       // eslint-disable-next-line no-unused-vars
       const quill = new window.Quill(selector, options);
 
-      let explanation = this.submission.answer.explanation;
+      let explanation = this.get('submission.answer.explanation');
 
-      let students = this.submission.answer.students;
+      let students = this.get('submission.answer.students');
       this.set(
         'contributors',
         students.map((s) => s)

@@ -98,12 +98,14 @@ export default Mixin.create({
 
   actions: {
     usernameValidate(username) {
+      console.log('usernamevalidate user_signup_mixin');
+      console.log(username);
       if (username) {
         var usernamePattern = new RegExp(this.usernameRegEx);
         var usernameTest = usernamePattern.test(username);
 
         if (usernameTest === false) {
-          this.set('usernameError', this.usernameErrors.invalid);
+          this.set('usernameError', this.get('usernameErrors.invalid'));
           return;
         }
 
@@ -118,15 +120,18 @@ export default Mixin.create({
     },
 
     emailValidate(email) {
+      console.log('emailValidate user_signup_mixin');
       let isValid = this.validateEmail(email);
       if (isValid) {
         this.set('emailError', null);
         this.set('email', email);
       } else {
-        this.set('emailError', this.emailErrors.invalid);
+        this.set('emailError', this.get('emailErrors.invalid'));
       }
     },
     passwordValidate: function (password) {
+      console.log('passwordValidate user_signup_mixin');
+      console.log(password);
       function hasWhiteSpace(string) {
         return /\s/g.test(string);
       }
@@ -135,7 +140,7 @@ export default Mixin.create({
         password.length < this.passwordMinLength ||
         password.length > this.passwordMaxLength
       ) {
-        this.set('passwordError', this.passwordErrors.invalid);
+        this.set('passwordError', this.get('passwordErrors.invalid'));
       } else {
         this.set('passwordError', null);
 
@@ -150,6 +155,7 @@ export default Mixin.create({
       }
     },
     resetErrors(e) {
+      console.log('reset errors user_signup_mixin');
       const errors = [
         'missingCredentials',
         'noTermsAndConditions',

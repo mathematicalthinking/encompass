@@ -1,0 +1,85 @@
+<header>
+  <h4>{{model.title}}</h4>
+  <p>View details about a problem</p>
+</header>
+<p><LinkTo @route="metrics">back</LinkTo></p>
+<div class="metrics__container">
+  <div class="metrics__container metrics--flex">
+    <button {{action "toggleProblemText"}} class="primary-button">Show Problem Text</button>
+    <button {{action "findWorkspaces"}} class="primary-button">Find Workspaces</button>
+    <button {{action "findWorkspaces2"}} class="primary-button">Find Workspaces2</button>
+    <button {{action "findSubmissions"}} class="primary-button">Find Answers</button>
+  </div>
+  {{#if showProblemText}}
+    <div class="metrics__card">
+      {{{model.text}}}
+    </div>
+  {{/if}}
+  {{#if showWorkspaces}}
+    <p>Workspaces</p>
+    <table class="metrics__table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Teacher
+          </th>
+          <th>
+            Submissions
+          </th>
+          <th>
+            Selections
+          </th>
+          <th>
+            Comments
+          </th>
+          <th>
+            Responses
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each relevantWorkspaces as |workspace|}}
+          <tr>
+            <td><LinkTo @route="metrics.workspace" @model={{workspace}}>{{workspace.name}}</LinkTo></td>
+            <td>{{workspace.owner.displayName}}</td>
+            <td>{{workspace.submissionsLength}}</td>
+            <td>{{workspace.selectionsLength}}</td>
+            <td>{{workspace.commentsLength}}</td>
+            <td>{{workspace.responsesLength}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+  {{#if showAnswers}}
+    <p>Answers</p>
+    <table class="metrics__table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Answer
+          </th>
+          <th>
+            Explanation
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each problemAnswers as |answer|}}
+          <tr>
+            <td>{{answer.student}}</td>
+            <td>{{answer.answer}}</td>
+            <td>{{{answer.explanation}}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+</div>
+<p><LinkTo @route="metrics">back</LinkTo></p>

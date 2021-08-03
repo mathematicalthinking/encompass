@@ -12,7 +12,7 @@ export default Component.extend({
     usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
     let orgUsersNotYou = usersWithOrgs.rejectBy(
       'username',
-      this.currentUser.username
+      this.get('currentUser.username')
     );
     orgUsersNotYou = orgUsersNotYou.sortBy('createDate').reverse();
     let accountTypeUsers = orgUsersNotYou.filterBy('accountType');
@@ -39,7 +39,7 @@ export default Component.extend({
       usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
       let orgUsersNotYou = usersWithOrgs.rejectBy(
         'username',
-        this.currentUser.username
+        this.get('currentUser.username')
       );
       return orgUsersNotYou.sortBy('createDate').reverse();
     }
@@ -64,7 +64,7 @@ export default Component.extend({
       usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
       let orgUsersNotYou = usersWithOrgs.rejectBy(
         'username',
-        this.currentUser.username
+        this.get('currentUser.username')
       );
       return orgUsersNotYou.sortBy('createDate').reverse();
     }
