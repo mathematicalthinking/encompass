@@ -28,7 +28,7 @@
 |Student  | No      | L/M     | No      | No     |
 
 ## Workspaces
-|         | Create  |           |         | Read  |          |        |Update |          | Delete |
+|         | Create  |     Read  |         |       |          |  Update|       |          | Delete |
 |---------|---------|-----------|---------|-------|----------|--------|-------|----------|--------|
 |         |         |Submissions| Comments|Folders|Selections|Comments|Folders|Selections|        |
 |Admin    |   All   |  All      |  All    |  All  |    All   |  All   |  All  |   All    |   All  |
