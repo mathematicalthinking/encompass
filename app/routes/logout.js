@@ -1,10 +1,12 @@
 import Route from '@ember/routing/route';
-import $ from 'jquery';
 
 export default class LogoutRoute extends Route {
   beforeModel() {
-    return $.get('/auth/logout').then(() => {
-      window.location.href = '/';
-    });
+    try {
+      fetch('/auth/logout');
+      return (window.location.href = '/');
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
