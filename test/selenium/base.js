@@ -94,7 +94,7 @@ describe('Home Page', function () {
         await helpers.findInputAndType(driver, css.login.password, helpers.admin.password);
         await helpers.findAndClickElement(driver, css.login.submit);
 
-        await helpers.waitForSelector(driver, 'a.nav__logout');
+        await helpers.waitForSelector(driver, 'a.logout');
       } catch (err) {
         console.log(err);
       }
