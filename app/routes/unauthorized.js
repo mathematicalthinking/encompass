@@ -1,7 +1,10 @@
 import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default Route.extend({
-  beforeModel: function () {
+export default class UnauthorizedRoute extends Route {
+  @service store;
+  beforeModel() {
     // redirect to login if no user logged in
     const user = this.modelFor('application');
 
@@ -23,19 +26,17 @@ export default Route.extend({
     if (user.get('isAuthz')) {
       this.transitionTo('/');
     }
-  },
+  }
 
-  model: function () {
+  model() {
     let user = this.modelFor('application');
     if (user.get('needAdditionalInfo')) {
       return this.store.findAll('organization');
     }
     return;
-  },
+  }
 
-  actions: {
-    toHome: function () {
-      window.location.href = '/';
-    },
-  },
-});
+  @action toHome() {
+    window.location.href = '/';
+  }
+}
