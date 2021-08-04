@@ -28,10 +28,9 @@
 |Student  | No      | L/M     | No      | No     |
 
 ## Workspaces
-|         | Create  |                       Read             |            Update         | Delete |
-|---------|---------|----------------------------------------|---------------------------|--------|
-|         |         |Submissions| Comments|Folders|Selections|Comments|Folders|Selections|        |
+|         | Create  |           |         | Read  |          |        |Update |          | Delete |
 |---------|---------|-----------|---------|-------|----------|--------|-------|----------|--------|
+|         |         |Submissions| Comments|Folders|Selections|Comments|Folders|Selections|        |
 |Admin    |   All   |  All      |  All    |  All  |    All   |  All   |  All  |   All    |   All  |
 |PdAdmin  |   All   |  L/O/C/P  | L/O/C/P |L/O/C/P| L/O/C/P  |L/O/C   |L/O/C  | L/O/C    |  L/C   |
 |Teacher  | L/O     | L/C/P     | L/C/P   |L/C/P  | L/C/P    |L/C     | L/C   | L/C      |  L/C   |
