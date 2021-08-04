@@ -2,23 +2,26 @@ import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { hash, resolve } from 'rsvp';
 import ConfirmLeavingRoute from '../../_confirm_leaving_route';
+import { action } from '@ember/object';
 
-export default Route.extend(ConfirmLeavingRoute, {
-  utils: service('utility-methods'),
-
-  renderTemplate: function (controller, model) {
+export default class ResponsesNewSubmissionRoute extends Route.extend(
+  ConfirmLeavingRoute
+) {
+  @service('utility-methods') utils;
+  @service store;
+  renderTemplate() {
     this.render('responses/response');
-  },
+  }
 
   beforeModel(transition) {
     let workspaceId;
-    if(transition.intent.queryParams){
+    if (transition.intent.queryParams) {
       workspaceId = transition.intent.queryParams.workspaceId;
     }
     if (this.utils.isValidMongoId(workspaceId)) {
-      this.set('workspace', this.store.peekRecord('workspace', workspaceId));
+      this.workspace = this.store.peekRecord('workspace', workspaceId);
     }
-  },
+  }
   resolveWorkspace(workspace, submission) {
     if (workspace) {
       return resolve(workspace);
@@ -28,7 +31,7 @@ export default Route.extend(ConfirmLeavingRoute, {
     return this.store.findRecord('workspace', wsId);
 
     // in current structure do submissions ever have multiple workspaces?
-  },
+  }
   resolveRecipient(submission, workspace) {
     // if creator of submission is enc user, they should always be in store
     // since to get here you have to click respond from that user's submission
@@ -44,9 +47,10 @@ export default Route.extend(ConfirmLeavingRoute, {
       return this.store.findRecord('user', firstApproverId);
     }
     return workspace.get('owner');
-  },
+  }
 
-  model: function (params) {
+  model(params) {
+    console.log('target route!');
     let submission;
 
     let isDraft = false;
@@ -123,25 +127,22 @@ export default Route.extend(ConfirmLeavingRoute, {
           submissions: studentSubmissions,
         };
       });
-  },
+  }
 
-  afterModel(model, transition) {
+  afterModel(model) {
     if (model.isDraft) {
       this.transitionTo('responses.submission', model.submissionId, {
         queryParams: { responseId: model.responseId },
       });
     }
-  },
-  actions: {
-    toResponse(submissionId, responseId) {
-      console.log('responses/new/submission submissionId', submissionId);
-      console.log('responses/new/submission responseId', responseId);
-      this.transitionTo('responses.submission', submissionId, {
-        queryParams: { responseId: responseId },
-      });
-    },
-    toResponseSubmission(subId) {
-      this.transitionTo('responses.submission', subId);
-    },
-  },
-});
+  }
+
+  @action toResponse(submissionId, responseId) {
+    this.transitionTo('responses.submission', submissionId, {
+      queryParams: { responseId: responseId },
+    });
+  }
+  @action toResponseSubmission(subId) {
+    this.transitionTo('responses.submission', subId);
+  }
+}
