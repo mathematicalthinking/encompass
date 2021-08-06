@@ -2894,14 +2894,12 @@ const cloneWorkspace = (req, res) => {
   if (req.body.copyWorkspaceRequest.batchClone) {
     return batchCloneWorkspace(req, res);
   } else {
-    cloneSingleWorkspace(req, res);
+    return cloneSingleWorkspace(req, res);
   }
 };
 
 const batchCloneWorkspace = async (req, res = {}) => {
-  // pull out batch clone info and workspace info
   const { copyWorkspaceRequest } = req.body;
-  // create workspace for each member of classn with cloneWorkspace
   const createdWorkspaces = await Promise.all(
     copyWorkspaceRequest.batchClone.section.students.map(async (student) => {
       let reqCopy = { ...req.body.copyWorkspaceRequest };
@@ -2913,13 +2911,13 @@ const batchCloneWorkspace = async (req, res = {}) => {
       return workspace;
     })
   );
-  // return array of workspace ids
-  // check for parentWorkspace and create
   if (copyWorkspaceRequest.batchClone.createParent) {
+    const name = `Parent Workspace: ${copyWorkspaceRequest.name}`;
     const parentOptions = {
       ...copyWorkspaceRequest,
       childWorkspaces: createdWorkspaces,
       doAutoUpdateFromChildren: true,
+      name,
     };
     const [err, parentWs] = await parentWsApi.generateParentWorkspace(
       parentOptions
@@ -2927,9 +2925,9 @@ const batchCloneWorkspace = async (req, res = {}) => {
     if (err) {
       console.log('ERROR', err);
     }
-    console.log('parentWs', parentWs);
+    return utils.sendResponse(res, parentWs);
   }
-  return utils.sendResponse(res, createdWorkspaces);
+  return utils.sendResponse(res, createdWorkspaces[0]);
 };
 
 async function cloneSingleWorkspace(req, res, next) {

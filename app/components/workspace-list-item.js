@@ -88,7 +88,7 @@ export default Component.extend({
                     createParent: true,
                   },
                   createDate: new Date(),
-                  name: `Copy of: ${workspaceName}`,
+                  name: `${workspaceName} / ${section.name}`,
                   isTrashed: false,
                   lastModifiedDate: new Date(),
                   mode: 'private',
