@@ -2901,19 +2901,21 @@ const cloneWorkspace = (req, res) => {
 const batchCloneWorkspace = async (req, res = {}) => {
   // pull out batch clone info and workspace info
   const { copyWorkspaceRequest } = req.body;
-  const batchClone = { ...copyWorkspaceRequest.batchClone };
   // create workspace for each member of classn with cloneWorkspace
   const createdWorkspaces = await Promise.all(
-    batchClone.section.students.map(async (student) => {
-      let reqCopy = { ...req };
-      reqCopy.body.copyWorkspaceRequest.owner = student;
-      const workspace = await cloneSingleWorkspace(reqCopy);
-      return workspace._id;
+    copyWorkspaceRequest.batchClone.section.students.map(async (student) => {
+      let reqCopy = { ...req.body.copyWorkspaceRequest };
+      reqCopy.owner = student;
+      const workspace = await cloneSingleWorkspace({
+        ...req,
+        body: { copyWorkspaceRequest: reqCopy },
+      });
+      return workspace;
     })
   );
   // return array of workspace ids
   // check for parentWorkspace and create
-  if (batchClone.createParent) {
+  if (copyWorkspaceRequest.batchClone.createParent) {
     const parentOptions = {
       ...copyWorkspaceRequest,
       childWorkspaces: createdWorkspaces,
@@ -2927,7 +2929,6 @@ const batchCloneWorkspace = async (req, res = {}) => {
     }
     console.log('parentWs', parentWs);
   }
-  // send response
   return utils.sendResponse(res, createdWorkspaces);
 };
 
