@@ -1,8 +1,8 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
 import Auditable from '../models/_auditable_mixin';
 
-
 export default Model.extend(Auditable, {
+  batchClone: attr(),
   name: attr('string'),
   owner: belongsTo('user', { inverse: null }),
   mode: attr('string'),
