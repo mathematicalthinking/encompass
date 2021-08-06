@@ -265,16 +265,16 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     if (!this.submissions) {
       return [];
     }
-    const threads = EmberMap.create();
+    const threads = {};
 
     this.submissions
       .sortBy('student')
       .getEach('student')
       .uniq()
       .forEach((student) => {
-        if (!threads.has(student)) {
+        if (!threads.student) {
           const submissions = this.studentWork(student);
-          threads.set(student, submissions);
+          threads.student = submissions;
         }
       });
     return threads;
