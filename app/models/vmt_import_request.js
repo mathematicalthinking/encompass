@@ -1,18 +1,16 @@
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import Auditable from '../models/_auditable_mixin';
 
-
-export default Model.extend(Auditable, {
-  workspaceName: attr('string'),
-  workspaceMode: attr('string'),
-  workspaceOwner: belongsTo('user', { inverse: null }),
-  folderSet: belongsTo('folder-set', { inverse: null }),
-  vmtRooms: attr(),
-  permissionObjects: attr(),
-  createdWorkspace: belongsTo('workspace'),
-  createdAnswers: hasMany('answer', { inverse: null }),
-  createdSubmissions: hasMany('submission', { inverse: null }),
-  createWorkspaceError: attr('string'),
-  doCreateWorkspace: attr('boolean'),
-
-});
+export default class VmtImportRequest extends Model.extend(Auditable) {
+  @attr('string') workspaceName;
+  @attr('string') workspaceMode;
+  @belongsTo('user', { inverse: null }) workspaceOwner;
+  @belongsTo('folder-set', { inverse: null }) folderSet;
+  @attr vmtRooms;
+  @attr permissionObjects;
+  @belongsTo('workspace') createdWorkspace;
+  @hasMany('answer', { inverse: null }) createdAnswers;
+  @hasMany('submission', { inverse: null }) createdSubmissions;
+  @attr('string') createWorkspaceError;
+  @attr('boolean') doCreateWorkspace;
+}

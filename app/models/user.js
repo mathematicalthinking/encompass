@@ -1,36 +1,32 @@
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
 import Auditable from '../models/_auditable_mixin';
 
-export default Model.extend(Auditable, {
-  firstName: attr('string'),
-  lastName: attr('string'),
-  userId: alias('id'),
-  email: attr('string'),
-  avatar: attr('string'),
-  organization: belongsTo('organization'),
-  organizationRequest: attr('string'),
-  location: attr('string'),
-  username: attr('string'),
-  googleId: attr('string'),
-  requestReason: attr('string'),
-  isGuest: attr('boolean'),
-  accountType: attr('string'),
-  isEmailConfirmed: attr('boolean'),
-  isAuthorized: attr('boolean', { defaultValue: false }),
-  authorizedBy: belongsTo('user', { inverse: null }),
-  seenTour: attr('date'),
-  lastImported: attr('date'),
-  lastLogin: attr('date'),
-  history: attr(),
-  sections: attr(),
-  assignments: hasMany('assignment', { async: true, inverse: null }),
-  answers: hasMany('answer', { async: true }),
-  actingRole: attr('string'),
-  notifications: hasMany('notifications', { inverse: 'recipient' }),
-
-  actingRoleName: computed('actingRole', function () {
+export default class UserModel extends Model.extend(Auditable) {
+  @attr('string') firstName;
+  @attr('string') lastName;
+  @attr('string') email;
+  @attr('string') avatar;
+  @belongsTo('organization') organization;
+  @attr('string') organizationRequest;
+  @attr('string') location;
+  @attr('string') username;
+  @attr('string') googleId;
+  @attr('string') requestReason;
+  @attr('boolean') isGuest;
+  @attr('string') accountType;
+  @attr('boolean') isEmailConfirmed;
+  @attr('boolean', { defaultValue: false }) isAuthorized;
+  @belongsTo('user', { inverse: null }) authorizedBy;
+  @attr('date') seenTour;
+  @attr('date') lastImported;
+  @attr('date') lastLogin;
+  @attr history;
+  @attr sections;
+  @hasMany('assignment', { async: true, inverse: null }) assignments;
+  @hasMany('answer', { async: true }) answers;
+  @attr('string') actingRole;
+  @hasMany('notifications', { inverse: 'recipient' }) notifications;
+  get actingRoleName() {
     let actingRole = this.actingRole;
     if (this.accountType === 'P') {
       actingRole === 'teacher'
@@ -42,63 +38,53 @@ export default Model.extend(Auditable, {
         : (actingRole = 'student');
     }
     return actingRole;
-  }),
-  isAdmin: computed('accountType', function () {
+  }
+  get isAdmin() {
     return this.accountType === 'A';
-  }),
-  isTeacher: computed('accountType', function () {
+  }
+  get isTeacher() {
     return this.accountType === 'T';
-  }),
-  isStudent: computed('accountType', 'actingRole', function () {
+  }
+  get isStudent() {
     return this.accountType === 'S' || this.actingRole === 'student';
-  }),
-  isPdAdmin: computed('accountType', function () {
+  }
+  get isPdAdmin() {
     return this.accountType === 'P';
-  }),
-  isAuthenticated: computed('isGuest', function () {
+  }
+  get isAuthenticated() {
     return !this.isGuest;
-  }),
-  isAuthz: computed('isAdmin', 'isAuthorized', function () {
+  }
+  get isAuthz() {
     return this.isAdmin || this.isAuthorized;
-  }),
-  displayName: computed('name', 'username', 'isLoaded', function () {
-    var display = this.name;
-    if (!display) {
-      display = this.username;
-    }
-    return display;
-  }),
-  lastSeen: attr('date'),
-  needAdditionalInfo: computed(
-    'googleId',
-    'requestReason',
-    'isAuthz',
-    function () {
-      const authorized = this.isAuthz;
-      if (authorized) {
-        return false;
-      }
-
-      const googleId = this.googleId;
-
-      if (!googleId) {
-        return false;
-      }
-      const requestReason = this.requestReason;
-
-      if (!requestReason) {
-        return true;
-      }
+  }
+  get displayName() {
+    return this.name || this.username;
+  }
+  @attr('date') lastSeen;
+  get needAdditionalInfo() {
+    const authorized = this.isAuthz;
+    if (authorized) {
       return false;
     }
-  ),
 
-  shouldSendAuthEmail: attr('boolean'),
-  collabWorkspaces: attr(),
-  hiddenWorkspaces: attr(),
-  socketId: attr('string'),
-  ssoId: attr('string'),
-  doForcePasswordChange: attr('boolean', { defaultValue: false }),
-  confirmEmailDate: attr('date'),
-  isConfirmingEmail: attr('boolean', { defaultValue: false }),
-});
+    const googleId = this.googleId;
+
+    if (!googleId) {
+      return false;
+    }
+    const requestReason = this.requestReason;
+
+    if (!requestReason) {
+      return true;
+    }
+    return false;
+  }
+  @attr('boolean') shouldSendAuthEmail;
+  @attr collabWorkspaces;
+  @attr hiddenWorkspaces;
+  @attr('string') socketId;
+  @attr('string') ssoId;
+  @attr('boolean', { defaultValue: false }) doForcePasswordChange;
+  @attr('date') confirmEmailDate;
+  @attr('boolean', { defaultValue: false }) isConfirmingEmail;
+}
