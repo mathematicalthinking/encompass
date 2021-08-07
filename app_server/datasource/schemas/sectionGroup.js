@@ -19,7 +19,7 @@ const SectionGroupSchema = new Schema({
   students: [{ type: ObjectId, ref: 'User' }],
 });
 
-module.exports.SectionGroup = mongoose.Model(
+module.exports.SectionGroup = mongoose.model(
   'SectionGroup',
   SectionGroupSchema
 );
