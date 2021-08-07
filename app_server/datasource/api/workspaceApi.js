@@ -2903,7 +2903,9 @@ const batchCloneWorkspace = async (req, res = {}) => {
   const createdWorkspaces = await Promise.all(
     copyWorkspaceRequest.batchClone.section.students.map(async (student) => {
       let reqCopy = { ...req.body.copyWorkspaceRequest };
+      let { username: studentName } = await models.User.findById(student);
       reqCopy.owner = student;
+      reqCopy.name = ` ${studentName}: ${copyWorkspaceRequest.name}`;
       const workspace = await cloneSingleWorkspace({
         ...req,
         body: { copyWorkspaceRequest: reqCopy },

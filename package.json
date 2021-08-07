@@ -32,7 +32,7 @@
     "lint:js:fix": "eslint . --fix",
     "start": "ember serve",
     "start-front": "ember server --proxy=http://localhost:8080",
-    "start-back": "node app_server/server.js",
+    "start-back": "nodemon app_server/server.js",
     "test-back": "NODE_ENV=seed node app_server/server.js",
     "start-all": "concurrently \"npm:start-front\" \"npm:start-back\"",
     "test": "npm-run-all lint test:*",
