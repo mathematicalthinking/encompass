@@ -20,6 +20,6 @@ const SectionGroupSchema = new Schema({
 });
 
 module.exports.SectionGroup = mongoose.Model(
-  'SectionGruop',
+  'SectionGroup',
   SectionGroupSchema
 );
