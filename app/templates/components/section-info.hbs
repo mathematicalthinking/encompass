@@ -141,6 +141,13 @@
           {{/each}}
         </div>
 
+        <div class="update-students">
+          <button {{action "toggleAddGroup"}}>Add a group</button>
+          {{#if this.addGruop}}
+            <p>ADD A MOTHERFUCKING GROUP BITCH</p>
+          {{/if}}
+        </div>
+
     </fieldset>
   {{#each this.queryErrors as |error|}}
     <p class="error-message">{{error}}</p>

@@ -32,6 +32,7 @@ export default Component.extend(ErrorHandlingMixin, {
   queryErrors: [],
   findRecordErrors: [],
   problemLoadErrors: [],
+  addGroup: false,
 
   init: function () {
     this._super(...arguments);
@@ -166,6 +167,9 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
 
   actions: {
+    toggleAddGroup: function () {
+      this.addGroup = true;
+    },
     removeStudent: function (user) {
       if (!user) {
         return;
