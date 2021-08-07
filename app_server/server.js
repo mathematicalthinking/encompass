@@ -211,6 +211,7 @@ server.get(
   paginate.middleware(25, 100),
   api.get.responseThreads
 );
+server.get('/api/groups', api.get.sectionGroups);
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);
