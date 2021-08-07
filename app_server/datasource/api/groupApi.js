@@ -19,7 +19,7 @@ module.exports.post = {};
 
 /**
  * @public
- * @method getSectionGroups
+ * @method getGroups
  * @description __URL__: /api/groups
  * @returns {Object} An array of sectiongroup objects
  * @throws {NotAuthorizedError} User has inadequate permissions
@@ -27,14 +27,14 @@ module.exports.post = {};
  * @throws {RestError} Something? went wrong
  */
 
-const getSectionGroups = async (req, res) => {
+const getGroups = async (req, res) => {
   let groups = await models.sectionGroups.find();
   return utils.sendResponse(res, { sectionGroups: groups });
 };
 
 /**
  * @public
- * @method getSectionGroup
+ * @method getGroup
  * @description __URL__: /api/group/:id
  * @returns {Object} An section group object
  * @throws {NotAuthorizedError} User has inadequate permissions
@@ -42,27 +42,28 @@ const getSectionGroups = async (req, res) => {
  * @throws {RestError} Something? went wrong
  */
 
-const getSectionGroup = (req, res) => {
+const getGroup = (req, res) => {
   return;
 };
 
 /**
  * @public
- * @method postSectionGroup
+ * @method postGroup
  * @description __URL__: /api/group
  * @throws {NotAuthorizedError} User has inadequate permissions
  * @throws {InternalError} Data saving failed
  * @throws {RestError} Something? went wrong
  */
 
-const postSectionGroup = async (req, res) => {
+const postGroup = async (req, res) => {
   const user = userAuth.requireUser(req);
-  const sectionGroup = new models.sectionGroup(req.body.sectionGroup);
+  console.log(req.body);
+  const sectionGroup = new models.Group(req.body.group);
   sectionGroup.createdBy = user;
   sectionGroup.createDate = new Date();
   try {
     let createdGroup = await sectionGroup.save();
-    const data = { sectionGroup: createdGroup };
+    const data = { group: createdGroup };
     return utils.sendResponse(res, data);
   } catch (err) {
     logger.error(err);
@@ -72,14 +73,14 @@ const postSectionGroup = async (req, res) => {
 
 /**
  * @public
- * @method putSectionGroup
+ * @method putGroup
  * @description __URL__: /api/group/:id
  * @throws {NotAuthorizedError} User has inadequate permissions
  * @throws {InternalError} Data update failed
  * @throws {RestError} Something? went wrong
  */
 
-const putSectionGroup = (req, res) => {
+const putGroup = (req, res) => {
   return;
 };
 
@@ -96,5 +97,5 @@ const deleteSection = (req, res) => {
   return;
 };
 
-module.exports.get.sectionGroups = getSectionGroups;
-module.exports.post.sectionGroups = postSectionGroup;
+module.exports.get.groups = getGroups;
+module.exports.post.groups = postGroup;

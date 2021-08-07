@@ -5,10 +5,10 @@ const ObjectId = Schema.ObjectId;
 /**
  * @public
  * @class SectionGroup
- * @description SectionGroups belong to a Section and can contain many students
+ * @description Groups belong to a Section and can contain many students
  */
 
-const SectionGroupSchema = new Schema({
+const GroupSchema = new Schema({
   createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, default: Date.now() },
   isTrashed: { type: Boolean, default: false },
@@ -19,7 +19,4 @@ const SectionGroupSchema = new Schema({
   students: [{ type: ObjectId, ref: 'User' }],
 });
 
-module.exports.SectionGroup = mongoose.model(
-  'SectionGroup',
-  SectionGroupSchema
-);
+module.exports.Group = mongoose.model('Group', GroupSchema);

@@ -32,7 +32,7 @@
   'updateWorkspaceRequest',
   'notification',
   'vmtImportRequest',
-  'sectionGroup',
+  'group',
 ].forEach(function (path) {
   var module = require('./' + path);
 

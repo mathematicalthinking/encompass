@@ -31,6 +31,42 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   actions: {
+    createSectionGroup: async function () {
+      const student = await this.store.queryRecord(
+        'user',
+        '60e6f360abc69948e6af111f'
+      );
+      const section = await this.store.queryRecord(
+        'section',
+        '610aa5a9bb7c9e0a06d82223'
+      );
+      const testGroup = await this.store.createRecord('group', {
+        name: 'GROUP NAME',
+        section,
+        students: [student],
+      });
+      try {
+        const group = await testGroup.save();
+        this.alert.showToast(
+          'success',
+          `${group.name} created`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        console.log(err);
+        this.alert.showToast(
+          'error',
+          `${err}`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
+    },
     showToggleModal: function () {
       this.get('alert')
         .showModal(

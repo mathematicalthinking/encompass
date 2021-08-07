@@ -211,7 +211,7 @@ server.get(
   paginate.middleware(25, 100),
   api.get.responseThreads
 );
-server.get('/api/groups', api.get.sectionGroups);
+server.get('/api/groups', api.get.groups);
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);
@@ -233,7 +233,7 @@ server.post('/api/folderSets', api.post.folderSet);
 server.post('/api/updateWorkspaceRequests', api.post.updateWorkspaceRequest);
 server.post('/api/notifications', api.post.notification);
 server.post('/api/parentWorkspaceRequests', api.post.parentWorkspace);
-
+server.post('/api/groups', api.post.groups);
 //ALL PUT REQUESTS
 server.put('/api/folders/:id', path.validateId(), api.put.folder);
 server.put('/api/submissions/:id', path.validateId(), api.put.submission);

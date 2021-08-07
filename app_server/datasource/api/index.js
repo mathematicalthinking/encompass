@@ -40,7 +40,7 @@ exports.delete = {};
   'notificationApi',
   'vmtApi',
   'parentWorkspaceApi',
-  'sectionGroupApi',
+  'groupApi',
 ].forEach(function (path) {
   var module = require('./' + path);
 
