@@ -179,16 +179,16 @@ export default Component.extend(ErrorHandlingMixin, {
       return this.toggleProperty('addGroup');
     },
     saveGroup: async function () {
+      const savedGroup = this.store.createRecord('group');
       this.newGroup.section = this.section;
       this.newGroup.createdBy = this.currentUser;
       this.newGroup.createDate = new Date();
       this.newGroup.lastModifiedBy = this.currentUser;
       this.newGroup.lastModifiedDate = this.currentUser;
-      let data = { ...this.newGroup };
-      const savedGroup = this.store.createRecord('group', data);
-      console.log(savedGroup);
+      for (let key in this.newGroup) {
+        savedGroup[key] = this.newGroup[key];
+      }
       const res = await savedGroup.save();
-      console.log(res);
     },
     placeStudent: async function (id) {
       let student = await this.store.findRecord('user', id);
