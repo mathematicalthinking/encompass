@@ -1,7 +1,6 @@
-import Model, { attr } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
-export default class ImageModel extends Model.extend(Auditable) {
+import { attr } from '@ember-data/model';
+import Auditable from './auditable';
+export default class ImageModel extends Auditable {
   get imageId() {
     return this.id;
   }

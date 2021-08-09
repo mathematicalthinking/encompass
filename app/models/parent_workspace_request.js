@@ -1,7 +1,6 @@
-import Model, { belongsTo, attr } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
-export default class ParentWorkspaceRequest extends Model.extend(Auditable) {
+import { belongsTo, attr } from '@ember-data/model';
+import Auditable from './auditable';
+export default class ParentWorkspaceRequest extends Auditable {
   @belongsTo('assignment', { inverse: null }) linkedAssignment;
   @belongsTo('user', { inverse: null }) owner;
   @attr('string') mode;

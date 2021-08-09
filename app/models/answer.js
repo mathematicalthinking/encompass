@@ -1,8 +1,8 @@
-import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
+import { attr, belongsTo, hasMany } from '@ember-data/model';
 import _ from 'underscore';
-import Auditable from '../models/_auditable_mixin';
+import Auditable from './auditable';
 
-export default class AnswerModel extends Model.extend(Auditable) {
+export default class AnswerModel extends Auditable {
   get answerId() {
     return this.id;
   }

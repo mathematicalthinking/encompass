@@ -1,7 +1,7 @@
-import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
+import { attr, belongsTo, hasMany } from '@ember-data/model';
+import Auditable from './auditable';
 
-export default class UserModel extends Model.extend(Auditable) {
+export default class UserModel extends Auditable {
   @attr('string') firstName;
   @attr('string') lastName;
   @attr('string') email;

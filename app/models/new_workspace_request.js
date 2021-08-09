@@ -1,7 +1,6 @@
-import Model, { attr, belongsTo } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
-export default class NewWorkspaceRequestModel extends Model.extend(Auditable) {
+import { attr, belongsTo } from '@ember-data/model';
+import Auditable from './auditable';
+export default class NewWorkspaceRequestModel extends Auditable {
   @attr('string') pdSetName;
   @attr('string') folderSetName;
   @belongsTo('workspace') result;
