@@ -56,8 +56,8 @@ const getGroup = (req, res) => {
  */
 
 const postGroup = async (req, res) => {
-  const user = userAuth.requireUser(req);
   console.log(req.body);
+  const user = userAuth.requireUser(req);
   const sectionGroup = new models.Group(req.body.group);
   sectionGroup.createdBy = user;
   sectionGroup.createDate = new Date();

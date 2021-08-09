@@ -141,10 +141,23 @@
           {{/each}}
         </div>
 
-        <div class="update-students">
+        <div>
+          <p>Groups:</p>
+          <ul>
+            {{#each this.groups as |group|}}
+              <li>{{group.name}}</li>
+            {{/each}}
+          </ul>
           <button {{action "toggleAddGroup"}}>Add a group</button>
-          {{#if this.addGruop}}
-            <p>ADD A GROUP</p>
+          {{#if this.addGroup}}
+            <Input @value={{this.newName}} @placeholder="Group Name"></Input>
+              <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
+                @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{true}}
+                @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
+            {{#each this.newStudents as |student|}}
+              <p>{{student.username}}</p>
+            {{/each}}
+            <button {{action "saveGroup"}}>Save Group</button>
           {{/if}}
         </div>
 

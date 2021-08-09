@@ -33,6 +33,14 @@ export default Component.extend(ErrorHandlingMixin, {
   findRecordErrors: [],
   problemLoadErrors: [],
   addGroup: false,
+  selectableStudents: computed('section.students.[]', function () {
+    return this.section.students.toArray();
+  }),
+  newGroup: {
+    name: '',
+    class: null,
+    students: [],
+  },
 
   init: function () {
     this._super(...arguments);
@@ -168,7 +176,23 @@ export default Component.extend(ErrorHandlingMixin, {
 
   actions: {
     toggleAddGroup: function () {
-      this.addGroup = true;
+      return this.toggleProperty('addGroup');
+    },
+    saveGroup: async function () {
+      this.newGroup.section = this.section;
+      this.newGroup.createdBy = this.currentUser;
+      this.newGroup.createDate = new Date();
+      this.newGroup.lastModifiedBy = this.currentUser;
+      this.newGroup.lastModifiedDate = this.currentUser;
+      console.log(this.newGroup);
+      const savedGroup = await this.store.createRecord('group', this.newGroup);
+      console.log(savedGroup);
+      const res = await savedGroup.save();
+      console.log(res);
+    },
+    placeStudent: async function (id) {
+      let student = await this.store.findRecord('user', id);
+      return this.newGroup.students.pushObject(student);
     },
     removeStudent: function (user) {
       if (!user) {
