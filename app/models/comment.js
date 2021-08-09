@@ -1,7 +1,6 @@
-import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
-export default class CommentModel extends Model.extend(Auditable) {
+import { attr, belongsTo, hasMany } from '@ember-data/model';
+import Auditable from './auditable';
+export default class CommentModel extends Auditable {
   @attr('string') label;
   @attr('string') text;
   @attr('boolean', { defaultValue: false }) useForResponse;

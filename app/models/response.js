@@ -1,7 +1,6 @@
-import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
-export default class ResponseModel extends Model.extend(Auditable) {
+import { attr, belongsTo, hasMany } from '@ember-data/model';
+import Auditable from './auditable';
+export default class ResponseModel extends Auditable {
   get persisted() {
     return !!this.id;
   }

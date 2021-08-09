@@ -3,8 +3,7 @@
  * @see [Cache Module](./datasource/api/cache.js)
  */
 import Model, { attr } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
+import Auditable from './auditable';
 export default class ImportRequestModel extends Model(Auditable) {
   @attr('string') teacher;
   @attr('string') submitter;

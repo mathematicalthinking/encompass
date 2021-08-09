@@ -1,7 +1,7 @@
-import Model, { attr, belongsTo } from '@ember-data/model';
+import { attr, belongsTo } from '@ember-data/model';
 import Auditable from './_auditable_mixin';
 
-export default class CopyWorkspaceRequestModel extends Model.extend(Auditable) {
+export default class CopyWorkspaceRequestModel extends Auditable {
   @attr('string') name;
   @belongsTo('user', { inverse: null }) owner;
   @attr('string') mode;
