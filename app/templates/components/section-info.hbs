@@ -141,23 +141,32 @@
           {{/each}}
         </div>
 
-        <div>
-          <p>Groups:</p>
-          <ul>
+        <div class="section-info-detail groups">
+          <label for="groups">Groups:
+            {{#unless this.cantEdit}}
+              {{#if this.addGroup}}
+                <i title="Done" {{action "toggleAddGroup"}} class="fa fa-check"></i>
+              {{else}}
+                <i title="Edit" {{action "toggleAddGroup"}} class="far fa-edit"></i>
+              {{/if}}
+            {{/unless}}
+          </label>
+          <ul class="listing">
             {{#each this.groups as |group|}}
               <li>{{group.name}}</li>
             {{/each}}
           </ul>
-          <button {{action "toggleAddGroup"}}>Add a group</button>
           {{#if this.addGroup}}
-            <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
-              <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
-                @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{true}}
-                @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
-            {{#each this.newGroup.students as |student|}}
-              <p>{{student.username}}</p>
-            {{/each}}
-            <button {{action "saveGroup"}}>Save Group</button>
+            <div>
+              <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
+                <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
+                  @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{true}}
+                  @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
+              {{#each this.newGroup.students as |student|}}
+                <p>{{student.username}}</p>
+              {{/each}}
+              <button {{action "saveGroup"}}>Save Group</button>
+            </div>
           {{/if}}
         </div>
 
