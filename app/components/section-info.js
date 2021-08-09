@@ -38,7 +38,7 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
   newGroup: {
     name: '',
-    class: null,
+    section: null,
     students: [],
   },
 
@@ -184,8 +184,8 @@ export default Component.extend(ErrorHandlingMixin, {
       this.newGroup.createDate = new Date();
       this.newGroup.lastModifiedBy = this.currentUser;
       this.newGroup.lastModifiedDate = this.currentUser;
-      console.log(this.newGroup);
-      const savedGroup = await this.store.createRecord('group', this.newGroup);
+      let data = { ...this.newGroup };
+      const savedGroup = this.store.createRecord('group', data);
       console.log(savedGroup);
       const res = await savedGroup.save();
       console.log(res);

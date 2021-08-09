@@ -7,10 +7,14 @@ export default class SectionsSectionRoute extends AuthenticatedRoute {
   @service store;
   async model(params) {
     let section = await this.store.findRecord('section', params.section_id);
+    let groups = await this.store.query('group', {
+      section: params.section_id,
+    });
     const currentUser = await this.modelFor('application');
     return hash({
       section,
       currentUser,
+      groups,
     });
   }
 

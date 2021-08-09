@@ -3,6 +3,6 @@ import Auditable from './_auditable_mixin';
 
 export default class GroupModel extends Model.extend(Auditable) {
   @attr name;
-  @belongsTo('section') section;
-  @hasMany('user') students;
+  @belongsTo('section', { inverse: null }) section;
+  @hasMany('user', { inverse: null }) students;
 }

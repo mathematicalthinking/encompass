@@ -150,11 +150,11 @@
           </ul>
           <button {{action "toggleAddGroup"}}>Add a group</button>
           {{#if this.addGroup}}
-            <Input @value={{this.newName}} @placeholder="Group Name"></Input>
+            <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
               <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
                 @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{true}}
                 @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
-            {{#each this.newStudents as |student|}}
+            {{#each this.newGroup.students as |student|}}
               <p>{{student.username}}</p>
             {{/each}}
             <button {{action "saveGroup"}}>Save Group</button>

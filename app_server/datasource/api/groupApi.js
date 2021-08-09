@@ -28,8 +28,8 @@ module.exports.post = {};
  */
 
 const getGroups = async (req, res) => {
-  let groups = await models.sectionGroups.find();
-  return utils.sendResponse(res, { sectionGroups: groups });
+  let groups = await models.Group.find().where({ section: req.query.section });
+  return utils.sendResponse(res, { groups: groups });
 };
 
 /**
