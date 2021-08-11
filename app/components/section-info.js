@@ -188,7 +188,27 @@ export default Component.extend(ErrorHandlingMixin, {
       for (let key in this.newGroup) {
         savedGroup[key] = this.newGroup[key];
       }
-      const res = await savedGroup.save();
+      try {
+        const res = await savedGroup.save();
+        console.log(res);
+        this.alert.showToast(
+          'success',
+          `group created`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        this.alert.showToast(
+          'error',
+          `${err}`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
     },
     placeStudent: async function (id) {
       let student = await this.store.findRecord('user', id);
