@@ -190,16 +190,17 @@ export default Component.extend(ErrorHandlingMixin, {
       }
       try {
         const res = await savedGroup.save();
-        console.log(res);
+        console.log(res.name);
         this.alert.showToast(
           'success',
-          `group created`,
+          `group "${res.name}" created`,
           'bottom-end',
           3000,
           false,
           null
         );
       } catch (err) {
+        console.log(err);
         this.alert.showToast(
           'error',
           `${err}`,
@@ -221,7 +222,7 @@ export default Component.extend(ErrorHandlingMixin, {
         const res = await group.save();
         this.alert.showToast(
           'success',
-          'student removed',
+          `${user.username} removed`,
           'bottom-end',
           3000,
           false,
@@ -244,7 +245,7 @@ export default Component.extend(ErrorHandlingMixin, {
         const res = await group.save();
         this.alert.showToast(
           'success',
-          'group deleted',
+          `${res.name} deleted`,
           'bottom-end',
           3000,
           false,
