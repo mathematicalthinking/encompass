@@ -2911,16 +2911,31 @@ const batchCloneWorkspace = async (req, res = {}) => {
       groups.map(async (group) => {
         let reqCopy = { ...req.body.copyWorkspaceRequest };
         reqCopy.name = `${group.name}: ${copyWorkspaceRequest.name}`;
+        reqCopy.owner = group.students[0];
         const workspace = await cloneSingleWorkspace({
           ...req,
           body: { copyWorkspaceRequest: reqCopy },
         });
+        workspace.permissions = group.students.map((student) => {
+          let options = {
+            user: student,
+            global: 'editor',
+            feedback: 'none',
+            comments: 4,
+            selections: 4,
+            folders: 3,
+            submissions: {
+              submissionIds: [],
+              all: true,
+              userOnly: false,
+            },
+          };
+          return options;
+        });
+        await workspace.save();
+        return workspace;
       })
     );
-    //create a workspace for each group
-    //teacher is the owner
-    //each student is a editor colaborator
-    return;
   } else {
     //make batch copies for each student in a class
     createdWorkspaces = await Promise.all(
