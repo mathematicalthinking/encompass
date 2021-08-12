@@ -153,11 +153,24 @@
           </label>
           <ul class="listing">
             {{#each this.groups as |group|}}
-              <li>{{group.name}}</li>
+              <li>
+                <strong>{{group.name}}</strong>
+                {{#if this.addGroup}}
+                  <ul class="listing">
+                    {{#each group.students as |student|}}
+                      <li>{{student.username}}
+                        <button class="trash-button" {{action 'updateGroup' group student}}>
+                        <i class="far fa-times-circle" aria-hidden="true"></i>
+                      </button>
+                      </li>
+                    {{/each}}
+                  </ul>
+              {{/if}}
+              </li>
             {{/each}}
           </ul>
           {{#if this.addGroup}}
-            <div>
+            <div class="update-students">
               <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
                 <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
                   @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{true}}

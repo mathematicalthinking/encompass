@@ -4,18 +4,14 @@
  * @author Tim Leonard
  */
 
-const _ = require('underscore');
-
 const logger = require('log4js').getLogger('server');
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
-const access = require('../../middleware/access/sections');
-
-const { isNonEmptyArray } = require('../../utils/objects');
 
 module.exports.get = {};
 module.exports.post = {};
+module.exports.put = {};
 
 /**
  * @public
@@ -80,8 +76,12 @@ const postGroup = async (req, res) => {
  * @throws {RestError} Something? went wrong
  */
 
-const putGroup = (req, res) => {
-  return;
+const putGroup = async (req, res) => {
+  let updated = models.Group.findByIdAndUpdate(req.params.id, {
+    students: req.body.group.students,
+  });
+  console.log(updated);
+  return { group: updated };
 };
 
 /**
@@ -99,3 +99,4 @@ const deleteSection = (req, res) => {
 
 module.exports.get.groups = getGroups;
 module.exports.post.groups = postGroup;
+module.exports.put.groups = putGroup;

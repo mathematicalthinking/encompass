@@ -214,6 +214,31 @@ export default Component.extend(ErrorHandlingMixin, {
       let student = await this.store.findRecord('user', id);
       return this.newGroup.students.pushObject(student);
     },
+    updateGroup: async function (group, user) {
+      if (!user) return;
+      try {
+        group.students.removeObject(user);
+        const res = await group.save();
+        console.log(res);
+        this.alert.showToast(
+          'success',
+          'student removed',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        console.log(err);
+        this.alert.showToast(
+          'error',
+          'oops there was a problem',
+          3000,
+          false,
+          null
+        );
+      }
+    },
     removeStudent: function (user) {
       if (!user) {
         return;

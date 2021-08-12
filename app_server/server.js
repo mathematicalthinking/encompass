@@ -309,7 +309,7 @@ server.put(
 server.put('/api/organizations/:id', path.validateId(), api.put.organization);
 server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
 server.put('/api/notifications/:id', path.validateId(), api.put.notification);
-
+server.put('/api/groups/:id', api.put.groups);
 //ALL DELETE REQUESTS
 server.delete('/api/images/:id', path.validateId(), api.delete.image);
 
