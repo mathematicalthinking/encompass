@@ -77,15 +77,13 @@ const postGroup = async (req, res) => {
  */
 
 const putGroup = async (req, res) => {
-  let options = { new: true };
-  let updated = await models.Group.findByIdAndUpdate(
-    req.params.id,
-    {
-      students: req.body.group.students,
-    },
-    options
-  );
-  return utils.sendResponse(res, { group: updated });
+  let { group } = req.body;
+  let found = await models.Group.findById(req.params.id);
+  found.students = group.students;
+  found.name = group.name;
+  found.isTrashed = group.isTrashed;
+  let saved = await found.save();
+  return utils.sendResponse(res, { group: saved });
 };
 
 /**
@@ -97,7 +95,7 @@ const putGroup = async (req, res) => {
  * @throws {RestError} Something? went wrong
  */
 
-const deleteSection = (req, res) => {
+const deleteGroup = (req, res) => {
   return;
 };
 

@@ -153,20 +153,25 @@
           </label>
           <ul class="listing">
             {{#each this.groups as |group|}}
+              {{#unless group.isTrashed}}
               <li>
                 <strong>{{group.name}}</strong>
                 {{#if this.addGroup}}
+                  <button class="trash-button" {{action 'deleteGroup' group}}>
+                  <i class="far fa-times-circle" aria-hidden="true"></i>
+                  </button>
                   <ul class="listing">
                     {{#each group.students as |student|}}
                       <li>{{student.username}}
                         <button class="trash-button" {{action 'updateGroup' group student}}>
                         <i class="far fa-times-circle" aria-hidden="true"></i>
-                      </button>
+                        </button>
                       </li>
                     {{/each}}
                   </ul>
               {{/if}}
               </li>
+              {{/unless}}
             {{/each}}
           </ul>
           {{#if this.addGroup}}

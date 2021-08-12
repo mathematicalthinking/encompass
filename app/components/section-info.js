@@ -219,7 +219,6 @@ export default Component.extend(ErrorHandlingMixin, {
       try {
         group.students.removeObject(user);
         const res = await group.save();
-        console.log(res);
         this.alert.showToast(
           'success',
           'student removed',
@@ -236,6 +235,24 @@ export default Component.extend(ErrorHandlingMixin, {
           false,
           null
         );
+      }
+    },
+    deleteGroup: async function (group) {
+      if (!group) return;
+      try {
+        group.isTrashed = true;
+        const res = await group.save();
+        this.alert.showToast(
+          'success',
+          'group deleted',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        console.log(err);
+        this.alert.showToast('error', 'could not delete', 3000, false, null);
       }
     },
     removeStudent: function (user) {
