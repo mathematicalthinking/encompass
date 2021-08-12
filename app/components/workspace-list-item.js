@@ -113,7 +113,9 @@ export default Component.extend({
                   'copyWorkspaceRequest',
                   copyWorkspaceRequest
                 );
-                return copyRequest.save();
+                return copyRequest.save().then((res) => {
+                  console.log(res);
+                });
               });
           }
         });

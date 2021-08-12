@@ -2927,9 +2927,13 @@ const batchCloneWorkspace = async (req, res = {}) => {
     if (err) {
       console.log('ERROR', err);
     }
-    return utils.sendResponse(res, parentWs);
+    console.log(parentWs);
+    return utils.sendResponse(res, { copyWorkspaceRequest: parentWs });
   }
-  return utils.sendResponse(res, createdWorkspaces[0]);
+  console.log(createdWorkspaces);
+  return utils.sendResponse(res, {
+    copyWorkspaceRequest: createdWorkspaces[0],
+  });
 };
 
 async function cloneSingleWorkspace(req, res, next) {
