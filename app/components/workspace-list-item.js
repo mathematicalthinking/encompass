@@ -63,6 +63,7 @@ export default Component.extend({
 
   actions: {
     async assignWorkspace() {
+      let initialRequest = this.store.createRecord('copyWorkspaceRequest');
       let sections = await this.store.findAll('section');
       let workspace = this.get('workspace');
       let workspaceName = this.get('workspace.name');
@@ -83,8 +84,9 @@ export default Component.extend({
               .then((section) => {
                 let copyWorkspaceRequest = {
                   batchClone: {
-                    mode: 'individual',
+                    mode: 'group',
                     section,
+                    sectionId: section.id,
                     createParent: true,
                   },
                   createDate: new Date(),
