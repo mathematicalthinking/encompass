@@ -255,6 +255,9 @@ export default Component.extend(ErrorHandlingMixin, {
         this.alert.showToast('error', 'could not delete', 3000, false, null);
       }
     },
+    updateGroupDraft: function (student) {
+      return this.newGroup.students.removeObject(student);
+    },
     removeStudent: function (user) {
       if (!user) {
         return;
