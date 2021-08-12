@@ -77,11 +77,15 @@ const postGroup = async (req, res) => {
  */
 
 const putGroup = async (req, res) => {
-  let updated = models.Group.findByIdAndUpdate(req.params.id, {
-    students: req.body.group.students,
-  });
-  console.log(updated);
-  return { group: updated };
+  let options = { new: true };
+  let updated = await models.Group.findByIdAndUpdate(
+    req.params.id,
+    {
+      students: req.body.group.students,
+    },
+    options
+  );
+  return utils.sendResponse(res, { group: updated });
 };
 
 /**

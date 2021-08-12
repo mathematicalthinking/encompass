@@ -229,7 +229,6 @@ export default Component.extend(ErrorHandlingMixin, {
           null
         );
       } catch (err) {
-        console.log(err);
         this.alert.showToast(
           'error',
           'oops there was a problem',
