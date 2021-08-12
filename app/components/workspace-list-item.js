@@ -3,6 +3,7 @@ import { computed } from '@ember/object';
 /*global _:false */
 import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+import { initial } from 'underscore';
 
 export default Component.extend({
   classNames: ['workspace-list-item'],
@@ -71,56 +72,47 @@ export default Component.extend({
       for (let section of sections.toArray()) {
         options[section.id] = section.name;
       }
-      this.get('alert')
-        .showPromptSelect(
-          'Assign Workspace to class',
-          options,
-          'Choose a class'
-        )
-        .then((res) => {
-          if (res.value) {
-            this.get('store')
-              .findRecord('section', res.value)
-              .then((section) => {
-                let copyWorkspaceRequest = {
-                  batchClone: {
-                    mode: 'group',
-                    section,
-                    sectionId: section.id,
-                    createParent: true,
-                  },
-                  createDate: new Date(),
-                  name: `${workspaceName} / ${section.name}`,
-                  isTrashed: false,
-                  lastModifiedDate: new Date(),
-                  mode: 'private',
-                  submissionOptions: { all: true },
-                  folderOptions: {
-                    folderSetOptions: { doCreateFolderSet: false },
-                    none: true,
-                  },
-                  selectionOptions: { none: true },
-                  commentOptions: { none: true },
-                  responseOptions: { none: true },
-                  permissionOptions: {},
-                  copyWorkspaceError: null,
-                  createdBy: this.get('currentUser'),
-                  lastModifiedBy: this.get('currentUser'),
-                  owner: this.get('currentUser'),
-                  originalWsId: workspace,
-                  createdWorkspace: null,
-                  createdFolderSet: null,
-                };
-                let copyRequest = this.get('store').createRecord(
-                  'copyWorkspaceRequest',
-                  copyWorkspaceRequest
-                );
-                return copyRequest.save().then((res) => {
-                  console.log(res);
-                });
-              });
-          }
-        });
+      let { value } = await this.get('alert').showPromptSelect(
+        'Assign Workspace to class',
+        options,
+        'Choose a class'
+      );
+      if (!value) return;
+      let section = await this.get('store').findRecord('section', value);
+      let request = {
+        batchClone: {
+          mode: 'group',
+          section,
+          sectionId: section.id,
+          createParent: true,
+        },
+        createDate: new Date(),
+        name: `${workspaceName} / ${section.name}`,
+        isTrashed: false,
+        lastModifiedDate: new Date(),
+        mode: 'private',
+        submissionOptions: { all: true },
+        folderOptions: {
+          folderSetOptions: { doCreateFolderSet: false },
+          none: true,
+        },
+        selectionOptions: { none: true },
+        commentOptions: { none: true },
+        responseOptions: { none: true },
+        permissionOptions: {},
+        copyWorkspaceError: null,
+        createdBy: this.get('currentUser'),
+        lastModifiedBy: this.get('currentUser'),
+        owner: this.get('currentUser'),
+        originalWsId: workspace,
+        createdWorkspace: null,
+        createdFolderSet: null,
+      };
+      for (let key in request) {
+        initialRequest[key] = request[key];
+      }
+      let res = await initialRequest.save();
+      console.log(res);
     },
     toggleShowMoreMenu() {
       let isShowing = this.showMoreMenu;
