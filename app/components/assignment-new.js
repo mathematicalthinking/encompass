@@ -179,7 +179,9 @@ export default Component.extend(ErrorHandlingMixin, {
       // let nameDate = $('#assignedDate')
       //   .data('daterangepicker')
       //   .startDate.format('MMM Do YYYY');
-      let nameDate = assignedDate ? moment(new Date(assignedDate)).format('MMM Do YYYY') : moment(new Date()).format('MMM Do YYYY');
+      let nameDate = assignedDate
+        ? moment(new Date(assignedDate)).format('MMM Do YYYY')
+        : moment(new Date()).format('MMM Do YYYY');
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
     }
@@ -220,6 +222,7 @@ export default Component.extend(ErrorHandlingMixin, {
     createAssignmentData.linkedWorkspacesRequest = {
       doCreate: doCreateLinkedWorkspaces,
       name: linkedNameFormat,
+      linkType: 'group',
     };
 
     createAssignmentData.parentWorkspaceRequest = {
