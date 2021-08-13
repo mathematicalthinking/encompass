@@ -1,14 +1,3 @@
 <div id="user-new">
-  {{#if @currentUser.isAdmin}}
     <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
-  {{/if}}
-  {{#if @currentUser.isPdAdmin}}
-    <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
-  {{/if}}
-  {{#if @currentUser.isTeacher}}
-    <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
-  {{/if}}
-  {{#if @currentUser.isStudent}}
-      <div class="centered">FORBIDDEN</div>
-  {{/if}}
 </div>
