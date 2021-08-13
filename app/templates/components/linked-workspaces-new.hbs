@@ -19,9 +19,11 @@
         Workspaces to be created
       </p>
       <ul>
-      {{#each students as |student|}}
-        <li>{{student.username}}: {{previewName}}</li>
-      {{/each}}
+      {{#unless this.mode}}
+        {{#each students as |student|}}
+          <li>{{student.username}}: {{previewName}}</li>
+        {{/each}}
+      {{/unless}}
       </ul>
     </div>
   {{#each workspaceNameErrors as |error|}}
