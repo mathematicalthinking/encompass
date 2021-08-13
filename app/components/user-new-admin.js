@@ -1,5 +1,6 @@
 import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
 import Component from '@ember/component';
 import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
@@ -17,7 +18,11 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
   email: '',
   org: null,
   location: '',
-  accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
+  accountTypes: computed('currentUser', function () {
+    return this.currentUser.isAdmin
+      ? ['Teacher', 'Student', 'Pd Admin', 'Admin']
+      : ['Teacher', 'Student'];
+  }),
   isAuthorized: null,
   authorizedBy: '',
   newUserData: {},

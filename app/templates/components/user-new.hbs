@@ -3,7 +3,7 @@
     <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
   {{/if}}
   {{#if @currentUser.isPdAdmin}}
-    <UserNewPd @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
+    <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
   {{/if}}
   {{#if @currentUser.isTeacher}}
     <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />

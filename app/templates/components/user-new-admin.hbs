@@ -29,7 +29,6 @@
         <Input @type="text" @value={{this.lastName}} @classNames="user-last-name" />
       </td>
     </tr>
-    {{!-- 1. teacher has none of this --}}
     {{#unless this.currentUser.isTeacher}}
     <tr>
       <td>Email
@@ -44,7 +43,11 @@
     <tr>
       <td>Organization <span class="required-star">*</span></td>
       <td>
-        <TwitterTypeahead @dataList={{this.organizations}} @minLength={{0}} @onSelect="setOrg" @optionLabelPath="name" @setSelectedValueOnChange={{true}} />
+        {{#unless this.currentUser.isAdmin}}
+          {{this.currentUser.organization.name}}
+        {{else}}
+          <TwitterTypeahead @dataList={{this.organizations}} @minLength={{0}} @onSelect="setOrg" @optionLabelPath="name" @setSelectedValueOnChange={{true}} />
+        {{/unless}}
       </td>
     </tr>
     <tr>
@@ -68,7 +71,6 @@
     {{/unless}}
   </table>
   
-  {{!-- 1. teacher has none of this --}}
   {{#if this.usernameError}}
     <ErrorBox @error={{this.usernameError}} @showDismiss={{true}} @resetError={{action (mut this.usernameError) null}} />
   {{/if}}

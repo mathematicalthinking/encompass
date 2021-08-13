@@ -512,10 +512,10 @@ describe('Users', function () {
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, '.mySelect', 'Teacher', true);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
-        await helpers.waitForSelector(driver, '.error-message');
-        expect(
-          await helpers.findAndGetText(driver, '.error-message')
-        ).to.contain('Missing required fields');
+        await helpers.waitForSelector(driver, '.error-text');
+        expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(
+          'Missing required fields'
+        );
       });
 
       it('should not let you submit form with invalid password', async function () {
@@ -527,10 +527,10 @@ describe('Users', function () {
           tooShortPass
         );
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
-        await helpers.waitForSelector(driver, '.error-message');
-        expect(
-          await helpers.findAndGetText(driver, '.error-message')
-        ).to.contain(expectedMsg);
+        await helpers.waitForSelector(driver, '.error-text');
+        expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(
+          expectedMsg
+        );
       });
 
       it('should not let you submit form with invalid username', async function () {
@@ -548,11 +548,11 @@ describe('Users', function () {
           badUsername
         );
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
-        await helpers.waitForSelector(driver, '.error-message');
+        await helpers.waitForSelector(driver, '.error-text');
         await helpers.waitForTextInDom(driver, expectedMsg);
-        expect(
-          await helpers.findAndGetText(driver, '.error-message')
-        ).to.contain(expectedMsg);
+        expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(
+          expectedMsg
+        );
         await clearUsername(driver);
       });
 
@@ -584,12 +584,12 @@ describe('Users', function () {
         await helpers.findInputAndType(driver, 'input.user-email', email);
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
-        await helpers.waitForSelector(driver, '.error-message');
+        await helpers.waitForSelector(driver, '.error-text');
         await helpers.waitForTextInDom(driver, expectedMsg);
 
-        expect(
-          await helpers.findAndGetText(driver, '.error-message')
-        ).to.contain(expectedMsg);
+        expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(
+          expectedMsg
+        );
         await clearUsername(driver);
       });
 
@@ -625,10 +625,10 @@ describe('Users', function () {
         );
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, '#new-user-btn');
-        await helpers.waitForSelector(driver, '.error-message');
-        expect(
-          await helpers.findAndGetText(driver, '.error-message')
-        ).to.contain('Username already exists');
+        await helpers.waitForSelector(driver, '.error-text');
+        expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(
+          'Username already exists'
+        );
         await clearUsername(driver);
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.findInputAndType(driver, 'input.user-last-name', '');
