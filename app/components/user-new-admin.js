@@ -116,15 +116,16 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
       }
     },
 
-    newUser: function () {
+    newUser: async function () {
       var username = this.username;
       var password = this.password;
       var firstName = this.firstName;
       var lastName = this.lastName;
       var email = this.email;
-      var organization = this.org;
+      var organization =
+        this.org || (await this.currentUser.get('organization'));
       var location = this.location;
-      var accountType = this.selectedType;
+      var accountType = this.selectedType || 'student';
       var accountTypeLetter;
       if (accountType) {
         accountTypeLetter = accountType.charAt(0).toUpperCase();

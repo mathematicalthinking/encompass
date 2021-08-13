@@ -29,6 +29,8 @@
         <Input @type="text" @value={{this.lastName}} @classNames="user-last-name" />
       </td>
     </tr>
+    {{!-- 1. teacher has none of this --}}
+    {{#unless this.currentUser.isTeacher}}
     <tr>
       <td>Email
           {{#if this.isEmailRequired}}
@@ -63,8 +65,10 @@
         <Input @type="checkbox" @checked={{this.isAuthorized}} @classNames="user-isAuth" />
       </td>
     </tr>
+    {{/unless}}
   </table>
-
+  
+  {{!-- 1. teacher has none of this --}}
   {{#if this.usernameError}}
     <ErrorBox @error={{this.usernameError}} @showDismiss={{true}} @resetError={{action (mut this.usernameError) null}} />
   {{/if}}

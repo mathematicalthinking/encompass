@@ -6,7 +6,7 @@
     <UserNewPd @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
   {{/if}}
   {{#if @currentUser.isTeacher}}
-    <UserNewTeacher @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
+    <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
   {{/if}}
   {{#if @currentUser.isStudent}}
       <div class="centered">FORBIDDEN</div>
