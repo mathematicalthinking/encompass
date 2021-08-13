@@ -1,15 +1,4 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  elementId: 'user-new',
-
-  actions: {
-    toUserInfo: function (user) {
-      this.sendAction('toUserInfo', user);
-    },
-    toUserHome: function () {
-      this.sendAction('toUserHome');
-    }
-  },
-});
-
+export default class UserNew extends Component {}

@@ -12,13 +12,4 @@ export default class UsersNewRoute extends AuthenticatedRoute {
       organizations: await this.store.findAll('organization'),
     });
   }
-  renderTemplate() {
-    this.render('users/new');
-  }
-  @action toUserInfo(user) {
-    this.transitionTo('user', user);
-  }
-  @action toUserHome() {
-    this.transitionTo('users');
-  }
 }

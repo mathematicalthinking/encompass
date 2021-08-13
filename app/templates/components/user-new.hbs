@@ -1,13 +1,14 @@
-{{#if this.currentUser.isAdmin}}
-  <UserNewAdmin @currentUser={{this.currentUser}} @store={{this.store}} @organizations={{this.organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
-{{/if}}
-{{#if this.currentUser.isPdAdmin}}
-  <UserNewPd @currentUser={{this.currentUser}} @store={{this.store}} @organizations={{this.organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
-{{/if}}
-{{#if this.currentUser.isTeacher}}
-  <UserNewTeacher @currentUser={{this.currentUser}} @store={{this.store}} @organizations={{this.organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
-{{/if}}
-{{#if this.currentUser.isStudent}}
-    <div class="centered">FORBIDDEN</div>
-{{/if}}
-
+<div id="user-new">
+  {{#if @currentUser.isAdmin}}
+    <UserNewAdmin @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
+  {{/if}}
+  {{#if @currentUser.isPdAdmin}}
+    <UserNewPd @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
+  {{/if}}
+  {{#if @currentUser.isTeacher}}
+    <UserNewTeacher @currentUser={{@currentUser}} @store={{@store}} @organizations={{@organizations}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
+  {{/if}}
+  {{#if @currentUser.isStudent}}
+      <div class="centered">FORBIDDEN</div>
+  {{/if}}
+</div>

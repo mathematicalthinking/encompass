@@ -33,7 +33,7 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
       }
       $.post({
         url: '/auth/signup',
-        data: data
+        data: data,
       })
         .then((res) => {
           return resolve(res);
@@ -67,10 +67,11 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
       if (orgReq) {
         let rec = that.store.createRecord('organization', {
           name: orgReq,
-          createdBy: that.get('currentUser')
+          createdBy: that.get('currentUser'),
         });
 
-        rec.save()
+        rec
+          .save()
           .then((res) => {
             return resolve(res.get('organizationId'));
           })
@@ -81,7 +82,6 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
       } else {
         return resolve(org.get('organizationId'));
       }
-
     });
   },
 
@@ -97,7 +97,13 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
         if (matchingOrg) {
           this.send('newUser');
         } else {
-          this.alert.showModal('question', `Are you sure you want to create ${org}`, null, 'Yes')
+          this.alert
+            .showModal(
+              'question',
+              `Are you sure you want to create ${org}`,
+              null,
+              'Yes'
+            )
             .then((result) => {
               if (result.value) {
                 this.send('newUser');
@@ -136,7 +142,7 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
         return;
       }
 
-      if (accountTypeLetter !== "S") {
+      if (accountTypeLetter !== 'S') {
         this.set('actingRole', 'teacher');
         if (!email) {
           this.set('errorMessage', true);
@@ -187,14 +193,25 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
           return this.createNewUser(newUserData)
             .then((res) => {
               if (res.username) {
-                this.alert.showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
+                this.alert.showToast(
+                  'success',
+                  `${res.username} created`,
+                  'bottom-end',
+                  3000,
+                  null,
+                  false
+                );
                 return this.router.transitionTo('users.user', res.id);
               }
-              if (res.message === 'There already exists a user with that username') {
+              if (
+                res.message === 'There already exists a user with that username'
+              ) {
                 this.set('usernameError', this.get('usernameErrors.taken'));
-              } else if (res.message === 'There already exists a user with that email address') {
+              } else if (
+                res.message ===
+                'There already exists a user with that email address'
+              ) {
                 this.set('emailError', this.get('emailErrors.taken'));
-
               } else {
                 this.set('createUserErrors', [res.message]);
               }
@@ -209,7 +226,7 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
     },
 
     cancelNew: function () {
-      this.sendAction('toUserHome');
+      this.router.transitionTo('user');
     },
 
     setOrg(org) {
@@ -227,5 +244,5 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
         $(`.${error}`).hide();
       }, 500);
     },
-  }
+  },
 });
