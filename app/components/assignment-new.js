@@ -19,6 +19,7 @@ export default Component.extend(ErrorHandlingMixin, {
   formId: null,
   createRecordErrors: [],
   queryErrors: [],
+  linkedWorkspacesMode: 'group',
   constraints: {
     section: {
       presence: { allowEmpty: false },
@@ -45,6 +46,20 @@ export default Component.extend(ErrorHandlingMixin, {
       {
         value: false,
         label: 'No',
+      },
+    ],
+  },
+  groupWsOptions: {
+    groupName: 'groupWorkspaces',
+    requried: false,
+    inputs: [
+      {
+        value: 'group',
+        label: 'By Group',
+      },
+      {
+        value: 'individual',
+        label: 'By Student',
       },
     ],
   },
@@ -222,7 +237,7 @@ export default Component.extend(ErrorHandlingMixin, {
     createAssignmentData.linkedWorkspacesRequest = {
       doCreate: doCreateLinkedWorkspaces,
       name: linkedNameFormat,
-      linkType: 'group',
+      linkType: this.linkedWorkspacesMode,
     };
 
     createAssignmentData.parentWorkspaceRequest = {

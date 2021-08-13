@@ -992,8 +992,6 @@ const generateLinkedWorkspacesFromAssignment = async (
     if (doCreateParentWs) {
       // create parent ws from linked workspaces
     }
-    console.log('created workspaces', workspaces);
-    console.log('###############################################');
     results.createdWorkspaces = workspaces;
     return [null, workspaces];
   } catch (err) {
