@@ -253,11 +253,49 @@ export default Component.extend(ErrorHandlingMixin, {
         );
       } catch (err) {
         console.log(err);
-        this.alert.showToast('error', 'could not delete', 3000, false, null);
+        this.alert.showToast(
+          'error',
+          'could not delete',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
       }
     },
     updateGroupDraft: function (student) {
       return this.newGroup.students.removeObject(student);
+    },
+    editGroupName: async function (group) {
+      const { value } = await this.get('alert').showPrompt(
+        'text',
+        `Update ${group.name}`,
+        null,
+        'Update'
+      );
+      if (!value) return;
+      group.name = value;
+      try {
+        await group.save();
+        this.get('alert').showToast(
+          'success',
+          'group updated',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        console.log(err);
+        this.get('alert').showToast(
+          'error',
+          'oops...error',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
     },
     removeStudent: function (user) {
       if (!user) {

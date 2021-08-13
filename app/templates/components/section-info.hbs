@@ -157,9 +157,8 @@
               <li>
                 <strong>{{group.name}}</strong>
                 {{#if this.addGroup}}
-                  <button class="trash-button" {{action 'deleteGroup' group}}>
-                  <i class="far fa-times-circle" aria-hidden="true"></i>
-                  </button>
+                  <i title="Edit" {{action "editGroupName" group}} class="far fa-edit"></i>
+                  <i class="far fa-times-circle" aria-hidden="true" {{action 'deleteGroup' group}}></i>
                   <ul class="listing">
                     {{#each group.students as |student|}}
                       <li>{{student.username}}
