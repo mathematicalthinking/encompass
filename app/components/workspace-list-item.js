@@ -79,12 +79,24 @@ export default Component.extend({
       );
       if (!value) return;
       let section = await this.get('store').findRecord('section', value);
+      let { value: mode } = await this.get('alert').showPromptSelect(
+        'Assign to groups or individuals?',
+        { group: 'Groups', individual: 'Individuals' },
+        'Select'
+      );
+      let { value: parentChoice } = await this.get('alert').showModal(
+        'info',
+        'Make Parent Workspace?',
+        null,
+        'Yes',
+        'No'
+      );
       let request = {
         batchClone: {
-          mode: 'group',
+          mode,
           section,
           sectionId: section.id,
-          createParent: true,
+          createParent: !!parentChoice,
         },
         createDate: new Date(),
         name: `${workspaceName} / ${section.name}`,
