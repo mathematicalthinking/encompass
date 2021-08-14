@@ -11,6 +11,12 @@ export default Component.extend({
     function () {
       let users = this.users.filterBy('isTrashed', false);
       let unauthUsers = users.filterBy('isAuthorized', false);
+      if (this.currentUser.isPdAdmin) {
+        let orgUsersNotYou = unauthUsers
+          .filterBy('organization.id', this.currentUser.get('organization.id'))
+          .rejectBy('username', this.currentUser.user);
+        return orgUsersNotYou.sortBy('createDate').reverse();
+      }
       return unauthUsers.sortBy('createDate').reverse();
     }
   ),
@@ -51,6 +57,12 @@ export default Component.extend({
       let users = this.users.filterBy('isTrashed', false);
       let teacherUsers = users.filterBy('accountType', 'T');
       let authTeachers = teacherUsers.filterBy('isAuthorized', true);
+      if (this.currentUser.isPdAdmin) {
+        let orgUsersNotYou = authTeachers
+          .filterBy('organization.id', this.currentUser.get('organization.id'))
+          .rejectBy('username', this.currentUser.username);
+        return orgUsersNotYou.sortBy('createDate').reverse();
+      }
       return authTeachers.sortBy('createDate').reverse();
     }
   ),
@@ -63,6 +75,12 @@ export default Component.extend({
       let users = this.users.filterBy('isTrashed', false);
       let authUsers = users.filterBy('isAuthorized', true);
       let students = authUsers.filterBy('accountType', 'S');
+      if (this.currentUser.isPdAdmin) {
+        let orgUsersNotYou = students
+          .filterBy('organization.id', this.currentUser.get('organization.id'))
+          .rejectBy('username', this.currentUser.username);
+        return orgUsersNotYou.sortBy('createDate').reverse();
+      }
       return students.sortBy('createDate').reverse();
     }
   ),
