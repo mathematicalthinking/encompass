@@ -7,7 +7,6 @@ import moment from 'moment';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'user-info',
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
   basePermissions: service('edit-permissions'),
