@@ -8,6 +8,7 @@ import UserSignupMixin from '../mixins/user_signup_mixin';
 
 export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
   router: service('router'),
+  store: service(),
   elementId: 'user-new-admin',
   alert: service('sweet-alert'),
   errorMessage: null,

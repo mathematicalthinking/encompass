@@ -3,7 +3,7 @@
 {{/if}}
 
 {{#if this.model.currentUser.isTeacher}}
-  <UserListTeacher @store={{this.store}} @currentUser={{this.model.currentUser}} @users={{this.model.users}} @organization={{this.model.organiztions}} @toUserInfo="toUserInfo" />
+  <UserListAdmin @store={{this.store}} @currentUser={{this.model.currentUser}} @users={{this.model.users}} @organization={{this.model.organiztions}} @toUserInfo="toUserInfo" />
 {{/if}}
 
 {{#if this.model.currentUser.isPdAdmin}}
