@@ -1,5 +1,4 @@
 <h3><span class="username">{{@user.username}}</span>'s Account Details</h3>
-
 {{#each this.errorHandling.loadOrgsErrors as |error|}}
 <p class="error-message">{{error}}</p>
 {{/each}}
@@ -83,7 +82,7 @@
         <td>Organization {{#if this.isEditing}}<span class="required-star">*</span>{{/if}}</td>
         {{#if this.isEditing}}
           {{#if @currentUser.isAdmin}}
-            <td><TwitterTypeahead @dataList={{this.orgList}} @selectedValue={{@user.organization}} @onSelect="setOrg" @minLength={{0}} @optionLabelPath="name" @setSelectedValueOnChange={{true}} /></td>
+            <td><TwitterTypeahead @dataList={{@orgList}} @selectedValue={{@user.organization}} @onSelect="setOrg" @minLength={{0}} @optionLabelPath="name" @setSelectedValueOnChange={{true}} /></td>
           {{else}}
             <td>{{@user.organization.name}}</td>
           {{/if}}

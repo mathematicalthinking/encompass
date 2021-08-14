@@ -48,16 +48,7 @@ export default class UserInfoComponent extends Component {
   //       this.errorHandling.handleErrors(err, 'loadOrgsErrors');
   //     });
   // },
-  get orgList() {
-    try {
-      let orgs = this.store.findAll('organization');
-      this.errorHandling.removeMessages('loadOrgErrors');
-      return orgs;
-    } catch (err) {
-      this.errorHandling.handleErrors(err, 'loadOrgErrors');
-      return null;
-    }
-  }
+
   get canEdit() {
     let user = this.args.user;
     let currentUser = this.args.currentUser;
@@ -231,7 +222,7 @@ export default class UserInfoComponent extends Component {
     let org = this.org;
     let orgReq = this.orgReq;
 
-    let orgs = this.orgList;
+    let orgs = this.args.orgList;
     let matchingOrg = orgs.findBy('name', orgReq);
     if (matchingOrg) {
       org = matchingOrg;
