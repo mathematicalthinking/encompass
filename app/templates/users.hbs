@@ -1,7 +1,7 @@
 {{#if this.model.currentUser.isStudent}}
   <div class="centered">FORBIDDEN</div>
 {{else}}
-  <UserListAdmin @store={{this.store}} @currentUser={{this.model.currentUser}} @users={{this.model.users}} @organization={{this.model.organiztions}} @toUserInfo="toUserInfo" />
+  <UserList @store={{this.store}} @currentUser={{this.model.currentUser}} @users={{this.model.users}} @organization={{this.model.organiztions}} @toUserInfo="toUserInfo" />
 {{/if}}
 
 
