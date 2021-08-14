@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { computed } from '@ember/object';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
@@ -8,7 +7,6 @@ export default class UserListComponent extends Component {
   @tracked showDeletedUsers = false;
   @service store;
 
-  @computed('args.users.@each.isAuthorized', 'args.users.@each.isTrashed')
   get unauthUsers() {
     let users = this.args.users.filterBy('isTrashed', false);
     let unauthUsers = users.filterBy('isAuthorized', false);
@@ -24,12 +22,6 @@ export default class UserListComponent extends Component {
     return unauthUsers.sortBy('createDate').reverse();
   }
 
-  @computed(
-    'args.users.@each.accountType',
-    'args.users.@each.isAuthorized',
-    'args.users.@each.isTrashed',
-    'args.currentUser.username'
-  )
   get adminUsers() {
     let users = this.args.users.filterBy('isTrashed', false);
     let authUsers = users.filterBy('isAuthorized', true);
@@ -41,11 +33,6 @@ export default class UserListComponent extends Component {
     return adminUsersNotYou.sortBy('createDate').reverse();
   }
 
-  @computed(
-    'args.users.@each.accountType',
-    'args.users.@each.isAuthorized',
-    'args.users.@each.isTrashed'
-  )
   get pdUsers() {
     let users = this.args.users.filterBy('isTrashed', false);
     let authUsers = users.filterBy('isAuthorized', true);
@@ -53,13 +40,6 @@ export default class UserListComponent extends Component {
     return students.sortBy('createDate').reverse();
   }
 
-  @computed(
-    'args.users.@each.isAuthorized',
-    'args.users.@each.accountType',
-    'args.users.@each.isTrashed',
-    'args.currentUser.isPdAdmin',
-    'args.currentUser.username'
-  )
   get teacherUsers() {
     let users = this.args.users.filterBy('isTrashed', false);
     let teacherUsers = users.filterBy('accountType', 'T');
@@ -75,13 +55,7 @@ export default class UserListComponent extends Component {
     }
     return authTeachers.sortBy('createDate').reverse();
   }
-  @computed(
-    'args.users.@each.accountType',
-    'args.users.@each.isAuthorized',
-    'args.users.@each.isTrashed',
-    'args.currentUser.isPdAdmin',
-    'args.currentUser.username'
-  )
+
   get studentUsers() {
     let users = this.args.users.filterBy('isTrashed', false);
     let authUsers = users.filterBy('isAuthorized', true);
@@ -97,14 +71,14 @@ export default class UserListComponent extends Component {
     }
     return students.sortBy('createDate').reverse();
   }
-  @computed('args.users.@each.isTrashed')
+
   get trashedUsers() {
     return this.store.query('user', {
       isTrashed: true,
     });
   }
   // These are all the students that are in sections you are a teacher of
-  @computed('args.users.@each.accountType', 'args.currentUser')
+
   get yourStudents() {
     let yourSections = this.args.currentUser.get('sections');
     let yourTeacherSections = yourSections.filterBy('role', 'teacher');
@@ -128,7 +102,7 @@ export default class UserListComponent extends Component {
   }
 
   // These are all the users that you have created - filter out duplicates
-  @computed('args.users.@each.isTrashed', 'args.currentUser')
+
   get yourUsers() {
     let yourId = this.args.currentUser.get('id');
     let yourUsers = this.args.users.filterBy('createdBy.id', yourId);
@@ -136,7 +110,7 @@ export default class UserListComponent extends Component {
   }
 
   // These are all the users that are in the same org as you
-  // @computed('args.users.@each.isTrashed', 'args.currentUser.username')
+
   get orgUsers() {
     let usersWithOrgs = this.args.users.filter((user) => {
       let accountType = user.get('accountType');
