@@ -8,12 +8,12 @@
     <nav class="list-box">
       <h2>Your account</h2>
       <ul class="listing your-account">
-        <li class="{{if this.currentUser.isAuthorized 'is-authorized'}} {{if this.currentUser.isAdmin 'is-admin'}}">
-          <LinkTo @route="users.user" @model={{this.currentUser.id}} @classNames="user">{{this.currentUser.username}}</LinkTo>
+        <li class="{{if @currentUser.isAuthorized 'is-authorized'}} {{if @currentUser.isAdmin 'is-admin'}}">
+          <LinkTo @route="users.user" @model={{@currentUser.id}} @classNames="user">{{@currentUser.username}}</LinkTo>
         </li>
       </ul>
       
-      {{#if this.currentUser.isTeacher}}
+      {{#if @currentUser.isTeacher}}
         <h2>Students in your Classes</h2>
       <ul class="listing waiting-auth">
         {{#if this.yourStudents}}
@@ -40,7 +40,7 @@
         {{/if}}
       </ul>
 
-      <h2>Users in {{this.currentUser.organization.name}}</h2>
+      <h2>Users in {{@currentUser.organization.name}}</h2>
       <ul class="listing org-users">
         {{#if this.orgUsers}}
           {{#each this.orgUsers as |user|}}
@@ -65,7 +65,7 @@
           <li>There are no users waiting to be authorized</li>
         {{/if}}
       </ul>
-    {{#if this.currentUser.isAdmin}}
+    {{#if @currentUser.isAdmin}}
       <h2>Administrators</h2>
       <ul class="listing admin-users">
         {{#each this.adminUsers as |user|}}
@@ -113,8 +113,8 @@
           <li>There are no students yet</li>
         {{/if}}
       </ul>
-      {{#if this.currentUser.isAdmin}}
-      <button class="toggle-button" {{action 'showDeletedUsers'}}>
+      {{#if @currentUser.isAdmin}}
+      <button class="toggle-button" {{action 'toggleDeletedUsers'}}>
         {{#if this.showDeletedUsers}}
           Hide
         {{else}}
