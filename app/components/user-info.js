@@ -2,7 +2,6 @@ import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import $ from 'jquery';
 import moment from 'moment';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
@@ -290,11 +289,6 @@ export default Component.extend(ErrorHandlingMixin, {
 
     resetPassword: function () {
       this.set('isResettingPassword', true);
-      later(() => {
-        $('html, body').animate({
-          scrollTop: $(document).height(),
-        });
-      }, 100);
     },
 
     authEmail: function () {
