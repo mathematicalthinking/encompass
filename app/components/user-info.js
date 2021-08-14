@@ -1,6 +1,5 @@
 import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
-import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import moment from 'moment';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
