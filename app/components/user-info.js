@@ -2,11 +2,11 @@ import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { inject as service } from '@ember/service';
 import moment from 'moment';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
+  errorHandling: service('error-handling'),
   basePermissions: service('edit-permissions'),
 
   isEditing: false,
@@ -30,7 +30,7 @@ export default Component.extend(ErrorHandlingMixin, {
       this.getUserSections();
     }
     this.set('org', null);
-    this.removeMessages(
+    this.errorHandling.removeMessages(
       'updateRecordErrors',
       'createRecordErrors',
       'findRecordErrors'
@@ -40,10 +40,10 @@ export default Component.extend(ErrorHandlingMixin, {
       .findAll('organization')
       .then((orgs) => {
         this.set('orgList', orgs);
-        this.removeMessages('loadOrgErrors');
+        this.errorHandling.removeMessages('loadOrgErrors');
       })
       .catch((err) => {
-        this.handleErrors(err, 'loadOrgsErrors');
+        this.errorHandling.handleErrors(err, 'loadOrgsErrors');
       });
   },
 
@@ -269,10 +269,10 @@ export default Component.extend(ErrorHandlingMixin, {
               null
             );
             this.set('isEditing', false);
-            this.removeMessages('updateRecordErrors');
+            this.errorHandling.removeMessages('updateRecordErrors');
           })
           .catch((err) => {
-            this.handleErrors(err, 'updateRecordErrors', user);
+            this.errorHandling.handleErrors(err, 'updateRecordErrors', user);
           });
       }
       this.set('isEditing', false);
@@ -322,7 +322,7 @@ export default Component.extend(ErrorHandlingMixin, {
       newOrg
         .save()
         .then((org) => {
-          this.removeMessages('createRecordErrors');
+          this.errorHandling.removeMessages('createRecordErrors');
           let user = this.user;
           let orgName = org.get('name');
           user.set('organization', org);
@@ -340,14 +340,14 @@ export default Component.extend(ErrorHandlingMixin, {
                 null
               );
               this.set('orgModal', false);
-              this.removeMessages('updateRecordErrors');
+              this.errorHandling.removeMessages('updateRecordErrors');
             })
             .catch((err) => {
-              this.handleErrors(err, 'updateRecordErrors', user);
+              this.errorHandling.handleErrors(err, 'updateRecordErrors', user);
             });
         })
         .catch((err) => {
-          this.handleErrors(err, 'createRecordErrors', newOrg);
+          this.errorHandling.handleErrors(err, 'createRecordErrors', newOrg);
         });
     },
 
@@ -358,10 +358,10 @@ export default Component.extend(ErrorHandlingMixin, {
         .save()
         .then((res) => {
           // handle success
-          this.removeMessages('updateRecordErrors');
+          this.errorHandling.removeMessages('updateRecordErrors');
         })
         .catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors', user);
+          this.errorHandling.handleErrors(err, 'updateRecordErrors', user);
         });
     },
 
@@ -453,10 +453,10 @@ export default Component.extend(ErrorHandlingMixin, {
           this.set('user', user);
           this.set('isResettingPassword', false);
           this.set('resetPasswordSuccess', true);
-          this.removeMessages('findRecordErrors');
+          this.errorHandling.removeMessages('findRecordErrors');
         })
         .catch((err) => {
-          this.handleErrors(err, 'findRecordErrors');
+          this.errorHandling.handleErrors(err, 'findRecordErrors');
         });
     },
 

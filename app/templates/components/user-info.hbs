@@ -1,6 +1,6 @@
 <h3><span class="username">{{this.user.username}}</span>'s Account Details</h3>
 
-{{#each this.loadOrgsErrors as |error|}}
+{{#each this.errorHandling.loadOrgsErrors as |error|}}
 <p class="error-message">{{error}}</p>
 {{/each}}
 <article class="user">
@@ -246,12 +246,12 @@
     <p class="warning-message">You can't edit users you haven't created. Contact an admin to make changes.</p>
   {{/if}}
 </article>
-{{#each this.findRecordErrors as |error|}}
+{{#each this.errorHandling.findRecordErrors as |error|}}
   <p class="error-message">{{error}}</p>
 {{/each}}
-{{#each this.createRecordErrors as |error|}}
+{{#each this.errorHandling.createRecordErrors as |error|}}
   <p class="error-message">{{error}}</p>
 {{/each}}
-{{#each this.updateRecordErrors as |error|}}
+{{#each this.errorHandling.updateRecordErrors as |error|}}
   <p class="error-message">{{error}}</p>
 {{/each}}
