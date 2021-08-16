@@ -34,13 +34,21 @@ export default Component.extend(ErrorHandlingMixin, {
   alert: service('sweet-alert'),
   permissions: service('problem-permissions'),
   utils: service('utility-methods'),
-
+  writePermissions: computed('problem', function () {
+    return this.permissions.writePermissions(this.problem);
+  }),
   canEdit: alias('writePermissions.canEdit'),
   canDelete: alias('writePermissions.canDelete'),
   canAssign: alias('writePermissions.canAssign'),
   recommendedProblems: alias('currentUser.organization.recommendedProblems'),
   parentActions: alias('parentView.actions'),
-
+  flaggedBy: computed('problem', function () {
+    if (!this.problem.get('flagReason.flaggedBy')) return;
+    return this.store.findRecord(
+      'user',
+      this.problem.get('flagReason.flaggedBy')
+    );
+  }),
   iconFillOptions: {
     approved: '#35A853',
     pending: '#FFD204',
@@ -52,82 +60,6 @@ export default Component.extend(ErrorHandlingMixin, {
     ip: 'Intellectual Property Concern',
     substance: 'Lacking Substance',
     other: 'Other Reason',
-  },
-
-  init: function () {
-    this._super(...arguments);
-    this.set('keywordFilter', this.createKeywordFilter.bind(this));
-
-    this.store
-      .findAll('section')
-      .then((sections) => {
-        this.set('sectionList', sections);
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'findRecordErrors');
-      });
-  },
-
-  didInsertElement() {
-    $('.list-outlet').removeClass('hidden');
-    this._super(...arguments);
-  },
-
-  didUpdateAttrs() {
-    let attrProbId = this.get('problem.id');
-    let currentId = this.currentProblemId;
-    if (!_.isEqual(attrProbId, currentId)) {
-      if (this.isEditing) {
-        this.set('isEditing', false);
-      }
-      if (this.isForEdit) {
-        this.set('isForEdit', false);
-      }
-    }
-    this._super(...arguments);
-  },
-
-  didReceiveAttrs: function () {
-    let currentProblemId = this.currentProblemId;
-    if (_.isUndefined(currentProblemId)) {
-      this.set('currentProblemId', this.get('problem.id'));
-    }
-    this.set('isWide', false);
-    this.set('showAssignment', false);
-
-    let problem = this.problem;
-    this.set('writePermissions', this.permissions.writePermissions(problem));
-
-    this.store
-      .findAll('section')
-      .then((sections) => {
-        this.set('sectionList', sections);
-        if (problem.get('isForEdit')) {
-          this.send('editProblem');
-        }
-        if (problem.get('isForAssignment')) {
-          this.send('showAssignment');
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'findRecordErrors');
-      });
-
-    let problemFlagReason = problem.get('flagReason');
-    if (problemFlagReason) {
-      let flaggedBy = problemFlagReason.flaggedBy;
-      if (!flaggedBy) return;
-      this.store.findRecord('user', flaggedBy).then((user) => {
-        this.set('flaggedBy', user);
-      });
-    }
-    this._super(...arguments);
-  },
-
-  willDestroyElement: function () {
-    // hide outlet, but don't transition to list because topbar link-to takes care of that
-    this.send('hideInfo', false);
-    this._super(...arguments);
   },
 
   statusIconFill: computed('problem.status', function () {
