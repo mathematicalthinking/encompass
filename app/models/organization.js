@@ -1,7 +1,6 @@
-import Model, { attr, hasMany } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
-export default class OrganizationModel extends Model.extend(Auditable) {
+import { attr, hasMany } from '@ember-data/model';
+import Auditable from './auditable';
+export default class OrganizationModel extends Auditable {
   get organizationId() {
     return this.id;
   }

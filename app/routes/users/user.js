@@ -9,6 +9,7 @@ export default class UsersUserRoute extends Route {
     return hash({
       currentUser,
       user: this.store.findRecord('user', params.user_id),
+      organizations: this.store.findAll('organization'),
     });
   }
 }

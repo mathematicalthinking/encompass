@@ -1,2 +1,5 @@
-<UserNew @store={{this.store}} @organizations={{this.model.organizations}} @currentUser={{this.model.currentUser}} @toUserInfo="toUserInfo" @toUserHome="toUserHome" />
-
+<div id="user-new">
+  <div id="user-new-admin">
+    <UserNew @organizations={{this.model.organizations}} @currentUser={{this.model.currentUser}} />
+  </div>
+</div>

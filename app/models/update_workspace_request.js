@@ -1,7 +1,6 @@
-import Model, { belongsTo, attr, hasMany } from '@ember-data/model';
-import Auditable from '../models/_auditable_mixin';
-
-export default class UpdateWorkspaceRequest extends Model.extend(Auditable) {
+import { belongsTo, attr, hasMany } from '@ember-data/model';
+import Auditable from './auditable';
+export default class UpdateWorkspaceRequest extends Auditable {
   @belongsTo('workspace', { inverse: null }) workspace;
   @belongsTo('assignment', { inverse: null }) linkedAssignment;
   @attr updateErrors;
