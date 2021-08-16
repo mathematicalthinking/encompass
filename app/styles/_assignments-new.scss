@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 #assignmentnewheader {
   color: $accent-color;
@@ -30,7 +30,6 @@ form#newassignmentform {
         color: $primary-font-color;
       }
     }
-
   }
   .flex-input {
     width: 70%;
@@ -39,7 +38,7 @@ form#newassignmentform {
     width: 70%;
   }
 
-  input[type=text]  {
+  input[type='text'] {
     width: 70%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -55,11 +54,10 @@ form#newassignmentform {
     font-size: 1em;
     display: inline-block;
   }
-  li{
-    display:flex;
+  li {
+    display: flex;
     align-items: center;
     flex-wrap: wrap;
-
   }
   i {
     margin-left: 3px;
@@ -69,6 +67,9 @@ form#newassignmentform {
   .radio-group {
     display: flex;
   }
+  .group-selection {
+    width: 100%;
+  }
 
   div.twitter-typeahead {
     display: inline-block;
@@ -77,7 +78,7 @@ form#newassignmentform {
     width: 70%;
 
     span.twitter-typeahead {
-      width:100%;
+      width: 100%;
     }
 
     input.typeahead {
@@ -102,6 +103,9 @@ form#newassignmentform {
     font-size: 1em;
     color: $dark-font-color;
   }
+  .no-width {
+    width: unset;
+  }
 
   .error-box {
     width: 70%;
@@ -120,5 +124,4 @@ form#newassignmentform {
     width: 100%;
     margin-left: 15px;
   }
-
 }

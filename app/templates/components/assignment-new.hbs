@@ -117,7 +117,7 @@
           </div>
         </li>
         <li class="linked-ws">
-          <label for="linkedWorkspaces">
+          <label for="linkedWorkspaces" class="no-width">
           <span
               class="label-text simptip-position-right simptip-multiline simptip-smooth"
               data-tooltip={{this.tooltips.linkedWorkspaces}}
@@ -128,8 +128,8 @@
           <RadioGroup @options={{this.linkedWsOptions}} @selectedValue={{this.doCreateLinkedWorkspaces}} />
 
           {{#if this.showLinkedWsForm}}
-            <div>
-              <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{this.linkedWorkspacesMode}} />
+            <div class="group-selection">
+              <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{this.linkedWorkspacesMode}} @noWidth={{true}} />
             </div>
             <LinkedWorkspacesNew @isDisplayOnly={{true}} @students={{this.selectedSection.students.content}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} />
           {{/if}}
