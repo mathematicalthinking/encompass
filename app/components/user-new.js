@@ -1,38 +1,36 @@
 import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import UserSignupComponent from './user-signup';
 import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
-import UserSignupMixin from '../mixins/user_signup_mixin';
 
-export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
-  router: service('router'),
-  store: service(),
-  elementId: 'user-new-admin',
-  alert: service('sweet-alert'),
-  errorMessage: null,
-  username: '',
-  password: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  org: null,
-  location: '',
-  accountTypes: computed('currentUser', function () {
-    return this.currentUser.isAdmin
+export default class UserNewComponent extends UserSignupComponent {
+  @service router;
+  @service store;
+  @service('sweet-alert') alert;
+  @tracked errorMessage = null;
+  @tracked username = '';
+  @tracked password = '';
+  @tracked firstName = '';
+  @tracked lastName = '';
+  @tracked email = '';
+  @tracked org = null;
+  @tracked location = '';
+  get accountTypes() {
+    return this.args.currentUser.isAdmin
       ? ['Teacher', 'Student', 'Pd Admin', 'Admin']
       : ['Teacher', 'Student'];
-  }),
-  isAuthorized: null,
-  authorizedBy: '',
-  newUserData: {},
-  actingRole: null,
-  orgReq: null,
-  createOrgErrors: [],
-  createUserErrors: [],
-
-  createNewUser: function (data) {
+  }
+  @tracked isAuthorized = null;
+  @tracked authorizedBy = '';
+  newUserData = {};
+  @tracked actingRole = null;
+  orgReq = null;
+  @tracked createOrgErrors = [];
+  @tracked createUserErrors = [];
+  @tracked missingAccountType = false;
+  createNewUser(data) {
     return new Promise((resolve, reject) => {
       if (!data) {
         return reject('Invalid data');
@@ -48,9 +46,9 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
           reject(err);
         });
     });
-  },
+  }
 
-  handleOrg: function (org) {
+  handleOrg(org) {
     var that = this;
     return new Promise((resolve, reject) => {
       if (!org) {
@@ -60,10 +58,10 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
       let orgReq;
       // make sure user did not type in existing org
       if (typeof org === 'string') {
-        let orgs = this.organizations;
+        let orgs = this.args.organizations;
         let matchingOrg = orgs.findBy('name', org);
         if (matchingOrg) {
-          this.set('org', matchingOrg);
+          this.org = matchingOrg;
           org = matchingOrg;
         } else {
           orgReq = org;
@@ -89,167 +87,167 @@ export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
         return resolve(org.get('organizationId'));
       }
     });
-  },
+  }
 
   //warn admin they are creating new org
   // When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
 
-  actions: {
-    confirmOrg: function () {
-      let org = this.org;
-      if (typeof org === 'string') {
-        let orgs = this.organizations;
-        let matchingOrg = orgs.findBy('name', org);
-        if (matchingOrg) {
-          this.send('newUser');
-        } else {
-          this.alert
-            .showModal(
-              'question',
-              `Are you sure you want to create ${org}`,
-              null,
-              'Yes'
-            )
-            .then((result) => {
-              if (result.value) {
-                this.send('newUser');
-              }
-            });
-          this.set('orgReq', org);
-        }
+  @action confirmOrg() {
+    let org = this.org;
+    if (typeof org === 'string') {
+      let orgs = this.args.organizations;
+      let [matchingOrg] = orgs.filter(
+        (organization) => organization.name === org
+      );
+      if (matchingOrg) {
+        this.newUser();
       } else {
-        this.send('newUser');
+        this.alert
+          .showModal(
+            'question',
+            `Are you sure you want to create ${org}`,
+            null,
+            'Yes'
+          )
+          .then((result) => {
+            if (result.value) {
+              this.newUser();
+            }
+          });
+        this.orgReq = org;
       }
-    },
+    } else {
+      this.newUser();
+    }
+  }
 
-    newUser: async function () {
-      var username = this.username;
-      var password = this.password;
-      var firstName = this.firstName;
-      var lastName = this.lastName;
-      var email = this.email;
-      var organization =
-        this.org || (await this.currentUser.get('organization'));
-      var location = this.location;
-      var accountType = this.selectedType || 'student';
-      var accountTypeLetter;
-      if (accountType) {
-        accountTypeLetter = accountType.charAt(0).toUpperCase();
-      } else {
-        this.set('missingAccountType', true);
-        $('.account').show();
+  async newUser() {
+    var username = this.username;
+    var password = this.password;
+    var firstName = this.firstName;
+    var lastName = this.lastName;
+    var email = this.email;
+    var organization =
+      this.org || (await this.args.currentUser.get('organization'));
+    var location = this.location;
+    var accountType = this.selectedType || 'student';
+    var accountTypeLetter;
+    if (accountType) {
+      accountTypeLetter = accountType.charAt(0).toUpperCase();
+    } else {
+      this.missingAccountType = true;
+      $('.account').show();
+      return;
+    }
+    var isAuthorized = this.isAuthorized;
+    var currentUserId = this.args.currentUser.get('id');
+
+    if (!username || !password) {
+      this.errorMessage = true;
+      $('.required').show();
+      return;
+    }
+
+    if (accountTypeLetter !== 'S') {
+      this.actingRole = 'teacher';
+      if (!email) {
+        this.errorMessage = true;
         return;
       }
-      var isAuthorized = this.isAuthorized;
-      var currentUserId = this.currentUser.get('id');
+    } else {
+      email = null;
+    }
 
-      if (!username || !password) {
-        this.set('errorMessage', true);
-        $('.required').show();
-        return;
-      }
+    if (isAuthorized) {
+      let userData = {
+        username,
+        password,
+        firstName,
+        lastName,
+        email,
+        location,
+        accountType: accountTypeLetter,
+        isAuthorized: true,
+        authorizedBy: currentUserId,
+        createdBy: currentUserId,
+      };
+      this.authorizedBy = currentUserId;
+      this.newUserData = userData;
+    } else {
+      let userData = {
+        username: username,
+        password: password,
+        firstName,
+        lastName,
+        email: email,
+        location: location,
+        accountType: accountTypeLetter,
+        isAuthorized: false,
+        createdBy: currentUserId,
+      };
+      this.newUserData = userData;
+    }
 
-      if (accountTypeLetter !== 'S') {
-        this.set('actingRole', 'teacher');
-        if (!email) {
-          this.set('errorMessage', true);
-          return;
-        }
-      } else {
-        email = null;
-      }
+    if (!username) {
+      return;
+    }
 
-      if (isAuthorized) {
-        let userData = {
-          username,
-          password,
-          firstName,
-          lastName,
-          email,
-          location,
-          accountType: accountTypeLetter,
-          isAuthorized: true,
-          authorizedBy: currentUserId,
-          createdBy: currentUserId,
-        };
-        this.set('authorizedBy', currentUserId);
-        this.set('newUserData', userData);
-      } else {
-        let userData = {
-          username: username,
-          password: password,
-          firstName,
-          lastName,
-          email: email,
-          location: location,
-          accountType: accountTypeLetter,
-          isAuthorized: false,
-          createdBy: currentUserId,
-        };
-        this.set('newUserData', userData);
-      }
+    return this.handleOrg(organization)
+      .then((org) => {
+        let newUserData = this.newUserData;
+        newUserData.organization = org;
+        return this.createNewUser(newUserData)
+          .then((res) => {
+            if (res.username) {
+              this.alert.showToast(
+                'success',
+                `${res.username} created`,
+                'bottom-end',
+                3000,
+                null,
+                false
+              );
+              return this.router.transitionTo('users.user', res.id);
+            }
+            if (
+              res.message === 'There already exists a user with that username'
+            ) {
+              this.usernameError = this.usernameErrors.taken;
+            } else if (
+              res.message ===
+              'There already exists a user with that email address'
+            ) {
+              this.emailError = this.emailErrors.taken;
+            } else {
+              this.createUserErrors = [res.message];
+            }
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'createUserErrors', newUserData);
+          });
+      })
+      .catch(() => {
+        // err should be handled within handleOrg function
+      });
+  }
 
-      if (!username) {
-        return;
-      }
+  @action cancelNew() {
+    this.router.transitionTo('user');
+  }
 
-      return this.handleOrg(organization)
-        .then((org) => {
-          let newUserData = this.newUserData;
-          newUserData.organization = org;
-          return this.createNewUser(newUserData)
-            .then((res) => {
-              if (res.username) {
-                this.alert.showToast(
-                  'success',
-                  `${res.username} created`,
-                  'bottom-end',
-                  3000,
-                  null,
-                  false
-                );
-                return this.router.transitionTo('users.user', res.id);
-              }
-              if (
-                res.message === 'There already exists a user with that username'
-              ) {
-                this.set('usernameError', this.get('usernameErrors.taken'));
-              } else if (
-                res.message ===
-                'There already exists a user with that email address'
-              ) {
-                this.set('emailError', this.get('emailErrors.taken'));
-              } else {
-                this.set('createUserErrors', [res.message]);
-              }
-            })
-            .catch((err) => {
-              this.handleErrors(err, 'createUserErrors', newUserData);
-            });
-        })
-        .catch(() => {
-          // err should be handled within handleOrg function
-        });
-    },
+  @action setOrg(org) {
+    //  if (typeof org === 'string') {
+    //    this.set('orgReq', org);
+    //  } else {
+    this.org = org;
+    //  }
+  }
 
-    cancelNew: function () {
-      this.router.transitionTo('user');
-    },
-
-    setOrg(org) {
-      //  if (typeof org === 'string') {
-      //    this.set('orgReq', org);
-      //  } else {
-      this.set('org', org);
-      //  }
-    },
-
-    closeError: function (error) {
-      $(`.${error}`).addClass('fadeOutRight');
-      later(() => {
-        $(`.${error}`).removeClass('fadeOutRight');
-        $(`.${error}`).hide();
-      }, 500);
-    },
-  },
-});
+  @action closeError(error) {
+    $(`.${error}`).addClass('fadeOutRight');
+    later(() => {
+      $(`.${error}`).removeClass('fadeOutRight');
+      $(`.${error}`).hide();
+    }, 500);
+  }
+}

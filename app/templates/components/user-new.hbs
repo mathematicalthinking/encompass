@@ -29,7 +29,7 @@
         <Input @type="text" @value={{this.lastName}} @classNames="user-last-name" />
       </td>
     </tr>
-    {{#unless this.currentUser.isTeacher}}
+    {{#unless @currentUser.isTeacher}}
     <tr>
       <td>Email
           {{#if this.isEmailRequired}}
@@ -43,10 +43,10 @@
     <tr>
       <td>Organization <span class="required-star">*</span></td>
       <td>
-        {{#unless this.currentUser.isAdmin}}
-          {{this.currentUser.organization.name}}
+        {{#unless @currentUser.isAdmin}}
+          {{@currentUser.organization.name}}
         {{else}}
-          <TwitterTypeahead @dataList={{this.organizations}} @minLength={{0}} @onSelect="setOrg" @optionLabelPath="name" @setSelectedValueOnChange={{true}} />
+          <TwitterTypeahead @dataList={{@organizations}} @minLength={{0}} @onSelect="setOrg" @optionLabelPath="name" @setSelectedValueOnChange={{true}} />
         {{/unless}}
       </td>
     </tr>
