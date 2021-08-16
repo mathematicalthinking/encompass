@@ -26,7 +26,7 @@ module.exports.put = {};
 const getGroups = async (req, res) => {
   if (req.query.section) {
     let groups = await models.Group.find().where({
-      section: req.query.section,
+      ...req.query,
     });
     return utils.sendResponse(res, { groups: groups });
   }

@@ -78,6 +78,15 @@ export default Component.extend(ErrorHandlingMixin, {
     ],
   },
 
+  sectionGroups: computed('selectedSection', function () {
+    if (this.selectedSection) {
+      return this.store.query('group', {
+        section: this.selectedSection.id,
+        isTrashed: false,
+      });
+    }
+  }),
+
   hasSelectedSection: notEmpty('selectedSection'),
 
   hasProblem: notEmpty('selectedProblem'),
