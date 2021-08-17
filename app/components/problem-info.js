@@ -32,6 +32,8 @@ export default Component.extend(ErrorHandlingMixin, {
   alert: service('sweet-alert'),
   permissions: service('problem-permissions'),
   utils: service('utility-methods'),
+  store: service(),
+  router: service(),
   writePermissions: computed('problem', function () {
     return this.permissions.writePermissions(this.problem);
   }),
@@ -733,7 +735,7 @@ export default Component.extend(ErrorHandlingMixin, {
     },
 
     toAssignmentInfo: function (assignment) {
-      this.sendAction('toAssignmentInfo', assignment);
+      this.router.transitionTo('assignments.assignment', assignment);
     },
 
     showAssignment: function () {
@@ -755,7 +757,7 @@ export default Component.extend(ErrorHandlingMixin, {
       }
       $('.list-outlet').addClass('hidden');
       if (doTransition) {
-        this.sendAction('toProblemList');
+        this.router.transitionTo('problems');
       }
     },
 
