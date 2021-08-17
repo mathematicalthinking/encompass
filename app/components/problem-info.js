@@ -8,8 +8,6 @@ import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'problem-info',
-  classNames: ['side-info'],
   isEditing: false,
   showGeneral: true,
   problemName: null,
