@@ -148,7 +148,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
 
   setStatus() {
     let problem = this.args.problem;
-    let currentUser = this.args.curentUser;
+    let currentUser = this.args.currentUser;
     let accountType = currentUser.get('accountType');
     let privacy = this.privacySetting;
     let originalPrivacy = problem.get('privacySetting');
@@ -185,7 +185,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
 
   updateProblem() {
     let problem = this.args.problem;
-    let currentUser = this.args.curentUser;
+    let currentUser = this.args.currentUser;
     let title = this.problemName.trim();
     const quillContent = this.$('.ql-editor').html();
     let text;
@@ -404,7 +404,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   @action editProblem() {
     let problem = this.args.problem;
     let problemId = problem.get('id');
-    let currentUserAccountType = this.args.curentUser.get('accountType');
+    let currentUserAccountType = this.args.currentUser.get('accountType');
     let isAdmin = currentUserAccountType === 'A';
     this.copyrightNotice = problem.copyrightNotice;
     this.sharingAuth = problem.sharingAuth;
@@ -508,7 +508,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   // }
 
   // @action checkStatus() {
-  //   let currentUser = this.args.curentUser;
+  //   let currentUser = this.args.currentUser;
   //   let status = this.generatedStatus;
   //   let problem = this.args.problem;
   //   let title = this.problemName;
@@ -568,73 +568,73 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   //   }
   // }
 
-  // @action addToMyProblems() {
-  //   let problem = this.args.problem;
-  //   let originalTitle = problem.get('title');
-  //   let title = 'Copy of ' + originalTitle;
-  //   let text = problem.get('text');
-  //   let author = problem.get('author');
-  //   let additionalInfo = problem.get('additionalInfo');
-  //   let isPublic = problem.get('isPublic');
-  //   let image = problem.get('image');
-  //   let imageUrl = problem.get('imageUrl');
-  //   let createdBy = this.args.curentUser;
-  //   let categories = problem.get('categories');
-  //   let status = problem.get('status');
-  //   let currentUser = this.args.curentUser;
-  //   let keywords = problem.get('keywords');
-  //   let organization = currentUser.get('organization');
-  //   let copyright = problem.get('copyrightNotice');
-  //   let sharingAuth = problem.get('sharingAuth');
+  @action addToMyProblems() {
+    let problem = this.args.problem;
+    let originalTitle = problem.get('title');
+    let title = 'Copy of ' + originalTitle;
+    let text = problem.get('text');
+    let author = problem.get('author');
+    let additionalInfo = problem.get('additionalInfo');
+    let isPublic = problem.get('isPublic');
+    let image = problem.get('image');
+    let imageUrl = problem.get('imageUrl');
+    let createdBy = this.args.currentUser;
+    let categories = problem.get('categories');
+    let status = problem.get('status');
+    let currentUser = this.args.currentUser;
+    let keywords = problem.get('keywords');
+    let organization = currentUser.get('organization');
+    let copyright = problem.get('copyrightNotice');
+    let sharingAuth = problem.get('sharingAuth');
 
-  //   let newProblem = this.store.createRecord('problem', {
-  //     title: title,
-  //     text: text,
-  //     author: author,
-  //     additionalInfo: additionalInfo,
-  //     imageUrl: imageUrl,
-  //     isPublic: isPublic,
-  //     origin: problem,
-  //     categories: categories,
-  //     createdBy: createdBy,
-  //     image: image,
-  //     organization: organization,
-  //     privacySetting: 'M',
-  //     copyrightNotice: copyright,
-  //     sharingAuth: sharingAuth,
-  //     status: status,
-  //     createDate: new Date(),
-  //     keywords: keywords,
-  //   });
+    let newProblem = this.store.createRecord('problem', {
+      title: title,
+      text: text,
+      author: author,
+      additionalInfo: additionalInfo,
+      imageUrl: imageUrl,
+      isPublic: isPublic,
+      origin: problem,
+      categories: categories,
+      createdBy: createdBy,
+      image: image,
+      organization: organization,
+      privacySetting: 'M',
+      copyrightNotice: copyright,
+      sharingAuth: sharingAuth,
+      status: status,
+      createDate: new Date(),
+      keywords: keywords,
+    });
 
-  //   newProblem
-  //     .save()
-  //     .then((problem) => {
-  //       let name = problem.get('title');
-  //       this.savedProblem = problem;
-  //       this.alert.showToast(
-  //         'success',
-  //         `${name} added to your problems`,
-  //         'bottom-end',
-  //         3000,
-  //         false,
-  //         null
-  //       );
-  //       let parentView = this.parentView;
-  //       this.parentActions.refreshList.call(parentView);
-  //     })
-  //     .catch((err) => {
-  //       this.alert.showToast(
-  //         'error',
-  //         `${err}`,
-  //         'bottom-end',
-  //         3000,
-  //         false,
-  //         null
-  //       );
-  //       // this.handleErrors(err, 'createRecordErrors', newProblem);
-  //     });
-  // }
+    newProblem
+      .save()
+      .then((problem) => {
+        let name = problem.get('title');
+        this.savedProblem = problem;
+        this.alert.showToast(
+          'success',
+          `${name} added to your problems`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        // let parentView = this.parentView;
+        // this.parentActions.refreshList.call(parentView);
+      })
+      .catch((err) => {
+        this.alert.showToast(
+          'error',
+          `${err}`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        // this.handleErrors(err, 'createRecordErrors', newProblem);
+      });
+  }
 
   // @action toggleImageSize() {
   //   this.isWide = !this.isWide;
@@ -738,12 +738,12 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   //   this.router.transitionTo('assignments.assignment', assignment);
   // }
 
-  // @action showAssignment() {
-  //   this.showAssignment = true;
-  //   this.problemList.pushObject(this.args.problem);
-  //   var scr = $('#outlet')[0].scrollHeight;
-  //   $('#outlet').animate({ scrollTop: scr }, 100);
-  // }
+  @action toggleAssignment() {
+    this.showAssignment = true;
+    this.problemList.pushObject(this.args.problem);
+    var scr = $('#outlet')[0].scrollHeight;
+    $('#outlet').animate({ scrollTop: scr }, 100);
+  }
 
   // @action hideInfo(doTransition = true) {
   //   // transition back to list
@@ -762,7 +762,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   // }
 
   // @action checkRecommend() {
-  //   let currentUser = this.args.curentUser;
+  //   let currentUser = this.args.currentUser;
   //   let accountType = currentUser.get('accountType');
   //   let problem = this.args.problem;
   //   let privacySetting = problem.get('privacySetting');
@@ -809,7 +809,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
 
   // @action addToRecommend() {
   //   let problem = this.args.problem;
-  //   let accountType = this.args.curentUser.accountType;
+  //   let accountType = this.args.currentUser.accountType;
   //   if (accountType === 'A') {
   //     let orgList = this.args.orgList.toArray();
   //     let optionList = {};
@@ -843,7 +843,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   //         }
   //       });
   //   } else if (accountType === 'P') {
-  //     return this.args.curentUser.get('organization').then((org) => {
+  //     return this.args.currentUser.get('organization').then((org) => {
   //       org.get('recommendedProblems').addObject(problem);
   //       org.save().then(() => {
   //         this.alert.showToast(
@@ -863,7 +863,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
 
   // @action removeRecommend() {
   //   let problem = this.args.problem;
-  //   return this.args.curentUser.get('organization').then((org) => {
+  //   return this.args.currentUser.get('organization').then((org) => {
   //     org.get('recommendedProblems').removeObject(problem);
   //     org.save().then(() => {
   //       this.alert.showToast(

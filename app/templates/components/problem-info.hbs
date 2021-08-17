@@ -337,7 +337,7 @@
           {{/if}}
             {{#unless @problem.isTrashed}}
               {{#unless (is-equal @problem.status 'flagged')}}
-              <button class="primary-button assign" {{action 'showAssignment'}}>Assign</button>
+              <button class="primary-button assign" {{action 'toggleAssignment'}}>Assign</button>
               {{/unless}}
             {{/unless}}
         {{/if}}
