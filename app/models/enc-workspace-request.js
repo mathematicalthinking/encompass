@@ -1,5 +1,5 @@
 import { belongsTo, attr, hasMany } from '@ember-data/model';
-import Auditable from './_auditable_mixin';
+import Auditable from './auditable';
 
 export default class EncWorkspaceRequestModel extends Auditable {
   @belongsTo('user', { inverse: null }) teacher;

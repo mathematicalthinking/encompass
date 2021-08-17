@@ -1,5 +1,5 @@
 import { attr, belongsTo } from '@ember-data/model';
-import Auditable from './_auditable_mixin';
+import Auditable from './auditable';
 
 export default class CopyWorkspaceRequestModel extends Auditable {
   @attr('string') name;
