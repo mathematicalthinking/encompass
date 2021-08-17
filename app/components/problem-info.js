@@ -134,6 +134,220 @@ export default Component.extend(ErrorHandlingMixin, {
     return !_.contains(keywordsLower, keywordLower);
   },
 
+  continueEdit: function () {
+    this.set('showEditWarning', false);
+    this.set('isEditing', true);
+    let problem = this.problem;
+    this.set('problemName', problem.get('title'));
+    this.set('problemText', problem.get('text'));
+    this.set('privacySetting', problem.get('privacySetting'));
+  },
+
+  setStatus: function () {
+    let problem = this.problem;
+    let currentUser = this.currentUser;
+    let accountType = currentUser.get('accountType');
+    let privacy = this.privacySetting;
+    let originalPrivacy = problem.get('privacySetting');
+    let status;
+
+    if (originalPrivacy !== privacy) {
+      if (accountType === 'A') {
+        status = this.problemStatus;
+      } else if (accountType === 'P') {
+        if (privacy === 'E') {
+          status = 'pending';
+        } else {
+          status = this.problemStatus;
+        }
+      } else {
+        if (privacy === 'M') {
+          status = 'approved';
+        } else {
+          status = 'pending';
+        }
+      }
+    } else {
+      status = this.problemStatus;
+    }
+
+    this.set('generatedStatus', status);
+
+    if (accountType === 'A' || accountType === 'P') {
+      this.send('checkStatus');
+    } else {
+      return this.updateProblem();
+    }
+  },
+
+  updateProblem: function () {
+    let problem = this.problem;
+    let currentUser = this.currentUser;
+    let title = this.problemName.trim();
+    const quillContent = this.$('.ql-editor').html();
+    let text;
+    let isQuillValid;
+
+    if (quillContent !== undefined) {
+      text = quillContent.replace(/["]/g, "'");
+      isQuillValid = this.isQuillValid();
+    } else {
+      text = problem.get('text');
+      isQuillValid = true;
+    }
+    let privacy = this.privacySetting;
+    let additionalInfo = this.additionalInfo;
+    let copyright = this.copyrightNotice;
+    let sharingAuth = this.sharingAuth;
+
+    let keywords = problem.get('keywords');
+    let initialKeywords = this.initialKeywords;
+    let didKeywordsChange = !_.isEqual(keywords, initialKeywords);
+
+    let flaggedReason = this.flaggedReason;
+
+    let author = this.author;
+    let status = this.generatedStatus;
+
+    if (!title || !isQuillValid || !privacy) {
+      this.set('isMissingRequiredFields', true);
+      return;
+    } else {
+      if (this.isMissingRequiredFields) {
+        this.set('isMissingRequiredFields', null);
+      }
+    }
+
+    if (privacy !== null) {
+      problem.set('privacySetting', privacy);
+    }
+
+    problem.set('title', title);
+    problem.set('text', text);
+    problem.set('additionalInfo', additionalInfo);
+    problem.set('copyrightNotice', copyright);
+    problem.set('sharingAuth', sharingAuth);
+    problem.set('author', author);
+    problem.set('status', status);
+    problem.set('flagReason', flaggedReason);
+
+    if (this.filesToBeUploaded) {
+      var uploadData = this.filesToBeUploaded;
+      var formData = new FormData();
+      for (let f of uploadData) {
+        formData.append('photo', f);
+      }
+      let firstItem = uploadData[0];
+      let isPDF = firstItem.type === 'application/pdf';
+
+      if (isPDF) {
+        $.post({
+          url: '/pdf',
+          processData: false,
+          contentType: false,
+          data: formData,
+        })
+          .then((res) => {
+            this.set('uploadResults', res.images);
+            this.store.findRecord('image', res.images[0]._id).then((image) => {
+              problem.set('image', image);
+              problem
+                .save()
+                .then((res) => {
+                  this.alert.showToast(
+                    'success',
+                    'Problem Updated',
+                    'bottom-end',
+                    3000,
+                    false,
+                    null
+                  );
+                  // handle success
+                  this.set('isEditing', false);
+                  if (problem.get('isForEdit')) {
+                    problem.set('isForEdit', false);
+                  }
+                  this.resetErrors();
+                })
+                .catch((err) => {
+                  this.handleErrors(err, 'updateProblemErrors', problem);
+                  this.set('showConfirmModal', false);
+                });
+            });
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'imageUploadErrors');
+          });
+      } else {
+        $.post({
+          url: '/image',
+          processData: false,
+          contentType: false,
+          data: formData,
+        })
+          .then((res) => {
+            this.set('uploadResults', res.images);
+            this.store.findRecord('image', res.images[0]._id).then((image) => {
+              problem.set('image', image);
+              problem
+                .save()
+                .then((res) => {
+                  this.alert.showToast(
+                    'success',
+                    'Problem Updated',
+                    'bottom-end',
+                    3000,
+                    false,
+                    null
+                  );
+                  this.set('isEditing', false);
+                  if (problem.get('isForEdit')) {
+                    problem.set('isForEdit', false);
+                  }
+                  this.resetErrors();
+                })
+                .catch((err) => {
+                  this.handleErrors(err, 'updateProblemErrors', problem);
+                  this.set('showConfirmModal', false);
+                });
+            });
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'imageUploadErrors');
+          });
+      }
+    } else {
+      if (problem.get('hasDirtyAttributes') || didKeywordsChange) {
+        problem.set('modifiedBy', currentUser);
+        problem
+          .save()
+          .then(() => {
+            this.alert.showToast(
+              'success',
+              'Problem Updated',
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+            this.resetErrors();
+            this.set('showConfirmModal', false);
+            this.set('isEditing', false);
+            if (problem.get('isForEdit')) {
+              problem.set('isForEdit', false);
+            }
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateProblemErrors', problem);
+            this.set('showConfirmModal', false);
+            return;
+          });
+      } else {
+        this.set('isEditing', false);
+      }
+    }
+  },
+
   actions: {
     deleteProblem: function () {
       let problem = this.problem;
@@ -224,11 +438,11 @@ export default Component.extend(ErrorHandlingMixin, {
                 )
                 .then((result) => {
                   if (result.value) {
-                    this.send('continueEdit');
+                    return this.continueEdit();
                   }
                 });
             } else {
-              this.send('continueEdit');
+              return this.continueEdit();
             }
           });
       } else {
@@ -242,20 +456,11 @@ export default Component.extend(ErrorHandlingMixin, {
             )
             .then((result) => {
               if (result.value) {
-                this.send('continueEdit');
+                return this.continueEdit();
               }
             });
         }
       }
-    },
-
-    continueEdit: function () {
-      this.set('showEditWarning', false);
-      this.set('isEditing', true);
-      let problem = this.problem;
-      this.set('problemName', problem.get('title'));
-      this.set('problemText', problem.get('text'));
-      this.set('privacySetting', problem.get('privacySetting'));
     },
 
     cancelEdit: function () {
@@ -292,48 +497,11 @@ export default Component.extend(ErrorHandlingMixin, {
           )
           .then((result) => {
             if (result.value) {
-              this.send('setStatus');
+              return this.setStatus();
             }
           });
       } else {
-        this.send('setStatus');
-      }
-    },
-
-    setStatus: function () {
-      let problem = this.problem;
-      let currentUser = this.currentUser;
-      let accountType = currentUser.get('accountType');
-      let privacy = this.privacySetting;
-      let originalPrivacy = problem.get('privacySetting');
-      let status;
-
-      if (originalPrivacy !== privacy) {
-        if (accountType === 'A') {
-          status = this.problemStatus;
-        } else if (accountType === 'P') {
-          if (privacy === 'E') {
-            status = 'pending';
-          } else {
-            status = this.problemStatus;
-          }
-        } else {
-          if (privacy === 'M') {
-            status = 'approved';
-          } else {
-            status = 'pending';
-          }
-        }
-      } else {
-        status = this.problemStatus;
-      }
-
-      this.set('generatedStatus', status);
-
-      if (accountType === 'A' || accountType === 'P') {
-        this.send('checkStatus');
-      } else {
-        this.send('updateProblem');
+        return this.setStatus();
       }
     },
 
@@ -350,7 +518,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
       if (status === 'approved' || status === 'pending') {
         this.set('flaggedReason', null);
-        this.send('updateProblem');
+        return this.updateProblem();
       } else if (status === 'flagged' && !problem.get('flagReason')) {
         this.alert
           .showModal(
@@ -382,191 +550,19 @@ export default Component.extend(ErrorHandlingMixin, {
                             flaggedReason.reason = result.value;
                             this.set('flaggedBy', currentUser);
                             this.set('flaggedReason', flaggedReason);
-                            this.send('updateProblem');
+                            return this.updateProblem();
                           }
                         });
                     } else {
                       flaggedReason.reason = result.value;
                       this.set('flaggedBy', currentUser);
                       this.set('flaggedReason', flaggedReason);
-                      this.send('updateProblem');
+                      return this.updateProblem();
                     }
                   }
                 });
             }
           });
-      }
-    },
-
-    updateProblem: function () {
-      let problem = this.problem;
-      let currentUser = this.currentUser;
-      let title = this.problemName.trim();
-      const quillContent = this.$('.ql-editor').html();
-      let text;
-      let isQuillValid;
-
-      if (quillContent !== undefined) {
-        text = quillContent.replace(/["]/g, "'");
-        isQuillValid = this.isQuillValid();
-      } else {
-        text = problem.get('text');
-        isQuillValid = true;
-      }
-      let privacy = this.privacySetting;
-      let additionalInfo = this.additionalInfo;
-      let copyright = this.copyrightNotice;
-      let sharingAuth = this.sharingAuth;
-
-      let keywords = problem.get('keywords');
-      let initialKeywords = this.initialKeywords;
-      let didKeywordsChange = !_.isEqual(keywords, initialKeywords);
-
-      let flaggedReason = this.flaggedReason;
-
-      let author = this.author;
-      let status = this.generatedStatus;
-
-      if (!title || !isQuillValid || !privacy) {
-        this.set('isMissingRequiredFields', true);
-        return;
-      } else {
-        if (this.isMissingRequiredFields) {
-          this.set('isMissingRequiredFields', null);
-        }
-      }
-
-      if (privacy !== null) {
-        problem.set('privacySetting', privacy);
-      }
-
-      problem.set('title', title);
-      problem.set('text', text);
-      problem.set('additionalInfo', additionalInfo);
-      problem.set('copyrightNotice', copyright);
-      problem.set('sharingAuth', sharingAuth);
-      problem.set('author', author);
-      problem.set('status', status);
-      problem.set('flagReason', flaggedReason);
-
-      if (this.filesToBeUploaded) {
-        var uploadData = this.filesToBeUploaded;
-        var formData = new FormData();
-        for (let f of uploadData) {
-          formData.append('photo', f);
-        }
-        let firstItem = uploadData[0];
-        let isPDF = firstItem.type === 'application/pdf';
-
-        if (isPDF) {
-          $.post({
-            url: '/pdf',
-            processData: false,
-            contentType: false,
-            data: formData,
-          })
-            .then((res) => {
-              this.set('uploadResults', res.images);
-              this.store
-                .findRecord('image', res.images[0]._id)
-                .then((image) => {
-                  problem.set('image', image);
-                  problem
-                    .save()
-                    .then((res) => {
-                      this.alert.showToast(
-                        'success',
-                        'Problem Updated',
-                        'bottom-end',
-                        3000,
-                        false,
-                        null
-                      );
-                      // handle success
-                      this.set('isEditing', false);
-                      if (problem.get('isForEdit')) {
-                        problem.set('isForEdit', false);
-                      }
-                      this.resetErrors();
-                    })
-                    .catch((err) => {
-                      this.handleErrors(err, 'updateProblemErrors', problem);
-                      this.set('showConfirmModal', false);
-                    });
-                });
-            })
-            .catch((err) => {
-              this.handleErrors(err, 'imageUploadErrors');
-            });
-        } else {
-          $.post({
-            url: '/image',
-            processData: false,
-            contentType: false,
-            data: formData,
-          })
-            .then((res) => {
-              this.set('uploadResults', res.images);
-              this.store
-                .findRecord('image', res.images[0]._id)
-                .then((image) => {
-                  problem.set('image', image);
-                  problem
-                    .save()
-                    .then((res) => {
-                      this.alert.showToast(
-                        'success',
-                        'Problem Updated',
-                        'bottom-end',
-                        3000,
-                        false,
-                        null
-                      );
-                      this.set('isEditing', false);
-                      if (problem.get('isForEdit')) {
-                        problem.set('isForEdit', false);
-                      }
-                      this.resetErrors();
-                    })
-                    .catch((err) => {
-                      this.handleErrors(err, 'updateProblemErrors', problem);
-                      this.set('showConfirmModal', false);
-                    });
-                });
-            })
-            .catch((err) => {
-              this.handleErrors(err, 'imageUploadErrors');
-            });
-        }
-      } else {
-        if (problem.get('hasDirtyAttributes') || didKeywordsChange) {
-          problem.set('modifiedBy', currentUser);
-          problem
-            .save()
-            .then(() => {
-              this.alert.showToast(
-                'success',
-                'Problem Updated',
-                'bottom-end',
-                3000,
-                false,
-                null
-              );
-              this.resetErrors();
-              this.set('showConfirmModal', false);
-              this.set('isEditing', false);
-              if (problem.get('isForEdit')) {
-                problem.set('isForEdit', false);
-              }
-            })
-            .catch((err) => {
-              this.handleErrors(err, 'updateProblemErrors', problem);
-              this.set('showConfirmModal', false);
-              return;
-            });
-        } else {
-          this.set('isEditing', false);
-        }
       }
     },
 
