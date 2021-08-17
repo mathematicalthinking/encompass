@@ -4,15 +4,15 @@
         {{{public-private this.privacySettingIcon}}}
       </span>
       <div class="select-container">
-        <select name="privacy-settings" id="privacy-select" {{action 'changePrivacy' on='change'}}>
-          <option value="E" selected={{is-equal this.problem.privacySetting "E"}}>Everyone</option>
-          <option value="O" selected={{is-equal this.problem.privacySetting "O"}}>My Org</option>
-          <option value="M" selected={{is-equal this.problem.privacySetting "M"}}>Just Me</option>
+        <select name="privacy-settings" id="privacy-select" {{on 'change' this.changePrivacy}}>
+          <option value="E" selected={{is-equal @problem.privacySetting "E"}}>Everyone</option>
+          <option value="O" selected={{is-equal @problem.privacySetting "O"}}>My Org</option>
+          <option value="M" selected={{is-equal @problem.privacySetting "M"}}>Just Me</option>
         </select>
       </div>
     {{else}}
-      <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting this.problem.privacySetting}}>
-        {{{public-private this.problem.privacySetting}}}
+      <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting @problem.privacySetting}}>
+        {{{public-private @problem.privacySetting}}}
       </span>
     {{/if}}
   <span class="remove-icon" {{action 'hideInfo'}}>
@@ -27,32 +27,32 @@
         {{#if this.isEditing}}
           <Input @name="title" @id="title" @type="text" @value={{this.problemName}} />
         {{else}}
-          {{{this.problem.title}}}
+          {{{@problem.title}}}
         {{/if}}
       </div>
-      <div class="subheading date">{{format-date this.problem.createDate 'MM/DD/YYYY'}}</div>
-      <div class="subheading">{{#link-to "metrics.problem" this.problem}}See Reports{{/link-to}}</div>
+      <div class="subheading date">{{format-date @problem.createDate 'MM/DD/YYYY'}}</div>
+      <div class="subheading">{{#link-to "metrics.problem" @problem}}See Reports{{/link-to}}</div>
     </div>
     <div class="info-menu">
-      <button class="tab-link general {{if this.showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
-      <button class="tab-link categories {{if this.showCats 'active-btn'}}" {{action 'showCats'}}>Categories</button>
-      <button class="tab-link additional {{if this.showAdditional 'active-btn'}}" {{action 'showAdditional'}}>Additional</button>
-      <button class="tab-link legal {{if this.showLegal 'active-btn'}}" {{action 'showLegal'}}>Legal</button>
+      <button class="tab-link general {{if this.showGeneral 'active-btn'}}" {{on 'click' this.toggleGeneral}}>General</button>
+      <button class="tab-link categories {{if this.showCats 'active-btn'}}" {{on 'click' this.toggleCats}}>Categories</button>
+      <button class="tab-link additional {{if this.showAdditional 'active-btn'}}" {{on 'click' this.toggleAdditional}}>Additional</button>
+      <button class="tab-link legal {{if this.showLegal 'active-btn'}}" {{on 'click' this.toggleLegal}}>Legal</button>
     </div>
     <div class="info-content">
       {{#if this.showGeneral}}
         <p class="info-content-label">Problem Statement</p>
         <div class="info-content-block statement large-content">
           {{#if this.isEditing}}
-            <QuillContainer @onEditorChange={{action "updateQuillText"}} @startingText={{this.problem.text}} />
+            <QuillContainer @onEditorChange={{action "updateQuillText"}} @startingText={{@problem.text}} />
           {{else}}
-            {{{this.problem.text}}}
+            {{{@problem.text}}}
           {{/if}}
         </div>
         {{#if this.isEditing}}
           <p class="info-content-label">Author</p>
           <div class="info-content-block author">
-            {{#if this.problem.author}}
+            {{#if @problem.author}}
               <div class="input-container">
                 <Input @name="author" @id="author" @type="text" @value={{this.author}} />
               </div>
@@ -63,19 +63,19 @@
             {{/if}}
           </div>
         {{else}}
-          {{#if this.problem.author}}
+          {{#if @problem.author}}
             <p class="info-content-label">Author</p>
             <div class="info-content-block author">
-              {{this.problem.author}}
+              {{@problem.author}}
             </div>
           {{/if}}
         {{/if}}
-        {{#if this.problem.organization}}
-          {{#if this.currentUser.isAdmin}}
+        {{#if @problem.organization}}
+          {{#if @currentUser.isAdmin}}
           <p class="info-content-label">Organization</p>
           <div class="info-content-block org">
-            {{#if this.problem.organization}}
-              {{this.problem.organization.name}}
+            {{#if @problem.organization}}
+              {{@problem.organization.name}}
             {{/if}}
           </div>
           {{/if}}
@@ -83,36 +83,36 @@
         <p class="info-content-label">Problem Status</p>
         <div class="info-content-block">
           {{#if this.isEditing}}
-            {{#if this.currentUser.isTeacher}}
+            {{#if @currentUser.isTeacher}}
               <svg height="20" width="20">
                 <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
               </svg>
               <span class="status-text">
-                {{this.problem.status}}
+                {{@problem.status}}
               </span>
             {{else}}
               <svg height="20" width="20">
                 <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
               </svg>
-              <MySelect @cannotBeNull={{true}} @selectedValue={{this.problem.status}} @content={{this.problemStatusOptions}} @action={{action (mut this.problemStatus)}} @isDisabled={{this.isReadOnly}} />
+              <MySelect @cannotBeNull={{true}} @selectedValue={{@problem.status}} @content={{this.problemStatusOptions}} @action={{action (mut this.problemStatus)}} @isDisabled={{this.isReadOnly}} />
             {{/if}}
           {{else}}
             <svg height="20" width="20">
               <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
             </svg>
             <span class="status-text">
-              {{this.problem.status}}
+              {{@problem.status}}
             </span>
-            {{#if (is-equal this.problem.status 'flagged')}}
+            {{#if (is-equal @problem.status 'flagged')}}
               {{#if this.showFlagReason}}
                 <span class="show-reason" {{action 'toggleShowFlagReason'}}>Hide</span>
                 <div class="flag-reason">
-                  <p class="reason"><strong>Reason:</strong> {{this.problem.flagReason.reason}}</p>
+                  <p class="reason"><strong>Reason:</strong> {{@problem.flagReason.reason}}</p>
                   <p class="details">By <LinkTo @route="users.user" @model={{this.flaggedBy.id}}>{{this.flaggedBy.username}}</LinkTo> on {{format-date
-                    this.problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
+                    @problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
                 </div>
               {{else}}
-                <span class="show-reason" {{action 'toggleShowFlagReason'}}>Why?</span>
+                <span class="show-reason" {{on 'click' this.toggleShowFlagReason}}>Why?</span>
               {{/if}}
             {{/if}}
           {{/if}}
@@ -123,9 +123,9 @@
         <p class="info-content-label">Problem Categories</p>
         <div class="info-content-block categories">
           {{#if this.isEditing}}
-            {{#if this.problem.categories}}
+            {{#if @problem.categories}}
               <ul>
-                {{#each this.problem.categories as |category|}}
+                {{#each @problem.categories as |category|}}
                   <li class="category-item">
                     <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
                     <button class="remove-cat" {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button>
@@ -135,24 +135,24 @@
               </ul>
               {{#unless this.showCategories}}
               <div class="button-row-list">
-                <button class="cancel-button" {{action 'showCategories'}}>Add Categories</button>
+                <button class="cancel-button" {{action 'toggleCategories'}}>Add Categories</button>
               </div>
               {{/unless}}
               {{#if this.showCategories}}
                 <div class="button-row-list">
-                  <button class="cancel-button" {{action 'showCategories'}}>Hide Categories</button>
+                  <button class="cancel-button" {{action 'toggleCategories'}}>Hide Categories</button>
                 </div>
                 <CategoriesMenu @categories={{this.categoryTree}} @store={{this.store}} @addCategories="addCategories" />
               {{/if}}
             {{else}}
               {{#unless this.showCategories}}
                 <div class="button-row">
-                  <button class="cancel-button" {{action 'showCategories'}}>Add Categories</button>
+                  <button class="cancel-button" {{action 'toggleCategories'}}>Add Categories</button>
                 </div>
               {{/unless}}
               {{#if this.showCategories}}
                 <div class="button-row">
-                  <button class="cancel-button" {{action 'showCategories'}}>Hide Categories</button>
+                  <button class="cancel-button" {{action 'toggleCategories'}}>Hide Categories</button>
                 </div>
                 {{#if this.categoryTree}}
                   <CategoriesMenu @categories={{this.categoryTree}} @store={{this.store}} @addCategories="addCategories" />
@@ -160,9 +160,9 @@
               {{/if}}
             {{/if}}
           {{else}}
-            {{#if this.problem.categories}}
+            {{#if @problem.categories}}
               <ul>
-                {{#each this.problem.categories as |category|}}
+                {{#each @problem.categories as |category|}}
                 <li class="category-item">
                   <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
                   <p class="category-description">{{category.description}}</p>
@@ -177,9 +177,9 @@
         <p class="info-content-label">Problem Keywords</p>
         <div class="info-content-block keywords">
           {{#if this.isEditing}}
-            <SelectizeInput @inputId="select-edit-keywords" @onItemAdd={{action "updateKeywords"}} @onItemRemove={{action "updateKeywords"}} @maxItems={{5}} @create={{true}} @createFilter={{this.keywordFilter}} @persist={{false}} @initialItems={{this.problem.keywords}} @initialOptions={{this.keywordSelectOptions}} @labelField="label" @valueField="value" />
+            <SelectizeInput @inputId="select-edit-keywords" @onItemAdd={{action "updateKeywords"}} @onItemRemove={{action "updateKeywords"}} @maxItems={{5}} @create={{true}} @createFilter={{this.keywordFilter}} @persist={{false}} @initialItems={{@problem.keywords}} @initialOptions={{this.keywordSelectOptions}} @labelField="label" @valueField="value" />
             {{else}}
-              {{#if this.problem.keywords}}
+              {{#if @problem.keywords}}
                 <ul>
                   {{#each problem.keywords as |keyword|}}
                   <li>
@@ -206,8 +206,8 @@
           </div>
           {{else}}
           <div class="info-content-block large-content additional">
-            {{#if this.problem.additionalInfo}}
-              {{{this.problem.additionalInfo}}}
+            {{#if @problem.additionalInfo}}
+              {{{@problem.additionalInfo}}}
             {{else}}
               No Additional Info
             {{/if}}
@@ -215,9 +215,9 @@
           {{/if}}
         <p class="info-content-label">Additional Image</p>
         <div class="info-content-block image">
-          {{#if this.problem.image}}
+          {{#if @problem.image}}
             <a {{action 'toggleImageSize'}}>
-              <img src="{{this.problem.image.imageData}}" alt="Image Error" class="additional-image {{if isWide "wide"}}">
+              <img src="{{@problem.image.imageData}}" alt="Image Error" class="additional-image {{if isWide "wide"}}">
             </a>
           {{else}}
             {{#unless this.isEditing}}
@@ -225,7 +225,7 @@
             {{/unless}}
           {{/if}}
           {{#if this.isEditing}}
-            {{#if this.problem.image}}
+            {{#if @problem.image}}
               <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
             {{else}}
               <div class="input-container" id="image-upload">
@@ -234,16 +234,16 @@
             {{/if}}
           {{/if}}
         </div>
-        {{#if this.problem.origin}}
+        {{#if @problem.origin}}
           <p class="info-content-label">Problem Origin</p>
           <div class="info-content-block origin">
-            <p><LinkTo @route="problems.problem" @model={{this.problem.origin.id}}>{{this.problem.origin.title}}</LinkTo></p>
+            <p><LinkTo @route="problems.problem" @model={{@problem.origin.id}}>{{@problem.origin.title}}</LinkTo></p>
           </div>
         {{/if}}
-        {{#if this.currentUser.isAdmin}}
+        {{#if @currentUser.isAdmin}}
         <p class="info-content-label">Created By</p>
         <div class="info-content-block creator">
-          <p><LinkTo @route="users.user" @model={{this.problem.createdBy.id}}>{{this.problem.createdBy.username}}</LinkTo></p>
+          <p><LinkTo @route="users.user" @model={{@problem.createdBy.id}}>{{@problem.createdBy.username}}</LinkTo></p>
         </div>
         {{/if}}
       {{/if}}
@@ -257,8 +257,8 @@
               <Input @name="copyright" @id="copyright" @type="text" @value={{this.copyrightNotice}} placeholder="Add Copyright Notice" />
             </div>
           {{else}}
-            {{#if this.problem.copyrightNotice}}
-              <p>&copy; {{this.problem.copyrightNotice}}</p>
+            {{#if @problem.copyrightNotice}}
+              <p>&copy; {{@problem.copyrightNotice}}</p>
             {{else}}
               No Copyright Notice
             {{/if}}
@@ -271,8 +271,8 @@
               <Input @name="sharing" @id="sharing" @type="text" @value={{this.sharingAuth}} placeholder="Add Sharing Authorization" />
             </div>
           {{else}}
-            {{#if this.problem.sharingAuth}}
-              {{this.problem.sharingAuth}}
+            {{#if @problem.sharingAuth}}
+              {{@problem.sharingAuth}}
             {{else}}
               No Sharing Authorization
             {{/if}}
@@ -286,16 +286,16 @@
     <div class="buttons-container">
       <span class="left-buttons">
         {{#if this.isEditing}}
-          {{#unless this.problem.isTrashed}}
-          <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
+          {{#unless @problem.isTrashed}}
+          <button class="button-icon" {{on "click" this.deleteProblem}}><i class="fas fa-trash"></i></button>
           {{/unless}}
         {{else}}
           <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Make a Copy of this Problem">
             <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
           </span>
-          {{#unless this.currentUser.isTeacher}}
-            {{#unless this.problem.isTrashed}}
-            {{#unless (is-equal this.problem.status 'flagged')}}
+          {{#unless @currentUser.isTeacher}}
+            {{#unless @problem.isTrashed}}
+            {{#unless (is-equal @problem.status 'flagged')}}
               {{#if this.isRecommended}}
                 <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Remove this Problem from Recommended">
                   <button class="button-icon star-icon" {{action 'removeRecommend'}}>
@@ -312,7 +312,7 @@
             {{/unless}}
             {{/unless}}
           {{/unless}}
-          {{#if this.currentUser.isTeacher}}
+          {{#if @currentUser.isTeacher}}
             {{#if this.isRecommended}}
               <button class="button-icon star-icon no-cursor">
                 <i class="fas fa-star star-filled"></i>
@@ -327,22 +327,22 @@
           <button class="primary-button save" {{action 'checkPrivacy'}}>Save</button>
         {{else}}
           {{#if this.writePermissions.canEdit}}
-            {{#if this.problem.isUsed}}
-              {{#if this.currentUser.isAdmin}}
+            {{#if @problem.isUsed}}
+              {{#if @currentUser.isAdmin}}
                 <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
               {{/if}}
             {{else}}
               <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
             {{/if}}
           {{/if}}
-            {{#unless this.problem.isTrashed}}
-              {{#unless (is-equal this.problem.status 'flagged')}}
+            {{#unless @problem.isTrashed}}
+              {{#unless (is-equal @problem.status 'flagged')}}
               <button class="primary-button assign" {{action 'showAssignment'}}>Assign</button>
               {{/unless}}
             {{/unless}}
         {{/if}}
-        {{#if this.problem.isTrashed}}
-          {{#if this.currentUser.isAdmin}}
+        {{#if @problem.isTrashed}}
+          {{#if @currentUser.isAdmin}}
             {{#unless this.isEditing}}
               <button class="primary-button restore" {{action 'restoreProblem'}}>Restore</button>
             {{/unless}}
@@ -369,6 +369,6 @@
   {{/each}}
 
   {{#if this.showAssignment}}
-    <AssignmentNew @cancel={{action (mut this.showAssignment) null}} @fromProblemInfo={{true}} @problems={{this.problemList}} @selectedProblem={{this.problem}} @sections={{this.sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
+    <AssignmentNew @cancel={{action (mut this.showAssignment) null}} @fromProblemInfo={{true}} @problems={{this.problemList}} @selectedProblem={{@problem}} @sections={{@sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
   {{/if}}
 </div>

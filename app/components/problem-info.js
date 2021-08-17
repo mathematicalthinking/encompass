@@ -1,105 +1,107 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import _ from 'underscore';
-/*global _:false */
-import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  isEditing: false,
-  showGeneral: true,
-  problemName: null,
-  problemText: null,
-  problemPublic: true,
-  privacySetting: null,
-  savedProblem: null,
-  showFlagReason: false,
-  isWide: false,
-  checked: true,
-  filesToBeUploaded: null,
-  isProblemUsed: false,
-  showAssignment: false,
-  problemList: [],
-  sectionList: null,
-  updateProblemErrors: [],
-  imageUploadErrors: [],
-  findRecordErrors: [],
-  createRecordErrors: [],
-  isMissingRequiredFields: null,
-  showCategories: false,
-  alert: service('sweet-alert'),
-  permissions: service('problem-permissions'),
-  utils: service('utility-methods'),
-  store: service(),
-  router: service(),
-  writePermissions: computed('problem', function () {
-    return this.permissions.writePermissions(this.problem);
-  }),
-  canEdit: alias('writePermissions.canEdit'),
-  canDelete: alias('writePermissions.canDelete'),
-  canAssign: alias('writePermissions.canAssign'),
-  recommendedProblems: alias('currentUser.organization.recommendedProblems'),
-  parentActions: alias('parentView.actions'),
-  flaggedBy: computed('problem', function () {
-    if (!this.problem.get('flagReason.flaggedBy')) return;
+export default class ProblemInfoComponent extends ErrorHandlingComponent {
+  @tracked isEditing = false;
+  @tracked showGeneral = true;
+  @tracked problemName = null;
+  @tracked problemText = null;
+  @tracked problemPublic = true;
+  @tracked privacySetting = null;
+  @tracked savedProblem = null;
+  @tracked showFlagReason = false;
+  @tracked isWide = false;
+  @tracked checked = true;
+  @tracked filesToBeUploaded = null;
+  @tracked isProblemUsed = false;
+  @tracked showAssignment = false;
+  @tracked problemList = [];
+  @tracked sectionList = null;
+  @tracked updateProblemErrors = [];
+  @tracked imageUploadErrors = [];
+  @tracked findRecordErrors = [];
+  @tracked createRecordErrors = [];
+  @tracked isMissingRequiredFields = null;
+  @tracked showCategories = false;
+  @tracked showGeneral = true;
+  @tracked showCats = false;
+  @tracked showAdditional = false;
+  @tracked showLegal = false;
+  @service('sweet-alert') alert;
+  @service('problem-permissions') permissions;
+  @service('utility-methods') utils;
+  @service store;
+  @service router;
+  @tracked copyrightNotice = '';
+  @tracked sharingAuth = '';
+  @tracked author = '';
+  @tracked problemName = '';
+  @tracked problemText = '';
+  @tracked organization = '';
+  @tracked problemCategories = '';
+  @tracked problemStatus = '';
+  @tracked additionalInfo = '';
+  @tracked privacySetting = '';
+  @tracked sharingAuth = '';
+  @tracked privacySettingIcon = '';
+  get writePermissions() {
+    return this.permissions.writePermissions(this.args.problem);
+  }
+  get recommendedProblems() {
+    return this.args.currentUser.get('organiztion.recommendedProblems');
+  }
+  get parentActions() {
+    return this.parentView.actions;
+  }
+  get flaggedBy() {
+    if (!this.args.problem.get('flagReason.flaggedBy')) return '';
     return this.store.findRecord(
       'user',
-      this.problem.get('flagReason.flaggedBy')
+      this.args.problem.get('flagReason.flaggedBy')
     );
-  }),
-  iconFillOptions: {
+  }
+  iconFillOptions = {
     approved: '#35A853',
     pending: '#FFD204',
     flagged: '#EB5757',
-  },
-  problemStatusOptions: ['approved', 'pending', 'flagged'],
-  flagOptions: {
+  };
+  problemStatusOptions = ['approved', 'pending', 'flagged'];
+  flagOptions = {
     inappropiate: 'Inappropriate Content',
     ip: 'Intellectual Property Concern',
     substance: 'Lacking Substance',
     other: 'Other Reason',
-  },
-
-  statusIconFill: computed('problem.status', function () {
-    let status = this.get('problem.status');
-
+  };
+  get statusIconFill() {
+    let status = this.args.problem.status;
     return this.iconFillOptions[status];
-  }),
+  }
 
-  resetErrors: function () {
+  resetErrors() {
     let errors = [
       'updateProblemErrors',
       'imageUploadErrors',
       'isMissingRequiredFields',
     ];
     for (let error of errors) {
-      if (this.get(error)) {
-        this.set(error, null);
+      if (this[error]) {
+        this[error] = null;
       }
     }
-  },
+  }
   // Empty quill editor .html() property returns <p><br></p>
   // For quill to not be empty, there must either be some text or
   // a student must have uploaded an img so there must be an img tag
-  isQuillValid: function () {
+  isQuillValid() {
     return !this.isQuillEmpty && !this.isQuillTooLong;
-  },
+  }
 
-  // orgOptions: function () {
-  //   return this.store.findAll('organization').then((orgs) => {
-  //     return orgs.map((org) => {
-  //       return {
-  //         id: org.id,
-  //         name: org.name,
-  //       };
-  //     });
-  //   });
-  // },
-
-  keywordSelectOptions: computed('problem.keywords.[]', function () {
-    let keywords = this.get('problem.keywords');
+  get keywordSelectOptions() {
+    let keywords = this.args.problem.keywords;
     if (!_.isArray(keywords)) {
       return [];
     }
@@ -109,17 +111,16 @@ export default Component.extend(ErrorHandlingMixin, {
         label: keyword,
       };
     });
-  }),
-
-  isRecommended: computed('problem.id', 'recommendedProblems.[]', function () {
-    let problem = this.problem;
+  }
+  get isRecommended() {
+    let problem = this.args.problem;
     let recommendedProblems = this.recommendedProblems || [];
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
       return false;
     }
-  }),
+  }
 
   createKeywordFilter(keyword) {
     if (!keyword) {
@@ -134,20 +135,20 @@ export default Component.extend(ErrorHandlingMixin, {
 
     // don't let user create keyword if it matches exactly an existing keyword
     return !_.contains(keywordsLower, keywordLower);
-  },
+  }
 
-  continueEdit: function () {
-    this.set('showEditWarning', false);
-    this.set('isEditing', true);
-    let problem = this.problem;
-    this.set('problemName', problem.get('title'));
-    this.set('problemText', problem.get('text'));
-    this.set('privacySetting', problem.get('privacySetting'));
-  },
+  continueEdit() {
+    this.showEditWarning = false;
+    this.isEditing = true;
+    let problem = this.args.problem;
+    this.problemName = problem.title;
+    this.problemText = problem.text;
+    this.privacySetting = problem.privacySetting;
+  }
 
-  setStatus: function () {
-    let problem = this.problem;
-    let currentUser = this.currentUser;
+  setStatus() {
+    let problem = this.args.problem;
+    let currentUser = this.args.curentUser;
     let accountType = currentUser.get('accountType');
     let privacy = this.privacySetting;
     let originalPrivacy = problem.get('privacySetting');
@@ -173,18 +174,18 @@ export default Component.extend(ErrorHandlingMixin, {
       status = this.problemStatus;
     }
 
-    this.set('generatedStatus', status);
+    this.generatedStatus = status;
 
     if (accountType === 'A' || accountType === 'P') {
       this.send('checkStatus');
     } else {
       return this.updateProblem();
     }
-  },
+  }
 
-  updateProblem: function () {
-    let problem = this.problem;
-    let currentUser = this.currentUser;
+  updateProblem() {
+    let problem = this.args.problem;
+    let currentUser = this.args.curentUser;
     let title = this.problemName.trim();
     const quillContent = this.$('.ql-editor').html();
     let text;
@@ -212,11 +213,11 @@ export default Component.extend(ErrorHandlingMixin, {
     let status = this.generatedStatus;
 
     if (!title || !isQuillValid || !privacy) {
-      this.set('isMissingRequiredFields', true);
+      this.isMissingRequiredFields = true;
       return;
     } else {
       if (this.isMissingRequiredFields) {
-        this.set('isMissingRequiredFields', null);
+        this.isMissingRequiredFields = null;
       }
     }
 
@@ -250,7 +251,7 @@ export default Component.extend(ErrorHandlingMixin, {
           data: formData,
         })
           .then((res) => {
-            this.set('uploadResults', res.images);
+            this.uploadResults = res.images;
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               problem.set('image', image);
               problem
@@ -265,7 +266,7 @@ export default Component.extend(ErrorHandlingMixin, {
                     null
                   );
                   // handle success
-                  this.set('isEditing', false);
+                  this.isEditing = false;
                   if (problem.get('isForEdit')) {
                     problem.set('isForEdit', false);
                   }
@@ -273,7 +274,7 @@ export default Component.extend(ErrorHandlingMixin, {
                 })
                 .catch((err) => {
                   this.handleErrors(err, 'updateProblemErrors', problem);
-                  this.set('showConfirmModal', false);
+                  this.showConfirmModal = false;
                 });
             });
           })
@@ -288,7 +289,7 @@ export default Component.extend(ErrorHandlingMixin, {
           data: formData,
         })
           .then((res) => {
-            this.set('uploadResults', res.images);
+            this.uploadResults = res.images;
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               problem.set('image', image);
               problem
@@ -302,7 +303,7 @@ export default Component.extend(ErrorHandlingMixin, {
                     false,
                     null
                   );
-                  this.set('isEditing', false);
+                  this.isEditing = false;
                   if (problem.get('isForEdit')) {
                     problem.set('isForEdit', false);
                   }
@@ -310,7 +311,7 @@ export default Component.extend(ErrorHandlingMixin, {
                 })
                 .catch((err) => {
                   this.handleErrors(err, 'updateProblemErrors', problem);
-                  this.set('showConfirmModal', false);
+                  this.showConfirmModal = false;
                 });
             });
           })
@@ -333,632 +334,630 @@ export default Component.extend(ErrorHandlingMixin, {
               null
             );
             this.resetErrors();
-            this.set('showConfirmModal', false);
-            this.set('isEditing', false);
+            this.showConfirmModal = false;
+            this.isEditing = false;
             if (problem.get('isForEdit')) {
               problem.set('isForEdit', false);
             }
           })
           .catch((err) => {
             this.handleErrors(err, 'updateProblemErrors', problem);
-            this.set('showConfirmModal', false);
+            this.showConfirmModal = false;
             return;
           });
       } else {
-        this.set('isEditing', false);
+        this.isEditing = false;
       }
     }
-  },
+  }
 
-  actions: {
-    deleteProblem: function () {
-      let problem = this.problem;
-      this.alert
-        .showModal(
-          'warning',
-          'Are you sure you want to delete this problem?',
-          null,
-          'Yes, delete it'
-        )
-        .then((result) => {
-          if (result.value) {
-            this.send('hideInfo');
-            problem.set('isTrashed', true);
-            window.history.back();
-            problem
-              .save()
-              .then((problem) => {
-                this.alert
-                  .showToast(
-                    'success',
-                    'Problem Deleted',
-                    'bottom-end',
-                    5000,
-                    true,
-                    'Undo'
-                  )
-                  .then((result) => {
-                    if (result.value) {
-                      problem.set('isTrashed', false);
-                      problem.save().then(() => {
-                        this.alert.showToast(
-                          'success',
-                          'Problem Restored',
-                          'bottom-end',
-                          3000,
-                          false,
-                          null
-                        );
-                        window.history.back();
-                      });
-                    }
-                  });
-              })
-              .catch((err) => {
-                this.handleErrors(err, 'updateProblemErrors', problem);
-              });
-          }
-        });
-    },
-
-    editProblem: function () {
-      let problem = this.problem;
-      let problemId = problem.get('id');
-      let currentUserAccountType = this.currentUser.get('accountType');
-      let isAdmin = currentUserAccountType === 'A';
-      this.set('copyrightNotice', problem.get('copyrightNotice'));
-      this.set('sharingAuth', problem.get('sharingAuth'));
-      this.set('author', problem.get('author'));
-      this.set('problemName', problem.get('title'));
-      this.set('problemText', problem.get('text'));
-      this.set('organization', problem.get('organization'));
-      this.set('problemCategories', problem.get('categories'));
-      this.set('problemStatus', problem.get('status'));
-      this.set('additionalInfo', problem.get('additionalInfo'));
-      this.set('privacySetting', problem.get('privacySetting'));
-      this.set('sharingAuth', problem.get('sharingAuth'));
-      this.set('privacySettingIcon', problem.get('privacySetting'));
-
-      let keywords = problem.get('keywords') || [];
-
-      let keywordsCopy = keywords.slice();
-      this.set('initialKeywords', keywordsCopy);
-
-      if (!problem.get('isUsed')) {
-        this.store
-          .queryRecord('assignment', {
-            problem: problemId,
-          })
-          .then((assignment) => {
-            if (assignment !== null) {
+  @action deleteProblem() {
+    let problem = this.args.problem;
+    this.alert
+      .showModal(
+        'warning',
+        'Are you sure you want to delete this problem?',
+        null,
+        'Yes, delete it'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.send('hideInfo');
+          problem.set('isTrashed', true);
+          window.history.back();
+          problem
+            .save()
+            .then((problem) => {
               this.alert
-                .showModal(
-                  'warning',
-                  'Are you sure you want to edit a problem that has already been assigned',
-                  'This problem has been used in an assignment but no answers have been submitted yet. Be careful editing the content of this problem',
-                  'Yes'
+                .showToast(
+                  'success',
+                  'Problem Deleted',
+                  'bottom-end',
+                  5000,
+                  true,
+                  'Undo'
                 )
                 .then((result) => {
                   if (result.value) {
-                    return this.continueEdit();
+                    problem.set('isTrashed', false);
+                    problem.save().then(() => {
+                      this.alert.showToast(
+                        'success',
+                        'Problem Restored',
+                        'bottom-end',
+                        3000,
+                        false,
+                        null
+                      );
+                      window.history.back();
+                    });
                   }
                 });
-            } else {
+            })
+            .catch((err) => {
+              this.handleErrors(err, 'updateProblemErrors', problem);
+            });
+        }
+      });
+  }
+
+  @action editProblem() {
+    let problem = this.args.problem;
+    let problemId = problem.get('id');
+    let currentUserAccountType = this.args.curentUser.get('accountType');
+    let isAdmin = currentUserAccountType === 'A';
+    this.copyrightNotice = problem.copyrightNotice;
+    this.sharingAuth = problem.sharingAuth;
+    this.author = problem.author;
+    this.problemName = problem.title;
+    this.problemText = problem.text;
+    this.organization = problem.organization;
+    this.problemCategories = problem.categories;
+    this.problemStatus = problem.status;
+    this.additionalInfo = problem.additionalInfo;
+    this.privacySetting = problem.privacySetting;
+    this.sharingAuth = problem.sharingAuth;
+    this.privacySettingIcon = problem.privacySetting;
+
+    let keywords = problem.get('keywords') || [];
+
+    let keywordsCopy = keywords.slice();
+    this.initialKeywords = keywordsCopy;
+
+    if (!problem.get('isUsed')) {
+      this.store
+        .queryRecord('assignment', {
+          problem: problemId,
+        })
+        .then((assignment) => {
+          if (assignment !== null) {
+            this.alert
+              .showModal(
+                'warning',
+                'Are you sure you want to edit a problem that has already been assigned',
+                'This problem has been used in an assignment but no answers have been submitted yet. Be careful editing the content of this problem',
+                'Yes'
+              )
+              .then((result) => {
+                if (result.value) {
+                  return this.continueEdit();
+                }
+              });
+          } else {
+            return this.continueEdit();
+          }
+        });
+    } else {
+      if (isAdmin) {
+        this.alert
+          .showModal(
+            'warning',
+            'Are you sure you want to edit a problem with answers?',
+            'Be careful changing the content of this problem because changes will be made everywhere this problem is used',
+            'Yes'
+          )
+          .then((result) => {
+            if (result.value) {
               return this.continueEdit();
             }
           });
-      } else {
-        if (isAdmin) {
-          this.alert
-            .showModal(
-              'warning',
-              'Are you sure you want to edit a problem with answers?',
-              'Be careful changing the content of this problem because changes will be made everywhere this problem is used',
-              'Yes'
-            )
-            .then((result) => {
-              if (result.value) {
-                return this.continueEdit();
-              }
-            });
-        }
       }
-    },
+    }
+  }
 
-    cancelEdit: function () {
-      this.set('isEditing', false);
+  // @action cancelEdit() {
+  //   this.isEditing = false;
 
-      let problem = this.problem;
-      if (problem.get('isForEdit')) {
-        problem.set('isForEdit', false);
-      }
-      this.resetErrors();
-    },
+  //   let problem = this.args.problem;
+  //   if (problem.get('isForEdit')) {
+  //     problem.set('isForEdit', false);
+  //   }
+  //   this.resetErrors();
+  // }
 
-    radioSelect: function (value) {
-      this.set('privacySetting', value);
-    },
+  // @action radioSelect(value) {
+  //   this.privacySetting = value;
+  // }
 
-    changePrivacy: function () {
-      let privacy = $('#privacy-select :selected').val();
-      this.set('privacySettingIcon', privacy);
-    },
+  // @action changePrivacy() {
+  //   let privacy = $('#privacy-select :selected').val();
+  //   this.privacySettingIcon = privacy;
+  // }
 
-    checkPrivacy: function () {
-      let currentPrivacy = this.problem.get('privacySetting');
-      let privacy = $('#privacy-select :selected').val();
-      this.set('privacySetting', privacy);
+  // @action checkPrivacy() {
+  //   let currentPrivacy = this.args.problem.get('privacySetting');
+  //   let privacy = $('#privacy-select :selected').val();
+  //   this.privacySetting = privacy;
 
-      if (currentPrivacy !== 'E' && privacy === 'E') {
-        this.alert
-          .showModal(
-            'question',
-            'Are you sure you want to make your problem public?',
-            "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
-            'Yes'
-          )
-          .then((result) => {
-            if (result.value) {
-              return this.setStatus();
-            }
-          });
-      } else {
-        return this.setStatus();
-      }
-    },
+  //   if (currentPrivacy !== 'E' && privacy === 'E') {
+  //     this.alert
+  //       .showModal(
+  //         'question',
+  //         'Are you sure you want to make your problem public?',
+  //         "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
+  //         'Yes'
+  //       )
+  //       .then((result) => {
+  //         if (result.value) {
+  //           return this.setStatus();
+  //         }
+  //       });
+  //   } else {
+  //     return this.setStatus();
+  //   }
+  // }
 
-    checkStatus: function () {
-      let currentUser = this.currentUser;
-      let status = this.generatedStatus;
-      let problem = this.problem;
-      let title = this.problemName;
-      let flaggedReason = {
-        flaggedBy: currentUser.get('id'),
-        reason: '',
-        flaggedDate: new Date(),
-      };
+  // @action checkStatus() {
+  //   let currentUser = this.args.curentUser;
+  //   let status = this.generatedStatus;
+  //   let problem = this.args.problem;
+  //   let title = this.problemName;
+  //   let flaggedReason = {
+  //     flaggedBy: currentUser.get('id'),
+  //     reason: '',
+  //     flaggedDate: new Date(),
+  //   };
 
-      if (status === 'approved' || status === 'pending') {
-        this.set('flaggedReason', null);
-        return this.updateProblem();
-      } else if (status === 'flagged' && !problem.get('flagReason')) {
-        this.alert
-          .showModal(
-            'warning',
-            `Are you sure you want to mark ${title} as flagged`,
-            null,
-            `Yes, Flag it!`
-          )
-          .then((result) => {
-            if (result.value) {
-              this.alert
-                .showPromptSelect(
-                  'Flag Reason',
-                  this.flagOptions,
-                  'Select a reason'
-                )
-                .then((result) => {
-                  if (result.value) {
-                    if (result.value === 'other') {
-                      this.alert
-                        .showPrompt(
-                          'text',
-                          'Other Flag Reason',
-                          'Please provide a brief explanation for why this problem should be flagged.',
-                          'Flag'
-                        )
-                        .then((result) => {
-                          if (result.value) {
-                            flaggedReason.reason = result.value;
-                            this.set('flaggedBy', currentUser);
-                            this.set('flaggedReason', flaggedReason);
-                            return this.updateProblem();
-                          }
-                        });
-                    } else {
-                      flaggedReason.reason = result.value;
-                      this.set('flaggedBy', currentUser);
-                      this.set('flaggedReason', flaggedReason);
-                      return this.updateProblem();
-                    }
-                  }
-                });
-            }
-          });
-      }
-    },
+  //   if (status === 'approved' || status === 'pending') {
+  //     this.flaggedReason = null;
+  //     return this.updateProblem();
+  //   } else if (status === 'flagged' && !problem.get('flagReason')) {
+  //     this.alert
+  //       .showModal(
+  //         'warning',
+  //         `Are you sure you want to mark ${title} as flagged`,
+  //         null,
+  //         `Yes, Flag it!`
+  //       )
+  //       .then((result) => {
+  //         if (result.value) {
+  //           this.alert
+  //             .showPromptSelect(
+  //               'Flag Reason',
+  //               this.flagOptions,
+  //               'Select a reason'
+  //             )
+  //             .then((result) => {
+  //               if (result.value) {
+  //                 if (result.value === 'other') {
+  //                   this.alert
+  //                     .showPrompt(
+  //                       'text',
+  //                       'Other Flag Reason',
+  //                       'Please provide a brief explanation for why this problem should be flagged.',
+  //                       'Flag'
+  //                     )
+  //                     .then((result) => {
+  //                       if (result.value) {
+  //                         flaggedReason.reason = result.value;
+  //                         this.flaggedBy = currentUser;
+  //                         this.flaggedReason = flaggedReason;
+  //                         return this.updateProblem();
+  //                       }
+  //                     });
+  //                 } else {
+  //                   flaggedReason.reason = result.value;
+  //                   this.flaggedBy = currentUser;
+  //                   this.flaggedReason = flaggedReason;
+  //                   return this.updateProblem();
+  //                 }
+  //               }
+  //             });
+  //         }
+  //       });
+  //   }
+  // }
 
-    addToMyProblems: function () {
-      let problem = this.problem;
-      let originalTitle = problem.get('title');
-      let title = 'Copy of ' + originalTitle;
-      let text = problem.get('text');
-      let author = problem.get('author');
-      let additionalInfo = problem.get('additionalInfo');
-      let isPublic = problem.get('isPublic');
-      let image = problem.get('image');
-      let imageUrl = problem.get('imageUrl');
-      let createdBy = this.currentUser;
-      let categories = problem.get('categories');
-      let status = problem.get('status');
-      let currentUser = this.currentUser;
-      let keywords = problem.get('keywords');
-      let organization = currentUser.get('organization');
-      let copyright = problem.get('copyrightNotice');
-      let sharingAuth = problem.get('sharingAuth');
+  // @action addToMyProblems() {
+  //   let problem = this.args.problem;
+  //   let originalTitle = problem.get('title');
+  //   let title = 'Copy of ' + originalTitle;
+  //   let text = problem.get('text');
+  //   let author = problem.get('author');
+  //   let additionalInfo = problem.get('additionalInfo');
+  //   let isPublic = problem.get('isPublic');
+  //   let image = problem.get('image');
+  //   let imageUrl = problem.get('imageUrl');
+  //   let createdBy = this.args.curentUser;
+  //   let categories = problem.get('categories');
+  //   let status = problem.get('status');
+  //   let currentUser = this.args.curentUser;
+  //   let keywords = problem.get('keywords');
+  //   let organization = currentUser.get('organization');
+  //   let copyright = problem.get('copyrightNotice');
+  //   let sharingAuth = problem.get('sharingAuth');
 
-      let newProblem = this.store.createRecord('problem', {
-        title: title,
-        text: text,
-        author: author,
-        additionalInfo: additionalInfo,
-        imageUrl: imageUrl,
-        isPublic: isPublic,
-        origin: problem,
-        categories: categories,
-        createdBy: createdBy,
-        image: image,
-        organization: organization,
-        privacySetting: 'M',
-        copyrightNotice: copyright,
-        sharingAuth: sharingAuth,
-        status: status,
-        createDate: new Date(),
-        keywords: keywords,
-      });
+  //   let newProblem = this.store.createRecord('problem', {
+  //     title: title,
+  //     text: text,
+  //     author: author,
+  //     additionalInfo: additionalInfo,
+  //     imageUrl: imageUrl,
+  //     isPublic: isPublic,
+  //     origin: problem,
+  //     categories: categories,
+  //     createdBy: createdBy,
+  //     image: image,
+  //     organization: organization,
+  //     privacySetting: 'M',
+  //     copyrightNotice: copyright,
+  //     sharingAuth: sharingAuth,
+  //     status: status,
+  //     createDate: new Date(),
+  //     keywords: keywords,
+  //   });
 
-      newProblem
-        .save()
-        .then((problem) => {
-          let name = problem.get('title');
-          this.set('savedProblem', problem);
-          this.alert.showToast(
-            'success',
-            `${name} added to your problems`,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          let parentView = this.parentView;
-          this.get('parentActions.refreshList').call(parentView);
-        })
-        .catch((err) => {
-          this.alert.showToast(
-            'error',
-            `${err}`,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          // this.handleErrors(err, 'createRecordErrors', newProblem);
-        });
-    },
+  //   newProblem
+  //     .save()
+  //     .then((problem) => {
+  //       let name = problem.get('title');
+  //       this.savedProblem = problem;
+  //       this.alert.showToast(
+  //         'success',
+  //         `${name} added to your problems`,
+  //         'bottom-end',
+  //         3000,
+  //         false,
+  //         null
+  //       );
+  //       let parentView = this.parentView;
+  //       this.parentActions.refreshList.call(parentView);
+  //     })
+  //     .catch((err) => {
+  //       this.alert.showToast(
+  //         'error',
+  //         `${err}`,
+  //         'bottom-end',
+  //         3000,
+  //         false,
+  //         null
+  //       );
+  //       // this.handleErrors(err, 'createRecordErrors', newProblem);
+  //     });
+  // }
 
-    toggleImageSize: function () {
-      this.toggleProperty('isWide');
-    },
+  // @action toggleImageSize() {
+  //   this.isWide = !this.isWide;
+  // }
 
-    deleteImage: function () {
-      let problem = this.problem;
-      problem.set('image', null);
-      problem
-        .save()
-        .then((res) => {
-          this.alert.showToast(
-            'success',
-            'Image Deleted',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateProblemErrors', problem);
-        });
-    },
+  // @action deleteImage() {
+  //   let problem = this.args.problem;
+  //   problem.set('image', null);
+  //   problem
+  //     .save()
+  //     .then((res) => {
+  //       this.alert.showToast(
+  //         'success',
+  //         'Image Deleted',
+  //         'bottom-end',
+  //         3000,
+  //         false,
+  //         null
+  //       );
+  //     })
+  //     .catch((err) => {
+  //       this.handleErrors(err, 'updateProblemErrors', problem);
+  //     });
+  // }
 
-    showCategories: function () {
-      this.store.query('category', {}).then((queryCats) => {
-        let categories = queryCats.get('meta');
-        this.set('categoryTree', categories.categories);
-      });
-      this.set('showCategories', !this.showCategories);
-    },
+  @action toggleCategories() {
+    this.store.query('category', {}).then((queryCats) => {
+      let categories = queryCats.get('meta');
+      this.categoryTree = categories.categories;
+    });
+    this.showCategories = !this.showCategories;
+  }
 
-    addCategories: function (category) {
-      let problem = this.problem;
-      let categories = problem.get('categories');
-      if (!categories.includes(category)) {
-        categories.pushObject(category);
-        problem.save().then(() => {
-          this.alert
-            .showToast(
-              'success',
-              'Category Added',
-              'bottom-end',
-              4000,
-              true,
-              'Undo'
-            )
-            .then((result) => {
-              if (result.value) {
-                problem.get('categories').removeObject(category);
-                problem.save().then(() => {
-                  this.alert.showToast(
-                    'success',
-                    'Category Removed',
-                    'bottom-end',
-                    4000,
-                    false,
-                    null
-                  );
-                });
-              }
-            });
-        });
-      }
-    },
+  // @action addCategories(category) {
+  //   let problem = this.args.problem;
+  //   let categories = problem.get('categories');
+  //   if (!categories.includes(category)) {
+  //     categories.pushObject(category);
+  //     problem.save().then(() => {
+  //       this.alert
+  //         .showToast(
+  //           'success',
+  //           'Category Added',
+  //           'bottom-end',
+  //           4000,
+  //           true,
+  //           'Undo'
+  //         )
+  //         .then((result) => {
+  //           if (result.value) {
+  //             problem.get('categories').removeObject(category);
+  //             problem.save().then(() => {
+  //               this.alert.showToast(
+  //                 'success',
+  //                 'Category Removed',
+  //                 'bottom-end',
+  //                 4000,
+  //                 false,
+  //                 null
+  //               );
+  //             });
+  //           }
+  //         });
+  //     });
+  //   }
+  // }
 
-    removeCategory: function (category) {
-      let problem = this.problem;
-      let categories = problem.get('categories');
-      categories.removeObject(category);
-      problem.save().then(() => {
-        this.alert
-          .showToast(
-            'success',
-            'Category Removed',
-            'bottom-end',
-            4000,
-            true,
-            'Undo'
-          )
-          .then((result) => {
-            if (result.value) {
-              problem.get('categories').pushObject(category);
-              problem.save().then(() => {
-                this.alert.showToast(
-                  'success',
-                  'Category Restored',
-                  'bottom-end',
-                  4000,
-                  false,
-                  null
-                );
-              });
-            }
-          });
-      });
-    },
+  // @action removeCategory(category) {
+  //   let problem = this.args.problem;
+  //   let categories = problem.get('categories');
+  //   categories.removeObject(category);
+  //   problem.save().then(() => {
+  //     this.alert
+  //       .showToast(
+  //         'success',
+  //         'Category Removed',
+  //         'bottom-end',
+  //         4000,
+  //         true,
+  //         'Undo'
+  //       )
+  //       .then((result) => {
+  //         if (result.value) {
+  //           problem.get('categories').pushObject(category);
+  //           problem.save().then(() => {
+  //             this.alert.showToast(
+  //               'success',
+  //               'Category Restored',
+  //               'bottom-end',
+  //               4000,
+  //               false,
+  //               null
+  //             );
+  //           });
+  //         }
+  //       });
+  //   });
+  // }
 
-    toAssignmentInfo: function (assignment) {
-      this.router.transitionTo('assignments.assignment', assignment);
-    },
+  // @action toAssignmentInfo(assignment) {
+  //   this.router.transitionTo('assignments.assignment', assignment);
+  // }
 
-    showAssignment: function () {
-      this.set('showAssignment', true);
-      this.problemList.pushObject(this.problem);
-      var scr = $('#outlet')[0].scrollHeight;
-      $('#outlet').animate({ scrollTop: scr }, 100);
-    },
+  // @action showAssignment() {
+  //   this.showAssignment = true;
+  //   this.problemList.pushObject(this.args.problem);
+  //   var scr = $('#outlet')[0].scrollHeight;
+  //   $('#outlet').animate({ scrollTop: scr }, 100);
+  // }
 
-    hideInfo: function (doTransition = true) {
-      // transition back to list
+  // @action hideInfo(doTransition = true) {
+  //   // transition back to list
 
-      if (this.isEditing) {
-        this.set('isEditing', false);
-      }
-      let problem = this.problem;
-      if (problem.get('isForEdit')) {
-        problem.set('isForEdit', false);
-      }
-      $('.list-outlet').addClass('hidden');
-      if (doTransition) {
-        this.router.transitionTo('problems');
-      }
-    },
+  //   if (this.isEditing) {
+  //     this.isEditing = false;
+  //   }
+  //   let problem = this.args.problem;
+  //   if (problem.isForEdit) {
+  //     problem.isForEdit = false;
+  //   }
+  //   $('.list-outlet').addClass('hidden');
+  //   if (doTransition) {
+  //     this.router.transitionTo('problems');
+  //   }
+  // }
 
-    checkRecommend: function () {
-      let currentUser = this.currentUser;
-      let accountType = currentUser.get('accountType');
-      let problem = this.problem;
-      let privacySetting = problem.get('privacySetting');
-      let status = problem.get('status');
+  // @action checkRecommend() {
+  //   let currentUser = this.args.curentUser;
+  //   let accountType = currentUser.get('accountType');
+  //   let problem = this.args.problem;
+  //   let privacySetting = problem.get('privacySetting');
+  //   let status = problem.get('status');
 
-      if (accountType === 'T') {
-        return;
-      }
+  //   if (accountType === 'T') {
+  //     return;
+  //   }
 
-      if (privacySetting === 'M') {
-        this.alert
-          .showModal(
-            'warning',
-            'Are you sure you want to recommend a private problem?',
-            'Regular users will not see this problem in their recommended list',
-            'Yes'
-          )
-          .then((result) => {
-            if (result.value) {
-              this.send('addToRecommend');
-            }
-          });
-      }
+  //   if (privacySetting === 'M') {
+  //     this.alert
+  //       .showModal(
+  //         'warning',
+  //         'Are you sure you want to recommend a private problem?',
+  //         'Regular users will not see this problem in their recommended list',
+  //         'Yes'
+  //       )
+  //       .then((result) => {
+  //         if (result.value) {
+  //           this.send('addToRecommend');
+  //         }
+  //       });
+  //   }
 
-      if (status !== 'approved') {
-        this.alert
-          .showModal(
-            'warning',
-            'Are you sure you want to recommend an unapproved problem?',
-            'Regular users will not see this problem in their recommended list',
-            'Yes'
-          )
-          .then((result) => {
-            if (result.value) {
-              this.send('addToRecommend');
-            }
-          });
-      }
+  //   if (status !== 'approved') {
+  //     this.alert
+  //       .showModal(
+  //         'warning',
+  //         'Are you sure you want to recommend an unapproved problem?',
+  //         'Regular users will not see this problem in their recommended list',
+  //         'Yes'
+  //       )
+  //       .then((result) => {
+  //         if (result.value) {
+  //           this.send('addToRecommend');
+  //         }
+  //       });
+  //   }
 
-      if (status === 'approved' && privacySetting !== 'M') {
-        this.send('addToRecommend');
-      }
-    },
+  //   if (status === 'approved' && privacySetting !== 'M') {
+  //     this.send('addToRecommend');
+  //   }
+  // }
 
-    addToRecommend: function () {
-      let problem = this.problem;
-      let accountType = this.get('currentUser.accountType');
-      if (accountType === 'A') {
-        let orgList = this.orgList.toArray();
-        let optionList = {};
-        for (let org of orgList) {
-          let id = org.id;
-          let name = org.name;
-          optionList[id] = name;
-        }
-        return this.alert
-          .showPromptSelect(
-            'Select Organization',
-            optionList,
-            'Select an organization'
-          )
-          .then((result) => {
-            if (result.value) {
-              let orgId = result.value;
-              this.store.findRecord('organization', orgId).then((org) => {
-                org.get('recommendedProblems').addObject(problem);
-                org.save().then(() => {
-                  this.alert.showToast(
-                    'success',
-                    'Added to Recommended',
-                    'bottom-end',
-                    3000,
-                    false,
-                    null
-                  );
-                });
-              });
-            }
-          });
-      } else if (accountType === 'P') {
-        return this.currentUser.get('organization').then((org) => {
-          org.get('recommendedProblems').addObject(problem);
-          org.save().then(() => {
-            this.alert.showToast(
-              'success',
-              'Added to Recommended',
-              'bottom-end',
-              3000,
-              false,
-              null
-            );
-          });
-        });
-      } else {
-        return;
-      }
-    },
+  // @action addToRecommend() {
+  //   let problem = this.args.problem;
+  //   let accountType = this.args.curentUser.accountType;
+  //   if (accountType === 'A') {
+  //     let orgList = this.args.orgList.toArray();
+  //     let optionList = {};
+  //     for (let org of orgList) {
+  //       let id = org.id;
+  //       let name = org.name;
+  //       optionList[id] = name;
+  //     }
+  //     return this.alert
+  //       .showPromptSelect(
+  //         'Select Organization',
+  //         optionList,
+  //         'Select an organization'
+  //       )
+  //       .then((result) => {
+  //         if (result.value) {
+  //           let orgId = result.value;
+  //           this.store.findRecord('organization', orgId).then((org) => {
+  //             org.get('recommendedProblems').addObject(problem);
+  //             org.save().then(() => {
+  //               this.alert.showToast(
+  //                 'success',
+  //                 'Added to Recommended',
+  //                 'bottom-end',
+  //                 3000,
+  //                 false,
+  //                 null
+  //               );
+  //             });
+  //           });
+  //         }
+  //       });
+  //   } else if (accountType === 'P') {
+  //     return this.args.curentUser.get('organization').then((org) => {
+  //       org.get('recommendedProblems').addObject(problem);
+  //       org.save().then(() => {
+  //         this.alert.showToast(
+  //           'success',
+  //           'Added to Recommended',
+  //           'bottom-end',
+  //           3000,
+  //           false,
+  //           null
+  //         );
+  //       });
+  //     });
+  //   } else {
+  //     return;
+  //   }
+  // }
 
-    removeRecommend: function () {
-      let problem = this.problem;
-      return this.currentUser.get('organization').then((org) => {
-        org.get('recommendedProblems').removeObject(problem);
-        org.save().then(() => {
-          this.alert.showToast(
-            'success',
-            'Removed from Recommended',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        });
-      });
-    },
+  // @action removeRecommend() {
+  //   let problem = this.args.problem;
+  //   return this.args.curentUser.get('organization').then((org) => {
+  //     org.get('recommendedProblems').removeObject(problem);
+  //     org.save().then(() => {
+  //       this.alert.showToast(
+  //         'success',
+  //         'Removed from Recommended',
+  //         'bottom-end',
+  //         3000,
+  //         false,
+  //         null
+  //       );
+  //     });
+  //   });
+  // }
 
-    showGeneral: function () {
-      this.set('showGeneral', true);
-      this.set('showCats', false);
-      this.set('showAdditional', false);
-      this.set('showLegal', false);
-    },
+  @action toggleGeneral() {
+    this.showGeneral = true;
+    this.showCats = false;
+    this.showAdditional = false;
+    this.showLegal = false;
+  }
 
-    showCats: function () {
-      this.set('showCats', true);
-      this.set('showGeneral', false);
-      this.set('showAdditional', false);
-      this.set('showLegal', false);
-    },
+  @action toggleCats() {
+    this.showCats = true;
+    this.showGeneral = false;
+    this.showAdditional = false;
+    this.showLegal = false;
+  }
 
-    showAdditional: function () {
-      this.set('showAdditional', true);
-      this.set('showCats', false);
-      this.set('showGeneral', false);
-      this.set('showLegal', false);
-    },
+  @action toggleAdditional() {
+    this.showAdditional = true;
+    this.showCats = false;
+    this.showGeneral = false;
+    this.showLegal = false;
+  }
 
-    showLegal: function () {
-      this.set('showLegal', true);
-      this.set('showCats', false);
-      this.set('showAdditional', false);
-      this.set('showGeneral', false);
-    },
+  @action toggleLegal() {
+    this.showLegal = true;
+    this.showCats = false;
+    this.showAdditional = false;
+    this.showGeneral = false;
+  }
 
-    restoreProblem: function () {
-      let problem = this.problem;
-      this.alert
-        .showModal(
-          'warning',
-          'Are you sure you want to restore this problem?',
-          null,
-          'Yes, restore'
-        )
-        .then((result) => {
-          if (result.value) {
-            problem.set('isTrashed', false);
-            problem.save().then(() => {
-              this.alert.showToast(
-                'success',
-                'Problem Restored',
-                'bottom-end',
-                3000,
-                false,
-                null
-              );
-              let parentView = this.parentView;
-              this.get('parentActions.refreshList').call(parentView);
-            });
-          }
-        });
-    },
+  // @action restoreProblem() {
+  //   let problem = this.args.problem;
+  //   this.alert
+  //     .showModal(
+  //       'warning',
+  //       'Are you sure you want to restore this problem?',
+  //       null,
+  //       'Yes, restore'
+  //     )
+  //     .then((result) => {
+  //       if (result.value) {
+  //         problem.set('isTrashed', false);
+  //         problem.save().then(() => {
+  //           this.alert.showToast(
+  //             'success',
+  //             'Problem Restored',
+  //             'bottom-end',
+  //             3000,
+  //             false,
+  //             null
+  //           );
+  //           let parentView = this.parentView;
+  //           this.parentActions.refreshList.call(parentView);
+  //         });
+  //       }
+  //     });
+  // }
 
-    toggleShowFlagReason: function () {
-      this.set('showFlagReason', !this.showFlagReason);
-    },
-    updateKeywords(val, $item) {
-      if (!val) {
-        return;
-      }
+  @action toggleShowFlagReason() {
+    this.showFlagReason = !this.showFlagReason;
+  }
+  @action updateKeywords(val, $item) {
+    if (!val) {
+      return;
+    }
 
-      let keywords = this.get('problem.keywords');
-      if (!_.isArray(keywords)) {
-        this.problem.set('keywords', []);
-        keywords = this.get('problem.keywords');
-      }
-      let isRemoval = _.isNull($item);
+    let keywords = this.args.problem.keywords;
+    if (!_.isArray(keywords)) {
+      this.args.problem.keywords = [];
+      keywords = this.args.problem.keywords;
+    }
+    let isRemoval = _.isNull($item);
 
-      if (isRemoval) {
-        keywords.removeObject(val);
-        return;
-      }
-      keywords.addObject(val);
-    },
-    updateQuillText(content, isEmpty, isOverLengthLimit) {
-      this.set('quillText', content);
-      this.set('isQuillEmpty', isEmpty);
-      this.set('isQuillTooLong', isOverLengthLimit);
-    },
-  },
-});
+    if (isRemoval) {
+      keywords.removeObject(val);
+      return;
+    }
+    keywords.addObject(val);
+  }
+  @action updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.quillText = content;
+    this.isQuillEmpty = isEmpty;
+    this.isQuillTooLong = isOverLengthLimit;
+  }
+}
