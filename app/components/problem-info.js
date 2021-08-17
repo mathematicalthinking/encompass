@@ -620,6 +620,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
           false,
           null
         );
+        this.router.transitionTo('problems.problem', problem.id);
         // let parentView = this.parentView;
         // this.parentActions.refreshList.call(parentView);
       })
