@@ -326,7 +326,7 @@
           <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
           <button class="primary-button save" {{action 'checkPrivacy'}}>Save</button>
         {{else}}
-          {{#if this.canEdit}}
+          {{#if this.writePermissions.canEdit}}
             {{#if this.problem.isUsed}}
               {{#if this.currentUser.isAdmin}}
                 <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
