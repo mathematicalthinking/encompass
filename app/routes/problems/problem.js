@@ -9,7 +9,8 @@ export default class ProblemsProblemRoute extends AuthenticatedRoute {
     const currentUser = this.modelFor('application');
     var problem = this.store.findRecord('problem', params.problem_id);
     const sectionList = this.store.findAll('section');
-    return hash({ currentUser, problem, sectionList });
+    const orgList = this.store.findAll('organization');
+    return hash({ currentUser, problem, sectionList, orgList });
   }
 
   @action toProblemList() {

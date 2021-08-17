@@ -87,16 +87,16 @@ export default Component.extend(ErrorHandlingMixin, {
     return !this.isQuillEmpty && !this.isQuillTooLong;
   },
 
-  orgOptions: function () {
-    return this.store.findAll('organization').then((orgs) => {
-      return orgs.map((org) => {
-        return {
-          id: org.id,
-          name: org.name,
-        };
-      });
-    });
-  },
+  // orgOptions: function () {
+  //   return this.store.findAll('organization').then((orgs) => {
+  //     return orgs.map((org) => {
+  //       return {
+  //         id: org.id,
+  //         name: org.name,
+  //       };
+  //     });
+  //   });
+  // },
 
   keywordSelectOptions: computed('problem.keywords.[]', function () {
     let keywords = this.get('problem.keywords');
@@ -811,40 +811,37 @@ export default Component.extend(ErrorHandlingMixin, {
       let problem = this.problem;
       let accountType = this.get('currentUser.accountType');
       if (accountType === 'A') {
-        this.orgOptions().then((orgs) => {
-          this.set('orgList', orgs);
-          let orgList = this.orgList;
-          let optionList = {};
-          for (let org of orgList) {
-            let id = org.id;
-            let name = org.name;
-            optionList[id] = name;
-          }
-          return this.alert
-            .showPromptSelect(
-              'Select Organization',
-              optionList,
-              'Select an organization'
-            )
-            .then((result) => {
-              if (result.value) {
-                let orgId = result.value;
-                this.store.findRecord('organization', orgId).then((org) => {
-                  org.get('recommendedProblems').addObject(problem);
-                  org.save().then(() => {
-                    this.alert.showToast(
-                      'success',
-                      'Added to Recommended',
-                      'bottom-end',
-                      3000,
-                      false,
-                      null
-                    );
-                  });
+        let orgList = this.orgList.toArray();
+        let optionList = {};
+        for (let org of orgList) {
+          let id = org.id;
+          let name = org.name;
+          optionList[id] = name;
+        }
+        return this.alert
+          .showPromptSelect(
+            'Select Organization',
+            optionList,
+            'Select an organization'
+          )
+          .then((result) => {
+            if (result.value) {
+              let orgId = result.value;
+              this.store.findRecord('organization', orgId).then((org) => {
+                org.get('recommendedProblems').addObject(problem);
+                org.save().then(() => {
+                  this.alert.showToast(
+                    'success',
+                    'Added to Recommended',
+                    'bottom-end',
+                    3000,
+                    false,
+                    null
+                  );
                 });
-              }
-            });
-        });
+              });
+            }
+          });
       } else if (accountType === 'P') {
         return this.currentUser.get('organization').then((org) => {
           org.get('recommendedProblems').addObject(problem);
