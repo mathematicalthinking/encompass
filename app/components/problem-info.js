@@ -31,6 +31,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   @tracked showCats = false;
   @tracked showAdditional = false;
   @tracked showLegal = false;
+  @tracked categoryTree = {};
   @service('sweet-alert') alert;
   @service('problem-permissions') permissions;
   @service('utility-methods') utils;
