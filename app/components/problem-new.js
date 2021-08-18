@@ -8,8 +8,6 @@ import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'problem-new',
-  classNames: ['side-info'],
   showGeneral: true,
   filesToBeUploaded: null,
   createProblemErrors: [],
@@ -25,31 +23,29 @@ export default Component.extend(ErrorHandlingMixin, {
   noLegalNotice: null,
   showCategories: false,
   keywords: [],
+  tooltips: {
+    name: 'Please try and give all your problems a unique title',
+    statement: 'Content of the problem to be completed',
+    categories:
+      'Use category menu to select appropriate common core categories',
+    keywords: 'Add keywords to help other people find this problem',
+    additionalInfo: 'Any additional information desired for the problem',
+    additionalImage:
+      'You can upload a JPG, PNG or PDF (only the first page is saved)',
+    privacySettings:
+      'Just Me makes your problem private, My Organization allows your problem to be seen by all members in your organization, and Public means every user can see your problem',
+    copyrightNotice: 'Add notice if problem contains copyrighted material',
+    sharingAuth:
+      'If you are posting copyrighted material please note your permission',
+    author: 'Name of the person who wrote this problem, (is the author)',
+    legalNotice:
+      'Please verify that the material you are posting is either your own or properly authorized to share',
+  },
+  selectedCategories: [],
 
   init: function () {
     this._super(...arguments);
     $('.list-outlet').removeClass('hidden');
-    let tooltips = {
-      name: 'Please try and give all your problems a unique title',
-      statement: 'Content of the problem to be completed',
-      categories:
-        'Use category menu to select appropriate common core categories',
-      keywords: 'Add keywords to help other people find this problem',
-      additionalInfo: 'Any additional information desired for the problem',
-      additionalImage:
-        'You can upload a JPG, PNG or PDF (only the first page is saved)',
-      privacySettings:
-        'Just Me makes your problem private, My Organization allows your problem to be seen by all members in your organization, and Public means every user can see your problem',
-      copyrightNotice: 'Add notice if problem contains copyrighted material',
-      sharingAuth:
-        'If you are posting copyrighted material please note your permission',
-      author: 'Name of the person who wrote this problem, (is the author)',
-      legalNotice:
-        'Please verify that the material you are posting is either your own or properly authorized to share',
-    };
-    this.set('tooltips', tooltips);
-    this.set('selectedCategories', []);
-    this.set('keywordFilter', this.createKeywordFilter.bind(this));
   },
 
   // didInsertElement: function () {
@@ -262,11 +258,11 @@ export default Component.extend(ErrorHandlingMixin, {
     }
   },
 
-  createKeywordFilter(keyword) {
+  keywordFilter(keyword) {
     if (!keyword) {
       return;
     }
-    let keywords = this.$('#select-add-keywords')[0].selectize.items;
+    let keywords = $('#select-add-keywords')[0].selectize.items;
 
     let keywordLower = keyword.trim().toLowerCase();
 
