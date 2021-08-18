@@ -1,3 +1,4 @@
+{{log this.isRecommended}}
 <header class="info-header">
     {{#if this.isEditing}}
       <span class="top-left-icon">
@@ -217,7 +218,7 @@
         <div class="info-content-block image">
           {{#if @problem.image}}
             <a {{action 'toggleImageSize'}}>
-              <img src="{{@problem.image.imageData}}" alt="Image Error" class="additional-image {{if isWide "wide"}}">
+              <img src="{{@problem.image.imageData}}" alt="Image Error" class="additional-image {{if this.isWide "wide"}}">
             </a>
           {{else}}
             {{#unless this.isEditing}}

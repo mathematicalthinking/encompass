@@ -51,9 +51,6 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   get writePermissions() {
     return this.permissions.writePermissions(this.args.problem);
   }
-  get recommendedProblems() {
-    return this.args.currentUser.get('organiztion.recommendedProblems');
-  }
   get parentActions() {
     return this.parentView.actions;
   }
@@ -114,7 +111,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   }
   get isRecommended() {
     let problem = this.args.problem;
-    let recommendedProblems = this.recommendedProblems || [];
+    let recommendedProblems = this.args.recommendedProblems.toArray() || [];
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
