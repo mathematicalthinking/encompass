@@ -49,6 +49,15 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   @tracked privacySetting = '';
   @tracked sharingAuth = '';
   @tracked privacySettingIcon = '';
+  constructor() {
+    super(...arguments);
+    if (this.args.problem.isForAssignment) {
+      this.showAssignment = true;
+    }
+    if (this.args.problem.isForEdit) {
+      this.isEditing = true;
+    }
+  }
   get writePermissions() {
     return this.permissions.writePermissions(this.args.problem);
   }
