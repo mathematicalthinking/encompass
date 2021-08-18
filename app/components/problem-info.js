@@ -759,122 +759,122 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   //   }
   // }
 
-  // @action checkRecommend() {
-  //   let currentUser = this.args.currentUser;
-  //   let accountType = currentUser.get('accountType');
-  //   let problem = this.args.problem;
-  //   let privacySetting = problem.get('privacySetting');
-  //   let status = problem.get('status');
+  @action checkRecommend() {
+    let currentUser = this.args.currentUser;
+    let accountType = currentUser.get('accountType');
+    let problem = this.args.problem;
+    let privacySetting = problem.get('privacySetting');
+    let status = problem.get('status');
 
-  //   if (accountType === 'T') {
-  //     return;
-  //   }
+    if (accountType === 'T') {
+      return;
+    }
 
-  //   if (privacySetting === 'M') {
-  //     this.alert
-  //       .showModal(
-  //         'warning',
-  //         'Are you sure you want to recommend a private problem?',
-  //         'Regular users will not see this problem in their recommended list',
-  //         'Yes'
-  //       )
-  //       .then((result) => {
-  //         if (result.value) {
-  //           this.send('addToRecommend');
-  //         }
-  //       });
-  //   }
+    if (privacySetting === 'M') {
+      this.alert
+        .showModal(
+          'warning',
+          'Are you sure you want to recommend a private problem?',
+          'Regular users will not see this problem in their recommended list',
+          'Yes'
+        )
+        .then((result) => {
+          if (result.value) {
+            this.addToRecommend();
+          }
+        });
+    }
 
-  //   if (status !== 'approved') {
-  //     this.alert
-  //       .showModal(
-  //         'warning',
-  //         'Are you sure you want to recommend an unapproved problem?',
-  //         'Regular users will not see this problem in their recommended list',
-  //         'Yes'
-  //       )
-  //       .then((result) => {
-  //         if (result.value) {
-  //           this.send('addToRecommend');
-  //         }
-  //       });
-  //   }
+    if (status !== 'approved') {
+      this.alert
+        .showModal(
+          'warning',
+          'Are you sure you want to recommend an unapproved problem?',
+          'Regular users will not see this problem in their recommended list',
+          'Yes'
+        )
+        .then((result) => {
+          if (result.value) {
+            this.addToRecommend();
+          }
+        });
+    }
 
-  //   if (status === 'approved' && privacySetting !== 'M') {
-  //     this.send('addToRecommend');
-  //   }
-  // }
+    if (status === 'approved' && privacySetting !== 'M') {
+      this.addToRecommend();
+    }
+  }
 
-  // @action addToRecommend() {
-  //   let problem = this.args.problem;
-  //   let accountType = this.args.currentUser.accountType;
-  //   if (accountType === 'A') {
-  //     let orgList = this.args.orgList.toArray();
-  //     let optionList = {};
-  //     for (let org of orgList) {
-  //       let id = org.id;
-  //       let name = org.name;
-  //       optionList[id] = name;
-  //     }
-  //     return this.alert
-  //       .showPromptSelect(
-  //         'Select Organization',
-  //         optionList,
-  //         'Select an organization'
-  //       )
-  //       .then((result) => {
-  //         if (result.value) {
-  //           let orgId = result.value;
-  //           this.store.findRecord('organization', orgId).then((org) => {
-  //             org.get('recommendedProblems').addObject(problem);
-  //             org.save().then(() => {
-  //               this.alert.showToast(
-  //                 'success',
-  //                 'Added to Recommended',
-  //                 'bottom-end',
-  //                 3000,
-  //                 false,
-  //                 null
-  //               );
-  //             });
-  //           });
-  //         }
-  //       });
-  //   } else if (accountType === 'P') {
-  //     return this.args.currentUser.get('organization').then((org) => {
-  //       org.get('recommendedProblems').addObject(problem);
-  //       org.save().then(() => {
-  //         this.alert.showToast(
-  //           'success',
-  //           'Added to Recommended',
-  //           'bottom-end',
-  //           3000,
-  //           false,
-  //           null
-  //         );
-  //       });
-  //     });
-  //   } else {
-  //     return;
-  //   }
-  // }
+  @action addToRecommend() {
+    let problem = this.args.problem;
+    let accountType = this.args.currentUser.accountType;
+    if (accountType === 'A') {
+      let orgList = this.args.orgList.toArray();
+      let optionList = {};
+      for (let org of orgList) {
+        let id = org.id;
+        let name = org.name;
+        optionList[id] = name;
+      }
+      return this.alert
+        .showPromptSelect(
+          'Select Organization',
+          optionList,
+          'Select an organization'
+        )
+        .then((result) => {
+          if (result.value) {
+            let orgId = result.value;
+            this.store.findRecord('organization', orgId).then((org) => {
+              org.get('recommendedProblems').addObject(problem);
+              org.save().then(() => {
+                this.alert.showToast(
+                  'success',
+                  'Added to Recommended',
+                  'bottom-end',
+                  3000,
+                  false,
+                  null
+                );
+              });
+            });
+          }
+        });
+    } else if (accountType === 'P') {
+      return this.args.currentUser.get('organization').then((org) => {
+        org.get('recommendedProblems').addObject(problem);
+        org.save().then(() => {
+          this.alert.showToast(
+            'success',
+            'Added to Recommended',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+        });
+      });
+    } else {
+      return;
+    }
+  }
 
-  // @action removeRecommend() {
-  //   let problem = this.args.problem;
-  //   return this.args.currentUser.get('organization').then((org) => {
-  //     org.get('recommendedProblems').removeObject(problem);
-  //     org.save().then(() => {
-  //       this.alert.showToast(
-  //         'success',
-  //         'Removed from Recommended',
-  //         'bottom-end',
-  //         3000,
-  //         false,
-  //         null
-  //       );
-  //     });
-  //   });
-  // }
+  @action removeRecommend() {
+    let problem = this.args.problem;
+    return this.args.currentUser.get('organization').then((org) => {
+      org.get('recommendedProblems').removeObject(problem);
+      org.save().then(() => {
+        this.alert.showToast(
+          'success',
+          'Removed from Recommended',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      });
+    });
+  }
 
   @action toggleGeneral() {
     this.showGeneral = true;
