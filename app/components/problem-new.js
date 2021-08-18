@@ -28,6 +28,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   init: function () {
     this._super(...arguments);
+    $('.list-outlet').removeClass('hidden');
     let tooltips = {
       name: 'Please try and give all your problems a unique title',
       statement: 'Content of the problem to be completed',
@@ -51,14 +52,14 @@ export default Component.extend(ErrorHandlingMixin, {
     this.set('keywordFilter', this.createKeywordFilter.bind(this));
   },
 
-  didInsertElement: function () {
-    $('.list-outlet').removeClass('hidden');
-  },
+  // didInsertElement: function () {
+  //   $('.list-outlet').removeClass('hidden');
+  // },
 
-  willDestroyElement() {
-    $('.list-outlet').addClass('hidden');
-    this._super(...arguments);
-  },
+  // willDestroyElement() {
+  //   $('.list-outlet').addClass('hidden');
+  //   this._super(...arguments);
+  // },
 
   observeErrors: observer('title', 'privacySetting', function () {
     let missingError = this.isMissingRequiredFields;
