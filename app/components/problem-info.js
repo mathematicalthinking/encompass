@@ -123,7 +123,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     if (!keyword) {
       return;
     }
-    let keywords = this.$('#select-edit-keywords')[0].selectize.items;
+    let keywords = $('#select-edit-keywords')[0].selectize.items;
     let keywordLower = keyword.trim().toLowerCase();
 
     let keywordsLower = _.map(keywords, (key, val) => {
@@ -174,7 +174,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     this.generatedStatus = status;
 
     if (accountType === 'A' || accountType === 'P') {
-      this.send('checkStatus');
+      this.checkStatus();
     } else {
       return this.updateProblem();
     }
@@ -184,7 +184,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     let problem = this.args.problem;
     let currentUser = this.args.currentUser;
     let title = this.problemName.trim();
-    const quillContent = this.$('.ql-editor').html();
+    const quillContent = $('.ql-editor').html();
     let text;
     let isQuillValid;
 
@@ -359,7 +359,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
       )
       .then((result) => {
         if (result.value) {
-          this.send('hideInfo');
+          this.hideInfo();
           problem.set('isTrashed', true);
           window.history.back();
           problem
@@ -462,108 +462,108 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     }
   }
 
-  // @action cancelEdit() {
-  //   this.isEditing = false;
+  @action cancelEdit() {
+    this.isEditing = false;
 
-  //   let problem = this.args.problem;
-  //   if (problem.get('isForEdit')) {
-  //     problem.set('isForEdit', false);
-  //   }
-  //   this.resetErrors();
-  // }
+    let problem = this.args.problem;
+    if (problem.get('isForEdit')) {
+      problem.set('isForEdit', false);
+    }
+    this.resetErrors();
+  }
 
-  // @action radioSelect(value) {
-  //   this.privacySetting = value;
-  // }
+  @action radioSelect(value) {
+    this.privacySetting = value;
+  }
 
-  // @action changePrivacy() {
-  //   let privacy = $('#privacy-select :selected').val();
-  //   this.privacySettingIcon = privacy;
-  // }
+  @action changePrivacy() {
+    let privacy = $('#privacy-select :selected').val();
+    this.privacySettingIcon = privacy;
+  }
 
-  // @action checkPrivacy() {
-  //   let currentPrivacy = this.args.problem.get('privacySetting');
-  //   let privacy = $('#privacy-select :selected').val();
-  //   this.privacySetting = privacy;
+  @action checkPrivacy() {
+    let currentPrivacy = this.args.problem.get('privacySetting');
+    let privacy = $('#privacy-select :selected').val();
+    this.privacySetting = privacy;
 
-  //   if (currentPrivacy !== 'E' && privacy === 'E') {
-  //     this.alert
-  //       .showModal(
-  //         'question',
-  //         'Are you sure you want to make your problem public?',
-  //         "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
-  //         'Yes'
-  //       )
-  //       .then((result) => {
-  //         if (result.value) {
-  //           return this.setStatus();
-  //         }
-  //       });
-  //   } else {
-  //     return this.setStatus();
-  //   }
-  // }
+    if (currentPrivacy !== 'E' && privacy === 'E') {
+      this.alert
+        .showModal(
+          'question',
+          'Are you sure you want to make your problem public?',
+          "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
+          'Yes'
+        )
+        .then((result) => {
+          if (result.value) {
+            return this.setStatus();
+          }
+        });
+    } else {
+      return this.setStatus();
+    }
+  }
 
-  // @action checkStatus() {
-  //   let currentUser = this.args.currentUser;
-  //   let status = this.generatedStatus;
-  //   let problem = this.args.problem;
-  //   let title = this.problemName;
-  //   let flaggedReason = {
-  //     flaggedBy: currentUser.get('id'),
-  //     reason: '',
-  //     flaggedDate: new Date(),
-  //   };
+  @action checkStatus() {
+    let currentUser = this.args.currentUser;
+    let status = this.generatedStatus;
+    let problem = this.args.problem;
+    let title = this.problemName;
+    let flaggedReason = {
+      flaggedBy: currentUser.get('id'),
+      reason: '',
+      flaggedDate: new Date(),
+    };
 
-  //   if (status === 'approved' || status === 'pending') {
-  //     this.flaggedReason = null;
-  //     return this.updateProblem();
-  //   } else if (status === 'flagged' && !problem.get('flagReason')) {
-  //     this.alert
-  //       .showModal(
-  //         'warning',
-  //         `Are you sure you want to mark ${title} as flagged`,
-  //         null,
-  //         `Yes, Flag it!`
-  //       )
-  //       .then((result) => {
-  //         if (result.value) {
-  //           this.alert
-  //             .showPromptSelect(
-  //               'Flag Reason',
-  //               this.flagOptions,
-  //               'Select a reason'
-  //             )
-  //             .then((result) => {
-  //               if (result.value) {
-  //                 if (result.value === 'other') {
-  //                   this.alert
-  //                     .showPrompt(
-  //                       'text',
-  //                       'Other Flag Reason',
-  //                       'Please provide a brief explanation for why this problem should be flagged.',
-  //                       'Flag'
-  //                     )
-  //                     .then((result) => {
-  //                       if (result.value) {
-  //                         flaggedReason.reason = result.value;
-  //                         this.flaggedBy = currentUser;
-  //                         this.flaggedReason = flaggedReason;
-  //                         return this.updateProblem();
-  //                       }
-  //                     });
-  //                 } else {
-  //                   flaggedReason.reason = result.value;
-  //                   this.flaggedBy = currentUser;
-  //                   this.flaggedReason = flaggedReason;
-  //                   return this.updateProblem();
-  //                 }
-  //               }
-  //             });
-  //         }
-  //       });
-  //   }
-  // }
+    if (status === 'approved' || status === 'pending') {
+      this.flaggedReason = null;
+      return this.updateProblem();
+    } else if (status === 'flagged' && !problem.get('flagReason')) {
+      this.alert
+        .showModal(
+          'warning',
+          `Are you sure you want to mark ${title} as flagged`,
+          null,
+          `Yes, Flag it!`
+        )
+        .then((result) => {
+          if (result.value) {
+            this.alert
+              .showPromptSelect(
+                'Flag Reason',
+                this.flagOptions,
+                'Select a reason'
+              )
+              .then((result) => {
+                if (result.value) {
+                  if (result.value === 'other') {
+                    this.alert
+                      .showPrompt(
+                        'text',
+                        'Other Flag Reason',
+                        'Please provide a brief explanation for why this problem should be flagged.',
+                        'Flag'
+                      )
+                      .then((result) => {
+                        if (result.value) {
+                          flaggedReason.reason = result.value;
+                          this.flaggedBy = currentUser;
+                          this.flaggedReason = flaggedReason;
+                          return this.updateProblem();
+                        }
+                      });
+                  } else {
+                    flaggedReason.reason = result.value;
+                    this.flaggedBy = currentUser;
+                    this.flaggedReason = flaggedReason;
+                    return this.updateProblem();
+                  }
+                }
+              });
+          }
+        });
+    }
+  }
 
   @action addToMyProblems() {
     let problem = this.args.problem;
@@ -634,29 +634,29 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
       });
   }
 
-  // @action toggleImageSize() {
-  //   this.isWide = !this.isWide;
-  // }
+  @action toggleImageSize() {
+    this.isWide = !this.isWide;
+  }
 
-  // @action deleteImage() {
-  //   let problem = this.args.problem;
-  //   problem.set('image', null);
-  //   problem
-  //     .save()
-  //     .then((res) => {
-  //       this.alert.showToast(
-  //         'success',
-  //         'Image Deleted',
-  //         'bottom-end',
-  //         3000,
-  //         false,
-  //         null
-  //       );
-  //     })
-  //     .catch((err) => {
-  //       this.handleErrors(err, 'updateProblemErrors', problem);
-  //     });
-  // }
+  @action deleteImage() {
+    let problem = this.args.problem;
+    problem.set('image', null);
+    problem
+      .save()
+      .then((res) => {
+        this.alert.showToast(
+          'success',
+          'Image Deleted',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'updateProblemErrors', problem);
+      });
+  }
 
   @action toggleCategories() {
     this.store.query('category', {}).then((queryCats) => {
@@ -666,75 +666,75 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     this.showCategories = !this.showCategories;
   }
 
-  // @action addCategories(category) {
-  //   let problem = this.args.problem;
-  //   let categories = problem.get('categories');
-  //   if (!categories.includes(category)) {
-  //     categories.pushObject(category);
-  //     problem.save().then(() => {
-  //       this.alert
-  //         .showToast(
-  //           'success',
-  //           'Category Added',
-  //           'bottom-end',
-  //           4000,
-  //           true,
-  //           'Undo'
-  //         )
-  //         .then((result) => {
-  //           if (result.value) {
-  //             problem.get('categories').removeObject(category);
-  //             problem.save().then(() => {
-  //               this.alert.showToast(
-  //                 'success',
-  //                 'Category Removed',
-  //                 'bottom-end',
-  //                 4000,
-  //                 false,
-  //                 null
-  //               );
-  //             });
-  //           }
-  //         });
-  //     });
-  //   }
-  // }
+  @action addCategories(category) {
+    let problem = this.args.problem;
+    let categories = problem.get('categories');
+    if (!categories.includes(category)) {
+      categories.pushObject(category);
+      problem.save().then(() => {
+        this.alert
+          .showToast(
+            'success',
+            'Category Added',
+            'bottom-end',
+            4000,
+            true,
+            'Undo'
+          )
+          .then((result) => {
+            if (result.value) {
+              problem.get('categories').removeObject(category);
+              problem.save().then(() => {
+                this.alert.showToast(
+                  'success',
+                  'Category Removed',
+                  'bottom-end',
+                  4000,
+                  false,
+                  null
+                );
+              });
+            }
+          });
+      });
+    }
+  }
 
-  // @action removeCategory(category) {
-  //   let problem = this.args.problem;
-  //   let categories = problem.get('categories');
-  //   categories.removeObject(category);
-  //   problem.save().then(() => {
-  //     this.alert
-  //       .showToast(
-  //         'success',
-  //         'Category Removed',
-  //         'bottom-end',
-  //         4000,
-  //         true,
-  //         'Undo'
-  //       )
-  //       .then((result) => {
-  //         if (result.value) {
-  //           problem.get('categories').pushObject(category);
-  //           problem.save().then(() => {
-  //             this.alert.showToast(
-  //               'success',
-  //               'Category Restored',
-  //               'bottom-end',
-  //               4000,
-  //               false,
-  //               null
-  //             );
-  //           });
-  //         }
-  //       });
-  //   });
-  // }
+  @action removeCategory(category) {
+    let problem = this.args.problem;
+    let categories = problem.get('categories');
+    categories.removeObject(category);
+    problem.save().then(() => {
+      this.alert
+        .showToast(
+          'success',
+          'Category Removed',
+          'bottom-end',
+          4000,
+          true,
+          'Undo'
+        )
+        .then((result) => {
+          if (result.value) {
+            problem.get('categories').pushObject(category);
+            problem.save().then(() => {
+              this.alert.showToast(
+                'success',
+                'Category Restored',
+                'bottom-end',
+                4000,
+                false,
+                null
+              );
+            });
+          }
+        });
+    });
+  }
 
-  // @action toAssignmentInfo(assignment) {
-  //   this.router.transitionTo('assignments.assignment', assignment);
-  // }
+  @action toAssignmentInfo(assignment) {
+    this.router.transitionTo('assignments.assignment', assignment);
+  }
 
   @action toggleAssignment() {
     this.showAssignment = true;
@@ -743,21 +743,21 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     $('#outlet').animate({ scrollTop: scr }, 100);
   }
 
-  // @action hideInfo(doTransition = true) {
-  //   // transition back to list
+  @action hideInfo(doTransition = true) {
+    // transition back to list
 
-  //   if (this.isEditing) {
-  //     this.isEditing = false;
-  //   }
-  //   let problem = this.args.problem;
-  //   if (problem.isForEdit) {
-  //     problem.isForEdit = false;
-  //   }
-  //   $('.list-outlet').addClass('hidden');
-  //   if (doTransition) {
-  //     this.router.transitionTo('problems');
-  //   }
-  // }
+    if (this.isEditing) {
+      this.isEditing = false;
+    }
+    let problem = this.args.problem;
+    if (problem.isForEdit) {
+      problem.isForEdit = false;
+    }
+    $('.list-outlet').addClass('hidden');
+    if (doTransition) {
+      this.router.transitionTo('problems');
+    }
+  }
 
   @action checkRecommend() {
     let currentUser = this.args.currentUser;
@@ -904,33 +904,33 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     this.showGeneral = false;
   }
 
-  // @action restoreProblem() {
-  //   let problem = this.args.problem;
-  //   this.alert
-  //     .showModal(
-  //       'warning',
-  //       'Are you sure you want to restore this problem?',
-  //       null,
-  //       'Yes, restore'
-  //     )
-  //     .then((result) => {
-  //       if (result.value) {
-  //         problem.set('isTrashed', false);
-  //         problem.save().then(() => {
-  //           this.alert.showToast(
-  //             'success',
-  //             'Problem Restored',
-  //             'bottom-end',
-  //             3000,
-  //             false,
-  //             null
-  //           );
-  //           let parentView = this.parentView;
-  //           this.parentActions.refreshList.call(parentView);
-  //         });
-  //       }
-  //     });
-  // }
+  @action restoreProblem() {
+    let problem = this.args.problem;
+    this.alert
+      .showModal(
+        'warning',
+        'Are you sure you want to restore this problem?',
+        null,
+        'Yes, restore'
+      )
+      .then((result) => {
+        if (result.value) {
+          problem.set('isTrashed', false);
+          problem.save().then(() => {
+            this.alert.showToast(
+              'success',
+              'Problem Restored',
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+            let parentView = this.parentView;
+            this.parentActions.refreshList.call(parentView);
+          });
+        }
+      });
+  }
 
   @action toggleShowFlagReason() {
     this.showFlagReason = !this.showFlagReason;
