@@ -76,7 +76,7 @@
           <div class="sort-bar-item more"></div>
         </div>
         {{#if this.showList}}
-          <ProblemList @currentUser={{this.currentUser}} @isSearching={{this.isSearchingProblems}} @problems={{this.displayProblems}} @metadata={{this.problemsMetadata}} @isList={{true}} @isGrid={{false}} @moreMenuOptions={{this.moreMenuOptions}} @store={{this.store}} @toProblemInfo="toProblemInfo" @refreshList={{action "refreshList"}} />
+          <ProblemList @recommendedProblems={{this.model.recommendedProblems}} @currentUser={{this.currentUser}} @isSearching={{this.isSearchingProblems}} @problems={{this.displayProblems}} @metadata={{this.problemsMetadata}} @isList={{true}} @isGrid={{false}} @moreMenuOptions={{this.moreMenuOptions}} @store={{this.store}} @toProblemInfo="toProblemInfo" @refreshList={{action "refreshList"}} />
         {{/if}}
         {{#if this.showGrid}}
           <ProblemList @currentUser={{this.currentUser}} @isSearching={{this.isSearchingProblems}} @store={{this.store}} @problems={{this.displayProblems}} @metadata={{this.problemsMetadata}} @isList={{false}} @isGrid={{true}} @moreMenuOptions={{this.moreMenuOptions}} @toProblemInfo="toProblemInfo" @refreshList={{action "refreshList"}} />

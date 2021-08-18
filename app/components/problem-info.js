@@ -51,6 +51,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   @tracked privacySettingIcon = '';
   constructor() {
     super(...arguments);
+    $('.list-outlet').removeClass('hidden');
     if (this.args.problem.isForAssignment) {
       this.showAssignment = true;
     }
