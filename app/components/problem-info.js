@@ -58,6 +58,18 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     if (this.args.problem.isForEdit) {
       this.isEditing = true;
       this.privacySettingIcon = this.args.problem.privacySetting;
+      this.copyrightNotice = this.args.problem.copyrightNotice;
+      this.sharingAuth = this.args.problem.sharingAuth;
+      this.author = this.args.problem.author;
+      this.problemName = this.args.problem.title;
+      this.problemText = this.args.problem.text;
+      this.organization = this.args.problem.organization;
+      this.problemCategories = this.args.problem.categories;
+      this.problemStatus = this.args.problem.status;
+      this.additionalInfo = this.args.problem.additionalInfo;
+      this.privacySetting = this.args.problem.privacySetting;
+      this.sharingAuth = this.args.problem.sharingAuth;
+      this.privacySettingIcon = this.args.problem.privacySetting;
     }
   }
   get writePermissions() {
