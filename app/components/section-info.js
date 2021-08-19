@@ -33,6 +33,13 @@ export default Component.extend(ErrorHandlingMixin, {
   findRecordErrors: [],
   problemLoadErrors: [],
   addGroup: false,
+  groupedStudents: computed('groups.[]', function () {
+    return this.groups
+      .toArray()
+      .filter((group) => !group.isTrashed)
+      .map((group) => group.students.toArray().map((student) => student.id))
+      .flat();
+  }),
   selectableStudents: computed('section.students.[]', function () {
     return this.section.students.toArray();
   }),
