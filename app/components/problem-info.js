@@ -57,6 +57,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     }
     if (this.args.problem.isForEdit) {
       this.isEditing = true;
+      this.privacySettingIcon = this.args.problem.privacySetting;
     }
   }
   get writePermissions() {
