@@ -1,22 +1,24 @@
-import Component from '@ember/component';
-import { action, computed } from '@ember/object';
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  tagName: '',
-  classNames: ['login-page'],
-  incorrectPassword: false,
-  incorrectUsername: false,
-  missingCredentials: false,
-  postErrors: [],
+export default class LogInComponent extends ErrorHandlingComponent {
+  @tracked incorrectPassword = false;
+  @tracked incorrectUsername = false;
+  @tracked missingCredentials = false;
+  @tracked username = '';
+  @tracked password = '';
+  @tracked postErrors = [];
+  @tracked oauthError = '';
 
-  oauthErrorMsg: computed('oauthError', function () {
+  get oauthErrorMsg() {
     if (this.oauthError === 'emailUnavailable') {
       return 'The provided email address is already associated with an existing account';
     }
-  }),
-  
+    return '';
+  }
+
   @action
   resetErrors() {
     const errors = [
@@ -26,40 +28,32 @@ export default Component.extend(ErrorHandlingMixin, {
     ];
 
     for (let error of errors) {
-      if (this.get(error)) {
-        this.set(error, false);
+      if (this[error]) {
+        this[error] = false;
       }
     }
-  },
+  }
 
   @action
-  login() {
-    var username = this.get('username');
-    var usernameTrim;
-    if (username) {
-      usernameTrim = username.trim();
-    } else {
-      usernameTrim = '';
-    }
-    var password = this.get('password');
-
-    if (!usernameTrim || !password) {
-      this.set('missingCredentials', true);
+  async login() {
+    if (!this.username.trim() || !this.password) {
+      this.missingCredentials = true;
       return;
     }
-    var createUserData = {
-      username: usernameTrim,
-      password: password,
+    const createUserData = {
+      username: this.username.trim(),
+      password: this.password,
     };
     $.post({
       url: '/auth/login',
       data: createUserData,
     })
       .then((res) => {
+        console.log(res);
         if (res.message === 'Incorrect password') {
-          this.set('incorrectPassword', true);
+          this.incorrectPassword = true;
         } else if (res.message === 'Incorrect username') {
-          this.set('incorrectUsername', true);
+          this.incorrectUsername = true;
         } else {
           window.location.href = '/';
         }
@@ -67,5 +61,5 @@ export default Component.extend(ErrorHandlingMixin, {
       .catch((err) => {
         this.handleErrors(err, 'postErrors');
       });
-  },
-});
+  }
+}
