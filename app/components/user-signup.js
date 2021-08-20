@@ -11,12 +11,8 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   @tracked usernameError = null;
   @tracked emailError = null;
   @tracked isEmailDirty = false;
-  @tracked isEmailValid = false;
-  @tracked isEmailInvalid = false;
   @tracked email = '';
   @tracked confirmEmail = '';
-  @tracked isEmailDirty = false;
-  @tracked confirmEmail = null;
   @tracked isPasswordDirty = false;
   @tracked confirmPassword = '';
   @tracked selectedType = '';
@@ -46,16 +42,11 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   get isEmailValid() {
-    let email = this.email;
-
-    if (!this.isEmailDirty && email) {
-      this.isEmailDirty = true;
-    }
-    return this.validateEmail(email);
+    return this.validateEmail(this.email);
   }
 
   get isEmailInvalid() {
-    return this.isEmailDirty && !this.isEmailValid;
+    return !!this.email.length && !this.validateEmail(this.email);
   }
 
   get doEmailsMatch() {
@@ -84,7 +75,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   validateEmail(email) {
-    console.log('validating email');
     if (!email) {
       return false;
     }
@@ -113,16 +103,17 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     }
   }
 
-  @action emailValidate(email) {
-    let isValid = this.validateEmail(email);
-    if (isValid) {
-      this.emailError = null;
-      this.email = email;
-      this.isEmailInvalid = false;
-    } else {
-      this.isEmailInvalid = true;
-    }
-  }
+  // @action emailValidate(email) {
+  //   let isValid = this.validateEmail(email);
+  //   if (isValid) {
+  //     this.emailError = null;
+  //     this.email = email;
+  //     this.isEmailInvalid = false;
+  //   } else {
+  //     this.isEmailInvalid = true;
+  //   }
+  // }
+
   @action passwordValidate(password) {
     function hasWhiteSpace(string) {
       return /\s/g.test(string);

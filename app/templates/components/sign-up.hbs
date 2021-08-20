@@ -1,5 +1,5 @@
 <div class="signup-box">
-
+{{log this.isEmailInvalid}}
   <img src="../assets/images/logo-encompass.png" class="encompass-logo" alt="encompass logo">
 
   <form class="form-signup">
@@ -13,7 +13,7 @@
     </div>
     <div class="auth-form-input">
       <label for="email">Email:</label>
-      <Input class="form-control" @type="text" @name="email" @id="email" @value={{this.email}} {{on "keyup" this.emailValidate}} @key-down={{action "resetErrors"}} />
+      <Input class="form-control" @type="text" @name="email" @id="email" @value={{this.email}} @key-down={{action "resetErrors"}} />
       {{#if this.isEmailInvalid}}
       <p class="error-message">{{this.emailErrors.invalid}}</p>
       {{/if}}
