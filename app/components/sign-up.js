@@ -1,13 +1,13 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
+import _ from 'underscore';
 /*global _:false */
 import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import UserSignupMixin from '../mixins/user_signup_mixin';
 
 export default Component.extend(ErrorHandlingMixin, UserSignupMixin, {
-  classNames: ['signup-page'],
   missingCredentials: false,
   noTermsAndConditions: false,
   agreedToTerms: false,
