@@ -13,12 +13,8 @@ export default class SignUpComponent extends UserSignupComponent {
   @tracked postErrors = [];
   @tracked firstName = '';
   @tracked lastName = '';
-  @tracked email = '';
-  @tracked confirmEmail = '';
   @tracked org = null;
   @tracked location = '';
-  @tracked username = '';
-  @tracked password = '';
   @tracked requestReason = '';
   @tracked agreedToTerms = false;
   @tracked doEmailsMatch = false;

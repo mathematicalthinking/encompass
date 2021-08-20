@@ -11,11 +11,17 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   @tracked usernameError = null;
   @tracked emailError = null;
   @tracked isEmailDirty = false;
-  @tracked isEmailValid = true;
+  @tracked isEmailValid = false;
+  @tracked isEmailInvalid = false;
   @tracked email = '';
+  @tracked confirmEmail = '';
   @tracked isEmailDirty = false;
   @tracked confirmEmail = null;
   @tracked isPasswordDirty = false;
+  @tracked confirmPassword = '';
+  @tracked selectedType = '';
+  @tracked password = '';
+  @tracked username = '';
 
   emailErrors = {
     invalid: 'Invalid email address.',
@@ -35,7 +41,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     missing: 'Password is required',
     mismatch: 'Passwords do not match',
   };
-  @tracked selectedType = '';
   get isEmailRequired() {
     return this.selectedType !== 'Student';
   }
@@ -57,8 +62,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     return this.email === this.confirmEmail;
   }
 
-  @tracked password = '';
-
   get isPasswordValid() {
     // if (!this.isPasswordDirty && this.password) {
     //   this.isPasswordDirty = true;
@@ -76,12 +79,12 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   get isPasswordInvalid() {
     return this.isPasswordDirty && !this.isPasswordValid;
   }
-  @tracked confirmPassword = '';
   get doPasswordsMatch() {
     return this.password === this.confirmPassword;
   }
 
   validateEmail(email) {
+    console.log('validating email');
     if (!email) {
       return false;
     }
@@ -90,7 +93,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   @action usernameValidate(username) {
-    console.log('usernamevalidate component');
     console.log(username);
     if (username) {
       var usernamePattern = new RegExp(this.usernameRegEx);
@@ -112,18 +114,16 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   @action emailValidate(email) {
-    console.log('emailValidate component');
     let isValid = this.validateEmail(email);
     if (isValid) {
       this.emailError = null;
       this.email = email;
+      this.isEmailInvalid = false;
     } else {
-      this.emailError = this.emailErrors.invalid;
+      this.isEmailInvalid = true;
     }
   }
   @action passwordValidate(password) {
-    console.log('passwordValidate component');
-    console.log(password);
     function hasWhiteSpace(string) {
       return /\s/g.test(string);
     }
@@ -147,7 +147,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     }
   }
   @action resetErrors() {
-    console.log('reset errors component');
     const errors = [
       'missingCredentials',
       'noTermsAndConditions',
