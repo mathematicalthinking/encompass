@@ -11,10 +11,11 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   @tracked usernameError = null;
   @tracked emailError = null;
   @tracked isEmailDirty = false;
-  @tracked isEmailValid = false;
+  @tracked isEmailValid = true;
   @tracked email = '';
   @tracked isEmailDirty = false;
   @tracked confirmEmail = null;
+  @tracked isPasswordDirty = false;
 
   emailErrors = {
     invalid: 'Invalid email address.',
@@ -59,9 +60,9 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   @tracked password = '';
 
   get isPasswordValid() {
-    if (!this.isPasswordDirty && this.password) {
-      this.isPasswordDirty = true;
-    }
+    // if (!this.isPasswordDirty && this.password) {
+    //   this.isPasswordDirty = true;
+    // }
     //TODO: stricter password req
     if (!this.password) {
       return false;
@@ -72,7 +73,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
 
     return length >= min && length <= max;
   }
-  @tracked isPasswordDirty = false;
   get isPasswordInvalid() {
     return this.isPasswordDirty && !this.isPasswordValid;
   }
