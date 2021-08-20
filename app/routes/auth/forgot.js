@@ -1,2 +1,2 @@
-import LoggedOutRoute from './_logged_out_route';
-export default class ForgotRoute extends LoggedOutRoute {}
+import Route from '@ember/routing/route';
+export default class ForgotRoute extends Route {}

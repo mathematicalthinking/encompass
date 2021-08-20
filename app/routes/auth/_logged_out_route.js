@@ -7,33 +7,28 @@ import { action } from '@ember/object';
  * @since 1.0.2
  */
 export default class LoggedOutRoute extends Route {
-  beforeModel() {
-    this.authenticate();
-  }
-  authenticate() {
-    //not crazy that this is duplicated here and in ApplicationRoute
-    let user = this.modelFor('application');
-
-    if (user.get('isAuthenticated')) {
-      this.transitionTo('/');
-    }
-  }
-
-  @action error(error, transition) {
-    let errorStatus;
-
-    if (error && error.errors) {
-      let errorObj = error.errors[0];
-
-      if (errorObj) {
-        errorStatus = errorObj.status;
-      }
-    }
-
-    if (errorStatus === '401') {
-      this.replaceWith('auth.login');
-    } else {
-      return true;
-    }
-  }
+  // beforeModel() {
+  //   this.authenticate();
+  // }
+  // authenticate() {
+  //   //not crazy that this is duplicated here and in ApplicationRoute
+  //   let user = this.modelFor('application');
+  //   if (user.get('isAuthenticated')) {
+  //     this.transitionTo('/');
+  //   }
+  // }
+  // @action error(error, transition) {
+  //   let errorStatus;
+  //   if (error && error.errors) {
+  //     let errorObj = error.errors[0];
+  //     if (errorObj) {
+  //       errorStatus = errorObj.status;
+  //     }
+  //   }
+  //   if (errorStatus === '401') {
+  //     this.replaceWith('auth.login');
+  //   } else {
+  //     return true;
+  //   }
+  // }
 }

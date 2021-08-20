@@ -9,19 +9,19 @@ const config = require('../../app_server/config');
 const css = require('./selectors');
 
 // testing timeout values
-const timeoutMs = 10000;  // timeout per await
-const timeoutTestMsStr = '25s';  // timeout per test
+const timeoutMs = 10000; // timeout per await
+const timeoutTestMsStr = '25s'; // timeout per test
 
 const nconf = config.nconf;
 const port = nconf.get('clientPort');
 const host = `http://localhost:${port}`;
 
-const loginUrl = `${host}/auth/login`;
+const loginUrl = `${host}/#/auth/login`;
 
 const admin = {
   username: 'Rick', // case insensitive
   password: 'sanchez',
-  name: 'Rick Sanchez'
+  name: 'Rick Sanchez',
 };
 
 const unauth = {
@@ -30,12 +30,12 @@ const unauth = {
 
 const regUser = {
   username: 'morty',
-  password: 'smith'
+  password: 'smith',
 };
 
 const pdAdmin = {
   username: 'pdadmin',
-  password: 'pdadmin'
+  password: 'pdadmin',
 };
 
 const newUser = {
@@ -48,13 +48,14 @@ const newUser = {
   username: 'johndoe111',
   password: 'noone11111',
   confirmPassword: 'noone11111',
-  requestReason: 'professional development'
+  requestReason: 'professional development',
 };
 
 const signupErrors = {
-  incomplete : 'You must complete all of the fields in order to signup.',
+  incomplete: 'You must complete all of the fields in order to signup.',
   terms: 'You must accept our Terms and Conditions',
-  username: 'Username must be all lowercase, at least 3 characters and can only contain the following special characters _',
+  username:
+    'Username must be all lowercase, at least 3 characters and can only contain the following special characters _',
   password: 'Password must be between 10 and 72 characters',
   blackListed: 'contains an invalid value',
 };
@@ -62,7 +63,7 @@ const signupErrors = {
 const signinErrors = {
   incomplete: 'Incorrect username or password',
   username: 'Incorrect Username',
-  password: 'Incorrect Password'
+  password: 'Incorrect Password',
 };
 
 const newProblem = {
@@ -74,31 +75,28 @@ const newProblem = {
   category: 'CCSS.Math.Content.K.G.B.6',
   keywords: ['math', 'geometry', 'puzzle'],
   additionalInfo: 'Test additional info',
-  copyrightNotice: "Test Problem Copyright",
-  sharingAuth: "Test Problem Sharing",
+  copyrightNotice: 'Test Problem Copyright',
+  sharingAuth: 'Test Problem Sharing',
 };
-
-
 
 const newSection = {
   details: {
     name: 'Test Section',
-    teachers: 'rick'
-  }
+    teachers: 'rick',
+  },
 };
 
-
-const getCurrentUrl = async function(webdriver) {
+const getCurrentUrl = async function (webdriver) {
   let url;
   try {
     url = await webdriver.getCurrentUrl();
-  }catch(err) {
+  } catch (err) {
     console.log(err);
   }
   return url;
 };
 
-const existsElement = async function(webDriver, selector) {
+const existsElement = async function (webDriver, selector) {
   try {
     await webDriver.findElement(By.css(selector));
   } catch (error) {
@@ -115,12 +113,11 @@ const isElementVisible = async function (webDriver, selector) {
       isVisible = await webElements[0].isDisplayed();
     }
   } catch (err) {
-    if (err.name === 'StaleElementReferenceError' ) {
+    if (err.name === 'StaleElementReferenceError') {
       // element is no longer in dom
       return false;
     }
-    console.log({isElementVisibleError: err});
-
+    console.log({ isElementVisibleError: err });
   }
   return isVisible;
 };
@@ -158,23 +155,26 @@ const getWebElementTooltip = async function (webDriver, selector) {
 };
 
 const navigateAndWait = function (webDriver, url, options = {}) {
+  let { selector, timeout = timeoutMs, urlToWaitFor = url } = options;
 
-  let { selector, timeout=timeoutMs, urlToWaitFor = url } = options;
-
-  return webDriver.get(url)
-  .then(() => {
-    return waitForUrlToEql(webDriver, urlToWaitFor, timeout)
+  return webDriver
+    .get(url)
     .then(() => {
-      return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+      return waitForUrlToEql(webDriver, urlToWaitFor, timeout).then(() => {
+        return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+      });
+    })
+    .catch((err) => {
+      console.log(`Error navigateAndWait: ${err.message}`);
+      throw err;
     });
-  })
-  .catch((err) => {
-    console.log(`Error navigateAndWait: ${err.message}`);
-    throw(err);
-  });
 };
 
-const findAndGetText = async function (webDriver, selector, caseInsenstive=false) {
+const findAndGetText = async function (
+  webDriver,
+  selector,
+  caseInsenstive = false
+) {
   let text;
   try {
     let webElements = await webDriver.findElements(By.css(selector));
@@ -191,12 +191,13 @@ const findAndGetText = async function (webDriver, selector, caseInsenstive=false
 };
 
 const isTextInDom = function (webDriver, text) {
-  return webDriver.getPageSource()
+  return webDriver
+    .getPageSource()
     .then((source) => {
       return typeof source === 'string' && source.includes(text);
     })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
@@ -204,7 +205,7 @@ const hasTooltipValue = async function (webDriver, selector, value) {
   let hasValue;
   try {
     let dataValue = await getWebElementTooltip(webDriver, selector);
-    hasValue = (dataValue === value) ? true : false;
+    hasValue = dataValue === value ? true : false;
   } catch (err) {
     console.log(err);
   }
@@ -219,51 +220,79 @@ const findAndClickElement = async function (webDriver, selector) {
   return;
 };
 
-const waitForAndClickElement = function (webDriver, selector, timeout = timeoutMs) {
-      return webDriver.wait(until.elementLocated(By.css(selector)), timeout, `Unable to locate element by selector: ${selector}`)
-      .then((locatedEl) => {
-        return webDriver.wait(until.elementIsVisible(locatedEl), timeout, `Element ${selector} not visible`)
+const waitForAndClickElement = function (
+  webDriver,
+  selector,
+  timeout = timeoutMs
+) {
+  return webDriver
+    .wait(
+      until.elementLocated(By.css(selector)),
+      timeout,
+      `Unable to locate element by selector: ${selector}`
+    )
+    .then((locatedEl) => {
+      return webDriver
+        .wait(
+          until.elementIsVisible(locatedEl),
+          timeout,
+          `Element ${selector} not visible`
+        )
         .then((visibleEl) => {
-            return visibleEl.click();
+          return visibleEl.click();
         });
-      })
-      .catch((err) => {
-        throw(err);
-      });
-};
-
-const waitForTextInDom = function (webDriver, text, timeout=timeoutMs) {
-    return webDriver.wait(function () {
-      return isTextInDom(webDriver, text);
-    }, timeout, `Could not find ${text} in DOM`)
+    })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
+const waitForTextInDom = function (webDriver, text, timeout = timeoutMs) {
+  return webDriver
+    .wait(
+      function () {
+        return isTextInDom(webDriver, text);
+      },
+      timeout,
+      `Could not find ${text} in DOM`
+    )
+    .catch((err) => {
+      throw err;
+    });
+};
 
 const waitForSelector = function (webDriver, selector, timeout = timeoutMs) {
-    return webDriver.wait(until.elementLocated(By.css(selector)), timeout)
+  return webDriver
+    .wait(until.elementLocated(By.css(selector)), timeout)
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
-const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
+const waitForRemoval = async function (
+  webDriver,
+  selector,
+  timeout = timeoutMs
+) {
   try {
-    return await webDriver.wait(async function() {
-      return await isElementVisible(webDriver, selector) === false;
+    return await webDriver.wait(async function () {
+      return (await isElementVisible(webDriver, selector)) === false;
     }, timeout);
   } catch (err) {
-    if (err.name === 'StaleElementReferenceError' ) {
+    if (err.name === 'StaleElementReferenceError') {
       // element we are waiting to be removed has already been removed
       return false;
     }
-    throw(err);
+    throw err;
   }
 };
 
-const findInputAndType = async function (webDriver, selector, text, doHitEnter=false) {
+const findInputAndType = async function (
+  webDriver,
+  selector,
+  text,
+  doHitEnter = false
+) {
   try {
     let input = await getWebElements(webDriver, selector);
     if (input.length > 0) {
@@ -284,7 +313,7 @@ const checkSelectorsExist = function (webDriver, selectors) {
       return isElementVisible(webDriver, selector);
     })
   ).then((selectors) => {
-    return selectors.every(x => x === true);
+    return selectors.every((x) => x === true);
   });
 };
 
@@ -295,12 +324,16 @@ const createSelectors = function (filterOptions) {
   return [].concat.apply([], options);
 };
 
-
-const createFilterList = function (isStudent, isAdmin, filterList, removeChildren) {
+const createFilterList = function (
+  isStudent,
+  isAdmin,
+  filterList,
+  removeChildren
+) {
   let filterOptions = [...filterList];
 
   if (removeChildren) {
-     filterOptions.forEach((item) => {
+    filterOptions.forEach((item) => {
       if (item.hasOwnProperty('children')) {
         delete item.children;
       }
@@ -351,7 +384,7 @@ const selectOption = async function (
   }
 };
 
-const login = async function(webDriver, host, user, selectorToTest) {
+const login = async function (webDriver, host, user, selectorToTest) {
   try {
     let navOptions = {
       selector: css.login.username,
@@ -366,14 +399,18 @@ const login = async function(webDriver, host, user, selectorToTest) {
     await findInputAndType(webDriver, css.login.password, user.password);
     await findAndClickElement(webDriver, css.login.submit);
     return waitForSelector(webDriver, selectorToWaitFor);
-
-  }catch(err) {
+  } catch (err) {
     console.log(`login error: ${err}`);
-    throw(err);
+    throw err;
   }
 };
 
-const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {
+const signup = async function (
+  webDriver,
+  missingFields = [],
+  user = newUser,
+  acceptedTerms = true
+) {
   const inputs = css.signup.inputs;
   for (let input of Object.keys(inputs)) {
     if (input !== 'terms' && !missingFields.includes(input)) {
@@ -387,8 +424,7 @@ const signup = async function(webDriver, missingFields=[], user=newUser,  accept
           // eslint-disable-next-line no-await-in-loop
           await findInputAndType(webDriver, inputs[input], user[input]);
         }
-
-      }catch(err){
+      } catch (err) {
         console.log(err);
       }
     }
@@ -398,49 +434,53 @@ const signup = async function(webDriver, missingFields=[], user=newUser,  accept
       await findAndClickElement(webDriver, inputs.terms);
     }
     await findAndClickElement(webDriver, css.signup.submit);
-  }catch(err) {
+  } catch (err) {
     console.log(err);
   }
 };
 
-const clearElement = async function(webDriver, element) {
+const clearElement = async function (webDriver, element) {
   let ele;
   try {
-   let elements = await getWebElements(webDriver, element);
-   ele = elements[0];
-   await ele.clear();
-  }catch(err) {
+    let elements = await getWebElements(webDriver, element);
+    ele = elements[0];
+    await ele.clear();
+  } catch (err) {
     console.log(err);
   }
 };
-const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
+const waitForUrlMatch = async function (webDriver, regex, timeout = timeoutMs) {
   try {
     await webDriver.wait(until.urlMatches(regex), timeout);
     return true;
-  }catch(err) {
+  } catch (err) {
     console.error(`Error waitForUrlMatch: ${err}`);
     console.trace();
     return false;
   }
 };
 
-const saveScreenshot = function(webdriver) {
-  return webdriver.takeScreenshot().
-  then((base64Data) => {
+const saveScreenshot = function (webdriver) {
+  return webdriver.takeScreenshot().then((base64Data) => {
     let buffer = Buffer.from(base64Data, 'base64');
-    return sharp(buffer).toFile(path.join(__dirname, 'screenshots', `${Date.now()}.png`))
-    .catch((err) => {
-      console.log(`Error saving screenshot: ${err}`);
-    });
+    return sharp(buffer)
+      .toFile(path.join(__dirname, 'screenshots', `${Date.now()}.png`))
+      .catch((err) => {
+        console.log(`Error saving screenshot: ${err}`);
+      });
   });
 };
 
-const waitForNElements = function(webDriver, selector, num, timeout=timeoutMs) {
+const waitForNElements = function (
+  webDriver,
+  selector,
+  num,
+  timeout = timeoutMs
+) {
   let elements;
 
   let conditionFn = () => {
-    return getWebElements(webDriver, selector)
-    .then((els) => {
+    return getWebElements(webDriver, selector).then((els) => {
       if (els.length === num) {
         elements = els;
         return true;
@@ -448,67 +488,73 @@ const waitForNElements = function(webDriver, selector, num, timeout=timeoutMs) {
       return false;
     });
   };
-  return webDriver.wait(conditionFn, timeout)
-  .then(() => {
-    return elements;
-  })
-  .catch((err) => {
-    throw(err);
-  });
-};
-
-const dismissErrorBox = function(webDriver) {
-  let xBtn = css.general.errorBoxDismiss;
-
-  return findAndClickElement(webDriver, xBtn)
+  return webDriver
+    .wait(conditionFn, timeout)
     .then(() => {
-      return waitForRemoval(webDriver, css.general.errorBox);
+      return elements;
+    })
+    .catch((err) => {
+      throw err;
     });
 };
 
-const waitForAndGetErrorBoxText = function(webDriver) {
+const dismissErrorBox = function (webDriver) {
+  let xBtn = css.general.errorBoxDismiss;
+
+  return findAndClickElement(webDriver, xBtn).then(() => {
+    return waitForRemoval(webDriver, css.general.errorBox);
+  });
+};
+
+const waitForAndGetErrorBoxText = function (webDriver) {
   return findAndGetText(webDriver, css.general.errorBoxText);
 };
 
-const selectSingleSelectizeItem = function(webDriver, inputSelector, text, itemValue, options = { willInputClearOnSelect: false } ) {
-
+const selectSingleSelectizeItem = function (
+  webDriver,
+  inputSelector,
+  text,
+  itemValue,
+  options = { willInputClearOnSelect: false }
+) {
   let { willInputClearOnSelect, toastText } = options;
 
   return getWebElementByCss(webDriver, inputSelector)
     .then((selectizeInput) => {
-      return selectizeInput.sendKeys(text)
-      .then(() => {
+      return selectizeInput.sendKeys(text).then(() => {
         let dataValSelector = `div[data-value="${itemValue}"]`;
-        return waitForAndClickElement(webDriver, dataValSelector )
-        .then(() => {
-          return getParentElement(selectizeInput)
-            .then((parentNode) => {
-              if (!willInputClearOnSelect) {
-                return waitForElementToHaveText(webDriver, parentNode, text );
-              }
-              if (toastText) {
-                return waitForTextInDom(webDriver, toastText);
-              }
-              return parentNode;
-            });
-
+        return waitForAndClickElement(webDriver, dataValSelector).then(() => {
+          return getParentElement(selectizeInput).then((parentNode) => {
+            if (!willInputClearOnSelect) {
+              return waitForElementToHaveText(webDriver, parentNode, text);
+            }
+            if (toastText) {
+              return waitForTextInDom(webDriver, toastText);
+            }
+            return parentNode;
+          });
         });
       });
     })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
-const getWebElementByCss = function(webDriver, selector ) {
+const getWebElementByCss = function (webDriver, selector) {
   // not for testing existence or visibility
-  return webDriver.findElement(By.css(selector))
-    .catch((err) => {
-      throw(err);
-    });
+  return webDriver.findElement(By.css(selector)).catch((err) => {
+    throw err;
+  });
 };
 
-const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedText, options={}, timeout=timeoutMs){
+const waitForElementToHaveText = function (
+  webDriver,
+  webElOrSelector,
+  expectedText,
+  options = {},
+  timeout = timeoutMs
+) {
   let conditionFn;
   let isSelector = typeof webElOrSelector === 'string';
 
@@ -516,66 +562,70 @@ const waitForElementToHaveText = function(webDriver, webElOrSelector, expectedTe
 
   if (isSelector) {
     conditionFn = () => {
-      return findAndGetText(webDriver, webElOrSelector)
-        .then((text) => {
-          return useIncludes ? text.includes(expectedText) : text === expectedText;
-        });
+      return findAndGetText(webDriver, webElOrSelector).then((text) => {
+        return useIncludes
+          ? text.includes(expectedText)
+          : text === expectedText;
+      });
     };
   } else {
     conditionFn = () => {
-      return webElOrSelector.getText()
-        .then((val) => {
-          return useIncludes ? val.includes(expectedText) : val === expectedText;
-        });
+      return webElOrSelector.getText().then((val) => {
+        return useIncludes ? val.includes(expectedText) : val === expectedText;
+      });
     };
   }
 
-  return webDriver.wait(conditionFn, timeout || timeoutMs)
-    .catch((err) => {
-      throw(err);
-    });
+  return webDriver.wait(conditionFn, timeout || timeoutMs).catch((err) => {
+    throw err;
+  });
 };
 
-const getParentElement = function(webElement) {
-  return webElement.findElement(By.xpath('./..'))
-    .catch((err) => {
-      throw err;
-    });
+const getParentElement = function (webElement) {
+  return webElement.findElement(By.xpath('./..')).catch((err) => {
+    throw err;
+  });
 };
 
-const waitForAttributeToEql = function(webDriver, webElement, attributeName, expectedValue, options = {}, timeout=timeoutMs) {
+const waitForAttributeToEql = function (
+  webDriver,
+  webElement,
+  attributeName,
+  expectedValue,
+  options = {},
+  timeout = timeoutMs
+) {
   let { useCssValue = false } = options;
   let conditionFn = () => {
-    let val = useCssValue ? webElement.getCssValue(attributeName) : webElement.getAttribute(attributeName);
-      return val
-        .then((attributeVal) => {
-        return attributeVal === expectedValue;
-      });
-  };
-  return webDriver.wait(conditionFn, timeout)
-    .catch((err) => {
-      throw(err);
+    let val = useCssValue
+      ? webElement.getCssValue(attributeName)
+      : webElement.getAttribute(attributeName);
+    return val.then((attributeVal) => {
+      return attributeVal === expectedValue;
     });
+  };
+  return webDriver.wait(conditionFn, timeout).catch((err) => {
+    throw err;
+  });
 };
 
-const logout = function(webDriver) {
+const logout = function (webDriver) {
   let loginRegex = new RegExp('/auth/login');
   return findAndClickElement(webDriver, css.topBar.logout)
     .then(() => {
       return waitForUrlMatch(webDriver, loginRegex);
     })
     .catch((err) => {
-      throw(err);
-  });
+      throw err;
+    });
 };
 
-const dismissWorkspaceTour = function(webDriver) {
+const dismissWorkspaceTour = function (webDriver) {
   let xBtnSel = css.workspace.tour.xBtn;
   let overlaySel = css.workspace.tour.overlay;
   return waitForSelector(webDriver, xBtnSel, 1000)
     .then((xBtn) => {
-      return xBtn.click()
-      .then(() => {
+      return xBtn.click().then(() => {
         return waitForRemoval(webDriver, overlaySel);
       });
     })
@@ -584,25 +634,27 @@ const dismissWorkspaceTour = function(webDriver) {
         // tour box didnt pop up
         return true;
       }
-      throw (err);
+      throw err;
     });
 };
 
-const waitForUrlToEql = function(webDriver, url, timeout=timeoutMs) {
-  return webDriver.wait(until.urlIs(url), timeout)
-  .catch((err) => {
+const waitForUrlToEql = function (webDriver, url, timeout = timeoutMs) {
+  return webDriver.wait(until.urlIs(url), timeout).catch((err) => {
     console.error(`Error waitForUrlMatch: ${err}`);
   });
 };
 
-const waitForElToBeVisible = function(webDriver, selectorOrEl, timeout=timeoutMs) {
+const waitForElToBeVisible = function (
+  webDriver,
+  selectorOrEl,
+  timeout = timeoutMs
+) {
   let isSelector = typeof selectorOrEl === 'string';
   let conditionFn;
 
   if (isSelector) {
     conditionFn = () => {
-      return webDriver.findElements({css: selectorOrEl})
-      .then((els) => {
+      return webDriver.findElements({ css: selectorOrEl }).then((els) => {
         if (els.length === 0) {
           return false;
         }
@@ -618,10 +670,14 @@ const waitForElToBeVisible = function(webDriver, selectorOrEl, timeout=timeoutMs
   return webDriver.wait(conditionFn, timeout);
 };
 
-function waitForSelectizeSingleText(webDriver, selector, expectedText, timeout=timeoutMs) {
+function waitForSelectizeSingleText(
+  webDriver,
+  selector,
+  expectedText,
+  timeout = timeoutMs
+) {
   let conditionFn = () => {
-    return getSelectizeSingleText(webDriver, selector)
-    .then((text) => {
+    return getSelectizeSingleText(webDriver, selector).then((text) => {
       return text === expectedText;
     });
   };
@@ -631,12 +687,12 @@ function waitForSelectizeSingleText(webDriver, selector, expectedText, timeout=t
 
 function getSelectizeSingleText(webDriver, selector) {
   return getWebElementByCss(webDriver, selector)
-  .then((el) => {
-    return el.getAttribute('innerText');
-  })
-  .catch((err) => {
-    throw(err);
-  });
+    .then((el) => {
+      return el.getAttribute('innerText');
+    })
+    .catch((err) => {
+      throw err;
+    });
 }
 
 //boilerplate setup for running tests by account type
@@ -660,7 +716,7 @@ function getSelectizeSingleText(webDriver, selector) {
 //       });
 //     });
 
-    //TESTS HERE
+//TESTS HERE
 //   }
 //   for (let user of Object.keys(users)) {
 //     await _runTests(users[user]);
@@ -707,7 +763,7 @@ module.exports.saveScreenshot = saveScreenshot;
 module.exports.waitForNElements = waitForNElements;
 module.exports.dismissErrorBox = dismissErrorBox;
 module.exports.waitForAndGetErrorBoxText = waitForAndGetErrorBoxText;
-module.exports.selectSingleSelectizeItem =selectSingleSelectizeItem;
+module.exports.selectSingleSelectizeItem = selectSingleSelectizeItem;
 module.exports.getWebWelementByCss = getWebElementByCss;
 module.exports.waitForElementToHaveText = waitForElementToHaveText;
 module.exports.waitForAttributeToEql = waitForAttributeToEql;
