@@ -17,7 +17,6 @@ export default class SignUpComponent extends UserSignupComponent {
   @tracked location = '';
   @tracked requestReason = '';
   @tracked agreedToTerms = false;
-  @tracked doEmailsMatch = false;
   orgRequest = null;
   didConfirmOrgRequest = false;
   @service('string-similarity') similarity;

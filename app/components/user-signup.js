@@ -10,10 +10,8 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   @tracked passwordError = null;
   @tracked usernameError = null;
   @tracked emailError = null;
-  @tracked isEmailDirty = false;
   @tracked email = '';
   @tracked confirmEmail = '';
-  @tracked isPasswordDirty = false;
   @tracked confirmPassword = '';
   @tracked selectedType = '';
   @tracked password = '';
@@ -46,7 +44,7 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   get isEmailInvalid() {
-    return !!this.email.length && !this.validateEmail(this.email);
+    return this.email && !this.validateEmail(this.email);
   }
 
   get doEmailsMatch() {
@@ -54,21 +52,10 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   get isPasswordValid() {
-    // if (!this.isPasswordDirty && this.password) {
-    //   this.isPasswordDirty = true;
-    // }
-    //TODO: stricter password req
-    if (!this.password) {
-      return false;
-    }
-    let length = this.password.length;
-    let min = this.passwordMinLength;
-    let max = this.passwordMaxLength;
-
-    return length >= min && length <= max;
+    return this.validatePassword(this.password);
   }
   get isPasswordInvalid() {
-    return this.isPasswordDirty && !this.isPasswordValid;
+    return this.password && !this.validatePassword(this.password);
   }
   get doPasswordsMatch() {
     return this.password === this.confirmPassword;
@@ -80,6 +67,17 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     }
     var emailPattern = new RegExp(this.emailRegEx);
     return emailPattern.test(email);
+  }
+
+  validatePassword(password) {
+    if (!this.password) {
+      return false;
+    }
+    let length = password.length;
+    let min = this.passwordMinLength;
+    let max = this.passwordMaxLength;
+
+    return length >= min && length <= max;
   }
 
   @action usernameValidate(username) {
@@ -103,40 +101,29 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     }
   }
 
-  // @action emailValidate(email) {
-  //   let isValid = this.validateEmail(email);
-  //   if (isValid) {
-  //     this.emailError = null;
-  //     this.email = email;
-  //     this.isEmailInvalid = false;
+  // @action passwordValidate(password) {
+  //   function hasWhiteSpace(string) {
+  //     return /\s/g.test(string);
+  //   }
+
+  //   if (
+  //     password.length < this.passwordMinLength ||
+  //     password.length > this.passwordMaxLength
+  //   ) {
+  //     this.passwordError = this.passwordErrors.invalid;
   //   } else {
-  //     this.isEmailInvalid = true;
+  //     this.passwordError = null;
+
+  //     this.password = password;
+  //   }
+
+  //   if (hasWhiteSpace(password)) {
+  //     this.noSpacesError = true;
+  //   } else {
+  //     this.noSpacesError = false;
+  //     this.password = password;
   //   }
   // }
-
-  @action passwordValidate(password) {
-    function hasWhiteSpace(string) {
-      return /\s/g.test(string);
-    }
-
-    if (
-      password.length < this.passwordMinLength ||
-      password.length > this.passwordMaxLength
-    ) {
-      this.passwordError = this.passwordErrors.invalid;
-    } else {
-      this.passwordError = null;
-
-      this.password = password;
-    }
-
-    if (hasWhiteSpace(password)) {
-      this.noSpacesError = true;
-    } else {
-      this.noSpacesError = false;
-      this.password = password;
-    }
-  }
   @action resetErrors() {
     const errors = [
       'missingCredentials',
