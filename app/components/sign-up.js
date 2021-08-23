@@ -103,26 +103,25 @@ export default class SignUpComponent extends UserSignupComponent {
     return !_.contains(orgNamesLower, requestLower);
   }
   @action signup() {
-    var that = this;
-    var firstName = that.firstName;
-    var lastName = that.lastName;
-    var email = that.email;
-    var confirmEmail = that.confirmEmail;
-    var organization = that.org;
-    var orgRequest = that.orgRequest;
-    var location = that.location;
-    var username = that.username;
+    var firstName = this.firstName;
+    var lastName = this.lastName;
+    var email = this.email;
+    var confirmEmail = this.confirmEmail;
+    var organization = this.org;
+    var orgRequest = this.orgRequest;
+    var location = this.location;
+    var username = this.username;
     var usernameTrim;
     if (username) {
       usernameTrim = username.trim();
     } else {
       usernameTrim = '';
     }
-    var password = that.password;
-    var confirmPassword = that.confirmPassword;
-    var requestReason = that.requestReason;
-    var doPasswordsMatch = that.doPasswordsMatch;
-    var doEmailsMatch = that.doEmailsMatch;
+    var password = this.password;
+    var confirmPassword = this.confirmPassword;
+    var requestReason = this.requestReason;
+    var doPasswordsMatch = this.doPasswordsMatch;
+    var doEmailsMatch = this.doEmailsMatch;
 
     if (
       !firstName ||
@@ -136,12 +135,12 @@ export default class SignUpComponent extends UserSignupComponent {
       !confirmEmail ||
       !confirmPassword
     ) {
-      that.missingCredentials = true;
+      this.missingCredentials = true;
       return;
     }
 
     if (!this.agreedToTerms) {
-      that.noTermsAndConditions = true;
+      this.noTermsAndConditions = true;
       return;
     }
 
@@ -177,65 +176,59 @@ export default class SignUpComponent extends UserSignupComponent {
         createUserData.organizationRequest = orgRequest;
       }
 
-      return that
-        .createUser(createUserData)
+      return this.createUser(createUserData)
         .then((res) => {
           if (res.username) {
-            that
-              .get('alert')
-              .showToast(
-                'success',
-                `Signup successful`,
-                'bottom-end',
-                3000,
-                null,
-                false
-              );
+            this.alert.showToast(
+              'success',
+              `Signup successful`,
+              'bottom-end',
+              3000,
+              null,
+              false
+            );
             window.location.href = '/';
           } else if (
             res.message === 'There already exists a user with that username'
           ) {
-            that.usernameError = that.usernameErrors.taken;
+            this.usernameError = this.usernameErrors.taken;
           } else if (
             res.message ===
             'There already exists a user with that email address'
           ) {
-            that.emailError = that.emailErrors.taken;
+            this.emailError = this.emailErrors.taken;
           } else {
-            that.postErrors = [res.message];
+            this.postErrors = [res.message];
           }
         })
         .catch((err) => {
-          that.handleErrors(err, 'postErrors');
+          this.handleErrors(err, 'postErrors');
         });
     } else {
       createUserData.organization = organization.id;
-      return that
-        .createUser(createUserData)
+      return this.createUser(createUserData)
         .then((res) => {
           if (res.username) {
-            that
-              .get('alert')
-              .showToast(
-                'success',
-                `Signup successful`,
-                'bottom-end',
-                3000,
-                null,
-                false
-              );
+            this.alert.showToast(
+              'success',
+              `Signup successful`,
+              'bottom-end',
+              3000,
+              null,
+              false
+            );
             window.location.href = '/';
           } else if (
             res.message === 'There already exists a user with that username'
           ) {
-            that.usernameError = that.usernameErrors.taken;
+            this.usernameError = this.usernameErrors.taken;
           } else if (
             res.message ===
             'There already exists a user with that email address'
           ) {
-            that.emailError = that.emailErrors.taken;
+            this.emailError = this.emailErrors.taken;
           } else {
-            that.postErrors = [res.message];
+            this.postErrors = [res.message];
           }
         })
         .catch((err) => {
