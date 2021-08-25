@@ -34,17 +34,17 @@ export default Component.extend(ErrorHandlingMixin, VmtHostMixin, {
   isSelectionsBoxExpanded: false,
   isMessageListenerAttached: false,
 
-  showSelectableView: computed(
-    'makingSelection',
-    'showingSelections',
-    'isTransitioning',
-    function () {
-      let making = this.makingSelection;
-      let showing = this.showingSelections;
-      let transitioning = this.isTransitioning;
-      return (making || showing) && !transitioning && !this.switching;
-    }
-  ),
+  // showSelectableView: computed(
+  //   'makingSelection',
+  //   'showingSelections',
+  //   'isTransitioning',
+  //   function () {
+  //     let making = this.makingSelection;
+  //     let showing = this.showingSelections;
+  //     let transitioning = this.isTransitioning;
+  //     return (making || showing) && !transitioning && !this.switching;
+  //   }
+  // ),
 
   shouldCheck: computed('makingSelection', function () {
     return this.makingSelection;
