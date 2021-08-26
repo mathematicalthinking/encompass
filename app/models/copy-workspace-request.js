@@ -2,6 +2,7 @@ import { attr, belongsTo } from '@ember-data/model';
 import Auditable from './auditable';
 
 export default class CopyWorkspaceRequestModel extends Auditable {
+  @attr batchClone;
   @attr('string') name;
   @belongsTo('user', { inverse: null }) owner;
   @attr('string') mode;
