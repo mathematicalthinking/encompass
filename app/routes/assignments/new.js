@@ -16,6 +16,7 @@ export default class AssignmentsNewRoute extends AuthenticatedRoute {
     return hash({
       currentUser,
       sections: this.store.findAll('section'),
+      groups: this.store.findAll('group'),
     });
   }
   @action toAssignmentInfo(model) {

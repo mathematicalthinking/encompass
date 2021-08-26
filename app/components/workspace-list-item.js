@@ -3,6 +3,7 @@ import { computed } from '@ember/object';
 /*global _:false */
 import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+import { initial } from 'underscore';
 
 export default Component.extend({
   classNames: ['workspace-list-item'],
@@ -62,58 +63,68 @@ export default Component.extend({
   ),
 
   actions: {
-    async assignWorkspace(){
+    async assignWorkspace() {
+      let initialRequest = this.store.createRecord('copyWorkspaceRequest');
       let sections = await this.store.findAll('section');
       let workspace = this.get('workspace');
       let workspaceName = this.get('workspace.name');
       let options = {};
-      for(let section of sections.toArray()){
+      for (let section of sections.toArray()) {
         options[section.id] = section.name;
       }
-      this.get('alert').showPromptSelect('Assign Workspace to class', options, "Choose a class")
-        .then((res)=>{
-          if(res.value){
-            this.get('store').findRecord('section', res.value).then((section)=>{
-              Promise.all(section.get("students").map((student)=>student.get('displayName'))).then((displayNames)=>{
-                Promise.all(section.get("students").map((student, index)=>{
-                  let copyWorkspaceRequest = {
-                    createDate: new Date(),
-                    isTrashed: false,
-                    lastModifiedDate: new Date(),
-                    name: `${displayNames[index] || "Copy of"}: ${workspaceName}`,
-                    mode: 'private',
-                    submissionOptions: { all: true },
-                    folderOptions: { folderSetOptions: { doCreateFolderSet: false }, none: true },
-                    selectionOptions: { none: true },
-                    commentOptions: { none: true },
-                    responseOptions: { none: true },
-                    permissionOptions: {},
-                    copyWorkspaceError: null,
-                    createdBy: this.get('currentUser'),
-                    lastModifiedBy: this.get('currentUser'),
-                    owner: student,
-                    originalWsId: workspace,
-                    createdWorkspace: null,
-                    createdFolderSet: null
-                  };
-                  let copyRequest = this.get('store').createRecord('copyWorkspaceRequest', copyWorkspaceRequest);
-                  return copyRequest.save();
-                })).then((results) => {
-                  let errors = results.filter((result)=>result.get('copyWorkspaceError')).map((result)=>result.get('copyWorkspaceError'));
-                  if(results.some((result)=>result.get('copyWorkspaceError'))){
-                    this.get('alert').showToast('error', errors[0], 'bottom-end', 5000);
-                  } else {
-                    this.get('alert').showToast('success', 'Workspaces Created', 'bottom-end', 5000);
-                  }
-                })
-                .catch((err) => {
-                  this.get('alert').showToast('error', 'Workspace Error', 'bottom-end', 5000);
-                  console.log(err);
-                });
-              });
-          });
-          }
-        });
+      let { value } = await this.get('alert').showPromptSelect(
+        'Assign Workspace to class',
+        options,
+        'Choose a class'
+      );
+      if (!value) return;
+      let section = await this.get('store').findRecord('section', value);
+      let { value: mode } = await this.get('alert').showPromptSelect(
+        'Assign to groups or individuals?',
+        { group: 'Groups', individual: 'Individuals' },
+        'Select'
+      );
+      let { value: parentChoice } = await this.get('alert').showModal(
+        'info',
+        'Make Parent Workspace?',
+        null,
+        'Yes',
+        'No'
+      );
+      let request = {
+        batchClone: {
+          mode,
+          section,
+          sectionId: section.id,
+          createParent: !!parentChoice,
+        },
+        createDate: new Date(),
+        name: `${workspaceName} / ${section.name}`,
+        isTrashed: false,
+        lastModifiedDate: new Date(),
+        mode: 'private',
+        submissionOptions: { all: true },
+        folderOptions: {
+          folderSetOptions: { doCreateFolderSet: false },
+          none: true,
+        },
+        selectionOptions: { none: true },
+        commentOptions: { none: true },
+        responseOptions: { none: true },
+        permissionOptions: {},
+        copyWorkspaceError: null,
+        createdBy: this.get('currentUser'),
+        lastModifiedBy: this.get('currentUser'),
+        owner: this.get('currentUser'),
+        originalWsId: workspace,
+        createdWorkspace: null,
+        createdFolderSet: null,
+      };
+      for (let key in request) {
+        initialRequest[key] = request[key];
+      }
+      let res = await initialRequest.save();
+      console.log(res);
     },
     toggleShowMoreMenu() {
       let isShowing = this.showMoreMenu;
