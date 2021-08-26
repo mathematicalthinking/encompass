@@ -369,6 +369,6 @@
   {{/each}}
 
   {{#if this.showAssignment}}
-    <AssignmentNew @cancel={{action (mut this.showAssignment) null}} @fromProblemInfo={{true}} @problems={{this.problemList}} @selectedProblem={{@problem}} @sections={{@sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
+    <AssignmentNew @currentUser={{@currentUser}} @cancel={{action (mut this.showAssignment) null}} @fromProblemInfo={{true}} @problems={{this.problemList}} @selectedProblem={{@problem}} @sections={{@sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
   {{/if}}
 </div>
