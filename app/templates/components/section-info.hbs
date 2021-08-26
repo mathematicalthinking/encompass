@@ -213,5 +213,5 @@
   <p class="error-message">{{error}}</p>
 {{/each}}
 {{#if this.showAssignment}}
-  <AssignmentNew @cancel={{action (mut this.showAssignment) null}} @fromSectionInfo={{true}} @problems={{this.problemList}} @selectedSection={{this.section}} @sections={{this.sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
+  <AssignmentNew @currentUser={{this.currentUser}} @cancel={{action (mut this.showAssignment) null}} @fromSectionInfo={{true}} @problems={{this.problemList}} @selectedSection={{this.section}} @sections={{this.sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
 {{/if}}
