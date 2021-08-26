@@ -53,7 +53,6 @@ describe('Confirm Email', function () {
       let options = {
         selector: css.confirmEmail.invalidToken,
       };
-
       await helpers.navigateAndWait(driver, expiredResetLink, options);
     });
 
@@ -74,7 +73,9 @@ describe('Confirm Email', function () {
       let options = {
         selector: css.confirmEmail.successMessage,
       };
-
+      await helpers.navigateAndWait(driver, 'http://localhost:8081', {
+        selector: 'a',
+      });
       await helpers.navigateAndWait(driver, confirmLink, options);
     });
 
