@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 #responses-list {
   header {
@@ -27,7 +27,7 @@
       font-weight: $main-font-weight;
       font-family: $primary-font;
       border-radius: 3px;
-      font-size: .8em;
+      font-size: 0.8em;
       padding: 0px 15px;
       margin-left: 10px;
       border: none;
@@ -40,7 +40,7 @@
     }
     .active-filter {
       font-weight: $bolder-font-weight;
-      background: darken($accent-yellow, 5%)
+      background: darken($accent-yellow, 5%);
     }
   }
   .flex-container-full {
@@ -102,7 +102,7 @@
         font-weight: $main-font-weight;
         font-family: $primary-font;
         border-radius: 3px;
-        font-size: .8em;
+        font-size: 0.8em;
         padding: 0px 15px;
         margin-left: 10px;
         border: none;
@@ -122,7 +122,15 @@
     }
     .side-icons {
       width: 220px;
-      @include flex-container(auto, null, row, nowrap, flex-end, center, center);
+      @include flex-container(
+        auto,
+        null,
+        row,
+        nowrap,
+        flex-end,
+        center,
+        center
+      );
       .my-select {
         width: 100%;
         margin-right: 30px;
@@ -138,7 +146,7 @@
           margin: 0 auto;
           text-transform: capitalize;
           color: black;
-          background: url(/images/caret-down.svg) no-repeat right;
+          background: url(../assets/images/caret-down.svg) no-repeat right;
           background-size: 12px;
           -webkit-appearance: none;
           -moz-appearance: none;
@@ -149,15 +157,19 @@
       }
     }
     .results-items {
-      .sort-bar-item, .item-section {
-        font-size: .8em;
+      .sort-bar-item,
+      .item-section {
+        font-size: 0.8em;
         text-align: center;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         // border: 1px solid red;
-        .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
-          font-size: .7em;
+        .fa-minus,
+        .fa-arrow-up,
+        .fa-arrow-down,
+        .fa-filter {
+          font-size: 0.7em;
           position: relative;
           top: -1px;
         }
@@ -166,20 +178,20 @@
           color: black;
         }
         &.student {
-          @include flex-item(1, start, .08 0 auto);
+          @include flex-item(1, start, 0.08 0 auto);
           width: 8%;
           vertical-align: top;
         }
         &.workspace {
-          @include flex-item(2, start, .15 0 auto);
+          @include flex-item(2, start, 0.15 0 auto);
           width: 15%;
         }
         &.submission-date {
-          @include flex-item(3, start, .10 0 auto);
+          @include flex-item(3, start, 0.1 0 auto);
           width: 10%;
         }
         &.problem {
-          @include flex-item(4, start, .15 0 auto);
+          @include flex-item(4, start, 0.15 0 auto);
           width: 15%;
         }
         // &.brief-summary {
@@ -188,20 +200,20 @@
         //   text-align: left;
         // }
         &.mentor {
-          @include flex-item(5, start, .18 0 auto);
+          @include flex-item(5, start, 0.18 0 auto);
           width: 18%;
           vertical-align: top;
         }
         &.reply-date {
-          @include flex-item(6, start, .10 0 auto);
+          @include flex-item(6, start, 0.1 0 auto);
           width: 10%;
         }
         &.status {
-          @include flex-item(7, start, .12 0 auto);
+          @include flex-item(7, start, 0.12 0 auto);
           width: 12%;
         }
         &.more {
-          @include flex-item(8, start, .01 0 auto);
+          @include flex-item(8, start, 0.01 0 auto);
           width: 2%;
         }
       }
@@ -227,7 +239,15 @@
     }
     div.item-section.flags {
       .flag-container {
-        @include flex-container(auto, null, row, wrap, flex-end, center, center);
+        @include flex-container(
+          auto,
+          null,
+          row,
+          wrap,
+          flex-end,
+          center,
+          center
+        );
 
         span {
           text-align: left;
@@ -235,7 +255,6 @@
           padding-bottom: 8px;
         }
       }
-
     }
   }
 }

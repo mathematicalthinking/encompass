@@ -19,6 +19,7 @@ export default Component.extend(ErrorHandlingMixin, {
   formId: null,
   createRecordErrors: [],
   queryErrors: [],
+  linkedWorkspacesMode: true,
   constraints: {
     section: {
       presence: { allowEmpty: false },
@@ -48,6 +49,20 @@ export default Component.extend(ErrorHandlingMixin, {
       },
     ],
   },
+  groupWsOptions: {
+    groupName: 'groupWorkspaces',
+    requried: false,
+    inputs: [
+      {
+        value: true,
+        label: 'By Group',
+      },
+      {
+        value: false,
+        label: 'By Student',
+      },
+    ],
+  },
   parentWsOptions: {
     groupName: 'parentWorkspace',
     required: false,
@@ -62,6 +77,15 @@ export default Component.extend(ErrorHandlingMixin, {
       },
     ],
   },
+
+  sectionGroups: computed('selectedSection', function () {
+    if (this.selectedSection) {
+      return this.store.query('group', {
+        section: this.selectedSection.id,
+        isTrashed: false,
+      });
+    }
+  }),
 
   hasSelectedSection: notEmpty('selectedSection'),
 
@@ -179,7 +203,9 @@ export default Component.extend(ErrorHandlingMixin, {
       // let nameDate = $('#assignedDate')
       //   .data('daterangepicker')
       //   .startDate.format('MMM Do YYYY');
-      let nameDate = assignedDate ? moment(new Date(assignedDate)).format('MMM Do YYYY') : moment(new Date()).format('MMM Do YYYY');
+      let nameDate = assignedDate
+        ? moment(new Date(assignedDate)).format('MMM Do YYYY')
+        : moment(new Date()).format('MMM Do YYYY');
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
     }
@@ -220,6 +246,7 @@ export default Component.extend(ErrorHandlingMixin, {
     createAssignmentData.linkedWorkspacesRequest = {
       doCreate: doCreateLinkedWorkspaces,
       name: linkedNameFormat,
+      linkType: this.linkedWorkspacesMode ? 'group' : 'individual',
     };
 
     createAssignmentData.parentWorkspaceRequest = {

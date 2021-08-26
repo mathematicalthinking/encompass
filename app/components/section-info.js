@@ -32,6 +32,28 @@ export default Component.extend(ErrorHandlingMixin, {
   queryErrors: [],
   findRecordErrors: [],
   problemLoadErrors: [],
+  addGroup: false,
+  groupedStudents: computed('groups.[]', function () {
+    return this.groups
+      .toArray()
+      .filter((group) => !group.isTrashed)
+      .map((group) => group.students.toArray().map((student) => student.id))
+      .flat();
+  }),
+  selectableStudents: computed('section.students.[]', function () {
+    return this.section.students.toArray().map((student) => {
+      let data = { username: student.username, id: student.id };
+      if (this.groupedStudents.includes(student.id)) {
+        data.username += ' ✅';
+      }
+      return data;
+    });
+  }),
+  newGroup: {
+    name: '',
+    section: null,
+    students: [],
+  },
 
   init: function () {
     this._super(...arguments);
@@ -166,6 +188,128 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
 
   actions: {
+    toggleAddGroup: function () {
+      return this.toggleProperty('addGroup');
+    },
+    saveGroup: async function () {
+      const savedGroup = this.store.createRecord('group');
+      this.newGroup.section = this.section;
+      this.newGroup.createdBy = this.currentUser;
+      this.newGroup.createDate = new Date();
+      this.newGroup.lastModifiedBy = this.currentUser;
+      this.newGroup.lastModifiedDate = this.currentUser;
+      for (let key in this.newGroup) {
+        savedGroup[key] = this.newGroup[key];
+      }
+      try {
+        const res = await savedGroup.save();
+        console.log(res.name);
+        this.alert.showToast(
+          'success',
+          `group "${res.name}" created`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        console.log(err);
+        this.alert.showToast(
+          'error',
+          `${err}`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
+    },
+    placeStudent: async function (id) {
+      let student = await this.store.findRecord('user', id);
+      return this.newGroup.students.pushObject(student);
+    },
+    updateGroup: async function (group, user) {
+      if (!user) return;
+      try {
+        group.students.removeObject(user);
+        const res = await group.save();
+        this.alert.showToast(
+          'success',
+          `${user.username} removed`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        this.alert.showToast(
+          'error',
+          'oops there was a problem',
+          3000,
+          false,
+          null
+        );
+      }
+    },
+    deleteGroup: async function (group) {
+      if (!group) return;
+      try {
+        group.isTrashed = true;
+        const res = await group.save();
+        this.alert.showToast(
+          'success',
+          `${res.name} deleted`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        console.log(err);
+        this.alert.showToast(
+          'error',
+          'could not delete',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
+    },
+    updateGroupDraft: function (student) {
+      return this.newGroup.students.removeObject(student);
+    },
+    editGroupName: async function (group) {
+      const { value } = await this.get('alert').showPrompt(
+        'text',
+        `Update ${group.name}`,
+        null,
+        'Update'
+      );
+      if (!value) return;
+      group.name = value;
+      try {
+        await group.save();
+        this.get('alert').showToast(
+          'success',
+          'group updated',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        console.log(err);
+        this.get('alert').showToast(
+          'error',
+          'oops...error',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
+    },
     removeStudent: function (user) {
       if (!user) {
         return;

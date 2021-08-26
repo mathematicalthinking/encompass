@@ -51,7 +51,7 @@
 </aside>
 
 <div id="al_submission">
-  {{#if this.showSelectableView}}
+  {{#if this.makingSelection}}
     <h3 id="sel-view-header" class="selectable-view-header">Selectable View!</h3>
     <SelectableArea @model={{this.currentSubmission}} @makingSelection={{this.makingSelection}} @showingSelections={{this.showingSelections}} @addSelection="addSelection" @hideSelections="hideSelections" @handleTransition="handleTransition" @sels={{this.workspaceSelections}} @trashed={{this.trashedSelections}} @setupResizeHandler={{action "setupResizeHandler"}}>
       <div id="submission_container">

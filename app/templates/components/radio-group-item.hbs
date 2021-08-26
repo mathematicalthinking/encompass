@@ -1,4 +1,4 @@
-<label>
+<label class={{if this.noWidth "no-width"}}>
   <input type="radio" checked={{this.isSelected}} required={{this.isRequired}} name={{this.name}} value={{this.value}} onclick={{action "onClick" this.value}}>
   <span>
     {{this.label}}

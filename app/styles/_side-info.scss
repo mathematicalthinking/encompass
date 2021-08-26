@@ -1,14 +1,14 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
-
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 400px) {
   .side-info {
     .info-menu {
-      .tab-link, .tab-name {
+      .tab-link,
+      .tab-name {
         margin: 0 0px;
-        font-size: .7em;
+        font-size: 0.7em;
         padding: 8px;
       }
     }
@@ -17,7 +17,7 @@
         .right-buttons {
           .primary-button {
             margin-left: 5px;
-            font-size: .7em;
+            font-size: 0.7em;
             padding: 10px 13px;
           }
         }
@@ -29,9 +29,10 @@
 @media screen and (min-width: 401px) and (max-width: 100000px) {
   .side-info {
     .info-menu {
-      .tab-link, .tab-name {
+      .tab-link,
+      .tab-name {
         margin: 0 10px;
-        font-size: .9em;
+        font-size: 0.9em;
         padding: 10px 20px;
       }
     }
@@ -79,8 +80,8 @@
         background: transparent;
         border: none;
         text-align: left;
-        font-size: .9em;
-        background: url(/images/caret-down.svg) no-repeat right;
+        font-size: 0.9em;
+        background: url(../assets/images/caret-down.svg) no-repeat right;
         -webkit-appearance: none;
         -moz-appearance: none;
         &:focus {
@@ -121,7 +122,7 @@
             background-color: $background-body;
             border-radius: 3px;
             padding: 10px 15px;
-            font-size: .9em;
+            font-size: 0.9em;
           }
         }
         .subheading {
@@ -176,9 +177,18 @@
         .info-content-block {
           margin: 15px 0 30px 0;
           .input-container {
-            @include flex-container(auto, null, row, no-wrap, center, center, stretch);
+            @include flex-container(
+              auto,
+              null,
+              row,
+              no-wrap,
+              center,
+              center,
+              stretch
+            );
           }
-          input[type=text], textarea {
+          input[type='text'],
+          textarea {
             margin-top: -8px;
             @include flex-item(1, 1 1 auto, auto);
             width: 100%;
@@ -186,7 +196,7 @@
             background-color: $background-body;
             border-radius: 3px;
             padding: 10px 15px;
-            font-size: .9em;
+            font-size: 0.9em;
           }
           img {
             width: auto;
@@ -197,7 +207,7 @@
             margin-right: 10px;
           }
           .remove-cat {
-            font-size: .8em;
+            font-size: 0.8em;
             cursor: pointer;
             background: none;
             border: none;
@@ -207,14 +217,14 @@
             margin-top: 15px;
           }
           .radio-item {
-            margin: 15px 0px
+            margin: 15px 0px;
           }
           .radio-text {
             margin-left: 15px;
           }
           .cancel-button {
             padding: 5px 15px;
-            font-size: .8em;
+            font-size: 0.8em;
             border: 1px solid $input-border;
             border-radius: 3px;
             margin-top: 10px;
@@ -234,14 +244,14 @@
             margin-top: -18px;
             select {
               width: 125px;
-              font-size: .9em;
+              font-size: 0.9em;
               text-transform: capitalize;
               background: none;
               border: none;
               text-align-last: left;
               margin: 0 auto;
               color: black;
-              background: url(/images/caret-down.svg) no-repeat right;
+              background: url(../assets/images/caret-down.svg) no-repeat right;
               // background-size: 12px;
               -webkit-appearance: none;
               -moz-appearance: none;
@@ -295,7 +305,15 @@
     .info-actions {
       height: 35px;
       margin-bottom: 15px;
-      @include flex-container(auto, null, row, no-wrap, center, center, stretch);
+      @include flex-container(
+        auto,
+        null,
+        row,
+        no-wrap,
+        center,
+        center,
+        stretch
+      );
       .buttons-container {
         height: 35px;
         margin-bottom: 15px;
@@ -318,18 +336,19 @@
         .star-filled {
           color: $accent-yellow;
         }
-        .star-line, .fa-copy {
-        &:hover {
-          &:before {
-            font-weight: bold;
+        .star-line,
+        .fa-copy {
+          &:hover {
+            &:before {
+              font-weight: bold;
+            }
           }
         }
-      }
-      .star-line {
-        &:hover {
-          color: $accent-yellow;
+        .star-line {
+          &:hover {
+            color: $accent-yellow;
+          }
         }
-      }
       }
       .left-buttons {
         float: left;

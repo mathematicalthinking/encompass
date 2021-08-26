@@ -141,6 +141,57 @@
           {{/each}}
         </div>
 
+        <div class="section-info-detail groups">
+          <label for="groups">Groups:
+            {{#unless this.cantEdit}}
+              {{#if this.addGroup}}
+                <i title="Done" {{action "toggleAddGroup"}} class="fa fa-check"></i>
+              {{else}}
+                <i title="Edit" {{action "toggleAddGroup"}} class="far fa-edit"></i>
+              {{/if}}
+            {{/unless}}
+          </label>
+          <ul class="listing">
+            {{#each this.groups as |group|}}
+              {{#unless group.isTrashed}}
+              <li>
+                <strong>{{group.name}}</strong>
+                {{#if this.addGroup}}
+                  <i title="Edit" {{action "editGroupName" group}} class="far fa-edit"></i>
+                  <i class="far fa-times-circle" aria-hidden="true" {{action 'deleteGroup' group}}></i>
+                  <ul class="listing">
+                    {{#each group.students as |student|}}
+                      <li>{{student.username}}
+                        <button class="trash-button" {{action 'updateGroup' group student}}>
+                        <i class="far fa-times-circle" aria-hidden="true"></i>
+                        </button>
+                      </li>
+                    {{/each}}
+                  </ul>
+              {{/if}}
+              </li>
+              {{/unless}}
+            {{/each}}
+          </ul>
+          {{#if this.addGroup}}
+            <div class="update-students">
+              <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
+                <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
+                  @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{true}}
+                  @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
+              {{#each this.newGroup.students as |student|}}
+                <p>
+                  {{student.username}}
+                  <button class="trash-button" {{action 'updateGroupDraft' student}}>
+                  <i class="far fa-times-circle" aria-hidden="true"></i>
+                  </button>
+                </p>
+              {{/each}}
+              <button {{action "saveGroup"}}>Save Group</button>
+            </div>
+          {{/if}}
+        </div>
+
     </fieldset>
   {{#each this.queryErrors as |error|}}
     <p class="error-message">{{error}}</p>
@@ -162,5 +213,5 @@
   <p class="error-message">{{error}}</p>
 {{/each}}
 {{#if this.showAssignment}}
-  <AssignmentNew @cancel={{action (mut this.showAssignment) null}} @fromSectionInfo={{true}} @problems={{this.problemList}} @selectedSection={{this.section}} @sections={{this.sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
+  <AssignmentNew @currentUser={{this.currentUser}} @cancel={{action (mut this.showAssignment) null}} @fromSectionInfo={{true}} @problems={{this.problemList}} @selectedSection={{this.section}} @sections={{this.sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
 {{/if}}
