@@ -1,35 +1,35 @@
-{{#if this.isList}}
+{{#if @isList}}
   <div class="item-container" id="container">
     <div class="item-section privacy">
-      {{{public-private this.problem.privacySetting}}}
+      {{{public-private @problem.privacySetting}}}
     </div>
 
     <div class="item-section name">
-      <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
-        <span class={{if this.problem.isTrashed 'strikethrough'}}>{{{this.problem.title}}}</span>
+      <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+        <span class={{if @problem.isTrashed 'strikethrough'}}>{{{@problem.title}}}</span>
         {{#if this.isRecommended}}
           <span><i class="fas fa-star star-icon"></i></span>
         {{/if}}
       </LinkTo>
     </div>
     <div class="item-section description">
-      <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
-        {{{this.problem.text}}}
+      <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+        {{{@problem.text}}}
       </LinkTo>
     </div>
     <div class="item-section date">
-      {{format-date this.problem.createDate 'MM/DD/YY'}}
+      {{format-date @problem.createDate 'MM/DD/YY'}}
     </div>
     <div class="item-section status">
       <svg height="20" width="20">
         <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
       </svg>
       <span class="status-text">
-        {{this.problem.status}}
+        {{@problem.status}}
       </span>
     </div>
     <div class="item-section action">
-      <button {{action this.actionButton.function this.problem this.actionButton.argument1 this.actionButton.argument2}} class="primary-button">
+      <button {{action this.actionButton.function @problem this.actionButton.argument1 this.actionButton.argument2}} class="primary-button">
         {{this.actionButton.name}}
       </button>
     </div>
@@ -57,12 +57,12 @@
   </div>
 {{/if}}
 
-{{#if this.isGrid}}
+{{#if @isGrid}}
   <div class="item-card-container">
     <div class="item-card row-1">
       <div class="item-card privacy">
-        <span class="privacy-icon">{{{public-private this.problem.privacySetting}}}</span>
-        <span class="date">{{format-date this.problem.createDate 'MM/DD/YY'}}</span>
+        <span class="privacy-icon">{{{public-private @problem.privacySetting}}}</span>
+        <span class="date">{{format-date @problem.createDate 'MM/DD/YY'}}</span>
       </div>
       <div class="item-card more" {{action "toggleShowMoreMenu"}}>
         <i class="fas fa-ellipsis-v more-menu"></i>
@@ -88,8 +88,8 @@
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
-        <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
-          <span class={{if this.problem.isTrashed 'strikethrough'}}>{{{this.problem.title}}}</span>
+        <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+          <span class={{if @problem.isTrashed 'strikethrough'}}>{{{@problem.title}}}</span>
           {{#if this.isRecommended}}
             <span><i class="fas fa-star star-icon"></i></span>
           {{/if}}
@@ -98,8 +98,8 @@
     </div>
     <div class="item-card row-3">
       <div class="item-card description">
-        <LinkTo @route="problems.problem" @model={{this.problem.id}} class="problem-title">
-          {{{this.problem.text}}}
+        <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+          {{{@problem.text}}}
         </LinkTo>
       </div>
     </div>
@@ -109,11 +109,11 @@
           <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
         </svg>
         <span class="status-text">
-          {{this.problem.status}}
+          {{@problem.status}}
         </span>
       </div>
       <div class="item-card action">
-        <button {{action this.actionButton.function this.problem this.actionButton.argument1 this.actionButton.argument2}} class="primary-button">
+        <button {{action this.actionButton.function @problem this.actionButton.argument1 this.actionButton.argument2}} class="primary-button">
         {{this.actionButton.name}}
       </button>
       </div>

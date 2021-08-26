@@ -27,7 +27,7 @@
       <div class="info-content-block">
         <div class="input-container">
           <Input @id="title" required="true" @type="text" @value={{this.title}} placeholder="Enter Problem Title"
-            @key-down={{resetErrors}} />
+            {{on 'keydown' this.resetErrors}} {{on "change" this.observeErrors}} />
         </div>
       </div>
       <p class="info-content-label statement">
@@ -58,21 +58,21 @@
           <li class="radio-item">
             <label class="radio-label">
               <input type="radio" checked={{is-equal this.privacySetting "M" }} value={{this.privacySetting}} required="true"
-                name="privacy" class="justMe" onclick={{action 'radioSelect' 'M' }}>
+                name="privacy" class="justMe" onclick={{action 'radioSelect' 'M' }} {{on "blur" this.observeErrors}}>
               <span class="radio-text">Just Me</span>
             </label>
           </li>
           <li class="radio-item">
             <label class="radio-label">
               <input type="radio" id="myOrg" checked={{is-equal this.privacySetting "O" }} value={{this.privacySetting}}
-                required="true" name="privacy" class="myOrg" onclick={{action 'radioSelect' 'O' }}>
+                required="true" name="privacy" class="myOrg" onclick={{action 'radioSelect' 'O' }} {{on "blur" this.observeErrors}}>
               <span class="radio-text">My Organization</span>
             </label>
           </li>
           <li class="radio-item">
             <label class="radio-label">
               <input type="radio" checked={{is-equal this.privacySetting "E" }} value={{this.privacySetting}} required="true"
-                name="privacy" class="everyone" onclick={{action 'radioSelect' 'E' }}>
+                name="privacy" class="everyone" onclick={{action 'radioSelect' 'E' }} {{on "blur" this.observeErrors}}>
               <span class="radio-text">Everyone</span>
             </label>
           </li>
@@ -96,10 +96,10 @@
         </ul>
         {{/if}}
         {{#unless this.showCategories}}
-        <button class="cancel-button show-cats-btn" {{action 'showCategories' }}>Show Category Menu</button>
+        <button class="cancel-button show-cats-btn" {{action 'toggleCategories' }}>Show Category Menu</button>
         {{/unless}}
         {{#if this.showCategories}}
-        <button class="cancel-button hide-cats-btn" {{action 'showCategories' }}>Hide Category Menu</button>
+        <button class="cancel-button hide-cats-btn" {{action 'toggleCategories' }}>Hide Category Menu</button>
         <CategoriesMenu @categories={{this.categoryTree}} @store={{this.store}} @addCategories="addCategories" />
         {{/if}}
       </div>
@@ -174,7 +174,7 @@
       </p>
       <div class="info-content-block">
         <Input @type="checkbox" @id="legal-notice" @checked={{this.approvedProblem}} required="true"
-          @click={{action "resetErrors" }} />
+          {{on "click" this.resetErrors}} />
         <span id="approved-problem">This problem does not contain any unapproved copywritten material</span>
       </div>
       {{/if}}

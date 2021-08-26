@@ -2,6 +2,7 @@ import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 import { hash } from 'rsvp';
 import AuthenticatedRoute from './_authenticated_route';
+import { use } from 'chai';
 
 export default class ProblemsRoute extends AuthenticatedRoute {
   @service store;
@@ -23,8 +24,10 @@ export default class ProblemsRoute extends AuthenticatedRoute {
   //     }
   //   }
   // },
-  model() {
+  async model() {
     const user = this.modelFor('application');
+    const userOrg = await user.get('organization');
+    const recommendedProblems = await userOrg.get('recommendedProblems');
     let problemCriteria = {};
 
     if (!user.get('isAdmin')) {
@@ -40,10 +43,7 @@ export default class ProblemsRoute extends AuthenticatedRoute {
       problems: this.store.query('problem', problemCriteria),
       hideOutlet: this.hideOutlet,
       currentUser: user,
+      recommendedProblems,
     });
-  }
-
-  @action toProblemInfo(problem) {
-    this.transitionTo('problems.problem', problem.id);
   }
 }

@@ -29,20 +29,25 @@
         <Input @type="text" @value={{this.lastName}} @classNames="user-last-name" />
       </td>
     </tr>
+    {{#unless @currentUser.isTeacher}}
     <tr>
-        <td>Email
+      <td>Email
           {{#if this.isEmailRequired}}
             <span class="required-star">*</span>
           {{/if}}
-        </td>
-        <td>
+      </td>
+      <td>
         <Input @type="text" class="user-email" @value={{this.email}} @focus-out={{action 'emailValidate' email="target.value"}} @focus-in={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
-      <td>Organization</td>
+      <td>Organization <span class="required-star">*</span></td>
       <td>
-        {{this.currentUser.organization.name}}
+        {{#unless @currentUser.isAdmin}}
+          {{@currentUser.organization.name}}
+        {{else}}
+          <TwitterTypeahead @dataList={{@organizations}} @minLength={{0}} @onSelect="setOrg" @optionLabelPath="name" @setSelectedValueOnChange={{true}} />
+        {{/unless}}
       </td>
     </tr>
     <tr>
@@ -54,7 +59,7 @@
     <tr>
       <td>Account Type <span class="required-star">*</span></td>
       <td>
-        <MySelect @selectedValue={{this.selectedType}} @prompt="Select Account Type" @content={{this.accountTypes}} @cannotBeNull={{true}} @action={{action (mut this.selectedType)}} />
+        <MySelect @selectedValue={{this.selectedType}} @prompt="Select Account Type" @content={{this.accountTypes}} @action={{action (mut this.selectedType)}} @cannotBeNull={{true}} @classNames="user-account-type" />
       </td>
     </tr>
     <tr>
@@ -63,37 +68,45 @@
         <Input @type="checkbox" @checked={{this.isAuthorized}} @classNames="user-isAuth" />
       </td>
     </tr>
+    {{/unless}}
   </table>
-
+  
   {{#if this.usernameError}}
-    <p class="error-message">{{this.usernameError}}</p>
+    <ErrorBox @error={{this.usernameError}} @showDismiss={{true}} @resetError={{action (mut this.usernameError) null}} />
   {{/if}}
 
   {{#if this.emailError}}
-    <p class="error-message">{{this.emailError}}</p>
+    <ErrorBox @error={{this.emailError}} @showDismiss={{true}} @resetError={{action (mut this.emailError) null}} />
   {{/if}}
 
   {{#if this.passwordError}}
-    <p class="error-message">{{this.passwordError}}</p>
+    <ErrorBox @error={{this.passwordError}} @showDismiss={{true}} @resetError={{action (mut this.passwordError) null}} />
   {{/if}}
 
   {{#if this.noSpacesError}}
-    <p class="error-message">Passwords cannot contain spaces</p>
+    <ErrorBox @error="Passwords cannot contain spaces" @showDismiss={{true}} @resetError={{action (mut this.noSpacesError) null}} />
+  {{/if}}
+
+  {{#if this.missingAccountType}}
+    <ErrorBox @error="Missing account type" @showDismiss={{true}} @resetError={{action (mut this.missingAccountType) null}} />
   {{/if}}
 
   {{#if this.errorMessage}}
-    <p class="error-message">Missing required fields</p>
+    <ErrorBox @error="Missing required fields" @showDismiss={{true}} @resetError={{action (mut this.errorMessage) null}} />
   {{/if}}
 
+  {{#each this.createOrgErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "createOrgErrors" error}} />
+  {{/each}}
   {{#each this.createUserErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "createUserErrors" error}} />
   {{/each}}
 
 
+  <div class="button-row">
+    <button class='action_button new-user' id="new-user-btn" {{action 'confirmOrg'}}>Create New User</button>
+    <button class='action_button new-user cancel-button' {{action 'cancelNew'}}>Cancel</button>
+  </div>
 
-    <div class="button-row">
-      <button class='action_button new-user' id="new-user-btn" {{action 'newUser'}}>Create New User</button>
-      <button class='action_button new-user cancel-button' {{action 'cancelNew'}}>Cancel</button>
-    </div>
+</article>
 
-  </article>

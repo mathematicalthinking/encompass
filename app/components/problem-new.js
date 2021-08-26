@@ -1,66 +1,67 @@
-/*global _:false */
-import { alias } from '@ember/object/computed';
-import { observer } from '@ember/object';
+/* eslint-disable ember/no-jquery */
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { observer, action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import _ from 'underscore';
-import Component from '@ember/component';
 import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'problem-new',
-  classNames: ['side-info'],
-  showGeneral: true,
-  filesToBeUploaded: null,
-  createProblemErrors: [],
-  imageUploadErrors: [],
-  isMissingRequiredFields: null,
-  isPublic: null,
-  privacySetting: null,
-  checked: true,
-  status: null,
-  alert: service('sweet-alert'),
-  parentActions: alias('parentView.actions'),
-  approvedProblem: false,
-  noLegalNotice: null,
-  showCategories: false,
-  keywords: [],
+export default class ProblemNewComponent extends ErrorHandlingComponent {
+  @service('sweet-alert') alert;
+  @service store;
+  @service router;
+  @tracked showGeneral = true;
+  @tracked filesToBeUploaded = null;
+  @tracked createProblemErrors = [];
+  @tracked imageUploadErrors = [];
+  @tracked isMissingRequiredFields = null;
+  @tracked isPublic = null;
+  @tracked privacySetting = null;
+  @tracked checked = true;
+  @tracked status = null;
+  @tracked problemStatement = '';
+  @tracked quillText = null;
+  @tracked isQuillEmpty = null;
+  @tracked isQuillTooLong = null;
+  @tracked showCats = false;
+  @tracked showGeneral = true;
+  @tracked showAdditional = false;
+  @tracked showLegal = false;
+  // parentActions: alias('parentView.actions'),
+  @tracked approvedProblem = false;
+  @tracked noLegalNotice = null;
+  @tracked showCategories = false;
+  @tracked keywords = [];
+  @tracked uploadResults = null;
+  @tracked additionalImage = null;
+  @tracked fileName = null;
+  @tracked categoryTree = {};
+  tooltips = {
+    name: 'Please try and give all your problems a unique title',
+    statement: 'Content of the problem to be completed',
+    categories:
+      'Use category menu to select appropriate common core categories',
+    keywords: 'Add keywords to help other people find this problem',
+    additionalInfo: 'Any additional information desired for the problem',
+    additionalImage:
+      'You can upload a JPG, PNG or PDF (only the first page is saved)',
+    privacySettings:
+      'Just Me makes your problem private, My Organization allows your problem to be seen by all members in your organization, and Public means every user can see your problem',
+    copyrightNotice: 'Add notice if problem contains copyrighted material',
+    sharingAuth:
+      'If you are posting copyrighted material please note your permission',
+    author: 'Name of the person who wrote this problem, (is the author)',
+    legalNotice:
+      'Please verify that the material you are posting is either your own or properly authorized to share',
+  };
+  @tracked selectedCategories = [];
 
-  init: function () {
-    this._super(...arguments);
-    let tooltips = {
-      name: 'Please try and give all your problems a unique title',
-      statement: 'Content of the problem to be completed',
-      categories:
-        'Use category menu to select appropriate common core categories',
-      keywords: 'Add keywords to help other people find this problem',
-      additionalInfo: 'Any additional information desired for the problem',
-      additionalImage:
-        'You can upload a JPG, PNG or PDF (only the first page is saved)',
-      privacySettings:
-        'Just Me makes your problem private, My Organization allows your problem to be seen by all members in your organization, and Public means every user can see your problem',
-      copyrightNotice: 'Add notice if problem contains copyrighted material',
-      sharingAuth:
-        'If you are posting copyrighted material please note your permission',
-      author: 'Name of the person who wrote this problem, (is the author)',
-      legalNotice:
-        'Please verify that the material you are posting is either your own or properly authorized to share',
-    };
-    this.set('tooltips', tooltips);
-    this.set('selectedCategories', []);
-    this.set('keywordFilter', this.createKeywordFilter.bind(this));
-  },
-
-  didInsertElement: function () {
+  constructor() {
+    super(...arguments);
     $('.list-outlet').removeClass('hidden');
-  },
+  }
 
-  willDestroyElement() {
-    $('.list-outlet').addClass('hidden');
-    this._super(...arguments);
-  },
-
-  observeErrors: observer('title', 'privacySetting', function () {
+  @action observeErrors() {
     let missingError = this.isMissingRequiredFields;
     if (!missingError) {
       return;
@@ -68,51 +69,51 @@ export default Component.extend(ErrorHandlingMixin, {
     let title = this.title;
     let privacySetting = this.privacySetting;
     if (!!title && !!privacySetting) {
-      this.set('isMissingRequiredFields', false);
+      this.isMissingRequiredFields = false;
     }
-  }),
+  }
 
   // Empty quill editor .html() property returns <p><br></p>
   // For quill to not be empty, there must either be some text or a student
   // must have uploaded an img so there must be an img tag
-  isQuillValid: function () {
+  isQuillValid() {
     return !this.isQuillEmpty && !this.isQuillTooLong;
-  },
+  }
 
-  createProblem: function () {
+  createProblem() {
     const problemStatement = this.problemStatement;
-    let createdBy = this.get('currentUser');
-    let title = this.get('problemTitle').trim();
-    let additionalInfo = this.get('additionalInfo');
-    let privacySetting = this.get('privacySetting');
-    let currentUser = this.get('currentUser');
-    let accountType = currentUser.get('accountType');
-    let organization = currentUser.get('organization');
+    let createdBy = this.args.currentUser;
+    let title = this.problemTitle.trim();
+    let additionalInfo = this.additionalInfo;
+    let privacySetting = this.privacySetting;
+    let currentUser = this.args.currentUser;
+    let accountType = currentUser.accountType;
+    let organization = currentUser.organization;
     let categories = this.selectedCategories;
-    let copyrightNotice = this.get('copyrightNotice');
-    let sharingAuth = this.get('sharingAuth');
-    let additionalImage = this.get('additionalImage');
-    let author = this.get('author');
-    let keywords = this.get('keywords');
+    let copyrightNotice = this.copyrightNotice;
+    let sharingAuth = this.sharingAuth;
+    let additionalImage = this.additionalImage;
+    let author = this.author;
+    let keywords = this.keywords;
 
     if (!this.approvedProblem) {
-      this.set('noLegalNotice', true);
+      this.noLegalNotice = true;
       return;
     }
 
     if (accountType === 'A') {
-      this.set('status', 'approved');
+      this.status = 'approved';
     } else if (accountType === 'P') {
       if (privacySetting === 'E') {
-        this.set('status', 'pending');
+        this.status = 'pending';
       } else {
-        this.set('status', 'approved');
+        this.status = 'approved';
       }
     } else {
       if (privacySetting === 'M') {
-        this.set('status', 'approved');
+        this.status = 'approved';
       } else {
-        this.set('status', 'pending');
+        this.status = 'pending';
       }
     }
     let status = this.status;
@@ -151,13 +152,13 @@ export default Component.extend(ErrorHandlingMixin, {
           createdBy: createdBy,
         })
           .then(function (res) {
-            this.set('uploadResults', res.images);
+            this.uploadResults = res.images;
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               createProblemData.set('image', image);
               createProblemData
                 .save()
                 .then((problem) => {
-                  this.get('alert').showToast(
+                  this.alert.showToast(
                     'success',
                     'Problem Created',
                     'bottom-end',
@@ -165,16 +166,16 @@ export default Component.extend(ErrorHandlingMixin, {
                     false,
                     null
                   );
-                  let parentView = this.parentView;
-                  this.get('parentActions.refreshList').call(parentView);
-                  this.sendAction('toProblemInfo', problem);
+                  // let parentView = this.parentView;
+                  // this.get('parentActions.refreshList').call(parentView);
+                  this.router.transitionTo('problems.problem', problem.id);
                 })
                 .catch((err) => {
                   if (
                     err.errors[0].detail ===
                     `There is already an existing public problem titled "${title}."`
                   ) {
-                    this.send('showGeneral');
+                    this.toggleGeneral();
                   }
                   this.handleErrors(
                     err,
@@ -196,13 +197,13 @@ export default Component.extend(ErrorHandlingMixin, {
           createdBy: createdBy,
         })
           .then(function (res) {
-            this.set('uploadResults', res.images);
+            this.uploadResults = res.images;
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               createProblemData.set('image', image);
               createProblemData
                 .save()
                 .then((problem) => {
-                  this.get('alert').showToast(
+                  this.alert.showToast(
                     'success',
                     'Problem Created',
                     'bottom-end',
@@ -210,16 +211,16 @@ export default Component.extend(ErrorHandlingMixin, {
                     false,
                     null
                   );
-                  let parentView = this.parentView;
-                  this.get('parentActions.refreshList').call(parentView);
-                  this.sendAction('toProblemInfo', problem);
+                  // let parentView = this.parentView;
+                  // this.get('parentActions.refreshList').call(parentView);
+                  this.router.transitionTo('problems.problem', problem.id);
                 })
                 .catch((err) => {
                   if (
                     err.errors[0].detail ===
                     `There is already an existing public problem titled "${title}."`
                   ) {
-                    this.send('showGeneral');
+                    this.toggleGeneral();
                   }
                   this.handleErrors(
                     err,
@@ -245,230 +246,228 @@ export default Component.extend(ErrorHandlingMixin, {
             false,
             null
           );
-          let parentView = this.parentView;
-          this.get('parentActions.refreshList').call(parentView);
-          this.sendAction('toProblemInfo', res);
+          // let parentView = this.parentView;
+          // this.get('parentActions.refreshList').call(parentView);
+          this.router.transitionTo('problems.problem', res.id);
         })
         .catch((err) => {
           if (
             err.errors[0].detail ===
             `There is already an existing public problem titled "${title}."`
           ) {
-            this.send('showGeneral');
+            this.toggleGeneral();
           }
           this.handleErrors(err, 'createProblemErrors', createProblemData);
         });
     }
-  },
+  }
 
-  createKeywordFilter(keyword) {
+  keywordFilter(keyword) {
     if (!keyword) {
       return;
     }
-    let keywords = this.$('#select-add-keywords')[0].selectize.items;
+    let keywords = $('#select-add-keywords')[0].selectize.items;
 
     let keywordLower = keyword.trim().toLowerCase();
 
-    let keywordsLower = _.map(keywords, (key, val) => {
+    let keywordsLower = _.map(keywords, (key) => {
       return key.toLowerCase();
     });
     // don't let user create keyword if it matches exactly an existing keyword
     return !_.contains(keywordsLower, keywordLower);
-  },
+  }
 
-  actions: {
-    radioSelect: function (value) {
-      this.set('privacySetting', value);
-    },
+  @action radioSelect(value) {
+    this.privacySetting = value;
+  }
 
-    validate: function () {
-      if (!this.approvedProblem) {
-        this.set('noLegalNotice', true);
-        return;
-      }
-      if (this.isMissingRequiredFields) {
-        this.set('isMissingRequiredFields', null);
-      } else {
-        this.createProblem();
-      }
-    },
-
-    problemCreate: function () {
+  @action validate() {
+    if (!this.approvedProblem) {
+      this.noLegalNotice = true;
+      return;
+    }
+    if (this.isMissingRequiredFields) {
+      this.isMissingRequiredFields = null;
+    } else {
       this.createProblem();
-    },
+    }
+  }
 
-    showCategories: function () {
-      this.store.query('category', {}).then((queryCats) => {
-        let categories = queryCats.get('meta');
-        this.set('categoryTree', categories.categories);
+  @action problemCreate() {
+    this.createProblem();
+  }
+
+  @action toggleCategories() {
+    this.store.query('category', {}).then((queryCats) => {
+      let categories = queryCats.get('meta');
+      this.categoryTree = categories.categories;
+    });
+    this.showCategories = !this.showCategories;
+  }
+
+  @action addCategories(category) {
+    let categories = this.selectedCategories;
+    if (!categories.includes(category)) {
+      categories.pushObject(category);
+    }
+  }
+
+  @action removeCategory(category) {
+    let categories = this.selectedCategories;
+    categories.removeObject(category);
+  }
+
+  @action cancelProblem() {
+    $('.list-outlet').addClass('hidden');
+    this.router.transitionTo('problems');
+  }
+
+  @action setFileToUpload(file) {
+    this.additionalImage = file;
+    this.fileName = file[0].name;
+  }
+
+  // @action removeFile() {
+  //   this.additionalImage = null;
+  //   this.fileName = null;
+  // }
+
+  @action resetErrors() {
+    const errors = [
+      'noLegalNotice',
+      'createProblemErrors',
+      'imageUploadErrors',
+    ];
+
+    for (let error of errors) {
+      if (this[error]) {
+        this[error] = null;
+      }
+    }
+  }
+
+  @action hideInfo() {
+    $('.list-outlet').addClass('hidden');
+    this.router.transitionTo('problems');
+  }
+
+  @action confirmCreatePublic() {
+    this.alert
+      .showModal(
+        'question',
+        'Are you sure you want to create a public problem?',
+        'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used',
+        'Yes'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.showCats = true;
+          this.showGeneral = false;
+          this.showAdditional = false;
+          this.showLegal = false;
+        }
       });
-      this.set('showCategories', !this.showCategories);
-    },
+  }
 
-    addCategories: function (category) {
-      let categories = this.selectedCategories;
-      if (!categories.includes(category)) {
-        categories.pushObject(category);
+  @action toggleGeneral() {
+    // this.set('privacySetting', this.privacySetting);
+    this.showGeneral = true;
+    this.showCats = false;
+    this.showAdditional = false;
+    this.showLegal = false;
+  }
+
+  @action toggleCats() {
+    // clear existing errors before validating
+    if (this.createProblemErrors) {
+      this.createProblemErrors = [];
+    }
+
+    if (this.showAdditional) {
+      this.showCats = true;
+      this.showGeneral = false;
+      this.showAdditional = false;
+      this.showLegal = false;
+    } else {
+      this.problemTitle = this.title;
+      let quillContent = $('.ql-editor').html();
+      let problemStatement = quillContent.replace(/["]/g, "'");
+      this.problemStatement = problemStatement;
+      // this.set('privacySetting', this.privacySetting);
+
+      let isQuillValid = this.isQuillValid();
+      if (
+        !isQuillValid ||
+        !this.problemTitle ||
+        !this.problemStatement ||
+        !this.privacySetting
+      ) {
+        this.isMissingRequiredFields = true;
+        return;
       }
-    },
-
-    removeCategory: function (category) {
-      let categories = this.selectedCategories;
-      categories.removeObject(category);
-    },
-
-    cancelProblem: function () {
-      $('.list-outlet').addClass('hidden');
-      this.sendAction('toProblemList');
-    },
-
-    setFileToUpload: function (file) {
-      this.set('additionalImage', file);
-      this.set('fileName', file[0].name);
-    },
-
-    removeFile: function () {
-      this.set('additionalImage', null);
-      this.set('fileName', null);
-    },
-
-    resetErrors(e) {
-      const errors = [
-        'noLegalNotice',
-        'createProblemErrors',
-        'imageUploadErrors',
-      ];
-
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, null);
-        }
-      }
-    },
-
-    hideInfo: function () {
-      $('.list-outlet').addClass('hidden');
-      this.sendAction('toProblemList');
-    },
-
-    confirmCreatePublic: function () {
-      this.alert
-        .showModal(
-          'question',
-          'Are you sure you want to create a public problem?',
-          'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used',
-          'Yes'
-        )
-        .then((result) => {
-          if (result.value) {
-            this.set('showCats', true);
-            this.set('showGeneral', false);
-            this.set('showAdditional', false);
-            this.set('showLegal', false);
-          }
-        });
-    },
-
-    showGeneral: function () {
-      this.set('privacySetting', this.privacySetting);
-      this.set('showGeneral', true);
-      this.set('showCats', false);
-      this.set('showAdditional', false);
-      this.set('showLegal', false);
-    },
-
-    showCats: function () {
-      // clear existing errors before validating
-      if (this.createProblemErrors) {
-        this.set('createProblemErrors', []);
-      }
-
-      if (this.showAdditional) {
-        this.set('showCats', true);
-        this.set('showGeneral', false);
-        this.set('showAdditional', false);
-        this.set('showLegal', false);
+      if (this.privacySetting === 'E') {
+        this.confirmCreatePublic();
       } else {
-        this.set('problemTitle', this.title);
-        let quillContent = this.$('.ql-editor').html();
-        let problemStatement = quillContent.replace(/["]/g, "'");
-        this.set('problemStatement', problemStatement);
-        this.set('privacySetting', this.privacySetting);
-
-        let isQuillValid = this.isQuillValid();
-        if (
-          !isQuillValid ||
-          !this.problemTitle ||
-          !this.problemStatement ||
-          !this.privacySetting
-        ) {
-          this.set('isMissingRequiredFields', true);
-          return;
-        }
-        if (this.privacySetting === 'E') {
-          this.send('confirmCreatePublic');
-        } else {
-          this.set('showCats', true);
-          this.set('showGeneral', false);
-          this.set('showAdditional', false);
-          this.set('showLegal', false);
-        }
+        this.showCats = true;
+        this.showGeneral = false;
+        this.showAdditional = false;
+        this.showLegal = false;
       }
-    },
+    }
+  }
 
-    showAdditional: function () {
-      this.set('showAdditional', true);
-      this.set('showCats', false);
-      this.set('showGeneral', false);
-      this.set('showLegal', false);
-    },
+  @action toggleAdditional() {
+    this.showAdditional = true;
+    this.showCats = false;
+    this.showGeneral = false;
+    this.showLegal = false;
+  }
 
-    showLegal: function () {
-      this.set('showLegal', true);
-      this.set('showCats', false);
-      this.set('showAdditional', false);
-      this.set('showGeneral', false);
-    },
+  @action toggleLegal() {
+    this.showLegal = true;
+    this.showCats = false;
+    this.showAdditional = false;
+    this.showGeneral = false;
+  }
 
-    nextStep: function () {
-      console.log('next step!');
-      if (this.showGeneral) {
-        this.send('showCats');
-      } else if (this.showCats) {
-        this.send('showAdditional');
-      } else if (this.showAdditional) {
-        this.send('showLegal');
-      }
-    },
+  @action nextStep() {
+    console.log('next step!');
+    if (this.showGeneral) {
+      this.toggleCats();
+    } else if (this.showCats) {
+      this.toggleAdditional();
+    } else if (this.showAdditional) {
+      this.toggleLegal();
+    }
+  }
 
-    backStep: function () {
-      if (this.showCats) {
-        this.send('showGeneral');
-      } else if (this.showAdditional) {
-        this.send('showCats');
-      } else if (this.showLegal) {
-        this.send('showAdditional');
-      }
-    },
+  @action backStep() {
+    if (this.showCats) {
+      this.toggleGeneral();
+    } else if (this.showAdditional) {
+      this.toggleCats();
+    } else if (this.showLegal) {
+      this.toggleAdditional();
+    }
+  }
 
-    updateKeywords(val, $item) {
-      if (!val) {
-        return;
-      }
-      let keywords = this.keywords;
+  @action updateKeywords(val, $item) {
+    if (!val) {
+      return;
+    }
+    let keywords = this.keywords;
 
-      let isRemoval = _.isNull($item);
+    let isRemoval = _.isNull($item);
 
-      if (isRemoval) {
-        keywords.removeObject(val);
-        return;
-      }
-      keywords.addObject(val);
-    },
-    updateQuillText(content, isEmpty, isOverLengthLimit) {
-      this.set('quillText', content);
-      this.set('isQuillEmpty', isEmpty);
-      this.set('isQuillTooLong', isOverLengthLimit);
-    },
-  },
-});
+    if (isRemoval) {
+      keywords.removeObject(val);
+      return;
+    }
+    keywords.addObject(val);
+  }
+  @action updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.quillText = content;
+    this.isQuillEmpty = isEmpty;
+    this.isQuillTooLong = isOverLengthLimit;
+  }
+}
