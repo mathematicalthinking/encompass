@@ -652,14 +652,14 @@ async function sendWorkspace(req, res, next) {
       workspace: ws,
     };
 
-    let dataMap = {
-      selections: 'selection',
-      submissions: 'submission',
-      folders: 'folder',
-      taggings: 'tagging',
-      responses: 'response',
-      comments: 'comment',
-    };
+    // let dataMap = {
+    //   selections: 'selection',
+    //   submissions: 'submission',
+    //   folders: 'folder',
+    //   taggings: 'tagging',
+    //   responses: 'response',
+    //   comments: 'comment',
+    // };
 
     let relatedData = {
       selections: [],
@@ -738,13 +738,13 @@ async function sendWorkspace(req, res, next) {
       }
     });
 
-    _.keys(relatedData).forEach(function (key) {
-      var modelName = key;
-      if (dataMap[key]) {
-        modelName = dataMap[key];
-      }
-      data[modelName] = _.values(relatedData[key]);
-    });
+    // _.keys(relatedData).forEach(function (key) {
+    //   var modelName = key;
+    //   if (dataMap[key]) {
+    //     modelName = dataMap[key];
+    //   }
+    //   data[modelName] = _.values(relatedData[key]);
+    // });
 
     if (isNonEmptyArray(ws.childWorkspaces)) {
       // sideload any owners of child workspaces that are not being
@@ -770,6 +770,7 @@ async function sendWorkspace(req, res, next) {
 
       ws.childWorkspaces = ws.childWorkspaces.map((childWs) => childWs._id);
     }
+    console.log(data);
     return utils.sendResponse(res, data);
   } catch (err) {
     console.error(`Error sendWorkspace: ${err}`);
