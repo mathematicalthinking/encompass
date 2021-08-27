@@ -1,5 +1,4 @@
 <div class="signup-box">
-
   <img src="../assets/images/logo-encompass.png" class="encompass-logo" alt="encompass logo">
 
   <form class="form-signup">
@@ -43,7 +42,7 @@
     </div>
     <div class="auth-form-input">
       <label for="username">Username:</label>
-      <Input class="form-control" @type="text" @name="username" @id="username" @value={{this.username}} @key-down={{action "usernameValidate"}} />
+      <Input class="form-control" @type="text" @name="username" @id="username" @value={{this.username}} @key-up={{action "usernameValidate"}} @key-down={{action "resetErrors"}} />
       {{#if this.usernameError}}
       <p class="error-message">{{this.usernameError}}</p>
       {{/if}}

@@ -1,7 +1,7 @@
-import LoggedOutRoute from './_logged_out_route';
+import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 
-export default class ResetRoute extends LoggedOutRoute {
+export default class ResetRoute extends Route {
   model(params) {
     return params.token;
   }

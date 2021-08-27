@@ -10,11 +10,12 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   @tracked passwordError = null;
   @tracked usernameError = null;
   @tracked emailError = null;
-  @tracked isEmailDirty = false;
-  @tracked isEmailValid = false;
   @tracked email = '';
-  @tracked isEmailDirty = false;
-  @tracked confirmEmail = null;
+  @tracked confirmEmail = '';
+  @tracked confirmPassword = '';
+  @tracked selectedType = '';
+  @tracked password = '';
+  @tracked username = '';
 
   emailErrors = {
     invalid: 'Invalid email address.',
@@ -34,49 +35,28 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     missing: 'Password is required',
     mismatch: 'Passwords do not match',
   };
-  @tracked selectedType = '';
   get isEmailRequired() {
     return this.selectedType !== 'Student';
   }
 
   get isEmailValid() {
-    let email = this.email;
-
-    if (!this.isEmailDirty && email) {
-      this.isEmailDirty = true;
-    }
-    return this.validateEmail(email);
+    return this.validateEmail(this.email);
   }
 
   get isEmailInvalid() {
-    return this.isEmailDirty && !this.isEmailValid;
+    return this.email && !this.validateEmail(this.email);
   }
 
   get doEmailsMatch() {
     return this.email === this.confirmEmail;
   }
 
-  @tracked password = '';
-
   get isPasswordValid() {
-    if (!this.isPasswordDirty && this.password) {
-      this.isPasswordDirty = true;
-    }
-    //TODO: stricter password req
-    if (!this.password) {
-      return false;
-    }
-    let length = this.password.length;
-    let min = this.passwordMinLength;
-    let max = this.passwordMaxLength;
-
-    return length >= min && length <= max;
+    return this.validatePassword(this.password);
   }
-  @tracked isPasswordDirty = false;
   get isPasswordInvalid() {
-    return this.isPasswordDirty && !this.isPasswordValid;
+    return this.password && !this.validatePassword(this.password);
   }
-  @tracked confirmPassword = '';
   get doPasswordsMatch() {
     return this.password === this.confirmPassword;
   }
@@ -89,8 +69,18 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     return emailPattern.test(email);
   }
 
+  validatePassword(password) {
+    if (!this.password) {
+      return false;
+    }
+    let length = password.length;
+    let min = this.passwordMinLength;
+    let max = this.passwordMaxLength;
+
+    return length >= min && length <= max;
+  }
+
   @action usernameValidate(username) {
-    console.log('usernamevalidate component');
     console.log(username);
     if (username) {
       var usernamePattern = new RegExp(this.usernameRegEx);
@@ -111,43 +101,30 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     }
   }
 
-  @action emailValidate(email) {
-    console.log('emailValidate component');
-    let isValid = this.validateEmail(email);
-    if (isValid) {
-      this.emailError = null;
-      this.email = email;
-    } else {
-      this.emailError = this.emailErrors.invalid;
-    }
-  }
-  @action passwordValidate(password) {
-    console.log('passwordValidate component');
-    console.log(password);
-    function hasWhiteSpace(string) {
-      return /\s/g.test(string);
-    }
+  // @action passwordValidate(password) {
+  //   function hasWhiteSpace(string) {
+  //     return /\s/g.test(string);
+  //   }
 
-    if (
-      password.length < this.passwordMinLength ||
-      password.length > this.passwordMaxLength
-    ) {
-      this.passwordError = this.passwordErrors.invalid;
-    } else {
-      this.passwordError = null;
+  //   if (
+  //     password.length < this.passwordMinLength ||
+  //     password.length > this.passwordMaxLength
+  //   ) {
+  //     this.passwordError = this.passwordErrors.invalid;
+  //   } else {
+  //     this.passwordError = null;
 
-      this.password = password;
-    }
+  //     this.password = password;
+  //   }
 
-    if (hasWhiteSpace(password)) {
-      this.noSpacesError = true;
-    } else {
-      this.noSpacesError = false;
-      this.password = password;
-    }
-  }
+  //   if (hasWhiteSpace(password)) {
+  //     this.noSpacesError = true;
+  //   } else {
+  //     this.noSpacesError = false;
+  //     this.password = password;
+  //   }
+  // }
   @action resetErrors() {
-    console.log('reset errors component');
     const errors = [
       'missingCredentials',
       'noTermsAndConditions',

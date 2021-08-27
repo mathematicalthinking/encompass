@@ -3,7 +3,7 @@
   * @description This is the main application route. Here we expose application wide:
                  + Models &
                  + Actions
-  * @author Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>
+  * @author Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>, Tim Leonard <tleonard@21pstem.org>
   * @since 1.0.0
   * @todo Manage the current user without setting on the Encompass object itself.
   */
@@ -39,8 +39,6 @@ export default class Application extends Route {
   }
 
   afterModel(user, transition) {
-    //not crazy that this is duplicated here and in AuthenticatedRoute...
-
     // Need this check so that the user isn't auto-redirected to home after
     // clicking on reset password link
 

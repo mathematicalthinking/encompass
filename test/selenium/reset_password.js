@@ -9,7 +9,7 @@ const css = require('./selectors');
 const fixtures = require('./fixtures/reset_password');
 
 const host = helpers.host;
-const resetPath = '/auth/reset';
+const resetPath = '/#/auth/reset';
 
 const resetLink = `${host}${resetPath}/${fixtures.userLiveToken.token}`;
 const invalidResetLink = `${host}${resetPath}/${fixtures.userLiveToken.invalidToken}`;
