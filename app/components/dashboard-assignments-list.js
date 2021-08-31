@@ -1,10 +1,11 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
+import { observer } from '@ember/object';
 
 export default Component.extend({
   currentUser: service(),
   store: service(),
-  utils: Ember.inject.service('utility-methods'),
+  utils: service('utility-methods'),
   sortCriterion: {
     name: 'A-Z',
     sortParam: { param: 'name', direction: 'asc' },
@@ -116,19 +117,23 @@ export default Component.extend({
     this.filterAssignments();
   },
 
-  filterAssignments: function () {
-    let currentUser = this.get('currentUser.user');
-    let filtered = this.assignments.filter((assignment) => {
-      return assignment.id && !assignment.get('isTrashed');
-    });
-    filtered = filtered.sortBy('createDate').reverse();
-    if (currentUser.get('accountType') === 'S') {
-      // what is this if block for?
-      // console.log('current user is a student');
+  filterAssignments: observer(
+    'assignments.@each.isTrashed',
+    'currentUser.isStudent',
+    function () {
+      let currentUser = this.get('currentUser.user');
+      let filtered = this.assignments.filter((assignment) => {
+        return assignment.id && !assignment.get('isTrashed');
+      });
+      filtered = filtered.sortBy('createDate').reverse();
+      if (currentUser.get('accountType') === 'S') {
+        // what is this if block for?
+        // console.log('current user is a student');
+      }
+      // let currentDate = new Date();
+      this.set('assignmentList', filtered);
     }
-    // let currentDate = new Date();
-    this.set('assignmentList', filtered);
-  }.observes('assignments.@each.isTrashed', 'currentUser.isStudent'),
+  ),
 
   yourList: function () {
     const date = new Date();
@@ -139,6 +144,9 @@ export default Component.extend({
       const assignedStudents = assignment
         .get('students')
         .content.currentState.map((student) => student.id);
+      if (!assignment.get('assignedDate')) {
+        return true;
+      }
       return (
         assignedStudents.includes(userId) &&
         !assignment.get('isTrashed') &&
