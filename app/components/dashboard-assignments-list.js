@@ -1,8 +1,8 @@
 import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default Component.extend(Encompass.CurrentUserMixin, {
+export default Component.extend({
+  currentUser: service(),
   store: service(),
   utils: Ember.inject.service('utility-methods'),
   sortCriterion: {
@@ -117,7 +117,7 @@ export default Component.extend(Encompass.CurrentUserMixin, {
   },
 
   filterAssignments: function () {
-    let currentUser = this.get('currentUser');
+    let currentUser = this.get('currentUser.user');
     let filtered = this.assignments.filter((assignment) => {
       return assignment.id && !assignment.get('isTrashed');
     });
@@ -133,7 +133,7 @@ export default Component.extend(Encompass.CurrentUserMixin, {
   yourList: function () {
     const date = new Date();
 
-    let currentUser = this.get('currentUser');
+    let currentUser = this.get('currentUser.user');
     let yourList = this.assignments.filter((assignment) => {
       let userId = currentUser.get('id');
       const assignedStudents = assignment
