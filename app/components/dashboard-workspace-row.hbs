@@ -1,7 +1,7 @@
   <tr>
     <td class="inner"><LinkTo @route='workspace.work' @model={{@workspace.id}} classNames='link'>{{@workspace.name}}</LinkTo></td>
     {{#if myAssignment.section.name}}
-    <td><LinkTo @route='sections.section' @model={{myAssignment.section.sectionId}}
+    <td><LinkTo @route='sections.section' @model={{myAssignment.section.id}}
       classNames='link'>{{myAssignment.section.name}}</LinkTo></td>
     {{else}}
     <td>N/A</td>
