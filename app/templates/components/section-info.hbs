@@ -159,16 +159,23 @@
                 {{#if this.addGroup}}
                   <i title="Edit" {{action "editGroupName" group}} class="far fa-edit"></i>
                   <i class="far fa-times-circle" aria-hidden="true" {{action 'deleteGroup' group}}></i>
-                  <ul class="listing">
-                    {{#each group.students as |student|}}
-                      <li>{{student.username}}
+                {{/if}}
+                {{#if this.addGroup}}
+                  <SelectizeInput @store={{this.store}} @inputId="{{group.id}}" @maxItems={{1}}
+                  @initialOptions={{this.selectableStudents}} @onItemAdd={{action "updateGroupStudents" group}} @model="user" @isAsync={{false}}
+                  @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
+                {{/if}}
+                <ul class="listing">
+                  {{#each group.students as |student|}}
+                    <li>{{student.username}}
+                      {{#if this.addGroup}}
                         <button class="trash-button" {{action 'updateGroup' group student}}>
                         <i class="far fa-times-circle" aria-hidden="true"></i>
                         </button>
-                      </li>
-                    {{/each}}
-                  </ul>
-              {{/if}}
+                      {{/if}}
+                    </li>
+                  {{/each}}
+                </ul>
               </li>
               {{/unless}}
             {{/each}}
@@ -177,7 +184,7 @@
             <div class="update-students">
               <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
                 <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
-                  @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{true}}
+                  @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{false}}
                   @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
               {{#each this.newGroup.students as |student|}}
                 <p>

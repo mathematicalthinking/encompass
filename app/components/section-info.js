@@ -224,6 +224,30 @@ export default Component.extend(ErrorHandlingMixin, {
         );
       }
     },
+    updateGroupStudents: async function (group, studentId) {
+      let student = await this.store.findRecord('user', studentId);
+      group.students.pushObject(student);
+      try {
+        const res = await group.save();
+        this.alert.showToast(
+          'success',
+          `${res.name} updated`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } catch (err) {
+        this.alert.showToast(
+          'error',
+          'oops there was a problem',
+          3000,
+          false,
+          null
+        );
+      }
+      this.set('addGroup', false);
+    },
     placeStudent: async function (id) {
       let student = await this.store.findRecord('user', id);
       return this.newGroup.students.pushObject(student);
