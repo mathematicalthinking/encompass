@@ -161,7 +161,7 @@
                   <i class="far fa-times-circle" aria-hidden="true" {{action 'deleteGroup' group}}></i>
                 {{/if}}
                 {{#if this.addGroup}}
-                  <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
+                  <SelectizeInput @store={{this.store}} @inputId="{{group.id}}" @maxItems={{1}}
                   @initialOptions={{this.selectableStudents}} @onItemAdd={{action "updateGroupStudents" group}} @model="user" @isAsync={{false}}
                   @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
                 {{/if}}

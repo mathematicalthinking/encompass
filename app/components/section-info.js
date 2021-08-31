@@ -229,17 +229,15 @@ export default Component.extend(ErrorHandlingMixin, {
       group.students.pushObject(student);
       try {
         const res = await group.save();
-        console.log(res);
         this.alert.showToast(
           'success',
-          `${student.username} added`,
+          `${res.name} updated`,
           'bottom-end',
           3000,
           false,
           null
         );
       } catch (err) {
-        console.log(err);
         this.alert.showToast(
           'error',
           'oops there was a problem',
@@ -248,6 +246,7 @@ export default Component.extend(ErrorHandlingMixin, {
           null
         );
       }
+      this.set('addGroup', false);
     },
     placeStudent: async function (id) {
       let student = await this.store.findRecord('user', id);
