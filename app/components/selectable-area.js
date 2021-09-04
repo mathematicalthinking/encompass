@@ -37,11 +37,11 @@ export default Component.extend({
       selectableContainerId: containerId,
       automaticEvent: !this.isTouchScreen,
     });
-    this.selectionHighlighting.init((id) => {
-      let selection = this.selectionHighlighting.getSelection(id);
-      selection.selectionType = 'selection';
-      this.sendAction('addSelection', selection);
-    });
+    // this.selectionHighlighting.init((id) => {
+    //   let selection = this.selectionHighlighting.getSelection(id);
+    //   selection.selectionType = 'selection';
+    //   this.sendAction('addSelection', selection);
+    // });
     this.selectionHighlighting.enableSelection();
     // set up the ImageTagging object
     this.imageTagging = new window.ImageTagging({
@@ -49,11 +49,11 @@ export default Component.extend({
       isCompSelectionMode: this.makingSelection,
       scrollableContainer: scrollableContainer,
     });
-    this.imageTagging.onSave((id, isUpdateOnly) => {
-      let tag = this.imageTagging.getTag(id);
-      tag.selectionType = 'image-tag';
-      this.sendAction('addSelection', tag, isUpdateOnly);
-    });
+    // this.imageTagging.onSave((id, isUpdateOnly) => {
+    //   let tag = this.imageTagging.getTag(id);
+    //   tag.selectionType = 'image-tag';
+    //   this.sendAction('addSelection', tag, isUpdateOnly);
+    // });
     this.imageTagging.enable();
     this.selectionHighlighting.loadSelections(this.selections);
     this.imageTagging.loadTags(this.imgTags);
@@ -142,6 +142,20 @@ export default Component.extend({
       highlighting.highlightAllSelections();
       tagging.showAllTags();
     }
+  },
+
+  didRender: function () {
+    this._super(...arguments);
+    this.selectionHighlighting.init((id) => {
+      let selection = this.selectionHighlighting.getSelection(id);
+      selection.selectionType = 'selection';
+      this.sendAction('addSelection', selection);
+    });
+    this.imageTagging.onSave((id, isUpdateOnly) => {
+      let tag = this.imageTagging.getTag(id);
+      tag.selectionType = 'image-tag';
+      this.sendAction('addSelection', tag, isUpdateOnly);
+    });
   },
 
   setupTagging: function () {
