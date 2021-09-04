@@ -42,7 +42,7 @@ export default Component.extend({
       selection.selectionType = 'selection';
       this.sendAction('addSelection', selection);
     });
-
+    this.selectionHighlighting.enableSelection();
     // set up the ImageTagging object
     this.imageTagging = new window.ImageTagging({
       targetContainer: containerId,
@@ -54,7 +54,7 @@ export default Component.extend({
       tag.selectionType = 'image-tag';
       this.sendAction('addSelection', tag, isUpdateOnly);
     });
-
+    this.imageTagging.enable();
     this.selectionHighlighting.loadSelections(this.selections);
     this.imageTagging.loadTags(this.imgTags);
 

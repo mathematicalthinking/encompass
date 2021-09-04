@@ -25,7 +25,7 @@ export default Component.extend(ErrorHandlingMixin, VmtHostMixin, {
   utils: service('utility-methods'),
   permissions: service('workspace-permissions'),
 
-  makingSelection: false,
+  makingSelection: true,
   showingSelections: false,
   isTransitioning: false,
   isDirty: false,
