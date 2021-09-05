@@ -182,41 +182,41 @@ const getAssignment = async function (req, res, next) {
     assignment.reportDetails = metadata;
   }
 
-  if (isNonEmptyArray(assignment.students)) {
-    data.users = assignment.students;
-  }
+  // if (isNonEmptyArray(assignment.students)) {
+  //   data.users = assignment.students;
+  // }
 
-  if (isValidMongoId(_.propertyOf(assignment)(['problem', '_id']))) {
-    data.problems = [assignment.problem];
-  }
+  // if (isValidMongoId(_.propertyOf(assignment)(['problem', '_id']))) {
+  //   data.problems = [assignment.problem];
+  // }
 
-  if (isValidMongoId(_.propertyOf(assignment)(['section', '_id']))) {
-    data.sections = [assignment.section];
-  }
+  // if (isValidMongoId(_.propertyOf(assignment)(['section', '_id']))) {
+  //   data.sections = [assignment.section];
+  // }
 
   assignment.depopulate('answers');
   assignment.depopulate('problem');
   assignment.depopulate('section');
   assignment.depopulate('students');
 
-  if (!isStudent) {
-    data.workspaces = [];
-    if (isNonEmptyArray(assignment.linkedWorkspaces)) {
-      await assignment.populate('linkedWorkspaces').execPopulate();
-      data.workspaces = assignment.linkedWorkspaces;
+  // if (!isStudent) {
+  //   data.workspaces = [];
+  //   if (isNonEmptyArray(assignment.linkedWorkspaces)) {
+  //     await assignment.populate('linkedWorkspaces').execPopulate();
+  //     data.workspaces = assignment.linkedWorkspaces;
 
-      assignment.depopulate('linkedWorkspaces');
-    }
-    if (assignment.parentWorkspace) {
-      await assignment.populate('parentWorkspace').execPopulate();
-      if (isNonEmptyArray(data.workspaces)) {
-        data.workspaces.push(assignment.parentWorkspace);
-      } else {
-        data.workspaces = assignment.parentWorkspace;
-      }
-      assignment.depopulate('parentWorkspace');
-    }
-  }
+  //     assignment.depopulate('linkedWorkspaces');
+  //   }
+  //   if (assignment.parentWorkspace) {
+  //     await assignment.populate('parentWorkspace').execPopulate();
+  //     if (isNonEmptyArray(data.workspaces)) {
+  //       data.workspaces.push(assignment.parentWorkspace);
+  //     } else {
+  //       data.workspaces = assignment.parentWorkspace;
+  //     }
+  //     assignment.depopulate('parentWorkspace');
+  //   }
+  // }
 
   let jsonAssn = assignment.toObject();
 
