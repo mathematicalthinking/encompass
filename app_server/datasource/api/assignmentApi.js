@@ -166,9 +166,16 @@ const getAssignment = async function (req, res, next) {
         };
       }
     });
-
+    // console.log(metadata);
     assignment.answers.forEach((answer) => {
+      console.log(answer);
       let creatorId = answer.createdBy;
+      if (!metadata[creatorId]) {
+        metadata[creatorId] = {
+          count: 0,
+          latestRevision: null,
+        };
+      }
       let latestRev = metadata[creatorId].latestRevision;
 
       metadata[creatorId].count += 1;
