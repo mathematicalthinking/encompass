@@ -22,10 +22,13 @@ export default Component.extend({
       let deleted = this.get('workspace.isTrashed');
       let canDelete = this.permissions.canDelete(ws);
       let canCopy = this.permissions.canCopy(ws);
-
       let moreMenuOptions = this.menuOptions;
       let options = moreMenuOptions.slice();
-
+      if (currentUser.isStudent) {
+        options = _.filter(options, (option) => {
+          return option.value !== 'assign';
+        });
+      }
       if (!canDelete || deleted) {
         options = _.filter(options, (option) => {
           return option.value !== 'delete';

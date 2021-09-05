@@ -101,29 +101,38 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     }
   }
 
-  // @action passwordValidate(password) {
-  //   function hasWhiteSpace(string) {
-  //     return /\s/g.test(string);
-  //   }
+  @action passwordValidate(password) {
+    function hasWhiteSpace(string) {
+      return /\s/g.test(string);
+    }
 
-  //   if (
-  //     password.length < this.passwordMinLength ||
-  //     password.length > this.passwordMaxLength
-  //   ) {
-  //     this.passwordError = this.passwordErrors.invalid;
-  //   } else {
-  //     this.passwordError = null;
+    if (
+      password.length < this.passwordMinLength ||
+      password.length > this.passwordMaxLength
+    ) {
+      this.passwordError = this.passwordErrors.invalid;
+    } else {
+      this.passwordError = null;
 
-  //     this.password = password;
-  //   }
+      this.password = password;
+    }
 
-  //   if (hasWhiteSpace(password)) {
-  //     this.noSpacesError = true;
-  //   } else {
-  //     this.noSpacesError = false;
-  //     this.password = password;
-  //   }
-  // }
+    if (hasWhiteSpace(password)) {
+      this.noSpacesError = true;
+    } else {
+      this.noSpacesError = false;
+      this.password = password;
+    }
+  }
+  @action emailValidate(email) {
+    let isValid = this.validateEmail(email);
+    if (isValid) {
+      this.emailError = null;
+      this.email = email;
+    } else {
+      this.emailError = this.emailErrors.invalid;
+    }
+  }
   @action resetErrors() {
     const errors = [
       'missingCredentials',

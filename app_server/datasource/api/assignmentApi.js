@@ -166,9 +166,7 @@ const getAssignment = async function (req, res, next) {
         };
       }
     });
-    // console.log(metadata);
     assignment.answers.forEach((answer) => {
-      console.log(answer);
       let creatorId = answer.createdBy;
       if (!metadata[creatorId]) {
         metadata[creatorId] = {
