@@ -1001,13 +1001,19 @@ const generateLinkedWorkspacesFromAssignment = async (
         })
       );
     }
-
-    let { doCreateParentWs } = parentWsOptions;
-
-    if (doCreateParentWs) {
-      // create parent ws from linked workspaces
+    const parentWorkspace = await models.Workspace.findById(
+      assignment.parentWorkspace
+    );
+    if (parentWorkspace) {
+      parentWorkspace.childWorkspaces = [
+        ...parentWorkspace.childWorkspaces,
+        ...workspaces,
+      ];
+      parentWorkspace.markModified('childWorkspaces');
+      let res = await parentWorkspace.save();
+      console.log(res);
+      results.createdWorkspaces = workspaces;
     }
-    results.createdWorkspaces = workspaces;
     return [null, workspaces];
   } catch (err) {
     console.log({ generateLinkedWorkspacesFromAssignmentErr: err });
