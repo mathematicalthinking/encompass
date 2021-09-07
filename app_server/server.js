@@ -212,6 +212,7 @@ server.get(
   api.get.responseThreads
 );
 server.get('/api/groups', api.get.groups);
+server.get('/api/groups/:id', api.get.group);
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);

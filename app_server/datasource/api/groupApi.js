@@ -44,8 +44,9 @@ const getGroups = async (req, res) => {
  * @throws {RestError} Something? went wrong
  */
 
-const getGroup = (req, res) => {
-  return;
+const getGroup = async (req, res) => {
+  let group = await models.Group.findById(req.params.id);
+  return { group };
 };
 
 /**
@@ -106,5 +107,6 @@ const deleteGroup = (req, res) => {
 };
 
 module.exports.get.groups = getGroups;
+module.exports.get.group = getGroup;
 module.exports.post.groups = postGroup;
 module.exports.put.groups = putGroup;
