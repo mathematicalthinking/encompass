@@ -1010,6 +1010,25 @@ const generateLinkedWorkspacesFromAssignment = async (
         ...workspaces,
       ];
       parentWorkspace.markModified('childWorkspaces');
+      workspaces.forEach((ws) => {
+        let data = {
+          createDate: new Date(),
+          isTrashed: false,
+          lastModifiedDate: new Date(),
+          editors: [],
+          children: [],
+          taggings: [],
+          wasNew: true,
+          updatedFields: [],
+          name: ws.name,
+          owner: parentWorkspace.owner,
+          createdBy: parentWorkspace.owner,
+          lastModifiedBy: parentWorkspace.owner,
+          workspace: parentWorkspace._id,
+          srcChildWs: ws._id,
+        };
+        models.Folder.create(data);
+      });
       let res = await parentWorkspace.save();
       console.log(res);
       results.createdWorkspaces = workspaces;
