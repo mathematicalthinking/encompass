@@ -931,8 +931,17 @@ const generateLinkedWorkspacesFromAssignment = async (
         section,
         isTrashed: false,
       });
+      await assignment
+        .populate({ path: 'linkedWorkspaces', select: 'group' })
+        .execPopulate();
+      let groupsWithoutWorkspaces = _.reject(groups, (group) => {
+        return _.find(assignment.linkedWorkspaces, (ws) => {
+          return areObjectIdsEqual(ws.group, group._id);
+        });
+      });
+      assignment.depopulate();
       workspaces = await Promise.all(
-        groups.map(async (group) => {
+        groupsWithoutWorkspaces.map(async (group) => {
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
               let sub = new models.Submission(obj);
@@ -974,7 +983,8 @@ const generateLinkedWorkspacesFromAssignment = async (
           });
           return models.Workspace.create({
             name: `${group.name}: ${nameSuffix}`,
-            owner: group.students[0],
+            owner: reqUser._id,
+            group: group._id,
             createdBy: reqUser._id,
             lastModifiedBy: reqUser._id,
             lastModifiedDate: Date.now(),
