@@ -49,13 +49,12 @@ export default Component.extend({
         'doShowLoadingMessage'
       );
 
-      let data = {
+      assignment.linkedWorkspacesRequest = {
+        ...assignment.linkedWorkspacesRequest,
         doAllowSubmissionUpdates: true,
         name: this.workspaceName || this.defaultName,
         doCreate: true,
       };
-
-      assignment.set('linkedWorkspacesRequest', data);
 
       assignment.set('parentWorkspaceRequest', { doCreate: false });
       return assignment
