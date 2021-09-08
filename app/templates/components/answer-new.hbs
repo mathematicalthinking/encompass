@@ -19,7 +19,7 @@
         <div class="new-answer-input explanation">
           <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
 
-          <QuillContainer @onEditorChange={{action "updateQuillText"}} @attrSectionId={{this.quillEditorId}} @startingText={{if this.explanationText this.explanationText "Show your detailed explanation here. This box will expand as you type."}} />
+          <QuillContainer @onEditorChange={{action "updateQuillText"}} @attrSectionId={{this.quillEditorId}} @startingText={{this.explanationText}} />
         </div>
         {{#each this.explanationErrors as |error|}}
           <ErrorBox @error={{error}} @resetError={{action (mut this.explanationErrors) null}} @showDismiss={{true}} />
