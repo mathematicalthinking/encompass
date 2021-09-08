@@ -36,6 +36,7 @@ export default Component.extend(ErrorHandlingMixin, {
   hideParentWsForm: not('showParentWsForm'),
   hideLinkedWsForm: not('showLinkedWsForm'),
   allStudentsHaveWs: equal('studentsWithoutWorkspaces.length', 0),
+  allGroupsHaveWs: equal('groupsWithoutWorkspaces.length', 0),
 
   alert: service('sweet-alert'),
   permissions: service('assignment-permissions'),
@@ -44,7 +45,14 @@ export default Component.extend(ErrorHandlingMixin, {
   hasLinkedWorkspaces: gt('assignment.linkedWorkspaces.length', 0),
   doesNotHaveLinkedWs: not('hasLinkedWorkspaces'),
 
-  showFullLinkedWsMsg: and('isEditing', 'allStudentsHaveWs'),
+  showFullLinkedWsMsg: computed(
+    'isEditing',
+    'allStudentsHaveWs',
+    'allGroupsHaveWs',
+    function () {
+      return this.isEditing && (this.allStudentsHaveWs || this.allGroupsHaveWs);
+    }
+  ),
   showNoParentWsMsg: and('isEditing', 'doesNotHaveLinkedWs'),
 
   init: function () {
@@ -262,13 +270,24 @@ export default Component.extend(ErrorHandlingMixin, {
     'hasBasicEditPrivileges',
     'hideLinkedWsForm',
     'allStudentsHaveWs',
+    'allGroupsHaveWs',
+    'linkedByGroup',
     function () {
-      return (
-        this.isEditing &&
-        this.hasBasicEditPrivileges &&
-        this.hideLinkedWsForm &&
-        !this.allStudentsHaveWs
-      );
+      if (this.linkedByGroup) {
+        return (
+          this.isEditing &&
+          this.hasBasicEditPrivileges &&
+          this.hideLinkedWsForm &&
+          !this.allGroupsHaveWs
+        );
+      } else {
+        return (
+          this.isEditing &&
+          this.hasBasicEditPrivileges &&
+          this.hideLinkedWsForm &&
+          !this.allStudentsHaveWs
+        );
+      }
     }
   ),
 
@@ -316,6 +335,26 @@ export default Component.extend(ErrorHandlingMixin, {
     }
   ),
 
+  groupsWithoutWorkspaces: computed(
+    'section',
+    'linkedWorkspaces.[]',
+    function () {
+      let groups = this.store.query('group', {
+        section: this.section.id,
+        isTrashed: false,
+      });
+      let existingWorkspaces = this.linkedWorkspaces || [];
+
+      console.log(groups);
+      console.log(existingWorkspaces);
+      return [];
+    }
+  ),
+
+  linkedByGroup: computed('assignment', function () {
+    return this.assignment.linkedWorkspacesRequest.linkType === 'group';
+  }),
+
   actions: {
     editAssignment: function () {
       let assignedDate = this.get('assignment.assignedDate');
@@ -355,8 +394,8 @@ export default Component.extend(ErrorHandlingMixin, {
       //     : '';
       //   let dueInputVal = dueDate ? moment(dueDate).format(format) : '';
 
-        this.set('assignedDateEditVal', this.formattedAssignedDate);
-        this.set('dueDateEditVal', this.formattedDueDate);
+      this.set('assignedDateEditVal', this.formattedAssignedDate);
+      this.set('dueDateEditVal', this.formattedDueDate);
 
       //   $('input#assignedDate').val(assignedInputVal);
       //   $('input#dueDate').val(dueInputVal);
@@ -497,7 +536,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
       if (this.canEditAssignedDate) {
         if (assignedDateEditVal) {
-          startDate = this.assignedDateEditVal
+          startDate = this.assignedDateEditVal;
 
           assignedDate = this.getMongoDate(startDate);
         }

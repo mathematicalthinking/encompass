@@ -132,7 +132,6 @@
               <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{this.linkedWorkspacesMode}} @noWidth={{true}} />
             </div>
             {{#if this.linkedWorkspacesMode}}
-              {{log this.sectionGroups}}
               <LinkedWorkspacesNew @isDisplayOnly={{true}} @students={{this.sectionGroups}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} />
             {{else}}
               <LinkedWorkspacesNew @isDisplayOnly={{true}} @students={{this.selectedSection.students.content}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} />
