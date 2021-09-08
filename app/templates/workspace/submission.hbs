@@ -6,7 +6,9 @@
       </LinkTo>
     </span>
     <span class="info workspaceOwner {{if this.isMyWorkspace 'isMine' 'notMine'}}">by {{this.currentWorkspace.owner.displayName}} </span>
-
+  {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
+    <LinkTo @route="workspace.work" @model={{ws.id}} @class="parent-link info">{{ws.name}}</LinkTo>
+  {{/each}}
 </div>
   <aside>
   <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>

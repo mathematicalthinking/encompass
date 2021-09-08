@@ -34,7 +34,9 @@
       <div class="row-value">
         <ul>
           {{#each this.workspace.parentWorkspaces as |ws|}}
+          <li>
             <LinkTo @route="workspace.work" @model={{ws.id}}>{{ws.name}}</LinkTo>
+          </li>
           {{/each}}
         </ul>
       </div>
