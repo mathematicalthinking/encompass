@@ -204,6 +204,13 @@ export default Component.extend(ErrorHandlingMixin, {
       try {
         const res = await savedGroup.save();
         this.refresh();
+        this.set('newGroup.name', '');
+        this.set('newGroup.students', []);
+        let selectize = this.$(`#group-add-student`)[0].selectize;
+        if (!selectize) {
+          return;
+        }
+        selectize.clear();
         this.alert.showToast(
           'success',
           `group "${res.name}" created`,

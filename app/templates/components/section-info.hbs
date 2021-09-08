@@ -183,7 +183,7 @@
           {{#if this.addGroup}}
             <div class="update-students">
               <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
-                <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
+                <SelectizeInput @store={{this.store}} @inputId="group-add-student" @maxItems={{1}}
                   @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{false}}
                   @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
               {{#each this.newGroup.students as |student|}}
