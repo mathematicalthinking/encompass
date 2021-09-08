@@ -8,7 +8,7 @@
 {{#if this.currentUser.isStudent}}
   <AssignmentInfoStudent @assignment={{this.assignment}} @currentUser={{this.currentUser}} @problem={{this.currentProblem}} @section={{this.currentSection}} @answerList={{this.assignment.answers.content}} @store={{this.store}} />
 {{else}}
-  <AssignmentInfoTeacher @assignment={{this.assignment}} @currentUser={{this.currentUser}} @details={{this.details}} @studentList={{this.assignmentStudents}} @store={{this.store}} @section={{this.currentSection}} @problem={{this.currentProblem}} @toAssignments="toAssignments" @linkedWorkspaces={{this.assignment.linkedWorkspaces.content}} @parentWorkspace={{this.assignment.parentWorkspace.content}} />
+  <AssignmentInfoTeacher @groups={{this.groups}} @assignment={{this.assignment}} @currentUser={{this.currentUser}} @details={{this.details}} @studentList={{this.assignmentStudents}} @store={{this.store}} @section={{this.currentSection}} @problem={{this.currentProblem}} @toAssignments="toAssignments" @linkedWorkspaces={{this.assignment.linkedWorkspaces.content}} @parentWorkspace={{this.assignment.parentWorkspace.content}} />
 {{/if}}
 
 

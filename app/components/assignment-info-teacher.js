@@ -336,18 +336,16 @@ export default Component.extend(ErrorHandlingMixin, {
   ),
 
   groupsWithoutWorkspaces: computed(
-    'section',
+    'groups',
     'linkedWorkspaces.[]',
     function () {
-      let groups = this.store.query('group', {
-        section: this.section.id,
-        isTrashed: false,
+      const existingWorkspaces = this.linkedWorkspaces || [];
+      return this.groups.reject((group) => {
+        return existingWorkspaces.find((ws) => {
+          let ownerId = this.utils.getBelongsToId(ws, 'group');
+          return ownerId === group.get('id');
+        });
       });
-      let existingWorkspaces = this.linkedWorkspaces || [];
-
-      console.log(groups);
-      console.log(existingWorkspaces);
-      return [];
     }
   ),
 
