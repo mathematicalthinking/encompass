@@ -203,6 +203,7 @@ export default Component.extend(ErrorHandlingMixin, {
       }
       try {
         const res = await savedGroup.save();
+        this.refresh();
         this.alert.showToast(
           'success',
           `group "${res.name}" created`,
