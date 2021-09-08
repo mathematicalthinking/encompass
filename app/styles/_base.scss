@@ -163,7 +163,6 @@ img {
   white-space: nowrap;
 }
 
-
 .al_sprite {
   position: relative;
   background: url(../assets/images/sprites.png) 0 0 no-repeat;
@@ -373,7 +372,6 @@ img {
   height: 12px;
 }
 
-
 #al_full {
   background-color: #f3f3f3;
 }
@@ -413,7 +411,6 @@ img {
   width: 28%;
 }
 
-
 #al_left {
   float: left;
   background: #f3f3f3;
@@ -441,7 +438,7 @@ img {
   padding-left: 5px;
 }
 
-#al_folders li>div {
+#al_folders li > div {
   cursor: pointer;
   position: relative;
   white-space: nowrap;
@@ -501,7 +498,6 @@ img {
 #al_folders_modify span {
   cursor: pointer;
 }
-
 
 #al_center {
   background: #fff;
@@ -567,25 +563,25 @@ img {
   margin-bottom: 10px;
 }
 
-#al_center.al_showall p>span {
+#al_center.al_showall p > span {
   background-color: #e7ef15;
 }
 
-#al_center.al_showall p>span:hover,
-#al_center.al_showall p>span.al_selected {
+#al_center.al_showall p > span:hover,
+#al_center.al_showall p > span.al_selected {
   border: 1px solid #616161;
   cursor: pointer;
 }
 
-#al_center p>span .al_sprite,
-#al_center.al_showall.al_makeselect p>span:hover .al_sprite {
+#al_center p > span .al_sprite,
+#al_center.al_showall.al_makeselect p > span:hover .al_sprite {
   position: absolute;
   top: -7px;
   right: -7px;
   display: none;
 }
 
-#al_center.al_showall p>span:hover .al_sprite {
+#al_center.al_showall p > span:hover .al_sprite {
   display: block;
 }
 
@@ -597,7 +593,6 @@ img {
 #al_center.al_makeselect p {
   cursor: url(images/cursor-select.cur), url(images/cursor-select.gif), auto;
 }
-
 
 #al_right {
   line-height: 16px;
@@ -699,7 +694,6 @@ li.notice .al_sprite.comment_label { background-position:-425px -71px; }
   margin-top: 4px;
 }
 
-
 #al_feedback textarea {
   font-size: 13px;
   padding: 10px;
@@ -800,7 +794,7 @@ li.notice .al_sprite.comment_label { background-position:-425px -71px; }
   line-height: 18px;
 }
 
-#al_remove_folder .al_destination>ul {
+#al_remove_folder .al_destination > ul {
   margin-top: 10px;
 }
 
@@ -899,7 +893,7 @@ nav.actions {
 }
 
 nav.listing,
-nav.actions>ul {
+nav.actions > ul {
   padding: 5px;
   border-bottom: 1px solid #cfcfcf;
 }
@@ -908,7 +902,8 @@ ul.actions {
   background-color: #efefef;
 }
 
-ul.listing {}
+ul.listing {
+}
 
 div.listOutlet {
   width: 70%;
@@ -917,27 +912,25 @@ div.listOutlet {
   padding: 5px;
 }
 
-
 a.puzzle {
   font-weight: bold;
   font-size: smaller;
 }
 
-article>h2,
-section>h2 {
+article > h2,
+section > h2 {
   font-size: 16px;
   font-weight: bold;
   margin: 5px;
 }
 
-.users>.listing>.is-admin>a {
+.users > .listing > .is-admin > a {
   color: red;
 }
 
-.users>.listing>.is-authorized {
+.users > .listing > .is-authorized {
   font-weight: bold;
 }
-
 
 .al_sprite {
   position: relative;
@@ -976,15 +969,14 @@ section>h2 {
   background: #c7bb54;
 }
 
-#folder_header>div#menubar>h1,
-#folder_header>div#menubar>h1>span {
+#folder_header > div#menubar > h1,
+#folder_header > div#menubar > h1 > span {
   display: inline-block;
 }
 
-#folder_header>div#statusbar {
+#folder_header > div#statusbar {
   font: status-bar;
 }
-
 
 #controls {
   background: #fffbdb;
@@ -1002,7 +994,7 @@ section>h2 {
   height: 100%;
   width: 19%;
   float: left;
-  margin-top: .5em;
+  margin-top: 0.5em;
 }
 
 #subcontrols label {
@@ -1012,7 +1004,7 @@ section>h2 {
 #folder_contents {
   border: solid 1px;
   width: 80%;
-  margin-top: .75em;
+  margin-top: 0.75em;
 }
 
 #folder_contents .header {
@@ -1119,7 +1111,7 @@ section>h2 {
 
 /* -- -- */
 
-header>h2 {
+header > h2 {
   margin-right: 8px;
 }
 
@@ -1127,7 +1119,8 @@ header>h2 {
   font-size: 11px;
 }
 
-table.values {}
+table.values {
+}
 
 table.values th {
   background-color: #cfcfcf;
@@ -1152,7 +1145,7 @@ table.cols td {
   border-right: 1px solid grey;
 }
 
-.sanity>section {
+.sanity > section {
   background-color: #efefef;
   margin: 5px;
   padding: 5px;
@@ -1164,7 +1157,7 @@ table.cols td {
   padding-right: 10px;
 }
 
-.sanity>section.third {
+.sanity > section.third {
   float: left;
   width: 30%;
 }
@@ -1178,7 +1171,7 @@ table.cols td {
 }
 
 .sanity header.buttons {
-  line-height: 100%
+  line-height: 100%;
 }
 
 #workspace_listing {
@@ -1191,12 +1184,12 @@ table.cols td {
   line-height: 50px;
 }
 
-#workspace_listing .theader>th {
+#workspace_listing .theader > th {
   padding: 0em 0.5em 0em 0.5em;
   text-align: center;
 }
 
-#workspace_listing .theader>th:first-child {
+#workspace_listing .theader > th:first-child {
   text-align: justify;
   padding-left: 55px;
 }
@@ -1205,7 +1198,7 @@ table.cols td {
   text-align: center;
 }
 
-#workspace_listing tr>td:first-child {
+#workspace_listing tr > td:first-child {
   text-align: justify;
 }
 
@@ -1268,7 +1261,6 @@ table.cols td {
 .al_wtf a {
   border-bottom: 2px solid #ffcc00;
   line-height: 1.3;
-
 }
 
 .al_wtf_link {
@@ -1304,11 +1296,12 @@ table.cols td {
 }
 
 .pointer {
-  cursor: pointer
+  cursor: pointer;
 }
 
 .refresh {
-  background: url('http://mathforum.org/img/glyphish/icons/icons-gray/02-redo-16.png') center left no-repeat;
+  background: url('http://mathforum.org/img/glyphish/icons/icons-gray/02-redo-16.png')
+    center left no-repeat;
   padding: 2em;
 }
 
@@ -1327,7 +1320,7 @@ textarea#responseTextarea {
 .al_wtf.move_up {
   position: relative;
   top: 8px;
-  background: url(images/move-up.png) 0 0 no-repeat;
+  background: url(../assets/images/move-up.png) 0 0 no-repeat;
   display: inline-block;
   zoom: 1;
   width: 26px;
@@ -1337,7 +1330,7 @@ textarea#responseTextarea {
 .al_wtf.move_down {
   position: relative;
   top: 8px;
-  background: url(images/move-down.png) 0 0 no-repeat;
+  background: url(../assets/images/move-down.png) 0 0 no-repeat;
   display: inline-block;
   zoom: 1;
   width: 26px;
@@ -1376,7 +1369,7 @@ ol {
 
 .breadcrumbs li {
   display: inline-block;
-  margin: 0 .25em 0 .25em;
+  margin: 0 0.25em 0 0.25em;
 }
 
 .breadcrumbs div.truncate {
@@ -1418,7 +1411,9 @@ ol {
 .breadcrumbs a.label {
   margin-left: 0em;
   padding-left: 2em;
-  background: #8e8e8e url('http://mathforum.org/img/glyphish/mini/mini-gray/04-eye.png') center left no-repeat;
+  background: #8e8e8e
+    url('http://mathforum.org/img/glyphish/mini/mini-gray/04-eye.png') center
+    left no-repeat;
   border-radius: 0 0.4em 0.4em 0;
   text-shadow: none;
   color: #ffffff;
@@ -1428,7 +1423,7 @@ ol {
 pre.message {
   padding: 10px;
   border: 1px solid #bfbfbf;
-  background-color: #EFEFF0;
+  background-color: #efeff0;
 }
 
 section.response {
@@ -1444,7 +1439,7 @@ section.origin {
 
 p.notice {
   padding: 20px 50px;
-  background-color: #EFEFF0;
+  background-color: #efeff0;
   font-style: italic;
   border-top: 2px solid #bfbfbf;
   border-bottom: 2px solid #bfbfbf;
@@ -1492,7 +1487,9 @@ div.selectBox .selected {
 
 div.selectBox .selector {
   position: absolute;
-  background: transparent url('http://mathforum.org/img/glyphish/icons/icons-gray/259-list-16.png') center left no-repeat;
+  background: transparent
+    url('http://mathforum.org/img/glyphish/icons/icons-gray/259-list-16.png')
+    center left no-repeat;
   width: 16px;
   height: 11px;
   left: 90%;
@@ -1588,5 +1585,5 @@ div.selectBox .selector {
 .footer {
   position: relative;
   bottom: 0;
-  font-family: "Times New Roman", Times, serif;
+  font-family: 'Times New Roman', Times, serif;
 }
