@@ -9,7 +9,6 @@
     <ul class="breadcrumbs truncated">
         {{#with this.itemsList.firstObject as |firstItem|}}
           <BreadCrumbsItem @item={{this.firstItem}} @displayValue={{1}} @onSelect={{action "onItemSelect"}} @selectedItem={{this.selectedItem}} @titleTextPath={{this.titleTextPath}} @starredItemsList={{this.starredItemsList}} />
-
         {{/with}}
         <abbr title="expand">
           <span {{action "showAllItems"}} class="truncate">
@@ -18,7 +17,6 @@
         </abbr>
         {{#with this.itemsList.lastObject as |lastItem|}}
           <BreadCrumbsItem @item={{this.lastItem}} @displayValue={{this.lastItemValue}} @onSelect={{action "onItemSelect"}} @selectedItem={{this.selectedItem}} @titleTextPath={{this.titleTextPath}} @starredItemsList={{this.starredItemsList}} />
-
         {{/with}}
     </ul>
   {{else}}
@@ -27,11 +25,10 @@
         <BreadCrumbsItem @item={{item}} @displayValue={{add-to index 1}} @onSelect={{action "onItemSelect"}} @selectedItem={{this.selectedItem}} @titleTextPath={{this.titleTextPath}} @starredItemsList={{this.starredItemsList}} />
       {{/each}}
       {{#if this.areManyItems}}
-
-     <li {{action "collapse"}} title="collapse"><i class="fas fa-minus-square"></i>
-     </li>
+        <li {{action "collapse"}} title="collapse">
+          <i class="fas fa-minus-square"></i>
+        </li>
       {{/if}}
     </ul>
-
   {{/if}}
 </div>
