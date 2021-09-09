@@ -50,7 +50,9 @@ export default Component.extend(ErrorHandlingMixin, {
     'allStudentsHaveWs',
     'allGroupsHaveWs',
     function () {
-      return this.isEditing && (this.allStudentsHaveWs || this.allGroupsHaveWs);
+      return this.linkedByGroup
+        ? this.isEditing && this.allGroupsHaveWs
+        : this.isEditing && this.allStudentsHaveWs;
     }
   ),
   showNoParentWsMsg: and('isEditing', 'doesNotHaveLinkedWs'),
