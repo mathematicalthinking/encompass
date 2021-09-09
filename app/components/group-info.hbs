@@ -1,5 +1,5 @@
 <li>
-  <strong {{on "click" this.toggleDisplayStudents}}>{{@group.name}}</strong>
+  <span {{on "click" this.toggleDisplayStudents}} class="group-name">{{@group.name}}</span>
   {{#if @addGroup}}
     <i title="Edit" {{action @editGroupName @group}} class="far fa-edit"></i>
     <i class="far fa-times-circle" aria-hidden="true" {{action @deleteGroup @group}}></i>

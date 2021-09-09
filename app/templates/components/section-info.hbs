@@ -151,13 +151,6 @@
               {{/if}}
             {{/unless}}
           </label>
-          <ul class="listing">
-            {{#each this.groups as |group|}}
-              {{#unless group.isTrashed}}
-                <GroupInfo @group={{group}} @addGroup={{this.addGroup}} @selectableStudents={{this.selectableStudents}} @editGroupName={{action "editGroupName"}} @updateGroupStudents={{action "updateGroupStudents"}} @updateGroup={{action "updateGroup"}} @deleteGroup={{action "deleteGroup"}} />
-              {{/unless}}
-            {{/each}}
-          </ul>
           {{#if this.addGroup}}
             <div class="update-students">
               <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
@@ -175,6 +168,13 @@
               <button {{action "saveGroup"}}>Save Group</button>
             </div>
           {{/if}}
+          <ul class="listing">
+            {{#each this.groups as |group|}}
+              {{#unless group.isTrashed}}
+                <GroupInfo @group={{group}} @addGroup={{this.addGroup}} @selectableStudents={{this.selectableStudents}} @editGroupName={{action "editGroupName"}} @updateGroupStudents={{action "updateGroupStudents"}} @updateGroup={{action "updateGroup"}} @deleteGroup={{action "deleteGroup"}} />
+              {{/unless}}
+            {{/each}}
+          </ul>
         </div>
 
     </fieldset>
