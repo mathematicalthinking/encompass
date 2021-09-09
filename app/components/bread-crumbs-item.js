@@ -17,7 +17,7 @@ export default class BreadCumbsItemComponent extends Component {
       return this.args.itemTitleText;
     }
     if (this.args.item.createDate) {
-      return moment(this.item.createDate.format('MMM Do YYYY h:mm A'));
+      return moment(this.args.item.createDate).format('MMM Do YYYY h:mm A');
     }
     if (_.isString(this.args.titleTextPath) && _.isObject(this.args.item)) {
       return this.args.item[this.args.titleTextPath];
