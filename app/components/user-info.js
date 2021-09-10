@@ -186,7 +186,7 @@ export default class UserInfoComponent extends Component {
 
   @action checkOrgExists() {
     let user = this.args.user;
-    let userOrg = user.get('organization').get('content');
+    let userOrg = user.get('organization.content');
     let userOrgRequest = user.get('organizationRequest');
     let org = this.org;
     let orgReq = this.orgReq;
@@ -243,32 +243,30 @@ export default class UserInfoComponent extends Component {
     user.set('email', this.userEmail);
 
     //if is authorized is now true, then we need to set the value of authorized by to current user
-    if (user.get('hasDirtyAttributes')) {
-      let newDate = new Date();
-      user.set('lastModifiedBy', currentUser);
-      user.set('lastModifiedDate', newDate);
+    let newDate = new Date();
+    user.set('lastModifiedBy', currentUser);
+    user.set('lastModifiedDate', newDate);
 
-      // so server knows whether to make request to sso server
-      user.set('isConfirmingEmail', this.isConfirmingEmail);
+    // so server knows whether to make request to sso server
+    user.set('isConfirmingEmail', this.isConfirmingEmail);
 
-      user
-        .save()
-        .then(() => {
-          this.alert.showToast(
-            'success',
-            'User updated',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.isEditing = false;
-          this.errorHandling.removeMessages('updateRecordErrors');
-        })
-        .catch((err) => {
-          this.errorHandling.handleErrors(err, 'updateRecordErrors', user);
-        });
-    }
+    user
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          'User updated',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        this.isEditing = false;
+        this.errorHandling.removeMessages('updateRecordErrors');
+      })
+      .catch((err) => {
+        this.errorHandling.handleErrors(err, 'updateRecordErrors', user);
+      });
     this.isEditing = false;
   }
 
