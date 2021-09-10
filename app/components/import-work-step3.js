@@ -1,12 +1,6 @@
 import Component from '@ember/component';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-
-
-
-
-
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   elementId: 'import-work-step3',
 
   didReceiveAttrs() {
@@ -14,12 +8,11 @@ export default Component.extend(CurrentUserMixin, {
       this.set('existingAnswers', []);
     }
 
-    if (!this.uploadedFiles) {
-      this.set('uploadedFiles', []);
-    }
+    // if (!this.uploadedFiles) {
+    //   this.set('uploadedFiles', []);
+    // }
 
     this._super(...arguments);
-
   },
 
   actions: {
@@ -57,7 +50,6 @@ export default Component.extend(CurrentUserMixin, {
       if (peeked) {
         peeked.destroyRecord();
       }
-    }
-  }
+    },
+  },
 });
-

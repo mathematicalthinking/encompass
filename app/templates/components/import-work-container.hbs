@@ -58,7 +58,7 @@
         {{/if}}
 
         {{#if showCreateWs}}
-          <ImportWorkStep5 @users={{users}} @selectedOwner={{selectedOwner}} @selectedFolderSet={{selectedFolderSet}} @createAssignmentValue={{createAssignmentValue}} @doCreateWs={{doCreateWs}} @selectedMode={{selectedMode}} @folderSets={{folderSets}} @store={{this.store}} @uploadedFiles={{uploadedFiles}} @answers={{answers}} @selectedProblem={{selectedProblem}} @selectedSection={{selectedSection}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @assignmentName={{assignmentName}} @onBack={{action "changeStep"}} @onProceed={{action "prepareReview"}} />
+          <ImportWorkStep5 @currentUser={{this.currentUser.user}} @users={{users}} @selectedOwner={{selectedOwner}} @selectedFolderSet={{selectedFolderSet}} @createAssignmentValue={{createAssignmentValue}} @doCreateWs={{doCreateWs}} @selectedMode={{selectedMode}} @folderSets={{folderSets}} @store={{this.store}} @uploadedFiles={{uploadedFiles}} @answers={{answers}} @selectedProblem={{selectedProblem}} @selectedSection={{selectedSection}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @assignmentName={{assignmentName}} @onBack={{action "changeStep"}} @onProceed={{action "prepareReview"}} />
         {{/if}}
 
         {{#if showReview}}

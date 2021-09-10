@@ -3,9 +3,8 @@ import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
 /*global _:false */
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   elementId: 'import-work-step5',
   creatingWs: equal('doCreateWs', true),
   creatingAssignment: equal('createAssignmentValue', true),

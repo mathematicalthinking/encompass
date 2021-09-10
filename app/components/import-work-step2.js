@@ -3,9 +3,8 @@ import { computed } from '@ember/object';
 /*global _:false */
 import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   elementId: 'import-work-step2',
   utils: service('utility-methods'),
   selectingClass: equal('selectedValue', true),
