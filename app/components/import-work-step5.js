@@ -3,9 +3,8 @@ import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
 /*global _:false */
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   elementId: 'import-work-step5',
   creatingWs: equal('doCreateWs', true),
   creatingAssignment: equal('createAssignmentValue', true),
@@ -122,6 +121,15 @@ export default Component.extend(CurrentUserMixin, {
   },
 
   actions: {
+    updateDoCreateWs: function (val) {
+      this.set('doCreateWs', val);
+    },
+    updateSelectedMode: function (val) {
+      this.set('selectedMode', val);
+    },
+    updateCreateAssignmentValue: function (val) {
+      this.set('createAssignmentValue', val);
+    },
     updateSelectizeSingle(val, $item, propToUpdate, model) {
       if (_.isNull($item)) {
         this.set(propToUpdate, null);

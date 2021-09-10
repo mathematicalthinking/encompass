@@ -317,6 +317,15 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
 
   actions: {
+    updateDoCreateLinkedWorkspaces: function (val) {
+      this.set('doCreateLinkedWorkspaces', val);
+    },
+    updateLinkedWorkspacesMode: function (val) {
+      this.set('linkedWorkspacesMode', val);
+    },
+    updateDoCreateParentWorkspace: function (val) {
+      this.set('doCreateParentWorkspace', val);
+    },
     validate: function () {
       const section = this.selectedSection;
       const problem = this.selectedProblem;

@@ -3,7 +3,7 @@
     <SelectizeInput @store={{this.store}} @inputId="collab-select" @maxItems={{1}} @initialOptions={{initialCollabOptions}} @selectedItemsHash={{selectedCollaborators}} @onItemAdd={{action "setCollab"}} @onItemRemove={{action "setCollab"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search by username" @preload="focus" />
   </div>
   <div class= "collab-settings global">
-    <RadioGroup @options={{globalItems}} @selectedValue={{globalPermissionValue}} />
+    <RadioGroup @options={{globalItems}} @selectedValue={{action "updateGlobalPermissionValue"}} />
   </div>
 
     <div class="collab-settings">

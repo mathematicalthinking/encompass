@@ -1,5 +1,5 @@
 <div class="collab-container">
-  <RadioGroup @options={{addTypeItems}} @selectedValue={{addType}} />
+  <RadioGroup @options={{addTypeItems}} @selectedValue={{action "updateAddType"}} />
   {{#if isBulkAdd}}
     <CheckboxList @items={{usersToAdd}} @selectedItems={{collabsToAdd}} @itemDisplayProp="username" @inputName="bulkAddCollabs" @header="Add users as collaborators" @noItemsMessage="All students have been added already" />
   {{else}}
@@ -9,7 +9,7 @@
   {{/if}}
   {{#unless isNoActionToTake}}
     <div class="collab-settings global">
-      <RadioGroup @options={{globalItems}} @selectedValue={{globalPermissionValue}} />
+      <RadioGroup @options={{globalItems}} @selectedValue={{action "updateGlobalPermissionValue"}} />
     </div>
   {{/unless}}
   <div class="collab-settings">

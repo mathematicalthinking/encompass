@@ -1,9 +1,8 @@
 import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { later } from '@ember/runloop';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   elementId: 'import-work-step6',
 
   shouldHideButtons: computed(
