@@ -41,7 +41,7 @@ export default Component.extend(ErrorHandlingMixin, {
       .flat();
   }),
   selectableStudents: computed('section.students.[]', function () {
-    return this.section.students.toArray().map((student) => {
+    return this.students.map((student) => {
       let data = { username: student.username, id: student.id };
       if (this.groupedStudents.includes(student.id)) {
         data.username += ' ✅';

@@ -151,35 +151,6 @@
               {{/if}}
             {{/unless}}
           </label>
-          <ul class="listing">
-            {{#each this.groups as |group|}}
-              {{#unless group.isTrashed}}
-              <li>
-                <strong>{{group.name}}</strong>
-                {{#if this.addGroup}}
-                  <i title="Edit" {{action "editGroupName" group}} class="far fa-edit"></i>
-                  <i class="far fa-times-circle" aria-hidden="true" {{action 'deleteGroup' group}}></i>
-                {{/if}}
-                {{#if this.addGroup}}
-                  <SelectizeInput @store={{this.store}} @inputId="{{group.id}}" @maxItems={{1}}
-                  @initialOptions={{this.selectableStudents}} @onItemAdd={{action "updateGroupStudents" group}} @model="user" @isAsync={{false}}
-                  @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
-                {{/if}}
-                <ul class="listing">
-                  {{#each group.students as |student|}}
-                    <li>{{student.username}}
-                      {{#if this.addGroup}}
-                        <button class="trash-button" {{action 'updateGroup' group student}}>
-                        <i class="far fa-times-circle" aria-hidden="true"></i>
-                        </button>
-                      {{/if}}
-                    </li>
-                  {{/each}}
-                </ul>
-              </li>
-              {{/unless}}
-            {{/each}}
-          </ul>
           {{#if this.addGroup}}
             <div class="update-students">
               <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
@@ -197,6 +168,13 @@
               <button {{action "saveGroup"}}>Save Group</button>
             </div>
           {{/if}}
+          <ul class="listing">
+            {{#each this.groups as |group|}}
+              {{#unless group.isTrashed}}
+                <GroupInfo @group={{group}} @addGroup={{this.addGroup}} @selectableStudents={{this.selectableStudents}} @editGroupName={{action "editGroupName"}} @updateGroupStudents={{action "updateGroupStudents"}} @updateGroup={{action "updateGroup"}} @deleteGroup={{action "deleteGroup"}} />
+              {{/unless}}
+            {{/each}}
+          </ul>
         </div>
 
     </fieldset>

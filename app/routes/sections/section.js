@@ -10,11 +10,13 @@ export default class SectionsSectionRoute extends AuthenticatedRoute {
     let groups = await this.store.query('group', {
       section: params.section_id,
     });
+    const students = await section.get('students').toArray();
     const currentUser = await this.modelFor('application');
     return hash({
       section,
       currentUser,
       groups,
+      students,
     });
   }
 
