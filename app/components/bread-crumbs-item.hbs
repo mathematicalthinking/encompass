@@ -1,0 +1,8 @@
+<li class="bread-crumbs-item {{if this.isSelected "active-crumb"}}" {{action "onSelect" @item}}>
+  <abbr title="{{unbound this.titleText}}">
+    {{@displayValue}}
+  </abbr>
+  {{#if @isStarredItem}}
+    <span class="required-star">*</span>
+  {{/if}}
+</li>
