@@ -232,7 +232,7 @@ export default class UserNewComponent extends UserSignupComponent {
   }
 
   @action cancelNew() {
-    this.router.transitionTo('user');
+    this.router.transitionTo('users');
   }
 
   @action setOrg(org) {
