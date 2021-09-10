@@ -1,20 +1,12 @@
-/*global _:false */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import _ from 'underscore';
 
-export default Component.extend({
-  classNames: ['radio-group-item'],
-
-  isSelected: computed('selectedValue', 'value', function () {
-    const selectedValue = this.selectedValue;
-    const value = this.value;
-
-    return _.isEqual(selectedValue, value);
-  }),
-
-  actions: {
-    onClick(val) {
-      this.onClick(val);
-    },
-  },
-});
+export default class RadioGroupItem extends Component {
+  get isSelected() {
+    return _.isEqual(this.args.selectedValue, this.args.value);
+  }
+  @action onClick(val) {
+    this.args.onClick(val);
+  }
+}
