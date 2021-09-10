@@ -125,11 +125,11 @@
              Create Student Workspaces Now?
             </span>
           </label>
-          <RadioGroup @options={{this.linkedWsOptions}} @selectedValue={{this.doCreateLinkedWorkspaces}} />
+          <RadioGroup @options={{this.linkedWsOptions}} @selectedValue={{action "updateDoCreateLinkedWorkspaces"}} />
 
           {{#if this.showLinkedWsForm}}
             <div class="group-selection">
-              <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{this.linkedWorkspacesMode}} @noWidth={{true}} />
+              <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{action "updateLinkedWorkspacesMode"}} @noWidth={{true}} />
             </div>
             {{#if this.linkedWorkspacesMode}}
               <LinkedWorkspacesNew @isDisplayOnly={{true}} @students={{this.sectionGroups}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} />
@@ -148,7 +148,7 @@
             Create Parent Workspace Now?
             </span>
           </label>
-          <RadioGroup @options={{this.parentWsOptions}} @selectedValue={{this.doCreateParentWorkspace}} />
+          <RadioGroup @options={{this.parentWsOptions}} @selectedValue={{action "updateDoCreateParentWorkspace"}} />
 
           {{#if this.showParentWsForm}}
             <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} />

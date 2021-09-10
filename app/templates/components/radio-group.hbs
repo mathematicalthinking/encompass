@@ -1,16 +1,18 @@
-{{#if this.options.groupLabel}}
-  <p class="radio-group-label">
-    {{this.options.groupLabel}}
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{this.options.info}}>
-      <i class="fas fa-info-circle info-icon"></i>
-    </span>
-  </p>
-{{/if}}
+<div class="radio-group">
+  {{#if @options.groupLabel}}
+    <p class="radio-group-label">
+      {{@options.groupLabel}}
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{@options.info}}>
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+  {{/if}}
 
-{{#each this.options.inputs as |input|}}
- <ol class="radio-list">
-    <li>
-      <RadioGroupItem @noWidth={{this.noWidth}} @selectedValue={{this.selectedValue}} @label={{input.label}} @name={{this.options.groupName}} @isRequired={{this.options.isRequired}} @value={{input.value}} @moreInfo={{this.input.moreInfo}} @onClick={{action "setValue"}} />
-    </li>
-  </ol>
-{{/each}}
+  {{#each @options.inputs as |input|}}
+  <ol class="radio-list">
+      <li>
+        <RadioGroupItem @noWidth={{@noWidth}} @selectedValue={{@selectedValue}} @label={{input.label}} @name={{@options.groupName}} @isRequired={{@options.isRequired}} @value={{input.value}} @moreInfo={{@input.moreInfo}} @onClick={{action "setValue"}} />
+      </li>
+    </ol>
+  {{/each}}
+</div>
