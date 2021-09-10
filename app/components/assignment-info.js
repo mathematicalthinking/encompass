@@ -24,17 +24,6 @@ export default Component.extend(ErrorHandlingMixin, {
     return assignment.get('section.content');
   }),
 
-  assignmentStudents: computed(
-    'currentAssignment.students.content',
-    function () {
-      let assignment = this.currentAssignment;
-      if (!assignment) {
-        return [];
-      }
-      return assignment.get('students.content');
-    }
-  ),
-
   didReceiveAttrs: function () {
     if (this.get('assignment.id') !== this.get('currentAssignment.id')) {
       this.set('currentAssignment', this.assignment);

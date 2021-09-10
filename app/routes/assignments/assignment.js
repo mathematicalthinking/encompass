@@ -14,10 +14,12 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
       section: section,
       isTrashed: false,
     });
+    const students = await assignment.get('students');
     return hash({
       currentUser,
       assignment,
       groups,
+      students,
     });
   }
   @action toAnswerInfo(answer) {
