@@ -38,6 +38,9 @@ export default Component.extend(CurrentUserMixin, {
   }),
 
   actions: {
+    updateSelectedValue: function (val) {
+      this.set('selectedValue', val);
+    },
     setSelectedSection(val, $item) {
       if (!val) {
         return;

@@ -375,6 +375,24 @@ export default Component.extend({
   },
 
   actions: {
+    updateSubmissions(val) {
+      this.set('submissions', val);
+    },
+    updateGlobal(val) {
+      this.set('global', val);
+    },
+    updateSelections(val) {
+      this.set('selections', val);
+    },
+    updateComments(val) {
+      this.set('comments', val);
+    },
+    updateFolders(val) {
+      this.set('folders', val);
+    },
+    updateFeedback(val) {
+      this.set('feedback', val);
+    },
     savePermissions() {
       if (this.saveError) {
         this.set('saveError', null);

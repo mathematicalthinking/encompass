@@ -122,6 +122,15 @@ export default Component.extend(CurrentUserMixin, {
   },
 
   actions: {
+    updateDoCreateWs: function (val) {
+      this.set('doCreateWs', val);
+    },
+    updateSelectedMode: function (val) {
+      this.set('selectedMode', val);
+    },
+    updateCreateAssignmentValue: function (val) {
+      this.set('createAssignmentValue', val);
+    },
     updateSelectizeSingle(val, $item, propToUpdate, model) {
       if (_.isNull($item)) {
         this.set(propToUpdate, null);

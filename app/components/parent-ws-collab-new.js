@@ -125,6 +125,12 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   actions: {
+    updateAddType: function (val) {
+      this.set('addType', val);
+    },
+    updateGlobalPermissionValue: function (val) {
+      this.set('globalPermissionValue', val);
+    },
     setCollab(val, $item) {
       if (!val) {
         return;

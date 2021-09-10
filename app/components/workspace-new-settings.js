@@ -168,6 +168,12 @@ export default Component.extend({
     return hash;
   }),
   actions: {
+    updateSelectedMode: function (val) {
+      this.set('selectedMode', val);
+    },
+    updateSelectedSubmissionSettings: function (val) {
+      this.set('selectedSubmissionSettings', val);
+    },
     updateSelectizeSingle(val, $item, propToUpdate, model) {
       if (_.isNull($item)) {
         this.set(propToUpdate, null);

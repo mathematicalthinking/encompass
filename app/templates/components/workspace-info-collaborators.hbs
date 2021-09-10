@@ -77,7 +77,7 @@
                 {{/unless}}
                 <div class="row-value">
                   {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                    <RadioGroup @options={{this.globalItems}} @selectedValue={{this.globalPermissionValue}} />
+                    <RadioGroup @options={{this.globalItems}} @selectedValue={{action "updateGlobalPermissionValue"}} />
                   {{else}}
                     {{collab-permissions collaborator.global}}
                     {{#unless (is-equal collaborator.global 'custom')}}
