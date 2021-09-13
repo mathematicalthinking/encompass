@@ -4,12 +4,17 @@ import { inject as service } from '@ember/service';
 
 export default class UsersUserRoute extends Route {
   @service store;
-  model(params) {
+  async model(params) {
+    const user = await this.store.findRecord('user', params.user_id);
+    const userSections = await this.store.query('section', {
+      ids: user.sections.map((section) => section.sectionId),
+    });
     let currentUser = this.modelFor('application');
     return hash({
       currentUser,
-      user: this.store.findRecord('user', params.user_id),
-      organizations: this.store.findAll('organization'),
+      user,
+      userSections,
+      organizations: await this.store.findAll('organization'),
     });
   }
 }

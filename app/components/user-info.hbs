@@ -115,7 +115,7 @@
       <tr>
         <td>User's Sections</td>
         <td>
-          {{#each this.userSections as |section|}}
+          {{#each @userSections as |section|}}
           <p><LinkTo @route="sections.section" @model={{section.id}}>{{section.name}}</LinkTo></p>
           {{/each}}
         </td>
