@@ -7,7 +7,6 @@ import $ from 'jquery';
 
 export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
   @service('sweet-alert') alert;
-  @tracked fieldType = 'password';
   @tracked postErrors = [];
   @tracked password = '';
   @tracked confirmPassword = '';
@@ -18,6 +17,10 @@ export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
 
   get doPasswordsMatch() {
     return this.password === this.confirmPassword;
+  }
+
+  get fieldType() {
+    return this.showingPassword ? 'text' : 'password';
   }
 
   @action resetPassword() {
@@ -74,15 +77,8 @@ export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
     this.args.cancelReset();
   }
 
-  @action showPassword() {
-    var isShowingPassword = this.showingPassword;
-    if (isShowingPassword === false) {
-      this.showingPassword = true;
-      this.fieldType = 'text';
-    } else {
-      this.showingPassword = false;
-      this.fieldType = 'password';
-    }
+  @action toggleShowingPassword() {
+    this.showingPassword = !this.showingPassword;
   }
 
   @action resetErrors() {
