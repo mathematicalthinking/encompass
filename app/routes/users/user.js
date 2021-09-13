@@ -1,5 +1,6 @@
 import Route from '@ember/routing/route';
 import { hash } from 'rsvp';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default class UsersUserRoute extends Route {
@@ -16,5 +17,8 @@ export default class UsersUserRoute extends Route {
       userSections,
       organizations: await this.store.findAll('organization'),
     });
+  }
+  @action refresh() {
+    this.refresh();
   }
 }

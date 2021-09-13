@@ -46,7 +46,6 @@ export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
     })
       .then((res) => {
         if (res._id && res._id === ssoId) {
-          this.args.handleResetSuccess(res);
           this.alert.showToast(
             'success',
             'Password Reset',
@@ -55,6 +54,7 @@ export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
             false,
             null
           );
+          this.args.handleResetSuccess(res);
         } else {
           let err;
           if (res.info) {
