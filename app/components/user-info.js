@@ -94,17 +94,17 @@ export default class UserInfoComponent extends Component {
     return !this.args.user.isEmailConfirmed;
   }
 
-  get userSections() {
-    let user = this.args.user;
-    let sections = user.sections;
-    let sectionIds = sections.map((section) => {
-      return section.sectionId;
-    });
+  // get userSections() {
+  //   let user = this.args.user;
+  //   let sections = user.sections;
+  //   let sectionIds = sections.map((section) => {
+  //     return section.sectionId;
+  //   });
 
-    return this.store.query('section', {
-      ids: sectionIds,
-    });
-  }
+  //   return this.store.query('section', {
+  //     ids: sectionIds,
+  //   });
+  // }
 
   // removeSuccessMessages: observer(
   //   'isResettingPassword',
