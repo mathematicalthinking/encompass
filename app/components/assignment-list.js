@@ -7,26 +7,21 @@ export default Component.extend({
 
   didReceiveAttrs: function () {
     this._super();
-    this.filterAssignments();
+    // this.filterAssignments();
   },
 
-  filterAssignments: observer(
-    'assignments.@each.isTrashed',
-    'currentUser.isStudent',
-    function () {
-      let currentUser = this.currentUser;
-      let filtered = this.assignments.filter((assignment) => {
-        return assignment.id && !assignment.get('isTrashed');
-      });
-      filtered = filtered.sortBy('createDate').reverse();
-      // if (currentUser.get('accountType') === 'S') {
-      //   // what is this if block for?
-      //   // console.log('current user is a student');
-      // }
-      // let currentDate = new Date();
-      this.set('assignmentList', filtered);
-    }
-  ),
+  // filterAssignments: observer(
+  //   'assignments.@each.isTrashed',
+  //   'currentUser.isStudent',
+  //   function () {
+  //     let currentUser = this.currentUser;
+  //     let filtered = this.assignments.filter((assignment) => {
+  //       return assignment.id && !assignment.get('isTrashed');
+  //     });
+  //     filtered = filtered.sortBy('createDate').reverse();
+  //     this.set('assignmentList', filtered);
+  //   }
+  // ),
 
   yourList: computed(
     'assignments.@each.isTrashed',
