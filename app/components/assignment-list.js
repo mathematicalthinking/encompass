@@ -1,5 +1,4 @@
 import Component from '@glimmer/component';
-import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default class AssignmentListComponent extends Component {
@@ -42,5 +41,14 @@ export default class AssignmentListComponent extends Component {
       return userId !== assigmentCreatorId && !assignment.get('isTrashed');
     });
     return pdList.sortBy('createDate').reverse();
+  }
+
+  get studentList() {
+    let currentUser = this.args.currentUser;
+    return currentUser
+      .get('assignments')
+      .toArray()
+      .filter((assignment) => assignment.name && !assignment.isTrashed)
+      .reverse();
   }
 }

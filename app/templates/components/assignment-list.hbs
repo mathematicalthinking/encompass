@@ -1,3 +1,4 @@
+{{log this.studentList}}
 <section class="list-side">
   <header class="list-header">
     <h1>Assignments</h1>
@@ -39,8 +40,8 @@
       {{#if @currentUser.isStudent}}
         <h2>{{@currentUser.username}}'s Assignments</h2>
         <ul class="your-assignments">
-          {{#if @assignmentList}}
-            {{#each @assignmentList as |assignment|}}
+          {{#if this.studentList}}
+            {{#each this.studentList as |assignment|}}
               {{#if assignment.name}}
                 <li>
                   <LinkTo @route="assignments.assignment" @model={{assignment.id}} @classNames="assignment-new-link">{{assignment.name}}</LinkTo>
