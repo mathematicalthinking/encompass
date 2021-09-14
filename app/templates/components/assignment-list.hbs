@@ -1,7 +1,7 @@
 <section class="list-side">
   <header class="list-header">
     <h1>Assignments</h1>
-    {{#unless this.currentUser.isStudent}}
+    {{#unless @currentUser.isStudent}}
       <LinkTo @route="assignments.new" @id="assignment-new-btn" class="new-link-btn">
         <span>Create Assignment</span>
         <i class="fas fa-plus"></i>
@@ -12,8 +12,8 @@
 
   <section>
     <nav class="list-box">
-      {{#unless this.currentUser.isStudent}}
-        <h2>{{this.currentUser.username}}'s Assignments</h2>
+      {{#unless @currentUser.isStudent}}
+        <h2>{{@currentUser.username}}'s Assignments</h2>
         <ul class="your-assignments">
           {{#if this.yourList}}
             {{#each this.yourList as |assignment|}}
@@ -36,11 +36,11 @@
           {{/if}}
         </ul>
       {{/unless}}
-      {{#if this.currentUser.isStudent}}
-        <h2>{{this.currentUser.username}}'s Assignments</h2>
+      {{#if @currentUser.isStudent}}
+        <h2>{{@currentUser.username}}'s Assignments</h2>
         <ul class="your-assignments">
-          {{#if this.assignmentList}}
-            {{#each this.assignmentList as |assignment|}}
+          {{#if @assignmentList}}
+            {{#each @assignmentList as |assignment|}}
               {{#if assignment.name}}
                 <li>
                   <LinkTo @route="assignments.assignment" @model={{assignment.id}} @classNames="assignment-new-link">{{assignment.name}}</LinkTo>
@@ -58,7 +58,7 @@
           {{/if}}
         </ul>
       {{/if}}
-      {{#if this.currentUser.isAdmin}}
+      {{#if @currentUser.isAdmin}}
         <h2>All Assignments</h2>
         <ul class="admin-assignments">
           {{#if this.adminList}}
@@ -82,8 +82,8 @@
           {{/if}}
         </ul>
       {{/if}}
-      {{#if this.currentUser.isPdAdmin}}
-        <h2>{{this.currentUser.organization.name}} Assignments</h2>
+      {{#if @currentUser.isPdAdmin}}
+        <h2>{{@currentUser.organization.name}} Assignments</h2>
         <ul class="pd-assignments">
           {{#if this.pdList}}
             {{#each this.pdList as |assignment|}}
