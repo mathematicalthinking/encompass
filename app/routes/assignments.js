@@ -8,11 +8,9 @@ export default class AssignmentsRoute extends AuthenticatedRoute {
   async model() {
     let currentUser = this.modelFor('application');
     let assignments = await this.store.findAll('assignment');
-    let users = await this.store.findAll('user');
     return hash({
       currentUser,
       assignments,
-      users,
     });
   }
 }
