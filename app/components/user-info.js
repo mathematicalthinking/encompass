@@ -20,6 +20,7 @@ export default class UserInfoComponent extends Component {
   @tracked updateRecordErrors = [];
   @tracked createRecordErrors = [];
   @tracked findRecordErrors = [];
+  @tracked isResettingPassword = false;
 
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
@@ -434,6 +435,7 @@ export default class UserInfoComponent extends Component {
   @action cancel() {
     this.isEditing = false;
     this.noOrgModal = false;
+    this.isResettingPassword = false;
   }
 
   @action handleCancelForm() {
@@ -441,19 +443,10 @@ export default class UserInfoComponent extends Component {
   }
 
   @action handleResetSuccess(updatedUser) {
-    const user = this.args.user;
-
-    return this.store
-      .findRecord('user', user.id)
-      .then((user) => {
-        this.args.user = user;
-        this.isResettingPassword = false;
-        this.resetPasswordSuccess = true;
-        this.errorHandling.removeMessages('findRecordErrors');
-      })
-      .catch((err) => {
-        this.errorHandling.handleErrors(err, 'findRecordErrors');
-      });
+    this.isResettingPassword = false;
+    this.resetPasswordSuccess = true;
+    this.errorHandling.removeMessages('findRecordErrors');
+    this.args.refresh();
   }
 
   @action clearTour() {
