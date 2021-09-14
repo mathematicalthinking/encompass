@@ -4,8 +4,6 @@ import { computed } from '@ember/object';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(CurrentUserMixin, {
-  elementId: 'assignment-report',
-
   sortCriterion: {
     name: 'A-Z',
     sortParam: { param: 'username', direction: 'asc' },
