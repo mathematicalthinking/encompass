@@ -5,13 +5,7 @@
   </header>
   <section>
     <nav class="list-box">
-      <h2>Your account</h2>
-      <ul class="listing your-account">
-        <li class="{{if @currentUser.isAuthorized 'is-authorized'}} {{if @currentUser.isAdmin 'is-admin'}}">
-          <LinkTo @route="users.user" @model={{@currentUser.id}} @classNames="user">{{@currentUser.username}}</LinkTo>
-        </li>
-      </ul>
-      
+      <CollapsibleList @title="Your account" @user={{@currentUser}} />      
       {{#if @currentUser.isTeacher}}
         <CollapsibleList @title="Students in your Classes" @users={{this.yourStudents}} @noInfo="You don't have any students yet" />
         <CollapsibleList @title="Users you have created" @users={{this.yourUsers}} @noInfo="You haven't created any users yet" />
