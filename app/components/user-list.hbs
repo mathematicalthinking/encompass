@@ -20,7 +20,7 @@
       <CollapsibleList @title="Waiting for Authorization"  @users={{this.unauthUsers}} @noInfo="There are no users waiting to be authorized" />
       {{#if @currentUser.isAdmin}}
         <CollapsibleList @title="Administrators" @users={{this.adminUsers}} @noInfo="There are no admins" />
-        <CollapsibleList @title="Pd Admins" @user={{this.pdUsers}} @noInfo="There are no Pd Admins yet" />
+        <CollapsibleList @title="Pd Admins" @users={{this.pdUsers}} @noInfo="There are no Pd Admins yet" />
       {{/if}}
         <CollapsibleList @title="Teacher" @users={{this.teacherUsers}} @noInfo="There are no teachers yet" />
         <CollapsibleList @title="Students" @users={{this.studentUsers}} @noInfo="There are no students yet" />

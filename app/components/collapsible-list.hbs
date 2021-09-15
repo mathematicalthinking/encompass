@@ -1,4 +1,4 @@
-<h2 {{on "click" this.toggleIsOpen}}>{{@title}}</h2>
+<h2 {{on "click" this.toggleIsOpen}} class="collapsible">{{@title}}</h2>
 {{#if this.isOpen}}
   <ul class="listing">
     {{#if @users}}
