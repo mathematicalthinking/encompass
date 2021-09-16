@@ -20,6 +20,20 @@ export default Component.extend(ErrorHandlingMixin, {
   createRecordErrors: [],
   queryErrors: [],
   linkedWorkspacesMode: false,
+  tooltips: {
+    class: 'Select which class you want to assign the problem',
+    problem: 'Select which problem you want to assign',
+    dateAssigned:
+      'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
+    dueDate:
+      'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
+    name:
+      'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
+    linkedWorkspaces:
+      'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
+    parentWorkspace:
+      'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
+  },
   constraints: {
     section: {
       presence: { allowEmpty: false },
@@ -130,21 +144,6 @@ export default Component.extend(ErrorHandlingMixin, {
     let that = this;
     this.set('nameDate', moment().format('MMM Do YYYY'));
     this._super(...arguments);
-    let tooltips = {
-      class: 'Select which class you want to assign the problem',
-      problem: 'Select which problem you want to assign',
-      dateAssigned:
-        'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
-      dueDate:
-        'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
-      name:
-        'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
-      linkedWorkspaces:
-        'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
-      parentWorkspace:
-        'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
-    };
-    this.set('tooltips', tooltips);
     // $(function () {
     //   $('input#assignedDate').daterangepicker(
     //     {
@@ -171,7 +170,6 @@ export default Component.extend(ErrorHandlingMixin, {
     //   );
     //   $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
     // });
-    this.set('cachedProblems', this.store.findAll('problem'));
   },
 
   didReceiveAttrs: function () {
@@ -204,7 +202,9 @@ export default Component.extend(ErrorHandlingMixin, {
       //   .data('daterangepicker')
       //   .startDate.format('MMM Do YYYY');
       let nameDate = assignedDate
-        ? moment(new Date(assignedDate)).format('MMM Do YYYY')
+        ? moment(new Date(assignedDate.replace(/-/g, '/'))).format(
+            'MMM Do YYYY'
+          )
         : moment(new Date()).format('MMM Do YYYY');
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
