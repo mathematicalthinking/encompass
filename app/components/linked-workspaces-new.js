@@ -37,12 +37,12 @@ export default class LinkedWorkspacesNew extends Component {
       return;
     }
 
-    this.loading.handleLoadingMessage(
-      this,
-      'start',
-      'isRequestInProgress',
-      'doShowLoadingMessage'
-    );
+    // this.loading.handleLoadingMessage(
+    //   this,
+    //   'start',
+    //   'isRequestInProgress',
+    //   'doShowLoadingMessage'
+    // );
 
     assignment.linkedWorkspacesRequest = {
       ...assignment.linkedWorkspacesRequest,
@@ -55,12 +55,12 @@ export default class LinkedWorkspacesNew extends Component {
     return assignment
       .save()
       .then((assignment) => {
-        this.loading.handleLoadingMessage(
-          this,
-          'end',
-          'isRequestInProgress',
-          'doShowLoadingMessage'
-        );
+        // this.loading.handleLoadingMessage(
+        //   this,
+        //   'end',
+        //   'isRequestInProgress',
+        //   'doShowLoadingMessage'
+        // );
 
         let createWorkspaceError = assignment.get(
           'linkedWorkspacesRequest.error'
@@ -74,12 +74,12 @@ export default class LinkedWorkspacesNew extends Component {
         this.send('cancel');
       })
       .catch((err) => {
-        this.loading.handleLoadingMessage(
-          this,
-          'start',
-          'isRequestInProgress',
-          'doShowLoadingMessage'
-        );
+        // this.loading.handleLoadingMessage(
+        //   this,
+        //   'start',
+        //   'isRequestInProgress',
+        //   'doShowLoadingMessage'
+        // );
 
         this.createWorkspaceError = err;
       });

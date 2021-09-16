@@ -1,33 +1,35 @@
-<div class="ws-new name">
-  <p class="input-label">
-    Workspace Name
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this workspace">
-      <i class="fas fa-info-circle info-icon"></i>
-    </span>
-  </p>
-  <div>
-    <Input @id="parent-ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
-  </div>
-{{#each workspaceNameErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut workspaceNameErrors) null}} />
-{{/each}}
-</div>
-
-{{#unless isDisplayOnly}}
-  <div class="create-ws-error">
-    {{#if createWorkspaceError}}
-      <ErrorBox @error={{createWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut createWorkspaceError) null}} />
-    {{/if}}
-  </div>
-
-  {{#if doShowLoadingMessage}}
-    <p class="loading-message">Request in Progress... Thank you for your patience.</p>
-  {{/if}}
-
-  {{#unless isRequestIsInProgress}}
-    <div class="button-row">
-      <button class="primary-button" data-test="add-parent-ws-create" {{action "create"}}>Create Workspace</button>
-      <button class="primary-button cancel-button" data-test="add-parent-ws-cancel" {{action "cancel"}}>Cancel</button>
+<div id="parent-workspace-new">
+  <div class="ws-new name">
+    <p class="input-label">
+      Workspace Name
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this workspace">
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+    <div>
+      <Input @id="parent-ws-new-name" class="single-text-input" @type="text" @value={{this.workspaceName}} placeholder="Provide a name for your workspace" />
     </div>
+  {{#each this.workspaceNameErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut this.workspaceNameErrors) null}} />
+  {{/each}}
+  </div>
+
+  {{#unless @isDisplayOnly}}
+    <div class="create-ws-error">
+      {{#if this.createWorkspaceError}}
+        <ErrorBox @error={{createWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut this.createWorkspaceError) null}} />
+      {{/if}}
+    </div>
+
+    {{#if this.doShowLoadingMessage}}
+      <p class="loading-message">Request in Progress... Thank you for your patience.</p>
+    {{/if}}
+
+    {{#unless this.isRequestIsInProgress}}
+      <div class="button-row">
+        <button class="primary-button" data-test="add-parent-ws-create" {{action "create"}}>Create Workspace</button>
+        <button class="primary-button cancel-button" data-test="add-parent-ws-cancel" {{action "cancel"}}>Cancel</button>
+      </div>
+    {{/unless}}
   {{/unless}}
-{{/unless}}
+</div>

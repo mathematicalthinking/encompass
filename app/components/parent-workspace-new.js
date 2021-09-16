@@ -1,104 +1,95 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
-  elementId: 'parent-workspace-new',
-  loading: service('loading-display'),
+export default class ParentWorkspaceNewComponent extends Component {
+  @service('loading-display') loading;
+  @service('current-user') currentUser;
+  @tracked isRequestInProgess = false;
+  @tracked doShowLoadingMessage = false;
+  @tracked workspaceName = '';
+  @tracked isCreating = true;
 
-  isRequestInProgess: false,
-  doShowLoadingMessage: false,
+  constructor() {
+    super(...arguments);
+    this.workspaceName = this.defaultName;
+  }
 
-  didReceiveAttrs() {
-    this.set('workspaceName', this.defaultName);
-  },
+  get defaultName() {
+    let base = 'Parent Workspace: ';
+    let assignmentName = this.args.assignmentName || this.args.assignment.name;
 
-  defaultName: computed(
-    'assignment.name',
-    'currentUser.username',
-    'assignmentName',
-    function () {
-      let base = 'Parent Workspace: ';
-      let assignmentName = this.get('assignment.name') || this.assignmentName;
-
-      if (assignmentName) {
-        return base + assignmentName;
-      }
-
-      return base + this.get('currentUser.username');
+    if (assignmentName) {
+      return base + assignmentName;
     }
-  ),
 
-  actions: {
-    cancel() {
-      if (this.onCancel) {
-        this.onCancel();
-      } else {
-        this.set('isCreating', false);
-      }
-    },
-    create() {
-      let childWorkspaces = this.childWorkspaces || [];
-      if (!childWorkspaces) {
-        return this.set(
-          'createWorkspaceError',
-          'Must provide child workspaces to create parent workspace'
+    return base + this.currentUser.user.username;
+  }
+
+  @action cancel() {
+    if (this.args.onCancel) {
+      this.args.onCancel();
+    } else {
+      this.isCreating = false;
+    }
+  }
+  @action create() {
+    let childWorkspaces = this.args.childWorkspaces || [];
+    if (!childWorkspaces) {
+      return (this.createWorkspaceError =
+        'Must provide child workspaces to create parent workspace');
+    }
+
+    // this.loading.handleLoadingMessage(
+    //   this,
+    //   'start',
+    //   'isRequestInProgress',
+    //   'doShowLoadingMessage'
+    // );
+
+    let assignment = this.assignment;
+    let data = {
+      childWorkspaces: childWorkspaces.mapBy('id'),
+      doAutoUpdateFromChildren: true,
+      name: this.workspaceName || this.defaultName,
+      doCreate: true,
+    };
+
+    assignment.parentWorkspaceRequest = data;
+
+    // make sure linked workspaces request is not set to create
+    assignment.linkedWorkspacesRequest = { doCreate: false };
+    return assignment
+      .save()
+      .then((results) => {
+        // this.loading.handleLoadingMessage(
+        //   this,
+        //   'end',
+        //   'isRequestInProgress',
+        //   'doShowLoadingMessage'
+        // );
+
+        let createWorkspaceError = results.get('parentWorkspaceRequest.error');
+        let createdWorkspace = results.get(
+          'parentWorkspaceRequest.createdWorkspace'
         );
-      }
 
-      this.loading.handleLoadingMessage(
-        this,
-        'start',
-        'isRequestInProgress',
-        'doShowLoadingMessage'
-      );
+        if (createWorkspaceError) {
+          return this.set('createWorkspaceError', createWorkspaceError);
+        }
 
-      let assignment = this.assignment;
-      let data = {
-        childWorkspaces: childWorkspaces.mapBy('id'),
-        doAutoUpdateFromChildren: true,
-        name: this.workspaceName || this.defaultName,
-        doCreate: true,
-      };
-
-      assignment.set('parentWorkspaceRequest', data);
-
-      // make sure linked workspaces request is not set to create
-      assignment.set('linkedWorkspacesRequest', { doCreate: false });
-      return assignment
-        .save()
-        .then((results) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isRequestInProgress',
-            'doShowLoadingMessage'
-          );
-
-          let createWorkspaceError = results.get(
-            'parentWorkspaceRequest.error'
-          );
-          let createdWorkspace = results.get(
-            'parentWorkspaceRequest.createdWorkspace'
-          );
-
-          if (createWorkspaceError) {
-            return this.set('createWorkspaceError', createWorkspaceError);
-          }
-
-          this.handleResults(createdWorkspace);
-          this.send('cancel');
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isRequestInProgress',
-            'doShowLoadingMessage'
-          );
-          this.set('createWorkspaceError', err);
-        });
-    },
-  },
-});
+        this.handleResults(createdWorkspace);
+        this.send('cancel');
+      })
+      .catch((err) => {
+        // this.loading.handleLoadingMessage(
+        //   this,
+        //   'end',
+        //   'isRequestInProgress',
+        //   'doShowLoadingMessage'
+        // );
+        this.set('createWorkspaceError', err);
+      });
+  }
+}
