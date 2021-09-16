@@ -70,8 +70,8 @@ export default class LinkedWorkspacesNew extends Component {
           return (this.createWorkspaceError = createWorkspaceError);
         }
 
-        this.handleResults(assignment);
-        this.send('cancel');
+        this.args.handleResults(assignment);
+        this.cancel();
       })
       .catch((err) => {
         // this.loading.handleLoadingMessage(

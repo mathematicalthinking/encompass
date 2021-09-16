@@ -48,7 +48,7 @@ export default class ParentWorkspaceNewComponent extends Component {
     //   'doShowLoadingMessage'
     // );
 
-    let assignment = this.assignment;
+    let assignment = this.args.assignment;
     let data = {
       childWorkspaces: childWorkspaces.mapBy('id'),
       doAutoUpdateFromChildren: true,
@@ -76,11 +76,11 @@ export default class ParentWorkspaceNewComponent extends Component {
         );
 
         if (createWorkspaceError) {
-          return this.set('createWorkspaceError', createWorkspaceError);
+          return (this.createWorkspaceError = createWorkspaceError);
         }
 
-        this.handleResults(createdWorkspace);
-        this.send('cancel');
+        this.args.handleResults(createdWorkspace);
+        this.cancel();
       })
       .catch((err) => {
         // this.loading.handleLoadingMessage(
@@ -89,7 +89,7 @@ export default class ParentWorkspaceNewComponent extends Component {
         //   'isRequestInProgress',
         //   'doShowLoadingMessage'
         // );
-        this.set('createWorkspaceError', err);
+        this.createWorkspaceError = err;
       });
   }
 }
