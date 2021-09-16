@@ -3,7 +3,12 @@ import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default Component.extend({
+  elementId: 'linked-workspaces-new',
   loading: service('loading-display'),
+
+  didReceiveAttrs() {
+    this.set('workspaceName', this.defaultName);
+  },
 
   defaultName: computed(
     'assignment.name',
@@ -17,6 +22,10 @@ export default Component.extend({
       return `${assignmentName} (${sectionName})`;
     }
   ),
+
+  previewName: computed('defaultName', 'workspaceName', function () {
+    return this.workspaceName || this.defaultName;
+  }),
 
   actions: {
     cancel() {

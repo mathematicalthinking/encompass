@@ -1,4 +1,3 @@
-<div id="linked-workspaces-new">
   {{#unless isDisplayOnly}}
     <p class="info">
       Clicking "Create Workspaces" will generate a private workspace for each student in this assignment (who is not the owner of an existing linked assignment). The workspaces will automatically update as new submissions and revisions are submitted for this assignment.
@@ -21,7 +20,7 @@
       </p>
       <ul>
         {{#each students as |student|}}
-          <li>{{if student.username student.username student.name}}: {{this.defaultName}}</li>
+          <li>{{if student.username student.username student.name}}: {{previewName}}</li>
         {{/each}}
       </ul>
     </div>
@@ -49,4 +48,3 @@
   {{/unless}}
 
 {{/unless}}
-</div>
