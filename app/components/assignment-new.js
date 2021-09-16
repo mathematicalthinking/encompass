@@ -14,7 +14,6 @@ export default Component.extend(ErrorHandlingMixin, {
   selectedSection: null,
   selectedProblem: null,
   alert: service('sweet-alert'),
-  sectionList: null,
   problemList: null,
   formId: null,
   createRecordErrors: [],
@@ -173,12 +172,6 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   didReceiveAttrs: function () {
-    if (this.sections) {
-      const sections = this.sections.filter((section) => {
-        return !section.get('isTrashed') && section.id;
-      });
-      this.set('sectionList', sections);
-    }
     let selectedProblem = this.selectedProblem;
     if (selectedProblem && selectedProblem.get('isForAssignment')) {
       this.set('FromProblemInfo', true);
