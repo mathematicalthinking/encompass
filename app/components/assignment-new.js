@@ -221,8 +221,10 @@ export default Component.extend(ErrorHandlingMixin, {
       createDate: new Date(),
       section,
       problem,
-      assignedDate: assignedDate ? new Date(assignedDate) : '',
-      dueDate: dueDate ? new Date(dueDate) : '',
+      assignedDate: assignedDate
+        ? new Date(assignedDate.replace(/-/g, '/'))
+        : '',
+      dueDate: dueDate ? new Date(dueDate.replace(/-/g, '/')) : '',
       name,
     });
 
