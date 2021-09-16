@@ -44,6 +44,7 @@ export default Component.extend(ErrorHandlingMixin, {
       presence: false,
     },
   },
+  nameDate: moment().format('MMM Do YYYY'),
 
   doCreateLinkedWorkspaces: false,
   doCreateParentWorkspace: false,
@@ -141,7 +142,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   init: function () {
     let that = this;
-    this.set('nameDate', moment().format('MMM Do YYYY'));
+
     this._super(...arguments);
     // $(function () {
     //   $('input#assignedDate').daterangepicker(

@@ -88,7 +88,6 @@
   {{/if}}
     {{#if this.showLinkedWsForm}}
       {{#if this.linkedByGroup}}
-        {{log this.groups}}
         <LinkedWorkspacesNew @students={{this.groupsWithoutWorkspaces}} @assignment={{this.assignment}} @section={{this.section}} @problem={{this.problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
       {{else}}
         <LinkedWorkspacesNew @students={{this.studentsWithoutWorkspaces}} @assignment={{this.assignment}} @section={{this.section}} @problem={{this.problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
