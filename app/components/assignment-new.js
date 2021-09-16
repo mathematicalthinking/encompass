@@ -91,14 +91,15 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     ],
   };
 
-  get sectionGroups() {
+  @tracked sectionGroups = [];
+
+  @action updateSectionGroups() {
     if (this.selectedSection) {
-      return this.store.query('group', {
+      this.sectionGroups = this.store.query('group', {
         section: this.selectedSection.id,
         isTrashed: false,
       });
     }
-    return [];
   }
 
   get hasSelectedSection() {
@@ -151,6 +152,10 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     if (selectedProblem && selectedProblem.isForAssignment) {
       this.fromProblemInfo = true;
       this.selectedProblem = selectedProblem;
+    }
+    if (this.args.fromSectionInfo) {
+      this.fromSectionInfo = true;
+      this.selectedSection = this.args.selectedSection;
     }
   }
 

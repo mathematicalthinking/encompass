@@ -12,11 +12,13 @@ export default class SectionsSectionRoute extends AuthenticatedRoute {
     });
     const students = await section.get('students').toArray();
     const currentUser = await this.modelFor('application');
+    const cachedProblems = await this.store.findAll('problem');
     return hash({
       section,
       currentUser,
       groups,
       students,
+      cachedProblems,
     });
   }
 
