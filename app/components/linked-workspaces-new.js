@@ -1,93 +1,87 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default Component.extend({
-  elementId: 'linked-workspaces-new',
-  loading: service('loading-display'),
+export default class LinkedWorkspacesNew extends Component {
+  @service('loading-display') loading;
+  @tracked workspaceName = '';
+  @tracked isCreating = true;
+  constructor() {
+    super(...arguments);
+    this.workspaceName = this.defaultName;
+  }
 
-  didReceiveAttrs() {
-    this.set('workspaceName', this.defaultName);
-  },
+  get defaultName() {
+    let assignmentName = this.args.assignmentName || this.args.assignment.name;
+    let sectionName = this.args.sectionName || this.args.section.name;
 
-  defaultName: computed(
-    'assignment.name',
-    'section.name',
-    'assignmentName',
-    'sectionName',
-    function () {
-      let assignmentName = this.get('assignment.name') || this.assignmentName;
-      let sectionName = this.get('section.name') || this.sectionName;
+    return `${assignmentName} (${sectionName})`;
+  }
 
-      return `${assignmentName} (${sectionName})`;
-    }
-  ),
-
-  previewName: computed('defaultName', 'workspaceName', function () {
+  get previewName() {
     return this.workspaceName || this.defaultName;
-  }),
+  }
 
-  actions: {
-    cancel() {
-      if (this.onCancel) {
-        this.onCancel();
-      } else {
-        this.set('isCreating', false);
-      }
-    },
-    create() {
-      let assignment = this.assignment;
+  @action cancel() {
+    if (this.args.onCancel) {
+      this.args.onCancel();
+    } else {
+      this.isCreating = false;
+    }
+  }
+  @action create() {
+    let assignment = this.args.assignment;
 
-      if (!assignment) {
-        return;
-      }
+    if (!assignment) {
+      return;
+    }
 
-      this.loading.handleLoadingMessage(
-        this,
-        'start',
-        'isRequestInProgress',
-        'doShowLoadingMessage'
-      );
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isRequestInProgress',
+      'doShowLoadingMessage'
+    );
 
-      assignment.linkedWorkspacesRequest = {
-        ...assignment.linkedWorkspacesRequest,
-        doAllowSubmissionUpdates: true,
-        name: this.workspaceName || this.defaultName,
-        doCreate: true,
-      };
+    assignment.linkedWorkspacesRequest = {
+      ...assignment.linkedWorkspacesRequest,
+      doAllowSubmissionUpdates: true,
+      name: this.workspaceName || this.defaultName,
+      doCreate: true,
+    };
 
-      assignment.set('parentWorkspaceRequest', { doCreate: false });
-      return assignment
-        .save()
-        .then((assignment) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isRequestInProgress',
-            'doShowLoadingMessage'
-          );
+    assignment.parentWorkspaceRequest = { doCreate: false };
+    return assignment
+      .save()
+      .then((assignment) => {
+        this.loading.handleLoadingMessage(
+          this,
+          'end',
+          'isRequestInProgress',
+          'doShowLoadingMessage'
+        );
 
-          let createWorkspaceError = assignment.get(
-            'linkedWorkspacesRequest.error'
-          );
+        let createWorkspaceError = assignment.get(
+          'linkedWorkspacesRequest.error'
+        );
 
-          if (createWorkspaceError) {
-            return this.set('createWorkspaceError', createWorkspaceError);
-          }
+        if (createWorkspaceError) {
+          return (this.createWorkspaceError = createWorkspaceError);
+        }
 
-          this.handleResults(assignment);
-          this.send('cancel');
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'start',
-            'isRequestInProgress',
-            'doShowLoadingMessage'
-          );
+        this.handleResults(assignment);
+        this.send('cancel');
+      })
+      .catch((err) => {
+        this.loading.handleLoadingMessage(
+          this,
+          'start',
+          'isRequestInProgress',
+          'doShowLoadingMessage'
+        );
 
-          this.set('createWorkspaceError', err);
-        });
-    },
-  },
-});
+        this.createWorkspaceError = err;
+      });
+  }
+}
