@@ -19,7 +19,7 @@ export default Component.extend(ErrorHandlingMixin, {
   formId: null,
   createRecordErrors: [],
   queryErrors: [],
-  linkedWorkspacesMode: true,
+  linkedWorkspacesMode: false,
   constraints: {
     section: {
       presence: { allowEmpty: false },
