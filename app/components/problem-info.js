@@ -762,6 +762,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
 
   @action toggleAssignment() {
     this.showAssignment = true;
+    this.args.problem.isForAssignment = true;
     this.problemList.pushObject(this.args.problem);
     var scr = $('#outlet')[0].scrollHeight;
     $('#outlet').animate({ scrollTop: scr }, 100);
