@@ -5,10 +5,10 @@
 {{#each this.initialLoadErrors as |error|}}
     <p class="error-message">{{error}}</p>
 {{/each}}
-{{#if this.currentUser.isStudent}}
-  <AssignmentInfoStudent @assignment={{this.assignment}} @problem={{this.currentProblem}} @section={{this.currentSection}} @answerList={{this.assignment.answers.content}} />
+{{#if @currentUser.isStudent}}
+  <AssignmentInfoStudent @assignment={{@assignment}} @problem={{this.currentProblem}} @section={{this.currentSection}} @answerList={{@assignment.answers.content}} />
 {{else}}
-  <AssignmentInfoTeacher @groups={{this.groups}} @sections={{this.sections}} @assignment={{this.assignment}} @currentUser={{this.currentUser}} @details={{this.details}} @studentList={{this.assignmentStudents}} @section={{this.currentSection}} @problem={{this.currentProblem}} @linkedWorkspaces={{this.assignment.linkedWorkspaces.content}} @parentWorkspace={{this.assignment.parentWorkspace.content}} />
+  <AssignmentInfoTeacher @groups={{@groups}} @sections={{@sections}} @assignment={{@assignment}} @currentUser={{@currentUser}} @studentList={{@assignmentStudents}} @section={{this.currentSection}} @problem={{this.currentProblem}} @linkedWorkspaces={{@assignment.linkedWorkspaces.content}} @parentWorkspace={{@assignment.parentWorkspace.content}} />
 {{/if}}
 
 
