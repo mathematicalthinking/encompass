@@ -1,7 +1,8 @@
+<div id="answer-info">
   <header class="info-header" id="answer-info-header">
     <h3>Answer Details
-      {{#if showHideButton}}
-        <i {{action (mut answer) null}} class="far fa-eye-slash"></i>
+      {{#if @showHideButton}}
+        <i {{action (mut @answer) null}} class="far fa-eye-slash"></i>
       {{/if}}
       </h3>
 
@@ -11,28 +12,29 @@
   <section class="answer-details">
     <div class="info-detail brief-summary">
       <label>Brief Summary:</label>
-      <p>{{answer.answer}}</p>
+      <p>{{@answer.answer}}</p>
     </div>
     <div class="info-detail explanation">
       <label>Explanation:</label>
-      {{{answer.explanation}}}
+      {{{@answer.explanation}}}
     </div>
     <div class="info-detail students">
       <label>Contributors:</label>
       <ul>
-        {{#each answer.students as |student|}}
+        {{#each @answer.students as |student|}}
           <li>{{student.username}}</li>
         {{/each}}
-        {{#each answer.studentNames as |studentName|}}
+        {{#each @answer.studentNames as |studentName|}}
           <li>{{studentName}}</li>
         {{/each}}
       </ul>
     </div>
   </section>
 
-  {{#if answer.additionalImage}}
+  {{#if @answer.additionalImage}}
   <div class="assignmentImage info-detail">
     <label>Additional Upload:</label>
-    <img src="{{{answer.additionalImage.imageData}}}" alt={{{format-date answer.createDate 'MMMM Do YYYY'}}} />
+    <img src="{{{@answer.additionalImage.imageData}}}" alt={{{format-date @answer.createDate 'MMMM Do YYYY'}}} />
   </div>
   {{/if}}
+</div>
