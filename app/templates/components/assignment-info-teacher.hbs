@@ -1,7 +1,7 @@
 <div id="assignment-info-teacher" class={{if this.isEditing 'is-editing'}}>
   <div class="info-flex-item assignment-name">
     {{#if this.isEditing}}
-      <Input @type="text" @value={{this.assignmentName}} />
+      <Input @type="text" @value={{this.assignment.name}} />
     {{else}}
       {{this.assignment.name}}
     {{/if}}
@@ -19,7 +19,7 @@
       Assigned
     </p>
     {{#if this.showAssignedDateInput}}
-      <Input @name="daterange" @id="assignedDate" @type="date" @value={{this.assignedDateEditVal}} />
+      <Input @name="daterange" @id="assignedDate" @type="date" @value={{(format-date this.assignment.assignedDate "YYYY-MM-DD")}} @change={{action "updateAssignedDate"}} />
     {{else}}
       <p class="value">
         {{format-date this.assignment.assignedDate "Do MMM YYYY"}}
@@ -31,7 +31,7 @@
       Due
     </p>
     {{#if this.showDueDateInput}}
-      <Input @id="dueDate" @name="daterange" @type="date" @value={{this.dueDateEditVal}} />
+      <Input @id="dueDate" @name="daterange" @type="date" @value={{(format-date this.assignment.dueDate "YYYY-MM-DD")}} @change={{action "updateDueDate"}} />
     {{else}}
       <p class="value">
         {{format-date this.assignment.dueDate "Do MMM YYYY"}}
@@ -142,7 +142,6 @@
       ></i>
     </p>
     {{#if this.areSubmissionsExpanded}}
-    {{log this.assignment.reportDetails}}
       <AssignmentReport @details={{this.assignment.reportDetails}} @students={{this.studentList}} />
     {{/if}}
   </div>

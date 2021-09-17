@@ -3,7 +3,6 @@ import { computed } from '@ember/object';
 import { and, equal, gt, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 /* eslint-disable complexity */
-import { isEqual } from '@ember/utils';
 import $ from 'jquery';
 import moment from 'moment';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
@@ -73,34 +72,6 @@ export default Component.extend(ErrorHandlingMixin, {
         }
         this.handleErrors(err, 'dataFetchErrors');
       });
-  },
-
-  didReceiveAttrs: function () {
-    const assignment = this.assignment;
-    if (this.get('currentAssignment.id') !== this.get('assignment.id')) {
-      this.set('currentAssignment', assignment);
-
-      this.set('isEditing', false);
-
-      let dateFormat = this.htmlDateFormat;
-      let dueDate = this.assignment.get('dueDate');
-      let assignedDate = this.assignment.get('assignedDate');
-      this.set('selectedProblem', this.problem);
-      this.set('selectedSection', this.section);
-
-      this.set('assignmentName', assignment.get('name'));
-
-      if (dueDate) {
-        this.set('formattedDueDate', moment(dueDate).format(dateFormat));
-      }
-
-      if (assignedDate) {
-        this.set(
-          'formattedAssignedDate',
-          moment(assignedDate).format(dateFormat)
-        );
-      }
-    }
   },
 
   isYourOwn: computed('assignment.id', 'currentUser.id', function () {
@@ -356,52 +327,6 @@ export default Component.extend(ErrorHandlingMixin, {
 
   actions: {
     editAssignment: function () {
-      let assignedDate = this.get('assignment.assignedDate');
-      let dueDate = this.get('assignment.dueDate');
-      let format = this.htmlDateFormat;
-
-      let autoUpdateAssigned =
-        assignedDate !== null && assignedDate !== undefined;
-      let autoUpdateDue = dueDate !== null && dueDate !== undefined;
-
-      // $(function () {
-      //   $('input#assignedDate').daterangepicker(
-      //     {
-      //       singleDatePicker: true,
-      //       showDropdowns: true,
-      //       autoUpdateInput: autoUpdateAssigned,
-      //     },
-      //     function (start, end, label) {
-      //       let assignedDate = start.format(format);
-      //       $('input#assignedDate').val(assignedDate);
-      //     }
-      //   );
-      //   $('input#dueDate').daterangepicker(
-      //     {
-      //       singleDatePicker: true,
-      //       showDropdowns: true,
-      //       autoUpdateInput: autoUpdateDue,
-      //     },
-      //     function (start, end, label) {
-      //       let dueDate = start.format(format);
-      //       $('input#dueDate').val(dueDate);
-      //     }
-      //   );
-
-      //   let assignedInputVal = assignedDate
-      //     ? moment(assignedDate).format(format)
-      //     : '';
-      //   let dueInputVal = dueDate ? moment(dueDate).format(format) : '';
-
-      this.set('assignedDateEditVal', this.formattedAssignedDate);
-      this.set('dueDateEditVal', this.formattedDueDate);
-
-      //   $('input#assignedDate').val(assignedInputVal);
-      //   $('input#dueDate').val(dueInputVal);
-
-      //   $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
-      // });
-
       this.set('isEditing', true);
     },
 
@@ -481,10 +406,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
       const assignment = this.assignment;
 
-      let selectedProblem = this.selectedProblem;
-      let selectedSection = this.selectedSection;
-
-      if (!selectedProblem || !selectedSection) {
+      if (!this.assignment.get('problem') || !this.assignment.get('section')) {
         return this.alert.showToast(
           'error',
           'Class and Problem are required',
@@ -495,47 +417,17 @@ export default Component.extend(ErrorHandlingMixin, {
         );
       }
 
-      let currentProblem = this.problem;
-      let currentSection = this.section;
-
-      let didProblemChange = !isEqual(selectedProblem, currentProblem);
-      let didSectionChange = !isEqual(selectedSection, currentSection);
-
-      let didRelationshipsChange = didProblemChange || didSectionChange;
-
-      const name = this.assignmentName;
-      assignment.set('name', name);
-
-      if (didProblemChange) {
-        assignment.set('problem', selectedProblem);
-      }
-      if (didSectionChange) {
-        assignment.set('section', selectedSection);
-      }
-
       let dueDate;
       let assignedDate;
       let endDate;
       let startDate;
-
-      let htmlDateFormat = this.htmlDateFormat;
-
-      let currentAssignedDate = this.get('assignment.assignedDate');
-      let currentDueDate = this.get('assignment.dueDate');
-
-      let currentAssignedFmt = currentAssignedDate
-        ? moment(currentAssignedDate).format(htmlDateFormat)
-        : undefined;
-      let currentDueFmt = currentDueDate
-        ? moment(currentDueDate).format(htmlDateFormat)
-        : undefined;
 
       let assignedDateEditVal = this.assignedDateEditVal;
       let dueDateEditVal = this.dueDateEditVal;
 
       if (this.canEditAssignedDate) {
         if (assignedDateEditVal) {
-          startDate = this.assignedDateEditVal;
+          startDate = this.assignment.assignedDate;
 
           assignedDate = this.getMongoDate(startDate);
         }
@@ -545,7 +437,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
       if (this.canEditDueDate) {
         if (dueDateEditVal) {
-          endDate = this.dueDateEditVal;
+          endDate = this.assignment.dueDate;
 
           dueDate = this.getEndDate(endDate);
         } else {
@@ -562,22 +454,7 @@ export default Component.extend(ErrorHandlingMixin, {
         }
       }
 
-      let areDueDatesSame =
-        (!currentDueDate && !dueDateEditVal) ||
-        currentDueFmt === dueDateEditVal;
-      let areAssignedDatesSame =
-        (!currentAssignedDate && !assignedDateEditVal) ||
-        currentAssignedFmt === assignedDateEditVal;
-
-      if (!areDueDatesSame) {
-        assignment.set('dueDate', dueDate);
-      }
-
-      if (!areAssignedDatesSame) {
-        assignment.set('assignedDate', assignedDate);
-      }
-
-      if (assignment.get('hasDirtyAttributes') || didRelationshipsChange) {
+      if (assignment.get('hasDirtyAttributes')) {
         // never creating workspaces from this function
         assignment.set('linkedWorkspacesRequest', { doCreate: false });
         assignment.set('parentWorkspaceRequest', { doCreate: false });
@@ -610,7 +487,7 @@ export default Component.extend(ErrorHandlingMixin, {
           false,
           null
         );
-
+        this.assignment.rollbackAttributes();
         this.set('isEditing', false);
         $('.daterangepicker').remove();
       }
@@ -642,6 +519,7 @@ export default Component.extend(ErrorHandlingMixin, {
         this.set('isEditing', false);
         $('.daterangepicker').remove();
       }
+      this.assignment.rollbackAttributes();
     },
     updateSelectizeSingle(val, $item, propToUpdate, model) {
       let errorProp = `${model}FormErrors`;
@@ -686,6 +564,18 @@ export default Component.extend(ErrorHandlingMixin, {
         return;
       }
       this.toggleProperty(propName);
+    },
+    updateAssignedDate(event) {
+      this.assignment.set(
+        'assignedDate',
+        new Date(event.target.value.replace(/-/g, '/'))
+      );
+    },
+    updateDueDate(event) {
+      this.assignment.set(
+        'dueDate',
+        new Date(event.target.value.replace(/-/g, '/'))
+      );
     },
   },
 });
