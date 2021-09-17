@@ -140,7 +140,10 @@
       {{action "toggleProperty" "areSubmissionsExpanded"}}
     ></i>
   </p>
-  <AssignmentReport @details={{this.assignment.reportDetails}} @assignment={{this.assignment}} @students={{this.studentList}} @hidden={{this.areSubmissionsHidden}} />
+  {{#if this.areSubmissionsExpanded}}
+  {{log this.assignment.reportDetails}}
+    <AssignmentReport @details={{this.assignment.reportDetails}} @students={{this.studentList}} />
+  {{/if}}
 </div>
 <div class="info-flex-item actions">
   {{#if this.showEditButton}}

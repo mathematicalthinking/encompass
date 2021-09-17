@@ -305,21 +305,25 @@ export default Component.extend(ErrorHandlingMixin, {
     return this.utils.isValidMongoId(workspaceId);
   }),
 
-  displayListsOptions: computed('areLinkedWsExpanded', function () {
-    let areLinkedWsExpanded = this.areLinkedWsExpanded;
-    let areSubmissionsExpanded = this.areSubmissionsExpanded;
+  displayListsOptions: computed(
+    'areLinkedWsExpanded',
+    'areSubmissionsExpanded',
+    function () {
+      let areLinkedWsExpanded = this.areLinkedWsExpanded;
+      let areSubmissionsExpanded = this.areSubmissionsExpanded;
 
-    let toHide = 'fas fa-chevron-down';
-    let toShow = 'fas fa-chevron-left';
-    return {
-      linkedWs: {
-        icon: areLinkedWsExpanded ? toHide : toShow,
-      },
-      submissions: {
-        icon: areSubmissionsExpanded ? toHide : toShow,
-      },
-    };
-  }),
+      let toHide = 'fas fa-chevron-down';
+      let toShow = 'fas fa-chevron-left';
+      return {
+        linkedWs: {
+          icon: areLinkedWsExpanded ? toHide : toShow,
+        },
+        submissions: {
+          icon: areSubmissionsExpanded ? toHide : toShow,
+        },
+      };
+    }
+  ),
 
   studentsWithoutWorkspaces: computed(
     'studentList.[]',
