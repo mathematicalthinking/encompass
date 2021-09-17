@@ -1,28 +1,28 @@
 <div id="assignment-info-teacher" class={{if this.isEditing 'is-editing'}}>
   <div class="info-flex-item assignment-name">
     {{#if this.isEditing}}
-      <Input @type="text" @value={{this.assignment.name}} />
+      <Input @type="text" @value={{@assignment.name}} />
     {{else}}
-      {{this.assignment.name}}
+      {{@assignment.name}}
     {{/if}}
   </div>
   <div class="info-flex-item creation-details">
     by
-    <LinkTo @route="users.user" @model={{this.assignment.createdBy.id}}>
-      {{this.assignment.createdBy.username}}
+    <LinkTo @route="users.user" @model={{@assignment.createdBy.id}}>
+      {{@assignment.createdBy.username}}
     </LinkTo>
     on
-    {{format-date this.assignment.createDate "Do MMM YYYY"}}
+    {{format-date @assignment.createDate "Do MMM YYYY"}}
   </div>
   <div class="info-flex-item single-line assigned-date">
     <p class="label">
       Assigned
     </p>
     {{#if this.showAssignedDateInput}}
-      <Input @name="daterange" @id="assignedDate" @type="date" @value={{(format-date this.assignment.assignedDate "YYYY-MM-DD")}} @change={{action "updateAssignedDate"}} />
+      <Input @name="daterange" @id="assignedDate" @type="date" @value={{(format-date @assignment.assignedDate "YYYY-MM-DD")}} @change={{action "updateAssignedDate"}} />
     {{else}}
       <p class="value">
-        {{format-date this.assignment.assignedDate "Do MMM YYYY"}}
+        {{format-date @assignment.assignedDate "Do MMM YYYY"}}
       </p>
     {{/if}}
   </div>
@@ -31,10 +31,10 @@
       Due
     </p>
     {{#if this.showDueDateInput}}
-      <Input @id="dueDate" @name="daterange" @type="date" @value={{(format-date this.assignment.dueDate "YYYY-MM-DD")}} @change={{action "updateDueDate"}} />
+      <Input @id="dueDate" @name="daterange" @type="date" @value={{(format-date @assignment.dueDate "YYYY-MM-DD")}} @change={{action "updateDueDate"}} />
     {{else}}
       <p class="value">
-        {{format-date this.assignment.dueDate "Do MMM YYYY"}}
+        {{format-date @assignment.dueDate "Do MMM YYYY"}}
       </p>
     {{/if}}
   </div>
@@ -43,10 +43,10 @@
       Class
     </p>
     {{#if this.showSectionInput}}
-      <SelectizeInput @inputId="assn-new-section-select" @initialOptions={{this.sectionOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @propToUpdate="selectedSection" @placeholder="Search for a section by name" @model="section" @store={{this.store}} />
+      <SelectizeInput @inputId="assn-new-section-select" @initialOptions={{this.sectionOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @propToUpdate="section" @placeholder="Search for a section by name" @model="section" @store={{this.store}} />
     {{else}}
-      <LinkTo @route="sections.section" @model={{this.section.id}}>
-        {{this.section.name}}
+      <LinkTo @route="sections.section" @model={{@section.id}}>
+        {{@section.name}}
       </LinkTo>
     {{/if}}
   </div>
@@ -55,10 +55,10 @@
       Problem
     </p>
     {{#if this.showProblemInput}}
-      <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="selectedProblem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
+      <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="problem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
     {{else}}
-      <LinkTo @route="problems.problem" @model={{this.problem}}>
-        {{this.problem.title}}
+      <LinkTo @route="problems.problem" @model={{@problem}}>
+        {{@problem.title}}
       </LinkTo>
     {{/if}}
   </div>
@@ -72,7 +72,7 @@
     </p>
     {{#if this.hasLinkedWorkspaces}}
       <ul class={{unless this.areLinkedWsExpanded "hidden"}}>
-        {{#each this.linkedWorkspaces as |ws|}}
+        {{#each @linkedWorkspaces as |ws|}}
           <li>
             <LinkTo @route="workspace.work" @model={{ws.id}}>
               {{ws.name}}
@@ -89,9 +89,9 @@
     {{/if}}
       {{#if this.showLinkedWsForm}}
         {{#if this.linkedByGroup}}
-          <LinkedWorkspacesNew @students={{this.groupsWithoutWorkspaces}} @assignment={{this.assignment}} @section={{this.section}} @problem={{this.problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
+          <LinkedWorkspacesNew @students={{this.groupsWithoutWorkspaces}} @assignment={{@assignment}} @section={{@section}} @problem={{@problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
         {{else}}
-          <LinkedWorkspacesNew @students={{this.studentsWithoutWorkspaces}} @assignment={{this.assignment}} @section={{this.section}} @problem={{this.problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
+          <LinkedWorkspacesNew @students={{this.studentsWithoutWorkspaces}} @assignment={{@assignment}} @section={{@section}} @problem={{@problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
         {{/if}}
       {{/if}}
       {{#if this.showAddLinkedWsBtn}}
@@ -112,9 +112,9 @@
     <p class="label">
       Parent Workspace
     </p>
-    {{#if this.parentWorkspace}}
-      <LinkTo @route="workspace.work" @model={{this.parentWorkspace.id}}>
-        {{this.parentWorkspace.name}}
+    {{#if @parentWorkspace}}
+      <LinkTo @route="workspace.work" @model={{@parentWorkspace.id}}>
+        {{@parentWorkspace.name}}
       </LinkTo>
     {{else}}
       <p class="value no-parent-ws">
@@ -122,7 +122,7 @@
       </p>
     {{/if}}
     {{#if this.showParentWsForm}}
-      <ParentWorkspaceNew @childWorkspaces={{this.assignment.linkedWorkspaces}} @assignment={{this.assignment}} @section={{this.section}} @problem={{this.problem}} @onCancel={{action (mut showParentWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedParentWs"}} />
+      <ParentWorkspaceNew @childWorkspaces={{@assignment.linkedWorkspaces}} @assignment={{@assignment}} @section={{@section}} @problem={{@problem}} @onCancel={{action (mut showParentWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedParentWs"}} />
     {{/if}}
     {{#if this.showAddParentWsBtn}}
       <button data-test="add-parent-ws" class="primary-button" {{action (mut showParentWsForm) true}}>Add Parent
@@ -142,7 +142,7 @@
       ></i>
     </p>
     {{#if this.areSubmissionsExpanded}}
-      <AssignmentReport @details={{this.assignment.reportDetails}} @students={{this.studentList}} />
+      <AssignmentReport @details={{@assignment.reportDetails}} @students={{@studentList}} />
     {{/if}}
   </div>
   <div class="info-flex-item actions">
