@@ -11,7 +11,6 @@ export default Component.extend(ErrorHandlingMixin, {
   formattedDueDate: null,
   formattedAssignedDate: null,
   isEditing: false,
-  // showReport: false,
   isPreparingReport: false,
   htmlDateFormat: 'YYYY-MM-DD',
   displayDateFormat: 'MMM Do YYYY',
@@ -57,21 +56,6 @@ export default Component.extend(ErrorHandlingMixin, {
     // only need to get these on init because user won't be creating new sections or problems from this component
 
     this.set('cachedProblems', this.store.peekAll('problem'));
-
-    return this.store
-      .findAll('section')
-      .then((sections) => {
-        if (this.isDestroying || this.isDestroyed) {
-          return;
-        }
-        this.set('sections', sections);
-      })
-      .catch((err) => {
-        if (this.isDestroying || this.isDestroyed) {
-          return;
-        }
-        this.handleErrors(err, 'dataFetchErrors');
-      });
   },
 
   isYourOwn: computed('assignment.id', 'currentUser.id', function () {
