@@ -9,12 +9,9 @@ import moment from 'moment';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'assignment-info-teacher',
-  classNameBindings: ['isEditing:is-editing'],
   formattedDueDate: null,
   formattedAssignedDate: null,
   isEditing: false,
-  isDisplaying: not('isEditing'),
   // showReport: false,
   isPreparingReport: false,
   htmlDateFormat: 'YYYY-MM-DD',
@@ -26,9 +23,7 @@ export default Component.extend(ErrorHandlingMixin, {
   areLinkedWsExpanded: true,
   showParentWsForm: false,
   showLinkedWsForm: false,
-  areLinkedWsHidden: not('areLinkedWsExpanded'),
   areSubmissionsExpanded: true,
-  areSubmissionsHidden: not('areSubmissionsExpanded'),
   showProblemInput: and('isEditing', 'canEditProblem'),
   showSectionInput: and('isEditing', 'canEditProblem'),
   showAssignedDateInput: and('isEditing', 'canEditAssignedDate'),
