@@ -34,9 +34,5 @@ export default Component.extend(ErrorHandlingMixin, {
     toAssignments: function () {
       this.sendAction('toAssignments');
     },
-
-    toAnswerInfo: function (answer) {
-      this.sendAction('toAnswerInfo', answer);
-    },
   },
 });

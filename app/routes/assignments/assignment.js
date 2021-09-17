@@ -22,9 +22,6 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
       students,
     });
   }
-  @action toAnswerInfo(answer) {
-    this.transitionTo('answer', answer);
-  }
   @action toAssignments() {
     this.transitionTo('assignments');
   }

@@ -1,63 +1,64 @@
-<section class="assignment-info-student">
-  {{#if this.assignment.name}}
-  <div class="info-detail">
-    <label for="assignment">Assignment Name:</label>
-    <p>{{this.assignment.name}}</p>
-  </div>
-  {{/if}}
-  <div class="info-detail">
-    <label>Problem Name:</label>
-    <p>{{this.assignment.problem.title}}</p>
-  </div>
-  <div class="info-detail">
-    <label>Class:</label>
-    <p><LinkTo @route="sections.section" @model={{this.assignment.section.id}}> {{this.assignment.section.name}}</LinkTo></p>
-  </div>
-
-  <div class="info-detail">
-    <label>Assigned Date:</label>
-    {{#if this.assignment.assignedDate}}
-      <p>{{format-date this.assignment.assignedDate 'MMM Do YYYY'}}</p>
-    {{else}}
-      <p>N/A</p>
+<div id="assignment-info-student">
+  <section class="assignment-info-student">
+    {{#if @assignment.name}}
+    <div class="info-detail">
+      <label for="assignment">Assignment Name:</label>
+      <p>{{@assignment.name}}</p>
+    </div>
     {{/if}}
-  </div>
+    <div class="info-detail">
+      <label>Problem Name:</label>
+      <p>{{@assignment.problem.title}}</p>
+    </div>
+    <div class="info-detail">
+      <label>Class:</label>
+      <p><LinkTo @route="sections.section" @model={{@assignment.section.id}}> {{@assignment.section.name}}</LinkTo></p>
+    </div>
 
-  <div class="info-detail">
-    <label>Due Date:</label>
-    {{#if this.assignment.dueDate}}
-    <p>{{format-date this.assignment.dueDate 'MMM Do YYYY'}}</p>
-    {{else}}
-      <p>N/A</p>
+    <div class="info-detail">
+      <label>Assigned Date:</label>
+      {{#if @assignment.assignedDate}}
+        <p>{{format-date @assignment.assignedDate 'MMM Do YYYY'}}</p>
+      {{else}}
+        <p>N/A</p>
+      {{/if}}
+    </div>
+
+    <div class="info-detail">
+      <label>Due Date:</label>
+      {{#if @assignment.dueDate}}
+      <p>{{format-date @assignment.dueDate 'MMM Do YYYY'}}</p>
+      {{else}}
+        <p>N/A</p>
+      {{/if}}
+    </div>
+    <div class="info-detail">
+      <label>Problem Statement:</label>
+      <p>{{{@assignment.problem.text}}}</p>
+    </div>
+    {{#if @assignment.problem.image}}
+    <div class="assignmentImage info-detail">
+      <label>Problem Image:</label>
+      <img src="{{{@assignment.problem.image.imageData}}}" alt={{@problem.title}}/>
+    </div>
     {{/if}}
-  </div>
-  <div class="info-detail">
-    <label>Problem Statement:</label>
-    <p>{{{this.assignment.problem.text}}}</p>
-  </div>
-  {{#if this.assignment.problem.image}}
-  <div class="assignmentImage info-detail">
-    <label>Problem Image:</label>
-    <img src="{{{this.assignment.problem.image.imageData}}}" alt={{this.problem.title}}/>
-  </div>
-  {{/if}}
-</section>
-{{#each this.loadAnswerErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "loadAnswerErrors" error}} />
-{{/each}}
-{{#if this.isResponding}}
-  <AnswerNew @assignment={{this.assignment}} @toAnswerInfo={{action "toAnswerInfo"}} @cancelResponse={{action "cancelResponse"}} @displayAnswer={{action "displayAnswer"}} @section={{this.section}} @problem={{this.problem}} @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
+  </section>
+  {{#each this.loadAnswerErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "loadAnswerErrors" error}} />
+  {{/each}}
+  {{#if this.isResponding}}
+    <AnswerNew @assignment={{@assignment}} @cancelResponse={{action "cancelResponse"}} @section={{@section}} @problem={{@problem}} @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
   {{/if}}
 
-{{#if this.isRevising}}
-  <AnswerNew @assignment={{this.assignment}} @isRevision={{true}} @priorAnswer={{this.priorAnswer}} @section={{this.section}} @problem={{this.problem}} @toAnswerInfo={{action "toAnswerInfo"}} @cancelResponse={{action "cancelResponse"}} @displayAnswer="displayAnswer" @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
-{{/if}}
-{{#if this.showReviseButton}}
-  <button class="primary-button revise" {{action 'reviseAssignmentResponse'}}>Revise</button>
-{{/if}}
-{{#if this.showRespondButton}}
-  <button class="primary-button respond" {{action 'beginAssignmentResponse'}}>Share Your Ideas</button>
-{{/if}}
+  {{#if this.isRevising}}
+    <AnswerNew @assignment={{@assignment}} @isRevision={{true}} @priorAnswer={{this.priorAnswer}} @section={{@section}} @problem={{@problem}} @cancelResponse={{action "cancelResponse"}} @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
+  {{/if}}
+  {{#if this.showReviseButton}}
+    <button class="primary-button revise" {{action 'reviseAssignmentResponse'}}>Revise</button>
+  {{/if}}
+  {{#if this.showRespondButton}}
+    <button class="primary-button respond" {{action 'beginAssignmentResponse'}}>Share Your Ideas</button>
+  {{/if}}
 
   <div class="info-msg-container">
     {{#if this.sortedList.length}}
@@ -81,15 +82,9 @@
       </section>
       <section class="past-answer-view">
         {{#if this.displayedAnswer}}
-          <AnswerInfo @answer={{this.displayedAnswer}} @assignment={{this.assignment}} @problem={{this.problem}} @showHideButton={{true}} />
+          <AnswerInfo @answer={{this.displayedAnswer}} @assignment={{@assignment}} @problem={{@problem}} @showHideButton={{true}} />
         {{/if}}
       </section>
     </div>
   {{/if}}
-
-
-
-
-
-
-
+</div>
