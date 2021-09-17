@@ -1,7 +1,8 @@
-<header id="answernewheader">
-  <h2>{{this.mainHeaderDisplayText}}</h2>
-  <div class="clear"></div>
-</header>
+<div id="answer-new">
+  <header id="answernewheader">
+    <h2>{{if this.mainHeaderText this.mainHeaderText 'Create New Answer'}}</h2>
+    <div class="clear"></div>
+  </header>
 
   <section class="third submissions">
     <form id='newanswerform' class='properForm'>
@@ -81,7 +82,7 @@
   {{#unless this.isCreatingAnswer}}
     <section class="submit">
       <span>
-        <button class="primary-button create" data-test="submit-answer" {{action 'validate'}}>{{this.createButtonDisplayText}}</button>
+        <button class="primary-button create" data-test="submit-answer" {{action 'validate'}}>{{if this.createButtonText this.createButtonText 'Create Answer'}}</button>
       </span>
       <span class="cancelResponse">
         <button class="action_button cancel-button" {{action 'cancelResponse'}}>Cancel</button>
@@ -102,3 +103,4 @@
   {{#each this.uploadErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
+</div>

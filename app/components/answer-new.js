@@ -1,14 +1,12 @@
 import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
+import { computed } from '@ember/object';
 /*global _:false */
-import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import { all, reject, resolve } from 'rsvp';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'answer-new',
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
   currentUser: service('current-user'),
@@ -66,20 +64,6 @@ export default Component.extend(ErrorHandlingMixin, {
 
   tooLargeExplanationMsg: computed('totalSizeLimitDisplay', function () {
     return `The total size of your submission (text and/or images) exceeds the size limit of ${this.totalSizeLimitDisplay}. Please remove or resize any large images and try again.`;
-  }),
-
-  createButtonDisplayText: computed('createButtonText', function () {
-    if (this.createButtonText) {
-      return this.createButtonText;
-    }
-    return 'Create Answer';
-  }),
-
-  mainHeaderDisplayText: computed('mainHeaderText', function () {
-    if (this.mainHeaderText) {
-      return this.mainHeaderText;
-    }
-    return 'Create New Answer';
   }),
 
   didInsertElement: function () {
@@ -159,24 +143,6 @@ export default Component.extend(ErrorHandlingMixin, {
       });
   },
 
-  handleLoadingMessage: observer('isCreatingAnswer', function () {
-    const that = this;
-    if (this.isDestroyed || this.isDestroying) {
-      return;
-    }
-
-    if (!this.isCreatingAnswer) {
-      this.set('showLoadingMessage', false);
-      return;
-    }
-    later(function () {
-      if (that.isDestroyed || that.isDestroying) {
-        return;
-      }
-      that.set('showLoadingMessage', that.get('isCreatingAnswer'));
-    }, 500);
-  }),
-
   createAnswer: function () {
     this.set('isCreatingAnswer', true);
 
@@ -185,14 +151,12 @@ export default Component.extend(ErrorHandlingMixin, {
     let explanation = quillContent.replace(/["]/g, "'");
     const priorAnswer = this.priorAnswer ? this.priorAnswer : null;
     const students = this.contributors;
-    console.log('students', students);
     if (priorAnswer) {
       // if revising, check to see that there were changes made from original
       // to avoid lots of duplicate answers
       if (
         !this.isRevisionDifferent(priorAnswer, answer, explanation, students)
       ) {
-        console.log('answer is not different');
         this.set('isCreatingAnswer', false);
         return this.alert.showToast(
           'info',
