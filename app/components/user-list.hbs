@@ -3,143 +3,31 @@
     <h1>Users</h1>
     <LinkTo @route="users.new" @id="new-user-link" class="new-link-btn"><span class="create-text">Create New User</span><i class="fas fa-plus"></i></LinkTo>
   </header>
-{{!-- put teacher list here --}}
   <section>
     <nav class="list-box">
-      <h2>Your account</h2>
-      <ul class="listing your-account">
-        <li class="{{if @currentUser.isAuthorized 'is-authorized'}} {{if @currentUser.isAdmin 'is-admin'}}">
-          <LinkTo @route="users.user" @model={{@currentUser.id}} @classNames="user">{{@currentUser.username}}</LinkTo>
-        </li>
-      </ul>
-      
+      <CollapsibleList @title="Your account" @user={{@currentUser}} />      
       {{#if @currentUser.isTeacher}}
-        <h2>Students in your Classes</h2>
-      <ul class="listing waiting-auth">
-        {{#if this.yourStudents}}
-          {{#each this.yourStudents as |user|}}
-          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
-            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-          {{/each}}
-        {{else}}
-          <li>You don't have any students yet</li>
-        {{/if}}
-      </ul>
-
-      <h2>Users you have created</h2>
-      <ul class="listing your-users">
-        {{#if this.yourUsers}}
-          {{#each this.yourUsers as |user|}}
-          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
-            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-          {{/each}}
-        {{else}}
-          <li>You haven't created any users yet</li>
-        {{/if}}
-      </ul>
-
-      <h2>Users in {{@currentUser.organization.name}}</h2>
-      <ul class="listing org-users">
-        {{#if this.orgUsers}}
-          {{#each this.orgUsers as |user|}}
-          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
-            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-          {{/each}}
-        {{else}}
-          <li>There are no users in your organization</li>
-        {{/if}}
-      </ul>
+        <CollapsibleList @title="Students in your Classes" @users={{this.yourStudents}} @noInfo="You don't have any students yet" />
+        <CollapsibleList @title="Users you have created" @users={{this.yourUsers}} @noInfo="You haven't created any users yet" />
+        <CollapsibleList @title="Users in {{@currentUser.organization.name}}" @users={{this.orgUsers}} @noInfo="There are no users in your organization" />
       {{/if}}
-      <h2>Waiting for Authorization</h2>
-      <ul class="listing waiting-auth">
-        {{#if this.unauthUsers}}
-          {{#each this.unauthUsers as |user|}}
-          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-          {{/each}}
-        {{else}}
-          <li>There are no users waiting to be authorized</li>
-        {{/if}}
-      </ul>
-    {{#if @currentUser.isAdmin}}
-      <h2>Administrators</h2>
-      <ul class="listing admin-users">
-        {{#each this.adminUsers as |user|}}
-        <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-          <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-        {{/each}}
-      </ul>
-
-      <h2>Pd Admins</h2>
-      <ul class="listing pd-users">
-        {{#if this.pdUsers}}
-          {{#each this.pdUsers as |user|}}
-          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-          {{/each}}
-        {{else}}
-        <li>There are no Pd Admins yet</li>
-        {{/if}}
-      </ul>
-    {{/if}}
-      <h2>Teachers</h2>
-      <ul class="listing teacher-users">
-        {{#if this.teacherUsers}}
-          {{#each this.teacherUsers as |user|}}
-          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-          {{/each}}
-        {{else}}
-          <li>There are no teachers yet</li>
-        {{/if}}
-      </ul>
-
-      <h2>Students</h2>
-      <ul class="listing student-users">
-        {{#if this.studentUsers}}
-          {{#each this.studentUsers as |user|}}
-          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
-            <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-          </li>
-          {{/each}}
-        {{else}}
-          <li>There are no students yet</li>
-        {{/if}}
-      </ul>
+      <CollapsibleList @title="Waiting for Authorization"  @users={{this.unauthUsers}} @noInfo="There are no users waiting to be authorized" />
       {{#if @currentUser.isAdmin}}
-      <button class="toggle-button" {{action 'toggleDeletedUsers'}}>
-        {{#if this.showDeletedUsers}}
-          Hide
-        {{else}}
-          Show
-        {{/if}}
-          Deleted Users
-      </button>
+        <CollapsibleList @title="Administrators" @users={{this.adminUsers}} @noInfo="There are no admins" />
+        <CollapsibleList @title="Pd Admins" @users={{this.pdUsers}} @noInfo="There are no Pd Admins yet" />
+      {{/if}}
+        <CollapsibleList @title="Teacher" @users={{this.teacherUsers}} @noInfo="There are no teachers yet" />
+        <CollapsibleList @title="Students" @users={{this.studentUsers}} @noInfo="There are no students yet" />
+      {{#if @currentUser.isAdmin}}
+        <button class="toggle-button" {{action 'toggleDeletedUsers'}}>
+          {{if this.showDeletedUsers 'Hide' 'Show'}} Deleted Users
+        </button>
 
-      {{#if this.showDeletedUsers}}
-      <h2>Deleted Users</h2>
-        <ul class="listing">
-          {{#if trashedUsers}}
-            {{#each trashedUsers as |user|}}
-            <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-              <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
-            </li>
-            {{/each}}
-          {{else}}
-            <li>There are no trashed users</li>
-          {{/if}}
-        </ul>
+        {{#if this.showDeletedUsers}}
+          <CollapsibleList @title="Deleted Users" @users={{this.trashedUsers}} @noInfo="There are no trashed users." />
         {{/if}}
       {{/if}}
     </nav>
-
   </section>
 </section>
 

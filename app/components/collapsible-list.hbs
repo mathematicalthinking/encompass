@@ -1,0 +1,22 @@
+<h2 {{on "click" this.toggleIsOpen}} class="collapsible">
+  <img src={{if this.isOpen "../assets/images/chevrons-down.svg" "../assets/images/chevrons-right.svg"}} alt="arrows">
+  {{@title}}
+</h2>
+{{#if this.isOpen}}
+  <ul class="listing">
+    {{#if @user}}
+      <li class="{{if @user.name 'simptip-position-right simptip-smooth'}} {{if @user.isAuthorized 'is-authorized'}} {{if @user.isAdmin 'is-admin'}} {{unless @user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{@user.name}}>
+        <LinkTo @route="users.user" @model={{@user.id}} @classNames="user">{{@user.username}}</LinkTo>
+      </li>
+    {{/if}}
+    {{#if @users}}
+      {{#each @users as |user|}}
+      <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
+        <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
+      </li>
+      {{/each}}
+    {{else}}
+      <li>{{@noInfo}}</li>
+    {{/if}}
+  </ul>
+{{/if}}

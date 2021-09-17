@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 859px) {
   .list-side {
@@ -11,7 +11,7 @@
         font-size: 1.2em;
       }
       .new-link-btn {
-        font-size: .8em;
+        font-size: 0.8em;
         span {
           display: none;
         }
@@ -36,7 +36,7 @@
         font-size: 1.5em;
       }
       .new-link-btn {
-        font-size: .8em;
+        font-size: 0.8em;
         span {
           display: none;
         }
@@ -136,8 +136,8 @@
       font-size: 1em;
       background-color: white;
       padding-bottom: 10px;
-      input[type=text] {
-        margin-left:20px;
+      input[type='text'] {
+        margin-left: 20px;
         border-radius: 3px;
         width: 65%;
         height: 30px;
@@ -170,7 +170,14 @@
       font-size: 1.4em;
       color: $accent-color;
       font-weight: $bold-font-weight;
-      @include responsive-font-size (.5em, 1.3em, 540px, 1500px, 0.5em);
+      @include responsive-font-size(0.5em, 1.3em, 540px, 1500px, 0.5em);
+      &.collapsible {
+        cursor: pointer;
+      }
+      img {
+        width: 5%;
+        height: auto;
+      }
     }
 
     li {
@@ -196,10 +203,9 @@
     border-radius: 5px;
     margin: 0 auto;
     display: block;
-    font-size: .8em;
+    font-size: 0.8em;
   }
 }
-
 
 .list-outlet {
   float: left;
