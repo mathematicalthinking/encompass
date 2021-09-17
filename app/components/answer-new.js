@@ -1,33 +1,37 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import _ from 'underscore';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import { all, reject, resolve } from 'rsvp';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  alert: service('sweet-alert'),
-  utils: service('utility-methods'),
-  currentUser: service('current-user'),
-  filesToBeUploaded: null,
-  createAnswerError: null,
-  isMissingRequiredFields: null,
-  students: [],
-  editor: null,
-  findRecordErrors: [],
-  uploadErrors: [],
-  createRecordErrors: [],
-  contributors: [],
-  isCreatingAnswer: false,
-  showLoadingMessage: false,
+export default class AnswerNew extends ErrorHandlingComponent {
+  @service('sweet-alert') alert;
+  @service('utility-methods') utils;
+  @service('current-user') currentUser;
+  @service store;
+  @tracked filesToBeUploaded = null;
+  @tracked createAnswerError = null;
+  @tracked isMissingRequiredFields = null;
+  @tracked students = [];
+  @tracked editor = null;
+  @tracked findRecordErrors = [];
+  @tracked uploadErrors = [];
+  @tracked createRecordErrors = [];
+  @tracked contributors = [];
+  @tracked isCreatingAnswer = false;
+  @tracked showLoadingMessage = false;
+  @tracked explanationText = '';
+  @tracked explanationErrors = [];
+  @tracked briefSummaryErrors = [];
 
-  quillEditorId: 'answer-new-editor',
-  quillText: '',
-  singleFileSizeLimit: 10485760, // 10MB
-  explanationLengthLimit: 14680064, // `14MB
+  quillEditorId = 'answer-new-editor';
+  @tracked quillText = '';
+  singleFileSizeLimit = 10485760; // 10MB
+  explanationLengthLimit = 14680064; // `14MB
 
-  constraints: {
+  constraints = {
     briefSummary: {
       presence: { allowEmpty: false },
       length: {
@@ -37,7 +41,7 @@ export default Component.extend(ErrorHandlingMixin, {
     explanation: {
       presence: true,
     },
-  },
+  };
 
   returnSizeDisplay(bytes) {
     if (bytes < 1024) {
@@ -47,11 +51,11 @@ export default Component.extend(ErrorHandlingMixin, {
     } else if (bytes >= 1048576) {
       return (bytes / 1048576).toFixed(1) + 'MB';
     }
-  },
+  }
 
-  totalSizeLimitDisplay: computed('explanationLengthLimit', function () {
+  get totalSizeLimitDisplay() {
     return this.returnSizeDisplay(this.explanationLengthLimit);
-  }),
+  }
 
   getOverSizedFileMsg(fileSize, fileName) {
     let limit = this.singleFileSizeLimit;
@@ -60,40 +64,37 @@ export default Component.extend(ErrorHandlingMixin, {
     let limitDisplay = this.returnSizeDisplay(limit);
 
     return `The file ${fileName} (${actualDisplay}) was not accepted due to exceeding the size limit of ${limitDisplay}`;
-  },
+  }
 
-  tooLargeExplanationMsg: computed('totalSizeLimitDisplay', function () {
+  get tooLargeExplanationMsg() {
     return `The total size of your submission (text and/or images) exceeds the size limit of ${this.totalSizeLimitDisplay}. Please remove or resize any large images and try again.`;
-  }),
+  }
 
-  didInsertElement: function () {
-    this._super(...arguments);
-    if (this.priorAnswer) {
+  constructor() {
+    super(...arguments);
+    if (this.args.priorAnswer) {
       //prefill form if revising
-      const ans = this.priorAnswer;
-      this.set('answer', ans.get('answer'));
-      let explanation = ans.get('explanation');
+      const ans = this.args.priorAnswer;
+      this.answer = ans.answer;
+      let explanation = ans.explanation;
 
-      this.set('explanationText', explanation);
-      let students = ans.get('students');
-      this.set(
-        'contributors',
-        students.map((s) => s)
-      );
+      this.explanationText = explanation;
+      let students = ans.students;
+      this.contributors = students.map((s) => s);
     } else {
       this.contributors.addObject(this.currentUser.user);
     }
-  },
+  }
 
-  willDestroyElement() {
+  willDestroy() {
     let propsToClear = ['isCreatingAnswer', 'showLoadingMessage'];
     propsToClear.forEach((prop) => {
-      if (this.get(prop)) {
-        this.set(prop, false);
+      if (this[prop]) {
+        this[prop] = false;
       }
     });
-    this._super(...arguments);
-  },
+    super.willDestroy(...arguments);
+  }
 
   handleImages() {
     if (this.existingImageId) {
@@ -110,10 +111,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
     for (let f of filesToUpload) {
       if (f.size > this.singleFileSizeLimit) {
-        this.set(
-          'overSizedFileError',
-          this.getOverSizedFileMsg(f.size, f.name)
-        );
+        this.overSizedFileError = this.getOverSizedFileMsg(f.size, f.name);
         return reject('oversizedFile');
       } else {
         formData.append('photo', f);
@@ -141,15 +139,15 @@ export default Component.extend(ErrorHandlingMixin, {
       .catch((err) => {
         return reject(err);
       });
-  },
+  }
 
-  createAnswer: function () {
-    this.set('isCreatingAnswer', true);
+  createAnswer() {
+    this.isCreatingAnswer = true;
 
     const answer = this.answer; // brief summary
-    const quillContent = this.$('.ql-editor').html();
+    const quillContent = $('.ql-editor').html();
     let explanation = quillContent.replace(/["]/g, "'");
-    const priorAnswer = this.priorAnswer ? this.priorAnswer : null;
+    const priorAnswer = this.args.priorAnswer ? this.args.priorAnswer : null;
     const students = this.contributors;
     if (priorAnswer) {
       // if revising, check to see that there were changes made from original
@@ -157,7 +155,7 @@ export default Component.extend(ErrorHandlingMixin, {
       if (
         !this.isRevisionDifferent(priorAnswer, answer, explanation, students)
       ) {
-        this.set('isCreatingAnswer', false);
+        this.isCreatingAnswer = false;
         return this.alert.showToast(
           'info',
           'Revison cannot be exact duplicate of original',
@@ -184,8 +182,8 @@ export default Component.extend(ErrorHandlingMixin, {
         }
 
         if (explanation.length > this.explanationLengthLimit) {
-          this.set('isExplanationTooLarge', true);
-          this.set('isCreatingAnswer', false);
+          this.isExplanationTooLarge = true;
+          this.sisCreatingAnswer = false;
           return;
         }
         const records = students.map((student) => {
@@ -196,11 +194,11 @@ export default Component.extend(ErrorHandlingMixin, {
             explanation: explanation,
             assignment: this.assignment,
             isSubmitted: true,
-            problem: this.problem,
+            problem: this.args.problem,
             priorAnswer: priorAnswer,
-            section: this.section,
+            section: this.args.section,
             students: students,
-            workspacesToUpdate: this.workspacesToUpdateIds,
+            workspacesToUpdate: this.args.workspacesToUpdateIds,
           });
         });
         // additional uploaded image base 64 data was concatenated to explanation
@@ -223,25 +221,25 @@ export default Component.extend(ErrorHandlingMixin, {
               null
             );
 
-            this.handleCreatedAnswer(yourAnswer);
+            this.args.handleCreatedAnswer(yourAnswer);
           })
           .catch((err) => {
             // do we need to roll back all recs this were created?
             if (!this.isDestroying && !this.isDestroyed) {
-              this.set('isCreatingAnswer', false);
+              this.isCreatingAnswer = false;
             }
             this.handleErrors(err, 'createRecordErrors');
           });
       })
       .catch((err) => {
         if (!this.isDestroying && !this.isDestroyed) {
-          this.set('isCreatingAnswer', false);
+          this.isCreatingAnswer = false;
         }
         if (err === 'oversizedFile') {
           return;
         }
       });
-  },
+  }
 
   isRevisionDifferent(original, newSummary, newExplanation, newContributors) {
     let filesToBeUploaded = this.filesToBeUploaded;
@@ -259,110 +257,108 @@ export default Component.extend(ErrorHandlingMixin, {
       return true;
     }
 
-    if (original.get('explanation') !== newExplanation) {
+    if (original.explanation !== newExplanation) {
       return true;
     }
-    if (original.get('students.length') !== newContributors.get('length')) {
+    if (original.students.length !== newContributors.get('length')) {
       return true;
     }
 
-    let originalContribIds = original.get('students').mapBy('id');
+    let originalContribIds = original.students.mapBy('id');
 
     let newContribIds = newContributors.mapBy('id');
 
     let didContribsChange = !_.isEqual(originalContribIds, newContribIds);
 
     return didContribsChange;
-  },
+  }
 
-  actions: {
-    validate: function () {
-      // remove existing errors
-      const formErrors = ['briefSummaryErrors', 'explanationErrors'];
-      for (let error of formErrors) {
-        if (this.get(error)) {
-          this.set(error, null);
-        }
+  @action validate() {
+    // remove existing errors
+    const formErrors = ['briefSummaryErrors', 'explanationErrors'];
+    for (let error of formErrors) {
+      if (this[error]) {
+        this[error] = null;
       }
+    }
 
-      let isQuillValid = !this.isQuillEmpty;
-      let briefSummary = this.answer;
-      let explanation = isQuillValid ? true : null;
+    let isQuillValid = !this.isQuillEmpty;
+    let briefSummary = this.answer;
+    let explanation = isQuillValid ? true : null;
 
-      let values = {
-        briefSummary,
-        explanation,
-      };
-      let constraints = this.constraints;
+    let values = {
+      briefSummary,
+      explanation,
+    };
+    let constraints = this.constraints;
 
-      let errors = window.validate(values, constraints);
-      if (errors) {
-        for (let key of Object.keys(errors)) {
-          let errorProp = `${key}Errors`;
-          this.set(errorProp, errors[key]);
-        }
-        return;
+    let errors = window.validate(values, constraints);
+    if (errors) {
+      for (let key of Object.keys(errors)) {
+        let errorProp = `${key}Errors`;
+        this[errorProp] = errors[key];
       }
-      // no errors
-      this.createAnswer();
-    },
+      return;
+    }
+    // no errors
+    this.createAnswer();
+  }
 
-    cancelResponse: function () {
-      this.cancelResponse();
-    },
-    deleteImage: function () {
-      this.set('existingImageId', null);
-      this.set('imageData', null);
-    },
-    toggleAddStudentMessages() {
-      if (this.addStudentError) {
-        this.set('addStudentError', false);
-      }
-      if (this.addedStudent) {
-        this.set('addedStudent', false);
-      }
-    },
-    addStudent: function (student) {
-      if (!student) {
-        return;
-      }
+  @action cancelResponse() {
+    this.args.cancelResponse();
+  }
+  @action deleteImage() {
+    this.existingImageId = null;
+    this.imageData = null;
+  }
+  @action toggleAddStudentMessages() {
+    if (this.addStudentError) {
+      this.addStudentError = false;
+    }
+    if (this.addedStudent) {
+      this.addedStudent = false;
+    }
+  }
+  @action addStudent(student) {
+    if (!student) {
+      return;
+    }
 
-      let students = this.contributors;
+    let students = this.contributors;
 
-      if (students.includes(student)) {
-        this.set('userAlreadyInSection', true);
-        return;
-      }
+    if (students.includes(student)) {
+      this.userAlreadyInSection = true;
+      return;
+    }
 
-      students.pushObject(student);
-      this.alert.showToast(
-        'success',
-        'Student Added',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    },
-    removeStudent: function (student) {
-      if (!student) {
-        return;
-      }
-      let students = this.contributors;
-      students.removeObject(student);
-      this.alert.showToast(
-        'success',
-        'Student Removed',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    },
-    updateQuillText(content, isEmpty, isOverLengthLimit) {
-      this.set('quillText', content);
-      this.set('isQuillEmpty', isEmpty);
-      this.set('isQuillTooLong', isOverLengthLimit);
-    },
-  },
-});
+    students.pushObject(student);
+    this.alert.showToast(
+      'success',
+      'Student Added',
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+  }
+  @action removeStudent(student) {
+    if (!student) {
+      return;
+    }
+    let students = this.contributors;
+    students.removeObject(student);
+    this.alert.showToast(
+      'success',
+      'Student Removed',
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+  }
+  @action updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.quillText = content;
+    this.isQuillEmpty = isEmpty;
+    this.isQuillTooLong = isOverLengthLimit;
+  }
+}

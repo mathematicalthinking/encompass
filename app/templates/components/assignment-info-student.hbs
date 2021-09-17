@@ -46,11 +46,11 @@
   <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "loadAnswerErrors" error}} />
 {{/each}}
 {{#if this.isResponding}}
-  <AnswerNew @store={{this.store}} @assignment={{this.assignment}} @toAnswerInfo="toAnswerInfo" @cancelResponse={{action "cancelResponse"}} @displayAnswer="displayAnswer" @section={{this.section}} @problem={{this.problem}} @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
+  <AnswerNew @assignment={{this.assignment}} @toAnswerInfo={{action "toAnswerInfo"}} @cancelResponse={{action "cancelResponse"}} @displayAnswer={{action "displayAnswer"}} @section={{this.section}} @problem={{this.problem}} @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
   {{/if}}
 
 {{#if this.isRevising}}
-  <AnswerNew @store={{this.store}} @assignment={{this.assignment}} @isRevision={{true}} @priorAnswer={{this.priorAnswer}} @section={{this.section}} @problem={{this.problem}} @toAnswerInfo="toAnswerInfo" @cancelResponse={{action "cancelResponse"}} @displayAnswer="displayAnswer" @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
+  <AnswerNew @assignment={{this.assignment}} @isRevision={{true}} @priorAnswer={{this.priorAnswer}} @section={{this.section}} @problem={{this.problem}} @toAnswerInfo={{action "toAnswerInfo" }}@cancelResponse={{action "cancelResponse"}} @displayAnswer="displayAnswer" @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
 {{/if}}
 {{#if this.showReviseButton}}
   <button class="primary-button revise" {{action 'reviseAssignmentResponse'}}>Revise</button>

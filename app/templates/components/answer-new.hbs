@@ -1,6 +1,6 @@
 <div id="answer-new">
   <header id="answernewheader">
-    <h2>{{if this.mainHeaderText this.mainHeaderText 'Create New Answer'}}</h2>
+    <h2>{{if @mainHeaderText @mainHeaderText 'Create New Answer'}}</h2>
     <div class="clear"></div>
   </header>
 
@@ -55,7 +55,7 @@
               </ul>
             </div>
           </div>
-          <TwitterTypeahead @selectedValue={{this.studentToAdd}} @selectedItems={{this.contributors}} @onSelect="addStudent" @dataList={{this.section.students}} @placeholder="username" @optionLabelPath="username" @allowMultiple={{true}} />
+          <TwitterTypeahead @selectedValue={{this.studentToAdd}} @selectedItems={{this.contributors}} @onSelect="addStudent" @dataList={{@section.students}} @placeholder="username" @optionLabelPath="username" @allowMultiple={{true}} />
 
           {{#if this.addStudentError}}
               <p class="error-message"></p>Sorry, that user is not in your class.
