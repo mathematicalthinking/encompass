@@ -1,7 +1,7 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
 import Auditable from './auditable';
 export default class SectionModel extends Auditable {
-  get ssectionId() {
+  get sectionId() {
     return this.id;
   }
   @attr('string') name;

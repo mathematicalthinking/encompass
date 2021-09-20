@@ -102,7 +102,7 @@
     "broccoli-asset-rev": "^3.0.0",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
-    "chromedriver": "^91.0.1",
+    "chromedriver": "^93.0.1",
     "concurrently": "^6.0.1",
     "csvtojson": "^2.0.10",
     "ember-auto-import": "^1.11.2",

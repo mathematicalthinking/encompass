@@ -439,10 +439,6 @@ const putAssignment = async (req, res, next) => {
 
     let assignment = await models.Assignment.findById(req.params.id).exec();
 
-    if (!assignment || assignment.isTrashed) {
-      return utils.sendResponse(res, null);
-    }
-
     // currently only support 1 request at a time for already existing assn
     let {
       linkedWorkspacesRequest,

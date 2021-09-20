@@ -1,0 +1,90 @@
+<div id="assignment-info-student">
+  <section class="assignment-info-student">
+    {{#if @assignment.name}}
+    <div class="info-detail">
+      <label for="assignment">Assignment Name:</label>
+      <p>{{@assignment.name}}</p>
+    </div>
+    {{/if}}
+    <div class="info-detail">
+      <label>Problem Name:</label>
+      <p>{{@assignment.problem.title}}</p>
+    </div>
+    <div class="info-detail">
+      <label>Class:</label>
+      <p><LinkTo @route="sections.section" @model={{@assignment.section.id}}> {{@assignment.section.name}}</LinkTo></p>
+    </div>
+
+    <div class="info-detail">
+      <label>Assigned Date:</label>
+      {{#if @assignment.assignedDate}}
+        <p>{{format-date @assignment.assignedDate 'MMM Do YYYY'}}</p>
+      {{else}}
+        <p>N/A</p>
+      {{/if}}
+    </div>
+
+    <div class="info-detail">
+      <label>Due Date:</label>
+      {{#if @assignment.dueDate}}
+      <p>{{format-date @assignment.dueDate 'MMM Do YYYY'}}</p>
+      {{else}}
+        <p>N/A</p>
+      {{/if}}
+    </div>
+    <div class="info-detail">
+      <label>Problem Statement:</label>
+      <p>{{{@assignment.problem.text}}}</p>
+    </div>
+    {{#if @assignment.problem.image}}
+    <div class="assignmentImage info-detail">
+      <label>Problem Image:</label>
+      <img src="{{{@assignment.problem.image.imageData}}}" alt={{@problem.title}}/>
+    </div>
+    {{/if}}
+  </section>
+  {{#each this.loadAnswerErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "loadAnswerErrors" error}} />
+  {{/each}}
+  {{#if this.isResponding}}
+    <AnswerNew @assignment={{@assignment}} @cancelResponse={{action "cancelResponse"}} @section={{@section}} @problem={{@problem}} @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
+  {{/if}}
+
+  {{#if this.isRevising}}
+    <AnswerNew @assignment={{@assignment}} @isRevision={{true}} @priorAnswer={{this.priorAnswer}} @section={{@section}} @problem={{@problem}} @cancelResponse={{action "cancelResponse"}} @handleCreatedAnswer={{action "handleCreatedAnswer"}} @workspacesToUpdateIds={{this.workspacesToUpdateIds}} />
+  {{/if}}
+  {{#if this.showReviseButton}}
+    <button class="primary-button revise" {{action 'reviseAssignmentResponse'}}>Revise</button>
+  {{/if}}
+  {{#if this.showRespondButton}}
+    <button class="primary-button respond" {{action 'beginAssignmentResponse'}}>Share Your Ideas</button>
+  {{/if}}
+
+  <div class="info-msg-container">
+    {{#if this.sortedList.length}}
+      <p class="info">You have made a total of {{this.sortedList.length}} submissions to this assignment. You can view the details of each submission by clicking on one of the Past Submissions items below. If you would like to revise your most recently submitted revision, cick Revise.</p>
+    {{else}}
+      <p class="info-none">It looks like you have not made any submissions to this assignment. Click 'Share Your Ideas' to begin making a submission.</p>
+    {{/if}}
+  </div>
+
+  {{#if this.sortedList.length}}
+    <div class="past-submissions">
+      <section class="past-submissions-list">
+        <header class="list-header" id="past-submissions-header">
+          <h3>Past Submissions</h3>
+        </header>
+        <ol class="submission-list">
+          {{#each this.sortedList as |answer|}}
+            <li class={{if (is-equal answer.answerId displayedAnswer.answerId) "highlight"}} {{action "displayAnswer" answer}}>{{format-date answer.createDate 'MMM Do YYYY hh:mm A' }}</li>
+          {{/each}}
+        </ol>
+      </section>
+      <section class="past-answer-view">
+        {{#if this.displayedAnswer}}
+          <AnswerInfo @answer={{this.displayedAnswer}} @assignment={{@assignment}} @problem={{@problem}} @showHideButton={{true}} />
+        {{/if}}
+      </section>
+    </div>
+  {{/if}}
+</div>

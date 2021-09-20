@@ -9,6 +9,7 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
       'assignment',
       params.assignment_id
     );
+    const sections = await this.store.findAll('section');
     const section = await assignment.get('section.id');
     const groups = await this.store.query('group', {
       section: section,
@@ -20,10 +21,8 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
       assignment,
       groups,
       students,
+      sections,
     });
-  }
-  @action toAnswerInfo(answer) {
-    this.transitionTo('answer', answer);
   }
   @action toAssignments() {
     this.transitionTo('assignments');

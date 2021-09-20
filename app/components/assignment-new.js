@@ -1,26 +1,41 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { and, notEmpty } from '@ember/object/computed';
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import moment from 'moment';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  router: service('router'),
-  elementId: 'assignment-new',
-  createAssignmentError: null,
-  isMissingRequiredFields: null,
-  selectedSection: null,
-  selectedProblem: null,
-  alert: service('sweet-alert'),
-  sectionList: null,
-  problemList: null,
-  formId: null,
-  createRecordErrors: [],
-  queryErrors: [],
-  linkedWorkspacesMode: true,
-  constraints: {
+export default class AssignmentNewComponent extends ErrorHandlingComponent {
+  @service router;
+  @service store;
+  @service('sweet-alert') alert;
+  @tracked createAssignmentError = null;
+  @tracked isMissingRequiredFields = null;
+  @tracked selectedSection = null;
+  @tracked selectedProblem = null;
+  @tracked problemList = null;
+  @tracked formId = null;
+  @tracked createRecordErrors = [];
+  @tracked queryErrors = [];
+  @tracked linkedWorkspacesMode = false;
+  @tracked doCreateLinkedWorkspaces = false;
+  @tracked doCreateParentWorkspace = false;
+  @tracked fromProblemInfo = false;
+  tooltips = {
+    class: 'Select which class you want to assign the problem',
+    problem: 'Select which problem you want to assign',
+    dateAssigned:
+      'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
+    dueDate:
+      'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
+    name:
+      'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
+    linkedWorkspaces:
+      'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
+    parentWorkspace:
+      'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
+  };
+  constraints = {
     section: {
       presence: { allowEmpty: false },
     },
@@ -30,12 +45,10 @@ export default Component.extend(ErrorHandlingMixin, {
     name: {
       presence: false,
     },
-  },
+  };
+  nameDate = moment().format('MMM Do YYYY');
 
-  doCreateLinkedWorkspaces: false,
-  doCreateParentWorkspace: false,
-
-  linkedWsOptions: {
+  linkedWsOptions = {
     groupName: 'linkedWorkspaces',
     required: false,
     inputs: [
@@ -48,8 +61,8 @@ export default Component.extend(ErrorHandlingMixin, {
         label: 'No',
       },
     ],
-  },
-  groupWsOptions: {
+  };
+  groupWsOptions = {
     groupName: 'groupWorkspaces',
     requried: false,
     inputs: [
@@ -62,8 +75,8 @@ export default Component.extend(ErrorHandlingMixin, {
         label: 'By Student',
       },
     ],
-  },
-  parentWsOptions: {
+  };
+  parentWsOptions = {
     groupName: 'parentWorkspace',
     required: false,
     inputs: [
@@ -76,141 +89,102 @@ export default Component.extend(ErrorHandlingMixin, {
         label: 'No',
       },
     ],
-  },
+  };
 
-  sectionGroups: computed('selectedSection', function () {
+  @tracked sectionGroups = [];
+
+  @action updateSectionGroups() {
     if (this.selectedSection) {
-      return this.store.query('group', {
+      this.sectionGroups = this.store.query('group', {
         section: this.selectedSection.id,
         isTrashed: false,
       });
     }
-  }),
+  }
 
-  hasSelectedSection: notEmpty('selectedSection'),
+  get hasSelectedSection() {
+    return !!this.selectedSection;
+  }
 
-  hasProblem: notEmpty('selectedProblem'),
+  get hasProblem() {
+    return !!this.selectedProblem;
+  }
 
-  hasProblemAndSection: and('hasProblem', 'hasSelectedSection'),
+  get hasProblemAndSection() {
+    return this.hasSelectedSection && this.hasProblem;
+  }
 
-  showLinkedWsForm: and('doCreateLinkedWorkspaces', 'hasProblemAndSection'),
+  get showLinkedWsForm() {
+    return this.doCreateLinkedWorkspaces && this.hasProblemAndSection;
+  }
 
-  showParentWsForm: and('doCreateParentWorkspace', 'showLinkedWsForm'),
+  get showParentWsForm() {
+    return this.doCreateLinkedWorkspaces && this.showLinkedWsForm;
+  }
 
-  problemsPreloadValue: computed('cachedProblems.[]', function () {
+  get problemsPreloadValue() {
     // if there is at least one problem in the store
     // do not auto fetch problems on focus
-    let length = this.get('cachedProblems.length');
-    return length > 0 ? undefined : 'focus';
-  }),
-
-  assignmentNamePreview: computed(
-    'name',
-    'selectedProblem.title',
-    'nameDate',
-    function () {
-      let hasName = this.get('name.length') > 0;
-
-      if (hasName) {
-        return this.name;
-      }
-
-      if (!this.hasProblem) {
-        return '';
-      }
-      let title = this.get('selectedProblem.title');
-
-      let nameDate = this.nameDate;
-
-      return `${title} / ${nameDate}`;
+    if (this.args.cachedProblems) {
+      let length = this.args.cachedProblems.length;
+      return length > 0 ? undefined : 'focus';
     }
-  ),
+    return undefined;
+  }
 
-  init: function () {
-    let that = this;
-    this.set('nameDate', moment().format('MMM Do YYYY'));
-    this._super(...arguments);
-    let tooltips = {
-      class: 'Select which class you want to assign the problem',
-      problem: 'Select which problem you want to assign',
-      dateAssigned:
-        'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
-      dueDate:
-        'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
-      name:
-        'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
-      linkedWorkspaces:
-        'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
-      parentWorkspace:
-        'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
-    };
-    this.set('tooltips', tooltips);
-    // $(function () {
-    //   $('input#assignedDate').daterangepicker(
-    //     {
-    //       singleDatePicker: true,
-    //       showDropdowns: true,
-    //       autoUpdateInput: false,
-    //     },
-    //     function (start, end, label) {
-    //       let assignedDate = start.format('MM/DD/YYYY');
-    //       $('input#assignedDate').val(assignedDate);
-    //       that.set('nameDate', start.format('MMM Do YYYY'));
-    //     }
-    //   );
-    //   $('input#dueDate').daterangepicker(
-    //     {
-    //       singleDatePicker: true,
-    //       showDropdowns: true,
-    //       autoUpdateInput: false,
-    //     },
-    //     function (start, end, label) {
-    //       let dueDate = start.format('MM/DD/YYYY');
-    //       $('input#dueDate').val(dueDate);
-    //     }
-    //   );
-    //   $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
-    // });
-    this.set('cachedProblems', this.store.findAll('problem'));
-  },
+  get assignmentNamePreview() {
+    if (this.name) {
+      return this.name;
+    }
 
-  didReceiveAttrs: function () {
-    if (this.sections) {
-      const sections = this.sections.filter((section) => {
-        return !section.get('isTrashed') && section.id;
-      });
-      this.set('sectionList', sections);
+    if (!this.hasProblem) {
+      return '';
     }
-    let selectedProblem = this.selectedProblem;
-    if (selectedProblem && selectedProblem.get('isForAssignment')) {
-      this.set('FromProblemInfo', true);
+    let title = this.selectedProblem.title;
+
+    let nameDate = this.nameDate;
+
+    return `${title} / ${nameDate}`;
+  }
+  constructor() {
+    super(...arguments);
+    let selectedProblem = this.args.selectedProblem;
+    if (selectedProblem && selectedProblem.isForAssignment) {
+      this.fromProblemInfo = true;
+      this.selectedProblem = selectedProblem;
     }
-  },
-  willDestroyElement: function () {
-    $('.daterangepicker').remove();
+    if (this.args.fromSectionInfo) {
+      this.fromSectionInfo = true;
+      this.selectedSection = this.args.selectedSection;
+    }
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
     let problem = this.selectedProblem;
-    if (problem && problem.get('isForAssignment')) {
-      problem.set('isForAssignment', false);
+    if (problem && problem.isForAssignment) {
+      problem.isForAssignment = false;
     }
-    this._super(...arguments);
-  },
+  }
 
-  createAssignment: function (formValues) {
+  createAssignment(formValues) {
     let { section, problem, assignedDate, dueDate, name } = formValues;
-    const createdBy = this.currentUser;
+    const createdBy = this.args.currentUser;
 
     if (!name) {
       // let nameDate = $('#assignedDate')
       //   .data('daterangepicker')
       //   .startDate.format('MMM Do YYYY');
       let nameDate = assignedDate
-        ? moment(new Date(assignedDate)).format('MMM Do YYYY')
+        ? moment(new Date(assignedDate.replace(/-/g, '/'))).format(
+            'MMM Do YYYY'
+          )
         : moment(new Date()).format('MMM Do YYYY');
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
     }
     if (assignedDate && dueDate && assignedDate > dueDate) {
-      this.set('invalidDateRange', true);
+      this.invalidDateRange = true;
       return;
     }
     // need to get all students from section
@@ -221,22 +195,24 @@ export default Component.extend(ErrorHandlingMixin, {
       createDate: new Date(),
       section,
       problem,
-      assignedDate: assignedDate ? new Date(assignedDate) : '',
-      dueDate: dueDate ? new Date(dueDate) : '',
+      assignedDate: assignedDate
+        ? new Date(assignedDate.replace(/-/g, '/'))
+        : '',
+      dueDate: dueDate ? new Date(dueDate.replace(/-/g, '/')) : '',
       name,
     });
 
     const doCreateLinkedWorkspaces = this.doCreateLinkedWorkspaces;
     const doCreateParentWorkspace = this.doCreateParentWorkspace;
 
-    let linkedFormatInput = this.$('#linked-ws-new-name');
+    let linkedFormatInput = $('#linked-ws-new-name');
     let linkedNameFormat;
 
     if (linkedFormatInput) {
       linkedNameFormat = linkedFormatInput.val();
     }
 
-    let parentFormatInput = this.$('#parent-ws-new-name');
+    let parentFormatInput = $('#parent-ws-new-name');
     let parentNameFormat;
 
     if (parentFormatInput) {
@@ -274,18 +250,18 @@ export default Component.extend(ErrorHandlingMixin, {
       .catch((err) => {
         this.handleErrors(err, 'createRecordErrors', createAssignmentData);
       });
-  },
+  }
 
-  getMongoDate: function (htmlDateString) {
+  getMongoDate(htmlDateString) {
     const htmlFormat = 'YYYY-MM-DD';
     if (typeof htmlDateString !== 'string') {
       return;
     }
     let dateMoment = moment(htmlDateString, htmlFormat);
     return new Date(dateMoment);
-  },
+  }
 
-  getEndDate: function (htmlDateString) {
+  getEndDate(htmlDateString) {
     const htmlFormat = 'YYYY-MM-DD HH:mm';
     if (typeof htmlDateString !== 'string') {
       return;
@@ -294,19 +270,22 @@ export default Component.extend(ErrorHandlingMixin, {
     let date = new Date(dateMoment);
     date.setHours(23, 59, 59);
     return date;
-  },
-  problemOptions: computed('cachedProblems.[]', function () {
-    let cachedProblems = this.cachedProblems;
-    let toArray = cachedProblems.toArray();
-    return toArray.map((cachedProblem) => {
-      return {
-        id: cachedProblem.id,
-        title: cachedProblem.get('title'),
-      };
-    });
-  }),
-  sectionOptions: computed('sectionList.[]', function () {
-    let sectionList = this.sectionList || [];
+  }
+  get problemOptions() {
+    let cachedProblems = this.args.cachedProblems;
+    if (cachedProblems) {
+      let toArray = cachedProblems.toArray();
+      return toArray.map((cachedProblem) => {
+        return {
+          id: cachedProblem.id,
+          title: cachedProblem.get('title'),
+        };
+      });
+    }
+    return [];
+  }
+  get sectionOptions() {
+    let sectionList = this.args.sectionList || [];
     let toArray = sectionList.toArray();
     return toArray.map((section) => {
       return {
@@ -314,75 +293,72 @@ export default Component.extend(ErrorHandlingMixin, {
         name: section.get('name'),
       };
     });
-  }),
+  }
+  @action updateDoCreateLinkedWorkspaces(val) {
+    this.doCreateLinkedWorkspaces = val;
+  }
+  @action updateLinkedWorkspacesMode(val) {
+    this.linkedWorkspacesMode = val;
+  }
+  @action updateDoCreateParentWorkspace(val) {
+    this.doCreateParentWorkspace = val;
+  }
+  @action validate() {
+    const section = this.selectedSection;
+    const problem = this.selectedProblem;
+    let assignedDate = $('#assignedDate').val();
+    let dueDate = $('#dueDate').val();
+    const name = this.name;
 
-  actions: {
-    updateDoCreateLinkedWorkspaces: function (val) {
-      this.set('doCreateLinkedWorkspaces', val);
-    },
-    updateLinkedWorkspacesMode: function (val) {
-      this.set('linkedWorkspacesMode', val);
-    },
-    updateDoCreateParentWorkspace: function (val) {
-      this.set('doCreateParentWorkspace', val);
-    },
-    validate: function () {
-      const section = this.selectedSection;
-      const problem = this.selectedProblem;
-      let assignedDate = $('#assignedDate').val();
-      let dueDate = $('#dueDate').val();
-      const name = this.name;
+    const values = {
+      section,
+      problem,
+      assignedDate,
+      dueDate,
+      name,
+    };
 
-      const values = {
-        section,
-        problem,
-        assignedDate,
-        dueDate,
-        name,
-      };
+    const constraints = this.constraints;
 
-      const constraints = this.constraints;
-
-      let errors = window.validate(values, constraints);
-      if (errors) {
-        // errors
-        for (let key of Object.keys(errors)) {
-          let errorProp = `${key}FormErrors`;
-          this.set(errorProp, errors[key]);
-        }
-        return;
+    let errors = window.validate(values, constraints);
+    if (errors) {
+      // errors
+      for (let key of Object.keys(errors)) {
+        let errorProp = `${key}FormErrors`;
+        this[errorProp] = errors[key];
       }
+      return;
+    }
 
-      if (!assignedDate) {
-        delete values.assignedDate;
-      }
-      if (!dueDate) {
-        delete values.dueDate;
-      }
+    if (!assignedDate) {
+      delete values.assignedDate;
+    }
+    if (!dueDate) {
+      delete values.dueDate;
+    }
 
-      this.createAssignment(values);
-    },
+    this.createAssignment(values);
+  }
 
-    cancel: function () {
-      if (this.cancel) {
-        this.cancel();
-      } else {
-        this.sendAction('toAssignmentsHome');
-      }
-    },
-    updateSelectizeSingle(val, $item, propToUpdate, model) {
-      let errorProp = `${model}FormErrors`;
-      this.set(errorProp, []);
+  @action cancel() {
+    if (this.cancel) {
+      this.args.cancel();
+    } else {
+      this.router.transitionTo('assignments');
+    }
+  }
+  @action updateSelectizeSingle(val, $item, propToUpdate, model) {
+    let errorProp = `${model}FormErrors`;
+    this[errorProp] = [];
 
-      if ($item === null) {
-        this.set(propToUpdate, null);
-        return;
-      }
-      let record = this.store.peekRecord(model, val);
-      if (!record) {
-        return;
-      }
-      this.set(propToUpdate, record);
-    },
-  },
-});
+    if ($item === null) {
+      this[propToUpdate] = null;
+      return;
+    }
+    let record = this.store.peekRecord(model, val);
+    if (!record) {
+      return;
+    }
+    this[propToUpdate] = record;
+  }
+}

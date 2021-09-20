@@ -33,7 +33,7 @@ var AssignmentSchema = new Schema(
     parentWorkspace: { type: ObjectId, ref: 'Workspace' },
     linkedWorkspacesRequest: {
       doCreate: { type: Boolean, default: false },
-      linkType: { type: String, default: 'group' },
+      linkType: { type: String, default: 'individual' },
       error: { type: String },
       createdWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
       doAllowSubmissionUpdates: { type: Boolean, default: true },

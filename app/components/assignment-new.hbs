@@ -1,3 +1,4 @@
+<div id="assignment-new">
 <header id="assignmentnewheader">
   <h2>
     Create New Assignment
@@ -128,14 +129,10 @@
           <RadioGroup @options={{this.linkedWsOptions}} @selectedValue={{action "updateDoCreateLinkedWorkspaces"}} />
 
           {{#if this.showLinkedWsForm}}
-            <div class="group-selection">
+            <div class="group-selection" {{on "click" this.updateSectionGroups}}>
               <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{action "updateLinkedWorkspacesMode"}} @noWidth={{true}} />
             </div>
-            {{#if this.linkedWorkspacesMode}}
-              <LinkedWorkspacesNew @isDisplayOnly={{true}} @students={{this.sectionGroups}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} />
-            {{else}}
-              <LinkedWorkspacesNew @isDisplayOnly={{true}} @students={{this.selectedSection.students.content}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} />
-            {{/if}}
+              <LinkedWorkspacesNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} @students={{if this.linkedWorkspacesMode this.sectionGroups this.selectedSection.students.content}} />
           {{/if}}
         </li>
         {{#if this.doCreateLinkedWorkspaces}}
@@ -178,3 +175,4 @@
     {{error}}
   </p>
 {{/each}}
+</div>

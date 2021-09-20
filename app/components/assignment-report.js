@@ -1,20 +1,17 @@
-/*global _:false */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import CurrentUserMixin from '../mixins/current_user_mixin';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import _ from 'underscore';
 
-export default Component.extend(CurrentUserMixin, {
-  elementId: 'assignment-report',
-
-  sortCriterion: {
+export default class AssignmentReportComponent extends Component {
+  @tracked sortCriterion = {
     name: 'A-Z',
     sortParam: { param: 'username', direction: 'asc' },
     icon: 'fas fa-sort-alpha-down sort-icon',
     type: 'username',
-  },
-  classNameBindings: ['hidden'],
+  };
 
-  sortedReportItems: computed('reportWithUser', 'sortCriterion', function () {
+  get sortedReportItems() {
     let reportObj = this.reportWithUser;
     let items = [];
     _.each(reportObj, (info, username) => {
@@ -23,23 +20,23 @@ export default Component.extend(CurrentUserMixin, {
       obj.username = username;
       items.push(obj);
     });
-    let sortValue = this.get('sortCriterion.sortParam.param') || 'username';
-    let sortDirection = this.get('sortCriterion.sortParam.direction') || 'asc';
+    let sortValue = this.sortCriterion.sortParam.param || 'username';
+    let sortDirection = this.sortCriterion.sortParam.direction || 'asc';
     let sorted = items.sortBy(sortValue);
 
     if (sortDirection === 'desc') {
       return sorted.reverse();
     }
     return sorted;
-  }),
+  }
 
-  reportWithUser: computed('students.[]', 'details', 'assignment', function () {
-    let details = this.details;
+  get reportWithUser() {
+    let details = this.args.details;
 
     let results = {};
 
     _.each(details, (val, userId) => {
-      let user = this.students.findBy('id', userId);
+      let user = this.args.students.findBy('id', userId);
       if (user) {
         let username = user.get('username');
         if (username) {
@@ -49,9 +46,9 @@ export default Component.extend(CurrentUserMixin, {
     });
 
     return results;
-  }),
+  }
 
-  sortOptions: {
+  sortOptions = {
     student: [
       { sortParam: null, icon: '' },
       {
@@ -99,38 +96,32 @@ export default Component.extend(CurrentUserMixin, {
         type: 'latestRevision',
       },
     ],
-  },
+  };
 
-  totalSubmissionsCount: computed('sortedReportItems.[]', function () {
+  get totalSubmissionsCount() {
     return this.sortedReportItems.mapBy('count').reduce((acc, val) => {
       return acc + val;
     }, 0);
-  }),
+  }
 
-  uniqueSubmitters: computed('sortedReportItems.[]', function () {
+  get uniqueSubmitters() {
     return this.sortedReportItems.filter((item) => {
       return item.count > 0;
     });
-  }),
+  }
 
-  summaryMessage: computed(
-    'uniqueSubmitters',
-    'totalSubmissionsCount',
-    function () {
-      let numStudents = this.get('sortedReportItems.length');
-      let numSubmitters = this.get('uniqueSubmitters.length');
-      let numSubmissions = this.totalSubmissionsCount;
+  get summaryMessage() {
+    let numStudents = this.sortedReportItems.length;
+    let numSubmitters = this.uniqueSubmitters.length;
+    let numSubmissions = this.totalSubmissionsCount;
 
-      let studentNoun = numStudents === 1 ? 'student' : 'students';
-      let submissionNoun = numSubmissions === 1 ? 'submission' : 'submissions';
+    let studentNoun = numStudents === 1 ? 'student' : 'students';
+    let submissionNoun = numSubmissions === 1 ? 'submission' : 'submissions';
 
-      return `${numSubmitters} out of ${numStudents} ${studentNoun} have submitted to this assignment, for a total of ${numSubmissions} ${submissionNoun}.`;
-    }
-  ),
+    return `${numSubmitters} out of ${numStudents} ${studentNoun} have submitted to this assignment, for a total of ${numSubmissions} ${submissionNoun}.`;
+  }
 
-  actions: {
-    updateSortCriterion(criterion) {
-      this.set('sortCriterion', criterion);
-    },
-  },
-});
+  @action updateSortCriterion(criterion) {
+    this.sortCriterion = criterion;
+  }
+}
