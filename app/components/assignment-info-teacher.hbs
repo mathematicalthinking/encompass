@@ -42,25 +42,25 @@
     <p class="label">
       Class
     </p>
-    {{#if this.showSectionInput}}
+    {{!-- {{#if this.showSectionInput}}
       <SelectizeInput @inputId="assn-new-section-select" @initialOptions={{this.sectionOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @propToUpdate="section" @placeholder="Search for a section by name" @model="section" @store={{this.store}} />
-    {{else}}
+    {{else}} --}}
       <LinkTo @route="sections.section" @model={{@section.id}}>
         {{@section.name}}
       </LinkTo>
-    {{/if}}
+    {{!-- {{/if}} --}}
   </div>
   <div class="info-flex-item problem">
     <p class="label">
       Problem
     </p>
-    {{#if this.showProblemInput}}
+    {{!-- {{#if this.showProblemInput}}
       <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="problem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
-    {{else}}
+    {{else}} --}}
       <LinkTo @route="problems.problem" @model={{@problem}}>
         {{@problem.title}}
       </LinkTo>
-    {{/if}}
+    {{!-- {{/if}} --}}
   </div>
   <div class="info-flex-item linked-ws">
     <p class="label">
