@@ -36,9 +36,14 @@ nconf.defaults({
   database: {
     host: 'localhost',
     name: 'encompass',
-    user: 'encompass',
-    pass: '',
     port: 27017,
+    options: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      user: '',
+      pass: '',
+      ssl: false,
+    },
     collections: [
       'workspaces',
       'folders',

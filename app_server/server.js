@@ -54,11 +54,17 @@ switch (process.env.NODE_ENV) {
     console.log('NODE_ENV == staging');
     port = process.env.PORT;
     dbConf.name = process.env.DB_NAME;
+    dbConf.options.ssl = true;
+    dbConf.options.user = process.env.MONGO_USER;
+    dbConf.options.pass = process.env.MONGO_PASS;
     break;
   case 'production':
     console.log('NODE_ENV == production');
     port = process.env.PORT;
     dbConf.name = process.env.DB_NAME;
+    dbConf.options.ssl = true;
+    dbConf.options.user = process.env.MONGO_USER;
+    dbConf.options.pass = process.env.MONGO_PASS;
     break;
   case 'development':
     console.log('NODE_ENV == development');
@@ -73,9 +79,10 @@ switch (process.env.NODE_ENV) {
 
 console.log(`database name: '${dbConf.name}'`);
 
-mongoose.connect(`mongodb://${dbConf.host}:27017/${dbConf.name}`, {
-  useMongoClient: true,
-});
+mongoose.connect(
+  `mongodb://${dbConf.host}:27017/${dbConf.name}`,
+  dbConf.options
+);
 
 console.info(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
 console.info(`Port: ${port.toString()}`);
