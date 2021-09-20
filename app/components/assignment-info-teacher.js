@@ -266,13 +266,14 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   get groupsWithoutWorkspaces() {
-    const existingWorkspaces = this.linkedWorkspaces || [];
-    return this.args.groups.reject((group) => {
-      return existingWorkspaces.find((ws) => {
-        let ownerId = this.utils.getBelongsToId(ws, 'group');
-        return ownerId === group.get('id');
-      });
+    const existingWorkspaces = this.args.linkedWorkspaces || [];
+    const groups = this.args.groups.filter((group) => {
+      const found = existingWorkspaces.find(
+        (ws) => group.id === ws.get('group.id')
+      );
+      return !found;
     });
+    return groups;
   }
 
   get linkedByGroup() {
