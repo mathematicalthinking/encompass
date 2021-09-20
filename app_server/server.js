@@ -54,11 +54,13 @@ switch (process.env.NODE_ENV) {
     console.log('NODE_ENV == staging');
     port = process.env.PORT;
     dbConf.name = process.env.DB_NAME;
+    dbConf.ssl = true;
     break;
   case 'production':
     console.log('NODE_ENV == production');
     port = process.env.PORT;
     dbConf.name = process.env.DB_NAME;
+    dbConf.ssl = true;
     break;
   case 'development':
     console.log('NODE_ENV == development');
@@ -75,6 +77,7 @@ console.log(`database name: '${dbConf.name}'`);
 
 mongoose.connect(`mongodb://${dbConf.host}:27017/${dbConf.name}`, {
   useMongoClient: true,
+  ssl: dbConf.ssl,
 });
 
 console.info(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);

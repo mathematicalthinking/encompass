@@ -39,6 +39,7 @@ nconf.defaults({
     user: 'encompass',
     pass: '',
     port: 27017,
+    ssl: false,
     collections: [
       'workspaces',
       'folders',
