@@ -147,7 +147,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       this.fieldType = 'text';
     } else {
       this.showingPassword = false;
-      this.sfieldType = 'password';
+      this.fieldType = 'password';
     }
   }
 
