@@ -6,7 +6,6 @@ import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'add-create-student',
   isUsingDefaultPassword: false,
   fieldType: 'password',
   isShowingClassPassword: true,
