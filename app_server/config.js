@@ -34,7 +34,7 @@ nconf.defaults({
   //   - dev, tet and seed are hard coded
   //   - staging and production are updated from .env file values
   database: {
-    host: 'localhost',
+    host: 'mongodb://localhost:27017',
     name: 'encompass',
     port: 27017,
     options: {
@@ -44,6 +44,7 @@ nconf.defaults({
       pass: '',
       ssl: false,
       sslKey: '',
+      sslValidate: true,
     },
     collections: [
       'workspaces',

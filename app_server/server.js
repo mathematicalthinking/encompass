@@ -37,7 +37,7 @@ let port = nconf.get('port');
 let dbConf = nconf.get('database');
 
 console.log('process.env.PORT: ', process.env.PORT);
-console.log('process.env.MONGO_URL: ', process.env.MONGO_URL);
+console.log('process.env.MONGO_URI: ', process.env.MONGO_URI);
 
 switch (process.env.NODE_ENV) {
   case 'test':
@@ -57,6 +57,7 @@ switch (process.env.NODE_ENV) {
     dbConf.options.ssl = true;
     dbConf.options.user = process.env.MONGO_USER_STAGE;
     dbConf.options.pass = process.env.MONGO_PASS_STAGE;
+    dbConf.host = process.env.MONGO_URI;
     dbConf.options.sslKey = require('fs').readFileSync(
       process.env.MONGO_SSL_KEY
     );
@@ -68,6 +69,7 @@ switch (process.env.NODE_ENV) {
     dbConf.options.ssl = true;
     dbConf.options.user = process.env.MONGO_USER_PROD;
     dbConf.options.pass = process.env.MONGO_PASS_PROD;
+    dbConf.host = process.env.MONGO_URI;
     dbConf.options.sslKey = require('fs').readFileSync(
       process.env.MONGO_SSL_KEY
     );
@@ -85,10 +87,7 @@ switch (process.env.NODE_ENV) {
 
 console.log(`database name: '${dbConf.name}'`);
 
-mongoose.connect(
-  `mongodb://${dbConf.host}:27017/${dbConf.name}`,
-  dbConf.options
-);
+mongoose.connect(`${dbConf.host}/${dbConf.name}`, dbConf.options);
 
 console.info(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
 console.info(`Port: ${port.toString()}`);
