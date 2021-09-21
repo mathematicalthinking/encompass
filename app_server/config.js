@@ -43,6 +43,7 @@ nconf.defaults({
       user: '',
       pass: '',
       ssl: false,
+      sslKey: '',
     },
     collections: [
       'workspaces',

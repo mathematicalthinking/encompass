@@ -53,18 +53,24 @@ switch (process.env.NODE_ENV) {
   case 'staging':
     console.log('NODE_ENV == staging');
     port = process.env.PORT;
-    dbConf.name = process.env.DB_NAME;
+    dbConf.name = process.env.DB_NAME_STAGING;
     dbConf.options.ssl = true;
-    dbConf.options.user = process.env.MONGO_USER;
-    dbConf.options.pass = process.env.MONGO_PASS;
+    dbConf.options.user = process.env.MONGO_USER_STAGE;
+    dbConf.options.pass = process.env.MONGO_PASS_STAGE;
+    dbConf.options.sslKey = require('fs').readFileSync(
+      process.env.MONGO_SSL_KEY
+    );
     break;
   case 'production':
     console.log('NODE_ENV == production');
     port = process.env.PORT;
-    dbConf.name = process.env.DB_NAME;
+    dbConf.name = process.env.DB_NAME_PROD;
     dbConf.options.ssl = true;
-    dbConf.options.user = process.env.MONGO_USER;
-    dbConf.options.pass = process.env.MONGO_PASS;
+    dbConf.options.user = process.env.MONGO_USER_PROD;
+    dbConf.options.pass = process.env.MONGO_PASS_PROD;
+    dbConf.options.sslKey = require('fs').readFileSync(
+      process.env.MONGO_SSL_KEY
+    );
     break;
   case 'development':
     console.log('NODE_ENV == development');
