@@ -134,7 +134,7 @@
         </div>
         <div class="update-students">
           {{#if this.isEditingStudents}}
-            <AddCreateStudent @store={{this.store}} @currentUser={{this.currentUser}} @section={{this.currentSection}} @students={{this.studentList}} @sectionPassword={{this.section.sectionPassword}} />
+            <AddCreateStudent @currentUser={{this.currentUser}} @section={{this.currentSection}} @students={{this.studentList}} @sectionPassword={{this.section.sectionPassword}} />
           {{/if}}
           {{#each this.updateStudentErrors as |error|}}
             <p class="error-message">{{error}}</p>
