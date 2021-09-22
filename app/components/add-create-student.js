@@ -7,7 +7,7 @@ import $ from 'jquery';
 
 export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   @tracked isUsingDefaultPassword = false;
-  @tracked fieldType = 'password';
+  @tracked showingPassword = false;
   @tracked isShowingClassPassword = true;
   @tracked createUserErrors = [];
   @tracked findUserErrors = [];
@@ -141,14 +141,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   }
 
   @action showPassword() {
-    let isShowingPassword = this.showingPassword;
-    if (!isShowingPassword) {
-      this.showingPassword = true;
-      this.fieldType = 'text';
-    } else {
-      this.showingPassword = false;
-      this.fieldType = 'password';
-    }
+    this.showingPassword = !this.showingPassword;
   }
 
   @action addExistingStudent() {
