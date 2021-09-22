@@ -8,8 +8,6 @@ import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'section-info',
-  className: ['section-info'],
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
 
@@ -22,9 +20,6 @@ export default Component.extend(ErrorHandlingMixin, {
   showAssignment: false,
   problemList: null,
   sectionList: [],
-  sectionToDelete: null,
-  pending: '<p>Loading results...</p>',
-  notFound: '<p>No matching users.</p>',
   dataLoadErrors: [],
   updateSectionErrors: [],
   updateTeacherErrors: [],
@@ -63,7 +58,6 @@ export default Component.extend(ErrorHandlingMixin, {
   didReceiveAttrs: function () {
     let section = this.currentSection;
     let didSectionChange = !isEqual(section, this.section);
-    this.set('isEditing', false);
     this.set('isAddingTeacher', false);
 
     if (didSectionChange) {
@@ -433,7 +427,6 @@ export default Component.extend(ErrorHandlingMixin, {
           this.sendAction('toSectionList');
         })
         .catch((err) => {
-          this.set('sectionToDelete', null);
           this.handleErrors(err, 'updateSectionErrors', section);
         });
     },
