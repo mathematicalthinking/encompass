@@ -12,6 +12,10 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   @tracked createUserErrors = [];
   @tracked findUserErrors = [];
   @tracked updateSectionErrors = [];
+  @tracked usernameAlreadyExists = false;
+  @tracked userAlreadyInSection = false;
+  @tracked isMissingCredentials = false;
+  @tracked incorrectUsername = false;
   @service('sweet-alert') alert;
   @service store;
 
@@ -251,7 +255,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
 
     for (let error of errors) {
       if (this[error]) {
-        this[error] = null;
+        this[error] = false;
       }
     }
   }

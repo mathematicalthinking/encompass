@@ -30,7 +30,7 @@
             </label>
             {{#if this.isEditingSectionPassword}}
               <Input @id="defaultPassword" @type={{if this.showingPassword "text" "password"}} @value={{@sectionPassword}} placeholder="default password"
-                {{on "key-down" this.checkError}} />
+                {{on "input" this.checkError}} />
               <button id="show-password-btn" {{action "showPassword" }}>
                 {{#if this.showingPassword}}
                   <i class="fas fa-eye-slash"></i>
@@ -62,16 +62,16 @@
               Username
               <span class="required-star">*</span>
             </label>
-            <Input @id="username" @type="text" @value={{this.username}} placeholder="username" {{on "key-down" this.usernameValidate}} />
+            <Input @id="username" @type="text" @value={{this.username}} placeholder="username" {{on "input" this.usernameValidate}} />
           </div>
 
           <div class="create-student-input">
             <label for="first-name">First Name (Optional)</label>
-            <Input @id="first-name" @type="text" @value={{this.firstName}} placeholder="first name" {{on "key-down" this.checkError}} />
+            <Input @id="first-name" @type="text" @value={{this.firstName}} placeholder="first name" {{on "input" this.checkError}} />
           </div>
           <div class="create-student-input">
             <label for="last-name">Last Name (Optional)</label>
-            <Input @id="last-name" @type="text" @value={{this.lastName}} placeholder="last name" {{on "key-down" this.checkError}} />
+            <Input @id="last-name" @type="text" @value={{this.lastName}} placeholder="last name" {{on "input" this.checkError}} />
           </div>
 
           {{#unless this.isUsingDefaultPassword}}
@@ -80,7 +80,7 @@
                 Password
                 <span class="required-star">*</span>
               </label>
-              <Input @id="password" @type={{if this.showingPassword "text" "password"}} @value={{this.password}} placeholder="password" {{on "key-down" this.checkError}} />
+              <Input @id="password" @type={{if this.showingPassword "text" "password"}} @value={{this.password}} placeholder="password" {{on "input" this.checkError}} />
               <button id="show-password-btn" {{action "showPassword"}}>
                 {{#if this.showingPassword}}
                   <i class="fas fa-eye-slash"></i>
