@@ -27,6 +27,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @tracked findRecordErrors = [];
   @tracked problemLoadErrors = [];
   @tracked addGroup = false;
+  @tracked isEditingName = false;
   get groupedStudents() {
     return this.args.groups
       .toArray()
@@ -191,7 +192,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     try {
       const res = await savedGroup.save();
-      this.refresh();
       this.newGroup.name = '';
       this.newGroup.students = [];
       let selectize = $(`#group-add-student`)[0].selectize;
@@ -207,6 +207,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         false,
         null
       );
+      this.args.refresh();
+      this.addGroup = false;
     } catch (err) {
       console.log(err);
       this.alert.showToast('error', `${err}`, 'bottom-end', 3000, false, null);
