@@ -13,13 +13,12 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   @tracked teacher = null;
   @tracked leader = null;
   @tracked teachers = [];
-  @tracked invalidTeacherUsername = null;
   @tracked selectedOrganization = null;
   @tracked missingFieldsError = false;
   @tracked userOrg = null;
   @tracked newSectionName = '';
   @tracked teacher = null;
-  @tracked teacherFormErrors = [];
+  @tracked teacherFormErrors = null;
   @tracked organization = null;
   @tracked organizationFormErrors = null;
   @tracked nameFormErrors = null;
@@ -53,6 +52,10 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
       this.organization = this.args.user.get('organization');
     }
   }
+
+  // get invalidTeacherUsername() {
+  //   return !this.teacher;
+  // }
 
   // setTeacher: observer('teacher', function () {
   //   let teacher = this.teacher;
@@ -91,12 +94,12 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   }
 
   @action createSection() {
-    if (this.invalidTeacherUsername) {
-      return;
-    }
     var newSectionName = this.newSectionName;
-    var organization = this.organization;
     var teacher = this.teacher;
+    var organization =
+      teacher && teacher.get('organization')
+        ? teacher.get('organization')
+        : this.args.user.get('organization');
 
     let constraints = this.constraints;
     let values = {
@@ -125,11 +128,7 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
       teacher = user;
     }
 
-    var sectionData = this.store.createRecord('section', {
-      name: newSectionName,
-      organization: this.organization,
-      createdBy: this.args.user,
-    });
+    var sectionData = this.store.createRecord('section', values);
 
     sectionData.get('teachers').addObject(teacher);
 
@@ -163,6 +162,12 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
     if (this.missingFieldsError) {
       this.missingFieldsError = false;
     }
+    const errorsList = [
+      'teacherFormErrors',
+      'nameFormErrors',
+      'organizationFormErrors',
+    ];
+    errorsList.forEach((err) => (this[err] = null));
   }
 
   @action cancel() {

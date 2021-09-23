@@ -56,7 +56,7 @@
           </label>
           {{#if @user.isAdmin}}
             {{#if this.validTeacher}}
-              {{#if this.organization}}
+              {{#if this.teacher.organization.name}}
                 <p class="section-new-info org">{{this.teacher.organization.name}}</p>
               {{else}}
                 <p class="section-new-info">{{this.teacher.username}} does not belong to an organization. Class will be created with
