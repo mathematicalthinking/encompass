@@ -45,9 +45,12 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   //set user as teacher
   constructor() {
     super(...arguments);
-    if (!this.args.user.isAdmin) {
+    if (this.args.user.isTeacher) {
       this.teacher = this.args.user;
       this.organization = this.teacher.get('organization');
+    }
+    if (this.args.user.isPdAdmin) {
+      this.organization = this.args.user.get('organization');
     }
   }
 

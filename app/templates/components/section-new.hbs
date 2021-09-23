@@ -55,16 +55,16 @@
               data-tooltip={{this.tooltips.organization}}>Organization </span>
           </label>
           {{#if @user.isAdmin}}
-          {{#if this.validTeacher}}
-          {{#if this.organization}}
-            <p class="section-new-info org">{{this.teacher.organization.name}}</p>
-          {{else}}
-            <p class="section-new-info">{{this.teacher.username}} does not belong to an organization. Class will be created with
-            your organization ({{@user.organization.name}}).</p>
-          {{/if}}
-          {{else}}
-            <p class="section-new-info">Please select a teacher first.</p>
-          {{/if}}
+            {{#if this.validTeacher}}
+              {{#if this.organization}}
+                <p class="section-new-info org">{{this.teacher.organization.name}}</p>
+              {{else}}
+                <p class="section-new-info">{{this.teacher.username}} does not belong to an organization. Class will be created with
+                your organization ({{@user.organization.name}}).</p>
+              {{/if}}
+            {{else}}
+              <p class="section-new-info">Please select a teacher first.</p>
+            {{/if}}
           {{else}}
             <p class="section-new-info">{{@user.organization.name}}</p>
           {{/if}}
