@@ -93,10 +93,13 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
     return this.teacher && !this.invalidTeacherUsername;
   }
 
-  @action createSection() {
-    var newSectionName = this.newSectionName;
-    var teacher = this.teacher;
-    var organization =
+  @action async createSection() {
+    let newSectionName = this.newSectionName;
+    let teacher = this.teacher;
+    if (typeof teacher === 'string') {
+      teacher = await this.args.users.findBy('username', teacher);
+    }
+    let organization =
       teacher && teacher.get('organization')
         ? teacher.get('organization')
         : this.args.user.get('organization');
