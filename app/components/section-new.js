@@ -1,23 +1,30 @@
-import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import { isEqual } from '@ember/utils';
 import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  alert: service('sweet-alert'),
-  createRecordErrors: [],
-  teacher: null,
-  leader: null,
-  teachers: [],
-  invalidTeacherUsername: null,
-  selectedOrganization: null,
-  missingFieldsError: null,
-  userOrg: null,
+export default class SectionNewComponent extends ErrorHandlingComponent {
+  @service store;
+  @service router;
+  @service('sweet-alert') alert;
+  @tracked createRecordErrors = [];
+  @tracked teacher = null;
+  @tracked leader = null;
+  @tracked teachers = [];
+  @tracked invalidTeacherUsername = null;
+  @tracked selectedOrganization = null;
+  @tracked missingFieldsError = false;
+  @tracked userOrg = null;
+  @tracked newSectionName = '';
+  @tracked teacher = null;
+  @tracked teacherFormErrors = [];
+  @tracked organization = null;
+  @tracked organizationFormErrors = null;
+  @tracked nameFormErrors = null;
 
-  constraints: {
+  constraints = {
     name: {
       presence: { allowEmpty: false },
     },
@@ -27,154 +34,135 @@ export default Component.extend(ErrorHandlingMixin, {
     organization: {
       presence: { allowEmpty: false },
     },
-  },
-
-  init: function () {
-    this._super(...arguments);
-    let tooltips = {
-      name: 'Please give your class a name',
-      leader: 'The main owner of this class',
-      organization:
-        "The organization of this class is the same as the leader's",
-    };
-    this.set('tooltips', tooltips);
-  },
-
-  didReceiveAttrs: function () {
-    let users = this.users;
-    let userList = this.userList;
-
-    if (!isEqual(users, userList)) {
-      this.set('userList', users);
-      //filter out students for adding teachers;
-      let addableTeachers = users.rejectBy('accountType', 'S');
-      this.set('addableTeachers', addableTeachers);
-    }
-  },
+  };
+  tooltips = {
+    name: 'Please give your class a name',
+    leader: 'The main owner of this class',
+    organization: "The organization of this class is the same as the leader's",
+  };
 
   //Non admin User creating section
   //set user as teacher
-  didInsertElement: function () {
-    var user = this.user;
-    if (!user.get('isAdmin')) {
-      this.set('teacher', user);
+  constructor() {
+    super(...arguments);
+    if (!this.args.user.isAdmin) {
+      this.teacher = this.args.user;
+      this.organization = this.teacher.get('organization');
     }
-  },
+  }
 
-  setTeacher: observer('teacher', function () {
-    let teacher = this.teacher;
-    if (!teacher) {
-      if (this.organization) {
-        this.set('organization', null);
+  // setTeacher: observer('teacher', function () {
+  //   let teacher = this.teacher;
+  //   if (!teacher) {
+  //     if (this.organization) {
+  //       this.set('organization', null);
+  //     }
+  //     return;
+  //   }
+
+  //   if (typeof teacher === 'string') {
+  //     let users = this.users;
+  //     let user = users.findBy('username', teacher);
+  //     if (!user) {
+  //       this.set('invalidTeacherUsername', true);
+  //       this.set('organization', null);
+  //       return;
+  //     }
+  //     teacher = user;
+  //   }
+
+  //   let organization = teacher.get('organization');
+
+  //   if (organization) {
+  //     this.set('organization', organization);
+  //   } else {
+  //     this.set('organization', this.get('currentUser.organization'));
+  //   }
+  //   if (this.invalidTeacherUsername) {
+  //     this.set('invalidTeacherUsername', null);
+  //   }
+  // }),
+
+  get validTeacher() {
+    return this.teacher && !this.invalidTeacherUsername;
+  }
+
+  @action createSection() {
+    if (this.invalidTeacherUsername) {
+      return;
+    }
+    var newSectionName = this.newSectionName;
+    var organization = this.organization;
+    var teacher = this.teacher;
+
+    let constraints = this.constraints;
+    let values = {
+      name: newSectionName,
+      teacher: teacher,
+      organization: organization,
+    };
+    let validation = window.validate(values, constraints);
+    if (validation) {
+      // errors
+      for (let key of Object.keys(validation)) {
+        let errorProp = `${key}FormErrors`;
+        this[errorProp] = validation[key];
+        $('#create-class').addClass('animated shake slow');
       }
       return;
     }
 
     if (typeof teacher === 'string') {
-      let users = this.users;
+      let users = this.args.users;
       let user = users.findBy('username', teacher);
       if (!user) {
-        this.set('invalidTeacherUsername', true);
-        this.set('organization', null);
+        this.invalidTeacherUsername = true;
         return;
       }
       teacher = user;
     }
 
-    let organization = teacher.get('organization');
+    var sectionData = this.store.createRecord('section', {
+      name: newSectionName,
+      organization: this.organization,
+      createdBy: this.args.user,
+    });
 
-    if (organization) {
-      this.set('organization', organization);
-    } else {
-      this.set('organization', this.get('currentUser.organization'));
-    }
-    if (this.invalidTeacherUsername) {
-      this.set('invalidTeacherUsername', null);
-    }
-  }),
+    sectionData.get('teachers').addObject(teacher);
 
-  validTeacher: computed('teacher', 'invalidTeacherUsername', function () {
-    return this.teacher && !this.invalidTeacherUsername;
-  }),
-
-  actions: {
-    createSection: function () {
-      if (this.invalidTeacherUsername) {
-        return;
-      }
-      var newSectionName = this.newSectionName;
-      var organization = this.organization;
-      var teacher = this.teacher;
-
-      let constraints = this.constraints;
-      let values = {
-        name: newSectionName,
-        teacher: teacher,
-        organization: organization,
-      };
-      let validation = window.validate(values, constraints);
-      if (validation) {
-        // errors
-        for (let key of Object.keys(validation)) {
-          let errorProp = `${key}FormErrors`;
-          this.set(errorProp, validation[key]);
-          $('#create-class').addClass('animated shake slow');
-        }
-        return;
-      }
-
-      if (typeof teacher === 'string') {
-        let users = this.users;
-        let user = users.findBy('username', teacher);
-        if (!user) {
-          this.set('invalidTeacherUsername', true);
-          return;
-        }
-        teacher = user;
-      }
-
-      var sectionData = this.store.createRecord('section', {
-        name: newSectionName,
-        organization: this.organization,
-        createdBy: this.user,
+    sectionData
+      .save()
+      .then((section) => {
+        let name = section.get('name');
+        this.alert.showToast(
+          'success',
+          `${name} created`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        this.router.transitionTo('sections.section', section.id);
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'createRecordErrors', sectionData);
       });
+  }
 
-      sectionData.get('teachers').addObject(teacher);
+  @action closeError(error) {
+    $('.error-box').addClass('fadeOutRight');
+    later(() => {
+      $('.error-box').remove();
+    }, 500);
+  }
 
-      sectionData
-        .save()
-        .then((section) => {
-          let name = section.get('name');
-          this.alert.showToast(
-            'success',
-            `${name} created`,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.sendAction('toSectionInfo', section);
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'createRecordErrors', sectionData);
-        });
-    },
+  @action checkError() {
+    if (this.missingFieldsError) {
+      this.missingFieldsError = false;
+    }
+  }
 
-    closeError: function (error) {
-      $('.error-box').addClass('fadeOutRight');
-      later(() => {
-        $('.error-box').remove();
-      }, 500);
-    },
-
-    checkError: function () {
-      if (this.missingFieldsError) {
-        this.set('missingFieldsError', false);
-      }
-    },
-
-    cancel: function () {
-      this.sendAction('toSectionsHome');
-    },
-  },
-});
+  @action cancel() {
+    this.router.transitionTo('sections');
+  }
+}
