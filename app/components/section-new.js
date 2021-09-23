@@ -7,10 +7,7 @@ import $ from 'jquery';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'section-new',
-  className: ['sections'],
   alert: service('sweet-alert'),
-  createdSection: null,
   createRecordErrors: [],
   teacher: null,
   leader: null,
@@ -156,7 +153,6 @@ export default Component.extend(ErrorHandlingMixin, {
             false,
             null
           );
-          this.set('createdSection', section);
           this.sendAction('toSectionInfo', section);
         })
         .catch((err) => {

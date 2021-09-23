@@ -1,91 +1,100 @@
-<header>
-  <h2>Create New Class</h2>
-  <div class="clear"></div>
-</header>
+<div id="section-new" class="sections">
+  <header>
+    <h2>Create New Class</h2>
+    <div class="clear"></div>
+  </header>
 
-<div class="info">
-  {{#if user.isAdmin}}
-  <p>In order to create a new class, we need a name for the class, a primary teacher, and the affiliated organization.
-    The organization will automatically be set as the selected teacher's organization. If the selected teacher does not
-    belong to an organization, the organization will be set as your current organization</p>
-  {{else}}
-  <p>Please provide a name for the new class.</p>
-  {{/if}}
+  <div class="info">
+    {{#if user.isAdmin}}
+      <p>In order to create a new class, we need a name for the class, a primary teacher, and the affiliated organization.
+      The organization will automatically be set as the selected teacher's organization. If the selected teacher does not
+      belong to an organization, the organization will be set as your current organization</p>
+    {{else}}
+      <p>Please provide a name for the new class.</p>
+    {{/if}}
 
-</div>
+  </div>
 
-<section class="newSection">
-  <form id='newsectionform' class='properForm'>
-    <fieldset>
-      <div class="section-new-input">
-        <label for="title">
-          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.name}}>Class Name
-          </span> <span class="required-star">*</span>
-        </label>
-        <Input @id="newSectionName" required="true" @type="text" @value={{newSectionName}}
-          placeholder="Enter class name" @keydown={{this.checkError}} />
-        {{#each nameFormErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+  <section class="newSection">
+    <form id='newsectionform' class='properForm'>
+      <fieldset>
+        <div class="section-new-input">
+          <label for="title">
+            <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.name}}>
+              Class Name
+            </span> 
+            <span class="required-star">*</span>
+          </label>
+            <Input @id="newSectionName" required="true" @type="text" @value={{newSectionName}}
+            placeholder="Enter class name" @keydown={{this.checkError}} />
+          {{#each nameFormErrors as |error|}}
+            <p class="error-message">{{error}}</p>
+          {{/each}}
+        </div>
+
+        <div class="section-new-input">
+          <label for="teacher">
+            <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.leader}}>
+              Teacher/Leader
+            </span> 
+            <span class="required-star">*</span>
+          </label>
+          {{#if user.isTeacher}}
+            <p class="section-new-info teacher">{{teacher.username}}</p>
+          {{else}}
+            <TwitterTypeahead @placeholder="Teacher's username" @dataList={{addableTeachers}} @optionLabelPath="username"
+            @selectedValue={{teacher}} @minLength={{2}} @setSelectedValueOnChange={{true}} />
+          {{/if}}
+        </div>
+        {{#each teacherFormErrors as |error|}}
+          <p class="error-message">{{error}}</p>
         {{/each}}
-      </div>
+        <div class="section-new-input">
+          <label for="organization">
+            <span class="label-text simptip-position-right simptip-smooth"
+              data-tooltip={{tooltips.organization}}>Organization </span>
+          </label>
+          {{#if user.isAdmin}}
+          {{#if validTeacher}}
+          {{#if organization}}
+            <p class="section-new-info org">{{teacher.organization.name}}</p>
+          {{else}}
+            <p class="section-new-info">{{teacher.username}} does not belong to an organization. Class will be created with
+            your organization ({{user.organization.name}}).</p>
+          {{/if}}
+          {{else}}
+            <p class="section-new-info">Please select a teacher first.</p>
+          {{/if}}
+          {{else}}
+            <p class="section-new-info">{{user.organization.name}}</p>
+          {{/if}}
 
-      <div class="section-new-input">
-        <label for="teacher">
-          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.leader}}>Teacher/Leader
-          </span> <span class="required-star">*</span>
-        </label>
-        {{#if user.isTeacher}}
-        <p class="section-new-info teacher">{{teacher.username}}</p>
-        {{else}}
-        <TwitterTypeahead @placeholder="Teacher's username" @dataList={{addableTeachers}} @optionLabelPath="username"
-          @selectedValue={{teacher}} @minLength={{2}} @setSelectedValueOnChange={{true}} />
+        </div>
+        {{#each organizationFormErrors as |error|}}
+          <p class="error-message">{{error}}</p>
+        {{/each}}
+        {{#if invalidTeacherUsername}}
+          <p class="error-message">Sorry, there is no teacher with that username.</p>
         {{/if}}
-      </div>
-      {{#each teacherFormErrors as |error|}}
-      <p class="error-message">{{error}}</p>
-      {{/each}}
-      <div class="section-new-input">
-        <label for="organization">
-          <span class="label-text simptip-position-right simptip-smooth"
-            data-tooltip={{tooltips.organization}}>Organization </span>
-        </label>
-        {{#if user.isAdmin}}
-        {{#if validTeacher}}
-        {{#if organization}}
-        <p class="section-new-info org">{{teacher.organization.name}}</p>
-        {{else}}
-        <p class="section-new-info">{{teacher.username}} does not belong to an organization. Class will be created with
-          your organization ({{user.organization.name}}).</p>
-        {{/if}}
-        {{else}}
-        <p class="section-new-info">Please select a teacher first.</p>
-        {{/if}}
-        {{else}}
-        <p class="section-new-info">{{user.organization.name}}</p>
-        {{/if}}
-
-      </div>
-      {{#each organizationFormErrors as |error|}}
-      <p class="error-message">{{error}}</p>
-      {{/each}}
-      {{#if invalidTeacherUsername}}
-      <p class="error-message">Sorry, there is no teacher with that username.</p>
-      {{/if}}
-    </fieldset>
-  </form>
-</section>
+      </fieldset>
+    </form>
+  </section>
 
 
-{{!-- submit button to add a new section --}}
+  {{!-- submit button to add a new section --}}
 
-<section class="submit">
-  <button class="action_button" id="create-class" {{action 'createSection'}}>Create Class</button>
-  <button class="action_button cancel-button" {{action 'cancel'}}>
-    Cancel
-  </button>
+  <section class="submit">
+    <button class="action_button" id="create-class" {{action 'createSection'}}>Create Class</button>
+    <button class="action_button cancel-button" {{action 'cancel'}}>
+      Cancel
+    </button>
 
-</section>
+  </section>
 
-{{#each createRecordErrors as |error|}}
-<p class="error-box animated fadeInLeft">{{error}} <button class="dismiss" {{action 'closeError'}}>x</button></p>
-{{/each}}
+  {{#each createRecordErrors as |error|}}
+    <p class="error-box animated fadeInLeft">
+      {{error}} 
+      <button class="dismiss" {{action 'closeError'}}>x</button>
+    </p>
+  {{/each}}
+</div>
