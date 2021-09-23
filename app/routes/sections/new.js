@@ -14,7 +14,7 @@ export default class SectionsNewRoute extends AuthenticatedRoute {
   }
 
   async model() {
-    const users = await this.store.findAll('user');
+    const users = await this.store.query('user', {});
     const addableTeachers = users.rejectBy('accountType', 'S');
     return hash({
       users,
