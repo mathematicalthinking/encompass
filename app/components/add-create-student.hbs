@@ -1,0 +1,131 @@
+<div id="add-create-student">
+  <div class="student-search">
+    <h3>
+      Add Existing User
+      <i title="Start typing an existing username to see suggestions" class="fas fa-info-circle fa-sm"></i>
+    </h3>
+    <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{1}}
+      @initialOptions={{this.initialStudentOptions}} @onItemAdd={{action "updateStudents"}} @model="user" @isAsync={{true}}
+      @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
+  </div>
+
+  <div class="student-create">
+    <form id="create-student" class="properForm">
+      <h3>Create new student account</h3>
+      <fieldset>
+        <div class="create-student-input">
+          <label for="usingDefaultPassword">Use class password for all students?</label>
+          <Input @type="checkbox" @checked={{this.isUsingDefaultPassword}} @name="usingDefaultPassword" />
+        </div>
+        {{#if this.isUsingDefaultPassword}}
+          <div class="create-student-input">
+            <label for="defaulPassword">
+              Class Password
+              <span class="required-star">*</span>
+              {{#if this.isEditingSectionPassword}}
+                <i title="Done" {{action "updateSectionPassword"}} class="far fa-check-square"></i>
+              {{else}}
+                <i title="Edit" {{action (mut this.isEditingSectionPassword) true}} class="far fa-edit"></i>
+              {{/if}}
+            </label>
+            {{#if this.isEditingSectionPassword}}
+              <Input @id="defaultPassword" @type={{if this.showingPassword "text" "password"}} @value={{@sectionPassword}} placeholder="default password"
+                {{on "input" this.checkError}} />
+              <button id="show-password-btn" {{action "showPassword" }}>
+                {{#if this.showingPassword}}
+                  <i class="fas fa-eye-slash"></i>
+                {{else}}
+                  <i class="fas fa-eye"></i>
+                {{/if}}
+              </button>
+            {{else}}
+              {{#if @sectionPassword}}
+                {{#if this.isShowingClassPassword}}
+                  <p class="section-info">{{@sectionPassword}}
+                    <button id="show-password-btn" {{action (mut this.isShowingClassPassword) false}}>
+                      <i class="fas fa-eye-slash"></i>
+                    </button>
+                  </p>
+                {{else}}
+                  <Input class="hidden-class-pass" @disabled={{true}} @value={{@sectionPassword}} @type="password" />
+                  <button id="show-password-btn" {{action (mut this.isShowingClassPassword) true}}><i class="fas fa-eye"></i></button>
+                {{/if}}
+              {{else}}
+                <p class="section-info">Class password has not been set yet.</p>
+              {{/if}}
+            {{/if}}
+          </div>
+        {{/if}}
+        <div class="student-info">
+          <div class="create-student-input">
+            <label for="username">
+              Username
+              <span class="required-star">*</span>
+            </label>
+            <Input @id="username" @type="text" @value={{this.username}} placeholder="username" {{on "input" this.usernameValidate}} />
+          </div>
+
+          <div class="create-student-input">
+            <label for="first-name">First Name (Optional)</label>
+            <Input @id="first-name" @type="text" @value={{this.firstName}} placeholder="first name" {{on "input" this.checkError}} />
+          </div>
+          <div class="create-student-input">
+            <label for="last-name">Last Name (Optional)</label>
+            <Input @id="last-name" @type="text" @value={{this.lastName}} placeholder="last name" {{on "input" this.checkError}} />
+          </div>
+
+          {{#unless this.isUsingDefaultPassword}}
+            <div class="create-student-input">
+              <label for="addpassword">
+                Password
+                <span class="required-star">*</span>
+              </label>
+              <Input @id="password" @type={{if this.showingPassword "text" "password"}} @value={{this.password}} placeholder="password" {{on "input" this.checkError}} />
+              <button id="show-password-btn" {{action "showPassword"}}>
+                {{#if this.showingPassword}}
+                  <i class="fas fa-eye-slash"></i>
+                {{else}}
+                  <i class="fas fa-eye"></i>
+                {{/if}}
+              </button>
+            </div>
+          {{/unless}}
+          <div class="submit">
+            <button class="action_button" {{action 'validateCreateStudent' }}>Create and Add </button>
+          </div>
+        </div>
+      </fieldset>
+      {{#if this.usernameAlreadyExists}}
+        <p class="error-message"> Username is unavailable.</p>
+      {{/if}}
+      {{#if this.userAlreadyInSection}}
+        <p class="error-message"> User already registered in this section.</p>
+      {{!-- <button class="action_button" {{action 'exitAddExistingUsername' }}> Close </button> --}}
+      {{/if}}
+      {{#if this.isMissingCredentials}}
+        <p class="error-message"> Please fill in all required fields</p>
+      {{!-- <button class="action_button" {{action 'exitAddExistingUsername' }}> Close </button> --}}
+      {{/if}}
+      {{#if this.incorrectUsername}}
+        <p class="error-message">Username must be all lowercase, at least 3 characters and can only contain the following
+        special characters .-_@</p>
+      {{/if}}
+      {{#if this.canAddExistingUser}}
+        <p class="error-message"> {{this.username}} is an existing member of your organization. Do you want to add {{this.username}}
+          to this section?
+          <button class="action_button" {{action 'addExistingStudent'}}> yes </button>
+          <button class="action_button" {{action 'exitAddExistingUsername'}}> no </button>
+        </p>
+      {{/if}}
+      {{#each this.createUserErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+      {{#each this.findUserErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+      {{#each this.updateSectionErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+    </form>
+  </div>
+</div>
