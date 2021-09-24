@@ -22,7 +22,7 @@ export default class ResponseModel extends Auditable {
   get powId() {
     return this.submission.powId;
   }
-  get isStatc() {
+  get isStatic() {
     return this.submiission.isStatic;
   }
   @attr('string') responseType;
