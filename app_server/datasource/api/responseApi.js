@@ -170,7 +170,7 @@ async function postResponse(req, res, next) {
     response.createDate = Date.now();
 
     let savedResponse = await response.save();
-
+    savedResponse.depopulate('submission');
     let data = { response: savedResponse };
     utils.sendResponse(res, data);
   } catch (err) {
