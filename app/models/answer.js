@@ -21,16 +21,19 @@ export default class AnswerModel extends Auditable {
   @attr workspacesToUpdate;
   @attr vmtRoomInfo;
   get isVmt() {
-    let id = this.vmtRoomInfo.roomId;
-    let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
+    if (this.vmtRoomInfo) {
+      let id = this.vmtRoomInfo.roomId;
+      let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
 
-    return checkForHexRegExp.test(id);
+      return checkForHexRegExp.test(id);
+    }
+    return false;
   }
   get student() {
     if (this.isVmt) {
       return this.vmtRoomInfo.participants.firstObject || 'Unknown';
     }
-    const creatorUsername = this.createdBy.username;
+    const creatorUsername = this.createdBy.get('username');
     if (creatorUsername && creatorUsername !== 'old_pows_user') {
       return creatorUsername;
     }
