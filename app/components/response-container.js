@@ -4,7 +4,7 @@ import { computed } from '@ember/object';
 import { alias, equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
-//🔴needed for notification functions🔴
+//needed for notification functions
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
@@ -85,7 +85,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     if (this.isPrimaryRecipient) {
       if (!this.get('response.wasReadByRecipient')) {
         this.response.set('wasReadByRecipient', true);
-        // this.response.save();
+        this.response.save();
       }
     } else if (
       this.get('response.status') === 'pendingApproval' &&
@@ -142,8 +142,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     'currentUser.user.id',
     function () {
       return (
-        this.get('submission.creator.studentId') ===
-        this.get('currentUser.user.id')
+        this.get('submission.creator.studentId') === this.get('currentUser.user.id')
       );
     }
   ),
@@ -206,9 +205,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     'response.recipient.id',
     'currentUser.user.id',
     function () {
-      return (
-        this.get('response.recipient.id') === this.get('currentUser.user.id')
-      );
+      return this.get('response.recipient.id') === this.get('currentUser.user.id');
     }
   ),
 
@@ -224,9 +221,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     'response.createdBy.id',
     'currentUser.user.id',
     function () {
-      return (
-        this.get('response.createdBy.id') === this.get('currentUser.user.id')
-      );
+      return this.get('response.createdBy.id') === this.get('currentUser.user.id');
     }
   ),
 
