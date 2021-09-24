@@ -16,7 +16,7 @@ const nconf = config.nconf;
 const port = nconf.get('clientPort');
 const host = `http://localhost:${port}/#`;
 
-const loginUrl = `${host}/#/auth/login`;
+const loginUrl = `${host}/auth/login`;
 
 const admin = {
   username: 'Rick', // case insensitive
