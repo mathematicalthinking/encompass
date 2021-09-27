@@ -1,4 +1,5 @@
 import Component from '@ember/component';
+import { hash } from 'rsvp';
 import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
@@ -199,7 +200,9 @@ export default Component.extend(ErrorHandlingMixin, {
   ),
 
   isOwnDisplayReply: computed('currentUser.user', 'displayReply', function () {
-    return this.get('currentUser.user.id') === this.get('displayReply.createdBy.id');
+    return (
+      this.get('currentUser.user.id') === this.get('displayReply.createdBy.id')
+    );
   }),
 
   isDisplayReplyToYou: computed(
@@ -432,7 +435,7 @@ export default Component.extend(ErrorHandlingMixin, {
         text: trimmed,
       });
 
-      let hash = {
+      let obj = {
         newReply: record.save(),
       };
 
@@ -442,7 +445,7 @@ export default Component.extend(ErrorHandlingMixin, {
           this.responseToApprove.set('approvedBy', this.currentUser.user);
           record.set('isApproverNoteOnly', true);
         }
-        hash.updatedReply = this.responseToApprove.save();
+        obj.updatedReply = this.responseToApprove.save();
       }
 
       this.loading.handleLoadingMessage(
@@ -451,21 +454,21 @@ export default Component.extend(ErrorHandlingMixin, {
         'isReplySending',
         'doShowLoadingMessage'
       );
-      return hash(hash)
-        .then((hash) => {
+      return hash(obj)
+        .then((obj) => {
           this.loading.handleLoadingMessage(
             this,
             'end',
             'isReplySending',
             'doShowLoadingMessage'
           );
-          if (!hash) {
+          if (!obj) {
             return;
           }
           this.send('cancelReply');
 
-          this.subResponses.addObject(hash.newReply);
-          this.set('replyToView', hash.newReply);
+          this.subResponses.addObject(obj.newReply);
+          this.set('replyToView', obj.newReply);
           this.alert.showToast(
             'success',
             toastMessage,
@@ -474,7 +477,7 @@ export default Component.extend(ErrorHandlingMixin, {
             false,
             null
           );
-          this.handleResponseThread(hash.newReply, 'approver');
+          this.handleResponseThread(obj.newReply, 'approver');
         })
         .catch((err) => {
           this.loading.handleLoadingMessage(
@@ -617,12 +620,12 @@ export default Component.extend(ErrorHandlingMixin, {
         }
       }
 
-      let hash = {
+      let obj = {
         newReply: this.displayReply.save(),
       };
 
       if (!isDraft && responseToUpdate) {
-        hash.updatedResponse = responseToUpdate.save();
+        obj.updatedResponse = responseToUpdate.save();
       }
       this.loading.handleLoadingMessage(
         this,
@@ -631,8 +634,8 @@ export default Component.extend(ErrorHandlingMixin, {
         'doShowLoadingMessage'
       );
 
-      hash(hash)
-        .then((hash) => {
+      hash(obj)
+        .then((obj) => {
           this.loading.handleLoadingMessage(
             this,
             'end',
