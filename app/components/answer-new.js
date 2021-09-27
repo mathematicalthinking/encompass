@@ -192,7 +192,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
             createDate: new Date(),
             answer: answer,
             explanation: explanation,
-            assignment: this.assignment,
+            assignment: this.args.assignment,
             isSubmitted: true,
             problem: this.args.problem,
             priorAnswer: priorAnswer,

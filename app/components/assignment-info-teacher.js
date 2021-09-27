@@ -46,6 +46,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
     return this.groupsWithoutWorkspaces.length === 0;
   }
   @service store;
+  @service router;
   @service('sweet-alert') alert;
   @service('assignment-permissions') permissions;
   @service('utility-methods') utils;
@@ -294,7 +295,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
       )
       .then((result) => {
         if (result.value) {
-          this.send('deleteAssignment');
+          this.deleteAssignment();
         }
       });
   }
@@ -331,8 +332,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
               });
             }
           });
-        this.sendAction('toAssignments');
-        $('.daterangepicker').remove();
+        this.router.transitionTo('assignments');
       })
       .catch((err) => {
         this.assignmentToDelete = null;
