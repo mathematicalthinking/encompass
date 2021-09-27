@@ -44,6 +44,7 @@ nconf.defaults({
       pass: '',
       ssl: false,
       sslKey: '',
+      sslCert: '',
       sslValidate: true,
     },
     collections: [
