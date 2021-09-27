@@ -9,8 +9,6 @@
 
 const nconf = require('nconf');
 const logs = require('log4js');
-const build = process.env.BUILD;
-console.log('build: ', build);
 
 // const today = new Date();
 // const aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);

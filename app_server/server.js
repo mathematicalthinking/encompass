@@ -36,8 +36,6 @@ const server = express();
 let port = nconf.get('port');
 let dbConf = nconf.get('database');
 
-console.log('process.env.PORT: ', process.env.PORT);
-
 switch (process.env.NODE_ENV) {
   case 'test':
     console.log('NODE_ENV == test');
