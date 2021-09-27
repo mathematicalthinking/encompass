@@ -57,7 +57,7 @@
     {{!-- {{#if this.showProblemInput}}
       <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="problem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
     {{else}} --}}
-      <LinkTo @route="problems.problem" @model={{@problem}}>
+      <LinkTo @route="problems.problem" @model={{@problem.id}}>
         {{@problem.title}}
       </LinkTo>
     {{!-- {{/if}} --}}
