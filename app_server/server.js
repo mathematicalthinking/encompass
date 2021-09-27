@@ -46,6 +46,8 @@ switch (process.env.NODE_ENV) {
     console.log('NODE_ENV == seed');
     port = nconf.get('testPort');
     dbConf.name = nconf.get('seedDBName');
+    delete dbConf.options.sslKey;
+    delete dbConf.options.sslCert;
     break;
   case 'staging':
     console.log('NODE_ENV == staging');
