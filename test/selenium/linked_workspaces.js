@@ -197,7 +197,6 @@ describe('Linking multiple workspaces to one assignment', function () {
           );
 
           await helpers.findAndClickElement(driver, answerNewCss.createBtn);
-
           await helpers.waitForTextInDom(driver, toastMsg);
           await helpers.waitForRemoval(driver, css.sweetAlert.container);
           let revItems = await helpers.getWebElements(

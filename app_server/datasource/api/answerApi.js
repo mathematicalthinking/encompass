@@ -1,8 +1,8 @@
 /**
-  * # Answer API
-  * @description This is the API for answer based requests
-  * @author Michael McVeigh
-*/
+ * # Answer API
+ * @description This is the API for answer based requests
+ * @author Michael McVeigh
+ */
 
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
@@ -13,7 +13,7 @@ const moment = require('moment');
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
-const access= require('../../middleware/access/answers');
+const access = require('../../middleware/access/answers');
 const wsApi = require('./workspaceApi');
 const apiUtils = require('./utils');
 
@@ -21,45 +21,50 @@ const mongooseUtils = require('../../utils/mongoose');
 const { cleanObjectIdArray } = mongooseUtils;
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyArray, } = objectUtils;
-
+const { isNonEmptyArray } = objectUtils;
 
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
 /**
-  * @public
-  * @method getAnswers
-  * @description __URL__: /api/answers
-  * @returns {Object} An array of answer objects
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method getAnswers
+ * @description __URL__: /api/answers
+ * @returns {Object} An array of answer objects
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 
 // eslint-disable-next-line complexity
 async function getAnswers(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
 
-    let { ids, problem, filterBy, searchBy, didConfirmLargeRequest } = req.query;
+    let {
+      ids,
+      problem,
+      filterBy,
+      searchBy,
+      didConfirmLargeRequest,
+    } = req.query;
 
     if (problem) {
       let criteria = req.query;
       const requestedAnswers = await models.Answer.findOne(criteria).exec();
       let data = {
-        'answers': requestedAnswers
+        answers: requestedAnswers,
       };
       return utils.sendResponse(res, data);
     }
 
     if (filterBy) {
-      let {startDate, endDate, students } = filterBy;
+      let { startDate, endDate, students } = filterBy;
 
       if (startDate && endDate) {
         let startMoment = moment(startDate).startOf('day');
-        let endMoment =  moment(endDate).endOf('day');
+        let endMoment = moment(endDate).endOf('day');
         let startDateObj = new Date(startMoment);
 
         let endDateObj = new Date(endMoment);
@@ -67,7 +72,7 @@ async function getAnswers(req, res, next) {
         if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
           filterBy.createDate = {
             $gte: startDateObj,
-            $lte: endDateObj
+            $lte: endDateObj,
           };
         }
       }
@@ -76,7 +81,7 @@ async function getAnswers(req, res, next) {
         let pruned = cleanObjectIdArray(students);
 
         if (isNonEmptyArray(pruned)) {
-          filterBy.createdBy = {$in: pruned};
+          filterBy.createdBy = { $in: pruned };
         }
       }
 
@@ -95,66 +100,69 @@ async function getAnswers(req, res, next) {
       if (criterion) {
         if (criterion === 'all') {
           let topLevelStringProps = ['name'];
-          query = query.replace(/\s+/g, "");
+          query = query.replace(/\s+/g, '');
           let regex = new RegExp(query.split('').join('\\s*'), 'i');
           searchFilter.$or = [];
           for (let prop of topLevelStringProps) {
-            searchFilter.$or.push({[prop]: regex});
+            searchFilter.$or.push({ [prop]: regex });
           }
         } else {
-          query = query.replace(/\s+/g, "");
+          query = query.replace(/\s+/g, '');
           let regex = new RegExp(query.split('').join('\\s*'), 'i');
 
-          searchFilter = {[criterion]: regex};
+          searchFilter = { [criterion]: regex };
         }
       }
     }
-      const criteria = await access.get.answers(user, ids, filterBy, searchFilter);
-      if (_.isNull(criteria)) {
+    const criteria = await access.get.answers(
+      user,
+      ids,
+      filterBy,
+      searchFilter
+    );
+    if (_.isNull(criteria)) {
+      const data = {
+        answers: [],
+        meta: {
+          total: 0,
+        },
+      };
+      return utils.sendResponse(res, data);
+    }
+    let results, itemCount;
+
+    itemCount = await models.Answer.count(criteria);
+
+    if (itemCount > 1000) {
+      if (user.accountType !== 'A') {
         const data = {
-          'answers': [],
-          'meta': {
-            'total': 0,
-          }
+          answers: [],
+          meta: {
+            total: itemCount,
+            areTooManyAnswers: true,
+          },
+        };
+
+        return utils.sendResponse(res, data);
+      } else if (didConfirmLargeRequest !== 'true') {
+        const data = {
+          answers: [],
+          meta: {
+            total: itemCount,
+            doConfirmCriteria: true,
+          },
         };
         return utils.sendResponse(res, data);
       }
-      let results, itemCount;
-
-      itemCount = await models.Answer.count(criteria);
-
-      if (itemCount > 1000) {
-        if (user.accountType !== 'A') {
-          const data = {
-            answers: [],
-            meta: {
-              total: itemCount,
-              areTooManyAnswers: true
-            }
-          };
-
-          return utils.sendResponse(res, data);
-
-        } else if (didConfirmLargeRequest !== 'true') {
-          const data = {
-            answers: [],
-            meta: {
-              total: itemCount,
-              doConfirmCriteria: true
-          }
-        };
-        return utils.sendResponse(res, data);
-      }
-
-      } else if (itemCount > 500) {
-        // return and ask for confirmation
-        if (didConfirmLargeRequest !== 'true') {
-          const data = {
-            'answers': [],
-            'meta': {
-              'total': itemCount,
-              'doConfirmCriteria': true
-          }
+    } else if (itemCount > 500) {
+      // return and ask for confirmation
+      if (didConfirmLargeRequest !== 'true') {
+        const data = {
+          answers: [],
+          meta: {
+            total: itemCount,
+            doConfirmCriteria: true,
+          },
         };
         return utils.sendResponse(res, data);
       }
@@ -163,36 +171,32 @@ async function getAnswers(req, res, next) {
     // request has been confirmed or does not exceed size limit
     results = await models.Answer.find(criteria).lean().exec();
     const data = {
-      'answers': results,
-      'meta': {
-        'total': itemCount,
-      }
+      answers: results,
+      meta: {
+        total: itemCount,
+      },
     };
 
     return utils.sendResponse(res, data);
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getAnswers: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);
   }
-
-
 }
 
-
 /**
-  * @public
-  * @method getAnswer
-  * @description __URL__: /api/answer/:id
-  * @returns {Object} An answer object
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method getAnswer
+ * @description __URL__: /api/answer/:id
+ * @returns {Object} An answer object
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 
 const getAnswer = (req, res, next) => {
-  models.Answer.findById(req.params.id)
-  .exec((err, answer) => {
+  models.Answer.findById(req.params.id).exec((err, answer) => {
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
@@ -200,23 +204,23 @@ const getAnswer = (req, res, next) => {
     if (!answer || answer.isTrashed) {
       return utils.sendResponse(res, null);
     }
-    const data = {'answer': answer};
+    const data = { answer: answer };
     utils.sendResponse(res, data);
     next();
   });
 };
 
 /**
-  * @public
-  * @method postAnswer
-  * @description __URL__: /api/answers
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data saving failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method postAnswer
+ * @description __URL__: /api/answers
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data saving failed
+ * @throws {RestError} Something? went wrong
+ */
 
- const postAnswer = async function(req, res, next) {
-   try {
+const postAnswer = async function (req, res, next) {
+  try {
     const user = userAuth.requireUser(req);
 
     if (!user) {
@@ -229,11 +233,17 @@ const getAnswer = (req, res, next) => {
 
     // should always be an explanation
     if (!Array.isArray(parsedExplanationEls)) {
-      return utils.sendError.InvalidContentError('Missing or invalid explanation provided', res);
+      return utils.sendError.InvalidContentError(
+        'Missing or invalid explanation provided',
+        res
+      );
     }
 
     // create image record for every base64 image (resize if necessary)
-    let convertedExplanation = await apiUtils.handleBase64Images(parsedExplanationEls, user);
+    let convertedExplanation = await apiUtils.handleBase64Images(
+      parsedExplanationEls,
+      user
+    );
 
     answer.explanation = convertedExplanation;
     answer.createDate = Date.now();
@@ -243,7 +253,10 @@ const getAnswer = (req, res, next) => {
     if (savedAnswer) {
       // check if should update workspace
       if (isNonEmptyArray(savedAnswer.workspacesToUpdate)) {
-      updatedWorkspacesInfo =  await wsApi.addAnswerToWorkspaces(user, savedAnswer);
+        updatedWorkspacesInfo = await wsApi.addAnswerToWorkspaces(
+          user,
+          savedAnswer
+        );
       }
     }
     // savedAnswer createdBy, problem, section were populated
@@ -252,7 +265,6 @@ const getAnswer = (req, res, next) => {
     let problemId = _.propertyOf(savedAnswer)(['problem', '_id']);
     let sectionId = _.propertyOf(savedAnswer)(['section', '_id']);
     let creatorId = _.propertyOf(savedAnswer)(['createdBy', '_id']);
-
 
     if (problemId) {
       savedAnswer.problem = savedAnswer.problem._id;
@@ -264,32 +276,30 @@ const getAnswer = (req, res, next) => {
     if (creatorId) {
       savedAnswer.createdBy = savedAnswer.createdBy._id;
     }
-    let data = { 'answer': savedAnswer };
+    let data = { answer: savedAnswer };
     // updatedWorkspaceInfo is array of workspaceUpdate objects
     /*
     workspaceId,
     submissionId
     */
-    data.meta = { updatedWorkspacesInfo };
+    data.meta = updatedWorkspacesInfo;
     utils.sendResponse(res, data);
-   }catch(err) {
-     console.error(`Error postAnswer: ${err}`);
-     console.trace();
-     return utils.sendError.InternalError(null, res);
-   }
-
-
+  } catch (err) {
+    console.error(`Error postAnswer: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 };
 
 /**
-  * @public
-  * @method putAnswer
-  * @description __URL__: /api/answers/:id
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {BadRequest} Answer is not editable
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method putAnswer
+ * @description __URL__: /api/answers/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {BadRequest} Answer is not editable
+ * @throws {RestError} Something? went wrong
+ */
 
 const putAnswer = (req, res, next) => {
   const user = userAuth.requireUser(req);
@@ -301,20 +311,23 @@ const putAnswer = (req, res, next) => {
   // what check do we want to perform if the user can edit
   // if they created the answer?
   models.Answer.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     // if this has been submitted it is no longer editable
     // return an error
     if (doc.isSubmitted && !isAdmin) {
-      logger.error("answer already submitted");
-      return utils.sendError.NotAuthorizedError('Answer has already been submitted', res);
+      logger.error('answer already submitted');
+      return utils.sendError.NotAuthorizedError(
+        'Answer has already been submitted',
+        res
+      );
     }
 
     // make the updates
-    for(let field in req.body.answer) {
-      if((field !== '_id') && (field !== undefined)) {
+    for (let field in req.body.answer) {
+      if (field !== '_id' && field !== undefined) {
         doc[field] = req.body.answer[field];
       }
     }
@@ -323,7 +336,7 @@ const putAnswer = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'answer': answer};
+      const data = { answer: answer };
       utils.sendResponse(res, data);
     });
   });
