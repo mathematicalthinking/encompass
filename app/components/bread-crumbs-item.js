@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 export default class BreadCumbsItemComponent extends Component {
   get isSelected() {
-    return this.args.item.id === this.args.selectedItem.id;
+    return _.isEqual(this.args.item, this.args.selectedItem);
   }
 
   get isStarredItem() {
