@@ -323,6 +323,15 @@ const postAssignment = async (req, res, next) => {
     let parentWorkspace;
     let parentWorkspaceError;
 
+    const [err, teacherWorkspaces] = await generateTeacherWorkspace(
+      assignment,
+      user
+    );
+
+    if (err) {
+      console.log(err);
+    }
+
     if (doCreateLinkedWorkspaces) {
       // create a linked workspace for each student in assignment
       await assignment
@@ -344,7 +353,10 @@ const postAssignment = async (req, res, next) => {
         assignment.linkedWorkspacesRequest.error = err;
       } else {
         if (isNonEmptyArray(linkedWorkspaces)) {
-          let linkedWorkspacesIds = linkedWorkspaces.map((ws) => ws._id);
+          let linkedWorkspacesIds = [
+            ...linkedWorkspaces,
+            ...teacherWorkspaces,
+          ].map((ws) => ws._id);
 
           assignment.linkedWorkspaces = linkedWorkspacesIds;
           assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
@@ -1032,6 +1044,37 @@ const generateLinkedWorkspacesFromAssignment = async (
     return [null, workspaces];
   } catch (err) {
     console.log({ generateLinkedWorkspacesFromAssignmentErr: err });
+    return [err, null];
+  }
+};
+
+const generateTeacherWorkspace = async (assignment, reqUser) => {
+  try {
+    if (!assignment) {
+      return ['Missing assignment', null];
+    }
+    const section = await models.Section.findById(assignment.section);
+    const workspaces = await Promise.all(
+      section.teachers.map(async (teacher) => {
+        const teacherDoc = await models.User.findById(teacher);
+        const wsName = `${teacherDoc.username}: ${assignment.name} (${section.name})`;
+        return models.Workspace.create({
+          name: wsName,
+          owner: teacher,
+          createdBy: reqUser._id,
+          lastModifiedBy: reqUser._id,
+          lastModifiedDate: new Date(),
+          mode: 'private',
+          submissions: [],
+          linkedAssignment: assignment._id,
+          organization: reqUser.organization,
+          doAllowSubmissionUpdates: true,
+        });
+      })
+    );
+    return [null, workspaces];
+  } catch (err) {
+    console.log({ generateTeacherWorkspace: err });
     return [err, null];
   }
 };
