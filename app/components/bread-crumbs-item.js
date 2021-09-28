@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 export default class BreadCumbsItemComponent extends Component {
   get isSelected() {
-    return _.isEqual(this.args.item, this.args.selectedItem);
+    return this.args.item.id === this.args.selectedItem.id;
   }
 
   get isStarredItem() {
@@ -28,6 +28,6 @@ export default class BreadCumbsItemComponent extends Component {
     if (!item || this.isSelected) {
       return;
     }
-    this.onSelect(item);
+    this.args.onSelect(item);
   }
 }
