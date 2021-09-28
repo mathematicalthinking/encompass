@@ -27,7 +27,7 @@
     </div>
 
     {{#if isRevising}}
-      <AnswerNew @store={{this.store}} @assignment={{displaySubmission.answer.assignment.content}} @isRevision={{true}} @priorAnswer={{displaySubmission.answer.content}} @section={{displaySubmission.answer.section.content}} @problem={{displaySubmission.answer.problem.content}} @cancelResponse={{action "cancelRevising"}} @createButtonText="Submit Revision" @mainHeaderText="Create New Revision" @handleCreatedAnswer={{action "toSubmissionFromAnswer"}} @workspacesToUpdateIds={{[workspace.id]}} />
+      <AnswerNew @store={{this.store}} @assignment={{displaySubmission.answer.assignment.content}} @isRevision={{true}} @priorAnswer={{displaySubmission.answer.content}} @section={{displaySubmission.answer.section.content}} @problem={{displaySubmission.answer.problem.content}} @cancelResponse={{action "cancelRevising"}} @createButtonText="Submit Revision" @mainHeaderText="Create New Revision" @handleCreatedAnswer={{action "toSubmissionFromAnswer"}} @workspacesToUpdateIds={{workspacesToUpdateIds}} />
     {{else}}
       <div class="submission-content-container short">
         {{#if isRevising}}

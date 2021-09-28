@@ -38,7 +38,8 @@ export default Component.extend({
 
   isOwnSubmission: computed('submission.creator.studentId', function () {
     return (
-      this.get('submission.creator.studentId') === this.get('currentUser.user.id')
+      this.get('submission.creator.studentId') ===
+      this.get('currentUser.user.id')
     );
   }),
 
@@ -55,6 +56,9 @@ export default Component.extend({
   }),
   sortedStudentSubmissions: computed('submissionList.[]', function () {
     return this.submissionList.sortBy('createDate');
+  }),
+  workspacesToUpdateIds: computed('workspaces', function () {
+    return [this.workspace.id];
   }),
 
   mentoredRevisions: computed(
