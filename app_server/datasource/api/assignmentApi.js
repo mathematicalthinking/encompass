@@ -362,7 +362,11 @@ const postAssignment = async (req, res, next) => {
           assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
 
           if (doCreateParentWorkspace) {
-            let { name, doAutoUpdateFromChildren } = parentWorkspaceRequest;
+            let {
+              name,
+              doAutoUpdateFromChildren,
+              giveAccess,
+            } = parentWorkspaceRequest;
 
             if (typeof doAutoUpdateFromChildren !== 'boolean') {
               doAutoUpdateFromChildren = true;
@@ -379,6 +383,28 @@ const postAssignment = async (req, res, next) => {
               doAutoUpdateFromChildren,
               linkedAssignment: assignment._id,
             };
+            if (giveAccess) {
+              const { students } = await models.Section.findById(
+                assignment.section
+              );
+              parentWsConfig.permissions = students.map((student) => {
+                return {
+                  user: student,
+                  section: assignment.section,
+                  organization: user.organization,
+                  global: 'editor',
+                  submissions: {
+                    all: true,
+                    submissionIds: [],
+                    userOnly: false,
+                  },
+                  folders: 1, // none, see, add new, modify existing folder structure
+                  comments: 1,
+                  selections: 1, // if can delete other selections, can delete other taggings
+                  feedback: 'none',
+                };
+              });
+            }
             [
               parentWorkspaceError,
               parentWorkspace,

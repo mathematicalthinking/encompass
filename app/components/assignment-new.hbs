@@ -148,6 +148,15 @@
           <RadioGroup @options={{this.parentWsOptions}} @selectedValue={{action "updateDoCreateParentWorkspace"}} />
 
           {{#if this.showParentWsForm}}
+            <label for="accessOptions">
+              <span
+                  class="label-text simptip-position-right simptip-multiline simptip-smooth"
+                  data-tooltip={{this.tooltips.parentWorkspace}}
+                >
+                Give access to students?
+                </span>
+            </label>
+            <RadioGroup @options={{this.parentWorkspaceAccessOptions}} @selectedValue={{action "updateParentWorkspaceAccess"}} @noWidth={{true}} />
             <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} />
           {{/if}}
         </li>

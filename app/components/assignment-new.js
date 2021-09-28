@@ -21,6 +21,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
+  @tracked parentWorkspaceAccess = false;
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -87,6 +88,20 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       {
         value: false,
         label: 'No',
+      },
+    ],
+  };
+  parentWorkspaceAccessOptions = {
+    groupName: 'accessOptions',
+    required: false,
+    inputs: [
+      {
+        value: true,
+        label: 'Give access',
+      },
+      {
+        value: false,
+        label: 'Keep private',
       },
     ],
   };
@@ -228,6 +243,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     createAssignmentData.parentWorkspaceRequest = {
       doCreate: doCreateLinkedWorkspaces ? doCreateParentWorkspace : false,
       name: parentNameFormat,
+      giveAccess: this.parentWorkspaceAccess,
     };
 
     students.forEach((student) => {
@@ -302,6 +318,9 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
   @action updateDoCreateParentWorkspace(val) {
     this.doCreateParentWorkspace = val;
+  }
+  @action updateParentWorkspaceAccess(val) {
+    this.parentWorkspaceAccess = val;
   }
   @action validate() {
     const section = this.selectedSection;
