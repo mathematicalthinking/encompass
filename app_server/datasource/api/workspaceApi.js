@@ -770,7 +770,6 @@ async function sendWorkspace(req, res, next) {
 
       ws.childWorkspaces = ws.childWorkspaces.map((childWs) => childWs._id);
     }
-    console.log(data);
     return utils.sendResponse(res, data);
   } catch (err) {
     console.error(`Error sendWorkspace: ${err}`);
