@@ -59,8 +59,15 @@ export default Component.extend(ErrorHandlingMixin, VmtHostMixin, {
       );
     }
   ),
+  init() {
+    this._super(...arguments);
+    if (this.currentWorkspace.workspaceType === 'parent') {
+      this.makingSelection = false;
+    }
+  },
 
   didRender: function () {
+    this._super(...arguments);
     if (this.switching) {
       this.set('switching', false);
     }
