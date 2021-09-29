@@ -17,7 +17,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked formId = null;
   @tracked createRecordErrors = [];
   @tracked queryErrors = [];
-  @tracked linkedWorkspacesMode = false;
+  @tracked linkedWorkspacesMode = 'individual';
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
@@ -68,12 +68,16 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     requried: false,
     inputs: [
       {
-        value: true,
+        value: 'group',
         label: 'By Group',
       },
       {
-        value: false,
+        value: 'individual',
         label: 'By Student',
+      },
+      {
+        value: 'both',
+        label: 'Student and Group',
       },
     ],
   };
@@ -161,6 +165,20 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
     return `${title} / ${nameDate}`;
   }
+  //for the 'workspaces to be created' list
+  get workspacesList() {
+    if (this.linkedWorkspacesMode === 'group') {
+      return this.sectionGroups;
+    } else if (this.linkedWorkspacesMode === 'individual') {
+      return this.selectedSection.students.content;
+    } else {
+      return [
+        ...this.sectionGroups.toArray(),
+        ...this.selectedSection.students.content.toArray(),
+      ];
+    }
+  }
+
   constructor() {
     super(...arguments);
     let selectedProblem = this.args.selectedProblem;
@@ -237,7 +255,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     createAssignmentData.linkedWorkspacesRequest = {
       doCreate: doCreateLinkedWorkspaces,
       name: linkedNameFormat,
-      linkType: this.linkedWorkspacesMode ? 'group' : 'individual',
+      linkType: this.linkedWorkspacesMode,
     };
 
     createAssignmentData.parentWorkspaceRequest = {
