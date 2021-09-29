@@ -1,11 +1,10 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
+import _ from 'underscore';
 import { equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   elementId: ['parent-ws-collab-new'],
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
