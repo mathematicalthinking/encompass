@@ -9,7 +9,7 @@ const css = require('./selectors');
 const fixtures = require('./fixtures/forgot_password');
 
 const host = helpers.host;
-const url = `${host}/#/auth/forgot`;
+const url = `${host}/auth/forgot`;
 const messages = fixtures.messages;
 
 describe('Forgot Password', function () {

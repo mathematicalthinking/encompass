@@ -115,7 +115,9 @@ describe('Home Page', function () {
       } catch (err) {
         console.log(err);
       }
-      expect(await helpers.getCurrentUrl(driver)).to.equal(`${host}/`);
+      expect(await helpers.getCurrentUrl(driver)).to.equal(
+        `http://localhost:8081/`
+      );
     });
   });
 
@@ -144,9 +146,7 @@ describe('Home Page', function () {
     it('should redirect to login page after logging out', async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.waitForSelector(driver, css.topBar.login);
-      expect(await helpers.getCurrentUrl(driver)).to.eql(
-        `${host}/#/auth/login`
-      );
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/auth/login`);
       expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be
         .true;
       expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be

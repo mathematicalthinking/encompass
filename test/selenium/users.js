@@ -48,7 +48,7 @@ describe('Users', function () {
     let user = helpers.admin;
     before(async function () {
       await helpers.login(driver, host, user);
-      await helpers.waitForSelector(driver, 'a[href="/users"]');
+      await helpers.waitForSelector(driver, 'a[href="#/users"]');
     });
 
     function validateUsersPage() {
@@ -502,7 +502,8 @@ describe('Users', function () {
           .true;
         expect(await helpers.isElementVisible(driver, 'input.user-location')).to
           .be.true;
-        expect(await helpers.isElementVisible(driver, 'select')).to.be.true;
+        await driver.sleep(5000);
+        expect(await helpers.isElementVisible(driver, 'select')).to.be.true; //flaky
         expect(await helpers.isElementVisible(driver, 'input.user-isAuth')).to
           .be.true;
       });

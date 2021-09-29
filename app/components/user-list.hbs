@@ -5,19 +5,19 @@
   </header>
   <section>
     <nav class="list-box">
-      <CollapsibleList @title="Your account" @user={{@currentUser}} />      
+      <CollapsibleList @tag="your-account" @title="Your account" @user={{@currentUser}} />      
       {{#if @currentUser.isTeacher}}
         <CollapsibleList @title="Students in your Classes" @users={{this.yourStudents}} @noInfo="You don't have any students yet" />
-        <CollapsibleList @title="Users you have created" @users={{this.yourUsers}} @noInfo="You haven't created any users yet" />
-        <CollapsibleList @title="Users in {{@currentUser.organization.name}}" @users={{this.orgUsers}} @noInfo="There are no users in your organization" />
+        <CollapsibleList @tag="your-users" @title="Users you have created" @users={{this.yourUsers}} @noInfo="You haven't created any users yet" />
+        <CollapsibleList @tag="org-users" @title="Users in {{@currentUser.organization.name}}" @users={{this.orgUsers}} @noInfo="There are no users in your organization" />
       {{/if}}
-      <CollapsibleList @title="Waiting for Authorization"  @users={{this.unauthUsers}} @noInfo="There are no users waiting to be authorized" />
+      <CollapsibleList @tag="waiting-auth" @title="Waiting for Authorization"  @users={{this.unauthUsers}} @noInfo="There are no users waiting to be authorized" />
       {{#if @currentUser.isAdmin}}
-        <CollapsibleList @title="Administrators" @users={{this.adminUsers}} @noInfo="There are no admins" />
-        <CollapsibleList @title="Pd Admins" @users={{this.pdUsers}} @noInfo="There are no Pd Admins yet" />
+        <CollapsibleList @tag="admin-users" @title="Administrators" @users={{this.adminUsers}} @noInfo="There are no admins" />
+        <CollapsibleList @tag="pd-users" @title="Pd Admins" @users={{this.pdUsers}} @noInfo="There are no Pd Admins yet" />
       {{/if}}
-        <CollapsibleList @title="Teacher" @users={{this.teacherUsers}} @noInfo="There are no teachers yet" />
-        <CollapsibleList @title="Students" @users={{this.studentUsers}} @noInfo="There are no students yet" />
+        <CollapsibleList @tag="teacher-users" @title="Teacher" @users={{this.teacherUsers}} @noInfo="There are no teachers yet" />
+        <CollapsibleList @tag="student-users" @title="Students" @users={{this.studentUsers}} @noInfo="There are no students yet" />
       {{#if @currentUser.isAdmin}}
         <button class="toggle-button" {{action 'toggleDeletedUsers'}}>
           {{if this.showDeletedUsers 'Hide' 'Show'}} Deleted Users

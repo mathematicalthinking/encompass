@@ -3,7 +3,7 @@
   {{@title}}
 </h2>
 {{#if this.isOpen}}
-  <ul class="listing">
+  <ul class="listing {{@tag}}">
     {{#if @user}}
       <li class="{{if @user.name 'simptip-position-right simptip-smooth'}} {{if @user.isAuthorized 'is-authorized'}} {{if @user.isAdmin 'is-admin'}} {{unless @user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{@user.name}}>
         <LinkTo @route="users.user" @model={{@user.id}} @classNames="user">{{@user.username}}</LinkTo>

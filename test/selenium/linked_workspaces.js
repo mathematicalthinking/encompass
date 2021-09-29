@@ -229,6 +229,7 @@ describe('Linking multiple workspaces to one assignment', function () {
 
       before(async function () {
         await helpers.login(driver, host, student);
+        await driver.sleep(1000); //flaky test
         await helpers.navigateAndWait(driver, responseUrl, {
           selector: submitterCss.reviseBtn,
         });

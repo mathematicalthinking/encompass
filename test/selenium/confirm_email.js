@@ -10,7 +10,7 @@ const css = require('./selectors');
 const fixtures = require('./fixtures/confirm_email');
 
 const host = helpers.host;
-const confirmPath = '/#/auth/confirm';
+const confirmPath = '/auth/confirm';
 
 const confirmLink = `${host}${confirmPath}/${fixtures.userLiveToken.token}`;
 const invalidResetLink = `${host}${confirmPath}/${fixtures.userLiveToken.invalidToken}`;
@@ -136,9 +136,7 @@ describe('Confirm Email', function () {
     });
 
     it('should redirect to /unconfirmed', async function () {
-      expect(await helpers.getCurrentUrl(driver)).to.eql(
-        `${host}/#/unconfirmed`
-      );
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/unconfirmed`);
     });
 
     it('should display info message', async function () {

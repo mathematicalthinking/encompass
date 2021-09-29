@@ -81,7 +81,7 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   @action usernameValidate(username) {
-    console.log(username);
+    this.resetErrors();
     if (username) {
       var usernamePattern = new RegExp(this.usernameRegEx);
       var usernameTest = usernamePattern.test(username);

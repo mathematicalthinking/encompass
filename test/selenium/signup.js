@@ -87,7 +87,7 @@ describe('Signup form', function () {
       ).to.eql(true);
 
       let url = await driver.getCurrentUrl();
-      expect(url).to.eql(`${host}/#/auth/signup`);
+      expect(url).to.eql(`${host}/auth/signup`);
       let usernameInput = await driver.findElement(
         By.css(css.signup.inputs.username)
       );

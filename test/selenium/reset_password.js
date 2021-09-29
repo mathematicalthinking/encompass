@@ -9,7 +9,7 @@ const css = require('./selectors');
 const fixtures = require('./fixtures/reset_password');
 
 const host = helpers.host;
-const resetPath = '/#/auth/reset';
+const resetPath = '/auth/reset';
 
 const resetLink = `${host}${resetPath}/${fixtures.userLiveToken.token}`;
 const invalidResetLink = `${host}${resetPath}/${fixtures.userLiveToken.invalidToken}`;
@@ -122,7 +122,9 @@ describe('Resetting Password', function () {
         });
 
         it('should automatically log user in and redirect to home', async function () {
-          expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
+          expect(await helpers.getCurrentUrl(driver)).to.eql(
+            `http://localhost:8081/`
+          );
           // expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(user.name);
         });
 
@@ -142,7 +144,9 @@ describe('Resetting Password', function () {
           await helpers.findAndClickElement(driver, css.login.submit);
           await helpers.waitForSelector(driver, css.topBar.logout);
 
-          expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
+          expect(await helpers.getCurrentUrl(driver)).to.eql(
+            `http://localhost:8081/`
+          );
         });
       });
     });

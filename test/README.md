@@ -35,27 +35,29 @@ Responses X X
 Sections
 Problems X X X X
 
-## 16 out of 22
+## 17 out of 23
 
-## assignments_student - all pass 7/24/2021
+## assignments_new - all pass 9/29/2021
 
-## assignments_teacher - all pass 7/24/2021
+## assignments_student - all pass 9/29/2021
 
-## base - all pass 7/24/2021
+## assignments_teacher - all pass 9/29/2021
 
-## comments - all pass 7/24/2021
+## base - all pass 9/29/2021
 
-## confirm_email - all pass 7/26/2021
+## comments - all pass 9/29/2021
 
-## folders - all pass 7/24/2021
+## confirm_email - all pass 9/29/2021
 
-## forgot_password - all pass 7/26/2021
+## folders - all pass 9/29/2021
 
-## linked_workspaces - 4 fail 7/28/2021
+## forgot_password - all pass 9/29/2021
 
-## mentoring_approving - all pass 9/27/2021
+## linked_workspaces - all pass 9/29/2021
 
-## mentoring - 3 fail
+## mentoring_approving - all pass 9/29/2021
+
+## mentoring - 2 fail
 
 1. Mentoring Interactions
    Visting Responses List
@@ -85,7 +87,7 @@ Problems X X X X
    at async thenableWebDriverProxy.execute (node_modules/selenium-webdriver/lib/webdriver.js:731:17)
    at async Context.<anonymous> (test/selenium/mentoring.js:288:9)
 
-## parent_workspace - all pass 7/29/2021
+## parent_workspace - 2 fail 9/29/2021 VERY FLAKY
 
 - flaky: link showing up in time to continue to workspace
 
@@ -95,17 +97,17 @@ Problems X X X X
 
 ## problems - all pass 7/27/2021
 
-## reset_password - all pass 7/24/2021
+## reset_password - all pass 9/29/2021
 
-## responses - all pass 7/24/2021
+## responses - all pass 9/29/2021
 
-## sections - all pass 7/24/2021
+## sections - all pass 9/29/2021
 
 - flaky: new student should persist after page refresh
 
-## signup - all pass 7/24/2021
+## signup - all pass 9/29/2021
 
-## users - all pass 7/24/2021
+## users - all pass 9/29/2021
 
 ## workspace_settings - all pass 7/24/2021
 
