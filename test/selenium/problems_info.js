@@ -208,7 +208,7 @@ describe('Problems Info', async function () {
                     await driver.sleep(500);
                   });
 
-                  xit('should show problem organization', async function () {
+                  it('should show problem organization', async function () {
                     expect(
                       await helpers.findAndGetText(
                         driver,
@@ -218,7 +218,7 @@ describe('Problems Info', async function () {
                     ).to.contain(problemInfo.org);
                   });
 
-                  xit('should show flagged problem', async function () {
+                  it('should show flagged problem', async function () {
                     await helpers.waitForSelector(
                       driver,
                       css.problemInfo.problemStatus
@@ -232,7 +232,7 @@ describe('Problems Info', async function () {
                     ).to.contain(problemInfo.status2);
                   });
 
-                  xit('should display flag reason and more detials', async function () {
+                  it('should display flag reason and more detials', async function () {
                     await helpers.findAndClickElement(
                       driver,
                       css.problemInfo.flagReasonBtn
@@ -427,7 +427,7 @@ describe('Problems Info', async function () {
               });
 
               if (problemInfo.origin) {
-                xit('should show problem origin - if applicable', async function () {
+                it('should show problem origin - if applicable', async function () {
                   await helpers.waitForSelector(driver, css.problemInfo.origin);
                   expect(
                     await helpers.findAndGetText(
@@ -440,7 +440,7 @@ describe('Problems Info', async function () {
               }
 
               if (isAdmin) {
-                xit('should show problem creator', async function () {
+                it('should show problem creator', async function () {
                   await helpers.waitForSelector(
                     driver,
                     css.problemInfo.creator
@@ -582,6 +582,7 @@ describe('Problems Info', async function () {
                     .be.true;
                 });
                 it('should remove fill for star icon when removed from recommended', async function () {
+                  //flaky
                   await driver.sleep(500);
                   await helpers.waitForAndClickElement(
                     driver,
@@ -592,27 +593,26 @@ describe('Problems Info', async function () {
                     css.problemInfo.recommendButton + ' i.star-filled';
 
                   await helpers.waitForRemoval(driver, filledSel);
-
+                  await driver.sleep(500);
                   let lineSel =
                     css.problemInfo.recommendButton + ' i.star-line';
                   await helpers.waitForSelector(driver, lineSel);
                   expect(await helpers.isElementVisible(driver, lineSel)).to.be
                     .true;
                 });
-
-                it('should create a copy of current problem when clicking copy', async function () {
-                  await helpers.waitForAndClickElement(
-                    driver,
-                    css.problemInfo.copyButton
-                  );
-                  expect(
-                    await helpers.findAndGetText(
-                      driver,
-                      css.problemInfo.problemName
-                    )
-                  ).to.contain('Copy of ' + problemInfo.title);
-                });
               }
+              it('should create a copy of current problem when clicking copy', async function () {
+                await helpers.waitForAndClickElement(
+                  driver,
+                  css.problemInfo.copyButton
+                );
+                expect(
+                  await helpers.findAndGetText(
+                    driver,
+                    css.problemInfo.problemName
+                  )
+                ).to.contain('Copy of ' + problemInfo.title);
+              });
             });
           });
 
@@ -635,7 +635,7 @@ describe('Problems Info', async function () {
               await helpers.findAndClickElement(driver, 'li.filter-mine');
               await helpers.waitForAndClickElement(
                 driver,
-                problemInfo.selector
+                '#problem-list-ul li:first-child .item-section.name span:first-child'
               );
               await driver.sleep(5000);
             });
@@ -751,12 +751,12 @@ describe('Problems Info', async function () {
                     css.problemEdit.problemAuthor
                   )
                 ).to.be.true;
-                // expect(
-                //   await helpers.getWebElementValue(
-                //     driver,
-                //     css.problemEdit.problemAuthor
-                //   )
-                // ).to.contain(problemInfo.author);
+                expect(
+                  await helpers.getWebElementValue(
+                    driver,
+                    css.problemEdit.problemAuthor
+                  )
+                ).to.contain(problemInfo.author);
                 await helpers.clearElement(
                   driver,
                   css.problemEdit.problemAuthor
@@ -769,7 +769,7 @@ describe('Problems Info', async function () {
               });
 
               if (isAdmin) {
-                xit('should show problem organization', async function () {
+                it('should show problem organization', async function () {
                   await helpers.waitForSelector(
                     driver,
                     css.problemInfo.problemOrg
@@ -847,10 +847,12 @@ describe('Problems Info', async function () {
               });
 
               it('privacy setting and problem title should have changed', async function () {
+                //flaky test
                 await helpers.waitForSelector(
                   driver,
                   css.problemInfo.privacySettingParent
                 );
+                await driver.sleep(8000);
                 expect(
                   await helpers.hasTooltipValue(
                     driver,
@@ -867,6 +869,7 @@ describe('Problems Info', async function () {
               });
 
               it('the problem statement, author and status should have changed', async function () {
+                //flaky test
                 await helpers.waitForSelector(
                   driver,
                   css.problemInfo.problemStatementCont
@@ -881,6 +884,7 @@ describe('Problems Info', async function () {
                   driver,
                   css.problemInfo.problemAuthor
                 );
+                await driver.sleep(8000);
                 expect(
                   await helpers.findAndGetText(
                     driver,
@@ -1144,7 +1148,7 @@ describe('Problems Info', async function () {
               });
 
               if (isAdmin) {
-                xit('should show problem creator', async function () {
+                it('should show problem creator', async function () {
                   expect(
                     await helpers.findAndGetText(
                       driver,
@@ -1169,7 +1173,7 @@ describe('Problems Info', async function () {
                 await driver.sleep(800);
               });
 
-              xit('should show and edit copyright notice', async function () {
+              it('should show and edit copyright notice', async function () {
                 await helpers.waitForSelector(
                   driver,
                   css.problemEdit.copyright
@@ -1197,7 +1201,7 @@ describe('Problems Info', async function () {
                 );
               });
 
-              xit('should show and edit sharing authorization', async function () {
+              it('should show and edit sharing authorization', async function () {
                 await helpers.waitForSelector(
                   driver,
                   css.problemEdit.sharingAuth
@@ -1235,7 +1239,7 @@ describe('Problems Info', async function () {
                 await driver.sleep(500);
               });
 
-              xit('copyright notice should have changed', async function () {
+              it('copyright notice should have changed', async function () {
                 await helpers.waitForSelector(
                   driver,
                   css.problemInfo.copyright
@@ -1248,7 +1252,7 @@ describe('Problems Info', async function () {
                 ).to.contain(problemEdit.copyright2);
               });
 
-              xit('sharing authorization should have changed', async function () {
+              it('sharing authorization should have changed', async function () {
                 await helpers.waitForSelector(
                   driver,
                   css.problemInfo.sharingAuth
@@ -1266,25 +1270,25 @@ describe('Problems Info', async function () {
           describe('General problem info testing', function () {
             before(async function () {
               // await helpers.waitForAndClickElement(driver, topLink);
-              // let options = {
-              //   selector: 'a',
-              //   urlToWaitFor: `${host}/problems`,
-              //   timeout: 10000,
-              // };
-              // await helpers.navigateAndWait(
-              //   driver,
-              //   `${host}/problems`,
-              //   options
-              // );
-              // await helpers.findAndClickElement(driver, 'li.filter-mine');
-              // await helpers.waitForAndClickElement(
-              //   driver,
-              //   '#problem-list-ul li:first-child .item-section.name span:first-child'
-              // );
-              // await driver.sleep(500);
+              let options = {
+                selector: 'a',
+                urlToWaitFor: `${host}/problems`,
+                timeout: 10000,
+              };
+              await helpers.navigateAndWait(
+                driver,
+                `${host}/problems`,
+                options
+              );
+              await helpers.findAndClickElement(driver, 'li.filter-mine');
+              await helpers.waitForAndClickElement(
+                driver,
+                '#problem-list-ul li:first-child .item-section.name span:first-child'
+              );
+              await driver.sleep(500);
             });
 
-            xit('cancel button should stop editing view', async function () {
+            it('cancel button should stop editing view', async function () {
               await helpers.waitForAndClickElement(
                 driver,
                 css.problemInfo.editButton
@@ -1308,7 +1312,7 @@ describe('Problems Info', async function () {
               ).to.be.true;
             });
 
-            xit('should show error when trying to create public problem with duplicate name', async function () {
+            it('should show error when trying to create public problem with duplicate name', async function () {
               await helpers.waitForAndClickElement(
                 driver,
                 css.problemInfo.editButton
@@ -1329,7 +1333,6 @@ describe('Problems Info', async function () {
               );
               await driver.sleep(800);
               await helpers.waitForSelector(driver, css.problemEdit.errorBox);
-              await driver.sleep(10000);
               expect(
                 await helpers.findAndGetText(
                   driver,
@@ -1344,7 +1347,7 @@ describe('Problems Info', async function () {
               );
             });
 
-            xit('should show error when saving a problem without a name', async function () {
+            it('should show error when saving a problem without a name', async function () {
               await helpers.clearElement(
                 driver,
                 css.problemEdit.problemNameInput
@@ -1356,7 +1359,7 @@ describe('Problems Info', async function () {
               );
               await driver.sleep(800);
               await helpers.waitForSelector(driver, css.problemEdit.errorBox);
-              await driver.sleep(10000);
+
               expect(
                 await helpers.findAndGetText(
                   driver,
@@ -1370,7 +1373,7 @@ describe('Problems Info', async function () {
               await driver.sleep(500);
             });
 
-            xit('should show error when saving a problem without a statement', async function () {
+            it('should show error when saving a problem without a statement', async function () {
               await helpers.waitForAndClickElement(
                 driver,
                 css.problemEdit.cancelButton
@@ -1400,7 +1403,7 @@ describe('Problems Info', async function () {
               ).to.contain('Please fill in all required fields');
             });
 
-            xit('should delete a problem you created with no answers', async function () {
+            it('should delete a problem you created with no answers', async function () {
               await helpers.waitForAndClickElement(
                 driver,
                 css.problemEdit.deleteButton
@@ -1420,10 +1423,10 @@ describe('Problems Info', async function () {
             });
 
             if (isPdadmin) {
-              xit('should show warning modal if editing assigned problem', async function () {
+              it('should show warning modal if editing assigned problem', async function () {
                 await helpers.findAndClickElement(driver, 'li.filter-myOrg');
                 console.log('editing assigned problem');
-                await driver.sleep(10000);
+
                 await helpers.waitForAndClickElement(
                   driver,
                   '#problem-list-ul li:nth-child(2) .item-section.name span:first-child'
@@ -1437,7 +1440,7 @@ describe('Problems Info', async function () {
             }
 
             if (isAdmin) {
-              xit('should show warning modal if editing problem with answers', async function () {
+              it('should show warning modal if editing problem with answers', async function () {
                 await helpers.findAndClickElement(driver, 'li.filter-all');
                 await helpers.waitForAndClickElement(
                   driver,

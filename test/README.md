@@ -35,7 +35,7 @@ Responses X X
 Sections
 Problems X X X X
 
-## 19 out of 23
+## 20 out of 22
 
 ## assignments_new - all pass 9/29/2021
 
@@ -91,7 +91,7 @@ Problems X X X X
 
 - flaky: link showing up in time to continue to workspace
 
-## problems_info - 3 fail
+## problems_info - all pass 9/30/2021 flaky
 
 ## problems_new - all pass 7/27/2021
 
