@@ -35,7 +35,7 @@ Responses X X
 Sections
 Problems X X X X
 
-## 17 out of 23
+## 19 out of 23
 
 ## assignments_new - all pass 9/29/2021
 
@@ -109,8 +109,8 @@ Problems X X X X
 
 ## users - all pass 9/29/2021
 
-## workspace_settings - all pass 7/24/2021
+## workspace_settings - all pass 9/30/2021
 
-## workspaces_new - all pass 7/24/2021
+## workspaces_new - needs updating
 
-## workspaces - all pass 7/24/2021
+## workspaces - all pass 9/30/2021
