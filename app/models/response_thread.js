@@ -160,10 +160,8 @@ export default Model.extend(CurrentUserMixin, {
     }
   ),
 
-  cleanResponses: computed('responses.content.@each.isTrashed', function () {
-    return this.get('responses.content')
-      .rejectBy('isTrashed')
-      .sortBy('createDate');
+  cleanResponses: computed('responses.@each.isTrashed', function () {
+    return this.get('responses').rejectBy('isTrashed').sortBy('createDate');
   }),
 
   unreadResponses: computed(
