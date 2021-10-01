@@ -16,6 +16,19 @@ export default class MetricsSubmissionController extends Controller {
   //       this.set('ws', name);
   //   });
   // }),
+
+  get answer() {
+    return this.model.shortAnswer
+      ? this.model.shortAnswer
+      : this.model.answer.answer;
+  }
+
+  get explanation() {
+    return this.model.longAnswer
+      ? this.model.longAnswer
+      : this.model.answer.explanation;
+  }
+
   @action handleToggle(prop) {
     this.showSelections = false;
     this.showFolders = false;

@@ -1,21 +1,21 @@
 <header>
-  <h4>{{model.title}}</h4>
+  <h4>{{make-html-safe this.model.title}}</h4>
   <p>View details about a problem</p>
 </header>
 <p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
   <div class="metrics__container metrics--flex">
-    <button {{action "toggleProblemText"}} class="primary-button">Show Problem Text</button>
-    <button {{action "findWorkspaces"}} class="primary-button">Find Workspaces</button>
-    <button {{action "findWorkspaces2"}} class="primary-button">Find Workspaces2</button>
-    <button {{action "findSubmissions"}} class="primary-button">Find Answers</button>
+    <button {{on "click" this.toggleProblemText}} class="primary-button" type="button">Show Problem Text</button>
+    <button {{on "click" this.findWorkspaces}} class="primary-button" type="button">Find Workspaces</button>
+    <button {{on "click" this.findWorkspaces2}} class="primary-button" type="button">Find Workspaces2</button>
+    <button {{on "click" this.findSubmissions}} class="primary-button" type="button">Find Answers</button>
   </div>
-  {{#if showProblemText}}
+  {{#if this.showProblemText}}
     <div class="metrics__card">
-      {{{model.text}}}
+      {{make-html-safe this.model.text}}
     </div>
   {{/if}}
-  {{#if showWorkspaces}}
+  {{#if this.showWorkspaces}}
     <p>Workspaces</p>
     <table class="metrics__table">
       <thead>
@@ -41,7 +41,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each relevantWorkspaces as |workspace|}}
+        {{#each this.relevantWorkspaces as |workspace|}}
           <tr>
             <td><LinkTo @route="metrics.workspace" @model={{workspace}}>{{workspace.name}}</LinkTo></td>
             <td>{{workspace.owner.displayName}}</td>
@@ -54,7 +54,7 @@
       </tbody>
     </table>
   {{/if}}
-  {{#if showAnswers}}
+  {{#if this.showAnswers}}
     <p>Answers</p>
     <table class="metrics__table">
       <thead>
@@ -71,11 +71,11 @@
         </tr>
       </thead>
       <tbody>
-        {{#each problemAnswers as |answer|}}
+        {{#each this.problemAnswers as |answer|}}
           <tr>
             <td>{{answer.student}}</td>
             <td>{{answer.answer}}</td>
-            <td>{{{answer.explanation}}}</td>
+            <td>{{make-html-safe answer.explanation}}</td>
           </tr>
         {{/each}}
       </tbody>

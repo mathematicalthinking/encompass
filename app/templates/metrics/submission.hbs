@@ -1,17 +1,16 @@
-{{log workspaceName}}
 <header>
-  <h3>{{model.student}}'s Submission in {{ws}}</h3>
+  <h3>{{this.model.student}}'s Submission</h3>
 </header>
 <p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
   <div class="metrics__container metrics--flex">
-    <button {{action "handleToggle" "showSelections"}} class="primary-button">Report Selections</button>
-    <button {{action "handleToggle" "showFolders"}} class="primary-button">Report Folders</button>
-    <button {{action "handleToggle" "showComments"}} class="primary-button">Report Comments</button>
-    <button {{action "handleToggle" "showResponses"}} class="primary-button">Report Responses</button>
+    <button {{on "click" (fn this.handleToggle "showSelections")}} class="primary-button" type="button">Report Selections</button>
+    <button {{on "click" (fn this.handleToggle "showFolders")}} class="primary-button" type="button">Report Folders</button>
+    <button {{on "click" (fn this.handleToggle "showComments")}} class="primary-button" type="button">Report Comments</button>
+    <button {{on "click" (fn this.handleToggle "showResponses")}} class="primary-button" type="button">Report Responses</button>
   </div>
   <div class="metrcis__container">
-  {{#if showSelections}}
+  {{#if this.showSelections}}
     <p>selections</p>
     <table class="metrics__table">
       <thead>
@@ -22,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.selections as |selection|}}
+        {{#each this.model.selections as |selection|}}
           <tr>
             <td>{{selection.text}}</td>
           </tr>
@@ -30,7 +29,7 @@
       </tbody>
     </table>
   {{/if}}
-  {{#if showFolders}}
+  {{#if this.showFolders}}
     <p>Folders</p>
     <table class="metrics__table">
       <thead>
@@ -41,7 +40,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.folders as |folder|}}
+        {{#each this.model.folders as |folder|}}
           <tr>
             <td>{{folder.name}}</td>
           </tr>
@@ -49,7 +48,7 @@
       </tbody>
     </table>
   {{/if}}
-  {{#if showComments}}
+  {{#if this.showComments}}
     <p>Comments</p>
     <table class="metrics__table">
       <thead>
@@ -66,7 +65,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.comments as |comment|}}
+        {{#each this.model.comments as |comment|}}
           <tr>
             <td>{{comment.createdBy.username}}</td>
             <td>{{comment.label}}</td>
@@ -76,7 +75,7 @@
       </tbody>
     </table>
   {{/if}}
-  {{#if showResponses}}
+  {{#if this.showResponses}}
     <p>Created By</p>
     <table class="metrics__table">
       <thead>
@@ -90,10 +89,10 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.responses as |response|}}
+        {{#each this.model.responses as |response|}}
           <tr>
             <td>{{response.createdBy.username}}</td>
-            <td>{{{response.text}}}</td>
+            <td>{{make-html-safe response.text}}</td>
           </tr>
         {{/each}}
       </tbody>
@@ -103,11 +102,11 @@
   <div class="metrics__container" id="submission">
     <div class="metrics__card">
     <h3>answer</h3>
-      <p>{{if model.shortAnswer model.shortAnswer model.answer.answer}}</p>
+      <p>{{make-html-safe this.answer}}</p>
     </div>
     <div class="metrics__card">
     <h3>explanation</h3>
-      <p>{{if model.longAnswer model.longAnswer model.answer.explanation}}</p>
+      <p>{{make-html-safe this.explanation}}</p>
     </div>
   </div>
 </div>

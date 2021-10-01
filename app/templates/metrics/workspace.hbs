@@ -7,16 +7,16 @@
   <h3>{{this.model.lastModifiedDate}}</h3>
 </header>
 <div class="metrics__container">
-  <p>{{#link-to "metrics"}}back{{/link-to}}</p>
+  <p><LinkTo @route="metrics">back</LinkTo></p>
   <div class="metrics__container metrics--flex">
-    <button {{action "handleToggle" "showCloud"}} class="primary-button">Generate Wordcloud</button>
-    <button {{action "handleToggle" "showFolders"}} class="primary-button">folders: {{model.foldersLength}}</button>
-    <button {{action "handleToggle" "showComments"}} class="primary-button">comments: {{model.commentsLength}}</button>
-    <button {{action "handleToggle" "showResponses"}} class="primary-button">responses: {{model.responsesLength}}</button>
-    <button {{action "handleToggle" "showSelections"}} class="primary-button">selections: {{model.selectionsLength}}</button>
-    <button {{action "handleToggle" "showSubmissions"}} class="primary-button">submissions: {{model.submissionsLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showCloud")}} class="primary-button" type="button">Generate Wordcloud</button>
+    <button {{on "click" (fn this.handleToggle "showFolders")}} class="primary-button" type="button">folders: {{this.model.foldersLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showComments")}} class="primary-button" type="button">comments: {{this.model.commentsLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showResponses")}} class="primary-button" type="button">responses: {{this.model.responsesLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showSelections")}} class="primary-button" type="button">selections: {{this.model.selectionsLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showSubmissions")}} class="primary-button" type="button">submissions: {{this.model.submissionsLength}}</button>
   </div>
-  {{#if showSelections}}
+  {{#if this.showSelections}}
     <p>selections</p>
     <table class="metrics__table">
       <thead>
@@ -36,7 +36,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.selections as |selection|}}
+        {{#each this.model.selections as |selection|}}
           <tr>
             <td>{{selection.submission.student}}</td>
             <td>{{selection.createdBy.username}}</td>
@@ -53,7 +53,7 @@
       </tbody>
     </table>
   {{/if}}
-  {{#if showFolders}}
+  {{#if this.showFolders}}
     <table class="metrics__table">
       <thead>
         <tr>
@@ -63,7 +63,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.folders as |folder|}}
+        {{#each this.model.folders as |folder|}}
           <tr>
             <td>{{folder.name}}</td>
           </tr>
@@ -71,7 +71,7 @@
       </tbody>
     </table>
   {{/if}}
-  {{#if showComments}}
+  {{#if this.showComments}}
     <table class="metrics__table">
       <thead>
         <tr>
@@ -87,7 +87,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.comments as |comment|}}
+        {{#each this.model.comments as |comment|}}
           <tr>
             <td>{{comment.createdBy.username}}</td>
             <td>{{comment.label}}</td>
@@ -97,7 +97,7 @@
       </tbody>
     </table>
   {{/if}}
-  {{#if showResponses}}
+  {{#if this.showResponses}}
     <table class="metrics__table">
       <thead>
         <tr>
@@ -110,16 +110,16 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.responses as |response|}}
+        {{#each this.model.responses as |response|}}
           <tr>
             <td>{{response.createdBy.username}}</td>
-            <td>{{{response.text}}}</td>
+            <td>{{make-html-safe response.text}}</td>
           </tr>
         {{/each}}
       </tbody>
     </table>
   {{/if}}
-  {{#if showSubmissions}}
+  {{#if this.showSubmissions}}
     <table class="metrics__table">
       <thead>
         <tr>
@@ -131,7 +131,7 @@
           </th>
           <th>
             Explanation
-            <button {{action "toggleShowAll"}}>Show All</button>
+            <button {{on "click" this.toggleShowAll}} type="button">Show All</button>
           </th>
           <th>
             Selections and Comments
@@ -139,11 +139,11 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.submissions as |submission|}}
+        {{#each this.model.submissions as |submission|}}
           <tr>
-            <td>{{#link-to "metrics.submission" submission classNames="metrics__link"}}{{submission.student}}{{/link-to}}</td>
+            <td><LinkTo @route="metrics.submission" @model={{submission}} class="metrics__link">{{submission.student}}</LinkTo></td>
             <td>{{if submission.shortAnswer submission.shortAnswer submission.answer.answer}}</td>
-            <td>{{expandable-cell showAll=showAll text=(if submission.longAnswer submission.longAnswer submission.answer.explanation)}}</td>
+            <td><ExpandableCell @showAll={{this.showAll}} @text={{if submission.longAnswer submission.longAnswer submission.answer.explanation}} /></td>
             <td>
               <ul>
                 {{#each submission.selections as |selection|}}
@@ -162,6 +162,6 @@
       </tbody>
     </table>
   {{/if}}
-  <p>{{#link-to "metrics"}}back{{/link-to}}</p>
+  <p><LinkTo @route="metrics">back</LinkTo></p>
   <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
 </div>
