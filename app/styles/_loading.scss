@@ -1,5 +1,5 @@
 .la-ball-clip-rotate,
-.la-ball-clip-rotate>div {
+.la-ball-clip-rotate > div {
   position: relative;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -16,7 +16,7 @@
   color: #333;
 }
 
-.la-ball-clip-rotate>div {
+.la-ball-clip-rotate > div {
   display: inline-block;
   float: none;
   background-color: currentColor;
@@ -26,19 +26,20 @@
 .la-ball-clip-rotate {
   width: 32px;
   height: 32px;
+  color: #3997ee;
 }
 
-.la-ball-clip-rotate>div {
+.la-ball-clip-rotate > div {
   width: 32px;
   height: 32px;
   background: transparent;
   border-width: 2px;
   border-bottom-color: transparent;
   border-radius: 100%;
-  -webkit-animation: ball-clip-rotate .75s linear infinite;
-  -moz-animation: ball-clip-rotate .75s linear infinite;
-  -o-animation: ball-clip-rotate .75s linear infinite;
-  animation: ball-clip-rotate .75s linear infinite;
+  -webkit-animation: ball-clip-rotate 0.75s linear infinite;
+  -moz-animation: ball-clip-rotate 0.75s linear infinite;
+  -o-animation: ball-clip-rotate 0.75s linear infinite;
+  animation: ball-clip-rotate 0.75s linear infinite;
 }
 
 .la-ball-clip-rotate.la-sm {
@@ -46,7 +47,7 @@
   height: 16px;
 }
 
-.la-ball-clip-rotate.la-sm>div {
+.la-ball-clip-rotate.la-sm > div {
   width: 16px;
   height: 16px;
   border-width: 1px;
@@ -57,7 +58,7 @@
   height: 64px;
 }
 
-.la-ball-clip-rotate.la-2x>div {
+.la-ball-clip-rotate.la-2x > div {
   width: 64px;
   height: 64px;
   border-width: 4px;
@@ -68,7 +69,7 @@
   height: 96px;
 }
 
-.la-ball-clip-rotate.la-3x>div {
+.la-ball-clip-rotate.la-3x > div {
   width: 96px;
   height: 96px;
   border-width: 6px;
