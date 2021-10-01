@@ -4,7 +4,7 @@ import { tracked } from '@glimmer/tracking';
 
 export default class ExpandableCellComponent extends Component {
   @tracked showThis = false;
-  get expanded() {
+  get isExpanded() {
     return this.args.showAll || this.showThis;
   }
   @action toggleExpand() {
