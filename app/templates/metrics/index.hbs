@@ -15,7 +15,7 @@
     <h4>Problems</h4>
     <ul class="metrics__list">
       {{#each this.model.problems as |problem|}}
-        <li class="metrics__list-item"><LinkTo @route="metrics.problem" @model={{problem.id}} class="metrics__link">{{{problem.title}}}</LinkTo></li>
+        <li class="metrics__list-item"><LinkTo @route="metrics.problem" @model={{problem.id}} class="metrics__link">{{make-html-safe problem.title}}</LinkTo></li>
       {{/each}}
     </ul>
   </div>

@@ -1,3 +1,7 @@
 <div {{action 'toggleExpand'}} class="metrics--expandable">
-  {{{if this.expanded @text 'Click to expand'}}}
+  {{#if this.expanded}}
+    {{make-html-safe @text}}
+  {{else}}
+    <p>Click to expand</p>
+  {{/if}}
 </div>
