@@ -1,3 +1,4 @@
+{{log this.model.submission}}
 <header>
   <h3>{{model.submission.student}}'s Answer</h3>
 </header>
@@ -5,21 +6,32 @@
 <div class="metrics__container">
     <div class="metrics__container metrics--flex">
     <button {{on "click" this.toggleShowWorkspaces}} class="primary-button">Show Workspaces</button>
-  </div>
-  <ul>
-    {{#if this.showWorkspaces}}
-    {{#each this.model.workspaces as |workspace|}}
-      <li>
-        <label><Input @type="checkbox" @checked={{is-in this.selectedWorkspaces workspace}} {{on "change" (fn this.updateSelectedWorkspaces workspace)}} />{{workspace.name}} - {{workspace.owner.username}}</label>
-      </li>
-    {{/each}}
-    {{/if}}
-  </ul>
-  <h2>Selected workspaces</h2>
-  <ul>
-    {{#each this.selectedWorkspaces as |workspace|}}
-      <li>{{workspace.name}} - {{workspace.owner.username}}</li>
-    {{/each}}
-  </ul>
+    <button {{on "click" this.toggleShowData}} class="primary-button">Show Data</button>
+</div>
+<ul>
+  {{#if this.showWorkspaces}}
+  {{#each this.model.allSubmissions as |submission|}}
+    <li>
+      <label><Input @type="checkbox" @checked={{is-in this.selectedWorkspaces submission}} {{on "change" (fn this.updateSelectedWorkspaces submission)}} />
+        {{#each submission.workspaces as |workspace|}}
+          {{workspace.name}} - {{workspace.owner.username}}
+        {{/each}}
+      </label>
+    </li>
+  {{/each}}
+  {{/if}}
+</ul>
+<h2>Data</h2>
+{{#each selectedWorkspaces as |submission|}}
+  <h3>Workspace</h3>
+  {{#each submission.workspaces as |workspace|}}
+    <p>Name: {{workspace.name}}</p>
+    <p>Owner: {{workspace.owner.username}}</p>
+  {{/each}}
+  <h3>Selections:</h3>
+  {{#each submission.selections as |selection|}}
+    {{selection.text}}
+  {{/each}}
+{{/each}}
 </div>
 <p><LinkTo @route="metrics">back</LinkTo></p>
