@@ -10,7 +10,7 @@
     {{#if this.showWorkspaces}}
     {{#each this.model.workspaces as |workspace|}}
       <li>
-        <label><Input @type="checkbox" {{on "change" (fn this.updateSelectedWorkspaces workspace)}} />{{workspace.name}} - {{workspace.owner.username}}</label>
+        <label><Input @type="checkbox" @checked={{is-in this.selectedWorkspaces workspace}} {{on "change" (fn this.updateSelectedWorkspaces workspace)}} />{{workspace.name}} - {{workspace.owner.username}}</label>
       </li>
     {{/each}}
     {{/if}}
