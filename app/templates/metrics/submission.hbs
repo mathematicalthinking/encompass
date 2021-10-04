@@ -8,6 +8,16 @@
     <button {{on "click" this.toggleShowWorkspaces}} class="primary-button">Show Workspaces</button>
     <button {{on "click" this.toggleShowData}} class="primary-button">Show Data</button>
 </div>
+  <div class="metrics__container" id="submission">
+    <div class="metrics__card">
+    <h3>answer</h3>
+      <p>{{if this.model.submission.shortAnswer this.model.submission.shortAnswer this.model.submission.answer.answer}}</p>
+    </div>
+    <div class="metrics__card">
+    <h3>explanation</h3>
+      <p>{{{if this.model.submission.longAnswer this.model.submission.longAnswer this.model.submission.answer.explanation}}}</p>
+    </div>
+  </div>
 <ul>
   {{#if this.showWorkspaces}}
   {{#each this.model.allSubmissions as |submission|}}
