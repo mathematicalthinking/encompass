@@ -141,7 +141,7 @@
       <tbody>
         {{#each model.submissions as |submission|}}
           <tr>
-            <td>{{#link-to "metrics.submission" submission classNames="metrics__link"}}{{submission.student}}{{/link-to}}</td>
+            <td>{{#link-to "metrics.submission" submission.id classNames="metrics__link"}}{{submission.student}}{{/link-to}}</td>
             <td>{{if submission.shortAnswer submission.shortAnswer submission.answer.answer}}</td>
             <td>{{expandable-cell showAll=showAll text=(if submission.longAnswer submission.longAnswer submission.answer.explanation)}}</td>
             <td>

@@ -1,6 +1,6 @@
-{{log workspaceName}}
+{{log this.model}}
 <header>
-  <h3>{{model.student}}'s Submission in {{ws}}</h3>
+  <h3>{{model.submission.student}}'s Answer</h3>
 </header>
 <p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
@@ -22,7 +22,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.selections as |selection|}}
+        {{#each model.submission.selections as |selection|}}
           <tr>
             <td>{{selection.text}}</td>
           </tr>
@@ -41,7 +41,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.folders as |folder|}}
+        {{#each model.submission.folders as |folder|}}
           <tr>
             <td>{{folder.name}}</td>
           </tr>
@@ -66,7 +66,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.comments as |comment|}}
+        {{#each model.submission.comments as |comment|}}
           <tr>
             <td>{{comment.createdBy.username}}</td>
             <td>{{comment.label}}</td>
@@ -90,7 +90,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each model.responses as |response|}}
+        {{#each model.submission.responses as |response|}}
           <tr>
             <td>{{response.createdBy.username}}</td>
             <td>{{{response.text}}}</td>
@@ -103,11 +103,11 @@
   <div class="metrics__container" id="submission">
     <div class="metrics__card">
     <h3>answer</h3>
-      <p>{{if model.shortAnswer model.shortAnswer model.answer.answer}}</p>
+      <p>{{if model.submission.shortAnswer model.submission.shortAnswer model.submission.answer.answer}}</p>
     </div>
     <div class="metrics__card">
     <h3>explanation</h3>
-      <p>{{if model.longAnswer model.longAnswer model.answer.explanation}}</p>
+      <p>{{if model.submission.longAnswer model.submission.longAnswer model.submission.answer.explanation}}</p>
     </div>
   </div>
 </div>
