@@ -1,23 +1,13 @@
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
+import { action } from '@ember/object';
 
-
-
-
-
-
-export default Component.extend({
-  classNames: ['radio-group'],
-  utils: service('utility-methods'),
-
-  actions: {
-    setValue(val) {
-      if (this.utils.isNullOrUndefined(val)) {
-        return;
-      }
-
-      this.set('selectedValue', val);
+export default class RadioGroupComponent extends Component {
+  @service('utility-methods') utils;
+  @action setValue(val) {
+    if (this.utils.isNullOrUndefined(val)) {
+      return;
     }
+    this.args.selectedValue(val);
   }
-
-});
+}

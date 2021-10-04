@@ -158,6 +158,9 @@ export default Component.extend(CurrentUserMixin, {
   },
 
   actions: {
+    updateSelectedMode: function (val) {
+      this.set('selectedMode', val);
+    },
     next() {
       const name = this.selectedName;
       const owner = this.selectedOwner;

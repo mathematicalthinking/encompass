@@ -18,7 +18,7 @@ export default class WorkspacesIndexRoute extends AuthenticatedRoute {
     if (!user.get('isAdmin')) {
       workspaceCriteria = {
         filterBy: {
-          createdBy: user.id,
+          $or: [{ createdBy: user.id }, { owner: user.id }],
         },
       };
     }

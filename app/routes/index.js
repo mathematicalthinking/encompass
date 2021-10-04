@@ -1,7 +1,7 @@
 /**
  * # Index Route
  * @description This route is the index route to the application. Its model is creating API calls for data to pass to home-page.hbs, and the child table components of the dashboard.
- * @author Crispina Muriel
+ * @author Crispina Muriel, Tim Leonard
  * @since 2.3.0
  */
 import Route from '@ember/routing/route';

@@ -11,11 +11,13 @@ export default class AssignmentsNewRoute extends AuthenticatedRoute {
       this.transitionTo('assignments');
     }
   }
-  model() {
+  async model() {
     let currentUser = this.modelFor('application');
     return hash({
       currentUser,
-      sections: this.store.findAll('section'),
+      sections: await this.store.findAll('section'),
+      groups: await this.store.findAll('group'),
+      cachedProblems: await this.store.findAll('problem'),
     });
   }
   @action toAssignmentInfo(model) {

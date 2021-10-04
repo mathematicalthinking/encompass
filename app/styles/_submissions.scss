@@ -1,16 +1,16 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 720px) {
   #workspace-new-container {
     .results-list {
       .results-icons {
         i {
-          font-size: .8em;
+          font-size: 0.8em;
         }
         .icon-message {
-          font-size: .85em;
+          font-size: 0.85em;
           &.submissions {
             width: 120px;
           }
@@ -23,7 +23,7 @@
         }
       }
       .side-icons {
-        font-size: .85em;
+        font-size: 0.85em;
       }
     }
   }
@@ -55,7 +55,8 @@
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 500px) {
   #workspace-new-container {
-    .sort-bar-item, .item-section {
+    .sort-bar-item,
+    .item-section {
       &.createDate {
         display: none;
       }
@@ -68,14 +69,14 @@
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 1199px) {
   #workspace-new-container {
-    .sort-bar-item, .item-section {
+    .sort-bar-item,
+    .item-section {
       &.section {
         display: none;
       }
     }
   }
 }
-
 
 #submissions-filter {
   .filter-items {
@@ -90,12 +91,13 @@
     padding: 0 20px;
     margin-bottom: 60px;
     li {
-      &.include-pows-input, &.include-trashed-input {
+      &.include-pows-input,
+      &.include-trashed-input {
         label {
           display: inline-block;
           width: 80%;
         }
-        input[type=checkbox] {
+        input[type='checkbox'] {
           margin-left: 0;
         }
       }
@@ -110,7 +112,7 @@
       }
       .single-text-input {
         height: 10px;
-        font-size: .8em;
+        font-size: 0.8em;
         padding-left: 10px;
         font-weight: $light-font-weight;
         max-width: 115px;
@@ -145,15 +147,13 @@
           display: inline-block;
           width: 80%;
         }
-        input[type=checkbox] {
+        input[type='checkbox'] {
           margin-left: 0;
         }
       }
     }
-
   }
 }
-
 
 #submission-viewer-list {
   .no-results-container {
@@ -166,7 +166,6 @@
     }
   }
 }
-
 
 #workspace-new-container {
   .scroll-icon {
@@ -242,7 +241,15 @@
     }
     .side-icons {
       width: 220px;
-      @include flex-container(auto, null, row, nowrap, flex-end, center, center);
+      @include flex-container(
+        auto,
+        null,
+        row,
+        nowrap,
+        flex-end,
+        center,
+        center
+      );
       .my-select {
         width: 100%;
         margin-right: 30px;
@@ -269,15 +276,19 @@
       }
     }
     .results-items {
-      .sort-bar-item, .item-section {
-        font-size: .8em;
+      .sort-bar-item,
+      .item-section {
+        font-size: 0.8em;
         text-align: center;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         // border: 1px solid red;
-        .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
-          font-size: .7em;
+        .fa-minus,
+        .fa-arrow-up,
+        .fa-arrow-down,
+        .fa-filter {
+          font-size: 0.7em;
           position: relative;
           top: -1px;
         }
@@ -286,56 +297,58 @@
           color: black;
         }
         &.toggle-all {
-          @include flex-item(1, start, .04 0 auto);
+          @include flex-item(1, start, 0.04 0 auto);
           width: 4%;
           text-align: center;
         }
         &.student {
-          @include flex-item(2, start, .08 0 auto);
+          @include flex-item(2, start, 0.08 0 auto);
           width: 8%;
           vertical-align: top;
           &.trashed {
             text-decoration: line-through;
-            color: $error-color
+            color: $error-color;
           }
         }
         &.revisions {
-          @include flex-item(3, start, .08 0 auto);
+          @include flex-item(3, start, 0.08 0 auto);
           width: 8%;
         }
         &.explanation {
-          @include flex-item(4, start, .53 0 auto);
+          @include flex-item(4, start, 0.53 0 auto);
           width: 52%;
           text-align: left;
           ul {
             list-style-type: disc;
             list-style-position: inside;
-         }
-         ol {
+          }
+          ol {
             list-style-type: decimal;
             list-style-position: inside;
-         }
-         ul ul, ol ul {
+          }
+          ul ul,
+          ol ul {
             list-style-type: circle;
             list-style-position: inside;
             margin-left: 15px;
-         }
-         ol ol, ul ol {
+          }
+          ol ol,
+          ul ol {
             list-style-type: lower-latin;
             list-style-position: inside;
             margin-left: 15px;
-         }
+          }
         }
         &.section {
-          @include flex-item(5, start, .12 0 auto);
+          @include flex-item(5, start, 0.12 0 auto);
           width: 12%;
         }
         &.createDate {
-          @include flex-item(6, start, .12 0 auto);
+          @include flex-item(6, start, 0.12 0 auto);
           width: 12%;
         }
         &.more {
-          @include flex-item(7, start, .01 0 auto);
+          @include flex-item(7, start, 0.01 0 auto);
           width: 2%;
         }
       }

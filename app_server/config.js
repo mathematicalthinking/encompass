@@ -9,8 +9,6 @@
 
 const nconf = require('nconf');
 const logs = require('log4js');
-const build = process.env.BUILD;
-console.log('build: ', build);
 
 // const today = new Date();
 // const aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);
@@ -34,11 +32,19 @@ nconf.defaults({
   //   - dev, tet and seed are hard coded
   //   - staging and production are updated from .env file values
   database: {
-    host: 'localhost',
+    host: 'mongodb://localhost:27017',
     name: 'encompass',
-    user: 'encompass',
-    pass: '',
     port: 27017,
+    options: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      user: '',
+      pass: '',
+      ssl: false,
+      sslKey: '',
+      sslCert: '',
+      sslValidate: true,
+    },
     collections: [
       'workspaces',
       'folders',

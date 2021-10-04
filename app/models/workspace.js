@@ -2,13 +2,16 @@ import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import moment from 'moment';
-import Permission from '../mixins/permission_mixin';
 import Auditable from '../models/_auditable_mixin';
 
-export default Model.extend(Auditable, Permission, {
+export default Model.extend(Auditable, {
   workspaceId: alias('id'),
   name: attr('string'),
+  mode: attr('string'),
+  owner: belongsTo('user', { async: true }),
+  editors: hasMany('user', { async: true }),
   folders: hasMany('folder', { async: true }),
+  group: belongsTo('group', { async: true }),
   submissions: hasMany('submission', { async: true }),
   responses: hasMany('response', { async: true }),
   selections: hasMany('selection', { async: true }),

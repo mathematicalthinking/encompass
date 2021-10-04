@@ -1,9 +1,8 @@
-import Model, { attr } from '@ember-data/model';
-import Auditable from './_auditable_mixin';
+import { attr } from '@ember-data/model';
+import Auditable from './auditable';
 
-
-export default Model.extend(Auditable, {
-  name: attr('string'),
-  privacySetting: attr('string'),
-  folders: attr()
-});
+export default class FolderSet extends Auditable {
+  @attr('string') name;
+  @attr('string') privacySetting;
+  @attr folders;
+}

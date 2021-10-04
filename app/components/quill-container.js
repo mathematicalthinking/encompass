@@ -2,11 +2,6 @@ import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import $ from 'jquery';
 
-
-
-
-
-
 export default Component.extend({
   classNames: ['quill-container'],
   utils: service('utility-methods'),
@@ -19,14 +14,16 @@ export default Component.extend({
     modules: {
       toolbar: [
         ['bold', 'italic', 'underline', 'strike'],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'script': 'sub' }, { 'script': 'super' }],
+        [{ color: [] }, { background: [] }],
+        [{ script: 'sub' }, { script: 'super' }],
         ['blockquote'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        ['link', 'image', 'formula']
-      ]
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'image', 'formula'],
+      ],
     },
-    theme: 'snow'
+    theme: 'snow',
+    placeholder:
+      'Type a detailed explanation here. This box will expand as you type.',
   },
 
   defaultMaxLength: 14680064, // 14MB
@@ -41,7 +38,6 @@ export default Component.extend({
 
     let limit = this.maxLength || this.defaultMaxLength;
     this.set('lengthLimit', limit);
-
   },
 
   didInsertElement() {
@@ -64,7 +60,6 @@ export default Component.extend({
 
       this.handleStartingText();
       this.handleQuillChange();
-
     });
     this._super(...arguments);
   },
@@ -83,9 +78,9 @@ export default Component.extend({
 
   handleStartingText() {
     let attrStartingText = this.startingText;
-    let startingText = typeof attrStartingText === 'string' ? attrStartingText : '';
+    let startingText =
+      typeof attrStartingText === 'string' ? attrStartingText : '';
     this.$('.ql-editor').html(startingText);
-
   },
   // Empty quill editor .html() property returns <p><br></p>
   // For quill to not be empty, there must either be some text or a student
@@ -132,6 +127,5 @@ export default Component.extend({
     if (this.onEditorChange) {
       this.onEditorChange(html, isEmpty, isOverLengthLimit);
     }
-  }
-
+  },
 });

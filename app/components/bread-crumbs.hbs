@@ -1,0 +1,36 @@
+<div class="bread-crumbs-comp">
+  <div class="breadcrumbs">
+    {{#if this.showInfoToolTip}}
+      <span class={{this.toolTipClassNames}} data-tooltip={{@infoToolTipText}}>
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    {{/if}}
+    <span class="revisions">{{this.itemsLabelText}}</span>
+    {{#if this.showTruncatedView}}
+      <ul class="breadcrumbs truncated">
+          {{#with this.itemsList.firstObject as |firstItem|}}
+            <BreadCrumbsItem @item={{firstItem}} @displayValue={{1}} @onSelect={{action "onItemSelect"}} @selectedItem={{@selectedItem}} @titleTextPath={{@titleTextPath}} @starredItemsList={{this.starredItemsList}} />
+          {{/with}}
+          <abbr title="expand">
+            <span {{action "showAllItems"}} class="truncate">
+              ...
+            </span>
+          </abbr>
+          {{#with this.itemsList.lastObject as |lastItem|}}
+            <BreadCrumbsItem @item={{this.lastItem}} @displayValue={{this.lastItemValue}} @onSelect={{action "onItemSelect"}} @selectedItem={{@selectedItem}} @titleTextPath={{@titleTextPath}} @starredItemsList={{this.starredItemsList}} />
+          {{/with}}
+      </ul>
+    {{else}}
+      <ul class="breadcrumbs">
+        {{#each this.itemsList as |item index|}}
+          <BreadCrumbsItem @item={{item}} @displayValue={{add-to index 1}} @onSelect={{action "onItemSelect"}} @selectedItem={{@selectedItem}} @titleTextPath={{@titleTextPath}} @starredItemsList={{this.starredItemsList}} />
+        {{/each}}
+        {{#if this.areManyItems}}
+          <li {{action "collapse"}} title="collapse">
+            <i class="fas fa-minus-square"></i>
+          </li>
+        {{/if}}
+      </ul>
+    {{/if}}
+  </div>
+</div>

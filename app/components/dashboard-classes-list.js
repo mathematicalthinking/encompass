@@ -148,7 +148,7 @@ export default class DashboardClassesListComponent extends Component {
     const yourSectionIds = yourSections.map((section) => section.id);
 
     let assignmentsList = this.args.assignments.filter((assignment) =>
-      yourSectionIds.includes(assignment.section.get('sectionId'))
+      yourSectionIds.includes(assignment.section.get('id'))
     );
     assignmentsList.forEach((assignment) => {
       if (assignment.answers.length) {

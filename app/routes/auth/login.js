@@ -1,22 +1,20 @@
-import MtAuthMixin from '../../mixins/mt_auth_mixin';
-import LoggedOutRoute from './_logged_out_route';
+import Route from '@ember/routing/route';
+import { action } from '@ember/object';
 
-export default LoggedOutRoute.extend(MtAuthMixin, {
-  // queryParams: 'oauthError',
-  // beforeModel(transition) {
-  //   this._super(...arguments);
-  //   this.set('oauthError', oauthError);
-  // },
+export default class LoginRoute extends Route {
+  beforeModel(transition) {
+    if (transition.intent.queryParams) {
+      this.oauthError = transition.intent.queryParams.oauthError;
+    }
+  }
 
-  model: function (params) {
+  model() {
     return {
       oauthError: this.oauthError,
     };
-  },
+  }
 
-  actions: {
-    toHome: function () {
-      window.location.href = '/';
-    },
-  },
-});
+  @action toHome() {
+    window.location.href = '/';
+  }
+}

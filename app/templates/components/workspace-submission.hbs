@@ -28,7 +28,7 @@
       </div>
       {{#if this.canRespond}}
       <div class="submission-row-item  new-response">
-        <button class="action_button new-response" {{action 'toNewResponse' this.currentSubmission.id this.currentWorkspace.id}}>Respond</button>
+        <button disabled={{this.areNoSelections}} class="action_button new-response" {{action 'toNewResponse' this.currentSubmission.id this.currentWorkspace.id}}>Respond</button>
         {{#if this.submissionResponses.length}}
           <span class="meta response-count existing" title="existing response count">
             ({{this.submissionResponses.length}})
@@ -51,7 +51,7 @@
 </aside>
 
 <div id="al_submission">
-  {{#if this.showSelectableView}}
+  {{#if this.makingSelection}}
     <h3 id="sel-view-header" class="selectable-view-header">Selectable View!</h3>
     <SelectableArea @model={{this.currentSubmission}} @makingSelection={{this.makingSelection}} @showingSelections={{this.showingSelections}} @addSelection="addSelection" @hideSelections="hideSelections" @handleTransition="handleTransition" @sels={{this.workspaceSelections}} @trashed={{this.trashedSelections}} @setupResizeHandler={{action "setupResizeHandler"}}>
       <div id="submission_container">
@@ -91,12 +91,12 @@
         </div>
         <div class="submission-long">
           {{#if this.vmtScreenshot}}
-        <img src={{this.vmtScreenshot}} alt="vmt screenshot">
-      {{else if this.currentSubmission.answer.explanation}}
-        {{{this.currentSubmission.answer.explanation}}}
-      {{else if this.currentSubmission.longAnswer}}
-        {{{this.currentSubmission.longAnswer}}}
-      {{/if}}
+            <img src={{this.vmtScreenshot}} alt="vmt screenshot">
+          {{else if this.currentSubmission.answer.explanation}}
+            {{{this.currentSubmission.answer.explanation}}}
+          {{else if this.currentSubmission.longAnswer}}
+            {{{this.currentSubmission.longAnswer}}}
+          {{/if}}
         </div>
       </div>
     </SelectableArea>

@@ -1,9 +1,9 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 #sectionupdateform {
-  input[type=text],
+  input[type='text'],
   select {
     font-size: 1em;
     width: 70%;
@@ -20,23 +20,23 @@
     }
   }
   label {
-    color:$dark-font-color;
+    color: $dark-font-color;
     font-size: 1em;
     width: 20%;
     padding: 12px 20px;
     margin: 8px 0px;
   }
 }
-  .right {
-    float: right;
-    border: none;
-    color: $primary-font-color;
-    background: none;
-    font-size: 1.5em;
-    &:hover {
-      color: lighten($primary-font-color, 10);
-    }
+.right {
+  float: right;
+  border: none;
+  color: $primary-font-color;
+  background: none;
+  font-size: 1.5em;
+  &:hover {
+    color: lighten($primary-font-color, 10);
   }
+}
 
 #sectioninfo {
   i {
@@ -45,13 +45,13 @@
       color: $success-color;
     }
   }
-  .section-info-detail{
-    display:flex;
+  .section-info-detail {
+    display: flex;
     align-items: baseline;
     flex-wrap: wrap;
 
     .btn-container {
-      width:50%;
+      width: 50%;
     }
 
     ul.listing {
@@ -63,8 +63,9 @@
     }
   }
 
-  .update-teachers, .update-students {
-    width:100%;
+  .update-teachers,
+  .update-students {
+    width: 100%;
   }
   .section-info {
     font-size: 1em;
@@ -92,7 +93,7 @@
     padding: 5px 20px;
     color: $dark-font-color;
   }
-  input[type=text] {
+  input[type='text'] {
     font-size: 1em;
     color: $primary-font-color;
     width: 50%;
@@ -110,7 +111,7 @@
   }
   li {
     padding-bottom: 12px;
-    display: flex;
+    width: fit-content;
     align-items: center;
   }
   // ul.listing {
@@ -130,25 +131,25 @@
     border: none;
     color: $primary-font-color;
     background: none;
-    font-size: .8em;
+    font-size: 0.8em;
   }
 
   .twitter-typeahead {
     margin-left: 10px;
 
     input {
-    width: 100%;
+      width: 100%;
       -webkit-appearance: textfield;
-    background-color: white;
-    -webkit-rtl-ordering: logical;
-    cursor: text;
-    padding: 1px;
-    border-width: 2px;
-    border-style: inset;
-    border-color: initial;
-    border-image: initial;
-    font-size: 1em;
-    border-radius: 0;
+      background-color: white;
+      -webkit-rtl-ordering: logical;
+      cursor: text;
+      padding: 1px;
+      border-width: 2px;
+      border-style: inset;
+      border-color: initial;
+      border-image: initial;
+      font-size: 1em;
+      border-radius: 0;
     }
   }
 }
@@ -169,13 +170,14 @@
   }
 }
 
-#add-create-student{
+#add-create-student {
   label {
     display: inline-block;
     line-height: 1em;
     vertical-align: middle;
     padding: 5px 20px;
     margin: 8px;
+    width: unset;
   }
 
   .hidden-class-pass {
@@ -191,16 +193,16 @@
       margin: 8px 0;
       .typeahead {
         -webkit-appearance: textfield;
-      background-color: white;
-      -webkit-rtl-ordering: logical;
-      cursor: text;
-      padding: 1px;
-      border-width: 2px;
-      border-style: inset;
-      border-color: initial;
-      border-image: initial;
-      font-size: 1em;
-      border-radius: 0;
+        background-color: white;
+        -webkit-rtl-ordering: logical;
+        cursor: text;
+        padding: 1px;
+        border-width: 2px;
+        border-style: inset;
+        border-color: initial;
+        border-image: initial;
+        font-size: 1em;
+        border-radius: 0;
       }
     }
   }
@@ -227,12 +229,10 @@
             margin: 0 5px;
             padding: 2px;
             font-size: 1em;
-
           }
           &::placeholder {
             color: $primary-font-color;
           }
-
         }
       }
     }
@@ -242,7 +242,11 @@
   }
 }
 
-  #deleteSection {
-    padding: 10px 10px;
-  }
+#deleteSection {
+  padding: 10px 10px;
+}
 
+.group-name {
+  cursor: pointer;
+  font-weight: bold;
+}

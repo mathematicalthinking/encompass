@@ -1,7 +1,10 @@
 import AuthenticatedRoute from './_authenticated_route';
+import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default AuthenticatedRoute.extend({
-  model: function () {
+export default class ResponsesRoute extends AuthenticatedRoute {
+  @service store;
+  model() {
     return this.store
       .query('responseThread', {
         threadType: 'all',
@@ -15,18 +18,17 @@ export default AuthenticatedRoute.extend({
           meta,
         };
       });
-  },
-  actions: {
-    toSubmissionResponse(subId) {
-      this.transitionTo('responses.submission', subId);
-    },
-    toResponses() {
-      this.refresh();
-    },
-    toResponse(submissionId, responseId) {
-      this.transitionTo('responses.submission', submissionId, {
-        queryParams: { responseId: responseId },
-      });
-    },
-  },
-});
+  }
+
+  @action toSubmissionResponse(subId) {
+    this.transitionTo('responses.submission', subId);
+  }
+  @action toResponses() {
+    this.refresh();
+  }
+  @action toResponse(submissionId, responseId) {
+    this.transitionTo('responses.submission', submissionId, {
+      queryParams: { responseId: responseId },
+    });
+  }
+}

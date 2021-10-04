@@ -1,20 +1,15 @@
-import LoggedOutRoute from './_logged_out_route';
+import Route from '@ember/routing/route';
+import { action } from '@ember/object';
 
-export default LoggedOutRoute.extend({
-  beforeModel() {
-    this._super(...arguments);
-  },
-
-  model: function (params) {
+export default class ResetRoute extends Route {
+  model(params) {
     return params.token;
-  },
-  renderTemplate: function () {
+  }
+  renderTemplate() {
     this.render('auth/reset');
-  },
+  }
 
-  actions: {
-    toHome: function () {
-      window.location.href = '/';
-    },
-  },
-});
+  @action toHome() {
+    window.location.href = '/';
+  }
+}

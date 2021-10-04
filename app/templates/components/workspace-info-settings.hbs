@@ -1,4 +1,8 @@
 <div class="info-card">
+  {{#each this.workspace.parentWorkspaces as |ws|}}
+    {{log ws.id}}
+    {{log ws.name}}
+  {{/each}}
   <div class="heading">
     Workspace Settings
     {{#if this.canEdit}}
@@ -22,6 +26,22 @@
         {{/if}}
       </div>
     </div>
+    {{#if this.workspace.parentWorkspaces}}
+    <div class="card-row">
+      <div class="row-label">
+        Parent Workspaces
+      </div>
+      <div class="row-value">
+        <ul>
+          {{#each this.workspace.parentWorkspaces as |ws|}}
+          <li>
+            <LinkTo @route="workspace.work" @model={{ws.id}}>{{ws.name}}</LinkTo>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    {{/if}}
     <div class="card-row">
       <div class="row-label">
         Owner

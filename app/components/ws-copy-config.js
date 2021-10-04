@@ -35,6 +35,9 @@ export default Component.extend({
   },
 
   actions: {
+    updateSelectedConfig: function (val) {
+      this.set('selectedConfig', val);
+    },
     next() {
       const selectedConfig = this.selectedConfig;
       const validConfigValues = this.validConfigValues;

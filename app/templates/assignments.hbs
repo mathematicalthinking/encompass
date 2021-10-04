@@ -1,1 +1,7 @@
-<AssignmentList @store={{this.store}} @assignments={{this.model.assignments}} @currentUser={{this.model.currentUser}} />
+<AssignmentList @store={{this.store}} @assignments={{this.model.assignments}} @currentUser={{this.model.currentUser}} @assignmentList={{this.model.filtered}} />
+
+<div class="list-outlet">
+  {{outlet}}
+</div>
+
+<div class="clear"/>

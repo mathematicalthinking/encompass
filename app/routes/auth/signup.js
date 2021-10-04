@@ -1,11 +1,10 @@
-import LoggedOutRoute from './_logged_out_route';
+import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default LoggedOutRoute.extend({
-  beforeModel() {
-    this._super(...arguments);
-  },
-
-  model: function () {
+export default class SignupRoute extends Route {
+  @service store;
+  model() {
     return this.store
       .query('organization', {
         sortBy: 'members',
@@ -13,11 +12,9 @@ export default LoggedOutRoute.extend({
       .then((orgs) => {
         return orgs;
       });
-  },
+  }
 
-  actions: {
-    toHome: function () {
-      window.location.href = '/';
-    },
-  },
-});
+  @action toHome() {
+    window.location.href = '/';
+  }
+}

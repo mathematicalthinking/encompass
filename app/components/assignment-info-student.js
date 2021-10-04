@@ -1,123 +1,94 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import moment from 'moment';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'assignment-info-student',
+export default class AssignmentInfoStudentComponent extends ErrorHandlingComponent {
+  @service('utility-methods') utils;
+  @service store;
+  @tracked isResponding = false;
+  @tracked isRevising = false;
+  @tracked displayedAnswer = null;
+  @tracked loadAnswerErrors = [];
 
-  utils: service('utility-methods'),
-
-  formattedDueDate: null,
-  formattedAssignedDate: null,
-  isResponding: false,
-  isRevising: false,
-  displayedAnswer: null,
-  loadAnswerErrors: [],
-
-  didReceiveAttrs() {
-    let assignment = this.assignment;
+  constructor() {
+    super(...arguments);
+    let assignment = this.args.assignment;
 
     if (assignment) {
       if (this.displayedAnswer) {
-        this.set('displayedAnswer', null);
+        this.displayedAnswer = null;
       }
 
       this.toggleResponse();
-
-      let dateTime = 'YYYY-MM-DD';
-      let dueDate = assignment.get('dueDate');
-      let assignedDate = assignment.get('assignedDate');
-
-      if (dueDate) {
-        this.set('formattedDueDate', moment(dueDate).format(dateTime));
-      }
-      if (assignedDate) {
-        this.set(
-          'formattedAssignedDate',
-          moment(assignedDate).format(dateTime)
-        );
-      }
     }
+  }
 
-    this._super(...arguments);
-  },
+  get workspacesToUpdateIds() {
+    return this.utils.getHasManyIds(this.args.assignment, 'linkedWorkspaces');
+  }
 
-  workspacesToUpdateIds: computed(
-    'assignment.linkedWorkspaces.[]',
-    function () {
-      return this.utils.getHasManyIds(this.assignment, 'linkedWorkspaces');
-    }
-  ),
-
-  isComposing: computed('isRevising', 'isResponding', function () {
+  get isComposing() {
     return this.isRevising || this.isResponding;
-  }),
+  }
 
-  showReviseButton: computed('isComposing', 'sortedList.[]', function () {
-    return !this.isComposing && this.get('sortedList.length') > 0;
-  }),
+  get showReviseButton() {
+    return !this.isComposing && this.sortedList.length > 0;
+  }
 
-  showRespondButton: computed('isComposing', 'sortedList.[]', function () {
-    return !this.isComposing && this.get('sortedList.length') === 0;
-  }),
+  get showRespondButton() {
+    return !this.isComposing && this.sortedList.length === 0;
+  }
 
-  sortedList: computed('answerList.[]', function () {
-    if (!this.answerList) {
+  get sortedList() {
+    if (!this.args.answerList) {
       return [];
     }
-    return this.answerList.sortBy('createDate').reverse();
-  }),
+    return this.args.answerList.sortBy('createDate').reverse();
+  }
 
-  priorAnswer: computed('sortedList.[]', function () {
+  get priorAnswer() {
     return this.sortedList.get('firstObject');
-  }),
+  }
 
-  toggleResponse: function () {
+  toggleResponse() {
     if (this.isResponding) {
-      this.set('isResponding', false);
+      this.isResponding = false;
     } else if (this.isRevising) {
-      this.set('isRevising', false);
+      this.isRevising = false;
     }
-  },
+  }
 
-  actions: {
-    beginAssignmentResponse: function () {
-      this.set('isResponding', true);
-      later(() => {
-        $('html, body').animate({ scrollTop: $(document).height() });
-      }, 100);
-    },
+  @action beginAssignmentResponse() {
+    this.isResponding = true;
+    later(() => {
+      $('html, body').animate({ scrollTop: $(document).height() });
+    }, 100);
+  }
 
-    reviseAssignmentResponse: function () {
-      this.set('isRevising', true);
+  @action reviseAssignmentResponse() {
+    this.isRevising = true;
 
-      later(() => {
-        $('html, body').animate({ scrollTop: $(document).height() });
-      }, 100);
-    },
+    later(() => {
+      $('html, body').animate({ scrollTop: $(document).height() });
+    }, 100);
+  }
 
-    toAnswerInfo: function (answer) {
-      this.sendAction('toAnswerInfo', answer);
-    },
+  @action displayAnswer(answer) {
+    this.displayedAnswer = answer;
+    later(() => {
+      $('html, body').animate({ scrollTop: $(document).height() });
+    }, 100);
+  }
 
-    displayAnswer: function (answer) {
-      this.set('displayedAnswer', answer);
-      later(() => {
-        $('html, body').animate({ scrollTop: $(document).height() });
-      }, 100);
-    },
+  @action handleCreatedAnswer(answer) {
+    this.toggleResponse();
+    this.args.answerList.addObject(answer);
+  }
 
-    handleCreatedAnswer: function (answer) {
-      this.toggleResponse();
-      this.answerList.addObject(answer);
-    },
-
-    cancelResponse: function () {
-      this.toggleResponse();
-    },
-  },
-});
+  @action cancelResponse() {
+    this.toggleResponse();
+  }
+}

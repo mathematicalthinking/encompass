@@ -1,0 +1,24 @@
+<div class="confirm-page">
+  <div class="confirm-box">
+    {{#if this.isTokenValid}}
+      <p class="success-message"> Your email address has been successfully confirmed!</p>
+      <p class="info">You will be notified once an admin has authorized your account. You can also <LinkTo @route="auth.login" @classNames="login-link"> log in</LinkTo> any time to check on the status of your account.</p>
+    {{else}}
+
+      {{#if this.isAlreadyConfirmed}}
+        <p class="info" data-test="already-confirmed">Email address has already been confirmed.</p>
+      {{/if}}
+      {{#if this.invalidTokenError}}
+        <p class="error-message">{{this.invalidTokenError}}</p>
+      {{/if}}
+
+      {{#each this.confirmTokenErrors as |error| }}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+
+        <p class="info">
+          Please <LinkTo @route="auth.login" @classNames="login-link"> log in</LinkTo> {{this.loginMessage}}
+          </p>
+    {{/if}}
+  </div>
+</div>

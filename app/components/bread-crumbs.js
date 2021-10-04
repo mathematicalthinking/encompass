@@ -1,65 +1,54 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
-export default Component.extend({
-  classNames: ['bread-crumbs-comp'],
+export default class BreadCrumbsComponent extends Component {
+  @tracked doTruncate = true;
 
-  doTruncate: true,
+  get lastItemValue() {
+    return this.itemsList.length - 1 || 1;
+  }
 
-  didReceiveAttrs() {
-    this._super(...arguments);
-  },
+  get itemsList() {
+    return this.args.items || [];
+  }
 
-  lastItemValue: computed('itemsList.length', function () {
-    return this.get('itemsList.length') - 1 || 1;
-  }),
+  get areManyItems() {
+    return this.itemsList.length >= 10;
+  }
 
-  itemsList: computed('items.[]', function () {
-    return this.items || [];
-  }),
-
-  areManyItems: computed('manyItemsNum', 'itemsList.length', function () {
-    let num = this.manyItemsNum;
-    if (typeof num !== 'number') {
-      num = 10;
-    }
-    return this.get('itemsList.length') >= num;
-  }),
-
-  showTruncatedView: computed('areManyItems', 'doTruncate', function () {
+  get showTruncatedView() {
     return this.doTruncate && this.areManyItems;
-  }),
+  }
 
-  starredItemsList: computed('starredItems.[]', function () {
-    return this.starredItems || [];
-  }),
+  get starredItemsList() {
+    return this.args.starredItems || [];
+  }
 
-  itemsLabelText: computed('labelText', function () {
-    return this.labelText || 'Rev.';
-  }),
+  get itemsLabelText() {
+    return this.args.labelText || 'Rev.';
+  }
 
-  showInfoToolTip: computed('infoToolTipText', function () {
-    let text = this.infoToolTipText;
+  get showInfoToolTip() {
+    let text = this.args.infoToolTipText;
     return typeof text === 'string' && text.length > 0;
-  }),
+  }
 
-  toolTipClassNames: computed('infoToolTipPosition', function () {
-    let position = this.infoToolTipPosition || 'bottom';
+  get toolTipClassNames() {
+    let position = this.args.infoToolTipPosition || 'bottom';
     return `info-text-tip simptip-position-${position} simptip-multiline simptip-smooth`;
-  }),
+  }
 
-  actions: {
-    onItemSelect: function (item) {
-      if (!item) {
-        return;
-      }
-      this.onSelect(item);
-    },
-    showAllItems() {
-      this.set('doTruncate', false);
-    },
-    collapse() {
-      this.set('doTruncate', true);
-    },
-  },
-});
+  @action onItemSelect(item) {
+    if (!item) {
+      return;
+    }
+    this.args.onSelect(item);
+  }
+  @action showAllItems() {
+    this.doTruncate = false;
+  }
+  @action collapse() {
+    this.doTruncate = true;
+  }
+}

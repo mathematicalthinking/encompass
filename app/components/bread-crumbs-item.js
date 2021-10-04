@@ -1,45 +1,33 @@
-/*global _:false */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 import moment from 'moment';
+import _ from 'underscore';
 
-export default Component.extend({
-  classNames: ['bread-crumbs-item'],
+export default class BreadCumbsItemComponent extends Component {
+  get isSelected() {
+    return _.isEqual(this.args.item, this.args.selectedItem);
+  }
 
-  isSelected: computed('selectedItem', function () {
-    return _.isEqual(this.item, this.selectedItem);
-  }),
+  get isStarredItem() {
+    return this.args.starredItemsList.includes(this.item);
+  }
 
-  isStarredItem: computed('starredItemsList.[]', 'item', function () {
-    return this.starredItemsList.includes(this.item);
-  }),
-
-  titleText: computed(
-    'itemTitleText',
-    'titleTextPath',
-    'item',
-    'item.createDate',
-    function () {
-      if (_.isString(this.itemTitleText)) {
-        return this.itemTitleText;
-      }
-      if (this.get('item.createDate')) {
-        return moment(this.get('item.createDate')).format('MMM Do YYYY h:mm A');
-      }
-      if (_.isString(this.titleTextPath) && _.isObject(this.item)) {
-        let path = `item.${this.titleTextPath}`;
-        return this.get(path);
-      }
-      return '';
+  get titleText() {
+    if (_.isString(this.args.itemTitleText)) {
+      return this.args.itemTitleText;
     }
-  ),
-
-  actions: {
-    onSelect(item) {
-      if (!item || this.isSelected) {
-        return;
-      }
-      this.onSelect(item);
-    },
-  },
-});
+    if (this.args.item.createDate) {
+      return moment(this.args.item.createDate).format('MMM Do YYYY h:mm A');
+    }
+    if (_.isString(this.args.titleTextPath) && _.isObject(this.args.item)) {
+      return this.args.item[this.args.titleTextPath];
+    }
+    return '';
+  }
+  @action onSelect(item) {
+    if (!item || this.isSelected) {
+      return;
+    }
+    this.args.onSelect(item);
+  }
+}

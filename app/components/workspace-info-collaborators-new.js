@@ -79,15 +79,22 @@ export default Component.extend({
     },
   ],
 
-  modes: computed('currentUser.user.isAdmin', 'currentUser.user.isStudent', function () {
-    const basic = ['private', 'org', 'public'];
+  modes: computed(
+    'currentUser.user.isAdmin',
+    'currentUser.user.isStudent',
+    function () {
+      const basic = ['private', 'org', 'public'];
 
-    if (this.get('currentUser.user.isStudent') || !this.get('currentUser.user.isAdmin')) {
-      return basic;
+      if (
+        this.get('currentUser.user.isStudent') ||
+        !this.get('currentUser.user.isAdmin')
+      ) {
+        return basic;
+      }
+
+      return ['private', 'org', 'public', 'internet'];
     }
-
-    return ['private', 'org', 'public', 'internet'];
-  }),
+  ),
 
   createValueObject(val) {
     let obj = {
@@ -173,6 +180,9 @@ export default Component.extend({
   },
 
   actions: {
+    updateGlobalPermissionValue: function (val) {
+      this.set('globalPermissionValue', val);
+    },
     setCollab(val, $item) {
       if (!val) {
         return;

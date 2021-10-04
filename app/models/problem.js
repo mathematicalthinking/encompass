@@ -1,36 +1,31 @@
-import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
+import { attr, belongsTo, hasMany } from '@ember-data/model';
 import { alias } from '@ember/object/computed';
-import Auditable from '../models/_auditable_mixin';
-
-
-
-
-
-
-
-export default Model.extend(Auditable, {
-  problemId: alias('id'),
-  title: attr('string'),
-  puzzleId: attr('number'),
-  text: attr('string'),
-  imageUrl: attr('string'),
-  sourceUrl: attr('string'),
-  image: belongsTo('image', { inverse: null }),
-  origin: belongsTo('problem', { inverse: null }),
-  modifiedBy: belongsTo('user', { inverse: null }),
-  organization: belongsTo('organization', { inverse: null }),
-  additionalInfo: attr('string'),
-  privacySetting: attr('string'),
-  categories: hasMany('category', { inverse: null }),
-  keywords: attr(),
-  copyrightNotice: attr('string'),
-  sharingAuth: attr('string'),
-  author: attr('string'),
-  error: attr('string'),
-  isUsed: attr('boolean'),
-  status: attr('string'),
-  flagReason: attr(),
-  isForEdit: attr('boolean', { defaultValue: false }),
-  isForAssignment: attr('boolean', { defaultValue: false }),
-  contexts: attr(),
-});
+import Auditable from './auditable';
+export default class ProblemModel extends Auditable {
+  get problemId() {
+    return this.id;
+  }
+  @attr('string') title;
+  @attr('number') puzzleId;
+  @attr('string') text;
+  @attr('string') imageUrl;
+  @attr('string') sourceUrl;
+  @belongsTo('image', { inverse: null }) image;
+  @belongsTo('problem', { inverse: null }) origin;
+  @belongsTo('user', { inverse: null }) modifiedBy;
+  @belongsTo('organization', { inverse: null }) organization;
+  @attr('string') additionalInfo;
+  @attr('string') privacySetting;
+  @hasMany('category', { inverse: null }) categories;
+  @attr keywords;
+  @attr('string') copyrightNotice;
+  @attr('string') sharingAuth;
+  @attr('string') author;
+  @attr('string') error;
+  @attr('boolean') isUsed;
+  @attr('string') status;
+  @attr flagReason;
+  @attr('boolean', { defaultValue: false }) isForEdit;
+  @attr('boolean', { defaultValue: false }) isForAssignment;
+  @attr contexts;
+}

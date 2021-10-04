@@ -1,10 +1,10 @@
 /* eslint-disable complexity */
 /* eslint-disable no-use-before-define */
 /**
-  * # Assignment API
-  * @description This is the API for assignment based requests
-  * @author Daniel Kelly
-*/
+ * # Assignment API
+ * @description This is the API for assignment based requests
+ * @author Daniel Kelly
+ */
 const moment = require('moment');
 
 const logger = require('log4js').getLogger('server');
@@ -15,7 +15,11 @@ const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/assignments');
 
-const { areObjectIdsEqual, isValidMongoId, auditObjectIdField } = require('../../utils/mongoose');
+const {
+  areObjectIdsEqual,
+  isValidMongoId,
+  auditObjectIdField,
+} = require('../../utils/mongoose');
 
 const { isNonEmptyArray, isNonEmptyString } = require('../../utils/objects');
 
@@ -26,40 +30,48 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
-
 /**
-  * @public
-  * @method getAssignments
-  * @description __URL__: /api/assignments
-  * @returns {Object} An array of assignment objects
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method getAssignments
+ * @description __URL__: /api/assignments
+ * @returns {Object} An array of assignment objects
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 
-
-const getAssignments = async function(req, res, next) {
+const getAssignments = async function (req, res, next) {
   try {
     const user = userAuth.requireUser(req);
     let criteria;
 
     if (req.query.problem) {
       criteria = req.query;
-      const requestedAssignments = await models.Assignment.findOne(criteria).exec();
+      const requestedAssignments = await models.Assignment.findOne(
+        criteria
+      ).exec();
       let data = {
-        assignments: requestedAssignments
+        assignments: requestedAssignments,
       };
       return utils.sendResponse(res, data);
     }
 
-    criteria = await access.get.assignments(user, req.query.ids, req.query.filterBy);
+    criteria = await access.get.assignments(
+      user,
+      req.query.ids,
+      req.query.filterBy
+    );
 
-    let doFilterAnswers = user.accountType === 'S' || user.actingRole === 'student';
+    let doFilterAnswers =
+      user.accountType === 'S' || user.actingRole === 'student';
 
     let assignments;
 
     if (doFilterAnswers) {
-      assignments = await models.Assignment.find(criteria).populate('answers').lean().exec();
+      assignments = await models.Assignment.find(criteria)
+        .populate('answers')
+        .lean()
+        .exec();
     } else {
       assignments = await models.Assignment.find(criteria).lean().exec();
     }
@@ -73,39 +85,47 @@ const getAssignments = async function(req, res, next) {
           .filter((answer) => {
             return areObjectIdsEqual(answer.createdBy, user._id);
           })
-          .pluck('_id').value();
+          .pluck('_id')
+          .value();
       });
     }
 
-    const data = {'assignments': assignments};
+    const data = { assignments: assignments };
     return utils.sendResponse(res, data);
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getAssignments: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);
   }
-
 };
 
 /**
-  * @public
-  * @method getAssignment
-  * @description __URL__: /api/assignment/:id
-  * @returns {Object} An assignment object
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method getAssignment
+ * @description __URL__: /api/assignment/:id
+ * @returns {Object} An assignment object
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 
-const getAssignment = async function(req, res, next) {
+const getAssignment = async function (req, res, next) {
   const user = userAuth.requireUser(req);
 
   if (!user) {
-    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+    return utils.sendError.InvalidCredentialsError(
+      'You must be logged in.',
+      res
+    );
   }
   let id = req.params.id;
 
-  let assignment = await models.Assignment.findById(id).populate('answers', 'createdBy createDate').populate('problem').populate('section').populate('students').exec();
+  let assignment = await models.Assignment.findById(id)
+    .populate('answers', 'createdBy createDate')
+    .populate('problem')
+    .populate('section')
+    .populate('students')
+    .exec();
   // record not found in db or is trashed
   if (!assignment || assignment.isTrashed) {
     return utils.sendResponse(res, null);
@@ -113,8 +133,12 @@ const getAssignment = async function(req, res, next) {
 
   let canLoadAssignment = await access.get.assignment(user, id);
 
-  if (!canLoadAssignment) { // user does not have permission to access assignment
-    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  if (!canLoadAssignment) {
+    // user does not have permission to access assignment
+    return utils.sendError.NotAuthorizedError(
+      'You do not have permission.',
+      res
+    );
   }
 
   let data = {};
@@ -142,59 +166,62 @@ const getAssignment = async function(req, res, next) {
         };
       }
     });
-
     assignment.answers.forEach((answer) => {
       let creatorId = answer.createdBy;
+      if (!metadata[creatorId]) {
+        metadata[creatorId] = {
+          count: 0,
+          latestRevision: null,
+        };
+      }
       let latestRev = metadata[creatorId].latestRevision;
 
       metadata[creatorId].count += 1;
       let newDate = answer.createDate;
 
-      if (latestRev === null || (newDate > latestRev)) {
+      if (latestRev === null || newDate > latestRev) {
         metadata[creatorId].latestRevision = newDate;
       }
-
     });
 
     assignment.reportDetails = metadata;
   }
 
-  if (isNonEmptyArray(assignment.students)) {
-    data.users = assignment.students;
-  }
+  // if (isNonEmptyArray(assignment.students)) {
+  //   data.users = assignment.students;
+  // }
 
-  if (isValidMongoId(_.propertyOf(assignment)(['problem', '_id']))) {
-    data.problems = [ assignment.problem ];
-  }
+  // if (isValidMongoId(_.propertyOf(assignment)(['problem', '_id']))) {
+  //   data.problems = [assignment.problem];
+  // }
 
-  if (isValidMongoId(_.propertyOf(assignment)(['section', '_id']))) {
-    data.sections = [ assignment.section ];
-  }
+  // if (isValidMongoId(_.propertyOf(assignment)(['section', '_id']))) {
+  //   data.sections = [assignment.section];
+  // }
 
   assignment.depopulate('answers');
   assignment.depopulate('problem');
   assignment.depopulate('section');
   assignment.depopulate('students');
 
-  if (!isStudent) {
-    data.workspaces = [];
-    if (isNonEmptyArray(assignment.linkedWorkspaces)) {
-      await assignment.populate('linkedWorkspaces').execPopulate();
-      data.workspaces = assignment.linkedWorkspaces;
+  // if (!isStudent) {
+  //   data.workspaces = [];
+  //   if (isNonEmptyArray(assignment.linkedWorkspaces)) {
+  //     await assignment.populate('linkedWorkspaces').execPopulate();
+  //     data.workspaces = assignment.linkedWorkspaces;
 
-      assignment.depopulate('linkedWorkspaces');
-    }
-    if (assignment.parentWorkspace) {
-      await assignment.populate('parentWorkspace').execPopulate();
-      if (isNonEmptyArray(data.workspaces)) {
-        data.workspaces.push(assignment.parentWorkspace);
-      } else {
-        data.workspaces = assignment.parentWorkspace;
-      }
-      assignment.depopulate('parentWorkspace');
-    }
-
-  }
+  //     assignment.depopulate('linkedWorkspaces');
+  //   }
+  //   if (assignment.parentWorkspace) {
+  //     await assignment.populate('parentWorkspace').execPopulate();
+  //     if (isNonEmptyArray(data.workspaces)) {
+  //       data.workspaces.push(assignment.parentWorkspace);
+  //     } else {
+  //       data.workspaces = assignment.parentWorkspace;
+  //     }
+  //     assignment.depopulate('parentWorkspace');
+  //   }
+  // }
 
   let jsonAssn = assignment.toObject();
 
@@ -205,24 +232,30 @@ const getAssignment = async function(req, res, next) {
   data.assignment = jsonAssn;
 
   return utils.sendResponse(res, data);
-
 };
 
 /**
-  * @public
-  * @method postAssignment
-  * @description __URL__: /api/assignments
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data saving failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method postAssignment
+ * @description __URL__: /api/assignments
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data saving failed
+ * @throws {RestError} Something? went wrong
+ */
 
 const postAssignment = async (req, res, next) => {
   try {
     const user = userAuth.requireUser(req);
     // do we want to check if the user is allowed to create assignments?
 
-    let { assignedDate, dueDate, name, problem, linkedWorkspacesRequest, parentWorkspaceRequest  } = req.body.assignment;
+    let {
+      assignedDate,
+      dueDate,
+      name,
+      problem,
+      linkedWorkspacesRequest,
+      parentWorkspaceRequest,
+    } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
 
@@ -258,7 +291,7 @@ const postAssignment = async (req, res, next) => {
         );
       }
       let foundProblem = await models.Problem.findById(problem, {
-        title: 1
+        title: 1,
       }).lean();
       if (!foundProblem || foundProblem.isTrashed) {
         return utils.sendError.InvalidContentError(
@@ -267,9 +300,9 @@ const postAssignment = async (req, res, next) => {
         );
       }
       let formattedDate =
-        typeof assignedDate === 'string' ?
-          moment(assignedDate).format('MMM Do YYYY') :
-          moment(new Date()).format('MMM Do YYYY');
+        typeof assignedDate === 'string'
+          ? moment(assignedDate).format('MMM Do YYYY')
+          : moment(new Date()).format('MMM Do YYYY');
       req.body.assignment.name = `${foundProblem.title} / ${formattedDate} `;
     }
 
@@ -281,8 +314,10 @@ const postAssignment = async (req, res, next) => {
 
     await assignment.save();
 
-    let doCreateLinkedWorkspaces = _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
-    let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
+    let doCreateLinkedWorkspaces =
+      _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
+    let doCreateParentWorkspace =
+      _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
 
     let linkedWorkspaces;
     let parentWorkspace;
@@ -296,7 +331,10 @@ const postAssignment = async (req, res, next) => {
         .populate({ path: 'section', select: 'name' })
         .execPopulate();
 
-        let [ err, linkedWorkspaces ] = await generateLinkedWorkspacesFromAssignment(
+      let [
+        err,
+        linkedWorkspaces,
+      ] = await generateLinkedWorkspacesFromAssignment(
         assignment,
         user,
         linkedWorkspacesRequest
@@ -306,7 +344,7 @@ const postAssignment = async (req, res, next) => {
         assignment.linkedWorkspacesRequest.error = err;
       } else {
         if (isNonEmptyArray(linkedWorkspaces)) {
-          let linkedWorkspacesIds = linkedWorkspaces.map(ws => ws._id);
+          let linkedWorkspacesIds = linkedWorkspaces.map((ws) => ws._id);
 
           assignment.linkedWorkspaces = linkedWorkspacesIds;
           assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
@@ -329,7 +367,10 @@ const postAssignment = async (req, res, next) => {
               doAutoUpdateFromChildren,
               linkedAssignment: assignment._id,
             };
-            [ parentWorkspaceError, parentWorkspace ] = await generateParentWorkspace(parentWsConfig);
+            [
+              parentWorkspaceError,
+              parentWorkspace,
+            ] = await generateParentWorkspace(parentWsConfig);
 
             if (parentWorkspaceError) {
               assignment.parentWorkspaceRequest.error = parentWorkspaceError;
@@ -337,12 +378,16 @@ const postAssignment = async (req, res, next) => {
 
             if (parentWorkspace) {
               assignment.parentWorkspace = parentWorkspace._id;
-              assignment.parentWorkspaceRequest.createdWorkspace = parentWorkspace._id;
+              assignment.parentWorkspaceRequest.createdWorkspace =
+                parentWorkspace._id;
             }
           }
         }
       }
-      assignment.depopulate('students').depopulate('section').depopulate('answers');
+      assignment
+        .depopulate('students')
+        .depopulate('section')
+        .depopulate('answers');
 
       // so future assignment put requests do not default to having doCreate=true
       if (doCreateLinkedWorkspaces) {
@@ -360,7 +405,6 @@ const postAssignment = async (req, res, next) => {
 
     let data = { assignment: assignmentJson };
 
-
     if (isNonEmptyArray(linkedWorkspaces)) {
       data.workspaces = linkedWorkspaces;
     }
@@ -368,7 +412,7 @@ const postAssignment = async (req, res, next) => {
       if (data.workspaces) {
         data.workspaces.push(parentWorkspace);
       } else {
-        data.workspaces = [ parentWorkspace ];
+        data.workspaces = [parentWorkspace];
       }
     }
     utils.sendResponse(res, data);
@@ -379,13 +423,13 @@ const postAssignment = async (req, res, next) => {
 };
 
 /**
-  * @public
-  * @method putAssignment
-  * @description __URL__: /api/assignments/:id
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method putAssignment
+ * @description __URL__: /api/assignments/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 const putAssignment = async (req, res, next) => {
   try {
     const user = userAuth.requireUser(req);
@@ -395,15 +439,16 @@ const putAssignment = async (req, res, next) => {
 
     let assignment = await models.Assignment.findById(req.params.id).exec();
 
-    if (!assignment || assignment.isTrashed) {
-      return utils.sendResponse(res, null);
-    }
-
     // currently only support 1 request at a time for already existing assn
-    let { linkedWorkspacesRequest, parentWorkspaceRequest } = req.body.assignment;
+    let {
+      linkedWorkspacesRequest,
+      parentWorkspaceRequest,
+    } = req.body.assignment;
 
-    let doCreateLinkedWorkspaces = _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
-    let doCreateParentWorkspace = _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
+    let doCreateLinkedWorkspaces =
+      _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
+    let doCreateParentWorkspace =
+      _.propertyOf(parentWorkspaceRequest)('doCreate') === true;
 
     let linkedWorkspacesErr;
     let linkedWorkspaces;
@@ -420,7 +465,7 @@ const putAssignment = async (req, res, next) => {
         .execPopulate();
       [
         linkedWorkspacesErr,
-        linkedWorkspaces
+        linkedWorkspaces,
       ] = await generateLinkedWorkspacesFromAssignment(
         assignment,
         user,
@@ -432,16 +477,16 @@ const putAssignment = async (req, res, next) => {
       } else if (isNonEmptyArray(linkedWorkspaces)) {
         data.workspaces = linkedWorkspaces;
 
-        let linkedWorkspacesIds = linkedWorkspaces.map(ws => ws._id);
+        let linkedWorkspacesIds = linkedWorkspaces.map((ws) => ws._id);
         assignment.linkedWorkspaces = assignment.linkedWorkspaces.concat(
           linkedWorkspacesIds
         );
         assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
       }
       assignment
-      .depopulate('students')
-      .depopulate('section')
-      .depopulate('answers');
+        .depopulate('students')
+        .depopulate('section')
+        .depopulate('answers');
 
       await assignment.save();
 
@@ -456,7 +501,8 @@ const putAssignment = async (req, res, next) => {
       let data = {};
       assignment.parentWorkspaceRequest = {};
       if (assignment.parentWorkspace) {
-        assignment.parentWorkspaceRequest.error = 'Assignment already has a parent workspace';
+        assignment.parentWorkspaceRequest.error =
+          'Assignment already has a parent workspace';
         assignment.lastModifiedBy = user;
         assignment.lastModifiedDate = Date.now();
 
@@ -465,7 +511,11 @@ const putAssignment = async (req, res, next) => {
         data.assignment = assignment;
         return utils.sendResponse(res, data);
       }
-      let { name, doAutoUpdateFromChildren, childWorkspaces } = parentWorkspaceRequest;
+      let {
+        name,
+        doAutoUpdateFromChildren,
+        childWorkspaces,
+      } = parentWorkspaceRequest;
 
       if (typeof doAutoUpdateFromChildren !== 'boolean') {
         doAutoUpdateFromChildren = true;
@@ -482,7 +532,10 @@ const putAssignment = async (req, res, next) => {
         doAutoUpdateFromChildren,
         linkedAssignment: assignment._id,
       };
-      let [ parentWorkspaceError, parentWorkspace ] = await generateParentWorkspace(parentWsConfig);
+      let [
+        parentWorkspaceError,
+        parentWorkspace,
+      ] = await generateParentWorkspace(parentWsConfig);
 
       if (parentWorkspaceError) {
         assignment.parentWorkspaceRequest.error = parentWorkspaceError;
@@ -490,8 +543,9 @@ const putAssignment = async (req, res, next) => {
 
       if (parentWorkspace) {
         assignment.parentWorkspace = parentWorkspace._id;
-        assignment.parentWorkspaceRequest.createdWorkspace = parentWorkspace._id;
-        data.workspaces = [ parentWorkspace ];
+        assignment.parentWorkspaceRequest.createdWorkspace =
+          parentWorkspace._id;
+        data.workspaces = [parentWorkspace];
       }
 
       assignment.lastModifiedBy = user;
@@ -501,7 +555,6 @@ const putAssignment = async (req, res, next) => {
       data.assignment = assignment;
 
       return utils.sendResponse(res, data);
-
     }
 
     let oldSection = assignment.section;
@@ -510,8 +563,8 @@ const putAssignment = async (req, res, next) => {
     let didSectionChange = auditObjectIdField(oldSection, newSection) !== 0;
 
     // make the updates
-    for(let field in req.body.assignment) {
-      if((field !== '_id') && (field !== undefined)) {
+    for (let field in req.body.assignment) {
+      if (field !== '_id' && field !== undefined) {
         assignment[field] = req.body.assignment[field];
       }
     }
@@ -546,7 +599,10 @@ const putAssignment = async (req, res, next) => {
       if (isNonEmptyArray(combinedStudentsTeachers)) {
         // pull assignment from students that are NOT from new section
         models.User.updateMany(
-          { _id: { $nin: combinedStudentsTeachers }, assignments: assignment._id },
+          {
+            _id: { $nin: combinedStudentsTeachers },
+            assignments: assignment._id,
+          },
           { $pull: { assignments: assignment._id } }
         ).exec();
       }
@@ -558,22 +614,21 @@ const putAssignment = async (req, res, next) => {
 
     const data = { assignment };
     utils.sendResponse(res, data);
-
-  }catch(err) {
+  } catch (err) {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
-}
+  }
 };
 
 /**
-  * @public
-  * @method addTeacher
-  * @description __URL__: /api/assignments/addTeacher/:id
-  * @body {teacherId: ObjectId}
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method addTeacher
+ * @description __URL__: /api/assignments/addTeacher/:id
+ * @body {teacherId: ObjectId}
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 const addTeacher = (req, res, next) => {
   const user = userAuth.requireUser(req);
 
@@ -582,11 +637,11 @@ const addTeacher = (req, res, next) => {
   }
 
   models.Assignment.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if (doc.teachers.indexOf(req.body.teacherId) === -1){
+    if (doc.teachers.indexOf(req.body.teacherId) === -1) {
       doc.teachers = doc.teachers.concat([req.body.teacherId]);
     }
     doc.save((err, assignment) => {
@@ -594,21 +649,21 @@ const addTeacher = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'assignment': assignment};
+      const data = { assignment: assignment };
       utils.sendResponse(res, data);
     });
   });
 };
 
 /**
-  * @public
-  * @method removeTeacher
-  * @description __URL__: /api/assignments/removeTeacher/:id
-  * @body {teacherId: ObjectId}
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method removeTeacher
+ * @description __URL__: /api/assignments/removeTeacher/:id
+ * @body {teacherId: ObjectId}
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 const removeTeacher = (req, res, next) => {
   const user = userAuth.requireUser(req);
 
@@ -617,7 +672,7 @@ const removeTeacher = (req, res, next) => {
   }
 
   models.Assignment.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
@@ -630,20 +685,20 @@ const removeTeacher = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'assignment': assignment};
+      const data = { assignment: assignment };
       utils.sendResponse(res, data);
     });
   });
 };
 /**
-  * @public
-  * @method addStudent
-  * @description __URL__: /api/assignments/addStudent/:id
-  * @body {studentName: String}
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method addStudent
+ * @description __URL__: /api/assignments/addStudent/:id
+ * @body {studentName: String}
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 const addStudent = (req, res, next) => {
   const user = userAuth.requireUser(req);
 
@@ -652,12 +707,12 @@ const addStudent = (req, res, next) => {
   }
 
   models.Assignment.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     // only add the student if they're not already in the assignment
-    if (doc.students.indexOf(req.body.studentId) === -1){
+    if (doc.students.indexOf(req.body.studentId) === -1) {
       doc.students = doc.students.concat([req.body.studentId]);
     }
     doc.save((err, assignment) => {
@@ -665,20 +720,20 @@ const addStudent = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'assignment': assignment};
+      const data = { assignment: assignment };
       utils.sendResponse(res, data);
     });
   });
 };
 /**
-  * @public
-  * @method removeStudent
-  * @description __URL__: /api/assignments/removeStudent/:id
-  * @body {studentName: String}
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method removeStudent
+ * @description __URL__: /api/assignments/removeStudent/:id
+ * @body {studentName: String}
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 const removeStudent = (req, res, next) => {
   const user = userAuth.requireUser(req);
 
@@ -687,7 +742,7 @@ const removeStudent = (req, res, next) => {
   }
 
   models.Assignment.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
@@ -700,20 +755,20 @@ const removeStudent = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'assignment': assignment};
+      const data = { assignment: assignment };
       utils.sendResponse(res, data);
     });
   });
 };
 /**
-  * @public
-  * @method addProblem
-  * @description __URL__: /api/assignments/addProblem/:id
-  * @body {problemId: ObjectId}
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method addProblem
+ * @description __URL__: /api/assignments/addProblem/:id
+ * @body {problemId: ObjectId}
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 const addProblem = (req, res, next) => {
   const user = userAuth.requireUser(req);
 
@@ -722,12 +777,12 @@ const addProblem = (req, res, next) => {
   }
 
   models.Assignment.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     // only add unique problems to the assignment
-    if (doc.problems.indexOf(req.body.problemId) === -1){
+    if (doc.problems.indexOf(req.body.problemId) === -1) {
       doc.problems = doc.problems.concat([req.body.problemId]);
     }
     doc.save((err, assignment) => {
@@ -735,20 +790,20 @@ const addProblem = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'assignment': assignment};
+      const data = { assignment: assignment };
       utils.sendResponse(res, data);
     });
   });
 };
 /**
-  * @public
-  * @method removeProblem
-  * @description __URL__: /api/assignments/removeProblem:id
-  * @body {problemId: ObjectId}
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-*/
+ * @public
+ * @method removeProblem
+ * @description __URL__: /api/assignments/removeProblem:id
+ * @body {problemId: ObjectId}
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 const removeProblem = (req, res, next) => {
   const user = userAuth.requireUser(req);
 
@@ -757,12 +812,12 @@ const removeProblem = (req, res, next) => {
   }
 
   models.Assignment.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     // only remove problem if its in this assignment
-    if (doc.problems.indexOf(req.body.problemId) !== -1){
+    if (doc.problems.indexOf(req.body.problemId) !== -1) {
       doc.problems.splice(doc.problems.indexOf(req.body.problemId), 1);
     }
     doc.save((err, assignment) => {
@@ -770,14 +825,18 @@ const removeProblem = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'assignment': assignment};
+      const data = { assignment: assignment };
       utils.sendResponse(res, data);
     });
   });
 };
 
-
-const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOptions = {}, parentWsOptions = {}) => {
+const generateLinkedWorkspacesFromAssignment = async (
+  assignment,
+  reqUser,
+  wsOptions = {},
+  parentWsOptions = {}
+) => {
   let results = {
     createdWorkspaces: [],
     error: null,
@@ -790,9 +849,11 @@ const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOpt
     // assignment will have students, section populated
     let { students, answers, section } = assignment;
 
-    let { mode, name, doAllowSubmissionUpdates } = wsOptions;
+    let { mode, name, doAllowSubmissionUpdates, linkType } = wsOptions;
 
-    await assignment.populate({path: 'linkedWorkspaces', select: 'owner'}).execPopulate();
+    await assignment
+      .populate({ path: 'linkedWorkspaces', select: 'owner' })
+      .execPopulate();
 
     let studentsWithoutWorkspaces = _.reject(students, (student) => {
       return _.find(assignment.linkedWorkspaces, (ws) => {
@@ -806,68 +867,172 @@ const generateLinkedWorkspacesFromAssignment = async (assignment, reqUser, wsOpt
     if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
       // should send message detailing this
       // logger.info('No students without a linked workspace');
-      return ['All students already own a linked workspace', null ];
+      return ['All students already own a linked workspace', null];
     }
     // if answers convert answers to submissions
 
     let submissionObjects = await answersToSubmissions(answers);
-
+    let workspaces;
     // create a workspace for each student in assignment
-    let workspaces = await Promise.all(studentsWithoutWorkspaces.map(async (student) => {
-      // create submission record copies
-      let submissionRecords = await Promise.all( submissionObjects.map((obj) => {
-        let sub = new models.Submission(obj);
-        let creatorId;
+    if (linkType === 'individual') {
+      workspaces = await Promise.all(
+        studentsWithoutWorkspaces.map(async (student) => {
+          // create submission record copies
+          let submissionRecords = await Promise.all(
+            submissionObjects.map((obj) => {
+              let sub = new models.Submission(obj);
+              let creatorId;
 
-        let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+              let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
 
-        // set creator of submission as the enc user who created it if applicable
-        // else set as importer
+              // set creator of submission as the enc user who created it if applicable
+              // else set as importer
 
-        if (isValidMongoId(encUserId)) {
-          creatorId = encUserId;
-        } else {
-          creatorId = reqUser._id;
-        }
-        sub.createdBy = creatorId;
-        sub.createDate = Date.now();
-        sub.lastModifiedDate = Date.now();
-        sub.lastModifiedBy = creatorId;
-        return sub.save();
-      }));
+              if (isValidMongoId(encUserId)) {
+                creatorId = encUserId;
+              } else {
+                creatorId = reqUser._id;
+              }
+              sub.createdBy = creatorId;
+              sub.createDate = Date.now();
+              sub.lastModifiedDate = Date.now();
+              sub.lastModifiedBy = creatorId;
+              return sub.save();
+            })
+          );
 
-      let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
+          let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
 
-      let wsName = `${student.username}: ${nameSuffix}`;
+          let wsName = `${student.username}: ${nameSuffix}`;
 
-      return models.Workspace.create({
-        name: wsName,
-        owner: student._id,
-        createdBy: reqUser._id,
-        lastModifiedBy: reqUser._id,
-        lastModifiedDate: Date.now(),
-        mode: mode || 'private',
-        submissions: submissionRecords.map(s => s._id),
-        linkedAssignment: assignment._id,
-        organization: reqUser.organization,
-        doAllowSubmissionUpdates: typeof doAllowSubmissionUpdates === 'boolean' ? doAllowSubmissionUpdates : true,
-
+          return models.Workspace.create({
+            name: wsName,
+            owner: student._id,
+            createdBy: reqUser._id,
+            lastModifiedBy: reqUser._id,
+            lastModifiedDate: Date.now(),
+            mode: mode || 'private',
+            submissions: submissionRecords.map((s) => s._id),
+            linkedAssignment: assignment._id,
+            organization: reqUser.organization,
+            doAllowSubmissionUpdates:
+              typeof doAllowSubmissionUpdates === 'boolean'
+                ? doAllowSubmissionUpdates
+                : true,
+          });
+        })
+      );
+    } else if (linkType === 'group') {
+      let groups = await models.Group.find().where({
+        section,
+        isTrashed: false,
       });
-    }));
+      await assignment
+        .populate({ path: 'linkedWorkspaces', select: 'group' })
+        .execPopulate();
+      let groupsWithoutWorkspaces = _.reject(groups, (group) => {
+        return _.find(assignment.linkedWorkspaces, (ws) => {
+          return areObjectIdsEqual(ws.group, group._id);
+        });
+      });
+      assignment.depopulate();
+      workspaces = await Promise.all(
+        groupsWithoutWorkspaces.map(async (group) => {
+          let submissionRecords = await Promise.all(
+            submissionObjects.map((obj) => {
+              let sub = new models.Submission(obj);
+              let creatorId;
 
-    let { doCreateParentWs } = parentWsOptions;
+              let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
 
-    if ( doCreateParentWs ) {
-      // create parent ws from linked workspaces
+              // set creator of submission as the enc user who created it if applicable
+              // else set as importer
 
+              if (isValidMongoId(encUserId)) {
+                creatorId = encUserId;
+              } else {
+                creatorId = reqUser._id;
+              }
+              sub.createdBy = creatorId;
+              sub.createDate = Date.now();
+              sub.lastModifiedDate = Date.now();
+              sub.lastModifiedBy = creatorId;
+              return sub.save();
+            })
+          );
+          let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
+          let permissions = group.students.map((student) => {
+            let options = {
+              user: student,
+              global: 'editor',
+              feedback: 'none',
+              comments: 4,
+              selections: 4,
+              folders: 3,
+              submissions: {
+                submissionIds: [],
+                all: true,
+                userOnly: false,
+              },
+            };
+            return options;
+          });
+          return models.Workspace.create({
+            name: `${group.name}: ${nameSuffix}`,
+            owner: reqUser._id,
+            group: group._id,
+            createdBy: reqUser._id,
+            lastModifiedBy: reqUser._id,
+            lastModifiedDate: Date.now(),
+            mode: mode || 'private',
+            submissions: submissionRecords.map((s) => s._id),
+            linkedAssignment: assignment._id,
+            organization: reqUser.organization,
+            permissions,
+            doAllowSubmissionUpdates:
+              typeof doAllowSubmissionUpdates === 'boolean'
+                ? doAllowSubmissionUpdates
+                : true,
+          });
+        })
+      );
     }
-
-    results.createdWorkspaces = workspaces;
-    return [ null, workspaces ];
-
-  }catch(err) {
-    console.log({generateLinkedWorkspacesFromAssignmentErr: err});
-    return [ err, null ];
+    const parentWorkspace = await models.Workspace.findById(
+      assignment.parentWorkspace
+    );
+    if (parentWorkspace) {
+      parentWorkspace.childWorkspaces = [
+        ...parentWorkspace.childWorkspaces,
+        ...workspaces,
+      ];
+      parentWorkspace.markModified('childWorkspaces');
+      workspaces.forEach((ws) => {
+        let data = {
+          createDate: new Date(),
+          isTrashed: false,
+          lastModifiedDate: new Date(),
+          editors: [],
+          children: [],
+          taggings: [],
+          wasNew: true,
+          updatedFields: [],
+          name: ws.name,
+          owner: parentWorkspace.owner,
+          createdBy: parentWorkspace.owner,
+          lastModifiedBy: parentWorkspace.owner,
+          workspace: parentWorkspace._id,
+          srcChildWs: ws._id,
+        };
+        models.Folder.create(data);
+      });
+      let res = await parentWorkspace.save();
+      console.log(res);
+      results.createdWorkspaces = workspaces;
+    }
+    return [null, workspaces];
+  } catch (err) {
+    console.log({ generateLinkedWorkspacesFromAssignmentErr: err });
+    return [err, null];
   }
 };
 
