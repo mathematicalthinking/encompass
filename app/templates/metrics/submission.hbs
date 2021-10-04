@@ -1,114 +1,25 @@
-{{log this.model}}
 <header>
   <h3>{{model.submission.student}}'s Answer</h3>
 </header>
 <p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
-  <div class="metrics__container metrics--flex">
-    <button {{action "handleToggle" "showSelections"}} class="primary-button">Report Selections</button>
-    <button {{action "handleToggle" "showFolders"}} class="primary-button">Report Folders</button>
-    <button {{action "handleToggle" "showComments"}} class="primary-button">Report Comments</button>
-    <button {{action "handleToggle" "showResponses"}} class="primary-button">Report Responses</button>
+    <div class="metrics__container metrics--flex">
+    <button {{on "click" this.toggleShowWorkspaces}} class="primary-button">Show Workspaces</button>
   </div>
-  <div class="metrcis__container">
-  {{#if showSelections}}
-    <p>selections</p>
-    <table class="metrics__table">
-      <thead>
-        <tr>
-          <th>
-            selected text
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each model.submission.selections as |selection|}}
-          <tr>
-            <td>{{selection.text}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  {{/if}}
-  {{#if showFolders}}
-    <p>Folders</p>
-    <table class="metrics__table">
-      <thead>
-        <tr>
-          <th>
-            Label
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each model.submission.folders as |folder|}}
-          <tr>
-            <td>{{folder.name}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  {{/if}}
-  {{#if showComments}}
-    <p>Comments</p>
-    <table class="metrics__table">
-      <thead>
-        <tr>
-          <th>
-            Created By
-          </th>
-          <th>
-            Label
-          </th>
-          <th>
-            Text
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each model.submission.comments as |comment|}}
-          <tr>
-            <td>{{comment.createdBy.username}}</td>
-            <td>{{comment.label}}</td>
-            <td>{{comment.text}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  {{/if}}
-  {{#if showResponses}}
-    <p>Created By</p>
-    <table class="metrics__table">
-      <thead>
-        <tr>
-          <th>
-            Created By
-          </th>
-          <th>
-            Text
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each model.submission.responses as |response|}}
-          <tr>
-            <td>{{response.createdBy.username}}</td>
-            <td>{{{response.text}}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  {{/if}}
-  </div>
-  <div class="metrics__container" id="submission">
-    <div class="metrics__card">
-    <h3>answer</h3>
-      <p>{{if model.submission.shortAnswer model.submission.shortAnswer model.submission.answer.answer}}</p>
-    </div>
-    <div class="metrics__card">
-    <h3>explanation</h3>
-      <p>{{if model.submission.longAnswer model.submission.longAnswer model.submission.answer.explanation}}</p>
-    </div>
-  </div>
+  <ul>
+    {{#if this.showWorkspaces}}
+    {{#each this.model.workspaces as |workspace|}}
+      <li>
+        <label><Input @type="checkbox" {{on "change" (fn this.updateSelectedWorkspaces workspace)}} />{{workspace.name}} - {{workspace.owner.username}}</label>
+      </li>
+    {{/each}}
+    {{/if}}
+  </ul>
+  <h2>Selected workspaces</h2>
+  <ul>
+    {{#each this.selectedWorkspaces as |workspace|}}
+      <li>{{workspace.name}} - {{workspace.owner.username}}</li>
+    {{/each}}
+  </ul>
 </div>
 <p><LinkTo @route="metrics">back</LinkTo></p>
