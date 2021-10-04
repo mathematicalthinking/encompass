@@ -1,5 +1,8 @@
-Encompass.Category = DS.Model.extend(Encompass.Auditable, {
-  identifier: DS.attr('string'),
-  description: DS.attr('string'),
-  url: DS.attr('string'),
-});
+import { attr } from '@ember-data/model';
+import Auditable from './auditable';
+
+export default class CategoryModel extends Auditable {
+  @attr('string') identifier;
+  @attr('string') description;
+  @attr('string') url;
+}

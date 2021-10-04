@@ -1,52 +1,79 @@
-Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { alias } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
+  currentUser: service('current-user'),
   tagName: 'li',
 
-  permissions: Ember.inject.service('workspace-permissions'),
-  utils: Ember.inject.service('utility-methods'),
+  permissions: service('workspace-permissions'),
+  utils: service('utility-methods'),
 
   currentWorkspace: null,
   classNames: ['ws-comment-comp'],
-  classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse', 'isFromCurrentSelection:is-for-cs',],
+  classNameBindings: [
+    'comment.label',
+    'relevanceClass',
+    'comment.inReuse',
+    'isFromCurrentSelection:is-for-cs',
+  ],
 
-  originalWorkspace: Ember.computed.alias('comment.originalComment.workspace'),
+  originalWorkspace: alias('comment.originalComment.workspace'),
 
-  isForCurrentWorkspace: function() {
-    let workspaceId = this.get('utils').getBelongsToId(this.get('comment'), 'workspace');
-    return workspaceId === this.get('currentWorkspace.id');
-  }.property('currentWorkspace.id', 'comment'),
+  isForCurrentWorkspace: computed(
+    'currentWorkspace.id',
+    'comment',
+    function () {
+      let workspaceId = this.utils.getBelongsToId(this.comment, 'workspace');
+      return workspaceId === this.get('currentWorkspace.id');
+    }
+  ),
 
-  childrenLength: function() {
-    let childrenIds = this.get('utils').getHasManyIds(this.get('comment'), 'children');
+  childrenLength: computed('comment.children.[]', function () {
+    let childrenIds = this.utils.getHasManyIds(this.comment, 'children');
     return childrenIds.get('length');
-  }.property('comment.children.[]'),
+  }),
 
-  isOwnComment: function() {
-    let creatorId = this.get('utils').getBelongsToId(this.get('comment'), 'createdBy');
-    return creatorId === this.get('currentUser.id');
-  }.property('comment', 'currentUser.id'),
+  isOwnComment: computed('comment', 'currentUser.user.id', function () {
+    let creatorId = this.utils.getBelongsToId(this.comment, 'createdBy');
+    return creatorId === this.get('currentUser.user.id');
+  }),
 
-  canDelete: function () {
-    let ws = this.get('currentWorkspace');
-    return this.get('permissions').canEdit(ws, 'comments', 4);
-  }.property('currentWorkspace.permissions.@each.{global,comments}'),
+  canDelete: computed(
+    'currentWorkspace.permissions.@each.{global,comments}',
+    function () {
+      let ws = this.currentWorkspace;
+      return this.permissions.canEdit(ws, 'comments', 4);
+    }
+  ),
 
-  permittedToComment: function () {
-    let ws = this.get('currentWorkspace');
-    return this.get('permissions').canEdit(ws, 'comments', 2);
-  }.property('currentWorkspace.permissions.@each.{global,comments}'),
+  permittedToComment: computed(
+    'currentWorkspace.permissions.@each.{global,comments}',
+    function () {
+      let ws = this.currentWorkspace;
+      return this.permissions.canEdit(ws, 'comments', 2);
+    }
+  ),
 
-  relevanceClass: function(){
+  relevanceClass: computed('comment.relevance', function () {
     return 'relevance-' + this.get('comment.relevance');
-  }.property('comment.relevance'),
+  }),
 
-  isFromCurrentSelection: function() {
-    return this.get('utils').getBelongsToId(this.get('comment'), 'selection') === this.get('currentSelection.id');
-  }.property('currentSelection', 'comment.selection'),
+  isFromCurrentSelection: computed(
+    'currentSelection',
+    'comment.selection',
+    function () {
+      return (
+        this.utils.getBelongsToId(this.comment, 'selection') ===
+        this.get('currentSelection.id')
+      );
+    }
+  ),
 
   actions: {
-    deleteComment: function( comment ){
+    deleteComment: function (comment) {
       this.sendAction('action', comment);
-    }
-  }
+    },
+  },
 });
-

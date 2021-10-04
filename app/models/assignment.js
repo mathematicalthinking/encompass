@@ -1,21 +1,44 @@
-Encompass.Assignment = DS.Model.extend(Encompass.Auditable, {
-  assignmentId: Ember.computed.alias('id'),
-  name: DS.attr('string'),
-  answers: DS.hasMany('answer', { async: true }),
-  students: DS.hasMany('user', { inverse: null }),
-  section: DS.belongsTo('section', { async: true }),
-  problem: DS.belongsTo('problem', { async: true }),
-  assignedDate: DS.attr('date'),
-  dueDate: DS.attr('date'),
-  taskWorkspace: DS.belongsTo('workspace', { inverse: null }),
-  assignmentType: DS.attr('string'),
-  linkedWorkspaces: DS.hasMany('workspace', { inverse: null }),
-  parentWorkspace: DS.belongsTo('workspace', { inverse: null }),
-  reportDetails: DS.attr(), // for assignment report,
-  linkedWorkspacesRequest: DS.attr({
-    defaultValue: { doCreate: false, error: null, createdWorkspaces: [], doAllowSubmissionUpdates: false, name: null }
-  }),
-  parentWorkspaceRequest: DS.attr({
-    defaultValue: { doCreate: false, error: null, createdWorkspace: null, doAutoUpdateFromChildren: false, name: null }
-  }),
-});
+import { attr, hasMany, belongsTo } from '@ember-data/model';
+import Auditable from './auditable';
+
+export default class AssignmentModel extends Auditable {
+  get assignmentId() {
+    return this.id;
+  }
+  @attr('string') name;
+  @hasMany('answer', { async: true }) answers;
+  @hasMany('user', { inverse: null }) students;
+  @belongsTo('section', { async: true }) section;
+  @belongsTo('problem', { async: true }) problem;
+  @attr('date') assignedDate;
+  @attr('date') dueDate;
+  @belongsTo('workspace', { inverse: null }) taskWorkspace;
+  @attr('string') assignmentType;
+  @hasMany('workspace', { inverse: null }) linkedWorkspaces;
+  @belongsTo('workspace', { inverse: null }) parentWorkspace;
+  @attr reportDetails;
+  @attr({
+    defaultValue: () => {
+      return {
+        doCreate: false,
+        error: null,
+        createdWorkspaces: [],
+        doAllowSubmissionUpdates: false,
+        name: null,
+      };
+    },
+  })
+  linkedWorkspacesRequest;
+  @attr({
+    defaultValue: () => {
+      return {
+        doCreate: false,
+        error: null,
+        createdWorkspace: null,
+        doAutoUpdateFromChildren: false,
+        name: null,
+      };
+    },
+  })
+  parentWorkspaceRequest;
+}

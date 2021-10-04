@@ -1,1 +1,3 @@
-{{problem-info store=store problem=model toProblemList="toProblemList" toAssignmentInfo="toAssignmentInfo"}}
+<div id="problem-info" class="side-info">
+  <ProblemInfo @orgList={{this.model.orgList}} @recommendedProblems={{this.model.recommendedProblems}} @problem={{this.model.problem}} @sectionList={{this.model.sectionList}} @currentUser={{this.model.currentUser}} />
+</div>

@@ -1,655 +1,540 @@
-/* eslint-disable complexity */
-Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(
-  Encompass.CurrentUserMixin,
-  Encompass.ErrorHandlingMixin,
-  {
-    elementId: 'assignment-info-teacher',
-    classNameBindings: ['isEditing:is-editing'],
-    formattedDueDate: null,
-    formattedAssignedDate: null,
-    isEditing: false,
-    isDisplaying: Ember.computed.not('isEditing'),
-    // showReport: false,
-    isPreparingReport: false,
-    htmlDateFormat: 'MM/DD/YYYY',
-    displayDateFormat: 'MMM Do YYYY',
-    assignmentToDelete: null,
-    dataFetchErrors: [],
-    findRecordErrors: [],
-    updateRecordErrors: [],
-    areLinkedWsExpanded: true,
-    showParentWsForm: false,
-    showLinkedWsForm: false,
-    areLinkedWsHidden: Ember.computed.not('areLinkedWsExpanded'),
-    areSubmissionsExpanded: true,
-    areSubmissionsHidden: Ember.computed.not('areSubmissionsExpanded'),
-    showProblemInput: Ember.computed.and('isEditing', 'canEditProblem'),
-    showSectionInput: Ember.computed.and('isEditing', 'canEditProblem'),
-    showAssignedDateInput: Ember.computed.and(
-      'isEditing',
-      'canEditAssignedDate'
-    ),
-    showDueDateInput: Ember.computed.and('isEditing', 'canEditDueDate'),
-    hideParentWsForm: Ember.computed.not('showParentWsForm'),
-    hideLinkedWsForm: Ember.computed.not('showLinkedWsForm'),
-    allStudentsHaveWs: Ember.computed.equal(
-      'studentsWithoutWorkspaces.length',
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
+import moment from 'moment';
+
+export default class AssignmentInfoTeacherComponent extends ErrorHandlingComponent {
+  @tracked formattedDueDate = null;
+  @tracked formattedAssignedDate = null;
+  @tracked isEditing = false;
+  @tracked isPreparingReport = false;
+  @tracked htmlDateFormat = 'YYYY-MM-DD';
+  @tracked displayDateFormat = 'MMM Do YYYY';
+  @tracked assignmentToDelete = null;
+  @tracked dataFetchErrors = [];
+  @tracked findRecordErrors = [];
+  @tracked updateRecordErrors = [];
+  @tracked areLinkedWsExpanded = true;
+  @tracked showParentWsForm = false;
+  @tracked showLinkedWsForm = false;
+  @tracked areSubmissionsExpanded = true;
+  @tracked cachedProblem = [];
+  get showProblemInput() {
+    return this.isEditing && this.canEditProblem;
+  }
+  get showSectionInput() {
+    return this.isEditing && this.canEditProblem;
+  }
+  get showAssignedDateInput() {
+    return this.isEditing && this.canEditAssignedDate;
+  }
+  get showDueDateInput() {
+    return this.isEditing && this.canEditDueDate;
+  }
+  get hideParentWsForm() {
+    return !this.showParentWsForm;
+  }
+  get hideLinkedWsForm() {
+    return !this.showLinkedWsForm;
+  }
+  get allStudentsHaveWs() {
+    return this.studentsWithoutWorkspaces.length === 0;
+  }
+  get allGroupsHaveWs() {
+    return this.groupsWithoutWorkspaces.length === 0;
+  }
+  @service store;
+  @service router;
+  @service('sweet-alert') alert;
+  @service('assignment-permissions') permissions;
+  @service('utility-methods') utils;
+
+  get hasLinkedWorkspaces() {
+    return this.args.assignment.linkedWorkspaces.length > 0;
+  }
+  get doesNotHaveLinkedWs() {
+    return !this.hasLinkedWorkspaces;
+  }
+
+  get showFullLinkedWsMsg() {
+    return this.linkedByGroup
+      ? this.isEditing && this.allGroupsHaveWs
+      : this.isEditing && this.allStudentsHaveWs;
+  }
+  get showNoParentWsMsg() {
+    return this.isEditing && this.doesNotHaveLinkedWs;
+  }
+
+  constructor() {
+    super(...arguments);
+    // get all sections and problems
+    // only need to get these on init because user won't be creating new sections or problems from this component
+
+    this.cachedProblems = this.store.peekAll('problem');
+  }
+
+  get isYourOwn() {
+    let creatorId = this.utils.getBelongsToId(
+      this.args.assignment,
+      'createdBy'
+    );
+    return this.args.currentUser.id === creatorId;
+  }
+
+  get isDirty() {
+    let answerIds = this.utils.getHasManyIds(this.args.assignment, 'answers');
+    return this.utils.isNonEmptyArray(answerIds);
+  }
+
+  get isClean() {
+    return !this.isDirty;
+  }
+
+  get canDelete() {
+    return this.permissions.canDelete(this.args.assignment);
+  }
+
+  get canEdit() {
+    const isAdmin = this.args.currentUser.isAdmin;
+    const isClean = this.isClean;
+    const isYourOwn = this.isYourOwn;
+
+    return isAdmin || (isClean && isYourOwn);
+  }
+  get isReadOnly() {
+    return !this.canEdit;
+  }
+
+  get canEditDueDate() {
+    return this.hasBasicEditPrivileges;
+  }
+
+  get canEditAssignedDate() {
+    return this.permissions.canEditAssignedDate(this.args.assignment);
+  }
+
+  get canEditProblem() {
+    return this.permissions.canEditProblem(this.args.assignment, this.section);
+  }
+
+  get hasBasicEditPrivileges() {
+    return (
+      this.permissions.getPermissionsLevel(this.args.assignment, this.section) >
       0
-    ),
+    );
+  }
 
-    alert: Ember.inject.service('sweet-alert'),
-    permissions: Ember.inject.service('assignment-permissions'),
-    utils: Ember.inject.service('utility-methods'),
+  get isBeforeAssignedDate() {
+    // true if assignedDate is in future
+    const currentDate = new Date();
+    const assignedDate = this.args.assignment.assignedDate;
+    return currentDate < assignedDate;
+  }
 
-    hasLinkedWorkspaces: Ember.computed.gt(
-      'assignment.linkedWorkspaces.length',
-      0
-    ),
-    doesNotHaveLinkedWs: Ember.computed.not('hasLinkedWorkspaces'),
+  get canEditDate() {
+    const isAdmin = this.args.currentUser.isAdmin;
+    const canEdit = this.canEdit;
+    const isBeforeAssignedDate = this.isBeforeAssignedDate;
+    return isAdmin || (canEdit && isBeforeAssignedDate);
+  }
 
-    showFullLinkedWsMsg: Ember.computed.and('isEditing', 'allStudentsHaveWs'),
-    showNoParentWsMsg: Ember.computed.and('isEditing', 'doesNotHaveLinkedWs'),
+  get isDateLocked() {
+    return !this.canEditDate;
+  }
 
-    init: function() {
-      this._super(...arguments);
-      // get all sections and problems
-      // only need to get these on init because user won't be creating new sections or problems from this component
+  getMongoDate(htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    return new Date(dateMoment);
+  }
 
-      this.set('cachedProblems', this.get('store').peekAll('problem'));
+  getEndDate(htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD HH:mm';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    let date = new Date(dateMoment);
+    date.setHours(23, 59, 59);
+    return date;
+  }
 
-      return this.store
-        .findAll('section')
-        .then(sections => {
-          if (this.get('isDestroying') || this.get('isDestroyed')) {
-            return;
-          }
-          this.set('sections', sections);
-        })
-        .catch(err => {
-          if (this.get('isDestroying') || this.get('isDestroyed')) {
-            return;
-          }
-          this.handleErrors(err, 'dataFetchErrors');
-        });
-    },
+  get showEditButton() {
+    return (
+      !this.isEditing && this.hasBasicEditPrivileges && !this.showParentWsForm
+    );
+  }
 
-    didReceiveAttrs: function() {
-      const assignment = this.get('assignment');
-      if (this.get('currentAssignment.id') !== this.get('assignment.id')) {
-        this.set('currentAssignment', assignment);
-
-        this.set('isEditing', false);
-
-        let dateFormat = this.get('htmlDateFormat');
-        let dueDate = this.assignment.get('dueDate');
-        let assignedDate = this.assignment.get('assignedDate');
-        this.set('selectedProblem', this.get('problem'));
-        this.set('selectedSection', this.get('section'));
-
-        this.set('assignmentName', assignment.get('name'));
-
-        if (dueDate) {
-          this.set('formattedDueDate', moment(dueDate).format(dateFormat));
-        }
-
-        if (assignedDate) {
-          this.set(
-            'formattedAssignedDate',
-            moment(assignedDate).format(dateFormat)
-          );
-        }
-      }
-    },
-
-    isYourOwn: function() {
-      let creatorId = this.get('utils').getBelongsToId(
-        this.get('assignment'),
-        'createdBy'
-      );
-      return this.get('currentUser.id') === creatorId;
-    }.property('assignment.id', 'currentUser.id'),
-
-    isDirty: function() {
-      let answerIds = this.get('utils').getHasManyIds(
-        this.get('assignment'),
-        'answers'
-      );
-      return this.get('utils').isNonEmptyArray(answerIds);
-    }.property('assignment.answers.[]'),
-
-    isClean: Ember.computed.not('isDirty'),
-
-    canDelete: function() {
-      return this.get('permissions').canDelete(this.get('assignment'));
-    }.property('currentUser.actingRole', 'assignment.answers[]'),
-
-    canEdit: function() {
-      const isAdmin = this.get('currentUser.isAdmin');
-      const isClean = this.get('isClean');
-      const isYourOwn = this.get('isYourOwn');
-
-      return isAdmin || (isClean && isYourOwn);
-    }.property('isClean', 'isYourOwn'),
-    isReadOnly: Ember.computed.not('canEdit'),
-
-    canEditDueDate: function() {
-      return this.get('hasBasicEditPrivileges');
-    }.property('hasBasicEditPrivileges'),
-
-    canEditAssignedDate: function() {
-      return this.get('permissions').canEditAssignedDate(
-        this.get('assignment')
-      );
-    }.property('assignment.assignedDate'),
-
-    canEditProblem: function() {
-      return this.get('permissions').canEditProblem(
-        this.get('assignment'),
-        this.get('section')
-      );
-    }.property(
-      'sortedAnswers.[]',
-      'hasBasicEditPrivileges',
-      'currentUser.actingRole'
-    ),
-
-    hasBasicEditPrivileges: function() {
-      return (
-        this.get('permissions').getPermissionsLevel(
-          this.get('assignment'),
-          this.get('section')
-        ) > 0
-      );
-    }.property('section.teachers.[]', 'currentUser.actingRole', 'assignment'),
-
-    isBeforeAssignedDate: function() {
-      // true if assignedDate is in future
-      const currentDate = new Date();
-      const assignedDate = this.assignment.get('assignedDate');
-      return currentDate < assignedDate;
-    }.property('assignment.id', 'assignment.assignedDate'),
-
-    canEditDate: function() {
-      const isAdmin = this.get('currentUser.isAdmin');
-      const canEdit = this.get('canEdit');
-      const isBeforeAssignedDate = this.get('isBeforeAssignedDate');
-      return isAdmin || (canEdit && isBeforeAssignedDate);
-    }.property('isBeforeAssignedDate', 'canEdit'),
-
-    isDateLocked: Ember.computed.not('canEditDate'),
-
-    getMongoDate: function(htmlDateString) {
-      const htmlFormat = 'YYYY-MM-DD';
-      if (typeof htmlDateString !== 'string') {
-        return;
-      }
-      let dateMoment = moment(htmlDateString, htmlFormat);
-      return new Date(dateMoment);
-    },
-
-    getEndDate: function(htmlDateString) {
-      const htmlFormat = 'YYYY-MM-DD HH:mm';
-      if (typeof htmlDateString !== 'string') {
-        return;
-      }
-      let dateMoment = moment(htmlDateString, htmlFormat);
-      let date = new Date(dateMoment);
-      date.setHours(23, 59, 59);
-      return date;
-    },
-
-    showEditButton: function() {
-      return (
-        !this.get('isEditing') &&
-        this.get('hasBasicEditPrivileges') &&
-        !this.get('showParentWsForm')
-      );
-    }.property('hasBasicEditPrivileges', 'isEditing', 'showParentWsForm'),
-
-    problemOptions: function() {
-      let cachedProblems = this.get('cachedProblems');
-      let toArray = cachedProblems.toArray();
-      return toArray.map(cachedProblem => {
-        return {
-          id: cachedProblem.id,
-          title: cachedProblem.get('title')
-        };
-      });
-    }.property('cachedProblems.[]'),
-    sectionOptions: function() {
-      let sections = this.get('sections') || [];
-      let toArray = sections.toArray();
-      return toArray.map(section => {
-        return {
-          id: section.id,
-          name: section.get('name')
-        };
-      });
-    }.property('sections.[]'),
-
-    initialProblemItem: function() {
-      if (this.get('selectedProblem.id')) {
-        return [this.get('selectedProblem.id')];
-      }
-      return [];
-    }.property('selectedProblem'),
-
-    initialSectionItem: function() {
-      if (this.get('selectedSection.id')) {
-        return [this.get('selectedSection.id')];
-      }
-      return [];
-    }.property('selectedSection'),
-
-    showAddParentWsBtn: function() {
-      return (
-        this.get('isEditing') &&
-        this.get('hasBasicEditPrivileges') &&
-        this.get('hideParentWsForm') &&
-        this.get('hasLinkedWorkspaces') &&
-        !this.get('hasParentWorkspace')
-      );
-    }.property(
-      'hasBasicEditPrivileges',
-      'isEditing',
-      'hideParentWsForm',
-      'hasParentWorkspace',
-      'hasLinkedWorkspaces'
-    ),
-    showAddLinkedWsBtn: function() {
-      return (
-        this.get('isEditing') &&
-        this.get('hasBasicEditPrivileges') &&
-        this.get('hideLinkedWsForm') &&
-        !this.get('allStudentsHaveWs')
-      );
-    }.property(
-      'isEditing',
-      'hasBasicEditPrivileges',
-      'hideLinkedWsForm',
-      'allStudentsHaveWs'
-    ),
-
-    showReport: function() {
-      return !this.get('showParentWsForm');
-    }.property('showParentWsForm'),
-
-    hasParentWorkspace: function() {
-      let workspaceId = this.get('utils').getBelongsToId(
-        this.get('assignment'),
-        'parentWorkspace'
-      );
-      return this.get('utils').isValidMongoId(workspaceId);
-    }.property('assignment.parentWorkspace'),
-
-    displayListsOptions: function() {
-      let areLinkedWsExpanded = this.get('areLinkedWsExpanded');
-      let areSubmissionsExpanded = this.get('areSubmissionsExpanded');
-
-      let toHide = 'fas fa-chevron-down';
-      let toShow = 'fas fa-chevron-left';
+  get problemOptions() {
+    let cachedProblems = this.cachedProblems;
+    let toArray = cachedProblems.toArray();
+    return toArray.map((cachedProblem) => {
       return {
-        linkedWs: {
-          icon: areLinkedWsExpanded ? toHide : toShow
-        },
-        submissions: {
-          icon: areSubmissionsExpanded ? toHide : toShow
-        }
+        id: cachedProblem.id,
+        title: cachedProblem.get('title'),
       };
-    }.property('areLinkedWsExpanded'),
+    });
+  }
+  get sectionOptions() {
+    let sections = this.args.sections || [];
+    let toArray = sections.toArray();
+    return toArray.map((section) => {
+      return {
+        id: section.id,
+        name: section.get('name'),
+      };
+    });
+  }
 
-    studentsWithoutWorkspaces: function() {
-      let students = this.get('studentList') || [];
-      let existingWorkspaces = this.get('linkedWorkspaces') || [];
+  get initialProblemItem() {
+    return [this.args.assignment.get('problem.id')];
+  }
 
-      return students.reject(student => {
-        return existingWorkspaces.find(ws => {
-          let ownerId = this.get('utils').getBelongsToId(ws, 'owner');
-          return ownerId === student.get('id');
-        });
-      });
-    }.property('studentList.[]', 'linkedWorkspaces.[]'),
+  get initialSectionItem() {
+    return [this.args.assignment.get('section.id')];
+  }
 
-    actions: {
-      editAssignment: function() {
-        let assignedDate = this.get('assignment.assignedDate');
-        let dueDate = this.get('assignment.dueDate');
-        let format = this.get('htmlDateFormat');
-
-        let that = this;
-
-        let autoUpdateAssigned = assignedDate !== null && assignedDate !== undefined;
-        let autoUpdateDue = dueDate !== null && dueDate !== undefined;
-
-        $(function () {
-          $('input#assignedDate').daterangepicker({
-            singleDatePicker: true,
-            showDropdowns: true,
-            autoUpdateInput: autoUpdateAssigned,
-          }, function(start, end, label) {
-            let assignedDate = start.format(format);
-            $('input#assignedDate').val(assignedDate);
-          });
-          $('input#dueDate').daterangepicker({
-            singleDatePicker: true,
-            showDropdowns: true,
-            autoUpdateInput: autoUpdateDue,
-          }, function(start, end, label) {
-            let dueDate = start.format(format);
-            $('input#dueDate').val(dueDate);
-          });
-
-          let assignedInputVal = assignedDate ? moment(assignedDate).format(format): '';
-          let dueInputVal = dueDate ? moment(dueDate).format(format): '';
-
-          that.set('assignedDateEditVal', assignedInputVal);
-          that.set('dueDateEditVal', dueInputVal);
-
-          $('input#assignedDate').val(assignedInputVal);
-          $('input#dueDate').val(dueInputVal);
-
-          $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
-        });
-
-        this.set('isEditing', true);
-      },
-
-      showDeleteModal: function() {
-        this.get('alert')
-          .showModal(
-            'warning',
-            'Are you sure you want to delete this assignment?',
-            null,
-            'Yes, delete it'
-          )
-          .then(result => {
-            if (result.value) {
-              this.send('deleteAssignment');
-            }
-          });
-      },
-
-      deleteAssignment: function() {
-        const assignment = this.get('assignment');
-        assignment.set('isTrashed', true);
-        return assignment
-          .save()
-          .then(assignment => {
-            this.set('assignmentToDelete', null);
-            this.get('alert')
-              .showToast(
-                'success',
-                'Assignment Deleted',
-                'bottom-end',
-                5000,
-                true,
-                'Undo'
-              )
-              .then(result => {
-                if (result.value) {
-                  assignment.set('isTrashed', false);
-                  assignment.save().then(() => {
-                    this.get('alert').showToast(
-                      'success',
-                      'Assignment Restored',
-                      'bottom-end',
-                      5000,
-                      false,
-                      null
-                    );
-                    window.history.back();
-                  });
-                }
-              });
-            this.sendAction('toAssignments');
-            $('.daterangepicker').remove();
-          })
-          .catch(err => {
-            this.set('assignmentToDelete', null);
-            this.handleErrors(err, 'updateRecordErrors', assignment);
-          });
-      },
-
-      updateAssignment: function() {
-        let isAddingLinkedWs = this.get('showLinkedWsForm');
-        let isAddingParentWs = this.get('showParentWsForm');
-
-        if (isAddingLinkedWs || isAddingParentWs) {
-          let msg = `Please finish or cancel adding of ${
-            isAddingLinkedWs ? 'Linked Workspaces' : 'Parent Workspace'
-          }`;
-          return this.get('alert').showToast(
-            'error',
-            msg,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        }
-
-        const assignment = this.get('assignment');
-
-        let selectedProblem = this.get('selectedProblem');
-        let selectedSection = this.get('selectedSection');
-
-        if (!selectedProblem || !selectedSection) {
-          return this.get('alert').showToast(
-            'error',
-            'Class and Problem are required',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        }
-
-        let currentProblem = this.get('problem');
-        let currentSection = this.get('section');
-
-        let didProblemChange = !Ember.isEqual(selectedProblem, currentProblem);
-        let didSectionChange = !Ember.isEqual(selectedSection, currentSection);
-
-        let didRelationshipsChange = didProblemChange || didSectionChange;
-
-        const name = this.get('assignmentName');
-        assignment.set('name', name);
-
-        if (didProblemChange) {
-          assignment.set('problem', selectedProblem);
-        }
-        if (didSectionChange) {
-          assignment.set('section', selectedSection);
-        }
-
-        let dueDate;
-        let assignedDate;
-        let endDate;
-        let startDate;
-
-        let htmlDateFormat = this.get('htmlDateFormat');
-
-        let currentAssignedDate = this.get('assignment.assignedDate');
-        let currentDueDate = this.get('assignment.dueDate');
-
-        let currentAssignedFmt = currentAssignedDate ?
-          moment(currentAssignedDate).format(htmlDateFormat) :
-          undefined;
-        let currentDueFmt = currentDueDate ?
-          moment(currentDueDate).format(htmlDateFormat) :
-          undefined;
-
-        let assignedDateEditVal = this.get('assignedDateEditVal');
-        let dueDateEditVal = this.get('dueDateEditVal');
-
-        if (this.get('canEditAssignedDate')){
-          if (assignedDateEditVal) {
-            startDate = $('#assignedDate')
-            .data('daterangepicker')
-            .startDate.format('YYYY-MM-DD');
-
-            assignedDate = this.getMongoDate(startDate);
-          }
-
-        } else {
-          assignedDate = this.get('assignment.assignedDate');
-        }
-
-        if (this.get('canEditDueDate')) {
-          if (dueDateEditVal) {
-
-            endDate = $('#dueDate')
-            .data('daterangepicker')
-            .startDate.format('YYYY-MM-DD');
-
-            dueDate = this.getEndDate(endDate);
-
-        } else {
-          dueDate = this.get('assignment.dueDate');
-        }
-      }
-
-        if (assignedDate && dueDate && assignedDate > dueDate) {
-          this.set('invalidDateRange', true);
-          return;
-        } else {
-          if (this.get('invalidDateRange')) {
-            this.set('invalidDateRange', null);
-          }
-        }
-
-        let areDueDatesSame =
-          (!currentDueDate && !dueDateEditVal) ||
-          currentDueFmt === dueDateEditVal;
-        let areAssignedDatesSame =
-          (!currentAssignedDate && !assignedDateEditVal) ||
-          currentAssignedFmt === assignedDateEditVal;
-
-        if (!areDueDatesSame) {
-          assignment.set('dueDate', dueDate);
-        }
-
-        if (
-          !areAssignedDatesSame) {
-          assignment.set('assignedDate', assignedDate);
-        }
-
-        if (assignment.get('hasDirtyAttributes') || didRelationshipsChange) {
-
-          // never creating workspaces from this function
-          assignment.set('linkedWorkspacesRequest', { doCreate: false });
-          assignment.set('parentWorkspaceRequest', { doCreate: false });
-
-          return assignment
-            .save()
-            .then(() => {
-              this.get('alert').showToast(
-                'success',
-                'Assignment Updated',
-                'bottom-end',
-                4000,
-                false,
-                null
-              );
-              this.set('assignmentUpdateSuccess', true);
-              $('.daterangepicker').remove();
-              this.set('isEditing', false);
-              return;
-            })
-            .catch(err => {
-              this.handleErrors(err, 'updateRecordErrors', assignment);
-            });
-        } else {
-          this.get('alert').showToast(
-            'info',
-            'No changes to save',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-
-          this.set('isEditing', false);
-          $('.daterangepicker').remove();
-        }
-      },
-      stopEditing: function() {
-        let isAddingLinkedWs = this.get('showLinkedWsForm');
-        let isAddingParentWs = this.get('showParentWsForm');
-
-        if (isAddingLinkedWs || isAddingParentWs) {
-          let title = `Are you sure you want to stop editing of this assignment?`;
-          let info = `Your ${isAddingLinkedWs ? 'Linked Workspaces have' : 'Parent Workspace has'} not been created.`;
-          return this.get('alert')
-          .showModal(
-            'question',
-            title,
-            info,
-            'Yes, stop editing'
-          )
-          .then(result => {
-            if (result.value) {
-              if (isAddingLinkedWs) {
-                this.set('showLinkedWsForm', false);
-              }
-              if (isAddingParentWs) {
-                this.set('showParentWsForm');
-              }
-              this.set('isEditing', false);
-              $('.daterangepicker').remove();
-            }
-          });
-        } else {
-          this.set('isEditing', false);
-          $('.daterangepicker').remove();
-
-        }
-
-      },
-      updateSelectizeSingle(val, $item, propToUpdate, model) {
-        let errorProp = `${model}FormErrors`;
-        this.set(errorProp, []);
-
-        if ($item === null) {
-          this.set(propToUpdate, null);
-          return;
-        }
-        let record = this.get('store').peekRecord(model, val);
-        if (!record) {
-          return;
-        }
-        this.set(propToUpdate, record);
-      },
-      handleCreatedParentWs(assignment) {
-        if (assignment) {
-          this.get('alert').showToast(
-            'success',
-            'Parent Workspace Created',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        }
-      },
-      handleCreatedLinkedWs(assignment) {
-        if (assignment) {
-          this.get('alert').showToast(
-            'success',
-            'Linked Workspaces Created',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        }
-      },
-      toggleProperty(propName) {
-        if (typeof propName !== 'string') {
-          return;
-        }
-        this.toggleProperty(propName);
-      }
+  get showAddParentWsBtn() {
+    return (
+      this.isEditing &&
+      this.hasBasicEditPrivileges &&
+      this.hideParentWsForm &&
+      this.hasLinkedWorkspaces &&
+      !this.hasParentWorkspace
+    );
+  }
+  get showAddLinkedWsBtn() {
+    if (this.linkedByGroup) {
+      return (
+        this.isEditing &&
+        this.hasBasicEditPrivileges &&
+        this.hideLinkedWsForm &&
+        !this.allGroupsHaveWs
+      );
+    } else {
+      return (
+        this.isEditing &&
+        this.hasBasicEditPrivileges &&
+        this.hideLinkedWsForm &&
+        !this.allStudentsHaveWs
+      );
     }
   }
-);
+
+  get showReport() {
+    return !this.showParentWsForm;
+  }
+
+  get hasParentWorkspace() {
+    let workspaceId = this.utils.getBelongsToId(
+      this.args.assignment,
+      'parentWorkspace'
+    );
+    return this.utils.isValidMongoId(workspaceId);
+  }
+
+  get displayListsOptions() {
+    let areLinkedWsExpanded = this.areLinkedWsExpanded;
+    let areSubmissionsExpanded = this.areSubmissionsExpanded;
+
+    let toHide = 'fas fa-chevron-down';
+    let toShow = 'fas fa-chevron-left';
+    return {
+      linkedWs: {
+        icon: areLinkedWsExpanded ? toHide : toShow,
+      },
+      submissions: {
+        icon: areSubmissionsExpanded ? toHide : toShow,
+      },
+    };
+  }
+
+  get studentsWithoutWorkspaces() {
+    let students = this.args.studentList || [];
+    let existingWorkspaces = this.args.linkedWorkspaces || [];
+
+    return students.reject((student) => {
+      return existingWorkspaces.find((ws) => {
+        let ownerId = this.utils.getBelongsToId(ws, 'owner');
+        return ownerId === student.get('id');
+      });
+    });
+  }
+
+  get groupsWithoutWorkspaces() {
+    const existingWorkspaces = this.args.linkedWorkspaces || [];
+    const groups = this.args.groups.filter((group) => {
+      const found = existingWorkspaces.find(
+        (ws) => group.id === ws.get('group.id')
+      );
+      return !found;
+    });
+    return groups;
+  }
+
+  get linkedByGroup() {
+    return this.args.assignment.linkedWorkspacesRequest.linkType === 'group';
+  }
+
+  @action editAssignment() {
+    this.isEditing = true;
+  }
+
+  @action showDeleteModal() {
+    this.alert
+      .showModal(
+        'warning',
+        'Are you sure you want to delete this assignment?',
+        null,
+        'Yes, delete it'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.deleteAssignment();
+        }
+      });
+  }
+
+  @action deleteAssignment() {
+    const assignment = this.args.assignment;
+    assignment.set('isTrashed', true);
+    return assignment
+      .save()
+      .then((assignment) => {
+        this.assignmentToDelete = null;
+        this.alert
+          .showToast(
+            'success',
+            'Assignment Deleted',
+            'bottom-end',
+            5000,
+            true,
+            'Undo'
+          )
+          .then((result) => {
+            if (result.value) {
+              assignment.set('isTrashed', false);
+              assignment.save().then(() => {
+                this.alert.showToast(
+                  'success',
+                  'Assignment Restored',
+                  'bottom-end',
+                  5000,
+                  false,
+                  null
+                );
+                window.history.back();
+              });
+            }
+          });
+        this.router.transitionTo('assignments');
+      })
+      .catch((err) => {
+        this.assignmentToDelete = null;
+        this.handleErrors(err, 'updateRecordErrors', assignment);
+      });
+  }
+
+  @action updateAssignment() {
+    let isAddingLinkedWs = this.showLinkedWsForm;
+    let isAddingParentWs = this.showParentWsForm;
+
+    if (isAddingLinkedWs || isAddingParentWs) {
+      let msg = `Please finish or cancel adding of ${
+        isAddingLinkedWs ? 'Linked Workspaces' : 'Parent Workspace'
+      }`;
+      return this.alert.showToast(
+        'error',
+        msg,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    }
+
+    const assignment = this.args.assignment;
+
+    if (
+      !this.args.assignment.get('problem') ||
+      !this.args.assignment.get('section')
+    ) {
+      return this.alert.showToast(
+        'error',
+        'Class and Problem are required',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    }
+
+    let dueDate;
+    let assignedDate;
+    let endDate;
+    let startDate;
+
+    let assignedDateEditVal = this.assignedDateEditVal;
+    let dueDateEditVal = this.dueDateEditVal;
+
+    if (this.canEditAssignedDate) {
+      if (assignedDateEditVal) {
+        startDate = this.args.assignment.assignedDate;
+
+        assignedDate = this.getMongoDate(startDate);
+      }
+    } else {
+      assignedDate = this.args.assignment.assignedDate;
+    }
+
+    if (this.canEditDueDate) {
+      if (dueDateEditVal) {
+        endDate = this.args.assignment.dueDate;
+
+        dueDate = this.getEndDate(endDate);
+      } else {
+        dueDate = this.args.assignment.dueDate;
+      }
+    }
+
+    if (assignedDate && dueDate && assignedDate > dueDate) {
+      this.invalidDateRange = true;
+      return;
+    } else {
+      if (this.invalidDateRange) {
+        this.invalidDateRange = null;
+      }
+    }
+
+    if (assignment.get('hasDirtyAttributes')) {
+      // never creating workspaces from this function
+      assignment.set('linkedWorkspacesRequest', { doCreate: false });
+      assignment.set('parentWorkspaceRequest', { doCreate: false });
+
+      return assignment
+        .save()
+        .then(() => {
+          this.alert.showToast(
+            'success',
+            'Assignment Updated',
+            'bottom-end',
+            4000,
+            false,
+            null
+          );
+          this.assignmentUpdateSuccess = true;
+          $('.daterangepicker').remove();
+          this.isEditing = false;
+          return;
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', assignment);
+        });
+    } else {
+      this.alert.showToast(
+        'info',
+        'No changes to save',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      this.args.assignment.rollbackAttributes();
+      this.isEditing = false;
+      $('.daterangepicker').remove();
+    }
+  }
+  @action stopEditing() {
+    let isAddingLinkedWs = this.showLinkedWsForm;
+    let isAddingParentWs = this.showParentWsForm;
+
+    if (isAddingLinkedWs || isAddingParentWs) {
+      let title = `Are you sure you want to stop editing of this assignment?`;
+      let info = `Your ${
+        isAddingLinkedWs ? 'Linked Workspaces have' : 'Parent Workspace has'
+      } not been created.`;
+      return this.alert
+        .showModal('question', title, info, 'Yes, stop editing')
+        .then((result) => {
+          if (result.value) {
+            if (isAddingLinkedWs) {
+              this.showLinkedWsForm = false;
+            }
+            if (isAddingParentWs) {
+              this.showParentWsForm = false;
+            }
+            this.isEditing = false;
+            $('.daterangepicker').remove();
+          }
+        });
+    } else {
+      this.isEditing = false;
+      $('.daterangepicker').remove();
+    }
+    this.args.assignment.rollbackAttributes();
+  }
+  @action updateSelectizeSingle(val, $item, propToUpdate, model) {
+    let errorProp = `${model}FormErrors`;
+    this[errorProp] = [];
+
+    if ($item === null) {
+      this.args[propToUpdate] = null;
+      return;
+    }
+    let record = this.store.peekRecord(model, val);
+    if (!record) {
+      return;
+    }
+    if (propToUpdate === 'section') {
+      this.args.assignment.section = record;
+    } else if (propToUpdate === 'problem') {
+      this.args.assignment.problem = record;
+    }
+  }
+  @action handleCreatedParentWs(assignment) {
+    if (assignment) {
+      this.alert.showToast(
+        'success',
+        'Parent Workspace Created',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    }
+  }
+  @action handleCreatedLinkedWs(assignment) {
+    if (assignment) {
+      this.alert.showToast(
+        'success',
+        'Linked Workspaces Created',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    }
+  }
+  @action toggleProperty(propName) {
+    if (typeof propName !== 'string') {
+      return;
+    }
+    this[propName] = !this[propName];
+  }
+  @action updateAssignedDate(event) {
+    this.args.assignment.assignedDate = new Date(
+      event.target.value.replace(/-/g, '/')
+    );
+  }
+
+  @action updateDueDate(event) {
+    this.args.assignment.dueDate = new Date(
+      event.target.value.replace(/-/g, '/')
+    );
+  }
+}

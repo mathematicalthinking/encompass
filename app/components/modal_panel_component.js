@@ -1,6 +1,13 @@
-Encompass.ModalPanelComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   actions: {
-    close: function() {
+    close: function () {
       return this.sendAction();
     }
   }

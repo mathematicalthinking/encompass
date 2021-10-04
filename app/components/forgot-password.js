@@ -1,88 +1,91 @@
-Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
-  classNames: ['forgot-page'],
-  postErrors: [],
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import $ from 'jquery';
 
-  validateEmail: function() {
-    var email = this.get('email');
-    if (!email) {
-      return false;
-    }
-    var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
-    var emailTest = emailPattern.test(email);
+export default class ForgotPasswordComponent extends ErrorHandlingComponent {
+  @tracked postErrors = [];
+  @tracked username = '';
+  @tracked email = '';
+  @tracked tooMuchData = false;
+  @tracked missingRequiredFields = false;
+  @tracked forgotPasswordErr = false;
+  @tracked resetEmailSent = false;
 
-    if (emailTest === false) {
-      return false;
-    }
-
-    if (emailTest === true) {
+  validateEmail(email) {
+    const emailPattern = new RegExp(
+      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+    );
+    return emailPattern.test(email);
+  }
+  get isEmailValid() {
+    if (!this.email) {
       return true;
     }
-
-  },
-  isEmailValid: function() {
-    if (!this.get('isEmailDirty') && !Ember.isEmpty(this.get('email'))) {
-      this.set('isEmailDirty', true);
-    }
-    return this.validateEmail();
-  }.property('email'),
+    return this.validateEmail(this.email);
+  }
 
   // We don't want error being displayed when form loads initially
-  isEmailInvalid: Ember.computed('isEmailValid', 'isEmailDirty', function() {
-    return this.get('isEmailDirty') && !this.get('isEmailValid') && !Ember.isEmpty(this.get('email'));
-  }),
+  get isEmailInvalid() {
+    if (!this.email) {
+      return false;
+    }
+    return !this.validateEmail(this.email);
+  }
 
-  clearFields: function() {
+  clearFields() {
     const fields = ['email', 'username'];
     for (let field of fields) {
-      this.set(field, null);
+      this[field] = '';
     }
-  },
-
-  actions: {
-    handleRequest: function() {
-      const email = this.get('email');
-      const username = this.get('username');
-
-      if (!email && !username) {
-        this.set('missingRequiredFields', true);
-        return;
-      }
-
-      if (email && username) {
-        this.set('tooMuchData', true);
-        return;
-      }
-
-      const that = this;
-      const forgotPasswordData = {
-        email,
-        username
-      };
-
-      return Ember.$.post({
-        url: '/auth/forgot',
-        data: forgotPasswordData
-      })
-        .then((res) => {
-          if (res.isSuccess) {
-            that.clearFields();
-            that.set('resetEmailSent', true);
-          } else {
-            that.set('forgotPasswordErr', res.info);
-          }
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'postErrors');
-        });
-    },
-    resetMessages: function() {
-      const messages = ['forgotPasswordErr', 'missingRequiredFields', 'tooMuchData', 'resetEmailSent'];
-
-      for (let message of messages) {
-        if (this.get(message)) {
-          this.set(message, false);
-        }
-      }
-    },
   }
-});
+
+  @action handleRequest() {
+    const email = this.email;
+    const username = this.username;
+
+    if (!email && !username) {
+      this.missingRequiredFields = true;
+      return;
+    }
+
+    if (email && username) {
+      this.tooMuchData = true;
+      return;
+    }
+    const forgotPasswordData = {
+      email,
+      username,
+    };
+
+    return $.post({
+      url: '/auth/forgot',
+      data: forgotPasswordData,
+    })
+      .then((res) => {
+        if (res.isSuccess) {
+          this.clearFields();
+          this.resetEmailSent = true;
+        } else {
+          this.forgotPasswordErr = res.info;
+        }
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'postErrors');
+      });
+  }
+  @action resetMessages() {
+    const messages = [
+      'forgotPasswordErr',
+      'missingRequiredFields',
+      'tooMuchData',
+      'resetEmailSent',
+    ];
+
+    for (let message of messages) {
+      if (this[message]) {
+        this[message] = false;
+      }
+    }
+  }
+}

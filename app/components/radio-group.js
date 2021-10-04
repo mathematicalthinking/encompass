@@ -1,15 +1,13 @@
-Encompass.RadioGroupComponent = Ember.Component.extend({
-  classNames: ['radio-group'],
-  utils: Ember.inject.service('utility-methods'),
+import Component from '@glimmer/component';
+import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-  actions: {
-    setValue(val) {
-      if (this.get('utils').isNullOrUndefined(val)) {
-        return;
-      }
-
-      this.set('selectedValue', val);
+export default class RadioGroupComponent extends Component {
+  @service('utility-methods') utils;
+  @action setValue(val) {
+    if (this.utils.isNullOrUndefined(val)) {
+      return;
     }
+    this.args.selectedValue(val);
   }
-
-});
+}

@@ -14,13 +14,7 @@
   {{/if}}
   {{#each items as |item|}}
     <li>
-    {{checkbox-list-item
-      item=item
-      selectedItems=selectedItems
-      displayProp=itemDisplayProp
-      onSelect=(action "onItemSelect")
-      name=inputName
-      }}
+    <CheckboxListItem @item={{item}} @selectedItems={{selectedItems}} @displayProp={{itemDisplayProp}} @onSelect={{action "onItemSelect"}} @name={{inputName}} />
     </li>
   {{else}}
     <li>{{noItemsMessage}}</li>

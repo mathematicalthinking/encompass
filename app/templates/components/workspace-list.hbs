@@ -13,18 +13,11 @@
 
 
   <div class="main-list">
-    {{#if isSearching}}
+    {{#if this.isSearching}}
       <p class="loading-message">Searching workspaces...</p>
     {{else}}
-      {{#each workspaces as |workspace|}}
-        {{workspace-list-item
-        workspace=workspace
-        isList=isList
-        isGrid=isGrid
-        store=store
-        toWorkspaceInfo=(action "toWorkspaceInfo")
-        toCopyWorkspace=(action "toCopyWorkspace")
-      }}
+      {{#each this.workspaces as |workspace|}}
+        <WorkspaceListItem @currentUser={{this.currentUser}} @workspace={{workspace}} @isList={{this.isList}} @isGrid={{this.isGrid}} @store={{this.store}} @toCopyWorkspace={{action "toCopyWorkspace"}} />
       {{/each}}
     {{/if}}
   </div>

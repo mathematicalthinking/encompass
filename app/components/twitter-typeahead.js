@@ -1,23 +1,25 @@
-Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
+import Ember from 'ember';
+
+export default Ember.Component.extend({
   classNames: ['twitter-typeahead'],
 
   init() {
     this._super(...arguments);
   },
 
-  didReceiveAttrs(){
+  didReceiveAttrs() {
     this._super(...arguments);
     let templates = {};
-    let notFound = this.get('showNotFound');
-    let header = this.get('header');
-    let footer = this.get('footer');
-    let pending = this.get('pending');
+    let notFound = this.showNotFound;
+    let header = this.header;
+    let footer = this.footer;
+    let pending = this.pending;
 
     if (notFound) {
       templates.notFound = notFound;
     }
 
-    if(header) {
+    if (header) {
       templates.header = header;
     }
 
@@ -30,7 +32,6 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     }
 
     this.set('templates', templates);
-
   },
 
   didInsertElement() {
@@ -39,8 +40,8 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     let options = this.getOptions();
     let dataSetOptions = this.getDataSetOptions();
 
-    let path = this.get('optionLabelPath');
-    let selectedValue = this.get('selectedValue');
+    let path = this.optionLabelPath;
+    let selectedValue = this.selectedValue;
 
     const that = this;
 
@@ -63,7 +64,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
 
     this.$('.typeahead').typeahead('val', startingValue);
 
-    this.$('.typeahead').on('typeahead:select', function(ev, suggestion) {
+    this.$('.typeahead').on('typeahead:select', function (ev, suggestion) {
       that.set('selectedValue', suggestion);
       if (that.get('onSelect')) {
         that.sendAction('onSelect', suggestion);
@@ -73,9 +74,8 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       }
     });
 
-    if (this.get('setSelectedValueOnChange')) {
-      this.$('.typeahead').on('typeahead:change', function(ev, val) {
-
+    if (this.setSelectedValueOnChange) {
+      this.$('.typeahead').on('typeahead:change', function (ev, val) {
         if (that.get('isDestroyed') || that.get('isDestroying')) {
           return;
         }
@@ -97,28 +97,30 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
         that.set('selectedValue', inputValue);
         if (that.get('onSelect')) {
           that.sendAction('onSelect', inputValue);
-
         }
         if (that.get('allowMultiple')) {
           that.$('.typeahead').typeahead('val', '');
         }
       });
     }
-
   },
 
-  willDestroyElement: function() {
+  willDestroyElement: function () {
     this.$('.typeahead').typeahead('destroy');
   },
 
-  getOptions: function() {
-    let minLength = this.get('minLength');
-    let limit = this.get('limit');
-    let async = this.get('isAsync');
+  getOptions: function () {
+    let minLength = this.minLength;
+    let limit = this.limit;
+    let async = this.isAsync;
     let hint = false;
     let highlight = true;
 
-    if (minLength === undefined || minLength === null || typeof minLength !== 'number') {
+    if (
+      minLength === undefined ||
+      minLength === null ||
+      typeof minLength !== 'number'
+    ) {
       minLength = 1;
     }
 
@@ -131,22 +133,22 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       limit,
       async,
       hint,
-      highlight
+      highlight,
     };
 
     // name will default to random number if not provided
     return ret;
   },
 
-  getDataSetOptions: function() {
-    let name = this.get('listName');
-    let dataList = this.get('dataList');
-    let sourceFunction = this.get('sourceFunction');
-    let path = this.get('optionLabelPath');
-    let display = this.get('display');
-    let templates = this.get('templates');
-    let isAsync = this.get('isAsync');
-    let debounceTime = this.get('debounceTime');
+  getDataSetOptions: function () {
+    let name = this.listName;
+    let dataList = this.dataList;
+    let sourceFunction = this.sourceFunction;
+    let path = this.optionLabelPath;
+    let display = this.display;
+    let templates = this.templates;
+    let isAsync = this.isAsync;
+    let debounceTime = this.debounceTime;
 
     if (!debounceTime) {
       debounceTime = 100;
@@ -155,7 +157,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     let source;
 
     if (!sourceFunction || typeof sourceFunction !== 'function') {
-     source = this.substringMatcher.call(this, dataList);
+      source = this.substringMatcher.call(this, dataList);
     } else if (!isAsync) {
       source = sourceFunction.call(this, dataList);
     } else {
@@ -166,14 +168,14 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       path = 'id';
     }
     if (!display) {
-      display = function(suggestion) {
+      display = function (suggestion) {
         return suggestion.get(path);
       };
     }
     let ret = {
       source,
       display,
-      templates
+      templates,
     };
     if (name) {
       ret.name = name;
@@ -181,9 +183,9 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     return ret;
   },
 
-  substringMatcher: function(data) {
+  substringMatcher: function (data) {
     // data should be array of ember objects
-    let path = this.get('optionLabelPath');
+    let path = this.optionLabelPath;
     if (!path) {
       path = 'id';
     }
@@ -193,7 +195,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     }
 
     let suggestions;
-    suggestions= data;
+    suggestions = data;
     const that = this;
 
     return function findMatches(q, cb, async) {
@@ -229,5 +231,4 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       cb(matches);
     };
   },
-
 });

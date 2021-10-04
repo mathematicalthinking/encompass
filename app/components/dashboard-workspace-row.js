@@ -1,13 +1,6 @@
-Encompass.DashboardWorkspaceRowComponent = Ember.Component.extend({
-  tagName: "",
-  myAssignment: null,
-  student: "",
+import Component from '@glimmer/component';
 
-  didReceiveAttrs: function () {
-    this.singleAssignment();
-  },
-
-  singleAssignment() {
-    this.myAssignment = this.workspace.get('linkedAssignment');
-  },
-});
+export default class DashboardWorkspaceRowComponent extends Component {
+  myAssignment = this.args.workspace.linkedAssignment;
+  student = '';
+}

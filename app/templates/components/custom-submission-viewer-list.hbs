@@ -22,7 +22,7 @@
 <ul>
   <li>
     {{#each submissions as |submission|}}
-      {{custom-submission-viewer-list-item submission=submission selectedSubmissionIds=selectedSubmissionIds onSelect=(action "onSelect")}}
+      <CustomSubmissionViewerListItem @submission={{submission}} @selectedSubmissionIds={{selectedSubmissionIds}} @onSelect={{action "onSelect"}} />
     {{/each}}
   </li>
 </ul>

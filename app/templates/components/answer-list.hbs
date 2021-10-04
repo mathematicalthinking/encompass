@@ -9,7 +9,7 @@
       <h2>{{currentUser.username}}'s Answers</h2>
       <ul class="your-assignments">
         {{#each answers as |answer|}}
-        <li>{{#link-to 'answer' answer}}{{answer.answer}}{{/link-to}}</li>
+        <li><LinkTo @route="answer" @model={{answer}}>{{answer.answer}}</LinkTo></li>
         {{/each}}
       </ul>
     </nav>

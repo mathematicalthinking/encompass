@@ -1,0 +1,52 @@
+<div id="linked-workspaces-new">
+  {{#unless @isDisplayOnly}}
+    <p class="info">
+      Clicking "Create Workspaces" will generate a private workspace for each student in this assignment (who is not the owner of an existing linked assignment). The workspaces will automatically update as new submissions and revisions are submitted for this assignment.
+    </p>
+  {{/unless}}
+
+    <div class="info-flex-item">
+      <p class="label">
+        Workspace Name Format
+        <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Student username will be prepended to name format">
+          <i class="fas fa-info-circle info-icon"></i>
+        </span>
+      </p>
+    <div class="info-flex-item">
+      <Input @id="linked-ws-new-name" class="single-text-input" @type="text" @value={{this.workspaceName}} placeholder="Provide format for workspace names" />
+    </div>
+    <div class="name-previews">
+      <p class="label">
+        Workspaces to be created
+      </p>
+      <ul>
+        {{#each @students as |student|}}
+          <li>{{if student.username student.username student.name}}: {{this.previewName}}</li>
+        {{/each}}
+      </ul>
+    </div>
+  {{#each this.workspaceNameErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut this.workspaceNameErrors) null}} />
+  {{/each}}
+  </div>
+
+{{#unless @isDisplayOnly}}
+  <div class="create-ws-error">
+    {{#if this.createWorkspaceError}}
+      <ErrorBox @error={{createWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut this.createWorkspaceError) null}} />
+    {{/if}}
+  </div>
+
+  {{#if this.doShowLoadingMessage}}
+    <p class="loading-message">Request in Progress... Thank you for your patience.</p>
+  {{/if}}
+
+  {{#unless this.isRequestInProgress}}
+    <div class="button-row">
+      <button class="primary-button create-ws" data-test="add-linked-ws-create" {{action "create"}}>Create Workspaces</button>
+      <button class="primary-button cancel-button" data-test="add-linked-ws-cancel" {{action "cancel"}}>Cancel</button>
+    </div>
+  {{/unless}}
+
+{{/unless}}
+</div>

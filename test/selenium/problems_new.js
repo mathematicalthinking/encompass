@@ -1,3 +1,5 @@
+//TODO switch to navigating with navbar line 47
+
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
@@ -10,7 +12,6 @@ const css = require('./selectors');
 
 const host = helpers.host;
 const testUsers = require('./fixtures/users');
-const topLink = css.topBar.problems;
 
 describe('Problems New', async function () {
   function runTests(users) {
@@ -40,16 +41,17 @@ describe('Problems New', async function () {
         });
 
         if (!isStudent) {
-          describe('Visiting problems new page', function () {
-            before(async function () {
-              await helpers.waitForAndClickElement(driver, topLink);
-              await helpers.waitForSelector(driver, css.problemPageSelectors.problemContainer);
-
-            });
             describe('Clicking on problem new page', function () {
               before(async function () {
-                await helpers.waitForAndClickElement(driver, topLink);
-                await helpers.waitForAndClickElement(driver, css.topBar.problemsNew);
+                // await helpers.waitForAndClickElement(driver, topLink);
+                // await helpers.waitForAndClickElement(driver, css.topBar.problemsNew);
+                let options = {
+                  selector: 'a',
+                  urlToWaitFor: `${helpers.host}/problems/new`,
+                  timeout: 10000
+                };
+            
+                await helpers.navigateAndWait(driver, `${helpers.host}/problems/new`, options );
               });
 
               it('should open problem new page from topbar', async function () {
@@ -295,7 +297,6 @@ describe('Problems New', async function () {
 
 
             });
-          });
         }
 
       });

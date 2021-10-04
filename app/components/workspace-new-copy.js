@@ -1,5 +1,15 @@
+import Component from '@ember/component';
+import EmberMap from '@ember/map';
+import { computed, observer } from '@ember/object';
+import { equal } from '@ember/object/computed';
 /*global _:false */
-Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+import { later } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
+export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   elementId: 'workspace-new-copy',
   newWsConfig: null,
   workspaceToCopy: null,
@@ -10,38 +20,70 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   newWsOwner: null,
   newWsPermissions: null,
   newFolderSetOptions: null,
-  utils: Ember.inject.service('utility-methods'),
+  utils: service('utility-methods'),
   currentStep: {
     value: 1,
     display: 'Choose Workspace to Copy',
   },
 
-  submissionsPool: function() {
+  copyConfig: {
+    groupName: 'copyConfig',
+    required: true,
+    inputs: [
+      {
+        value: 'A',
+        label: 'Submissions Only',
+        moreInfo: 'Copy only the submissions used in this workspace',
+      },
+      {
+        value: 'B',
+        label: 'Submissions and Folder Structure',
+        moreInfo:
+          'Copy the submissions and the folder structure (not content) used in this workspace',
+      },
+      {
+        value: 'C',
+        label: 'Everything',
+        moreInfo:
+          'Copy everything used in this workspace (submissions, selections, folders, taggings, comments, responses)',
+      },
+      {
+        value: 'D',
+        label: 'Custom',
+        moreInfo:
+          'Decide which to copy for submissions, selections, folders, taggings, comments and responses',
+      },
+    ],
+  },
+
+  submissionsPool: computed('workspaceToCopy', 'newWsConfig', function () {
     let allSubmissions = this.get('workspaceToCopy.submissions.content');
     if (!allSubmissions) {
       return [];
     }
-    const newWsConfig = this.get('newWsConfig');
-    if (newWsConfig !== 'D' || this.get('customConfig.submissionOptions.all') === true) {
+    const newWsConfig = this.newWsConfig;
+    if (
+      newWsConfig !== 'D' ||
+      this.get('customConfig.submissionOptions.all') === true
+    ) {
       return allSubmissions;
     }
 
     let customIds = this.get('customConfig.submissionOptions.submissionIds');
-    if (this.get('utils').isNonEmptyArray(customIds)) {
+    if (this.utils.isNonEmptyArray(customIds)) {
       return allSubmissions.filter((sub) => {
         return customIds.includes(sub.get('id'));
       });
     }
     return [];
+  }),
 
-  }.property('workspaceToCopy', 'newWsConfig'),
-
-  submissionsLength: function() {
+  submissionsLength: computed('submissionsPool', function () {
     return this.get('submissionsPool.length') || 0;
-  }.property('submissionsPool'),
-  collaboratorsCount: function() {
+  }),
+  collaboratorsCount: computed('newWsPermissions', function () {
     return this.get('newWsPermissions.length') || 0;
-  }.property('newWsPermissions'),
+  }),
 
   getCounts(model) {
     let models = ['selections', 'comments', 'responses', 'folders'];
@@ -49,7 +91,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       return;
     }
 
-    const config = this.get('newWsConfig');
+    const config = this.newWsConfig;
     let allRecordProp = `workspaceToCopy.${model}Length`;
     const allOriginalRecords = this.get(allRecordProp);
     if (!config) {
@@ -62,7 +104,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       return allOriginalRecords;
     }
 
-    const submissions = this.get('submissionsPool');
+    const submissions = this.submissionsPool;
     if (!submissions) {
       return 0;
     }
@@ -86,151 +128,172 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       let lengths = submissions.mapBy(`${model}.length`);
 
       if (isAll) {
-        return  lengths.reduce((memo, val) => {
+        return lengths.reduce((memo, val) => {
           return memo + val;
-        },0);
+        }, 0);
       }
 
-      let customCount = this.get(`customConfig.${singular}Options.${singular}Ids.length`);
+      let customCount = this.get(
+        `customConfig.${singular}Options.${singular}Ids.length`
+      );
 
       return customCount || 0;
     }
-
   },
 
-  recordCounts: function() {
-    return {
-      submissions: this.get('submissionsLength'),
-      comments: this.getCounts('comments'),
-      selections: this.getCounts('selections'),
-      responses: this.getCounts('responses'),
-      folders: this.getCounts('folders'),
-      collaborators: this.get('collaboratorsCount')
-    };
-  }.property('workspaceToCopy', 'newWsConfig', 'customConfig', 'newWsPermissions'),
+  recordCounts: computed(
+    'workspaceToCopy',
+    'newWsConfig',
+    'customConfig',
+    'newWsPermissions',
+    function () {
+      return {
+        submissions: this.submissionsLength,
+        comments: this.getCounts('comments'),
+        selections: this.getCounts('selections'),
+        responses: this.getCounts('responses'),
+        folders: this.getCounts('folders'),
+        collaborators: this.collaboratorsCount,
+      };
+    }
+  ),
 
-  modeInputs: function() {
-    let res = {
-      groupName: 'mode',
-      required: true,
-      inputs: [
-        {
-          value: 'private',
-          label: 'Private',
-          moreInfo: 'Workspace will only be visible to the owner and collaborators',
-        },
-        {
-          value: 'org',
-          label: 'My Org',
-          moreInfo: 'Workspace will be visible to everyone belonging to your org',
-        },
-        {
-          value: 'public',
-          label: 'Public',
-          moreInfo: 'Workspace will be visible to every Encompass user',
-        },
-      ]
-    };
+  modeInputs: computed(
+    'currentUser.isStudent',
+    'currentUser.isAdmin',
+    function () {
+      let res = {
+        groupName: 'mode',
+        required: true,
+        inputs: [
+          {
+            value: 'private',
+            label: 'Private',
+            moreInfo:
+              'Workspace will only be visible to the owner and collaborators',
+          },
+          {
+            value: 'org',
+            label: 'My Org',
+            moreInfo:
+              'Workspace will be visible to everyone belonging to your org',
+          },
+          {
+            value: 'public',
+            label: 'Public',
+            moreInfo: 'Workspace will be visible to every Encompass user',
+          },
+        ],
+      };
 
-    if (this.get('currentUser.isStudent') || !this.get('currentUser.isAdmin') ) {
+      if (
+        this.get('currentUser.isStudent') ||
+        !this.get('currentUser.isAdmin')
+      ) {
+        return res;
+      }
+
+      res.inputs.push({
+        value: 'internet',
+        label: 'Internet',
+        moreInfo:
+          'Workspace will be accesible to any user with a link to the workspace',
+      });
       return res;
     }
+  ),
 
-    res.inputs.push({
-      value: 'internet',
-      label: 'Internet',
-      moreInfo: 'Workspace will be accesible to any user with a link to the workspace',
-    });
-    return res;
-  }.property('currentUser.isStudent', 'currentUser.isAdmin'),
-
-  showSelectWorkspace: Ember.computed.equal('currentStep.value', 1),
+  showSelectWorkspace: equal('currentStep.value', 1),
   // showSelectWorkspace: false,
-  showSelectConfig: Ember.computed.equal('currentStep.value', 2),
+  showSelectConfig: equal('currentStep.value', 2),
   // showSelectConfig: true,
-  showOwnerSettings: Ember.computed.equal('currentStep.value', 3),
-  showPermissions: Ember.computed.equal('currentStep.value', 4),
-  showReview: Ember.computed.equal('currentStep.value', 5),
+  showOwnerSettings: equal('currentStep.value', 3),
+  showPermissions: equal('currentStep.value', 4),
+  showReview: equal('currentStep.value', 5),
 
-  didReceiveAttrs: function() {
+  didReceiveAttrs: function () {
     let hasWorkspaceToCopy = this.get('model.workspaceToCopy');
     if (hasWorkspaceToCopy) {
-      return this.store.findRecord('workspace', hasWorkspaceToCopy)
-      .then((workspace) => {
-        this.set('workspaceToCopy', workspace);
-        this.set('selectedWorkspace', workspace);
-        this.set('fromWorkspaceList', true);
-      });
+      return this.store
+        .findRecord('workspace', hasWorkspaceToCopy)
+        .then((workspace) => {
+          this.set('workspaceToCopy', workspace);
+          this.set('selectedWorkspace', workspace);
+          this.set('fromWorkspaceList', true);
+        });
     }
   },
 
-  maxSteps: function() {
+  maxSteps: computed('steps', function () {
     return this.get('steps.length') - 1;
-  }.property('steps'),
+  }),
 
-  isCopyingFolders: function() {
-    const newWsConfig = this.get('newWsConfig');
-    const utils = this.get('utils');
-    const isCustomWithNoFolders = this.get('customConfig.folderOptions.none');
+  isCopyingFolders: computed(
+    'newWsConfig',
+    'workspaceToCopy.foldersLength',
+    'customConfig.folderOptions.@each{all,includeStructureOnly,none}',
+    function () {
+      const newWsConfig = this.newWsConfig;
+      const utils = this.utils;
+      const isCustomWithNoFolders = this.get('customConfig.folderOptions.none');
 
-    // user has not picked a config yet
-    if (utils.isNullOrUndefined(newWsConfig)) {
-      return null;
-    }
+      // user has not picked a config yet
+      if (utils.isNullOrUndefined(newWsConfig)) {
+        return null;
+      }
 
-    // Submissions Only
-    if (newWsConfig === 'A') {
-      return false;
-    }
-
-    // custom config selected
-    if (newWsConfig === 'D') {
-
-      // none option selected
-      if (isCustomWithNoFolders) {
+      // Submissions Only
+      if (newWsConfig === 'A') {
         return false;
       }
+
+      // custom config selected
+      if (newWsConfig === 'D') {
+        // none option selected
+        if (isCustomWithNoFolders) {
+          return false;
+        }
+      }
+      // make sure chosen workspace has any folders to copy
+
+      const foldersLength = this.get('workspaceToCopy.foldersLength');
+      return foldersLength > 0;
     }
-    // make sure chosen workspace has any folders to copy
+  ),
 
-    const foldersLength = this.get('workspaceToCopy.foldersLength');
-    return foldersLength > 0;
-  }.property('newWsConfig', 'workspaceToCopy.foldersLength', 'customConfig.folderOptions.@each{all,includeStructureOnly,none}'),
-
-  submissionThreads: function() {
-    if (!this.get('submissions')) {
+  submissionThreads: computed('submissions.[]', function () {
+    if (!this.submissions) {
       return [];
     }
-    const threads = Ember.Map.create();
+    const threads = {};
 
-    this.get('submissions')
+    this.submissions
       .sortBy('student')
       .getEach('student')
       .uniq()
       .forEach((student) => {
-        if(!threads.has(student)) {
+        if (!threads.student) {
           const submissions = this.studentWork(student);
-          threads.set(student, submissions);
+          threads.student = submissions;
         }
       });
     return threads;
-  }.property('submissions.[]'),
+  }),
 
-  studentWork: function(student) {
-    return this.get('submissions')
-      .filterBy('student', student)
-      .sortBy('createDate');
-
+  studentWork: function (student) {
+    return this.submissions.filterBy('student', student).sortBy('createDate');
   },
 
-  collabList: function() {
+  collabList: computed('newWsPermissions.[]', function () {
     //need to get the permissions object
     //get username from each permissions object and list them in the sumamry
-    const formattedPermissionObjects = this.formatPermissionsObjects(this.get('newWsPermissions'));
+    const formattedPermissionObjects = this.formatPermissionsObjects(
+      this.newWsPermissions
+    );
     if (formattedPermissionObjects) {
       let users = formattedPermissionObjects.map((object) => {
         let userId = object.user;
-        let record = this.get('store').peekRecord('user', userId);
+        let record = this.store.peekRecord('user', userId);
         if (record) {
           return record.get('username');
         }
@@ -238,111 +301,128 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       // remove null or undefined
       return users.compact();
     }
-  }.property('newWsPermissions.[]'),
+  }),
 
-
-  detailsItems: function() {
-    return [
-      {
-        label: 'Selected Workspace',
-        displayValue: this.get('workspaceToCopy.name'),
-        emptyValue: 'No workspace',
-        propName: 'workspaceToCopy',
-        associatedStep: 1
-      },
-      {
-        label: 'Selected Configuration',
-        displayValue: this.get('selectedConfigDisplay'),
-        emptyValue: 'No Configuration',
-        propName: 'newWsConfig',
-        associatedStep: 2
-      },
-      {
-        label: 'New Workspace Info',
-        propName: 'wsInfo',
-        associatedStep: 3,
-        children: [
-          {
-            label: 'Name',
-            displayValue: this.get('newWsName'),
-            emptyValue: 'No Name',
-            propName: 'newWsName',
-            associatedStep: 3,
-          },
-          {
-            label: 'Owner',
-            displayValue: this.get('newWsOwner.username') || this.get('newWsOwner.name'),
-            emptyValue: 'No Owner',
-            propName: 'owner',
-            associatedStep: 3
-          },
-          {
-            label: 'Privacy Setting',
-            displayValue: this.get('modeDisplay'),
-            emptyValue: 'No Privacy Setting',
-            propName: 'newWsMode',
-            associatedStep: 3,
-          },
-          {
-            label: 'Folder Set',
-            displayValue: this.get('selectedFolderSet'),
-            emptyValue: 'N/A',
-            propName: 'existingFolderSet',
-            associatedStep: 3,
-          },
-          // {
-          //   label: 'New Folder Set',
-          //   displayValue: this.get('newFolderSetOptions.name'),
-          //   emptyValue: 'N/A',
-          //   propName: 'newFolderSetOptions.name',
-          //   associatedStep: 3,
-          // },
-        ],
-      },
-      {
-        label: 'Collaborators',
-        displayValue: this.get('collabList'),
-        isArray: true,
-        emptyValue: 'No Collaborators',
-        propName: 'collabs',
-        associatedStep: 4,
-      },
-    ];
-  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode','collabList', 'existingFolderSet', 'newFolderSetOptions.name'),
-
-  existingFolderSet: function() {
-    let id = this.get('newFolderSetOptions.existingFolderSetToUse');
-    if (!_.isString(id)) {
-      return null;
+  detailsItems: computed(
+    'workspaceToCopy',
+    'newWsConfig',
+    'newWsName',
+    'newWsOwner',
+    'newWsMode',
+    'collabList',
+    'existingFolderSet',
+    'newFolderSetOptions.name',
+    function () {
+      return [
+        {
+          label: 'Selected Workspace',
+          displayValue: this.get('workspaceToCopy.name'),
+          emptyValue: 'No workspace',
+          propName: 'workspaceToCopy',
+          associatedStep: 1,
+        },
+        {
+          label: 'Selected Configuration',
+          displayValue: this.selectedConfigDisplay,
+          emptyValue: 'No Configuration',
+          propName: 'newWsConfig',
+          associatedStep: 2,
+        },
+        {
+          label: 'New Workspace Info',
+          propName: 'wsInfo',
+          associatedStep: 3,
+          children: [
+            {
+              label: 'Name',
+              displayValue: this.newWsName,
+              emptyValue: 'No Name',
+              propName: 'newWsName',
+              associatedStep: 3,
+            },
+            {
+              label: 'Owner',
+              displayValue:
+                this.get('newWsOwner.username') || this.get('newWsOwner.name'),
+              emptyValue: 'No Owner',
+              propName: 'owner',
+              associatedStep: 3,
+            },
+            {
+              label: 'Privacy Setting',
+              displayValue: this.modeDisplay,
+              emptyValue: 'No Privacy Setting',
+              propName: 'newWsMode',
+              associatedStep: 3,
+            },
+            {
+              label: 'Folder Set',
+              displayValue: this.selectedFolderSet,
+              emptyValue: 'N/A',
+              propName: 'existingFolderSet',
+              associatedStep: 3,
+            },
+            // {
+            //   label: 'New Folder Set',
+            //   displayValue: this.get('newFolderSetOptions.name'),
+            //   emptyValue: 'N/A',
+            //   propName: 'newFolderSetOptions.name',
+            //   associatedStep: 3,
+            // },
+          ],
+        },
+        {
+          label: 'Collaborators',
+          displayValue: this.collabList,
+          isArray: true,
+          emptyValue: 'No Collaborators',
+          propName: 'collabs',
+          associatedStep: 4,
+        },
+      ];
     }
-    let record = this.get('store').peekRecord('folder-set', id);
-    return record || null;
-  }.property('newFolderSetOptions.existingFolderSetToUse'),
+  ),
 
-  selectedFolderSet: function () {
-    let existingFolderSet = this.get('existingFolderSet');
-    let newFolderSet = this.get('newFolderSetOptions.name');
-    if (existingFolderSet) {
-      return existingFolderSet.get('name');
-    } else if (newFolderSet) {
-      return newFolderSet;
-    } else {
-      return null;
+  existingFolderSet: computed(
+    'newFolderSetOptions.existingFolderSetToUse',
+    function () {
+      let id = this.get('newFolderSetOptions.existingFolderSetToUse');
+      if (!_.isString(id)) {
+        return null;
+      }
+      let record = this.store.peekRecord('folder-set', id);
+      return record || null;
     }
-  }.property('newFolderSetOptions', 'newFolderSetOptions.existingFolderSetToUse'),
+  ),
 
-  selectedConfigDisplay: function() {
-    if (_.isNull(this.get('newWsConfig'))) {
+  selectedFolderSet: computed(
+    'newFolderSetOptions',
+    'newFolderSetOptions.existingFolderSetToUse',
+    function () {
+      let existingFolderSet = this.existingFolderSet;
+      let newFolderSet = this.get('newFolderSetOptions.name');
+      if (existingFolderSet) {
+        return existingFolderSet.get('name');
+      } else if (newFolderSet) {
+        return newFolderSet;
+      } else {
+        return null;
+      }
+    }
+  ),
+
+  selectedConfigDisplay: computed('newWsConfig', function () {
+    if (_.isNull(this.newWsConfig)) {
       return;
     }
     const hash = {
       A: 'Submissions Only',
       B: 'Submissions and Folder Structure',
       C: 'Everything',
-      D: 'Custom'
+      D: 'Custom',
     };
-    return hash[this.get('newWsConfig')];
-  }.property('newWsConfig'),
+    return hash[this.newWsConfig];
+  }),
 
   steps: [
     { value: 0 },
@@ -353,21 +433,20 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     { value: 5 },
   ],
 
-  modeDisplay: function() {
+  modeDisplay: computed('newWsMode', function () {
     const hash = {
-      private: 'Private' ,
+      private: 'Private',
       org: 'My Org',
-      public: 'Public' ,
+      public: 'Public',
       internet: 'World Wide Web',
     };
-    return hash[this.get('newWsMode')] || null;
-
-  }.property('newWsMode'),
+    return hash[this.newWsMode] || null;
+  }),
 
   formatPermissionsObjects() {
-    const objects = this.get('newWsPermissions');
+    const objects = this.newWsPermissions;
 
-    if (this.get('utils').isNonEmptyArray(objects)) {
+    if (this.utils.isNonEmptyArray(objects)) {
       return objects.map((obj) => {
         let user = obj.user;
         if (user && user.id) {
@@ -377,13 +456,13 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       });
     }
   },
-  handleSubmissionsLoadingMessage: function() {
+  handleSubmissionsLoadingMessage: observer('loadingSubmissions', function () {
     const that = this;
-    if (!this.get('loadingSubmissions')) {
+    if (!this.loadingSubmissions) {
       this.set('showLoadingSubmissions', false);
       return;
     }
-    Ember.run.later(function() {
+    later(function () {
       if (that.isDestroyed || that.isDestroying) {
         return;
       }
@@ -392,15 +471,14 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       }
       that.set('showLoadingSubmissions', true);
     }, 500);
-
-  }.observes('loadingSubmissions'),
-  handleInProgressRequest: function() {
+  }),
+  handleInProgressRequest: observer('isRequestInProgress', function () {
     const that = this;
-    if (!this.get('isRequestInProgress')) {
+    if (!this.isRequestInProgress) {
       this.set('showRequestLoading', false);
       return;
     }
-    Ember.run.later(function() {
+    later(function () {
       if (that.isDestroyed || that.isDestroying) {
         return;
       }
@@ -409,15 +487,14 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       }
       that.set('showRequestLoading', true);
     }, 500);
-
-  }.observes('isRequestInProgress'),
+  }),
 
   actions: {
     goToStep(stepValue) {
-      if(!stepValue) {
+      if (!stepValue) {
         return;
       }
-      this.set('currentStep', this.get('steps')[stepValue]);
+      this.set('currentStep', this.steps[stepValue]);
     },
 
     // proceed() {
@@ -437,7 +514,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
     changeStep(direction) {
       let currentStep = this.get('currentStep.value');
-      let maxStep = this.get('maxSteps');
+      let maxStep = this.maxSteps;
       if (direction === 1) {
         if (currentStep === maxStep) {
           return;
@@ -449,37 +526,46 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         if (currentStep === 1) {
           return;
         }
-        this.set('currentStep', this.get('steps')[currentStep - 1]);
+        this.set('currentStep', this.steps[currentStep - 1]);
       }
     },
     setOriginalWorkspace() {
-      const workspace = this.get('selectedWorkspace');
+      const workspace = this.selectedWorkspace;
 
       this.set('workspaceToCopy', workspace);
       this.set('defaultName', `Copy of ${workspace.get('name')}`);
 
       // need to reset config, settings, and collaborators to default if already selected
-      let propsToReset = ['newWsConfig', 'newWsMode', 'newWsOwner', 'customConfig', 'newWsPermissions', 'newWsName', 'newFolderSetOptions'];
+      let propsToReset = [
+        'newWsConfig',
+        'newWsMode',
+        'newWsOwner',
+        'customConfig',
+        'newWsPermissions',
+        'newWsName',
+        'newFolderSetOptions',
+      ];
       _.each(propsToReset, (prop) => {
         if (prop) {
           this.set(prop, null);
         }
-        if (this.get('isUsingCustomConfig')) {
+        if (this.isUsingCustomConfig) {
           this.set('isUsingCustomConfig', false);
         }
       });
       // start process of loading submissions - may need these for config step
       // for large workspaces(i.e. 1000+ submissions - this could take a long time)
       this.set('loadingSubmissions', true);
-      this.get('workspaceToCopy.submissions').then((submissions) => {
-        this.set('submissions', submissions);
-        this.set('loadingSubmissions', false);
-        this.set('currentStep', this.get('steps')[2]);
-      })
-      .catch((err) => {
-        this.set('loadingSubmissions', false);
-        this.handleErrors(err, 'loadSubmissionsError');
-      });
+      this.get('workspaceToCopy.submissions')
+        .then((submissions) => {
+          this.set('submissions', submissions);
+          this.set('loadingSubmissions', false);
+          this.set('currentStep', this.steps[2]);
+        })
+        .catch((err) => {
+          this.set('loadingSubmissions', false);
+          this.handleErrors(err, 'loadSubmissionsError');
+        });
     },
 
     setConfig(config, customConfig) {
@@ -487,29 +573,30 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       if (customConfig) {
         this.set('customConfig', customConfig);
       }
-      this.set('currentStep', this.get('steps')[3]);
+      this.set('currentStep', this.steps[3]);
     },
     setOwnerSettings(name, owner, mode, folderSetOptions) {
       this.set('newWsName', name);
       this.set('newWsOwner', owner);
       this.set('newWsMode', mode);
       this.set('newFolderSetOptions', folderSetOptions);
-      this.set('currentStep', this.get('steps')[4]);
-
+      this.set('currentStep', this.steps[4]);
     },
     setPermissions(permissions) {
       this.set('newWsPermissions', permissions);
       // console.log('')
-      this.set('currentStep', this.get('steps')[5]);
+      this.set('currentStep', this.steps[5]);
     },
     createCopyRequest() {
-      const selectedConfig = this.get('newWsConfig');
-      const owner = this.get('newWsOwner');
-      const name = this.get('newWsName');
-      const originalWsId = this.get('workspaceToCopy');
-      const mode = this.get('newWsMode');
+      const selectedConfig = this.newWsConfig;
+      const owner = this.newWsOwner;
+      const name = this.newWsName;
+      const originalWsId = this.workspaceToCopy;
+      const mode = this.newWsMode;
 
-      const formattedPermissionObjects = this.formatPermissionsObjects(this.get('newWsPermissions'));
+      const formattedPermissionObjects = this.formatPermissionsObjects(
+        this.newWsPermissions
+      );
 
       let copyRequest;
       let requestSource;
@@ -521,10 +608,10 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         mode,
         createDate: Date.now(),
         lastModifiedDate: Date.now(),
-        createdBy: this.get('currentUser')
+        createdBy: this.currentUser,
       };
 
-      let folderSetOptions = this.get('newFolderSetOptions');
+      let folderSetOptions = this.newFolderSetOptions;
       if (folderSetOptions) {
         if (!folderSetOptions.doCreateFolderSet) {
           delete folderSetOptions.name;
@@ -536,23 +623,22 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       }
 
       let baseOptions = {
-        submissionOptions : { all: true },
-        folderOptions : {
-          folderSetOptions: this.get('newFolderSetOptions'),
-          none: true
+        submissionOptions: { all: true },
+        folderOptions: {
+          folderSetOptions: this.newFolderSetOptions,
+          none: true,
         },
-        selectionOptions : { none: true },
-        commentOptions : { none: true },
-        responseOptions : {  none: true},
+        selectionOptions: { none: true },
+        commentOptions: { none: true },
+        responseOptions: { none: true },
         permissionOptions: {
-          permissionObjects: formattedPermissionObjects
-        }
+          permissionObjects: formattedPermissionObjects,
+        },
       };
-        // basic shallow with folders
+      // basic shallow with folders
 
       if (selectedConfig === 'A') {
         requestSource = Object.assign(base, baseOptions);
-
       } else if (selectedConfig === 'B') {
         delete baseOptions.folderOptions.none;
         baseOptions.folderOptions.all = true;
@@ -573,22 +659,26 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         delete baseOptions.responseOptions.none;
         requestSource = Object.assign(base, baseOptions);
       } else if (selectedConfig === 'D') {
-        const customConfig = this.get('customConfig');
-        if (this.get('utils').isNonEmptyObject(customConfig)) {
+        const customConfig = this.customConfig;
+        if (this.utils.isNonEmptyObject(customConfig)) {
           customConfig.folderOptions.folderSetOptions = folderSetOptions;
           requestSource = Object.assign(base, customConfig);
           // customConfig does not have the permissionOptions
           requestSource.permissionOptions = {
-            permissionObjects: formattedPermissionObjects
+            permissionObjects: formattedPermissionObjects,
           };
         } else {
           this.set('customConfigError', true);
           return;
         }
       }
-      copyRequest = this.get('store').createRecord('copyWorkspaceRequest', requestSource);
+      copyRequest = this.store.createRecord(
+        'copyWorkspaceRequest',
+        requestSource
+      );
       this.set('isRequestInProgress', true);
-      copyRequest.save()
+      copyRequest
+        .save()
         .then((result) => {
           this.set('isRequestInProgress', false);
           const error = result.get('copyWorkspaceError');
@@ -602,19 +692,21 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
             this.sendAction('toWorkspace', createdWorkspace);
           } else {
             // something went wrong?
-            this.set('copyWorkspaceError', 'Sorry, there was an unknown error.');
+            this.set(
+              'copyWorkspaceError',
+              'Sorry, there was an unknown error.'
+            );
           }
         })
         .catch((err) => {
           this.set('isRequestInProgress', false);
           this.handleErrors(err, 'serverErrors');
         });
-
     },
     toggleMenu: function () {
       $('#filter-list-side').toggleClass('collapse');
       $('#arrow-icon').toggleClass('fa-rotate-180');
       $('#filter-list-side').addClass('animated slideInLeft');
     },
-  }
+  },
 });

@@ -1,4 +1,11 @@
-Encompass.AuthIndexComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   shouldShowLogin: null,
 
 

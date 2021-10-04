@@ -1,4 +1,6 @@
-Encompass.WorkspaceInfoStatsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import Component from '@ember/component';
+
+export default Component.extend({
   elementId: ['workspace-info-stats'],
 
 });

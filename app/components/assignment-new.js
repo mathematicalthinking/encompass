@@ -1,165 +1,190 @@
-Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  elementId: 'assignment-new',
-  createAssignmentError: null,
-  isMissingRequiredFields: null,
-  selectedSection: null,
-  selectedProblem: null,
-  alert: Ember.inject.service('sweet-alert'),
-  sectionList: null,
-  problemList: null,
-  formId: null,
-  createRecordErrors: [],
-  queryErrors: [],
-  constraints: {
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
+import moment from 'moment';
+
+export default class AssignmentNewComponent extends ErrorHandlingComponent {
+  @service router;
+  @service store;
+  @service('sweet-alert') alert;
+  @tracked createAssignmentError = null;
+  @tracked isMissingRequiredFields = null;
+  @tracked selectedSection = null;
+  @tracked selectedProblem = null;
+  @tracked problemList = null;
+  @tracked formId = null;
+  @tracked createRecordErrors = [];
+  @tracked queryErrors = [];
+  @tracked linkedWorkspacesMode = false;
+  @tracked doCreateLinkedWorkspaces = false;
+  @tracked doCreateParentWorkspace = false;
+  @tracked fromProblemInfo = false;
+  tooltips = {
+    class: 'Select which class you want to assign the problem',
+    problem: 'Select which problem you want to assign',
+    dateAssigned:
+      'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
+    dueDate:
+      'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
+    name:
+      'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
+    linkedWorkspaces:
+      'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
+    parentWorkspace:
+      'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
+  };
+  constraints = {
     section: {
-      presence: { allowEmpty: false }
+      presence: { allowEmpty: false },
     },
     problem: {
       presence: { allowEmpty: false },
     },
     name: {
-      presence: false
+      presence: false,
+    },
+  };
+  nameDate = moment().format('MMM Do YYYY');
+
+  linkedWsOptions = {
+    groupName: 'linkedWorkspaces',
+    required: false,
+    inputs: [
+      {
+        value: true,
+        label: 'Yes',
+      },
+      {
+        value: false,
+        label: 'No',
+      },
+    ],
+  };
+  groupWsOptions = {
+    groupName: 'groupWorkspaces',
+    requried: false,
+    inputs: [
+      {
+        value: true,
+        label: 'By Group',
+      },
+      {
+        value: false,
+        label: 'By Student',
+      },
+    ],
+  };
+  parentWsOptions = {
+    groupName: 'parentWorkspace',
+    required: false,
+    inputs: [
+      {
+        value: true,
+        label: 'Yes',
+      },
+      {
+        value: false,
+        label: 'No',
+      },
+    ],
+  };
+
+  @tracked sectionGroups = [];
+
+  @action updateSectionGroups() {
+    if (this.selectedSection) {
+      this.sectionGroups = this.store.query('group', {
+        section: this.selectedSection.id,
+        isTrashed: false,
+      });
     }
-  },
+  }
 
-  doCreateLinkedWorkspaces: false,
-  doCreateParentWorkspace: false,
+  get hasSelectedSection() {
+    return !!this.selectedSection;
+  }
 
-  linkedWsOptions: {
-    groupName: "linkedWorkspaces",
-    required: false,
-    inputs: [
-      {
-        value: true,
-        label: "Yes"
-      },
-      {
-        value: false,
-        label: "No"
-      }
-    ]
-  },
-  parentWsOptions: {
-    groupName: "parentWorkspace",
-    required: false,
-    inputs: [
-      {
-        value: true,
-        label: "Yes"
-      },
-      {
-        value: false,
-        label: "No"
-      }
-    ]
-  },
+  get hasProblem() {
+    return !!this.selectedProblem;
+  }
 
-  hasSelectedSection: Ember.computed.notEmpty('selectedSection'),
+  get hasProblemAndSection() {
+    return this.hasSelectedSection && this.hasProblem;
+  }
 
-  hasProblem: Ember.computed.notEmpty('selectedProblem'),
+  get showLinkedWsForm() {
+    return this.doCreateLinkedWorkspaces && this.hasProblemAndSection;
+  }
 
-  hasProblemAndSection: Ember.computed.and('hasProblem', 'hasSelectedSection'),
+  get showParentWsForm() {
+    return this.doCreateLinkedWorkspaces && this.showLinkedWsForm;
+  }
 
-  showLinkedWsForm: Ember.computed.and('doCreateLinkedWorkspaces', 'hasProblemAndSection'),
-
-  showParentWsForm: Ember.computed.and('doCreateParentWorkspace', 'showLinkedWsForm'),
-
-  problemsPreloadValue: function() {
+  get problemsPreloadValue() {
     // if there is at least one problem in the store
     // do not auto fetch problems on focus
-    let length = this.get('cachedProblems.length');
-    return length > 0 ? undefined : 'focus';
-  }.property('cachedProblems.[]'),
+    if (this.args.cachedProblems) {
+      let length = this.args.cachedProblems.length;
+      return length > 0 ? undefined : 'focus';
+    }
+    return undefined;
+  }
 
-
-  assignmentNamePreview: function() {
-    let hasName = this.get('name.length') > 0;
-
-    if (hasName) {
-      return this.get('name');
+  get assignmentNamePreview() {
+    if (this.name) {
+      return this.name;
     }
 
-    if(!this.get('hasProblem')) {
+    if (!this.hasProblem) {
       return '';
     }
-    let title = this.get('selectedProblem.title');
+    let title = this.selectedProblem.title;
 
-    let nameDate = this.get('nameDate');
+    let nameDate = this.nameDate;
 
     return `${title} / ${nameDate}`;
-
-  }.property('name', 'selectedProblem.title', 'nameDate'),
-
-  init: function() {
-    let that = this;
-    this.set('nameDate', moment().format('MMM Do YYYY') );
-    this._super(...arguments);
-    let tooltips = {
-      class: 'Select which class you want to assign the problem',
-      problem: 'Select which problem you want to assign',
-      dateAssigned: 'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
-      dueDate: 'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
-      name: 'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
-      linkedWorkspaces: 'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
-      parentWorkspace: 'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
-    };
-    this.set('tooltips', tooltips);
-    $(function () {
-      $('input#assignedDate').daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        autoUpdateInput: false,
-      }, function(start, end, label) {
-        let assignedDate = start.format('MM/DD/YYYY');
-        $('input#assignedDate').val(assignedDate);
-        that.set('nameDate', start.format('MMM Do YYYY'));
-      });
-      $('input#dueDate').daterangepicker({
-        singleDatePicker: true,
-        showDropdowns: true,
-        autoUpdateInput: false,
-      }, function(start, end, label) {
-        let dueDate = start.format('MM/DD/YYYY');
-        $('input#dueDate').val(dueDate);
-      });
-      $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
-    });
-    this.set('cachedProblems', this.get('store').peekAll('problem'));
-  },
-
-  didReceiveAttrs: function() {
-    if (this.sections) {
-      const sections = this.sections.filter((section) => {
-        return !section.get('isTrashed') && section.id;
-      });
-      this.set('sectionList', sections);
+  }
+  constructor() {
+    super(...arguments);
+    let selectedProblem = this.args.selectedProblem;
+    if (selectedProblem && selectedProblem.isForAssignment) {
+      this.fromProblemInfo = true;
+      this.selectedProblem = selectedProblem;
     }
-    let selectedProblem = this.get('selectedProblem');
-    if (selectedProblem && selectedProblem.get('isForAssignment')) {
-      this.set('FromProblemInfo', true);
+    if (this.args.fromSectionInfo) {
+      this.fromSectionInfo = true;
+      this.selectedSection = this.args.selectedSection;
     }
+  }
 
-  },
-  willDestroyElement: function () {
-    $(".daterangepicker").remove();
-    let problem = this.get('selectedProblem');
-    if (problem && problem.get('isForAssignment')) {
-      problem.set('isForAssignment', false);
+  willDestroy() {
+    super.willDestroy(...arguments);
+    let problem = this.selectedProblem;
+    if (problem && problem.isForAssignment) {
+      problem.isForAssignment = false;
     }
-    this._super(...arguments);
-  },
+  }
 
-  createAssignment: function(formValues) {
+  createAssignment(formValues) {
     let { section, problem, assignedDate, dueDate, name } = formValues;
-    const createdBy = this.get('currentUser');
+    const createdBy = this.args.currentUser;
 
     if (!name) {
-      let nameDate= $('#assignedDate').data('daterangepicker').startDate.format('MMM Do YYYY');
+      // let nameDate = $('#assignedDate')
+      //   .data('daterangepicker')
+      //   .startDate.format('MMM Do YYYY');
+      let nameDate = assignedDate
+        ? moment(new Date(assignedDate.replace(/-/g, '/'))).format(
+            'MMM Do YYYY'
+          )
+        : moment(new Date()).format('MMM Do YYYY');
       let problemTitle = problem.get('title');
-      name = problemTitle + ' / ' + nameDate;
+      name = `${problemTitle} / ${nameDate}`;
     }
-    if ((assignedDate && dueDate) && assignedDate > dueDate) {
-      this.set('invalidDateRange', true);
+    if (assignedDate && dueDate && assignedDate > dueDate) {
+      this.invalidDateRange = true;
       return;
     }
     // need to get all students from section
@@ -170,167 +195,170 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       createDate: new Date(),
       section,
       problem,
-      assignedDate,
-      dueDate,
+      assignedDate: assignedDate
+        ? new Date(assignedDate.replace(/-/g, '/'))
+        : '',
+      dueDate: dueDate ? new Date(dueDate.replace(/-/g, '/')) : '',
       name,
     });
 
-    const doCreateLinkedWorkspaces = this.get('doCreateLinkedWorkspaces');
-    const doCreateParentWorkspace = this.get('doCreateParentWorkspace');
+    const doCreateLinkedWorkspaces = this.doCreateLinkedWorkspaces;
+    const doCreateParentWorkspace = this.doCreateParentWorkspace;
 
-    let linkedFormatInput = this.$('#linked-ws-new-name');
+    let linkedFormatInput = $('#linked-ws-new-name');
     let linkedNameFormat;
 
     if (linkedFormatInput) {
       linkedNameFormat = linkedFormatInput.val();
     }
 
-    let parentFormatInput = this.$('#parent-ws-new-name');
+    let parentFormatInput = $('#parent-ws-new-name');
     let parentNameFormat;
 
     if (parentFormatInput) {
       parentNameFormat = parentFormatInput.val();
     }
 
-      createAssignmentData.linkedWorkspacesRequest = {
-        doCreate: doCreateLinkedWorkspaces,
-        name: linkedNameFormat,
-      };
+    createAssignmentData.linkedWorkspacesRequest = {
+      doCreate: doCreateLinkedWorkspaces,
+      name: linkedNameFormat,
+      linkType: this.linkedWorkspacesMode ? 'group' : 'individual',
+    };
 
-      createAssignmentData.parentWorkspaceRequest = {
-        doCreate : doCreateLinkedWorkspaces ? doCreateParentWorkspace: false,
-        name: parentNameFormat,
-      };
+    createAssignmentData.parentWorkspaceRequest = {
+      doCreate: doCreateLinkedWorkspaces ? doCreateParentWorkspace : false,
+      name: parentNameFormat,
+    };
 
     students.forEach((student) => {
       createAssignmentData.get('students').pushObject(student);
     });
 
-    createAssignmentData.save()
-    .then((assignment) => {
-      this.sendAction('toAssignmentInfo', assignment);
-      this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
-    })
-    .catch((err) => {
-       this.handleErrors(err, 'createRecordErrors', createAssignmentData);
-    });
-  },
+    createAssignmentData
+      .save()
+      .then((assignment) => {
+        this.router.transitionTo('assignments.assignment', assignment.id);
+        this.alert.showToast(
+          'success',
+          'Assignment Created',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'createRecordErrors', createAssignmentData);
+      });
+  }
 
-    getMongoDate: function(htmlDateString) {
-      const htmlFormat = 'YYYY-MM-DD';
-      if (typeof htmlDateString !== 'string') {
-        return;
-      }
-      let dateMoment = moment(htmlDateString, htmlFormat);
-      return new Date(dateMoment);
-    },
+  getMongoDate(htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    return new Date(dateMoment);
+  }
 
-    getEndDate: function (htmlDateString) {
-      const htmlFormat = 'YYYY-MM-DD HH:mm';
-      if (typeof htmlDateString !== 'string') {
-        return;
-      }
-      let dateMoment = moment(htmlDateString, htmlFormat);
-      let date = new Date(dateMoment);
-      date.setHours(23, 59, 59);
-      return date;
-    },
-    problemOptions: function() {
-      let cachedProblems = this.get('cachedProblems');
+  getEndDate(htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD HH:mm';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    let date = new Date(dateMoment);
+    date.setHours(23, 59, 59);
+    return date;
+  }
+  get problemOptions() {
+    let cachedProblems = this.args.cachedProblems;
+    if (cachedProblems) {
       let toArray = cachedProblems.toArray();
       return toArray.map((cachedProblem) => {
         return {
           id: cachedProblem.id,
-          title: cachedProblem.get('title')
+          title: cachedProblem.get('title'),
         };
-
       });
-    }.property('cachedProblems.[]'),
-    sectionOptions: function() {
-      let sectionList = this.get('sectionList') || [];
-      let toArray = sectionList.toArray();
-      return toArray.map((section) => {
-        return {
-          id: section.id,
-          name: section.get('name')
-        };
-
-      });
-    }.property('sectionList.[]'),
-
-
-  actions: {
-    validate: function() {
-      const section = this.get('selectedSection');
-      const problem = this.get('selectedProblem');
-      let assignedDate = $('#assignedDate').val();
-      let dueDate = $('#dueDate').val();
-      const name = this.get('name');
-
-      const values = {
-        section,
-        problem,
-        assignedDate,
-        dueDate,
-        name
-      };
-
-      const constraints = this.get('constraints');
-
-      let errors = window.validate(values, constraints);
-      if (errors) { // errors
-        for (let key of Object.keys(errors)) {
-          let errorProp = `${key}FormErrors`;
-          this.set(errorProp, errors[key]);
-        }
-        return;
-      }
-
-      let startDate;
-      let endDate;
-
-      if (!assignedDate) {
-        delete values.assignedDate;
-      } else {
-        startDate = $('#assignedDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
-        values.assignedDate = this.getMongoDate(startDate);
-
-      }
-      if (!dueDate) {
-        delete values.dueDate;
-      } else {
-        endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
-        values.dueDate = this.getEndDate(endDate);
-
-      }
-
-
-      this.createAssignment(values);
-
-    },
-
-    cancel: function() {
-      if (this.cancel) {
-        this.cancel();
-      } else {
-        this.sendAction('toAssignmentsHome');
-      }
-
-    },
-    updateSelectizeSingle(val, $item, propToUpdate, model) {
-      let errorProp = `${model}FormErrors`;
-      this.set(errorProp, []);
-
-      if ($item === null) {
-        this.set(propToUpdate, null);
-        return;
-      }
-      let record = this.get('store').peekRecord(model, val);
-      if (!record) {
-        return;
-      }
-      this.set(propToUpdate, record);
-    },
+    }
+    return [];
   }
-});
+  get sectionOptions() {
+    let sectionList = this.args.sectionList || [];
+    let toArray = sectionList.toArray();
+    return toArray.map((section) => {
+      return {
+        id: section.id,
+        name: section.get('name'),
+      };
+    });
+  }
+  @action updateDoCreateLinkedWorkspaces(val) {
+    this.doCreateLinkedWorkspaces = val;
+  }
+  @action updateLinkedWorkspacesMode(val) {
+    this.linkedWorkspacesMode = val;
+  }
+  @action updateDoCreateParentWorkspace(val) {
+    this.doCreateParentWorkspace = val;
+  }
+  @action validate() {
+    const section = this.selectedSection;
+    const problem = this.selectedProblem;
+    let assignedDate = $('#assignedDate').val();
+    let dueDate = $('#dueDate').val();
+    const name = this.name;
 
+    const values = {
+      section,
+      problem,
+      assignedDate,
+      dueDate,
+      name,
+    };
+
+    const constraints = this.constraints;
+
+    let errors = window.validate(values, constraints);
+    if (errors) {
+      // errors
+      for (let key of Object.keys(errors)) {
+        let errorProp = `${key}FormErrors`;
+        this[errorProp] = errors[key];
+      }
+      return;
+    }
+
+    if (!assignedDate) {
+      delete values.assignedDate;
+    }
+    if (!dueDate) {
+      delete values.dueDate;
+    }
+
+    this.createAssignment(values);
+  }
+
+  @action cancel() {
+    if (this.cancel) {
+      this.args.cancel();
+    } else {
+      this.router.transitionTo('assignments');
+    }
+  }
+  @action updateSelectizeSingle(val, $item, propToUpdate, model) {
+    let errorProp = `${model}FormErrors`;
+    this[errorProp] = [];
+
+    if ($item === null) {
+      this[propToUpdate] = null;
+      return;
+    }
+    let record = this.store.peekRecord(model, val);
+    if (!record) {
+      return;
+    }
+    this[propToUpdate] = record;
+  }
+}

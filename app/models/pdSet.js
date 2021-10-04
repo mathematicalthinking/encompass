@@ -1,6 +1,8 @@
-Encompass.PdSet = DS.Model.extend({
-  count: DS.attr('number'),
-  label: function(){
-    return this.get('id') + ' (' + this.get('count') + ' submissions)';
-  }.property('count')
-});
+import Model, { attr } from '@ember-data/model';
+
+export default class PdSetModel extends Model {
+  @attr('number') count;
+  get label() {
+    return this.id + ' (' + this.count + ' submissions)';
+  }
+}

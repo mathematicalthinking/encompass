@@ -1,10 +1,13 @@
-Encompass.NewFoldersetFormComponent = Ember.Component.extend({
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
+
+export default Component.extend({
   elementId: 'new-folderset-form',
   privacySetting: 'M',
-  utils: Ember.inject.service('utility-methods'),
+  utils: service('utility-methods'),
 
   didReceiveAttrs() {
-    if (this.get('utils').isNullOrUndefined(this.get('privacySetting'))) {
+    if (this.utils.isNullOrUndefined(this.privacySetting)) {
       this.set('privacySetting', 'M');
     }
     this._super(...arguments);
@@ -19,22 +22,26 @@ Encompass.NewFoldersetFormComponent = Ember.Component.extend({
         label: 'Private',
         isChecked: true,
         moreInfo: 'Only you will be able to see and reuse this folder set',
-
       },
       {
         value: 'O',
         label: 'My Org',
         isChecked: false,
-        moreInfo: 'All members of your org will be able to see and reuse this folder set',
-
+        moreInfo:
+          'All members of your org will be able to see and reuse this folder set',
       },
       {
         value: 'E',
         label: 'Public',
         isChecked: false,
-        moreInfo: 'All Encompass users will be able to see and reuse this folder set',
+        moreInfo:
+          'All Encompass users will be able to see and reuse this folder set',
       },
-    ]
+    ],
   },
-
+  actions: {
+    updatePrivacySetting: function (val) {
+      this.set('privacySetting', val);
+    },
+  },
 });

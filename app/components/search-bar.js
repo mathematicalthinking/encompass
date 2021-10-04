@@ -1,81 +1,103 @@
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 /*global _:false */
-Encompass.SearchBarComponent = Ember.Component.extend({
-  classNames: ["search-bar-comp"],
-  searchQuery: Ember.computed.alias("parentView.searchQuery"),
-  searchInputValue: Ember.computed.alias("parentView.searchInputValue"),
+import { alias } from '@ember/object/computed';
+
+export default Component.extend({
+  classNames: ['search-bar-comp'],
+  searchQuery: alias('parentView.searchQuery'),
+  searchInputValue: alias('parentView.searchInputValue'),
   defaultConstraints: {
     query: {
       length: {
         minimum: 1,
-        maximum: 500
-      }
-    }
+        maximum: 500,
+      },
+    },
   },
 
   init() {
     this._super(...arguments);
 
-    let doDebounce = this.get('doDebounce') || false;
-    let debounceTime = this.get('debounceTime') || 300;
+    let doDebounce = this.doDebounce || false;
+    let debounceTime = this.debounceTime || 300;
     if (doDebounce) {
-      this.set('debouncedSearch', _.debounce(this.onChangeSearch, debounceTime));
+      this.set(
+        'debouncedSearch',
+        _.debounce(this.onChangeSearch, debounceTime)
+      );
     }
   },
 
-  showClear: function() {
-    let hasSearchQuery = this.get('searchQuery');
-    let hasSearchInputValue = this.get('searchInputValue');
+  showClear: computed(
+    'searchQuery',
+    'searchInputValue',
+    'doSearchOnInputChange',
+    'inputValue',
+    function () {
+      let hasSearchQuery = this.searchQuery;
+      let hasSearchInputValue = this.searchInputValue;
 
-    if (hasSearchQuery || hasSearchInputValue || (this.get('doSearchOnInputChange') && this.get('inputValue'))) {
-      return true;
-    } else {
-      return false;
+      if (
+        hasSearchQuery ||
+        hasSearchInputValue ||
+        (this.doSearchOnInputChange && this.inputValue)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
-  }.property('searchQuery', 'searchInputValue', 'doSearchOnInputChange', 'inputValue'),
+  ),
 
-  placeholder: function() {
-    let base = this.get("basePlaceholder");
-    if (!this.get("showFilter")) {
-      return base;
+  placeholder: computed(
+    'basePlaceholder',
+    'selectedCriterion',
+    'showFilter',
+    function () {
+      let base = this.basePlaceholder;
+      if (!this.showFilter) {
+        return base;
+      }
+      let criterion = this.selectedCriterion;
+      let combined = `${base} by ${criterion}`;
+      return combined;
     }
-    let criterion = this.get("selectedCriterion");
-    let combined = `${base} by ${criterion}`;
-    return combined;
-  }.property("basePlaceholder", "selectedCriterion", "showFilter"),
+  ),
 
-  inputStringValue: function() {
-    let val = this.get("inputValue");
+  inputStringValue: computed('inputValue', function () {
+    let val = this.inputValue;
     if (!val) {
-      return "";
+      return '';
     }
     // handle escaping?
     let trimmed = val.trim();
     let lowercase = trimmed.toLowerCase();
-    if (this.get("queryErrors")) {
-      this.set("queryErrors", null);
+    if (this.queryErrors) {
+      this.set('queryErrors', null);
     }
     return lowercase;
-  }.property("inputValue"),
+  }),
 
-  inputConstraints: function() {
-    let constraints = this.get("constraints");
+  inputConstraints: computed('constraints', function () {
+    let constraints = this.constraints;
     if (constraints) {
       return constraints;
     }
-    return this.get("defaultConstraints");
-  }.property("constraints"),
+    return this.defaultConstraints;
+  }),
 
-  initiateSearch: function(val) {
-    let criterion = this.get("selectedCriterion");
-    this.get("onSearch")(val, criterion);
+  initiateSearch: function (val) {
+    let criterion = this.selectedCriterion;
+    this.onSearch(val, criterion);
   },
 
-  onChangeSearch: function() {
+  onChangeSearch: function () {
     this.send('validate');
   },
 
   actions: {
-    clearResults: function() {
+    clearResults: function () {
       // let textVal = this.get("inputValue");
       // let isString = _.isString(textVal);
       // if (!isString) {
@@ -83,17 +105,17 @@ Encompass.SearchBarComponent = Ember.Component.extend({
       // }
       // let trimmed = textVal.trim();
       // if (trimmed.length === 0) {
-        // just empty spaces, clear out search bar but dont bubble up and fetch
-        this.set("inputValue", null);
-        // return;
+      // just empty spaces, clear out search bar but dont bubble up and fetch
+      this.set('inputValue', null);
+      // return;
       // }
-      this.get("clearSearchResults")();
+      this.clearSearchResults();
     },
 
-    validate: function() {
-      let val = this.get("inputStringValue");
+    validate: function () {
+      let val = this.inputStringValue;
       let values = { query: val };
-      let constraints = this.get("inputConstraints");
+      let constraints = this.inputConstraints;
 
       let errors = window.validate(values, constraints);
       if (errors) {
@@ -106,21 +128,21 @@ Encompass.SearchBarComponent = Ember.Component.extend({
       // handle validation success
       this.initiateSearch(val);
     },
-    clearErrors: function() {
-      if (this.get("queryErrors")) {
-        this.set("queryErrors", null);
+    clearErrors: function () {
+      if (this.queryErrors) {
+        this.set('queryErrors', null);
       }
     },
-    searchAction: function() {
-      this.send("validate");
+    searchAction: function () {
+      this.send('validate');
     },
     onInputChange() {
-      if (this.get('doSearchOnInputChange')) {
-        if (this.get('debouncedSearch')) {
+      if (this.doSearchOnInputChange) {
+        if (this.debouncedSearch) {
           return this.debouncedSearch();
         }
         this.send('validate');
       }
-    }
-  }
+    },
+  },
 });

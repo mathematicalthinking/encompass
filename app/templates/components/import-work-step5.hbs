@@ -4,7 +4,7 @@
     <i class="fas fa-info-circle info-icon"></i>
   </span>
 </p>
-{{radio-group options=createWs selectedValue=doCreateWs}}
+<RadioGroup @options={{createWs}} @selectedValue={{action "updateDoCreateWs"}} />
 
 {{#if creatingWs}}
 <div class="create-ws-content">
@@ -17,11 +17,11 @@
       </span>
     </p>
     <div class="single-text-input-container">
-      {{input id="ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
+      <Input @id="ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
     </div>
     {{#if missingNameError}}
     <div class="create-ws-error">
-      {{error-box error=missingNameError showDismiss=true resetError=(action (mut missingNameError) null)}}
+      <ErrorBox @error={{missingNameError}} @showDismiss={{true}} @resetError={{action (mut missingNameError) null}} />
     </div>
     {{/if}}
   </div>
@@ -36,23 +36,10 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{selectize-input
-      store=store
-      inputId="owner-select"
-      initialOptions=ownerOptions
-      initialItems=initialOwnerItem
-      maxItems=1
-      onItemAdd=(action "updateSelectizeSingle")
-      onItemRemove=(action "updateSelectizeSingle")
-      labelField="username"
-      valueField="id"
-      searchField="username"
-      model="user"
-      propToUpdate="selectedOwner"
-      placeholder="Search by username to choose as owner"}}
+    <SelectizeInput @store={{this.store}} @inputId="owner-select" @initialOptions={{ownerOptions}} @initialItems={{initialOwnerItem}} @maxItems={{1}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @propToUpdate="selectedOwner" @placeholder="Search by username to choose as owner" />
     {{#if missingOwnerError}}
     <div class="create-ws-error">
-      {{error-box error=missingOwnerError showDismiss=true resetError=(action (mut missingOwnerError) null)}}
+      <ErrorBox @error={{missingOwnerError}} @showDismiss={{true}} @resetError={{action (mut missingOwnerError) null}} />
     </div>
     {{/if}}
   </div>
@@ -64,7 +51,7 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{radio-group options=modeInputs selectedValue=selectedMode}}
+    <RadioGroup @options={{modeInputs}} @selectedValue={{action "updateSelectedMode"}} />
   </div>
 
 
@@ -75,27 +62,13 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{selectize-input
-      store=store
-      inputId="folderset-select"
-      initialOptions=folderSetOptions
-      maxItems=1
-      initialItems=initialFolderSetItem
-      onItemAdd=(action "updateSelectizeSingle")
-      onItemRemove=(action "updateSelectizeSingle")
-      labelField="name"
-      valueField="id"
-      searchField="name"
-      model="folder-set"
-      propToUpdate="selectedFolderSet"
-      placeholder="Select a Folder Set"
-    }}
+    <SelectizeInput @store={{this.store}} @inputId="folderset-select" @initialOptions={{folderSetOptions}} @maxItems={{1}} @initialItems={{initialFolderSetItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @valueField="id" @searchField="name" @model="folder-set" @propToUpdate="selectedFolderSet" @placeholder="Select a Folder Set" />
   </div>
     <p class="info">You can add collaborators and change workspace settings after creating the workspace</p>
   </div>
   {{/if}}
 
-  {{#unless currentUser.isStudent}}
+  {{#unless this.currentUser.isStudent}}
     {{#if selectedSection}}
     <div class="ws-new assignment">
       <p class="input-label">
@@ -104,7 +77,7 @@
           <i class="fas fa-info-circle info-icon"></i>
         </span>
       </p>
-      {{radio-group options=createAssignment selectedValue=createAssignmentValue}}
+      <RadioGroup @options={{createAssignment}} @selectedValue={{action "updateCreateAssignmentValue"}} />
     </div>
     {{/if}}
   {{/unless}}
@@ -119,11 +92,11 @@
         </span>
       </p>
       <div class="single-text-input-container">
-        {{input id="assignment-name" class="single-text-input" type="text" value=assignmentName placeholder="Provide a name for your assignment"}}
+        <Input @id="assignment-name" class="single-text-input" @type="text" @value={{assignmentName}} placeholder="Provide a name for your assignment" />
       </div>
       {{#if missingAssignmentError}}
       <div class="create-ws-error">
-        {{error-box error=missingAssignmentError showDismiss=true resetError=(action (mut missingAssignmentError) null)}}
+        <ErrorBox @error={{missingAssignmentError}} @showDismiss={{true}} @resetError={{action (mut missingAssignmentError) null}} />
       </div>
       {{/if}}
     </div>

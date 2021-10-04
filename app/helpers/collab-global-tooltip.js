@@ -1,5 +1,12 @@
 /*global _:false */
-Encompass.CollabGlobalTooltipHelper = Ember.Helper.helper( function(args){
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (args) {
   let [val] = args;
 
   let hash = {

@@ -1,4 +1,6 @@
-Encompass.SweetAlertService = Ember.Service.extend({
+import Service from '@ember/service';
+
+export default Service.extend({
   title: null,
   type: null,
   toast: true,
@@ -6,32 +8,39 @@ Encompass.SweetAlertService = Ember.Service.extend({
   timer: null,
   showConfirmButton: null,
   backgroundColor: null,
-  successColor: '#CBFDCB',
-  errorColor: '#ffe0e0',
-  warningColor: '#ffcd94',
-  infoColor: '#afeeee',
+  successColor: "#CBFDCB",
+  errorColor: "#ffe0e0",
+  warningColor: "#ffcd94",
+  infoColor: "#afeeee",
 
-  setBackgroundColor: function(type) {
+  setBackgroundColor: function (type) {
     switch (type) {
-      case 'success':
-        this.set('backgroundColor', this.get('successColor'));
+      case "success":
+        this.set("backgroundColor", this.successColor);
         break;
-      case 'error':
-        this.set('backgroundColor', this.get('errorColor'));
+      case "error":
+        this.set("backgroundColor", this.errorColor);
         break;
-      case 'warning':
-        this.set('backgroundColor', this.get('warningColor'));
+      case "warning":
+        this.set("backgroundColor", this.warningColor);
         break;
-      case 'info':
-        this.set('backgroundColor', this.get('infoColor'));
+      case "info":
+        this.set("backgroundColor", this.infoColor);
         break;
       default:
-        this.set('backgroundColor', '#fff');
+        this.set("backgroundColor", "#fff");
         break;
     }
   },
 
-  showToast: function(type="success", title="Updated Successfully", position='bottom-end', timer=4000, showConfirmButton=false, confirmButtonText=null) {
+  showToast: function (
+    type = "success",
+    title = "Updated Successfully",
+    position = "bottom-end",
+    timer = 4000,
+    showConfirmButton = false,
+    confirmButtonText = null
+  ) {
     this.setBackgroundColor(type);
     return window.swal({
       type: type,
@@ -41,11 +50,11 @@ Encompass.SweetAlertService = Ember.Service.extend({
       toast: true,
       showConfirmButton: showConfirmButton,
       confirmButtonText: confirmButtonText,
-      background: this.get('backgroundColor'),
+      background: this.backgroundColor,
     });
   },
 
-  showModal: function(type, title, text, confirmText, cancelText='Cancel') {
+  showModal: function (type, title, text, confirmText, cancelText = "Cancel") {
     return window.swal({
       type: type,
       title: title,
@@ -57,30 +66,34 @@ Encompass.SweetAlertService = Ember.Service.extend({
     });
   },
 
-  showPrompt: function(input, title, text, confirmButtonText) {
+  showPrompt: function (input, title, text, confirmButtonText) {
     return window.swal({
       input: input,
       title: title,
       text: text,
-      confirmButtonText:  confirmButtonText,
+      confirmButtonText: confirmButtonText,
       showCancelButton: true,
     });
   },
 
-  showPromptSelect: function(title, inputOptions, inputPlaceholder, text=null, confirmButtonText='OK') {
+  showPromptSelect: function (
+    title,
+    inputOptions,
+    inputPlaceholder,
+    text = null,
+    confirmButtonText = "OK"
+  ) {
     return window.swal({
-      input: 'select',
+      input: "select",
       title,
       inputPlaceholder,
       inputOptions,
       showCancelButton: true,
       inputValidator: (value) => {
-        return !value && 'Please choose an option.';
+        return !value && "Please choose an option.";
       },
       text,
-      confirmButtonText
+      confirmButtonText,
     });
   },
-
-
 });

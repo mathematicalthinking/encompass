@@ -1,51 +1,64 @@
-Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.VmtHostMixin, Encompass.ErrorHandlingMixin, {
-  classNames: ['vmt-search'],
+import $ from 'jquery';
+import Component from '@ember/component';
+import CurrentUserMixin from '../mixins/current_user_mixin';
+import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import VmtHostMixin from '../mixins/vmt-host';
 
-  searchConstraints: {
-    query: {
-      length: {
-        minimum: 0,
-        maximum: 500
-      }
-    }
-  },
-  searchErrors: [],
+export default Component.extend(
+  CurrentUserMixin,
+  VmtHostMixin,
+  ErrorHandlingMixin,
+  {
+    classNames: ['vmt-search'],
 
-  actions: {
-    submitSearch() {
-      let searchText = this.get('searchText');
+    searchConstraints: {
+      query: {
+        length: {
+          minimum: 0,
+          maximum: 500,
+        },
+      },
+    },
+    searchErrors: [],
 
-      let trimmed = typeof searchText === 'string' ? searchText.trim() : '';
+    actions: {
+      submitSearch() {
+        let searchText = this.searchText;
 
-      if (trimmed.length === 0) {
+        let trimmed = typeof searchText === 'string' ? searchText.trim() : '';
+
+        if (trimmed.length === 0) {
+          return;
+        }
+        let vmtHost = this.getVmtHost();
+
+        let url = `${vmtHost}/enc/search?resourceName=${trimmed}`;
+
+        $.get({
+          url,
+          xhrFields: {
+            withCredentials: true,
+          },
+          // headers
+        })
+          .then((results) => {
+            /*
+          {
+            activities: [],
+            rooms: [],
+          }
+          */
+            if (this.handleSearchResults) {
+              this.handleSearchResults(results);
+            }
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'searchErrors');
+          });
+      },
+      clearSearchResults() {
         return;
-      }
-      let vmtHost = this.getVmtHost();
-
-      let url = `${vmtHost}/enc/search?resourceName=${trimmed}`;
-
-      Ember.$.get({
-        url,
-        xhrFields: {
-          withCredentials: true
-       }
-        // headers
-      })
-      .then((results) => {
-        /*
-        {
-          activities: [],
-          rooms: [],
-        }
-        */
-        if (this.get('handleSearchResults')) {
-          this.get('handleSearchResults')(results);
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'searchErrors');
-      });
-    }
+      },
+    },
   }
-
-});
+);

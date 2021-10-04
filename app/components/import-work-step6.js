@@ -1,40 +1,67 @@
-Encompass.ImportWorkStep6Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import Component from '@ember/component';
+import { computed, observer } from '@ember/object';
+import { later } from '@ember/runloop';
+
+export default Component.extend({
   elementId: 'import-work-step6',
 
-  shouldHideButtons: function () {
-    if (this.get('isUploadingAnswer') || this.get('isCreatingWorkspace') || this.get('savingAssignment') || this.get('uploadedAnswers')) {
-      return true;
-    } else {
-      return false;
+  shouldHideButtons: computed(
+    'isUploadingAnswer',
+    'isCreatingWorkspace',
+    'savingAssignment',
+    'uploadedAnswers',
+    function () {
+      if (
+        this.isUploadingAnswer ||
+        this.isCreatingWorkspace ||
+        this.savingAssignment ||
+        this.uploadedAnswers
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
-  }.property('isUploadingAnswer', 'isCreatingWorkspace', 'savingAssignment', 'uploadedAnswers'),
+  ),
 
-  workspaceLink: function () {
-    let createdWorkspace = this.get('createdWorkspace');
-    return `/#/workspaces/${createdWorkspace._id}/submissions/${createdWorkspace.submissions[0]}`;
-  }.property('isCreatingWorkspace', 'createdWorkspace'),
-
-  handleLoadingMessage: function() {
-    const that = this;
-    if (!this.get('isUploadingAnswer') || !this.get('isCreatingWorkspace') || this.get('savingAssignment')) {
-      this.set('showLoadingMessage', false);
-      return;
+  workspaceLink: computed(
+    'isCreatingWorkspace',
+    'createdWorkspace',
+    function () {
+      let createdWorkspace = this.createdWorkspace;
+      return `/#/workspaces/${createdWorkspace._id}/submissions/${createdWorkspace.submissions[0]}`;
     }
-    Ember.run.later(function() {
-      if (that.isDestroyed || that.isDestroying) {
+  ),
+
+  handleLoadingMessage: observer(
+    'isUploadingAnswer',
+    'isCreatingWorkspace',
+    'savingAssignment',
+    function () {
+      const that = this;
+      if (
+        !this.isUploadingAnswer ||
+        !this.isCreatingWorkspace ||
+        this.savingAssignment
+      ) {
+        this.set('showLoadingMessage', false);
         return;
       }
-      that.set('showLoadingMessage', true);
-    }, 800);
-
-  }.observes('isUploadingAnswer', 'isCreatingWorkspace', 'savingAssignment'),
+      later(function () {
+        if (that.isDestroyed || that.isDestroying) {
+          return;
+        }
+        that.set('showLoadingMessage', true);
+      }, 800);
+    }
+  ),
 
   actions: {
     next() {
-      this.get('onProceed')();
+      this.onProceed();
     },
     back() {
-      this.get('onBack')(-1);
-    }
-  }
+      this.onBack(-1);
+    },
+  },
 });

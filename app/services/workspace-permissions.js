@@ -1,6 +1,12 @@
 /* eslint-disable complexity */
-Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUserMixin, {
-  utils: Ember.inject.service('utility-methods'),
+import Service, { inject as service } from '@ember/service';
+
+export default Service.extend({
+  currentUser: null,
+  setUser(user) {
+    this.set('currentUser', user);
+  },
+  utils: service('utility-methods'),
 
   isAdmin() {
     return this.get('currentUser.isAdmin');
@@ -11,12 +17,12 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   isOwner(ws) {
-    let ownerId = this.get('utils').getBelongsToId(ws, 'owner');
+    let ownerId = this.utils.getBelongsToId(ws, 'owner');
     return ownerId === this.get('currentUser.id');
   },
 
   isCreator(ws) {
-    let creatorId = this.get('utils').getBelongsToId(ws, 'createdBy');
+    let creatorId = this.utils.getBelongsToId(ws, 'createdBy');
     return creatorId === this.get('currentUser.id');
   },
 
@@ -24,9 +30,9 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     if (!this.isPdAdmin()) {
       return false;
     }
-    let utils = this.get('utils');
+    let utils = this.utils;
 
-    let userOrgId = utils.getBelongsToId(this.get('currentUser'), 'organization');
+    let userOrgId = utils.getBelongsToId(this.currentUser, 'organization');
     let wsOrgId = utils.getBelongsToId(ws, 'organization');
 
     return userOrgId === wsOrgId;
@@ -53,8 +59,8 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return false;
     }
 
-   let approvers = ws.get('feedbackAuthorizers') || [];
-   return approvers.includes(this.get('currentUser.id'));
+    let approvers = ws.get('feedbackAuthorizers') || [];
+    return approvers.includes(this.get('currentUser.id'));
   },
 
   canApproveFeedback(ws) {
@@ -65,7 +71,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   canEdit(ws, recordType, requiredPermissionLevel) {
-    const utils = this.get('utils');
+    const utils = this.utils;
 
     if (!utils.isNonEmptyObject(ws)) {
       return false;

@@ -12,8 +12,8 @@
   <section class="third submissions">
     <h2>Submissions</h2>
     <div>
-      {{input type="radio" name="importMode" class="pdImport" value="0" click=(action "radioSelect" 0)}} <label>PD</label>
-      {{input type="radio" name="importMode" class="powImport" value="1" click=(action "radioSelect" 1)}} <label>PoW</label>
+      <Input @type="radio" @name="importMode" class="pdImport" @value="0" @click={{action "radioSelect" 0}} /> <label>PD</label>
+      <Input @type="radio" @name="importMode" class="powImport" @value="1" @click={{action "radioSelect" 1}} /> <label>PoW</label>
     {{#if isPdImport}}
       <p>
         One or more workspaces will be created with the submissions from the
@@ -22,9 +22,9 @@
       </p>
     {{else}}
       <p>
-        <label>As PD set {{input id="powPd" type="checkbox" checked=pd}}</label>
+        <label>As PD set <Input @id="powPd" @type="checkbox" @checked={{pd}} /></label>
         {{#if pd}}
-          {{input type="text" value=newPdSet}}
+          <Input @type="text" @value={{newPdSet}} />
         {{/if}}
       </p>
       {{#if pd}}
@@ -46,7 +46,7 @@
     <form id="pdImportForm" class='properForm'>
     <ol>
       <li>
-      {{my-select content=model.pdSets optionLabelPath='label' prompt="Please select a PD set" action=(action (mut selectedPdSet))}}
+      <MySelect @content={{model.pdSets}} @optionLabelPath="label" @prompt="Please select a PD set" @action={{action (mut selectedPdSet)}} />
       </li>
     </ol>
     </form>
@@ -59,24 +59,24 @@
        <ol>
          <li>
            <label for="teacher">Teacher <em>*</em></label>
-           {{input id="teacher" type="text" value=teacher disabled=canEdit placeholder="enter username"}}
+           <Input @id="teacher" @type="text" @value={{teacher}} @disabled={{canEdit}} placeholder="enter username" />
          </li>
          <li>
            <label for="submitter">Submitter</label>
-           {{input id="submitter" type="text" value=submitter placeholder="enter username"}}
+           <Input @id="submitter" @type="text" @value={{submitter}} placeholder="enter username" />
          </li>
          <li>
            <label for="puzzle">Problem</label>
-           {{input id="puzzle" type="number" value=puzzId placeholder="enter number"}}
+           <Input @id="puzzle" @type="number" @value={{puzzId}} placeholder="enter number" />
          </li>
          <li>
            <label for="course">Class</label>
-           {{input id="course" type="number" value=course placeholder="enter ID"}}
+           <Input @id="course" @type="number" @value={{course}} placeholder="enter ID" />
          </li>
          <li style="border-bottom:2px dashed; padding:0.2em; text-align:center;">OR</li>
-         <li >
+         <li>
            <label for="subs">Submissions</label>
-           {{input id="subs" type="text" value=subs size="33" placeholder="one or more IDs" pattern="([0-9]+(,?))*"}}
+           <Input @id="subs" @type="text" @value={{subs}} @size="33" placeholder="one or more IDs" @pattern="([0-9]+(,?))*" />
           </li>
          </ol>
      </fieldset><br />
@@ -85,11 +85,11 @@
        <ol>
          <li>
            <label for="start">From</label>
-           {{input id="start" type="date" value=startDate placeholder="mm/dd/yyyy"}}
+           <Input @id="start" @type="date" @value={{startDate}} placeholder="mm/dd/yyyy" />
          </li>
          <li>
          <label for="end">To</label>
-         {{input id="end" type="date" value=endDate placeholder="mm/dd/yyyy"}}
+         <Input @id="end" @type="date" @value={{endDate}} placeholder="mm/dd/yyyy" />
          </li>
        </ol>
      </fieldset>
@@ -101,7 +101,7 @@
   <section class="third folders">
     <h2>Folders</h2>
     <p>Choose the folders you want to start off with.  You will be able to add/remove/reorder folders in each workspace once you get started.</p>
-    {{my-select content=model.folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action (mut selectedFolderSetId))}}
+    <MySelect @content={{model.folderSets}} @optionLabelPath="name" @prompt="Please select a folder set" @action={{action (mut selectedFolderSetId)}} />
   </section>
 
   <section class="third permissions">

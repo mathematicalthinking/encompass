@@ -1,6 +1,14 @@
-Encompass.LoadingDisplayService = Ember.Service.extend({
+import { later } from '@ember/runloop';
+import Service from '@ember/service';
 
-  handleLoadingMessage(context, eventType, triggerProperty, propToSet, timeout=500) {
+
+
+
+
+
+export default Service.extend({
+
+  handleLoadingMessage(context, eventType, triggerProperty, propToSet, timeout = 500) {
     if (context.get('isDestroyed') || context.get('isDestroying')) {
       return;
     }
@@ -20,7 +28,7 @@ Encompass.LoadingDisplayService = Ember.Service.extend({
       return;
     }
 
-    Ember.run.later(function() {
+    later(function () {
       if (context.isDestroyed || context.isDestroying) {
         return;
       }

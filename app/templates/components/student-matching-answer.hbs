@@ -8,22 +8,7 @@
     </div>
   </div>
   <div class="card-end">
-    {{selectize-input
-      store=store
-      inputId=selectizeInputId
-      maxItems=10
-      initialOptions=studentOptions
-      initialItems=initialStudentItems
-      onItemAdd=(action "updateSelectedIds")
-      onItemRemove=(action "updateSelectedIds")
-      labelField="username"
-      searchField="username"
-      valueField="id"
-      model="user"
-      placeholder="Search students by username"
-      create=(action "addStudentName")
-      createFilter=newNameFilter
-    }}
+    <SelectizeInput @store={{this.store}} @inputId={{selectizeInputId}} @maxItems={{10}} @initialOptions={{studentOptions}} @initialItems={{initialStudentItems}} @onItemAdd={{action "updateSelectedIds"}} @onItemRemove={{action "updateSelectedIds"}} @labelField="username" @searchField="username" @valueField="id" @model="user" @placeholder="Search students by username" @create={{action "addStudentName"}} @createFilter={{newNameFilter}} />
   </div>
 </div>
 

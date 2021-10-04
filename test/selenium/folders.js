@@ -27,7 +27,7 @@ describe('Folders', function() {
   });
 
   after(() => {
-    driver.quit();
+    return driver.quit();
   });
   describe('Visiting a ESI 2014 Wednesday Reflection', function() {
     before(async function() {
@@ -35,7 +35,7 @@ describe('Folders', function() {
         selector: 'table#folder_contents'
       };
 
-      await helpers.navigateAndWait(driver, `${host}/#/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`, options);
+      await helpers.navigateAndWait(driver, `${host}/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`, options);
     });
 
     it('should display the folder name', async function() {

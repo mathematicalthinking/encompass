@@ -1,4 +1,11 @@
-Encompass.PrivacySettingHelper = Ember.Helper.helper(function (setting) {
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (setting) {
   if (setting[0] === "M") {
     return 'Just Me';
   } else if (setting[0] === "O") {

@@ -1,5 +1,6 @@
 <div class="info-container">
-  <p class="info">Hi, {{currentUser.displayName}}! Thank you for signing up for EnCoMPASS with your google account. We just need a bit more information in order to authorize your account.</p>
+  <p class="info">Hi, {{currentUser.displayName}}! Thank you for signing up for EnCoMPASS with your google account. We
+    just need a bit more information in order to authorize your account.</p>
 </div>
 <div class="signup-box">
 
@@ -8,37 +9,35 @@
   <form class="form-signup">
     <div class="auth-form-input">
       <label for="organization">Institution, Organization, School or District Name:</label>
-      {{twitter-typeahead minLength=0 header=typeaheadHeader listName="orgs" dataList=organizations optionLabelPath="name" selectedValue=org setSelectedValueOnChange=true}}
+      <TwitterTypeahead @minLength={{0}} @header={{typeaheadHeader}} @listName="orgs" @dataList={{organizations}}
+        @optionLabelPath="name" @selectedValue={{org}} @setSelectedValueOnChange={{true}} />
     </div>
     <div class="auth-form-input">
       <label for="location">City and State:</label>
-        {{input class="form-control" type="text" name="location" id="location" value=location action="resetErrors" on="key-down"}}
+      <Input class="form-control" @type="text" @name="location" @id="location" @value={{location}} {{on "key-down"
+        this.resetErrors}} />
     </div>
     <div class="auth-form-input">
       <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
-        {{input class="form-control" type="text" name="requestReason" id="requestReason" value=requestReason action="resetErrors"
-      on="key-down"}}
+      <Input class="form-control" @type="text" @name="requestReason" @id="requestReason" @value={{requestReason}}
+        {{on "key-down" this.resetErrors}} />
       {{#if missingCredentials}}
-        <p class="error-message">You must complete all of the fields in order to signup.</p>
+      <p class="error-message">You must complete all of the fields in order to signup.</p>
       {{/if}}
     </div>
     <div id="checkbox">
-      {{input type="checkbox" id="terms" name="terms" checked=agreedToTerms click=(action "resetErrors")}}
+      <Input @type="checkbox" @id="terms" @name="terms" @checked={{agreedToTerms}} @click={{action "resetErrors" }} />
       <label for="terms">Do you accept our <a href="">Terms and Conditions</a></label>
     </div>
 
     <div class="terms-error">
       {{#if noTermsAndConditions}}
-        <p class="error-message">You must accept our Terms and Conditions.</p>
+      <p class="error-message">You must accept our Terms and Conditions.</p>
       {{/if}}
     </div>
-    <button class="auth-button" type="submit" {{action 'submit'}}>Submit</button>
+    <button class="auth-button" type="submit" {{action 'submit' }}>Submit</button>
   </form>
   {{#each updateUserErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+  <p class="error-message">{{error}}</p>
   {{/each}}
 </div>
-
-
-
-

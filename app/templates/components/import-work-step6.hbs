@@ -7,7 +7,7 @@
     <p class="input-label">Import Summary</p>
     {{#if uploadedAnswers}}
       <p class="success-info animated fadeIn"><b>{{submissionCount}} submissions</b> have successfully been created as answers for <b>{{selectedProblem.title}}</b></p>
-      <p class="info  animated fadeIn">You can create a workspace from these submissions {{#link-to 'workspaces.new'}}here{{/link-to}}</p>
+      <p class="info  animated fadeIn">You can create a workspace from these submissions <LinkTo @route="workspaces.new">here</LinkTo></p>
     {{else}}
       <p class="info"><b>{{submissionCount}} submissions</b> will be created in EnCoMPASS as answers for <b>{{selectedProblem.title}}</b></p>
       <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
@@ -103,7 +103,7 @@
     {{#if createdAssignment}}
       <p class="input-label">Created Assignment</p>
       <p class="success-info animated fadeIn"><b>{{createdAssignment.name}}</b> was successfully created.
-        View it {{#link-to 'assignment' createdAssignment}}here{{/link-to}}
+        View it <LinkTo @route="assignments.assignment" @model={{createdAssignment}}>here</LinkTo>
       </p>
     {{else}}
       <p class="input-label">Assignment to be created</p>

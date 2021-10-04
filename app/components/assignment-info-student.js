@@ -1,111 +1,94 @@
-Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  elementId: 'assignment-info-student',
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { later } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
 
-  utils: Ember.inject.service('utility-methods'),
+export default class AssignmentInfoStudentComponent extends ErrorHandlingComponent {
+  @service('utility-methods') utils;
+  @service store;
+  @tracked isResponding = false;
+  @tracked isRevising = false;
+  @tracked displayedAnswer = null;
+  @tracked loadAnswerErrors = [];
 
-  formattedDueDate: null,
-  formattedAssignedDate: null,
-  isResponding: false,
-  isRevising: false,
-  displayedAnswer: null,
-  loadAnswerErrors: [],
-
-  didReceiveAttrs() {
-    let assignment = this.get('assignment');
+  constructor() {
+    super(...arguments);
+    let assignment = this.args.assignment;
 
     if (assignment) {
-      if (this.get('displayedAnswer')) {
-        this.set('displayedAnswer', null);
+      if (this.displayedAnswer) {
+        this.displayedAnswer = null;
       }
 
       this.toggleResponse();
-
-      let dateTime = 'YYYY-MM-DD';
-      let dueDate = assignment.get('dueDate');
-      let assignedDate = assignment.get('assignedDate');
-
-      if (dueDate) {
-        this.set('formattedDueDate', moment(dueDate).format(dateTime));
-      }
-      if (assignedDate) {
-        this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
-      }
     }
-
-    this._super(...arguments);
-  },
-
-  workspacesToUpdateIds: function() {
-    return this.get('utils').getHasManyIds(this.get('assignment'), 'linkedWorkspaces');
-  }.property('assignment.linkedWorkspaces.[]'),
-
-  isComposing: function() {
-    return this.get('isRevising') || this.get('isResponding');
-  }.property('isRevising', 'isResponding'),
-
-  showReviseButton: function() {
-    return !this.get('isComposing') && this.get('sortedList.length') > 0;
-  }.property('isComposing', 'sortedList.[]'),
-
-  showRespondButton: function() {
-    return !this.get('isComposing') && this.get('sortedList.length') === 0;
-  }.property('isComposing', 'sortedList.[]'),
-
-  sortedList: function() {
-    if (!this.get('answerList')) {
-      return [];
-    }
-    return this.get('answerList').sortBy('createDate').reverse();
-  }.property('answerList.[]'),
-
-  priorAnswer: function() {
-    return this.get('sortedList').get('firstObject');
-  }.property('sortedList.[]'),
-
-  toggleResponse: function() {
-    if (this.get('isResponding')) {
-      this.set('isResponding', false);
-    } else if (this.get('isRevising')) {
-      this.set('isRevising', false);
-    }
-  },
-
-  actions: {
-    beginAssignmentResponse: function() {
-      this.set('isResponding', true);
-      Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
-      }, 100);
-    },
-
-    reviseAssignmentResponse: function() {
-      this.set('isRevising', true);
-
-      Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
-      }, 100);
-    },
-
-    toAnswerInfo: function(answer) {
-      this.sendAction('toAnswerInfo', answer);
-    },
-
-    displayAnswer: function(answer) {
-      this.set('displayedAnswer', answer);
-      Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
-      }, 100);
-    },
-
-    handleCreatedAnswer: function(answer) {
-      this.toggleResponse();
-      this.get('answerList').addObject(answer);
-    },
-
-    cancelResponse: function() {
-      this.toggleResponse();
-
-    },
   }
 
-});
+  get workspacesToUpdateIds() {
+    return this.utils.getHasManyIds(this.args.assignment, 'linkedWorkspaces');
+  }
+
+  get isComposing() {
+    return this.isRevising || this.isResponding;
+  }
+
+  get showReviseButton() {
+    return !this.isComposing && this.sortedList.length > 0;
+  }
+
+  get showRespondButton() {
+    return !this.isComposing && this.sortedList.length === 0;
+  }
+
+  get sortedList() {
+    if (!this.args.answerList) {
+      return [];
+    }
+    return this.args.answerList.sortBy('createDate').reverse();
+  }
+
+  get priorAnswer() {
+    return this.sortedList.get('firstObject');
+  }
+
+  toggleResponse() {
+    if (this.isResponding) {
+      this.isResponding = false;
+    } else if (this.isRevising) {
+      this.isRevising = false;
+    }
+  }
+
+  @action beginAssignmentResponse() {
+    this.isResponding = true;
+    later(() => {
+      $('html, body').animate({ scrollTop: $(document).height() });
+    }, 100);
+  }
+
+  @action reviseAssignmentResponse() {
+    this.isRevising = true;
+
+    later(() => {
+      $('html, body').animate({ scrollTop: $(document).height() });
+    }, 100);
+  }
+
+  @action displayAnswer(answer) {
+    this.displayedAnswer = answer;
+    later(() => {
+      $('html, body').animate({ scrollTop: $(document).height() });
+    }, 100);
+  }
+
+  @action handleCreatedAnswer(answer) {
+    this.toggleResponse();
+    this.args.answerList.addObject(answer);
+  }
+
+  @action cancelResponse() {
+    this.toggleResponse();
+  }
+}

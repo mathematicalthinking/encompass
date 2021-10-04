@@ -1,0 +1,54 @@
+<div class="login-box">
+
+  <img src="../assets/images/logo-encompass.gif" class="encompass-logo" alt="encompass logo">
+
+  <form class="form-signin">
+    <div class="auth-form-input">
+      {{#if this.missingCredentials}}
+      <ErrorBox @error="Incorrect username or password" @showDismiss={{true}} />
+      {{/if}}
+
+      <label for="username">Username:</label>
+      <Input class="form-control" @name="username" @id="username" @required={{true}} @type="text" @value={{this.username}}
+        {{on "keydown" this.resetErrors}} />
+
+      {{#if this.incorrectUsername}}
+      <ErrorBox @error="Incorrect Username" @showDismiss={{true}} />
+      {{/if}}
+    </div>
+
+    <div class="auth-form-input">
+      <label for="password">Password:</label>
+      <Input class="form-control" @name="password" @id="password" @required={{true}} @type="password" @value={{this.password}}
+        {{on "keydown" this.resetErrors}} />
+
+      {{#if this.incorrectPassword}}
+      <ErrorBox @error="Incorrect Password" @showDismiss={{true}} />
+      {{/if}}
+
+      {{#if this.oauthErrorMsg}}
+      <ErrorBox @error={{this.oauthErrorMsg}} @showDismiss={{true}} />
+      {{/if}}
+
+    </div>
+
+    <button class="auth-button" type="submit" {{action 'login' }}>Log In</button>
+    {{#each this.postErrors as |error|}}
+    <ErrorBox @error={{error}} @showDismiss={{true}} />
+    {{/each}}
+  </form>
+
+  <div class="bottom-info">
+    <p class="or">Or</p>
+
+    <SocialSignin />
+
+    <p class="signup-link" data-test="auth-signup"> New to EnCoMPASS? <LinkTo @route="auth.signup"
+        @classNames="signup-link">Sign up now</LinkTo>
+    </p>
+    <p class="forgot-link">Forgot Password? <LinkTo @route="auth.forgot" @classNames="forgot-link">Request password
+        reset</LinkTo>
+    </p>
+
+  </div>
+</div>

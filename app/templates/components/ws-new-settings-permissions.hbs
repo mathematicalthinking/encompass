@@ -6,27 +6,15 @@
 </p>
 
 <p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
-  {{selectize-input
-  store=store
-  inputId="collab-select"
-  maxItems=1
-  initialOptions=initialCollabOptions
-  selectedItemsHash=selectedCollaborators
-  onItemAdd=(action "setCollaborator")
-  onItemRemove=(action "setCollaborator")
-  labelField="username"
-  valueField="id"
-  searchField="username"
-  model="user"
-  placeholder="Search by username to add a collaborator"}}
+  <SelectizeInput @store={{this.store}} @inputId="collab-select" @maxItems={{1}} @initialOptions={{initialCollabOptions}} @selectedItemsHash={{selectedCollaborators}} @onItemAdd={{action "setCollaborator"}} @onItemRemove={{action "setCollaborator"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @placeholder="Search by username to add a collaborator" />
 
 {{#if selectedCollaborator}}
   <div class="global-permissions">
-    {{radio-group options=globalItems selectedValue=globalPermissionValue}}
+    <RadioGroup @options={{globalItems}} @selectedValue={{action "updateGlobalPermissionValue"}} />
     <p class="sub-input-label">You can set more custom permissions after you create the workspace</p>
 
     {{#if saveError}}
-      {{error-box error="Sorry, something went wrong. Please try again" showDismiss=true resetError=(action (mut saveError) null)}}
+      <ErrorBox @error="Sorry, something went wrong. Please try again" @showDismiss={{true}} @resetError={{action (mut saveError) null}} />
     {{/if}}
 
     <div class="button-container">

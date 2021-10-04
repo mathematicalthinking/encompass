@@ -1,74 +1,78 @@
-/*global _:false */
-Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  classNames: ['problem-list-item'],
-  classNameBindings: ['isPublic', 'isPrivate', 'isOrg', 'isPows'],
-  privacySetting: Ember.computed.alias('problem.privacySetting'),
-  puzzleId: Ember.computed.alias('problem.puzzleId'),
-  alert: Ember.inject.service('sweet-alert'),
-  permissions: Ember.inject.service('problem-permissions'),
-  canEdit: Ember.computed.alias('writePermissions.canEdit'),
-  canDelete: Ember.computed.alias('writePermissions.canDelete'),
-  canAssign: Ember.computed.alias('writePermissions.canAssign'),
-  recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
-  iconFillOptions: {
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import _ from 'underscore';
+import { inject as service } from '@ember/service';
+
+export default class ProblemListItemComponent extends Component {
+  @tracked showAdminStatusMenu = false;
+  @tracked showMoreMenu = false;
+  @tracked savedProblem = null;
+  get privacySetting() {
+    return this.args.problem.privacySetting;
+  }
+  get puzzleId() {
+    return this.args.problem.puzzleId;
+  }
+  @service('sweet-alert') alert;
+  @service('problem-permissions') permissions;
+  @service router;
+  @service store;
+  get writePermissions() {
+    return this.permissions.writePermissions(this.args.problem);
+  }
+  iconFillOptions = {
     approved: '#35A853',
     pending: '#FFD204',
-    flagged: '#EB5757'
-  },
-  flagOptions: {
-    'inappropiate': 'Inappropriate Content',
-    'ip': 'Intellectual Property Concern',
-    'substance': 'Lacking Substance',
-    'other': 'Other Reason'
-  },
+    flagged: '#EB5757',
+  };
+  flagOptions = {
+    inappropiate: 'Inappropriate Content',
+    ip: 'Intellectual Property Concern',
+    substance: 'Lacking Substance',
+    other: 'Other Reason',
+  };
 
-  didReceiveAttrs: function () {
-    let problem = this.get('problem');
-    this.set('writePermissions', this.get('permissions').writePermissions(problem));
-  },
+  get isPublic() {
+    return this.privacySetting === 'E';
+  }
 
-  isPublic: function() {
-    return this.get('privacySetting') === 'E';
-  }.property('problem.privacySetting'),
+  get isOrg() {
+    return this.privacySetting === 'O';
+  }
 
-  isOrg: function() {
-    return this.get('privacySetting') === 'O';
-  }.property('problem.privacySetting'),
+  get isPrivate() {
+    return this.privacySetting === 'M';
+  }
 
-  isPrivate: function() {
-    return this.get('privacySetting') === 'M';
-  }.property('problem.privacySetting'),
+  get isPows() {
+    return this.puzzleId !== null && this.puzzleId !== undefined;
+  }
 
-  isPows: function() {
-    return this.get('puzzleId') !== null && this.get('puzzleId') !== undefined;
-  }.property('problem.puzzleId'),
+  get statusIconFill() {
+    let status = this.args.problem.status;
 
-  statusIconFill: function() {
-    let status = this.get('problem.status');
+    return this.iconFillOptions[status];
+  }
 
-    return this.get('iconFillOptions')[status];
-  }.property('problem.status'),
-
-  isRecommended: function () {
-    let problem = this.get('problem');
-    let recommendedProblems = this.get('recommendedProblems') || [];
+  get isRecommended() {
+    let problem = this.args.problem;
+    let recommendedProblems = this.args.recommendedProblems || [];
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
       return false;
     }
-  }.property('problem.id', 'recommendedProblems.[]'),
+  }
 
-
-
-  ellipsisMenuOptions: function() {
-    let canDelete = this.get('canDelete');
-    let canAssign = this.get('canAssign');
-    let moreMenuOptions = this.get('moreMenuOptions');
-    let isAdmin = this.get('currentUser.isAdmin');
+  get ellipsisMenuOptions() {
+    let canDelete = this.writePermissions.canDelete;
+    let canAssign = this.writePermissions.canAssign;
+    let moreMenuOptions = this.args.moreMenuOptions;
+    let isAdmin = this.args.currentUser.isAdmin;
     let options = moreMenuOptions.slice();
-    let status = this.get('problem.status');
-    let deleted = this.get('problem.isTrashed');
+    let status = this.args.problem.status;
+    let deleted = this.args.problem.isTrashed;
 
     if (!canDelete) {
       // dont show delete or edit option
@@ -95,7 +99,7 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       options = _.filter(options, (option) => {
         return !option.adminOnly;
       });
-      if (status === "approved") {
+      if (status === 'approved') {
         options = _.filter(options, (option) => {
           return !_.contains(['assign'], option.value);
         });
@@ -122,252 +126,328 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     }
 
     return options;
-  }.property('problem.id', 'problem.status'),
+  }
 
-
-  actionButton: function () {
+  get actionButton() {
     let actionBtn = {};
-    let isAdmin = this.get('currentUser.isAdmin');
-    let isPdAdmin = this.get('currentUser.isPdAdmin');
-    let problem = this.get('problem');
+    let isAdmin = this.args.currentUser.isAdmin;
+    let isPdAdmin = this.args.currentUser.isPdAdmin;
+    let problem = this.args.problem;
 
     if (isAdmin) {
-      if (problem.get('isTrashed')) {
-        actionBtn.function = "restoreProblem";
-        actionBtn.name = "Restore";
+      if (problem.isTrashed) {
+        actionBtn.function = 'restoreProblem';
+        actionBtn.name = 'Restore';
       } else {
-        actionBtn.function = "confirmStatusUpdate";
+        actionBtn.function = 'confirmStatusUpdate';
         if (problem.get('status') === 'approved') {
-          actionBtn.name = "Flag";
-          actionBtn.argument1 = "title";
-          actionBtn.argument2 = "flagged";
+          actionBtn.name = 'Flag';
+          actionBtn.argument1 = 'title';
+          actionBtn.argument2 = 'flagged';
         } else {
-          actionBtn.name = "Approve";
-          actionBtn.argument1 = "title";
-          actionBtn.argument2 = "approved";
+          actionBtn.name = 'Approve';
+          actionBtn.argument1 = 'title';
+          actionBtn.argument2 = 'approved';
         }
       }
     } else {
       if (isPdAdmin) {
-        if (problem.get('privacySetting') !== "E" && problem.get('status') !== 'approved') {
-          actionBtn.function = "confirmStatusUpdate";
-          actionBtn.name = "Approve";
-          actionBtn.argument1 = "title";
-          actionBtn.argument2 = "approved";
+        if (
+          problem.get('privacySetting') !== 'E' &&
+          problem.get('status') !== 'approved'
+        ) {
+          actionBtn.function = 'confirmStatusUpdate';
+          actionBtn.name = 'Approve';
+          actionBtn.argument1 = 'title';
+          actionBtn.argument2 = 'approved';
         } else {
           if (problem.get('status') !== 'flagged') {
-            actionBtn.function = "assignProblem";
-            actionBtn.name = "Assign";
+            actionBtn.function = 'assignProblem';
+            actionBtn.name = 'Assign';
           } else {
-            actionBtn.function = "addToMyProblems";
-            actionBtn.name = "Copy";
+            actionBtn.function = 'addToMyProblems';
+            actionBtn.name = 'Copy';
           }
         }
       } else {
-        actionBtn.function = "assignProblem";
-        actionBtn.name = "Assign";
+        actionBtn.function = 'assignProblem';
+        actionBtn.name = 'Assign';
       }
     }
     return actionBtn;
-  }.property('problem.isTrashed', 'problem.status', 'problem.privacySetting'),
+  }
 
-
-  actions: {
-    showStatusOptions() {
-      this.set('showAdminStatusMenu', true);
-    },
-    toggleShowMoreMenu() {
-      let isShowing = this.get('showMoreMenu');
-      this.set('showMoreMenu', !isShowing);
-    },
-    confirmStatusUpdate(record, displayKey, value) {
-      let action;
-      let display;
-      if (value === 'approved') {
-        action = 'approve it';
-      } else if (value === 'flagged') {
-        action = 'flag it';
-      } else {
-        action = 'mark as pending';
-      }
-      display = record.get(displayKey);
-      this.get('alert').showModal('warning', `Are you sure you want to mark ${display} as ${value}`, null, `Yes, ${action}`)
+  @action showStatusOptions() {
+    this.showAdminStatusMenu = true;
+  }
+  @action toggleShowMoreMenu() {
+    let isShowing = this.showMoreMenu;
+    this.showMoreMenu = !isShowing;
+  }
+  @action confirmStatusUpdate(record, displayKey, value) {
+    let action;
+    let display;
+    if (value === 'approved') {
+      action = 'approve it';
+    } else if (value === 'flagged') {
+      action = 'flag it';
+    } else {
+      action = 'mark as pending';
+    }
+    display = record.get(displayKey);
+    this.alert
+      .showModal(
+        'warning',
+        `Are you sure you want to mark ${display} as ${value}`,
+        null,
+        `Yes, ${action}`
+      )
       .then((result) => {
         if (result.value) {
           if (value === 'flagged') {
-            this.get('alert').showPromptSelect('Flag Reason', this.get('flagOptions'), 'Select a reason')
-            .then((result) => {
-              if (result.value) {
-                if (result.value === 'other') {
-                  this.get('alert').showPrompt('text', 'Other Flag Reason', 'Please provide a brief explanation for why this problem should be flagged.', 'Flag')
-                  .then((result) => {
-                    if (result.value) {
-                      this.send('updateStatus', record, value, displayKey, result.value);
-                    }
-                  });
-                } else {
-                  this.send('updateStatus', record, value, displayKey, result.value);
+            this.alert
+              .showPromptSelect(
+                'Flag Reason',
+                this.flagOptions,
+                'Select a reason'
+              )
+              .then((result) => {
+                if (result.value) {
+                  if (result.value === 'other') {
+                    this.alert
+                      .showPrompt(
+                        'text',
+                        'Other Flag Reason',
+                        'Please provide a brief explanation for why this problem should be flagged.',
+                        'Flag'
+                      )
+                      .then((result) => {
+                        if (result.value) {
+                          this.updateStatus(
+                            record,
+                            value,
+                            displayKey,
+                            result.value
+                          );
+                        }
+                      });
+                  } else {
+                    this.updateStatus(record, value, displayKey, result.value);
+                  }
                 }
-              }
-            });
+              });
           } else {
-            this.send('updateStatus', record, value, displayKey);
-
+            this.updateStatus(record, value, displayKey);
           }
         }
       });
-    },
-    updateStatus(record, value, displayKey, reason) {
-      let msg;
-      let display = record.get(displayKey);
-      if (value === 'flagged' || value === 'approved') {
-        msg = `${display} ${value}`;
-      } else if (value === 'pending') {
-        msg = `${display} marked as ${value}`;
-      }
-      if (value === 'approved') {
-        record.set('flagReason', null);
-      }
-      record.set('status', value);
-      if (reason) {
-        let flagReason = {
-          flaggedBy: this.get('currentUser.id'),
-          reason: reason,
-          flaggedDate: new Date(),
-        };
-        record.set('flagReason', flagReason);
-      }
-      record.save()
+  }
+  @action updateStatus(record, value, displayKey, reason) {
+    let msg;
+    let display = record.get(displayKey);
+    if (value === 'flagged' || value === 'approved') {
+      msg = `${display} ${value}`;
+    } else if (value === 'pending') {
+      msg = `${display} marked as ${value}`;
+    }
+    if (value === 'approved') {
+      record.set('flagReason', null);
+    }
+    record.set('status', value);
+    if (reason) {
+      let flagReason = {
+        flaggedBy: this.args.currentUser.id,
+        reason: reason,
+        flaggedDate: new Date(),
+      };
+      record.set('flagReason', flagReason);
+    }
+    record
+      .save()
       .then((record) => {
-        this.get('alert').showToast('success', msg, 'bottom-end', 5000, false, null);
-        if (this.get('showMoreMenu')) {
-          this.set('showMoreMenu', false);
+        this.alert.showToast('success', msg, 'bottom-end', 5000, false, null);
+        if (this.showMoreMenu) {
+          this.showMoreMenu = false;
         }
       })
       .catch((err) => {
         let message = err.errors[0].detail;
-          this.get('alert').showToast('error', `${message}`, 'bottom-end', 4000, false, null);
-          this.handleErrors(err, 'flagErrors', record);
+        this.alert.showToast(
+          'error',
+          `${message}`,
+          'bottom-end',
+          4000,
+          false,
+          null
+        );
+        this.handleErrors(err, 'flagErrors', record);
       });
-
-    },
-    reportProblem() {
-      this.send('confirmStatusUpdate', this.get('problem'), 'title', 'flagged');
-    },
-    restoreProblem: function () {
-      let problem = this.get('problem');
-      this.get('alert').showModal('warning', 'Are you sure you want to restore this problem?', null, 'Yes, restore')
+  }
+  @action reportProblem() {
+    this.confirmStatusUpdate(this.args.problem, 'title', 'flagged');
+  }
+  @action restoreProblem() {
+    let problem = this.args.problem;
+    this.alert
+      .showModal(
+        'warning',
+        'Are you sure you want to restore this problem?',
+        null,
+        'Yes, restore'
+      )
       .then((result) => {
         if (result.value) {
           problem.set('isTrashed', false);
           problem.save().then(() => {
-            this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
-            this.get('refreshList')();
+            this.alert.showToast(
+              'success',
+              'Problem Restored',
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+            this.args.refreshList();
           });
         }
       });
-    },
-    deleteProblem: function () {
-      let problem = this.get('problem');
-      this.get('alert').showModal('warning', 'Are you sure you want to delete this problem?', null, 'Yes, delete it')
+  }
+  @action deleteProblem() {
+    let problem = this.args.problem;
+    this.alert
+      .showModal(
+        'warning',
+        'Are you sure you want to delete this problem?',
+        null,
+        'Yes, delete it'
+      )
       .then((result) => {
         if (result.value) {
           problem.set('isTrashed', true);
           // this.sendAction('toProblemList');
-          problem.save().then((problem) => {
-            if (this.get('showMoreMenu')) {
-              this.set('showMoreMenu', false);
-            }
-            this.get('alert').showToast('success', 'Problem Deleted', 'bottom-end', 5000, true, 'Undo')
-            .then((result) => {
-              if (result.value) {
-                problem.set('isTrashed', false);
-                problem.save().then(() => {
-                  this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
-                  // window.history.back();
-                });
+          problem
+            .save()
+            .then((problem) => {
+              if (this.showMoreMenu) {
+                this.showMoreMenu = false;
               }
+              this.alert
+                .showToast(
+                  'success',
+                  'Problem Deleted',
+                  'bottom-end',
+                  5000,
+                  true,
+                  'Undo'
+                )
+                .then((result) => {
+                  if (result.value) {
+                    problem.set('isTrashed', false);
+                    problem.save().then(() => {
+                      this.alert.showToast(
+                        'success',
+                        'Problem Restored',
+                        'bottom-end',
+                        3000,
+                        false,
+                        null
+                      );
+                      // window.history.back();
+                    });
+                  }
+                });
+            })
+            .catch((err) => {
+              this.handleErrors(err, 'updateProblemErrors', problem);
             });
-          }).catch((err) => {
-            this.handleErrors(err, 'updateProblemErrors', problem);
-          });
         }
       });
-    },
-    assignProblem() {
-      // this.set('creatingAssignment', true);
-      // send to parent to handle?
-      let problem = this.get('problem');
-      problem.set('isForAssignment', true);
-      this.send('toProblemInfo', problem);
-
-    },
-    editProblem() {
-      // send to parent to handle?
-      let problem = this.get('problem');
-      problem.set('isForEdit', true);
-      this.send('toProblemInfo', problem);
-    },
-
-
-    addToMyProblems: function () {
-      let problem = this.get('problem');
-      let originalTitle = problem.get('title');
-      let title = 'Copy of ' + originalTitle;
-      let text = problem.get('text');
-      let author = problem.get('author');
-      let additionalInfo = problem.get('additionalInfo');
-      let isPublic = problem.get('isPublic');
-      let image = problem.get('image');
-      let imageUrl = problem.get('imageUrl');
-      let createdBy = this.get('currentUser');
-      let categories = problem.get('categories');
-      let status = problem.get('status');
-      let currentUser = this.get('currentUser');
-      let keywords = problem.get('keywords');
-      let organization = currentUser.get('organization');
-      let copyright = problem.get('copyrightNotice');
-      let sharingAuth = problem.get('sharingAuth');
-
-      let newProblem = this.store.createRecord('problem', {
-        title: title,
-        text: text,
-        author: author,
-        additionalInfo: additionalInfo,
-        imageUrl: imageUrl,
-        isPublic: isPublic,
-        origin: problem,
-        categories: categories,
-        createdBy: createdBy,
-        image: image,
-        organization: organization,
-        privacySetting: "M",
-        copyrightNotice: copyright,
-        sharingAuth: sharingAuth,
-        status: status,
-        createDate: new Date(),
-        keywords: keywords
-      });
-
-      newProblem.save()
-        .then((problem) => {
-          let name = problem.get('title');
-          this.set('savedProblem', problem);
-          this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
-          this.get('refreshList')();
-        }).catch((err) => {
-          this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
-          // this.handleErrors(err, 'createRecordErrors', newProblem);
-        });
-    },
-
-    toProblemInfo(problem) {
-      this.get('toProblemInfo')(problem);
-    },
-    makePending() {
-      this.send('confirmStatusUpdate', this.get('problem'), 'title', 'pending');
-    }
+  }
+  @action assignProblem() {
+    // this.set('creatingAssignment', true);
+    // send to parent to handle?
+    let problem = this.args.problem;
+    problem.set('isForAssignment', true);
+    this.router.transitionTo('problems.problem', problem.id);
+  }
+  @action editProblem() {
+    // send to parent to handle?
+    let problem = this.args.problem;
+    problem.set('isForEdit', true);
+    this.router.transitionTo('problems.problem', problem.id);
   }
 
+  @action addToMyProblems() {
+    let problem = this.args.problem;
+    let originalTitle = problem.title;
+    let title = 'Copy of ' + originalTitle;
+    let text = problem.text;
+    let author = problem.author;
+    let additionalInfo = problem.additionalInfo;
+    let isPublic = problem.isPublic;
+    let image = problem.image;
+    let imageUrl = problem.imageUrl;
+    let createdBy = this.args.currentUser;
+    let categories = problem.categories;
+    let status = problem.status;
+    let currentUser = this.args.currentUser;
+    let keywords = problem.keywords;
+    let organization = currentUser.get('organization');
+    let copyright = problem.copyrightNotice;
+    let sharingAuth = problem.sharingAuth;
 
-});
+    let newProblem = this.store.createRecord('problem', {
+      title: title,
+      text: text,
+      author: author,
+      additionalInfo: additionalInfo,
+      imageUrl: imageUrl,
+      isPublic: isPublic,
+      origin: problem,
+      categories: categories,
+      createdBy: createdBy,
+      image: image,
+      organization: organization,
+      privacySetting: 'M',
+      copyrightNotice: copyright,
+      sharingAuth: sharingAuth,
+      status: status,
+      createDate: new Date(),
+      keywords: keywords,
+    });
+
+    newProblem
+      .save()
+      .then((problem) => {
+        let name = problem.get('title');
+        this.avedProblem = problem;
+        this.alert.showToast(
+          'success',
+          `${name} added to your problems`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        this.args.refreshList();
+      })
+      .catch((err) => {
+        this.alert.showToast(
+          'error',
+          `${err}`,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        // this.handleErrors(err, 'createRecordErrors', newProblem);
+      });
+  }
+
+  @action toProblemInfo(problem) {
+    this.router.transitionTo('problems.problem', problem.id);
+  }
+  @action makePending() {
+    this.confirmStatusUpdate(this.args.problem, 'title', 'pending');
+  }
+}

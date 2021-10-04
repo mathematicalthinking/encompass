@@ -4,17 +4,7 @@
       <h2>Summary</h2>
       <ul class="primary-filter-list">
         {{#each detailsItems as |item|}}
-          {{details-list-item
-          label = item.label
-          displayValue = item.displayValue
-          emptyValue = item.emptyValue
-          propName = item.propName
-          children = item.children
-          isArray = item.isArray
-          editValue = (action "goToStep")
-          associatedStep=item.associatedStep
-          currentStep=currentStep.value
-          }}
+          <DetailsListItem @label={{item.label}} @displayValue={{item.displayValue}} @emptyValue={{item.emptyValue}} @propName={{item.propName}} @children={{item.children}} @isArray={{item.isArray}} @editValue={{action "goToStep"}} @associatedStep={{item.associatedStep}} @currentStep={{currentStep.value}} />
         {{/each}}
       </ul>
     </div>
@@ -52,38 +42,38 @@
 
       <div class="step-content">
         {{#if showSelectProblem}}
-          {{import-work-step1 store=store selectedProblem=selectedProblem onProceed=(action "setSelectedProblem")}}
+          <ImportWorkStep1 @store={{this.store}} @selectedProblem={{selectedProblem}} @onProceed={{action "setSelectedProblem"}} />
         {{/if}}
 
         {{#if showSelectClass}}
-          {{import-work-step2 store=store selectedSection=selectedSection selectedValue=selectedValue onBack=(action "changeStep") onProceed=(action "setSelectedSection")}}
+          <ImportWorkStep2 @store={{this.store}} @selectedSection={{selectedSection}} @selectedValue={{selectedValue}} @onBack={{action "changeStep"}} @onProceed={{action "setSelectedSection"}} />
         {{/if}}
 
         {{#if showUploadFiles}}
-          {{import-work-step3 store=store selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setUploadedFiles") existingAnswers=answers uploadedFiles=uploadedFiles}}
+          <ImportWorkStep3 @store={{this.store}} @selectedProblem={{selectedProblem}} @selectedSection={{selectedSection}} @onBack={{action "changeStep"}} @onProceed={{action "setUploadedFiles"}} @existingAnswers={{answers}} @uploadedFiles={{uploadedFiles}} />
         {{/if}}
 
         {{#if showMatchStudents}}
-          {{import-work-step4  store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem studentMap=studentMap selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setMatchedStudents")}}
+          <ImportWorkStep4 @store={{this.store}} @uploadedFiles={{uploadedFiles}} @answers={{answers}} @selectedProblem={{selectedProblem}} @studentMap={{studentMap}} @selectedSection={{selectedSection}} @onBack={{action "changeStep"}} @onProceed={{action "setMatchedStudents"}} />
         {{/if}}
 
         {{#if showCreateWs}}
-          {{import-work-step5 users=users selectedOwner=selectedOwner selectedFolderSet=selectedFolderSet createAssignmentValue=createAssignmentValue doCreateWs=doCreateWs selectedMode=selectedMode folderSets=folderSets store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName onBack=(action "changeStep") onProceed=(action "prepareReview")}}
+          <ImportWorkStep5 @currentUser={{this.currentUser.user}} @users={{users}} @selectedOwner={{selectedOwner}} @selectedFolderSet={{selectedFolderSet}} @createAssignmentValue={{createAssignmentValue}} @doCreateWs={{doCreateWs}} @selectedMode={{selectedMode}} @folderSets={{folderSets}} @store={{this.store}} @uploadedFiles={{uploadedFiles}} @answers={{answers}} @selectedProblem={{selectedProblem}} @selectedSection={{selectedSection}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @assignmentName={{assignmentName}} @onBack={{action "changeStep"}} @onProceed={{action "prepareReview"}} />
         {{/if}}
 
         {{#if showReview}}
-          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection submissionCount=submissionCount workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName savingAssignment=savingAssignment isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers createdWorkspace=createdWorkspace createdAssignment=createdAssignment onBack=(action "changeStep") onProceed=(action "importWork")}}
+          <ImportWorkStep6 @store={{this.store}} @uploadedFiles={{uploadedFiles}} @answers={{answers}} @selectedProblem={{selectedProblem}} @selectedSection={{selectedSection}} @submissionCount={{submissionCount}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @assignmentName={{assignmentName}} @savingAssignment={{savingAssignment}} @isUploadingAnswer={{isUploadingAnswer}} @isCreatingWorkspace={{isCreatingWorkspace}} @uploadedAnswers={{uploadedAnswers}} @createdWorkspace={{createdWorkspace}} @createdAssignment={{createdAssignment}} @onBack={{action "changeStep"}} @onProceed={{action "importWork"}} />
         {{/if}}
       </div>
 
     {{#each findRecordErrors as |error|}}
-      {{error-box error=error showDismiss=true}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
     {{#each postErrors as |error|}}
-      {{error-box error=error showDismiss=true}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
     {{#each createAnswerErrors as |error|}}
-      {{error-box error=error showDismiss=true}}
+      <ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
     </div>
   </div>

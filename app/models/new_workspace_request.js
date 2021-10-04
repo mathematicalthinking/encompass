@@ -1,5 +1,7 @@
-Encompass.NewWorkspaceRequest = DS.Model.extend(Encompass.Auditable, {
-  pdSetName: DS.attr('string'),
-  folderSetName: DS.attr('string'),
-  result: DS.belongsTo('workspace')
-});
+import { attr, belongsTo } from '@ember-data/model';
+import Auditable from './auditable';
+export default class NewWorkspaceRequestModel extends Auditable {
+  @attr('string') pdSetName;
+  @attr('string') folderSetName;
+  @belongsTo('workspace') result;
+}

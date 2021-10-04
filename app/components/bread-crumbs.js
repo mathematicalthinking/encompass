@@ -1,65 +1,54 @@
-Encompass.BreadCrumbsComponent = Ember.Component.extend({
-  classNames: ['bread-crumbs-comp'],
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
-  doTruncate: true,
-  infoToolTipPosition: "top",
-  
-  infoToolTipText: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
+export default class BreadCrumbsComponent extends Component {
+  @tracked doTruncate = true;
 
-  didReceiveAttrs() {
-    this._super(...arguments);
-  },
-
-  lastItemValue: function() {
-    return this.get('itemsList.length') - 1 || 1;
-  }.property('itemsList.length'),
-
-  itemsList: function() {
-    return this.get('items') || [];
-  }.property('items.[]'),
-
-  areManyItems: function() {
-    let num = this.get('manyItemsNum');
-    if (typeof num !== 'number') {
-      num = 10;
-    }
-    return this.get('itemsList.length') >= num;
-  }.property('manyItemsNum', 'itemsList.length'),
-
-  showTruncatedView: function() {
-    return this.get('doTruncate') && this.get('areManyItems');
-  }.property('areManyItems', 'doTruncate'),
-
-  starredItemsList: function() {
-    return this.get('starredItems') || [];
-  }.property('starredItems.[]'),
-
-  itemsLabelText: function() {
-    return this.get('labelText') || 'Rev.';
-  }.property('labelText'),
-
-  showInfoToolTip: function() {
-    let text = this.get('infoToolTipText');
-    return typeof text === 'string' && text.length > 0;
-  }.property('infoToolTipText'),
-
-  toolTipClassNames: function() {
-    let position = this.get('infoToolTipPosition') || 'bottom';
-    return `info-text-tip simptip-position-${position} simptip-multiline simptip-smooth`;
-  }.property('infoToolTipPosition'),
-
-  actions: {
-    onItemSelect: function(item) {
-      if (!item) {
-        return;
-      }
-      this.get('onSelect')(item);
-    },
-    showAllItems() {
-      this.set('doTruncate', false);
-    },
-    collapse() {
-      this.set('doTruncate', true);
-    }
+  get lastItemValue() {
+    return this.itemsList.length - 1 || 1;
   }
-});
+
+  get itemsList() {
+    return this.args.items || [];
+  }
+
+  get areManyItems() {
+    return this.itemsList.length >= 10;
+  }
+
+  get showTruncatedView() {
+    return this.doTruncate && this.areManyItems;
+  }
+
+  get starredItemsList() {
+    return this.args.starredItems || [];
+  }
+
+  get itemsLabelText() {
+    return this.args.labelText || 'Rev.';
+  }
+
+  get showInfoToolTip() {
+    let text = this.args.infoToolTipText;
+    return typeof text === 'string' && text.length > 0;
+  }
+
+  get toolTipClassNames() {
+    let position = this.args.infoToolTipPosition || 'bottom';
+    return `info-text-tip simptip-position-${position} simptip-multiline simptip-smooth`;
+  }
+
+  @action onItemSelect(item) {
+    if (!item) {
+      return;
+    }
+    this.args.onSelect(item);
+  }
+  @action showAllItems() {
+    this.doTruncate = false;
+  }
+  @action collapse() {
+    this.doTruncate = true;
+  }
+}

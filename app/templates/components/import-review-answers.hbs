@@ -8,18 +8,18 @@
       <ol>
         <li>
           <label for="createWorkspace">Do not create workspace</label>
-          {{input type="checkbox" name="createWorkspace" checked=doNotCreateWorkspace}}
+          <Input @type="checkbox" @name="createWorkspace" @checked={{doNotCreateWorkspace}} />
         </li>
 
 
         {{#unless doNotCreateWorkspace}}
         <li>
           <label for="name">Workspace Name</label>
-          {{input id="requestedName" type="text" value=requestedName}}
+          <Input @id="requestedName" @type="text" @value={{requestedName}} />
         </li>
         <li>
           <label for="folders">Folders</label>
-          {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action (mut selectedFolderSet))}}
+          <MySelect @content={{folderSets}} @optionLabelPath="name" @prompt="Please select a folder set" @action={{action (mut selectedFolderSet)}} />
         </li>
 
 

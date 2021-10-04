@@ -1,137 +1,167 @@
-Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  elementId: 'section-info',
-  className: ['section-info'],
-  alert: Ember.inject.service('sweet-alert'),
-  utils: Ember.inject.service('utility-methods'),
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { later } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
 
-  removeTeacherError: null,
-  isEditingStudents: false,
-  isEditingTeachers: false,
-  organization: null,
-  studentList: null,
-  teacherList: null,
-  showAssignment: false,
-  problemList: null,
-  sectionList: [],
-  sectionToDelete: null,
-  pending: '<p>Loading results...</p>',
-  notFound: '<p>No matching users.</p>',
-  dataLoadErrors: [],
-  updateSectionErrors: [],
-  updateTeacherErrors: [],
-  updateStudentErrors: [],
-  queryErrors: [],
-  findRecordErrors: [],
-  problemLoadErrors: [],
-
-  init: function () {
-    this._super(...arguments);
-    return this.setSectionAttributes().then(() => {
+export default class SectionInfoComponent extends ErrorHandlingComponent {
+  @service('sweet-alert') alert;
+  @service('utility-methods') utils;
+  @service router;
+  @service store;
+  @tracked removeTeacherError = null;
+  @tracked isEditingStudents = false;
+  @tracked isEditingTeachers = false;
+  @tracked organization = null;
+  @tracked studentList = null;
+  @tracked teacherList = null;
+  @tracked showAssignment = false;
+  @tracked problemList = null;
+  @tracked sectionList = [];
+  @tracked dataLoadErrors = [];
+  @tracked updateSectionErrors = [];
+  @tracked updateTeacherErrors = [];
+  @tracked updateStudentErrors = [];
+  @tracked queryErrors = [];
+  @tracked findRecordErrors = [];
+  @tracked problemLoadErrors = [];
+  @tracked addGroup = false;
+  @tracked isEditingName = false;
+  get groupedStudents() {
+    return this.args.groups
+      .toArray()
+      .filter((group) => !group.isTrashed)
+      .map((group) => group.students.toArray().map((student) => student.id))
+      .flat();
+  }
+  get selectableStudents() {
+    return this.args.students.map((student) => {
+      let data = { username: student.username, id: student.id };
+      if (this.groupedStudents.includes(student.id)) {
+        data.username += ' ✅';
+      }
+      return data;
     });
+  }
+  @tracked newGroup = {
+    name: '',
+    section: null,
+    students: [],
+  };
 
-  },
+  constructor() {
+    super(...arguments);
+    this.setSectionAttributes();
+  }
 
-  didReceiveAttrs: function () {
-    let section = this.get('currentSection');
-    let didSectionChange = !Ember.isEqual(section, this.section);
-    this.set('isEditing', false);
-    this.set('isAddingTeacher', false);
+  // didReceiveAttrs() {
+  //   let section = this.currentSection;
+  //   let didSectionChange = !isEqual(section, this.args.section);
+  //   this.isAddingTeacher = false;
 
-    if (didSectionChange) {
-      if (this.get('isEditingStudents')) {
-        this.set('isEditingStudents', false);
-      }
+  //   if (didSectionChange) {
+  //     if (this.isEditingStudents) {
+  //       this.isEditingStudents = false;
+  //     }
 
-      if (this.get('isEditingTeachers')) {
-        this.set('isEditingTeachers', false);
-      }
-      return this.setSectionAttributes();
-    }
-  },
+  //     if (this.isEditingTeachers) {
+  //       this.isEditingTeachers = false;
+  //     }
+  //     return this.setSectionAttributes();
+  //   }
+  // }
 
-  setSectionAttributes: function () {
-    let section = this.get('section');
-    this.set('currentSection', section);
+  setSectionAttributes() {
+    let section = this.args.section;
+    this.currentSection = section;
     return Promise.resolve(section.get('students'))
       .then((students) => {
-        this.set('studentList', students);
+        this.studentList = students;
         return section.get('teachers');
       })
       .then((teachers) => {
-        this.set('teacherList', teachers);
+        this.teacherList = teachers;
         return section.get('organization');
       })
       .then((org) => {
-        this.set('organization', org);
+        this.organization = org;
       })
       .catch((err) => {
         this.handleErrors(err, 'dataLoadErrors');
       });
-  },
+  }
 
-  canEdit: function() {
+  get canEdit() {
     // can only edit if created section, admin, pdadmin, or teacher
 
-    if (this.get('currentUser.isStudent')) {
+    if (this.args.currentUser.isStudent) {
       return false;
     }
-    if (this.get('currentUser.isAdmin')) {
+    if (this.args.currentUser.isAdmin) {
       return true;
     }
-    let creatorId = this.get('utils').getBelongsToId(this.get('section'), 'createdBy');
+    let creatorId = this.utils.getBelongsToId(this.args.section, 'createdBy');
 
-    if (creatorId === this.get('currentUser.id')) {
-      return true;
-    }
-
-    let teacherIds = this.get('section').hasMany('teachers').ids();
-    if (teacherIds.includes(this.get('currentUser.id'))) {
+    if (creatorId === this.args.currentUser.id) {
       return true;
     }
 
-    if (this.get('currentUser.isPdAdmin')) {
-      let sectionOrgId = this.get('utils').getBelongsToId(this.get('section'), 'organization');
-      let userOrgId = this.get('utils').getBelongsToId(this.get('currentUser'), 'organization');
+    let teacherIds = this.args.section.hasMany('teachers').ids();
+    if (teacherIds.includes(this.args.currentUser.id)) {
+      return true;
+    }
+
+    if (this.args.currentUser.isPdAdmin) {
+      let sectionOrgId = this.utils.getBelongsToId(
+        this.args.section,
+        'organization'
+      );
+      let userOrgId = this.utils.getBelongsToId(
+        this.args.currentUser,
+        'organization'
+      );
       return sectionOrgId === userOrgId;
     }
     return false;
+  }
 
-  }.property('currentUser.actingRole', 'currentUser.accountType', 'section.teachers', 'section.organization'),
-
-  cantEdit: Ember.computed.not('canEdit'),
+  get cantEdit() {
+    return !this.canEdit;
+  }
 
   clearSelectizeInput(id) {
     if (!id) {
       return;
     }
-    let selectize = this.$(`#${id}`)[0].selectize;
+    let selectize = $(`#${id}`)[0].selectize;
     if (!selectize) {
       return;
     }
     selectize.clear();
-  },
+  }
 
-  scrollIfEditingStudents: function () {
-    if (this.get('isEditingStudents')) {
-      Ember.run.later(() => {
-        $('html, body').animate({
-          scrollTop: $(document).height()
-        });
-      }, 100);
-    }
-  }.observes('isEditingStudents'),
+  // scrollIfEditingStudents: observer('isEditingStudents', function () {
+  //   if (this.isEditingStudents) {
+  //     later(() => {
+  //       $('html, body').animate({
+  //         scrollTop: $(document).height(),
+  //       });
+  //     }, 100);
+  //   }
+  // }),
 
-  addTeacherQueryParams: {
+  @tracked addTeacherQueryParams = {
     filterBy: {
       accountType: {
-        $ne: 'S'
-      }
-    }
-  },
+        $ne: 'S',
+      },
+    },
+  };
 
-  initialTeacherOptions: function() {
-    let peeked = this.get('store').peekAll('user').toArray();
-    let currentTeachers = this.get('teacherList').toArray();
+  get initialTeacherOptions() {
+    let peeked = this.store.peekAll('user').toArray();
+    let currentTeachers = this.teacherList.toArray();
     let filtered = [];
 
     if (peeked && currentTeachers) {
@@ -140,136 +170,333 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return filtered.map((obj) => {
         return {
           id: obj.get('id'),
-          username: obj.get('username')
+          username: obj.get('username'),
         };
       });
     }
     return filtered;
-  }.property('teacherList.[]'),
+  }
 
-
-  actions: {
-    removeStudent: function (user) {
-      if(!user) {
+  @action toggleAddGroup() {
+    return (this.addGroup = !this.addGroup);
+  }
+  @action async saveGroup() {
+    const savedGroup = this.store.createRecord('group');
+    this.newGroup.section = this.args.section;
+    this.newGroup.createdBy = this.args.currentUser;
+    this.newGroup.createDate = new Date();
+    this.newGroup.lastModifiedBy = this.args.currentUser;
+    this.newGroup.lastModifiedDate = this.args.currentUser;
+    for (let key in this.newGroup) {
+      savedGroup[key] = this.newGroup[key];
+    }
+    try {
+      const res = await savedGroup.save();
+      this.newGroup.name = '';
+      this.newGroup.students = [];
+      let selectize = $(`#group-add-student`)[0].selectize;
+      if (!selectize) {
         return;
       }
+      selectize.clear();
+      this.alert.showToast(
+        'success',
+        `group "${res.name}" created`,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      this.args.refresh();
+      this.addGroup = false;
+    } catch (err) {
+      console.log(err);
+      this.alert.showToast('error', `${err}`, 'bottom-end', 3000, false, null);
+    }
+  }
+  @action async updateGroupStudents(group, studentId) {
+    let student = await this.store.findRecord('user', studentId);
+    group.students.pushObject(student);
+    try {
+      const res = await group.save();
+      this.alert.showToast(
+        'success',
+        `${res.name} updated`,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (err) {
+      this.alert.showToast(
+        'error',
+        'oops there was a problem',
+        3000,
+        false,
+        null
+      );
+    }
+    this.addGroup = false;
+  }
+  @action async placeStudent(id) {
+    let student = await this.store.findRecord('user', id);
+    return this.newGroup.students.pushObject(student);
+  }
+  @action async updateGroup(group, user) {
+    if (!user) return;
+    try {
+      group.students.removeObject(user);
+      const res = await group.save();
+      this.alert.showToast(
+        'success',
+        `${user.username} removed`,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (err) {
+      this.alert.showToast(
+        'error',
+        'oops there was a problem',
+        3000,
+        false,
+        null
+      );
+    }
+  }
+  @action async deleteGroup(group) {
+    if (!group) return;
+    try {
+      group.isTrashed = true;
+      const res = await group.save();
+      this.alert.showToast(
+        'success',
+        `${res.name} deleted`,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (err) {
+      console.log(err);
+      this.alert.showToast(
+        'error',
+        'could not delete',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    }
+  }
+  @action updateGroupDraft(student) {
+    return this.newGroup.students.removeObject(student);
+  }
+  @action async editGroupName(group) {
+    const { value } = await this.alert.showPrompt(
+      'text',
+      `Update ${group.name}`,
+      null,
+      'Update'
+    );
+    if (!value) return;
+    group.name = value;
+    try {
+      await group.save();
+      this.alert.showToast(
+        'success',
+        'group updated',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (err) {
+      console.log(err);
+      this.alert.showToast(
+        'error',
+        'oops...error',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    }
+  }
+  @action removeStudent(user) {
+    if (!user) {
+      return;
+    }
 
-      let section = this.get('currentSection');
-      let students = section.get('students');
-      let selectedUser = user;
+    let section = this.currentSection;
+    let students = section.get('students');
+    let selectedUser = user;
 
-      students.removeObject(selectedUser);
+    students.removeObject(selectedUser);
 
-      section.save().then((section) => {
-        this.get('alert').showToast('success', 'Student Removed', 'bottom-end', 3000, false, null);
-
-      }).catch((err) => {
+    section
+      .save()
+      .then((section) => {
+        this.alert.showToast(
+          'success',
+          'Student Removed',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
         this.handleErrors(err, 'updateSectionErrors', section);
       });
-    },
+  }
 
-    removeTeacher: function (user) {
-      let section = this.get('currentSection');
-      let teachers = this.get('teacherList');
-      let teachersLength = teachers.get('length');
+  @action removeTeacher(user) {
+    let section = this.currentSection;
+    let teachers = this.teacherList;
+    let teachersLength = teachers.get('length');
 
-      if (teachersLength > 1) {
-        teachers.removeObject(user);
-      } else {
-        this.set('removeTeacherError', true);
-        Ember.run.later((() => {
-          this.set('removeTeacherError', false);
-        }), 3000);
-        return;
-      }
+    if (teachersLength > 1) {
+      teachers.removeObject(user);
+    } else {
+      this.removeTeacherError = true;
+      later(() => {
+        this.removeTeacherError = false;
+      }, 3000);
+      return;
+    }
 
-      section.save().then((section) => {
-        this.get('alert').showToast('success', 'Teacher Removed', 'bottom-end', 3000, false, null);
+    section
+      .save()
+      .then((section) => {
+        this.alert.showToast(
+          'success',
+          'Teacher Removed',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
       })
       .catch((err) => {
         this.handleErrors(err, 'updateSectionErrors');
       });
-    },
-
-    confirmDelete: function () {
-      this.get('alert').showModal('warning', 'Are you sure you want to delete this class?', 'This may interfere with any work you have already created.', 'Yes, delete it')
-        .then((result) => {
-          if (result.value) {
-            this.send('deleteSection');
-          }
-        });
-    },
-
-    deleteSection: function () {
-      const section = this.get('section');
-      section.set('isTrashed', true);
-      return section.save().then(() => {
-          this.get('alert').showToast('success', 'Class Deleted', 'bottom-end', 3000, false, null);
-          this.sendAction('toSectionList');
-        })
-        .catch((err) => {
-          this.set('sectionToDelete', null);
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
-    },
-
-    toAssignmentInfo: function (assignment) {
-      this.sendAction('toAssignmentInfo', assignment);
-    },
-
-    showAssignment: function () {
-      return this.store.findAll('problem')
-        .then((problems) => {
-          this.set('problemList', problems);
-          this.set('showAssignment', true);
-          this.get('sectionList').pushObject(this.section);
-
-          Ember.run.later(() => {
-            $('html, body').animate({
-              scrollTop: $(document).height()
-            });
-          }, 100);
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'problemLoadErrors');
-        });
-    },
-
-    updateSectionName: function () {
-      this.set('isEditingName', false);
-      let section = this.get('currentSection');
-      if (section.get('hasDirtyAttributes')) {
-        this.get('currentSection').save().then(() => {
-          this.get('alert').showToast('success', 'Class Name Updated', 'bottom-end', 3000, false, null);
-        }).catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
-      }
-    },
-    addTeacher: function (val, $item) {
-      if (!val) {
-        return;
-      }
-      let teacher = this.get('store').peekRecord('user', val);
-
-      if (!teacher) {
-        return;
-      }
-
-      let section = this.get('currentSection');
-
-      let teachers = this.get('teacherList');
-
-      if (!teachers.includes(teacher)) {
-        teachers.addObject(teacher);
-
-        section.save().then(() => {
-          this.get('alert').showToast('success', 'Teacher Added', 'bottom-end', 3000, false, null);
-          this.clearSelectizeInput('select-add-teacher');
-        }).catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
-      }
-    },
   }
-});
+
+  @action confirmDelete() {
+    this.alert
+      .showModal(
+        'warning',
+        'Are you sure you want to delete this class?',
+        'This may interfere with any work you have already created.',
+        'Yes, delete it'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.deleteSection();
+        }
+      });
+  }
+
+  @action deleteSection() {
+    const section = this.args.section;
+    section.set('isTrashed', true);
+    return section
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          'Class Deleted',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        this.router.transitionTo('sections');
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'updateSectionErrors', section);
+      });
+  }
+
+  @action toAssignmentInfo(assignment) {
+    this.router.transitionTo('assignments.assignment', assignment.id);
+  }
+
+  @action updateShowAssignment() {
+    return this.store
+      .findAll('problem')
+      .then((problems) => {
+        this.problemList = problems;
+        this.showAssignment = true;
+        this.sectionList.pushObject(this.args.section);
+
+        later(() => {
+          $('html, body').animate({
+            scrollTop: $(document).height(),
+          });
+        }, 100);
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'problemLoadErrors');
+      });
+  }
+
+  @action updateSectionName() {
+    this.isEditingName = false;
+    let section = this.currentSection;
+    if (section.get('hasDirtyAttributes')) {
+      this.currentSection
+        .save()
+        .then(() => {
+          this.alert.showToast(
+            'success',
+            'Class Name Updated',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors', section);
+        });
+    }
+  }
+  @action addTeacher(val, $item) {
+    if (!val) {
+      return;
+    }
+    let teacher = this.store.peekRecord('user', val);
+
+    if (!teacher) {
+      return;
+    }
+
+    let section = this.currentSection;
+
+    let teachers = this.teacherList;
+
+    if (!teachers.includes(teacher)) {
+      teachers.addObject(teacher);
+
+      section
+        .save()
+        .then(() => {
+          this.alert.showToast(
+            'success',
+            'Teacher Added',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+          this.clearSelectizeInput('select-add-teacher');
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors', section);
+        });
+    }
+  }
+}

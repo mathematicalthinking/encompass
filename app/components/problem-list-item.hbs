@@ -1,0 +1,141 @@
+{{#if @isList}}
+  <div class="item-container" id="container">
+    <div class="item-section privacy">
+      {{{public-private @problem.privacySetting}}}
+    </div>
+
+    <div class="item-section name">
+      <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+        <span class={{if @problem.isTrashed 'strikethrough'}}>{{{@problem.title}}}</span>
+        {{#if this.isRecommended}}
+          <span><i class="fas fa-star star-icon"></i></span>
+        {{/if}}
+      </LinkTo>
+    </div>
+    <div class="item-section description">
+      <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+        {{{@problem.text}}}
+      </LinkTo>
+    </div>
+    <div class="item-section date">
+      {{format-date @problem.createDate 'MM/DD/YY'}}
+    </div>
+    <div class="item-section status">
+      <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
+      </svg>
+      <span class="status-text">
+        {{@problem.status}}
+      </span>
+    </div>
+    <div class="item-section action">
+      <button {{action this.actionButton.function @problem this.actionButton.argument1 this.actionButton.argument2}} class="primary-button">
+        {{this.actionButton.name}}
+      </button>
+    </div>
+    <div class="item-section more" {{action "toggleShowMoreMenu"}}>
+      <i class="fas fa-ellipsis-v more-menu"></i>
+      {{#if this.showMoreMenu}}
+        <span class="click-menu">
+          <ul>
+            {{#if this.ellipsisMenuOptions}}
+              {{#each this.ellipsisMenuOptions as |option|}}
+              <li {{action option.action}}>
+                <label>
+                  <span class="icon-text">{{option.label}}</span>
+                  <i class={{option.icon}}></i>
+                </label>
+              </li>
+              {{/each}}
+            {{else}}
+              <li>No options</li>
+            {{/if}}
+          </ul>
+        </span>
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{#if @isGrid}}
+  <div class="item-card-container">
+    <div class="item-card row-1">
+      <div class="item-card privacy">
+        <span class="privacy-icon">{{{public-private @problem.privacySetting}}}</span>
+        <span class="date">{{format-date @problem.createDate 'MM/DD/YY'}}</span>
+      </div>
+      <div class="item-card more" {{action "toggleShowMoreMenu"}}>
+        <i class="fas fa-ellipsis-v more-menu"></i>
+        {{#if this.showMoreMenu}}
+          <span class="click-menu">
+            <ul>
+              {{#if this.ellipsisMenuOptions}}
+                {{#each this.ellipsisMenuOptions as |option|}}
+                <li {{action option.action}}>
+                  <label>
+                    <span class="icon-text">{{option.label}}</span>
+                    <i class={{option.icon}}></i>
+                  </label>
+                </li>
+                {{/each}}
+              {{else}}
+                <li>No options</li>
+              {{/if}}
+            </ul>
+          </span>
+        {{/if}}
+      </div>
+    </div>
+    <div class="item-card row-2">
+      <div class="item-card name">
+        <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+          <span class={{if @problem.isTrashed 'strikethrough'}}>{{{@problem.title}}}</span>
+          {{#if this.isRecommended}}
+            <span><i class="fas fa-star star-icon"></i></span>
+          {{/if}}
+        </LinkTo>
+      </div>
+    </div>
+    <div class="item-card row-3">
+      <div class="item-card description">
+        <LinkTo @route="problems.problem" @model={{@problem.id}} class="problem-title">
+          {{{@problem.text}}}
+        </LinkTo>
+      </div>
+    </div>
+    <div class="item-card row-4">
+      <div class="item-card status">
+        <svg height="20" width="20">
+          <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
+        </svg>
+        <span class="status-text">
+          {{@problem.status}}
+        </span>
+      </div>
+      <div class="item-card action">
+        <button {{action this.actionButton.function @problem this.actionButton.argument1 this.actionButton.argument2}} class="primary-button">
+        {{this.actionButton.name}}
+      </button>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+
+
+<script>
+  $('.problem-title').click(function (e) {
+    $('.list-outlet').removeClass('hidden');
+    $('.list-outlet').addClass('animated slideInRight');
+  });
+
+  $('.results-list').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+
+  $('.flex-item-full').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+</script>
+
+

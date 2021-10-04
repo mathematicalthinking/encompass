@@ -1,4 +1,12 @@
-Encompass.VmtReplayerComponent = Ember.Component.extend(Encompass.VmtHostMixin,{
+import Component from '@ember/component';
+import $ from 'jquery';
+import VmtHostMixin from '../mixins/vmt-host.js';
+
+
+
+
+
+export default Component.extend(VmtHostMixin, {
   didInsertElement() {
     this.fetchReplayer();
     this.fetchCss();

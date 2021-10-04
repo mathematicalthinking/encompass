@@ -1,15 +1,19 @@
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 /*global _:false */
-Encompass.ImportWorkStep1Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  elementId: 'import-work-step1',
-  utils: Ember.inject.service('utility-methods'),
+import { inject as service } from '@ember/service';
 
-  initialProblemItem: function () {
-    const selectedProblem = this.get('selectedProblem');
-    if (this.get('utils').isNonEmptyObject(selectedProblem)) {
+export default Component.extend({
+  elementId: 'import-work-step1',
+  utils: service('utility-methods'),
+
+  initialProblemItem: computed('selectedProblem', function () {
+    const selectedProblem = this.selectedProblem;
+    if (this.utils.isNonEmptyObject(selectedProblem)) {
       return [selectedProblem.id];
     }
     return [];
-  }.property('selectedProblem'),
+  }),
 
   actions: {
     setSelectedProblem(val, $item) {
@@ -23,26 +27,25 @@ Encompass.ImportWorkStep1Component = Ember.Component.extend(Encompass.CurrentUse
         return;
       }
 
-      const problem = this.get('store').peekRecord('problem', val);
-      if (this.get('utils').isNullOrUndefined(problem)) {
+      const problem = this.store.peekRecord('problem', val);
+      if (this.utils.isNullOrUndefined(problem)) {
         return;
       }
 
       this.set('selectedProblem', problem);
-      if (this.get('missingProblem')) {
+      if (this.missingProblem) {
         this.set('missingProblem', null);
       }
     },
     next() {
-      const problem = this.get('selectedProblem');
+      const problem = this.selectedProblem;
 
       // workspace is required to go to next step
-      if (this.get('utils').isNonEmptyObject(problem)) {
-        this.get('onProceed')();
+      if (this.utils.isNonEmptyObject(problem)) {
+        this.onProceed();
         return;
       }
       this.set('missingProblem', true);
-
-    }
-  }
+    },
+  },
 });

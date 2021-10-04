@@ -19,7 +19,7 @@ describe('User CRUD operations by account type', async function() {
     await describe(`User CRUD operations as ${user.details.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, _id, createdBy, name } = user.details;
+      const { username, password, accountType, actingRole, _id, name } = user.details;
       const { modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount, outsideCollab, outsideStudent } = user.users;
       const isStudent = accountType === 'S' || actingRole === 'S';
       const defaultSelfPutBody = {

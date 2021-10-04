@@ -1,12 +1,19 @@
-Encompass.ModalConfirmComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   elementId: 'modal-confirm',
 
   actions: {
-    confirm: function() {
-      this.sendAction('onConfirm', this.get('actionToConfirm'));
+    confirm: function () {
+      this.sendAction('onConfirm', this.actionToConfirm);
     },
 
-    cancel: function() {
+    cancel: function () {
       this.set('actionToConfirm', null);
     }
   }

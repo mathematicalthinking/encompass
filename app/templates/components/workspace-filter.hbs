@@ -2,28 +2,20 @@
   <h2>Filter Options</h2>
   <h3>Primary Filters</h3>
   <ul class="primary-filter-list">
-    {{#each primaryFilterOptions as |input|}}
-      <li>
-        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}
-        {{#if (is-equal primaryFilterValue input.value)}}
-          {{#if showAdminFilters}}
-            {{admin-workspace-filter
-              filter=adminFilter
-              mainOptions=secondaryFilterOptions
-              secondaryFilter=secondaryFilter
-              onUpdate=(action "onUpdate")
-              orgOptions=orgOptions
-              store=store
-              updateSecondLevel=(action "updateSecondLevel")
-            }}
+    {{#each this.primaryFilterOptions as |input|}}
+      <li class="filter-{{input.value}}">
+        <RadioFilter @groupValue={{this.primaryFilterValue}} @secondaryInputs={{input.secondaryFilters}} @isChecked={{input.isChecked}} @groupName="top-level" @inputValue={{input.value}} @onClick={{action "updateTopLevel"}} @labelName={{input.label}} @labelIcon={{input.icon}} />
+        {{#if (is-equal this.primaryFilterValue input.value)}}
+          {{#if this.showAdminFilters}}
+            <AdminWorkspaceFilter @filter={{this.adminFilter}} @mainOptions={{this.secondaryFilterOptions}} @secondaryFilter={{this.secondaryFilter}} @onUpdate={{action "onUpdate"}} @orgOptions={{this.orgOptions}} @store={{this.store}} @updateSecondLevel={{action "updateSecondLevel"}} />
           {{else}}
           <ul class="secondary-filter-options">
-            {{#each secondaryFilterOptions as |option|}}
-              <li class="checkbox-content {{if (is-in currentValues option.value) 'is-selected'}}">
+            {{#each this.secondaryFilterOptions as |option|}}
+              <li class="checkbox-content {{if (is-in this.currentValues option.value) 'is-selected'}}">
                 <label for={{option.value}} class="checkbox-label">
                   <i class="checkbox-icon {{option.icon}}"></i>
                   <span class="checkbox-text">{{option.label}}</span>
-                  {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
+                  <Input @id={{option.value}} @type="checkbox" @checked={{option.isApplied}} @change={{action "updateSecondLevel"}} />
                 </label>
               </li>
             {{/each}}
@@ -34,19 +26,19 @@
       </li>
     {{/each}}
   </ul>
-    <h3 {{action 'toggleMoreFilters'}} class="more-header {{if closedMenu 'closed'}}">
-      <i class="fas {{if showMoreFilters 'fa-chevron-down'}}{{unless showMoreFilters 'fa-chevron-right'}}"></i> More
+    <h3 {{action 'toggleMoreFilters'}} class="more-header {{if this.closedMenu 'closed'}}">
+      <i class="fas {{if this.showMoreFilters 'fa-chevron-down'}}{{unless this.showMoreFilters 'fa-chevron-right'}}"></i> More
     </h3>
-    {{#if showMoreFilters}}
+    {{#if this.showMoreFilters}}
       <ul class="more-filter-list">
         <h5>Hidden Workspaces</h5>
         <label class="subfilter">
-          {{input id="toggle-hidden" type="checkbox" checked=showHiddenWorkspaces change=(action "toggleHiddenWorkspaces")}} <span>Show All Hidden Workspaces</span>
+          <Input @id="toggle-hidden" @type="checkbox" @checked={{this.showHiddenWorkspaces}} @change={{action "toggleHiddenWorkspaces"}} /> <span>Show All Hidden Workspaces</span>
         </label>
-      {{#if currentUser.isAdmin}}
+      {{#if this.currentUser.user.isAdmin}}
         <h5>Trashed Workspaces</h5>
         <label class="subfilter">
-          {{input id="toggle-trashed" type="checkbox" checked=showTrashedWorkspaces change=(action "toggleTrashedWorkspaces")}} <span>Show All Trashed Workspaces</span>
+          <Input @id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedWorkspaces}} @change={{action "toggleTrashedWorkspaces"}} /> <span>Show All Trashed Workspaces</span>
         </label>
       {{/if}}
       </ul>

@@ -1,17 +1,26 @@
-Encompass.ErrorBoxComponent = Ember.Component.extend({
+import { later } from '@ember/runloop';
+import Component from '@ember/component';
+import $ from 'jquery';
+
+
+
+
+
+
+export default Component.extend({
   classNames: ['error-box', 'required', 'animated', 'fadeIn'],
 
   actions: {
-    closeError: function() {
+    closeError: function () {
       let id = this.elementId;
       $(`#${id}`).removeClass('fadeIn');
       $(`#${id}`).addClass('fadeOut');
 
-      if (this.get('resetError')) {
-        this.get('resetError')();
+      if (this.resetError) {
+        this.resetError();
       }
 
-      Ember.run.later(() => {
+      later(() => {
         $(`#${id}`).remove();
       }, 500);
     }

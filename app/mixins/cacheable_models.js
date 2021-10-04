@@ -16,47 +16,51 @@
   * @since 1.0.2
   */
 /*global _:false */
+import { Promise } from 'rsvp';
 
-//used in app.js...doesn't ember data automatically cache?
-Encompass.CacheableModels = Ember.Mixin.create({
-  since: function(model) {
+import Mixin from '@ember/object/mixin';
+import DS from 'ember-data';
+
+
+export default Mixin.create({
+  since: function (model) {
     //var meta = model.get('meta');
     //var since = meta.sinceToken; //this.metadataFor(model).sinceToken;
     var since = this.metadataFor(model).sinceToken;
     return since;
   },
-  cacheExpired: function(model, options) {
+  cacheExpired: function (model, options) {
     var cacheExpired = false;
     var lastRetrieval = this.since(model);
-    if(lastRetrieval) {
+    if (lastRetrieval) {
       lastRetrieval = new Date(lastRetrieval).getTime() / 1000; //seconds
-      var now   = new Date().getTime() / 1000;
-      var diff  = now - lastRetrieval;
-      if(diff > options.expiration) {
+      var now = new Date().getTime() / 1000;
+      var diff = now - lastRetrieval;
+      if (diff > options.expiration) {
         cacheExpired = true;
       }
     }
     return cacheExpired;
   },
-  cache: function(model, options) {
+  cache: function (model, options) {
     var defaults = {
       expiration: 180,
       bypass: false
     };
-    if(!options){ options = {}; }
+    if (!options) { options = {}; }
     _.defaults(options, defaults);
 
     var cached = this.peekAll('workspace');
 
     var cacheExpired = this.cacheExpired(model, options);
-    var notCached    = !this.since(model);
+    var notCached = !this.since(model);
 
-    if(notCached || cacheExpired || options.bypass) {
+    if (notCached || cacheExpired || options.bypass) {
       return this.findAll(model);
     }
 
     return DS.PromiseArray.create({
-      promise: new Ember.RSVP.Promise(function(resolve, reject) {
+      promise: new Promise(function (resolve, reject) {
         resolve(cached);
       })
     });

@@ -2,26 +2,33 @@
  * Passed in by parent:
  * - hide
  */
-Encompass.ModalFolderNewComponent = Ember.Component.extend({
+import Component from '@ember/component';
+
+
+
+
+
+
+export default Component.extend({
   classNameBindings: ['hide'],
   newFolderName: '',
 
   actions: {
-    close: function(){
+    close: function () {
       this.set('newFolderName', '');
-      this.set( 'hide', true );
+      this.set('hide', true);
     },
 
-    cancel: function(){
+    cancel: function () {
       this.set('newFolderName', '');
-      this.set( 'hide', true );
+      this.set('hide', true);
     },
 
-    save: function(){
-      var newName = this.get('newFolderName');
-      this.sendAction( "newFolder", newName );
+    save: function () {
+      var newName = this.newFolderName;
+      this.sendAction("newFolder", newName);
 
-      this.set( 'hide', true );
+      this.set('hide', true);
     }
   }
 });

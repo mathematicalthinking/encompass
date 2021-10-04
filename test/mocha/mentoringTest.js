@@ -4,7 +4,6 @@ const chaiHttp = require('chai-http');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
-const userFixtures = require('./userFixtures');
 
 const expect = chai.expect;
 const host = helpers.host;
@@ -12,17 +11,17 @@ const baseUrl = "/api/responses/";
 
 chai.use(chaiHttp);
 
-let indirectMentor = {
-  _id: '5c6f4075b1ccdf96abab26fe',
-  username: 'mentort1',
-  password: 'test',
-  newResponse: {
-    text: 'This response should have status of pendingApproval once created.',
-  },
-  alreadyApprovedResponse: {
-    _id: '5c6eca77a89be9751158ce0c',
-  }
-};
+// let indirectMentor = {
+//   _id: '5c6f4075b1ccdf96abab26fe',
+//   username: 'mentort1',
+//   password: 'test',
+//   newResponse: {
+//     text: 'This response should have status of pendingApproval once created.',
+//   },
+//   alreadyApprovedResponse: {
+//     _id: '5c6eca77a89be9751158ce0c',
+//   }
+// };
 
 let ownerApprover = {
   userId: '5c6eb49c9852e5710311d634',
@@ -38,7 +37,7 @@ let ownerApprover = {
   }
 };
 
-async function updateResponse(id, putBody, agent) {
+function updateResponse(id, putBody, agent) {
   return agent
     .put(`${baseUrl}${id}`)
     .send(putBody);

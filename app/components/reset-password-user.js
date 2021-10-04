@@ -1,89 +1,92 @@
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 // Used for when a logged in user is resetting either their own password or another user's password
-Encompass.ResetPasswordUserComponent = Ember.Component.extend(
-  Encompass.ErrorHandlingMixin, {
-  ElementId: 'reset-password-user',
-  alert: Ember.inject.service('sweet-alert'),
-  displayResetForm: true,
-  fieldType: 'password',
-  postErrors: [],
+import $ from 'jquery';
 
-  doPasswordsMatch: function() {
-    return this.get('password') === this.get('confirmPassword');
-  }.property('password', 'confirmPassword'),
+export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
+  @service('sweet-alert') alert;
+  @tracked postErrors = [];
+  @tracked password = '';
+  @tracked confirmPassword = '';
+  @tracked showingPassword = false;
+  @tracked missingRequiredFields = false;
+  @tracked matchError = false;
+  @tracked resetError = '';
 
-  isShowingPassword: Ember.computed(function () {
-    var showing = this.get('showingPassword');
-    return showing;
-  }),
+  get doPasswordsMatch() {
+    return this.password === this.confirmPassword;
+  }
 
-  actions: {
-    resetPassword: function() {
-      const password = this.get('password');
-      const confirmPassword = this.get('confirmPassword');
+  get fieldType() {
+    return this.showingPassword ? 'text' : 'password';
+  }
 
-      if (!password || !confirmPassword) {
-        this.set('missingRequiredFields', true);
-      }
+  @action resetPassword() {
+    const password = this.password;
+    const confirmPassword = this.confirmPassword;
 
-      if (!this.get('doPasswordsMatch')) {
-        this.set('matchError', true);
-        return;
-      }
+    if (!password || !confirmPassword) {
+      this.missingRequiredFields = true;
+    }
 
-      const ssoId = this.get('user.ssoId');
+    if (!this.doPasswordsMatch) {
+      this.matchError = true;
+      return;
+    }
 
-      const resetPasswordData = {
-        password,
-        ssoId
-       };
-      const that = this;
+    const ssoId = this.args.user.ssoId;
 
-      return Ember.$.post({
-        url: `/auth/resetuser`,
-        data: resetPasswordData
-      })
-        .then((res) => {
-          if (res._id && res._id === ssoId) {
-            that.get('handleResetSuccess')(res);
-            this.get('alert').showToast('success', 'Password Reset', 'bottom-end', 3000, false, null);
+    const resetPasswordData = {
+      password,
+      ssoId,
+    };
+
+    return $.post({
+      url: `/auth/resetuser`,
+      data: resetPasswordData,
+    })
+      .then((res) => {
+        if (res._id && res._id === ssoId) {
+          this.alert.showToast(
+            'success',
+            'Password Reset',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+          this.args.handleResetSuccess(res);
+        } else {
+          let err;
+          if (res.info) {
+            err = res.info;
           } else {
-            let err;
-            if (res.info) {
-              err = res.info;
-            } else {
-              err = 'Could not complete reset. Please try again.';
-            }
-            that.set('resetError', err);
+            err = 'Could not complete reset. Please try again.';
           }
-        })
-        .catch((err) => {
-          that.handleErrors(err, 'postErrors');
-        });
-    },
-
-    cancelReset: function() {
-      this.cancelReset();
-    },
-
-    showPassword: function () {
-      var isShowingPassword = this.get('showingPassword');
-      if (isShowingPassword === false) {
-        this.set('showingPassword', true);
-        this.set('fieldType', 'text');
-      } else {
-        this.set('showingPassword', false);
-        this.set('fieldType', 'password');
-      }
-    },
-
-    resetErrors: function() {
-      const errors = ['matchError', 'missingRequiredFields'];
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
+          this.resetError = err;
         }
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'postErrors');
+      });
+  }
+
+  @action cancelReset() {
+    this.args.cancelReset();
+  }
+
+  @action toggleShowingPassword() {
+    this.showingPassword = !this.showingPassword;
+  }
+
+  @action resetErrors() {
+    const errors = ['matchError', 'missingRequiredFields'];
+    for (let error of errors) {
+      if (this[error]) {
+        this[error] = false;
       }
     }
   }
-
-});
+}

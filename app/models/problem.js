@@ -1,26 +1,31 @@
-Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
-  problemId: Ember.computed.alias('id'),
-  title: DS.attr('string'),
-  puzzleId: DS.attr('number'),
-  text: DS.attr('string'),
-  imageUrl: DS.attr('string'),
-  sourceUrl: DS.attr('string'),
-  image: DS.belongsTo('image', { inverse: null} ),
-  origin: DS.belongsTo('problem', { inverse: null }),
-  modifiedBy: DS.belongsTo('user', { inverse: null }),
-  organization: DS.belongsTo('organization', { inverse: null }),
-  additionalInfo: DS.attr('string'),
-  privacySetting: DS.attr('string'),
-  categories: DS.hasMany('category', { inverse: null }),
-  keywords: DS.attr(),
-  copyrightNotice: DS.attr('string'),
-  sharingAuth: DS.attr('string'),
-  author: DS.attr('string'),
-  error: DS.attr('string'),
-  isUsed: DS.attr('boolean'),
-  status: DS.attr('string'),
-  flagReason: DS.attr(),
-  isForEdit: DS.attr('boolean', { defaultValue: false }),
-  isForAssignment: DS.attr('boolean', {defaultValue: false}),
-  contexts: DS.attr(),
-});
+import { attr, belongsTo, hasMany } from '@ember-data/model';
+import { alias } from '@ember/object/computed';
+import Auditable from './auditable';
+export default class ProblemModel extends Auditable {
+  get problemId() {
+    return this.id;
+  }
+  @attr('string') title;
+  @attr('number') puzzleId;
+  @attr('string') text;
+  @attr('string') imageUrl;
+  @attr('string') sourceUrl;
+  @belongsTo('image', { inverse: null }) image;
+  @belongsTo('problem', { inverse: null }) origin;
+  @belongsTo('user', { inverse: null }) modifiedBy;
+  @belongsTo('organization', { inverse: null }) organization;
+  @attr('string') additionalInfo;
+  @attr('string') privacySetting;
+  @hasMany('category', { inverse: null }) categories;
+  @attr keywords;
+  @attr('string') copyrightNotice;
+  @attr('string') sharingAuth;
+  @attr('string') author;
+  @attr('string') error;
+  @attr('boolean') isUsed;
+  @attr('string') status;
+  @attr flagReason;
+  @attr('boolean', { defaultValue: false }) isForEdit;
+  @attr('boolean', { defaultValue: false }) isForAssignment;
+  @attr contexts;
+}

@@ -3,162 +3,87 @@
   <ul class="primary-filter-list">
     <li>
       <label>Teacher</label>
-        {{selectize-input
-            store=store
-            inputId="select-add-teacher"
-            maxItems=1
-            initialItems=initialTeacherItem
-            initialOptions=teacherPoolOptions
-            onItemAdd=(action "updateSelectizeSingle")
-            onItemRemove=(action "updateSelectizeSingle")
-            labelField="username"
-            searchField="username"
-            valueField="id"
-            propToUpdate="selectedTeacher"
-            model="user"
-            placeholder="Search teachers by username"
-            isDisabled=isTeacher
-        }}
-      {{#each teacherFormErrors as |error|}}
+        <SelectizeInput @store={{this.store}} @inputId="select-add-teacher" @maxItems={{1}} @initialItems={{this.initialTeacherItem}} @initialOptions={{this.teacherPoolOptions}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="username" @searchField="username" @valueField="id" @propToUpdate="selectedTeacher" @model="user" @placeholder="Search teachers by username" @isDisabled={{this.isTeacher}} />
+      {{#each this.teacherFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
       {{/each}}
     </li>
     <li>
       <label>Assignment</label>
-        {{selectize-input
-            store=store
-            inputId="select-add-assignment"
-            maxItems=1
-            initialOptions=assignmentOptions
-            initialItems=initialAssignmentItem
-            onItemAdd=(action "updateSelectizeSingle")
-            onItemRemove=(action "updateSelectizeSingle")
-            labelField="name"
-            searchField="name"
-            valueField="id"
-            model="assignment"
-            propToUpdate="selectedAssignment"
-            placeholder="Search assignments by name"
-        }}
+        <SelectizeInput @store={{this.store}} @inputId="select-add-assignment" @maxItems={{1}} @initialOptions={{this.assignmentOptions}} @initialItems={{this.initialAssignmentItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @searchField="name" @valueField="id" @model="assignment" @propToUpdate="selectedAssignment" @placeholder="Search assignments by name" />
 
-      {{#each assignmentFormErrors as |error|}}
+      {{#each this.assignmentFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
       {{/each}}
     </li>
     <li>
       <label>Problem</label>
-      {{selectize-input
-        store=store
-        inputId="select-add-problem"
-        isAsync=true
-        maxItems=1
-        initialItems=initialProblemItem
-        onItemAdd=(action "updateSelectizeSingle")
-        onItemRemove=(action "updateSelectizeSingle")
-        labelField="title"
-        searchField="title"
-        valueField="id"
-        model="problem"
-        propToUpdate="selectedProblem"
-        queryParamsKey="title"
-        topLevelQueryParams="filterBy"
-        placeholder="Search problems by title"
-        preload="focus"
-        secondaryFilters=problemFilters
-      }}
+      <SelectizeInput @store={{this.store}} @inputId="select-add-problem" @isAsync={{true}} @maxItems={{1}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="title" @searchField="title" @valueField="id" @model="problem" @propToUpdate="selectedProblem" @queryParamsKey="title" @topLevelQueryParams="filterBy" @placeholder="Search problems by title" @preload="focus" @secondaryFilters={{this.problemFilters}} />
 
-      {{#each problemFormErrors as |error|}}
+      {{#each this.problemFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
       {{/each}}
     </li>
     <li>
       <label>Class</label>
-        {{selectize-input
-          store=store
-          inputId="select-add-section"
-          maxItems=1
-          initialOptions=sectionPoolOptions
-          initialItems=initialSectionItem
-          onItemAdd=(action "updateSelectizeSingle")
-          onItemRemove=(action "updateSelectizeSingle")
-          labelField="name"
-          searchField="name"
-          valueField="id"
-          model="section"
-          propToUpdate="selectedSection"
-          placeholder="Search classes by name"
-        }}
-      {{#each sectionFormErrors as |error|}}
+        <SelectizeInput @store={{this.store}} @inputId="select-add-section" @maxItems={{1}} @initialOptions={{this.sectionPoolOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @searchField="name" @valueField="id" @model="section" @propToUpdate="selectedSection" @placeholder="Search classes by name" />
+      {{#each this.sectionFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
       {{/each}}
     </li>
     <li>
       <label>Student</label>
-        {{selectize-input
-            store=store
-            inputId="select-add-student"
-            maxItems=20
-            initialOptions=studentPoolOptions
-            initialItems=initialStudentItem
-            onItemAdd=(action "updateSelectedStudents")
-            onItemRemove=(action "updateSelectedStudents")
-            labelField="username"
-            searchField="username"
-            valueField="id"
-            propToUpdate="selectedStudents"
-            model="user"
-            placeholder="Search students by username"
-        }}
-      {{#each studentFormErrors as |error|}}
+        <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{20}} @initialOptions={{this.studentPoolOptions}} @initialItems={{this.initialStudentItem}} @onItemAdd={{action "updateSelectedStudents"}} @onItemRemove={{action "updateSelectedStudents"}} @labelField="username" @searchField="username" @valueField="id" @propToUpdate="selectedStudents" @model="user" @placeholder="Search students by username" />
+      {{#each this.studentFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
       {{/each}}
     </li>
     <li>
       <label>Date Range</label>
       <div class="single-text-input-container">
-        {{input class="single-text-input" id="startDate" name="startDate" type="text" value=startDate}}
+        <Input class="single-text-input" @id="startDate" @name="startDate" @type="date" @value={{this.startDate}} {{action 'changeDate' on="change"}} />
         <span class="seperator"> - </span>
-        {{input class="single-text-input" id="endDate" name="endDate" type="text" value=endDate}}
+        <Input class="single-text-input" @id="endDate" @name="endDate" @type="date" @value={{this.endDate}} {{action 'changeDate' on="change"}} />
       </div>
     </li>
     <li class="include-pows-input">
-      {{input type="checkbox" checked=doIncludeOldPows name="doIncludeOldPows"}}
+      <Input @type="checkbox" @checked={{this.doIncludeOldPows}} @name="doIncludeOldPows" />
       <label>Include Old Pows Work</label>
     </li>
 
-    {{#if currentUser.isAdmin}}
+    {{#if this.currentUser.isAdmin}}
       <li class="include-trashed-input">
-        {{input type="checkbox" checked=isTrashedOnly name="isTrashedOnly"}}
+        <Input @type="checkbox" @checked={{this.isTrashedOnly}} @name="isTrashedOnly" />
         <label>Only Trashed Answers</label>
       </li>
     {{/if}}
 
     <h3 {{action 'toggleVmtFilters'}} class="vmt-header">
-      <i class="fas {{if showVmtFilters 'fa-chevron-down'}}{{unless showVmtFilters 'fa-chevron-right'}}"></i> Vmt
+      <i class="fas {{if this.showVmtFilters 'fa-chevron-down'}}{{unless this.showVmtFilters 'fa-chevron-right'}}"></i> Vmt
     </h3>
 
-  {{#if showVmtFilters}}
+  {{#if this.showVmtFilters}}
   <ul class="vmt-filter-list">
     <li class="vmt-only-input">
-      {{input type="checkbox" checked=isVmtOnly name="isVmtOnly"}}
+      <Input @type="checkbox" @checked={{this.isVmtOnly}} @name="isVmtOnly" />
       <label>Include Only VMT Work</label>
     </li>
     <li>
       <div class="vmt-search">
       <label>Search by room, activity, or username</label>
-      {{input class="single-text-input vmt-search" name="vmt-search" type="text" value=vmtSearchText}}
+      <Input class="single-text-input vmt-search" @name="vmt-search" @type="text" @value={{this.vmtSearchText}} />
       </div>
     </li>
   </ul>
   {{/if}}
 
 
-    {{#if isMissingCriteria}}
-      {{error-box error=missingCriteriaMessage showDismiss=true resetError=(action (mut isMissingCriteria) null) }}
+    {{#if this.isMissingCriteria}}
+      <ErrorBox @error={{this.missingCriteriaMessage}} @showDismiss={{true}} @resetError={{action (mut this.isMissingCriteria) null}} />
     {{/if}}
 
-    {{#if isInvalidDateRange}}
-      {{error-box error=invalidDateRangeMessage showDismiss=true resetError=(action (mut isInvalidDateRange) null) }}
+    {{#if this.isInvalidDateRange}}
+      <ErrorBox @error={{this.invalidDateRangeMessage}} @showDismiss={{true}} @resetError={{action (mut this.isInvalidDateRange) null}} />
     {{/if}}
 
     <button class="primary-button search-answers" {{action "buildCriteria"}}>Search</button>
@@ -166,7 +91,7 @@
 </div>
 
 
-  {{#if isRequestInProgress}}
+  {{#if this.isRequestInProgress}}
     <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
   {{/if}}
 

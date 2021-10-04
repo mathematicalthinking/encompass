@@ -1,35 +1,33 @@
-/*global _:false */
-Encompass.BreadCrumbsItemComponent = Ember.Component.extend({
-  classNames: ['bread-crumbs-item'],
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import moment from 'moment';
+import _ from 'underscore';
 
-  isSelected: function() {
-    return _.isEqual(this.get('item'), this.get('selectedItem'));
-  }.property('selectedItem'),
+export default class BreadCumbsItemComponent extends Component {
+  get isSelected() {
+    return _.isEqual(this.args.item, this.args.selectedItem);
+  }
 
-  isStarredItem: function() {
-    return this.get('starredItemsList').includes(this.get('item'));
-  }.property('starredItemsList.[]', 'item'),
+  get isStarredItem() {
+    return this.args.starredItemsList.includes(this.item);
+  }
 
-  titleText: function() {
-    if (_.isString(this.get('itemTitleText'))) {
-      return this.get('itemTitleText');
+  get titleText() {
+    if (_.isString(this.args.itemTitleText)) {
+      return this.args.itemTitleText;
     }
-    if (this.get('item.createDate')) {
-      return moment(this.get('item.createDate')).format('MMM Do YYYY h:mm A');
+    if (this.args.item.createDate) {
+      return moment(this.args.item.createDate).format('MMM Do YYYY h:mm A');
     }
-    if (_.isString(this.get('titleTextPath')) && _.isObject(this.get('item'))) {
-      let path = `item.${this.get('titleTextPath')}`;
-      return this.get(path);
+    if (_.isString(this.args.titleTextPath) && _.isObject(this.args.item)) {
+      return this.args.item[this.args.titleTextPath];
     }
     return '';
-  }.property('itemTitleText', 'titleTextPath', 'item', 'item.createDate'),
-
-  actions: {
-    onSelect(item) {
-      if (!item || this.get('isSelected')) {
-        return;
-      }
-      this.get('onSelect')(item);
-    }
   }
-});
+  @action onSelect(item) {
+    if (!item || this.isSelected) {
+      return;
+    }
+    this.args.onSelect(item);
+  }
+}

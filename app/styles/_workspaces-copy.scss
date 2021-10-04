@@ -1,0 +1,473 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 460px) {
+  #workspace-new-copy {
+    .results-list {
+      .step-content {
+        margin: 0 auto;
+        padding: 0px;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+      .nav-btn-container {
+        position: fixed;
+        margin-top: 20px;
+        right: 5%;
+        bottom: 2%;
+        button {
+          margin-left: 15px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 461px) and (max-width: 10000px) {
+  #workspace-new-copy {
+    .step-content {
+      margin: 0 auto;
+      padding: 30px 20px;
+      margin-left: 30px;
+      margin-right: 30px;
+    }
+    .nav-btn-container {
+      position: fixed;
+      margin-top: 20px;
+      right: 5%;
+      bottom: 5%;
+      button {
+        margin-left: 15px;
+      }
+    }
+  }
+}
+
+#workspace-new-copy {
+  .single-text-input-container {
+    max-width: 600px;
+  }
+  .show-viewer {
+    color: $accent-color;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: $light-font-weight;
+    position: relative;
+    font-size: 1em;
+    left: 20px;
+    top: 2px;
+  }
+  .primary-filter-list {
+    margin-bottom: 50px;
+    .display-info {
+      font-weight: $light-font-weight;
+      padding-right: 10px;
+      margin: 0 0 25px 30px;
+      font-size: .95em;
+    }
+    .detail-header {
+      font-weight: $bold-font-weight;
+      i {
+        position: relative;
+        left: 5px;
+        bottom: 1px;
+      }
+    }
+    .sub-list {
+      margin-left: 30px;
+      margin-top: -10px;
+      margin-bottom: 30px;
+      .sub-header {
+        font-weight: $bold-font-weight;
+        margin-bottom: 10px;
+      }
+      .sub-content {
+        font-weight: $light-font-weight;
+        margin-bottom: 20px;
+        font-size: .95em;
+      }
+      .sub-content-child {
+        margin-left: -10px;
+        padding-top: 10px;
+      }
+    }
+  }
+  .results-list {
+    position: relative;
+    padding-bottom: 50px;
+    .header {
+      h1 {
+        font-size: 1.75em;
+        text-align: center;
+        color: $dark-font-color;
+        font-weight: $main-font-weight;
+        margin: 15px 0;
+      }
+    }
+    .step-content {
+      margin-top: 40px;
+      overflow-x: hidden;
+      min-height: 380px;
+      .input-label {
+        font-size: 1.2em;
+        color: black;
+        i {
+          color: $primary-font-color;
+        }
+      }
+      .input-label-custom {
+        color: $primary-font-color;
+        font-size: 1.1em;
+        margin-bottom: 15px;
+        i {
+          font-size: .8em;
+        }
+      }
+      .selectize-comp {
+        max-width: 600px;
+        .selectize-input {
+          input {
+            font-size: 1.2em;
+            line-height: 1.5em;
+            font-weight: $light-font-weight;
+          }
+        }
+      }
+    }
+  }
+
+  .error-box {
+    max-width: 538px;
+  }
+}
+
+
+// ws-copy-workspace component
+#ws-copy-workspace {
+  margin-bottom: 60px;
+}
+
+.select-workspace-container {
+  margin-bottom: 50px;
+}
+// ws-copy-owner-settings component
+#ws-copy-owner-settings {
+  .ws-copy-input {
+    margin-bottom: 40px;
+  }
+  .sub-input-label {
+    margin-top: 10px;
+  }
+  .my-select {
+    max-width: 600px;
+    select {
+      font-size: .8em;
+      width: 100%;
+      height: 35px;
+      font-size: .8em;
+      background-color: white;
+      border: 1px solid $input-border;
+      float: left;
+    }
+    .cancel-icon {
+      float: right;
+      position: relative;
+      right: -25px;
+      bottom: 24px;
+    }
+  }
+}
+
+#new-folderset-form {
+  .new-folderset {
+    margin: 40px 0 20px 25px;
+  }
+}
+
+#ws-copy-custom-config {
+  margin-top: 40px;
+  .custom-header {
+    margin-bottom: 30px;
+  }
+  .sub-input-label {
+    font-size: 1em;
+  }
+  .custom-config-content {
+    margin-left: 20px;
+    margin-bottom: 40px;
+  }
+  .radio-group-item {
+    i {
+      margin-left: 10px;
+      font-size: .9em;
+    }
+    .selectize-comp {
+      margin-top: 10px;
+      margin-left: 25px;
+      max-width: 500px;
+    }
+  }
+  .selected-count {
+    box-shadow: $box-shadow;
+    width: 300px;
+    position: fixed;
+    top: 270px;
+    right: 40px;
+    border-radius: 5px;
+    background-color: $background-body;
+  }
+}
+
+#custom-submission-viewer-list {
+  width: 100%;
+  margin-top: 20px;
+  box-shadow: $box-shadow;
+  h4 {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: $main-font-weight;
+    padding: 20px 0 10px 0;
+  }
+  .info-bar {
+    margin: 10px 0;
+    @include flex-container(auto, auto, row, no-wrap, space-between, center, stretch);
+    .info-bar-item {
+      &.message {
+        @include flex-item(1, center, .30 0 auto);
+        width: 30%;
+        text-align: left;
+        font-weight: $light-font-weight;
+        padding-left: 15px;
+      }
+      &.link {
+        @include flex-item(2, center, .30 0 auto);
+        width: 30%;
+        text-align: center;
+        color: $accent-color;
+      }
+      &.button {
+        @include flex-item(3, center, .30 0 auto);
+        width: 30%;
+        text-align: right;
+        padding-right: 15px;
+      }
+    }
+  }
+  .sort-bar {
+    background-color: $filter-list-background-color;
+    @include flex-container(auto, auto, row, no-wrap, space-between, center, stretch);
+    .sort-bar-item {
+      text-transform: uppercase;
+      margin-top: 2px;
+      font-size: .9em;
+      text-align: center;
+      padding: 15px 0;
+      .sort-icon {
+        margin-left: 5px;
+      }
+      &.check {
+        @include flex-item(1, center, .03 0 auto);
+        width: 3%;
+        input {
+          text-align: center;
+        }
+      }
+      &.student {
+        @include flex-item(2, center, .12 0 auto);
+        width: 12%;
+      }
+      &.explanation {
+        @include flex-item(3, center, .60 0 auto);
+        width: 60%;
+        text-align: left;
+      }
+      &.selections {
+        @include flex-item(4, center, .10 0 auto);
+        width: 10%;
+      }
+      &.date {
+        @include flex-item(5, center, .12 0 auto);
+        width: 12%;
+      }
+      &:hover {
+        cursor: pointer;
+        color: black;
+      }
+    }
+  }
+}
+#custom-submission-viewer-list-item {
+  border-bottom: .5px solid $input-border;
+  padding: 10px 0;
+  display: inline-block;
+  @include flex-container(100%, null, row, wrap, space-between, center, stretch);
+  .item-section {
+    text-align: center;
+    &.check {
+      @include flex-item(1, center, .03 0 auto);
+      width: 3%;
+      input {
+        text-align: center;
+      }
+    }
+    &.student {
+      @include flex-item(2, center, .12 0 auto);
+      width: 12%;
+    }
+    &.explanation {
+      @include flex-item(3, center, .60 0 auto);
+      width: 60%;
+      text-align: left;
+    }
+    &.selections {
+      @include flex-item(4, center, .10 0 auto);
+      width: 10%;
+    }
+    &.date {
+      @include flex-item(5, center, .12 0 auto);
+      width: 12%;
+    }
+  }
+}
+
+#ws-copy-permissions {
+  .selectize-comp {
+    margin-bottom: 25px;
+    margin-top: 15px;
+  }
+  .fa-edit {
+    margin-left: 15px;
+  }
+  .fa-minus-circle {
+    color: $error-color;
+    margin-left: 15px;
+  }
+  .collaborator-list {
+    margin: 20px 0 30px 0;
+    li {
+      margin: 10px 10px;
+    }
+  }
+}
+
+#ws-permissions-new {
+  .username {
+    font-weight: $light-font-weight;
+  }
+  .global-permissions {
+    margin-bottom: 30px;
+    margin-top: 20px;
+  }
+  .submission-permissions {
+    margin-bottom: 30px;
+  }
+  .custom-global-permissions {
+    margin-top: 20px;
+    margin-left: 50px;
+    .input-label {
+      margin-left: -10px;
+    }
+    .radio-group {
+      margin: 20px 0;
+    }
+  }
+  .primary-button {
+    width: fit-content;
+    margin-left: 15px;
+  }
+}
+
+
+#ws-copy-review {
+  .sub-input-label {
+    margin-bottom: 20px;
+  }
+}
+
+
+#workspace-new-copy {
+  .workspace-copy-card {
+    @include flex-item(1, auto, 1 1 auto);
+    max-width: 700px;
+    .item-card-container {
+      margin: 5px;
+      box-shadow: $box-shadow;
+      border-radius: 5px;
+      padding: 10px;
+      display: block;
+      @include flex-container(auto, hidden, column, wrap, space-between, stretch, stretch);
+      &:hover {
+        background-color: $list-hover-color;
+      }
+      .item-card {
+        &.row-1 {
+          @include flex-item(1, auto, 1 0 auto);
+          padding: 15px 10px;
+          .privacy {
+            text-align: left;
+            float: left;
+            .privacy-icon {
+              margin-right: 5px;
+              font-size: 1.2em;
+            }
+            .date {
+              margin-left: 10px;
+              position: relative;
+              top: -3px;
+            }
+          }
+          .more {
+            float: right;
+            font-size: 1em;
+            margin-top: 5px;
+            cursor: pointer;
+          }
+        }
+        &.row-2 {
+          @include flex-item(2, auto, 1 0 auto);
+          padding: 20px 15px 15px 15px;
+          a {
+            color: black;
+            font-size: 1em;
+            &.active {
+              font-weight: $bolder-font-weight;
+              background-color: $background-body !important;
+            }
+          }
+          text-transform: capitalize;
+          overflow-y: hidden;
+        }
+        &.row-3 {
+          @include flex-item(3, auto, 1 0 auto);
+          padding: 0px 15px 15px 15px;
+          a {
+            &.active {
+              font-weight: $bolder-font-weight;
+              background-color: $background-body !important;
+            }
+          }
+        }
+        &.row-4 {
+          @include flex-item(4, auto, 1 0 auto);
+          padding: 15px 10px 20px 10px;
+          .workspace-stats {
+            text-align: center;
+            @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
+            li {
+              @include flex-item(1, auto, 1 0 auto);
+              line-height: 2em;
+              min-width: 100px;
+              .stat-header {
+                color: black;
+              }
+              .stat-number {
+                font-weight: $light-font-weight;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,13 +1,19 @@
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 /*global _:false */
-Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
+import { equal } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
   elementId: 'import-work-step2',
-  utils: Ember.inject.service('utility-methods'),
-  selectingClass: Ember.computed.equal('selectedValue', true),
+  utils: service('utility-methods'),
+  selectingClass: equal('selectedValue', true),
 
   useClass: {
     groupName: 'useClass',
     required: true,
-    inputs: [{
+    inputs: [
+      {
         value: true,
         label: 'Yes',
       },
@@ -15,23 +21,25 @@ Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUse
         value: false,
         label: 'No',
       },
-    ]
+    ],
   },
-
 
   willDestroyElement: function () {
-    this.set('selectedValue', this.get('selectedValue'));
+    this.set('selectedValue', this.selectedValue);
   },
 
-  initialSectionItem: function () {
-      const selectedSection = this.get('selectedSection');
-      if (this.get('utils').isNonEmptyObject(selectedSection)) {
-        return [selectedSection.id];
-      }
-      return [];
-  }.property('selectedSection'),
+  initialSectionItem: computed('selectedSection', function () {
+    const selectedSection = this.selectedSection;
+    if (this.utils.isNonEmptyObject(selectedSection)) {
+      return [selectedSection.id];
+    }
+    return [];
+  }),
 
   actions: {
+    updateSelectedValue: function (val) {
+      this.set('selectedValue', val);
+    },
     setSelectedSection(val, $item) {
       if (!val) {
         return;
@@ -43,31 +51,30 @@ Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUse
         return;
       }
 
-      const section = this.get('store').peekRecord('section', val);
-      if (this.get('utils').isNullOrUndefined(section)) {
+      const section = this.store.peekRecord('section', val);
+      if (this.utils.isNullOrUndefined(section)) {
         return;
       }
 
       this.set('selectedSection', section);
-      if (this.get('missingSection')) {
+      if (this.missingSection) {
         this.set('missingSection', null);
       }
     },
     next() {
-      const selectedValue = this.get('selectedValue');
+      const selectedValue = this.selectedValue;
       if (!selectedValue) {
         this.set('selectedSection', null);
       }
-      const section = this.get('selectedSection');
-      if (this.get('utils').isNonEmptyObject(section) || !selectedValue) {
-        this.get('onProceed')();
+      const section = this.selectedSection;
+      if (this.utils.isNonEmptyObject(section) || !selectedValue) {
+        this.onProceed();
         return;
       }
       this.set('missingSection', true);
-
     },
     back() {
-      this.get('onBack')(-1);
-    }
-  }
+      this.onBack(-1);
+    },
+  },
 });

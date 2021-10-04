@@ -1,27 +1,27 @@
 {{! app/templates/components/my-select.hbs}}
-<select disabled={{isDisabled}} {{action 'selectChange' on='change'}}>
-  {{#if prompt}}
-    {{#unless selectedValue}}
-    <option value="" id="select-prompt">{{prompt}}</option>
+<select disabled={{this.isDisabled}} {{action 'selectChange' on='change'}}>
+  {{#if this.prompt}}
+    {{#unless this.selectedValue}}
+    <option value="" id="select-prompt">{{this.prompt}}</option>
     {{/unless}}
   {{/if}}
-  {{#each content key="@index" as |item|}}
+  {{#each this.content key="@index" as |item|}}
     {{#if item.id}}
-    <option class="option" value="{{item.id}}" selected={{is-equal item selectedValue}} >
+    <option class="option" value="{{item.id}}" selected={{is-equal item this.selectedValue}} >
       {{get item optionLabelPath}}
       {{!item.label}}
     </option>
     {{else}}
 
-    <option class="option" value="{{item}}" selected={{is-equal item selectedValue}}>
+    <option class="option" value="{{item}}" selected={{is-equal item this.selectedValue}}>
       {{item}} {{!item.label}}
     </option>
     {{/if}}
   {{/each}}
 </select>
 
-{{#unless cannotBeNull}}
-  {{#if selectedValue}}
-    <i {{action (mut selectedValue) null}} class="fa fa-times cancel-icon" aria-hidden="true"></i>
+{{#unless this.cannotBeNull}}
+  {{#if this.selectedValue}}
+    <i {{action (mut this.selectedValue) null}} class="fa fa-times cancel-icon" aria-hidden="true"></i>
   {{/if}}
 {{/unless}}

@@ -1,10 +1,14 @@
-Encompass.Section = DS.Model.extend(Encompass.Auditable, {
-  sectionId: Ember.computed.alias('id'),
-  name: DS.attr('string'),
-  organization: DS.belongsTo('organization', {inverse: null}),
-  teachers: DS.hasMany('user', { inverse: null}),
-  sectionPassword: DS.attr('string'),
-  students: DS.hasMany('user', { inverse: null }),
-  problems: DS.hasMany('problem'),
-  assignments: DS.hasMany('assignment')
-});
+import { attr, belongsTo, hasMany } from '@ember-data/model';
+import Auditable from './auditable';
+export default class SectionModel extends Auditable {
+  get sectionId() {
+    return this.id;
+  }
+  @attr('string') name;
+  @belongsTo('organization', { inverse: null }) organization;
+  @hasMany('user', { inverse: null }) teachers;
+  @attr('string') sectionPassword;
+  @hasMany('user', { inverse: null }) students;
+  @hasMany('problem') problems;
+  @hasMany('assignment') assignments;
+}

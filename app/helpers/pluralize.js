@@ -1,4 +1,11 @@
-Encompass.PluralizeHelper = Ember.Helper.helper(function(params) {
+import { helper as buildHelper } from '@ember/component/helper';
+
+
+
+
+
+
+export default buildHelper(function (params) {
   var number = params[0];
   var singular = params[1];
   var plural = params[2];
