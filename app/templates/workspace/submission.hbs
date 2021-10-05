@@ -7,14 +7,14 @@
     </span>
     <span class="info workspaceOwner {{if this.isMyWorkspace 'isMine' 'notMine'}}">by {{this.currentWorkspace.owner.displayName}} </span>
   {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
-    <LinkTo @route="workspace.work" @model={{ws.id}} class="parent-link info">{{ws.name}}</LinkTo>
+    <LinkTo @route="workspace.work" @model={{ws.id}} @class="parent-link info">{{ws.name}}</LinkTo>
   {{/each}}
 </div>
   <aside>
-  <button id="takeTour" class="action_button" {{on "click" this.startTour}} type="button">Take Tour</button>
+  <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>
     {{! this needs to be here so the GuideJS can click it when done
         we don't have a better way to propagate actions }}
-    <button id="doneTour" {{on "click" this.doneTour}} type="button">Done Tour</button>
+    <a id="doneTour" style="display:none" {{action 'doneTour'}}>Done Tour</a>
   </aside>
   <div class="clear"></div>
 </header>
@@ -23,32 +23,32 @@
 {{!-- <div id="al_left" class="workspace-flex-item folders"> --}}
   {{#if this.showFoldersToggle}}
   <div title="Show Folders" class="toggle-display">
-    <button {{on "click" this.toggleFolderDisplay}} type="button"><img src="../assets/images/chevrons-right.svg" alt="folder display toggle"></button>
+    <button {{action 'toggleFolderDisplay'}}><img src="../assets/images/chevrons-right.svg"></button>
   </div>
   {{/if}}
-  <FolderList @store={{this.store}} @folders={{this.nonTrashedFolders}} @workspace={{this.currentWorkspace}} @fileSelection="fileSelectionInFolder" @currentSubmission={{this.model.submission}} @currentSelection={{this.currentSelection}} @taggings={{this.nonTrashedTaggings}} @workspaceSubmissions={{this.currentWorkspace.submissions.content}} @workspaceSelections={{this.nonTrashedSelections}} @hideFolders={{this.toggleFolderDisplay}} @isHidden={{this.areFoldersHidden}} @containerLayoutClass={{this.containerLayoutClass}} @hideComments={{this.toggleCommentDisplay}} @areCommentsHidden={{this.areCommentsHidden}} />
+  <FolderList @store={{this.store}} @folders={{this.nonTrashedFolders}} @workspace={{this.currentWorkspace}} @fileSelection="fileSelectionInFolder" @currentSubmission={{this.model.submission}} @currentSelection={{this.currentSelection}} @taggings={{this.nonTrashedTaggings}} @workspaceSubmissions={{this.currentWorkspace.submissions.content}} @workspaceSelections={{this.nonTrashedSelections}} @hideFolders={{action "toggleFolderDisplay"}} @isHidden={{this.areFoldersHidden}} @containerLayoutClass={{this.containerLayoutClass}} @hideComments={{action "toggleCommentDisplay"}} @areCommentsHidden={{this.areCommentsHidden}} />
 {{!-- </div> --}}
 
-{{!-- <!--section class="submissions"--> --}}
+<!--section class="submissions"-->
 {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
-  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model}} @addSelection={{this.addSelection}} @deleteSelection={{this.deleteSelection}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{this.toNewResponse}} @toSubmission={{this.toSubmission}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
-{{!-- <!--/section--> --}}
+<!--/section-->
 
-{{!-- <!--section class="right"--> --}}
+<!--section class="right"-->
 {{!-- <div id="al_right"> --}}
    {{#if this.showCommentsToggle}}
   <div title="Show Comments" class="toggle-display comments">
-    <button {{on "click" this.toggleCommentDisplay}} type="button"><img src="../assets/images/chevrons-left.svg" alt="comment display toggle"></button>
+    <button {{action 'toggleCommentDisplay'}}><img src="../assets/images/chevrons-left.svg"></button>
   </div>
   {{/if}}
-  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model}} @allowedToComment={{this.permittedToComment}} @resetComment={{this.cancelComment}} @isHidden={{this.areCommentsHidden}} @hideComments={{this.toggleCommentDisplay}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 </div>
 
-{{!-- <!--/section--> --}}
+<!--/section-->
 </div>
 {{#if this.showOverlay}}
 <div class="clear"></div>
-<div {{on "click" this.popupMaskClicked}} id="al_popup_mask" class="al_popup_close" style="height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;"></div>
+<div {{action 'popupMaskClicked'}} id="al_popup_mask" class="al_popup_close" style="height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;"></div>
 {{/if}}
