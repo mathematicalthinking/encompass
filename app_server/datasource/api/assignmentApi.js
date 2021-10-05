@@ -915,17 +915,17 @@ const generateLinkedWorkspacesFromAssignment = async (
     });
     assignment.depopulate();
     // logger.info('students without workspaces', studentsWithoutWorkspaces.map(s => s.username));
-    if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
-      // should send message detailing this
-      // logger.info('No students without a linked workspace');
-      return ['All students already own a linked workspace', null];
-    }
     // if answers convert answers to submissions
 
     let submissionObjects = await answersToSubmissions(answers);
     let workspaces;
     // create a workspace for each student in assignment
     if (linkType === 'individual') {
+      if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
+        // should send message detailing this
+        // logger.info('No students without a linked workspace');
+        return ['All students already own a linked workspace', null];
+      }
       workspaces = await Promise.all(
         studentsWithoutWorkspaces.map(async (student) => {
           // create submission record copies
