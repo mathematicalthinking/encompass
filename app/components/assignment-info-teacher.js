@@ -59,7 +59,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   get showFullLinkedWsMsg() {
-    return this.linkedByGroup
+    return this.missingWorkspaces.length
       ? this.isEditing && this.allGroupsHaveWs
       : this.isEditing && this.allStudentsHaveWs;
   }
@@ -209,21 +209,12 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
     );
   }
   get showAddLinkedWsBtn() {
-    if (this.linkedByGroup) {
-      return (
-        this.isEditing &&
-        this.hasBasicEditPrivileges &&
-        this.hideLinkedWsForm &&
-        !this.allGroupsHaveWs
-      );
-    } else {
-      return (
-        this.isEditing &&
-        this.hasBasicEditPrivileges &&
-        this.hideLinkedWsForm &&
-        !this.allStudentsHaveWs
-      );
-    }
+    return (
+      this.isEditing &&
+      this.hasBasicEditPrivileges &&
+      this.hideLinkedWsForm &&
+      this.missingWorkspaces.length
+    );
   }
 
   get showReport() {
@@ -279,6 +270,21 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
 
   get linkedByGroup() {
     return this.args.assignment.linkedWorkspacesRequest.linkType === 'group';
+  }
+
+  get missingWorkspaces() {
+    if (this.args.assignment.linkedWorkspacesRequest.linkType === 'group') {
+      return this.groupsWithoutWorkspaces;
+    }
+    if (
+      this.args.assignment.linkedWorkspacesRequest.linkType === 'individual'
+    ) {
+      return this.studentsWithoutWorkspaces;
+    }
+    return [
+      ...this.groupsWithoutWorkspaces.toArray(),
+      ...this.studentsWithoutWorkspaces.toArray(),
+    ];
   }
 
   @action editAssignment() {

@@ -901,6 +901,19 @@ const generateLinkedWorkspacesFromAssignment = async (
 
     await assignment.depopulate('linkedWorkspaces');
 
+    let groups = await models.Group.find().where({
+      section,
+      isTrashed: false,
+    });
+    await assignment
+      .populate({ path: 'linkedWorkspaces', select: 'group' })
+      .execPopulate();
+    let groupsWithoutWorkspaces = _.reject(groups, (group) => {
+      return _.find(assignment.linkedWorkspaces, (ws) => {
+        return areObjectIdsEqual(ws.group, group._id);
+      });
+    });
+    assignment.depopulate();
     // logger.info('students without workspaces', studentsWithoutWorkspaces.map(s => s.username));
     if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
       // should send message detailing this
@@ -961,19 +974,6 @@ const generateLinkedWorkspacesFromAssignment = async (
         })
       );
     } else if (linkType === 'group') {
-      let groups = await models.Group.find().where({
-        section,
-        isTrashed: false,
-      });
-      await assignment
-        .populate({ path: 'linkedWorkspaces', select: 'group' })
-        .execPopulate();
-      let groupsWithoutWorkspaces = _.reject(groups, (group) => {
-        return _.find(assignment.linkedWorkspaces, (ws) => {
-          return areObjectIdsEqual(ws.group, group._id);
-        });
-      });
-      assignment.depopulate();
       workspaces = await Promise.all(
         groupsWithoutWorkspaces.map(async (group) => {
           let submissionRecords = await Promise.all(
@@ -1034,6 +1034,115 @@ const generateLinkedWorkspacesFromAssignment = async (
           });
         })
       );
+    } else if (linkType === 'both') {
+      let individualWorkspaces = await Promise.all(
+        studentsWithoutWorkspaces.map(async (student) => {
+          // create submission record copies
+          let submissionRecords = await Promise.all(
+            submissionObjects.map((obj) => {
+              let sub = new models.Submission(obj);
+              let creatorId;
+
+              let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+              // set creator of submission as the enc user who created it if applicable
+              // else set as importer
+
+              if (isValidMongoId(encUserId)) {
+                creatorId = encUserId;
+              } else {
+                creatorId = reqUser._id;
+              }
+              sub.createdBy = creatorId;
+              sub.createDate = Date.now();
+              sub.lastModifiedDate = Date.now();
+              sub.lastModifiedBy = creatorId;
+              return sub.save();
+            })
+          );
+
+          let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
+
+          let wsName = `${student.username}: ${nameSuffix}`;
+
+          return models.Workspace.create({
+            name: wsName,
+            owner: student._id,
+            createdBy: reqUser._id,
+            lastModifiedBy: reqUser._id,
+            lastModifiedDate: Date.now(),
+            mode: mode || 'private',
+            submissions: submissionRecords.map((s) => s._id),
+            linkedAssignment: assignment._id,
+            organization: reqUser.organization,
+            doAllowSubmissionUpdates:
+              typeof doAllowSubmissionUpdates === 'boolean'
+                ? doAllowSubmissionUpdates
+                : true,
+          });
+        })
+      );
+      let groupWorkspaces = await Promise.all(
+        groupsWithoutWorkspaces.map(async (group) => {
+          let submissionRecords = await Promise.all(
+            submissionObjects.map((obj) => {
+              let sub = new models.Submission(obj);
+              let creatorId;
+
+              let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+              // set creator of submission as the enc user who created it if applicable
+              // else set as importer
+
+              if (isValidMongoId(encUserId)) {
+                creatorId = encUserId;
+              } else {
+                creatorId = reqUser._id;
+              }
+              sub.createdBy = creatorId;
+              sub.createDate = Date.now();
+              sub.lastModifiedDate = Date.now();
+              sub.lastModifiedBy = creatorId;
+              return sub.save();
+            })
+          );
+          let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
+          let permissions = group.students.map((student) => {
+            let options = {
+              user: student,
+              global: 'editor',
+              feedback: 'none',
+              comments: 4,
+              selections: 4,
+              folders: 3,
+              submissions: {
+                submissionIds: [],
+                all: true,
+                userOnly: false,
+              },
+            };
+            return options;
+          });
+          return models.Workspace.create({
+            name: `${group.name}: ${nameSuffix}`,
+            owner: reqUser._id,
+            group: group._id,
+            createdBy: reqUser._id,
+            lastModifiedBy: reqUser._id,
+            lastModifiedDate: Date.now(),
+            mode: mode || 'private',
+            submissions: submissionRecords.map((s) => s._id),
+            linkedAssignment: assignment._id,
+            organization: reqUser.organization,
+            permissions,
+            doAllowSubmissionUpdates:
+              typeof doAllowSubmissionUpdates === 'boolean'
+                ? doAllowSubmissionUpdates
+                : true,
+          });
+        })
+      );
+      workspaces = [...individualWorkspaces, ...groupWorkspaces];
     }
     const parentWorkspace = await models.Workspace.findById(
       assignment.parentWorkspace
