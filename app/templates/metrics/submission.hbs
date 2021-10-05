@@ -31,8 +31,64 @@
   {{/each}}
   {{/if}}
 </ul>
-<h2>Data</h2>
-{{#each selectedWorkspaces as |submission|}}
+<table>
+  <thead>
+    <tr>
+      <th>
+        Workspace
+      </th>
+      <th>
+        Selections
+      </th>
+      <th>
+        Comments
+      </th>
+      <th>
+        Folders
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each selectedWorkspaces as |submission|}}
+      <tr>
+        <td>
+          {{#each submission.workspaces as |workspace|}}
+            <p>Name: {{workspace.name}}</p>
+            <p>Owner: {{workspace.owner.username}}</p>
+          {{/each}}
+        </td>
+        <td>
+          <table>
+            {{#each submission.selections as |selection|}}
+              <tr>
+                <td>{{selection.text}}</td>
+              </tr>
+            {{/each}}
+          </table>
+        </td>
+        <td>
+          <table>
+            {{#each submission.comments as |comment|}}
+              <tr>
+                <td>{{comment.text}}</td>
+              </tr>
+            {{/each}}
+          </table>
+        </td>
+        <td>
+          <table>
+            {{#each submission.folders as |folder|}}
+              <tr>
+                <td>{{folder.name}}</td>
+              </tr>
+            {{/each}}
+          </table>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{!-- {{#each selectedWorkspaces as |submission|}}
   <h3>Workspace</h3>
   {{#each submission.workspaces as |workspace|}}
     <p>Name: {{workspace.name}}</p>
@@ -77,6 +133,6 @@
       {{/each}}
     </tbody>
   </table>
-{{/each}}
+{{/each}} --}}
 </div>
 <p><LinkTo @route="metrics">back</LinkTo></p>
