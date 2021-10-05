@@ -23,4 +23,10 @@ export default class MetricsSubmissionRoute extends Route {
       workspaces,
     });
   }
+  resetController(controller, isExiting, transition) {
+    if (isExiting && transition.targetName !== 'error') {
+      controller.showWorkspaces = false;
+      controller.selectedWorkspaces = [];
+    }
+  }
 }

@@ -6,16 +6,16 @@
 <div class="metrics__container">
     <div class="metrics__container metrics--flex">
     <button {{on "click" this.toggleShowWorkspaces}} class="primary-button">Show Workspaces</button>
-    <button {{on "click" this.toggleShowData}} class="primary-button">Show Data</button>
+    {{!-- <button {{on "click" this.toggleShowData}} class="primary-button">Show Data</button> --}}
 </div>
   <div class="metrics__container" id="submission">
     <div class="metrics__card">
     <h3>answer</h3>
-      <p>{{if this.model.submission.shortAnswer this.model.submission.shortAnswer this.model.submission.answer.answer}}</p>
+      <ExpandableCell @text={{if this.model.submission.shortAnswer this.model.submission.shortAnswer this.model.submission.answer.answer}} />
     </div>
     <div class="metrics__card">
     <h3>explanation</h3>
-      <p>{{{if this.model.submission.longAnswer this.model.submission.longAnswer this.model.submission.answer.explanation}}}</p>
+      <ExpandableCell @text={{if this.model.submission.longAnswer this.model.submission.longAnswer this.model.submission.answer.explanation}} />
     </div>
   </div>
 <ul>
@@ -39,9 +39,44 @@
     <p>Owner: {{workspace.owner.username}}</p>
   {{/each}}
   <h3>Selections:</h3>
-  {{#each submission.selections as |selection|}}
-    {{selection.text}}
-  {{/each}}
+  <table>
+    <thead>
+      <tr>
+        <th>
+          selection
+        </th>
+        <th>
+          comments
+        </th>
+        <th>
+          folder
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each submission.selections as |selection|}}
+        <tr>
+          <td>
+            {{selection.text}}
+          </td>
+          <td>
+            <ul>
+              {{#each selection.comments as |comment|}}
+                <li>{{comment.text}}</li>
+              {{/each}}
+            </ul>
+          </td>
+          <td>
+            <ul>
+              {{#each selection.folder as |folder|}}
+                <li>{{folder.name}}</li>
+              {{/each}}
+            </ul>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
 {{/each}}
 </div>
 <p><LinkTo @route="metrics">back</LinkTo></p>
