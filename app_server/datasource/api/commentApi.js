@@ -1,37 +1,37 @@
 /**
-  * # Comment API
-  * @description This is the API for comment based requests
-  * @author Damola Mabogunje, Daniel Kelly
-  * @since 1.0.1
-  */
+ * # Comment API
+ * @description This is the API for comment based requests
+ * @author Damola Mabogunje, Daniel Kelly
+ * @since 1.0.1
+ */
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
 const moment = require('moment');
 
 //REQUIRE FILES
-const models   = require('../schemas');
+const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
-const utils    = require('../../middleware/requestHandler');
-const wsAccess   = require('../../middleware/access/workspaces');
-const access   = require('../../middleware/access/comments');
+const utils = require('../../middleware/requestHandler');
+const wsAccess = require('../../middleware/access/workspaces');
+const access = require('../../middleware/access/comments');
 const asyncWrapper = utils.asyncWrapper;
 
-const { isValidMongoId, } = require('../../utils/mongoose');
+const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
 /**
-  * @public
-  * @method getComments
-  * @description __URL__: /api/comments
-  * @returns {Object} A 'named' array of comment objects
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method getComments
+ * @description __URL__: /api/comments
+ * @returns {Object} A 'named' array of comment objects
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 async function getComments(req, res, next) {
   let user = userAuth.requireUser(req);
   let criteria;
@@ -44,7 +44,7 @@ async function getComments(req, res, next) {
     } else {
       criteria = await access.get.comments(user, null);
     }
-  }catch(err) {
+  } catch (err) {
     console.error('error getComments', err);
     console.trace();
   }
@@ -53,14 +53,14 @@ async function getComments(req, res, next) {
   let byRelevance = false;
 
   // Determine what comments can be searched
-  if(textSearch) {
+  if (textSearch) {
     byRelevance = true;
     criteria.$text = {
-      $search: textSearch
+      $search: textSearch,
     };
   }
 
-  if(isValidMongoId(createdBy)) {
+  if (isValidMongoId(createdBy)) {
     criteria.createdBy = createdBy;
   }
 
@@ -77,13 +77,13 @@ async function getComments(req, res, next) {
     let startMoment = moment(sinceDate, 'L').startOf('day');
     let startDateObj = new Date(startMoment);
 
-    criteria.createDate = {$gte: startDateObj};
+    criteria.createDate = { $gte: startDateObj };
   }
 
   let workspaces = req.query.workspaces;
 
-  if(workspaces) {
-    criteria.workspace = {$in: req.query.workspaces};
+  if (workspaces) {
+    criteria.workspace = { $in: req.query.workspaces };
   }
 
   //see comment on ENC-488 this isn't gonna work (need JOIN/multiple queries or denormalization)
@@ -97,12 +97,11 @@ async function getComments(req, res, next) {
 
   let sortParam = { createDate: 1 };
 
-
   if (byRelevance) {
-    sortParam = { score: { $meta: "textScore" } };
+    sortParam = { score: { $meta: 'textScore' } };
 
-    [ results, itemCount ] = await Promise.all([
-      models.Comment.find(criteria, { score: {$meta: "textScore"}})
+    [results, itemCount] = await Promise.all([
+      models.Comment.find(criteria, { score: { $meta: 'textScore' } })
         .sort(sortParam)
         .limit(req.query.limit)
         .skip(req.skip)
@@ -110,16 +109,23 @@ async function getComments(req, res, next) {
         .populate('submission')
         .populate('createdBy')
         .populate('workspace')
-        .lean().exec(),
-      models.Comment.count(criteria)
+        .lean()
+        .exec(),
+      models.Comment.count(criteria),
     ]);
   } else {
-    [ results, itemCount ] = await Promise.all([
-      models.Comment.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).populate('selection')
-      .populate('submission')
-      .populate('workspace')
-      .populate('createdBy').lean().exec(),
-      models.Comment.count(criteria)
+    [results, itemCount] = await Promise.all([
+      models.Comment.find(criteria)
+        .sort(sortParam)
+        .limit(req.query.limit)
+        .skip(req.skip)
+        .populate('selection')
+        .populate('submission')
+        .populate('workspace')
+        .populate('createdBy')
+        .lean()
+        .exec(),
+      models.Comment.count(criteria),
     ]);
   }
   const pageCount = Math.ceil(itemCount / req.query.limit);
@@ -127,69 +133,71 @@ async function getComments(req, res, next) {
   if (!currentPage) {
     currentPage = 1;
   }
-     let data = {
-       comments: [],
-       meta: {
-        total: itemCount,
-        pageCount,
-        currentPage
+  let data = {
+    comments: [],
+    meta: {
+      total: itemCount,
+      pageCount,
+      currentPage,
+    },
+  };
+  let dataMap = { createdBy: 'user' };
+  let relatedData = {
+    selection: {},
+    submission: {},
+    workspace: {},
+    createdBy: {},
+  };
+
+  //this would probably be better done as an aggregate?
+  //we're just massaging the data into an ember friendly format for side-loading
+  results.forEach((comment) => {
+    let hasMissingRelationship = false;
+
+    _.keys(relatedData).forEach(function (key) {
+      if (comment[key]) {
+        relatedData[key][comment[key]._id] = comment[key];
+        comment[key] = comment[key]._id;
+      } else {
+        hasMissingRelationship = true;
+
+        logger.error('comment ' + comment._id + ' missing ' + key);
+        delete comment[key];
       }
-    };
-     let dataMap = {createdBy: 'user'};
-     let relatedData = {
-        selection: {},
-        submission: {},
-        workspace: {},
-        createdBy: {}
-      };
+    });
+    if (!hasMissingRelationship) {
+      data.comments.push(comment);
+    }
+  });
 
-      //this would probably be better done as an aggregate?
-      //we're just massaging the data into an ember friendly format for side-loading
-      results.forEach((comment) => {
-        let hasMissingRelationship = false;
+  _.keys(relatedData).forEach(function (key) {
+    let modelName = key;
+    if (dataMap[key]) {
+      modelName = dataMap[key];
+    }
+    data[modelName] = _.values(relatedData[key]);
+  });
 
-        _.keys(relatedData).forEach(function(key){
-          if(comment[key]){
-            relatedData[key][comment[key]._id] = comment[key];
-            comment[key] = comment[key]._id;
-          } else {
-            hasMissingRelationship = true;
-
-            logger.error('comment ' + comment._id + ' missing ' + key);
-            delete comment[key];
-          }
-        });
-        if (!hasMissingRelationship) {
-          data.comments.push(comment);
-        }
-      });
-
-      _.keys(relatedData).forEach(function(key){
-        let modelName = key;
-        if(dataMap[key]) {
-          modelName = dataMap[key];
-        }
-        data[modelName] = _.values(relatedData[key]);
-      });
-
-      utils.sendResponse(res, data);
-
+  utils.sendResponse(res, data);
 }
 
 /**
-  * @public
-  * @method getComment
-  * @description __URL__: /api/comments/:id
-  * @returns {Object} A 'named' comment object
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method getComment
+ * @description __URL__: /api/comments/:id
+ * @returns {Object} A 'named' comment object
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 async function getComment(req, res, next) {
   const user = userAuth.requireUser(req);
 
   if (!user) {
-    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+    return utils.sendError.InvalidCredentialsError(
+      'You must be logged in.',
+      res
+    );
   }
 
   let err;
@@ -198,7 +206,7 @@ async function getComment(req, res, next) {
 
   let id = req.params.id;
 
-  [ err, comment ] = await asyncWrapper(models.Comment.findById(id));
+  [err, comment] = await asyncWrapper(models.Comment.findById(id));
 
   if (err) {
     console.error(`Error finding comment by id: ${err}`);
@@ -206,11 +214,12 @@ async function getComment(req, res, next) {
     return utils.sendError.InternalError(null, res);
   }
 
-  if (!comment || comment.isTrashed) { // record not found in db
+  if (!comment || comment.isTrashed) {
+    // record not found in db
     return utils.sendResponse(res, null);
   }
 
-  [ err, canLoadComment ] = await asyncWrapper(access.get.comment(user, id));
+  [err, canLoadComment] = await asyncWrapper(access.get.comment(user, id));
 
   if (err) {
     console.error(`Error getComment: ${err}`);
@@ -218,36 +227,54 @@ async function getComment(req, res, next) {
     return utils.sendError.InternalError(null, res);
   }
 
-  if (!canLoadComment) { // user does not have permission to access comment
-    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  if (!canLoadComment) {
+    // user does not have permission to access comment
+    return utils.sendError.NotAuthorizedError(
+      'You do not have permission.',
+      res
+    );
   }
 
-  const data = { // user has permission; send back record
-    comment
+  const data = {
+    // user has permission; send back record
+    comment,
   };
 
   return utils.sendResponse(res, data);
 }
 
 /**
-  * @public
-  * @method postComment
-  * @description __URL__: /api/comments
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data saving failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method postComment
+ * @description __URL__: /api/comments
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data saving failed
+ * @throws {RestError} Something? went wrong
+ */
 async function postComment(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
     let workspaceId = req.body.comment.workspace;
-    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
+    let workspace = await models.Workspace.findById(workspaceId)
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
 
-    let canCreateCommentInWs = wsAccess.canModify(user, workspace, 'comments', 2);
+    let canCreateCommentInWs = wsAccess.canModify(
+      user,
+      workspace,
+      'comments',
+      2
+    );
 
     if (!canCreateCommentInWs) {
-      logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
+      logger.info('permission denied');
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission for this workspace`,
+        res
+      );
     }
     let comment = new models.Comment(req.body.comment);
     comment.createdBy = user;
@@ -259,30 +286,29 @@ async function postComment(req, res, next) {
 
     let data = { comment };
     utils.sendResponse(res, data);
-
-  }catch(err) {
+  } catch (err) {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
   }
 }
 
 /**
-  * @public
-  * @method putComment
-  * @description __URL__: /api/comments/:id
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method putComment
+ * @description __URL__: /api/comments/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 
 /**
-  * @public
-  * @method putComment
-  * @description __URL__: /api/comments/:id
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method putComment
+ * @description __URL__: /api/comments/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 async function putComment(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
@@ -338,15 +364,71 @@ async function putComment(req, res, next) {
 
     let data = { comment };
     utils.sendResponse(res, data);
-
-
   } catch (err) {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
   }
 }
 
+const resolveGroupUpdates = async (comment, type) => {
+  const sourceWorkspace = await models.Workspace.findById(comment.workspace);
+  //this is only supposed to add selections to group workspaces from individual workspaces
+  if (sourceWorkspace.group || sourceWorkspace.workspaceType === 'parent') {
+    return;
+  }
+  const targetGroups = await models.Group.find({
+    students: sourceWorkspace.owner,
+  });
+  //find the group workspaces
+  const targetWorkspaces = await models.Workspace.find({
+    group: targetGroups,
+    isTrashed: false,
+    linkedAssignment: sourceWorkspace.linkedAssignment,
+  });
+  if (!targetWorkspaces.length) {
+    return;
+  }
+  if (type === 'delete') {
+    return deleteGroupLevelComments(comment);
+  }
+  //add a copy of the selection to each of those workspaces
+  const createdComments = await Promise.all(
+    targetWorkspaces.map(async (workspace) => {
+      await comment.populate('submission').execPopulate();
+      await workspace.populate('submissions').execPopulate();
+      let childPlain = comment.toObject();
+      let fieldsToOmit = ['_id', 'workspace', 'comments', 'taggings'];
+      let childCopy = _.omit(childPlain, fieldsToOmit);
+      childCopy.originalComment = comment._id;
+      let parentSub = _.find(workspace.submissions, (popSubmission) => {
+        return areObjectIdsEqual(
+          popSubmission.answer,
+          childCopy.submission.answer
+        );
+      });
+      childCopy.submission = parentSub._id;
+      childCopy.workspace = workspace._id;
+      const newComment = await models.Comment.create(childCopy);
+      return newComment;
+    })
+  );
+  return createdComments;
+};
+
+const deleteGroupLevelComments = async (comment) => {
+  const foundComments = await models.Comment.find({
+    originalComment: comment._id,
+  });
+  return Promise.all(
+    foundComments.map((targetComment) => {
+      targetComment.isTrashed = true;
+      return targetComment.save();
+    })
+  );
+};
+
 module.exports.get.comments = getComments;
 module.exports.get.comment = getComment;
 module.exports.post.comment = postComment;
 module.exports.put.comment = putComment;
+module.exports.resolveGroupUpdates = resolveGroupUpdates;
