@@ -195,7 +195,7 @@ SelectionSchema.post('save', function (selection) {
     ).catch((err) => {
       console.log('Error creating parent selection: ', err);
     });
-    resolveGroupWorkspaces(selection);
+    resolveGroupWorkspaces(selection, 'create');
   } else if (wereUpdatedFields) {
     let allowedParentUpdateFields = [
       'isTrashed',
@@ -219,6 +219,9 @@ SelectionSchema.post('save', function (selection) {
     ).catch((err) => {
       console.log('Error updating parent selection: ', err);
     });
+    if (parentFieldsToUpdate.includes('isTrashed')) {
+      resolveGroupWorkspaces(selection, 'delete');
+    }
   }
 });
 

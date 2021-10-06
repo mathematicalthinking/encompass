@@ -329,7 +329,7 @@ async function putSelection(req, res, next) {
   }
 }
 
-const resolveGroupWorkspaces = async (selection) => {
+const resolveGroupWorkspaces = async (selection, type) => {
   const sourceWorkspace = await models.Workspace.findById(selection.workspace);
   //this is only supposed to add selections to group workspaces from individual workspaces
   if (sourceWorkspace.group || sourceWorkspace.workspaceType === 'parent') {
@@ -346,6 +346,9 @@ const resolveGroupWorkspaces = async (selection) => {
   });
   if (!targetWorkspaces.length) {
     return;
+  }
+  if (type === 'delete') {
+    return deleteGroupLevelSelections(selection);
   }
   //add a copy of the selection to each of those workspaces
   const createdSelections = await Promise.all(
@@ -369,6 +372,18 @@ const resolveGroupWorkspaces = async (selection) => {
     })
   );
   return createdSelections;
+};
+
+const deleteGroupLevelSelections = async (selection) => {
+  const foundSelections = await models.Selection.find({
+    originalSelection: selection._id,
+  });
+  return Promise.all(
+    foundSelections.map((targetSelection) => {
+      targetSelection.isTrashed = true;
+      return targetSelection.save();
+    })
+  );
 };
 
 module.exports.get.selections = getSelections;
