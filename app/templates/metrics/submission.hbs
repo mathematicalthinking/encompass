@@ -15,7 +15,7 @@
     </div>
     <div class="metrics__card">
     <h3>explanation</h3>
-      <ExpandableCell @text={{if this.model.submission.longAnswer this.model.submission.longAnswer this.model.submission.answer.explanation}} />
+      <ExpandableCell @text={{if this.model.submission.longAnswer (make-html-safe this.model.submission.longAnswer) (make-html-safe this.model.submission.answer.explanation)}} />
     </div>
   </div>
 <ul>
