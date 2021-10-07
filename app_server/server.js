@@ -50,27 +50,26 @@ switch (process.env.NODE_ENV) {
     delete dbConf.options.sslKey;
     delete dbConf.options.sslCert;
     break;
-  case 'staging':
-    console.log('NODE_ENV == staging');
-    port = process.env.PORT;
-    dbConf.name = process.env.DB_NAME_STAGING;
-    dbConf.host = process.env.MONGO_URI_PROD;
-    dbConf.options.ssl = true;
-    dbConf.options.user = process.env.MONGO_USER_STAGE;
-    dbConf.options.pass = process.env.MONGO_PASS_STAGE;
-    dbConf.host = process.env.MONGO_URI;
-    dbConf.options.sslKey = fs.readFileSync(process.env.MONGO_SSL_KEY);
-    dbConf.options.sslCert = fs.readFileSync(process.env.MONGO_SSL_CERT);
-    break;
   case 'production':
     console.log('NODE_ENV == production');
     port = process.env.PORT;
+    dbConf.host = process.env.MONGO_URI_PROD;
     dbConf.name = process.env.DB_NAME_PROD;
+    dbConf.options.ssl = true;
+    dbConf.options.user = process.env.MONGO_USER;
+    dbConf.options.pass = process.env.MONGO_PASS;
+    dbConf.options.sslKey = fs.readFileSync(process.env.MONGO_SSL_KEY);
+    dbConf.options.sslCert = fs.readFileSync(process.env.MONGO_SSL_CERT);
+    break;
+  case 'staging':
+    console.log('NODE_ENV == staging');
+    port = process.env.PORT;
+    dbConf.host = process.env.MONGO_URI_STAGING;
+    dbConf.name = process.env.DB_NAME_STAGING;
     dbConf.options.ssl = false;
     dbConf.options.sslValidate = false;
     delete dbConf.options.user;
     delete dbConf.options.pass;
-    dbConf.host = process.env.MONGO_URI_PROD;
     delete dbConf.options.sslKey;
     delete dbConf.options.sslCert;
     break;
