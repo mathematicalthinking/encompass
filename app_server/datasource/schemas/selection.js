@@ -185,8 +185,8 @@ SelectionSchema.post('save', function (selection) {
 
   let wereUpdatedFields =
     Array.isArray(updatedFields) && updatedFields.length > 0;
-
-  if (wasNew) {
+  //don't make parent copies of group workspace copies of selections
+  if (wasNew && !selection.originalSelection) {
     resolveParentUpdates(
       selection.createdBy,
       selection,

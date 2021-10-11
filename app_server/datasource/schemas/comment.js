@@ -242,8 +242,8 @@ CommentSchema.post('save', function (comment) {
 
   let wereUpdatedFields =
     Array.isArray(updatedFields) && updatedFields.length > 0;
-
-  if (wasNew) {
+  //don't make parent copies of group workspace copies of comments
+  if (wasNew && !comment.originalComment) {
     resolveParentUpdates(comment.createdBy, comment, 'comment', 'create').catch(
       (err) => {
         console.log('Error creating parent comment: ', err);
