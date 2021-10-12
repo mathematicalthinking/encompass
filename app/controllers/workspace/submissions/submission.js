@@ -15,7 +15,7 @@ export default Controller.extend({
   workspace: controller(),
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
-
+  store: service(),
   queryParams: ['vmtRoomId'],
 
   // workspaceSubmissions: Ember.inject.controller(),
@@ -38,7 +38,7 @@ export default Controller.extend({
   }),
   areFoldersHidden: false,
   areCommentsHidden: false,
-
+  itemsToDisplay: 'all',
   isParentWorkspace: equal('currentWorkspace.workspaceType', 'parent'),
 
   canSelect: computed(
@@ -188,6 +188,10 @@ export default Controller.extend({
   cannotSeeResponses: not('canSeeResponses'),
 
   actions: {
+    updateDisplayInput: function ({ target }) {
+      console.log(this.itemsToDisplay);
+      return (this.itemsToDisplay = target.value);
+    },
     startTour: function () {
       this.guider
         .createGuider(

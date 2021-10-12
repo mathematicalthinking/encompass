@@ -11,7 +11,15 @@
   {{/each}}
 </div>
   <aside>
-  <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>
+    {{#if this.showOptions}}
+      <label for="dispaly-options">Work to display: </label>
+      <select id="display-options" oninput={{action "updateDisplayInput"}}>
+        <option value="all">All work</option>
+        <option value="individual">Individual work only</option>
+        <option value="group">Group work only</option>
+      </select>
+    {{/if}}
+    <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>
     {{! this needs to be here so the GuideJS can click it when done
         we don't have a better way to propagate actions }}
     <a id="doneTour" style="display:none" {{action 'doneTour'}}>Done Tour</a>
