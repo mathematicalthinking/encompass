@@ -66,12 +66,13 @@ switch (process.env.NODE_ENV) {
     port = process.env.PORT;
     dbConf.host = process.env.MONGO_URI_STAGING;
     dbConf.name = process.env.DB_NAME_STAGING;
-    dbConf.options.ssl = false;
-    dbConf.options.sslValidate = false;
-    delete dbConf.options.user;
-    delete dbConf.options.pass;
-    delete dbConf.options.sslKey;
-    delete dbConf.options.sslCert;
+    dbConf.options.ssl = true;
+    dbConf.options.user = process.env.MONGO_USER;
+    dbConf.options.pass = process.env.MONGO_PASS;
+    dbConf.options.sslKey = fs.readFileSync(process.env.MONGO_SSL_KEY_STAGING);
+    dbConf.options.sslCert = fs.readFileSync(
+      process.env.MONGO_SSL_CERT_STAGING
+    );
     break;
   case 'development':
     console.log('NODE_ENV == development');
