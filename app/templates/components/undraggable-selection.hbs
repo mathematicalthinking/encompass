@@ -1,6 +1,6 @@
 <div class="selectionLink {{if this.isImage "image-tag"}} {{if this.isSelected 'is-selected'}} {{if this.isText "selection_text"}}"
   title="{{this.titleText}} {{if this.isParentWorkspace " by "}} {{if this.isParentWorkspace this.selection.originalSelection.createdBy.username}} {{if this.isParentWorkspace " in "}} {{if this.isParentWorkspace this.selection.originalSelection.workspace.name}}">
-  <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array this.selection.workspace this.selection.submission this.selection}} @classNames={{this.linkToClassName}}>
+  <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array this.selection.workspace.id this.selection.submission.id this.selection.id}} @classNames={{this.linkToClassName}}>
     {{#if this.isImage}}
         <img class="img-tag-thmb" src={{this.selection.imageTagLink}} alt={{this.selection.text}}>
         <div class="overlay">
