@@ -31,7 +31,7 @@
 
 <!--section class="submissions"-->
 {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
-  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model.submission}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 <!--/section-->
 
@@ -42,7 +42,7 @@
     <button {{action 'toggleCommentDisplay'}}><img src="../assets/images/chevrons-left.svg"></button>
   </div>
   {{/if}}
-  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model.submission}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 </div>
 

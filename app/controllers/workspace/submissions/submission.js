@@ -26,7 +26,16 @@ export default Controller.extend({
   workspaceOwner: alias('currentWorkspace.owner'),
   permissions: service('workspace-permissions'),
   guider: service('guiders-create'),
-
+  showOptions: computed('model.assignment', function () {
+    if (
+      this.model.assignment &&
+      this.model.assignment.linkedWorkspacesRequest &&
+      this.isParentWorkspace
+    ) {
+      return this.model.assignment.linkedWorkspacesRequest.linkType === 'both';
+    }
+    return false;
+  }),
   areFoldersHidden: false,
   areCommentsHidden: false,
 
@@ -83,7 +92,7 @@ export default Controller.extend({
   nonTrashedFolders: computed(
     'currentWorkspace.folders.content.@each.isTrashed',
     function () {
-      const stuff= this.get('currentWorkspace');
+      const stuff = this.get('currentWorkspace');
       return this.get('currentWorkspace.folders.content').rejectBy('isTrashed');
     }
   ),
@@ -353,7 +362,7 @@ export default Controller.extend({
     addSelection: function (selection, isUpdateOnly) {
       var user = this.currentUser.user;
       var workspace = this.currentWorkspace;
-      var submission = this.model;
+      var submission = this.model.submission;
       var controller = this;
       var newSelection = null;
       var alreadyExists = this.get('model.selections').filterBy(
@@ -505,7 +514,10 @@ export default Controller.extend({
           null
         );
 
-        controller.transitionToRoute('workspace.submissions.submission', controller.model);
+        controller.transitionToRoute(
+          'workspace.submissions.submission',
+          controller.model
+        );
       });
     },
 

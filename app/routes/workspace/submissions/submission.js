@@ -23,7 +23,13 @@ export default Route.extend(VmtHostMixin, {
 
   async model({ submission_id }) {
     let submissions = await this.modelFor('workspace.submissions');
-    return await submissions.findBy('id', submission_id);
+    let workspace = await this.modelFor('workspace');
+    let assignment = await workspace.get('linkedAssignment');
+    return hash({
+      workspace,
+      assignment,
+      submission: submissions.findBy('id', submission_id),
+    });
   },
 
   afterModel(submission, transition) {
@@ -67,8 +73,8 @@ export default Route.extend(VmtHostMixin, {
   },
 
   resolveVmtRoom(submission) {
-    let roomId 
-    if(submission.submission){
+    let roomId;
+    if (submission.submission) {
       roomId = submission.submission.get('vmtRoomInfo.roomId');
     } else {
       roomId = submission.get('vmtRoomInfo.roomId');
