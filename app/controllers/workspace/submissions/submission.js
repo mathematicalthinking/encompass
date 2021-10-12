@@ -30,7 +30,7 @@ export default Controller.extend({
     if (
       this.model.assignment &&
       this.model.assignment.linkedWorkspacesRequest &&
-      this.isParentWorkspace
+      (this.isParentWorkspace || this.model.workspace.group)
     ) {
       return this.model.assignment.linkedWorkspacesRequest.linkType === 'both';
     }
@@ -99,10 +99,30 @@ export default Controller.extend({
 
   nonTrashedComments: computed(
     'currentWorkspace.comments.content.@each.isTrashed',
+    'itemsToDisplay',
     function () {
-      return this.get('currentWorkspace.comments.content').rejectBy(
+      const nonTrashed = this.get('currentWorkspace.comments.content').rejectBy(
         'isTrashed'
       );
+      if (this.itemsToDisplay === 'all') {
+        return nonTrashed;
+      }
+      if (this.itemsToDisplay === 'individual') {
+        return nonTrashed.filter((comment) => {
+          const originalComment = comment.get('originalComment');
+          const workspace = originalComment.get('workspace');
+          const group = workspace.get('group');
+          return !group;
+        });
+      }
+      if (this.itemsToDisplay === 'group') {
+        return nonTrashed.filter((comment) => {
+          const originalComment = comment.get('originalComment');
+          const workspace = originalComment.get('workspace');
+          const group = workspace.get('group');
+          return !!group;
+        });
+      }
     }
   ),
 
@@ -189,8 +209,7 @@ export default Controller.extend({
 
   actions: {
     updateDisplayInput: function ({ target }) {
-      console.log(this.itemsToDisplay);
-      return (this.itemsToDisplay = target.value);
+      return this.set('itemsToDisplay', target.value);
     },
     startTour: function () {
       this.guider
