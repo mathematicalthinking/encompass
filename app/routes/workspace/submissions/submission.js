@@ -6,7 +6,7 @@
   * @since 1.0.1
   * @see workspace_submissions_route
   */
-/*global _:false */
+
 import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
 import { hash } from 'rsvp';
@@ -50,6 +50,11 @@ export default Route.extend(VmtHostMixin, {
 
   setupController: function (controller, model) {
     this._super(controller, model);
+  },
+  resetController(controller, isExiting, transition) {
+    if (isExiting && transition.targetName !== 'error') {
+      controller.set('itemsToDisplay', 'all');
+    }
   },
 
   activate: function () {
