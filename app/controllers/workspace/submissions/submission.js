@@ -75,10 +75,38 @@ export default Controller.extend({
 
   nonTrashedSelections: computed(
     'currentWorkspace.selections.content.@each.isTrashed',
+    'itemsToDisplay',
     function () {
-      return this.get('currentWorkspace.selections.content').rejectBy(
-        'isTrashed'
-      );
+      const nonTrashed = this.get(
+        'currentWorkspace.selections.content'
+      ).rejectBy('isTrashed');
+      if (this.itemsToDisplay === 'all') {
+        return nonTrashed;
+      }
+      if (this.itemsToDisplay === 'individual') {
+        return nonTrashed.filter((selection) => {
+          const originalSelection = selection.get('originalSelection');
+          const workspace = originalSelection.get('workspace');
+          //in case data is corrupted and workspace is missing
+          if (workspace) {
+            const group = workspace.get('group');
+            //return selections from workspaces not associated with a group
+            return !group;
+          }
+          return false;
+        });
+      }
+      if (this.itemsToDisplay === 'group') {
+        return nonTrashed.filter((selection) => {
+          const originalSelection = selection.get('originalSelection');
+          const workspace = originalSelection.get('workspace');
+          if (workspace) {
+            const group = workspace.get('group');
+            return !!group;
+          }
+          return false;
+        });
+      }
     }
   ),
 
@@ -111,16 +139,26 @@ export default Controller.extend({
         return nonTrashed.filter((comment) => {
           const originalComment = comment.get('originalComment');
           const workspace = originalComment.get('workspace');
-          const group = workspace.get('group');
-          return !group;
+          //in case data is corrupted and workspace is missing
+          if (workspace) {
+            const group = workspace.get('group');
+            //return comments from workspaces not associated with a group
+            return !group;
+          }
+          return false;
         });
       }
       if (this.itemsToDisplay === 'group') {
         return nonTrashed.filter((comment) => {
           const originalComment = comment.get('originalComment');
           const workspace = originalComment.get('workspace');
-          const group = workspace.get('group');
-          return !!group;
+          //in case data is corrupted and workspace is missing
+          if (workspace) {
+            const group = workspace.get('group');
+            //return comment from workspaces associated with a group
+            return !!group;
+          }
+          return false;
         });
       }
     }
