@@ -116,13 +116,12 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
   @action updateLists(record) {
     if (record.constructor.modelName === 'user') {
-      this.studentWorkspacesToMake.includes(record)
-        ? this.studentWorkspacesToMake.removeObject(record)
-        : this.studentWorkspacesToMake.addObject(record);
+      this.studentWorkspacesToMake = [
+        ...this.studentWorkspacesToMake,
+        record.id,
+      ];
     } else {
-      this.groupWorkspacesToMake.includes(record)
-        ? this.groupWorkspacesToMake.removeObject(record)
-        : this.groupWorkspacesToMake.addObject(record);
+      this.groupWorkspacesToMake = [...this.groupWorkspacesToMake, record.id];
     }
     console.log(this.studentWorkspacesToMake);
     console.log(this.groupWorkspacesToMake);
@@ -272,8 +271,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       doCreate: doCreateLinkedWorkspaces,
       name: linkedNameFormat,
       linkType: this.linkedWorkspacesMode,
-      groups: this.groupWorkspacesToMake,
-      students: this.studentWorkspacesToMake,
+      groupsToMake: this.groupWorkspacesToMake,
+      studentsToMake: this.studentWorkspacesToMake,
     };
 
     createAssignmentData.parentWorkspaceRequest = {

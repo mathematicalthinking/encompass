@@ -258,8 +258,6 @@ const postAssignment = async (req, res, next) => {
     } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
-    console.log(linkedWorkspacesRequest);
-    return;
     let assignedMoment = moment(assignedDate);
 
     if (!assignedMoment.isValid()) {
@@ -894,7 +892,14 @@ const generateLinkedWorkspacesFromAssignment = async (
     // assignment will have students, section populated
     let { students, answers, section } = assignment;
 
-    let { mode, name, doAllowSubmissionUpdates, linkType } = wsOptions;
+    let {
+      mode,
+      name,
+      doAllowSubmissionUpdates,
+      linkType,
+      groupsToMake,
+      studentsToMake,
+    } = wsOptions;
 
     await assignment
       .populate({ path: 'linkedWorkspaces', select: 'owner' })
@@ -934,7 +939,7 @@ const generateLinkedWorkspacesFromAssignment = async (
         return ['All students already own a linked workspace', null];
       }
       workspaces = await Promise.all(
-        studentsWithoutWorkspaces.map(async (student) => {
+        studentsToMake.map(async (student) => {
           // create submission record copies
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
@@ -982,7 +987,7 @@ const generateLinkedWorkspacesFromAssignment = async (
       );
     } else if (linkType === 'group') {
       workspaces = await Promise.all(
-        groupsWithoutWorkspaces.map(async (group) => {
+        groupsToMake.map(async (group) => {
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
               let sub = new models.Submission(obj);
@@ -1043,7 +1048,9 @@ const generateLinkedWorkspacesFromAssignment = async (
       );
     } else if (linkType === 'both') {
       let individualWorkspaces = await Promise.all(
-        studentsWithoutWorkspaces.map(async (student) => {
+        studentsToMake.map(async (studentId) => {
+          const student = await models.User.findById(studentId);
+          console.log(student);
           // create submission record copies
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
@@ -1090,7 +1097,9 @@ const generateLinkedWorkspacesFromAssignment = async (
         })
       );
       let groupWorkspaces = await Promise.all(
-        groupsWithoutWorkspaces.map(async (group) => {
+        groupsToMake.map(async (groupId) => {
+          const group = await models.Group.findById(groupId);
+          console.log(group);
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
               let sub = new models.Submission(obj);
