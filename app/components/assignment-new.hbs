@@ -132,7 +132,7 @@
             <div class="group-selection" {{on "click" this.updateSectionGroups}}>
               <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{action "updateLinkedWorkspacesMode"}} @noWidth={{true}} />
             </div>
-              <LinkedWorkspacesNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @students={{this.workspacesList}} />
+              <LinkedWorkspacesNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @students={{this.workspacesList}} @updateLists={{this.updateLists}} />
           {{/if}}
         </li>
         {{#if this.doCreateLinkedWorkspaces}}

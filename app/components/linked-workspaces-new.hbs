@@ -17,11 +17,11 @@
     </div>
     <div class="name-previews">
       <p class="label">
-        Workspaces to be created
+        Choose Workspaces to be created:
       </p>
       <ul>
         {{#each @students as |student|}}
-          <li>{{if student.username student.username student.name}}: {{this.previewName}}</li>
+          <li><label><Input @type="checkbox" {{on "input" (fn this.update student)}} /> {{if student.username student.username student.name}}: {{this.previewName}}</label></li>
         {{/each}}
       </ul>
     </div>

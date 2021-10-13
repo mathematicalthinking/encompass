@@ -111,6 +111,22 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   };
 
   @tracked sectionGroups = [];
+  @tracked groupWorkspacesToMake = [];
+  @tracked studentWorkspacesToMake = [];
+
+  @action updateLists(record) {
+    if (record.constructor.modelName === 'user') {
+      this.studentWorkspacesToMake.includes(record)
+        ? this.studentWorkspacesToMake.removeObject(record)
+        : this.studentWorkspacesToMake.addObject(record);
+    } else {
+      this.groupWorkspacesToMake.includes(record)
+        ? this.groupWorkspacesToMake.removeObject(record)
+        : this.groupWorkspacesToMake.addObject(record);
+    }
+    console.log(this.studentWorkspacesToMake);
+    console.log(this.groupWorkspacesToMake);
+  }
 
   @action updateSectionGroups() {
     if (this.selectedSection) {
@@ -256,6 +272,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       doCreate: doCreateLinkedWorkspaces,
       name: linkedNameFormat,
       linkType: this.linkedWorkspacesMode,
+      groups: this.groupWorkspacesToMake,
+      students: this.studentWorkspacesToMake,
     };
 
     createAssignmentData.parentWorkspaceRequest = {

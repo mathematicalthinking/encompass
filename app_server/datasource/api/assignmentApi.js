@@ -258,7 +258,8 @@ const postAssignment = async (req, res, next) => {
     } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
-
+    console.log(linkedWorkspacesRequest);
+    return;
     let assignedMoment = moment(assignedDate);
 
     if (!assignedMoment.isValid()) {
@@ -868,6 +869,12 @@ const removeProblem = (req, res, next) => {
     });
   });
 };
+
+/**
+ * @private
+ * @method generateLinkedWorkspacesFromAssignment
+ * @description creates linked workspaces based on linkedWorkspaceRequest in POST to assignments
+ */
 
 const generateLinkedWorkspacesFromAssignment = async (
   assignment,
