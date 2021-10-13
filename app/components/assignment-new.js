@@ -116,12 +116,25 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
   @action updateLists(record) {
     if (record.constructor.modelName === 'user') {
-      this.studentWorkspacesToMake = [
-        ...this.studentWorkspacesToMake,
-        record.id,
-      ];
+      this.studentWorkspacesToMake.includes(record.id)
+        ? this.studentWorkspacesToMake.splice(
+            this.studentWorkspacesToMake.indexOf(record.id),
+            1
+          )
+        : (this.studentWorkspacesToMake = [
+            ...this.studentWorkspacesToMake,
+            record.id,
+          ]);
     } else {
-      this.groupWorkspacesToMake = [...this.groupWorkspacesToMake, record.id];
+      this.groupWorkspacesToMake.includes(record.id)
+        ? this.groupWorkspacesToMake.splice(
+            this.groupWorkspacesToMake.indexOf(record.id),
+            1
+          )
+        : (this.groupWorkspacesToMake = [
+            ...this.groupWorkspacesToMake,
+            record.id,
+          ]);
     }
     console.log(this.studentWorkspacesToMake);
     console.log(this.groupWorkspacesToMake);
