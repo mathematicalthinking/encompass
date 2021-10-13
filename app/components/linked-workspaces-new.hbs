@@ -21,7 +21,7 @@
       </p>
       <ul>
         {{#each @students as |student|}}
-          <li><label><Input @type="checkbox" {{on "input" (fn this.update student)}} /> {{if student.username student.username student.name}}: {{this.previewName}}</label></li>
+          <li><label class="no-width"><Input @type="checkbox" {{on "input" (fn this.update student)}} /> {{if student.username student.username student.name}}: {{this.previewName}}</label></li>
         {{/each}}
       </ul>
     </div>
