@@ -351,6 +351,9 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
   @action updateLinkedWorkspacesMode(val) {
     this.linkedWorkspacesMode = val;
+    //reset chosen linkedWorkspaces
+    this.groupWorkspacesToMake = [];
+    this.studentWorkspacesToMake = [];
   }
   @action updateDoCreateParentWorkspace(val) {
     this.doCreateParentWorkspace = val;
