@@ -872,6 +872,7 @@ const removeProblem = (req, res, next) => {
  * @private
  * @method generateLinkedWorkspacesFromAssignment
  * @description creates linked workspaces based on linkedWorkspaceRequest in POST to assignments
+ * @todo refactor general methods
  */
 
 const generateLinkedWorkspacesFromAssignment = async (

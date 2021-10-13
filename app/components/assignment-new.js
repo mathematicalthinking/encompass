@@ -113,7 +113,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked sectionGroups = [];
   @tracked groupWorkspacesToMake = [];
   @tracked studentWorkspacesToMake = [];
-
+  //TODO: refactor
   @action updateLists(record) {
     if (record.constructor.modelName === 'user') {
       this.studentWorkspacesToMake.includes(record.id)
