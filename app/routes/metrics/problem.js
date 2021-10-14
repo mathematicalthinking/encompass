@@ -3,13 +3,22 @@ import { inject as service } from '@ember/service';
 import { hash } from 'rsvp';
 export default class MetricsProblemRoute extends Route {
   @service store;
-  async model() {
+  async model({ problem_id }) {
+    const problem = await this.store.findRecord('problem', problem_id);
     const workspaces = await this.store.query('workspace', {
       filterBy: {
-        'submissionSet.criteria.puzzle.puzzleId': this.model.id,
+        'submissionSet.criteria.puzzle.puzzleId': problem_id,
       },
     });
-    return workspaces.toArray();
+    return workspaces.map((ws) => {
+      return {
+        name: ws.name,
+        owner: ws.get('owner.displayName'),
+        commentsLength: ws.commentsLength,
+        submissionsLength: ws.submissionsLength,
+        selectionsLength: ws.selectionsLength,
+      };
+    });
   }
   resetController(controller, isExiting, transition) {
     if (isExiting && transition.targetName !== 'error') {

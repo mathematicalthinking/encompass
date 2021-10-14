@@ -10,9 +10,10 @@ export default class MetricsProblemController extends Controller {
   @tracked problemAnswers = [];
   workspacesHead = [
     { name: 'Name', valuePath: 'name' },
-    { name: 'Owner', valuePath: 'owner.displayName' },
+    { name: 'Owner', valuePath: 'owner' },
     { name: 'Submissions', valuePath: 'submissionsLength' },
     { name: 'Comments', valuePath: 'commentsLength' },
+    { name: 'Selections', valuePath: 'selectionsLength' },
     { name: 'Responses', valuePath: 'responsesLength' },
   ];
   @action toggleProblemText() {
@@ -21,18 +22,9 @@ export default class MetricsProblemController extends Controller {
     this.showAnswers = false;
   }
   @action findWorkspaces() {
-    this.store
-      .query('workspace', {
-        filterBy: {
-          'submissionSet.criteria.puzzle.puzzleId': this.model.id,
-        },
-      })
-      .then((res) => {
-        this.relevantWorkspaces = res;
-        this.showAnswers = false;
-        this.showWorkspaces = true;
-        this.showProblemText = false;
-      });
+    this.showAnswers = false;
+    this.showWorkspaces = true;
+    this.showProblemText = false;
   }
   @action findWorkspaces2() {
     this.store

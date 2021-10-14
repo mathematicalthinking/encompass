@@ -19,7 +19,7 @@
   {{#if this.showWorkspaces}}
     <p>Workspaces</p>
     <EmberTable as |t|>
-      <t.head @column={{this.workspacesHead}} />
+      <t.head @columns={{this.workspacesHead}} />
       <t.body @rows={{this.model}} />
     </EmberTable>
     {{!-- <table class="metrics__table">
