@@ -10,7 +10,7 @@ export default class MetricsProblemRoute extends Route {
         'submissionSet.criteria.puzzle.puzzleId': problem_id,
       },
     });
-    return workspaces.map((ws) => {
+    const workspacesRows = workspaces.map((ws) => {
       return {
         name: ws.name,
         owner: ws.get('owner.displayName'),
@@ -18,6 +18,24 @@ export default class MetricsProblemRoute extends Route {
         submissionsLength: ws.submissionsLength,
         selectionsLength: ws.selectionsLength,
       };
+    });
+    const answers = await this.store.query('answer', {
+      filterBy: {
+        problem: problem_id,
+      },
+      didConfirmLargeRequest: true,
+    });
+    const answersRows = answers.map((answer) => {
+      return {
+        name: answer.student,
+        answer: answer.answer,
+        explanation: answer.explanation,
+      };
+    });
+    return hash({
+      problem,
+      workspacesRows,
+      answersRows,
     });
   }
   resetController(controller, isExiting, transition) {

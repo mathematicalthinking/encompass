@@ -16,6 +16,11 @@ export default class MetricsProblemController extends Controller {
     { name: 'Selections', valuePath: 'selectionsLength' },
     { name: 'Responses', valuePath: 'responsesLength' },
   ];
+  answersHead = [
+    { name: 'Name', valuePath: 'name' },
+    { name: 'Answer', valuePath: 'answer' },
+    { name: 'Explanation', valuePath: 'explanation' },
+  ];
   @action toggleProblemText() {
     this.showProblemText = !this.showProblemText;
     this.showWorkspaces = false;
@@ -41,18 +46,8 @@ export default class MetricsProblemController extends Controller {
       });
   }
   @action findSubmissions() {
-    this.store
-      .query('answer', {
-        filterBy: {
-          problem: this.model.id,
-        },
-        didConfirmLargeRequest: true,
-      })
-      .then((res) => {
-        this.problemAnswers = res;
-        this.showAnswers = true;
-        this.showWorkspaces = false;
-        this.showProblemText = false;
-      });
+    this.showAnswers = true;
+    this.showWorkspaces = false;
+    this.showProblemText = false;
   }
 }

@@ -8,7 +8,6 @@
   <div class="metrics__container metrics--flex">
     <button {{on "click" this.toggleProblemText}} class="primary-button" type="button">Show Problem Text</button>
     <button {{on "click" this.findWorkspaces}} class="primary-button" type="button">Find Workspaces</button>
-    <button {{on "click" this.findWorkspaces2}} class="primary-button" type="button">Find Workspaces2</button>
     <button {{on "click" this.findSubmissions}} class="primary-button" type="button">Find Answers</button>
   </div>
   {{#if this.showProblemText}}
@@ -19,72 +18,26 @@
   {{#if this.showWorkspaces}}
     <p>Workspaces</p>
     <EmberTable as |t|>
-      <t.head @columns={{this.workspacesHead}} />
-      <t.body @rows={{this.model}} />
+      <t.head @columns={{this.workspacesHead}} @widthConstraint="gte-container" />
+      <t.body @rows={{this.model.workspacesRows}} />
     </EmberTable>
-    {{!-- <table class="metrics__table">
-      <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Teacher
-          </th>
-          <th>
-            Submissions
-          </th>
-          <th>
-            Selections
-          </th>
-          <th>
-            Comments
-          </th>
-          <th>
-            Responses
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each this.relevantWorkspaces as |workspace|}}
-          <tr>
-            <td><LinkTo @route="metrics.workspace" @model={{workspace}}>{{workspace.name}}</LinkTo></td>
-            <td>{{workspace.owner.displayName}}</td>
-            <td>{{workspace.submissionsLength}}</td>
-            <td>{{workspace.selectionsLength}}</td>
-            <td>{{workspace.commentsLength}}</td>
-            <td>{{workspace.responsesLength}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table> --}}
   {{/if}}
   {{#if this.showAnswers}}
     <p>Answers</p>
-    <table class="metrics__table">
-      <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Answer
-          </th>
-          <th>
-            Explanation
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each this.problemAnswers as |answer|}}
-          <tr>
-            <td>{{answer.student}}</td>
-            <td>{{answer.answer}}</td>
-            <td>{{make-html-safe answer.explanation}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+    <EmberTable as |t|>
+      <t.head @columns={{this.answersHead}} @widthConstraint="gte-container" />
+      <t.body @rows={{this.model.answersRows}} as |b|>
+        <b.row as |r|>
+          <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
+            {{#if (is-equal columnValue.name "Explanation")}}
+              {{make-html-safe cellValue}}
+            {{else}}
+              {{cellValue}}
+            {{/if}}
+          </r.cell>
+        </b.row>
+      </t.body>
+    </EmberTable>
   {{/if}}
 </div>
 <p><LinkTo @route="metrics">back</LinkTo></p>
