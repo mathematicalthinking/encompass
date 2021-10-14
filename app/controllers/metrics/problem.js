@@ -8,7 +8,13 @@ export default class MetricsProblemController extends Controller {
   @tracked showAnswers = false;
   @tracked relevantWorkspaces = [];
   @tracked problemAnswers = [];
-
+  workspacesHead = [
+    { name: 'Name', valuePath: 'name' },
+    { name: 'Owner', valuePath: 'owner.displayName' },
+    { name: 'Submissions', valuePath: 'submissionsLength' },
+    { name: 'Comments', valuePath: 'commentsLength' },
+    { name: 'Responses', valuePath: 'responsesLength' },
+  ];
   @action toggleProblemText() {
     this.showProblemText = !this.showProblemText;
     this.showWorkspaces = false;

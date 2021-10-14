@@ -1,3 +1,4 @@
+{{log this.model}}
 <header>
   <h4>{{make-html-safe this.model.title}}</h4>
   <p>View details about a problem</p>
@@ -17,7 +18,11 @@
   {{/if}}
   {{#if this.showWorkspaces}}
     <p>Workspaces</p>
-    <table class="metrics__table">
+    <EmberTable as |t|>
+      <t.head @column={{this.workspacesHead}} />
+      <t.body @rows={{this.model}} />
+    </EmberTable>
+    {{!-- <table class="metrics__table">
       <thead>
         <tr>
           <th>
@@ -52,7 +57,7 @@
           </tr>
         {{/each}}
       </tbody>
-    </table>
+    </table> --}}
   {{/if}}
   {{#if this.showAnswers}}
     <p>Answers</p>
