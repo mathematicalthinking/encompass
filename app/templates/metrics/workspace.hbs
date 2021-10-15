@@ -1,20 +1,21 @@
 <header>
+  {{log this.model}}
   <p>Looking at workspace:</p>
-  <h3>{{this.model.name}}</h3>
+  <h3>{{this.model.workspace.name}}</h3>
   <p>Owner:</p>
-  <h3>{{this.model.owner.displayName}}</h3>
+  <h3>{{this.model.workspace.owner.displayName}}</h3>
   <p>Last Updated:</p>
-  <h3>{{this.model.lastModifiedDate}}</h3>
+  <h3>{{this.model.workspace.lastModifiedDate}}</h3>
 </header>
 <div class="metrics__container">
   <p><LinkTo @route="metrics">back</LinkTo></p>
   <div class="metrics__container metrics--flex">
     <button {{on "click" (fn this.handleToggle "showCloud")}} class="primary-button" type="button">Generate Wordcloud</button>
-    <button {{on "click" (fn this.handleToggle "showFolders")}} class="primary-button" type="button">folders: {{this.model.foldersLength}}</button>
-    <button {{on "click" (fn this.handleToggle "showComments")}} class="primary-button" type="button">comments: {{this.model.commentsLength}}</button>
-    <button {{on "click" (fn this.handleToggle "showResponses")}} class="primary-button" type="button">responses: {{this.model.responsesLength}}</button>
-    <button {{on "click" (fn this.handleToggle "showSelections")}} class="primary-button" type="button">selections: {{this.model.selectionsLength}}</button>
-    <button {{on "click" (fn this.handleToggle "showSubmissions")}} class="primary-button" type="button">submissions: {{this.model.submissionsLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showFolders")}} class="primary-button" type="button">folders: {{this.model.workspace.foldersLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showComments")}} class="primary-button" type="button">comments: {{this.model.workspace.commentsLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showResponses")}} class="primary-button" type="button">responses: {{this.model.workspace.responsesLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showSelections")}} class="primary-button" type="button">selections: {{this.model.workspace.selectionsLength}}</button>
+    <button {{on "click" (fn this.handleToggle "showSubmissions")}} class="primary-button" type="button">submissions: {{this.model.workspace.submissionsLength}}</button>
   </div>
   {{#if this.showSelections}}
     <p>selections</p>
@@ -36,7 +37,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each this.model.selections as |selection|}}
+        {{#each this.model.workspace.selections as |selection|}}
           <tr>
             <td>{{selection.submission.student}}</td>
             <td>{{selection.createdBy.username}}</td>
@@ -63,7 +64,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each this.model.folders as |folder|}}
+        {{#each this.model.workspace.folders as |folder|}}
           <tr>
             <td>{{folder.name}}</td>
           </tr>
@@ -87,7 +88,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each this.model.comments as |comment|}}
+        {{#each this.model.workspace.comments as |comment|}}
           <tr>
             <td>{{comment.createdBy.username}}</td>
             <td>{{comment.label}}</td>
@@ -110,7 +111,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each this.model.responses as |response|}}
+        {{#each this.model.workspace.responses as |response|}}
           <tr>
             <td>{{response.createdBy.username}}</td>
             <td>{{make-html-safe response.text}}</td>
@@ -120,7 +121,21 @@
     </table>
   {{/if}}
   {{#if this.showSubmissions}}
-    <table class="metrics__table">
+    <EmberTable as |t|>
+      <t.head @columns={{this.submissionsColumns}} />
+      <t.body @rows={{this.model.submissionsRows}} as |b|>
+         <b.row as |r|>
+          <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
+            {{#if (is-equal columnValue.name "Explanation")}}
+              {{make-html-safe cellValue}}
+            {{else}}
+              {{cellValue}}
+            {{/if}}
+          </r.cell>
+        </b.row>
+      </t.body>
+    </EmberTable>
+    {{!-- <table class="metrics__table">
       <thead>
         <tr>
           <th>
@@ -139,7 +154,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each this.model.submissions as |submission|}}
+        {{#each this.model.workspace.submissions as |submission|}}
           <tr>
             <td><LinkTo @route="metrics.submission" @model={{submission.id}} class="metrics__link">{{submission.student}}</LinkTo></td>
             <td>{{if submission.shortAnswer submission.shortAnswer submission.answer.answer}}</td>
@@ -160,7 +175,7 @@
           </tr>
         {{/each}}
       </tbody>
-    </table>
+    </table> --}}
   {{/if}}
   <p><LinkTo @route="metrics">back</LinkTo></p>
   <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
