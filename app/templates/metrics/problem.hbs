@@ -1,32 +1,23 @@
-{{log this.model}}
 <header>
   <h4>{{make-html-safe this.model.title}}</h4>
   <p>View details about a problem</p>
 </header>
 <p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
-  <div class="metrics__container metrics--flex">
+  <div class="metrics--flex">
     <button {{on "click" this.toggleProblemText}} class="primary-button" type="button">Show Problem Text</button>
     <button {{on "click" this.findWorkspaces}} class="primary-button" type="button">Find Workspaces</button>
     <button {{on "click" this.findSubmissions}} class="primary-button" type="button">Find Answers</button>
   </div>
   {{#if this.showProblemText}}
     <div class="metrics__card">
-      {{make-html-safe this.model.text}}
+      {{make-html-safe this.model.problem.text}}
     </div>
   {{/if}}
-  {{#if this.showWorkspaces}}
-    <p>Workspaces</p>
+  {{#if this.showTable}}
     <EmberTable as |t|>
-      <t.head @columns={{this.workspacesHead}} @widthConstraint="gte-container" />
-      <t.body @rows={{this.model.workspacesRows}} />
-    </EmberTable>
-  {{/if}}
-  {{#if this.showAnswers}}
-    <p>Answers</p>
-    <EmberTable as |t|>
-      <t.head @columns={{this.answersHead}} @widthConstraint="gte-container" />
-      <t.body @rows={{this.model.answersRows}} as |b|>
+      <t.head @columns={{this.currentTableColumns}} @widthConstraint="gte-container" />
+      <t.body @rows={{this.currentTableRows}} as |b|>
         <b.row as |r|>
           <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
             {{#if (is-equal columnValue.name "Explanation")}}
@@ -40,4 +31,3 @@
     </EmberTable>
   {{/if}}
 </div>
-<p><LinkTo @route="metrics">back</LinkTo></p>
