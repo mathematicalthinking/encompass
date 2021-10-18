@@ -12,6 +12,10 @@ export default class SelectionModel extends Auditable {
   @belongsTo('workspace', { async: false }) workspace;
   @attr relativeCoords;
   @attr relativeSize;
+  //for table display in metrics.workspace
+  get name() {
+    return this.createdBy.get('username');
+  }
   get folders() {
     return this.taggings
       .filterBy('isTrashed', false)

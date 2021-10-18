@@ -9,7 +9,7 @@
 </header>
 <div class="metrics__container">
   <p><LinkTo @route="metrics">back</LinkTo></p>
-  <div class="metrics__container metrics--flex">
+  <div class="metrics--flex">
     <button {{on "click" (fn this.handleToggle "showCloud")}} class="primary-button" type="button">Generate Wordcloud</button>
     <button {{on "click" (fn this.handleToggle "showFolders")}} class="primary-button" type="button">folders: {{this.model.workspace.foldersLength}}</button>
     <button {{on "click" (fn this.handleToggle "showComments")}} class="primary-button" type="button">comments: {{this.model.workspace.commentsLength}}</button>
@@ -126,8 +126,8 @@
       <t.body @rows={{this.model.submissionsRows}} as |b|>
          <b.row as |r|>
           <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
-            {{#if (is-equal columnValue.name "Explanation")}}
-              {{make-html-safe cellValue}}
+            {{#if (is-equal columnValue.name "Text")}}
+              <ExpandableCell @text={{cellValue}} />
             {{else}}
               {{cellValue}}
             {{/if}}

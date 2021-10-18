@@ -9,17 +9,29 @@ export default class MetricsWorkspaceRoute extends Route {
       params.workspace_id
     );
     const submissions = await workspace.submissions;
-    const submissionsRows = await submissions.map((submission) => {
-      return {
-        name: submission.student,
-        answer: submission.shortAnswer
-          ? submission.shortAnswer
-          : submission.answer.answer,
-        explanation: submission.longAnswer
-          ? submission.longAnswer
-          : submission.answer.explanation,
-      };
-    });
+    const submissionsRows = await Promise.all(
+      submissions.map(async (submission) => {
+        const selections = await submission.selections.toArray();
+        selections.forEach((selection) => {
+          selection.type = 'Selection';
+        });
+        const submissionText = `<div>${
+          submission.shortAnswer
+            ? submission.shortAnswer
+            : submission.answer.answer
+        } <br> ${
+          submission.longAnswer
+            ? submission.longAnswer
+            : submission.answer.explanation
+        }</div>`;
+        return {
+          type: 'Submission',
+          name: submission.student,
+          text: submissionText,
+          children: selections,
+        };
+      })
+    );
     return hash({
       workspace,
       submissionsRows,

@@ -11,9 +11,9 @@ export default class MetricsWorkspaceController extends Controller {
   @tracked showAll = false;
   @tracked showCloud = false;
   submissionsColumns = [
-    { name: 'Student', valuePath: 'name' },
-    { name: 'Answer', valuePath: 'answer' },
-    { name: 'Explanation', valuePath: 'explanation' },
+    { name: 'Record', valuePath: 'type' },
+    { name: 'Name', valuePath: 'name' },
+    { name: 'Text', valuePath: 'text' },
   ];
   @action
   toggleShowAll() {
