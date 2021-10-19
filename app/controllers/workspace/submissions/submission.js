@@ -426,7 +426,7 @@ export default Controller.extend({
       var submission = this.model.submission;
       var controller = this;
       var newSelection = null;
-      var alreadyExists = this.get('model.selections').filterBy(
+      var alreadyExists = this.get('model.submission.selections').filterBy(
         'id',
         selection.id
       );
@@ -528,8 +528,8 @@ export default Controller.extend({
 
           controller.transitionToRoute(
             'workspace.submissions.submission.selections.selection',
-            workspace,
-            submission,
+            workspace.id,
+            submission.id,
             newSelection.id
           );
 
