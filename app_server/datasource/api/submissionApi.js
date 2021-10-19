@@ -107,7 +107,6 @@ function toPDSubmission(obj, index, arr) {
 async function getSubmissions(req, res, next) {
   if (req.query.findByAnswer) {
     const submissions = await findSubmissionsByAnswerId(req.query.answer);
-    console.log(submissions);
     return utils.sendResponse(res, { submissions });
   }
   let user = userAuth.getUser(req);
