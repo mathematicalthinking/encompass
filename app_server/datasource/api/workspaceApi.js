@@ -2911,7 +2911,8 @@ const batchCloneWorkspace = async (req, res = {}) => {
       groups.map(async (group) => {
         let reqCopy = { ...req.body.copyWorkspaceRequest };
         reqCopy.name = `${group.name}: ${copyWorkspaceRequest.name}`;
-        reqCopy.owner = group.students[0];
+        reqCopy.owner = req.body.user;
+        reqCopy.group = group._id;
         const workspace = await cloneSingleWorkspace({
           ...req,
           body: { copyWorkspaceRequest: reqCopy },
@@ -3053,7 +3054,7 @@ async function cloneSingleWorkspace(req, res, next) {
     }
 
     // process basic settings
-    const { name, owner, mode, createdBy } = copyWorkspaceRequest;
+    const { name, owner, mode, createdBy, group } = copyWorkspaceRequest;
 
     if (mode === 'public' || mode === 'internet') {
       let isNameUnique = await apiUtils.isRecordUniqueByStringProp(
@@ -3083,6 +3084,7 @@ async function cloneSingleWorkspace(req, res, next) {
       mode: mode || originalWs.mode,
       createdBy: createdBy || user._id,
       organization: ownerOrg,
+      group,
     });
 
     // let savedWs = await newWs.save();
