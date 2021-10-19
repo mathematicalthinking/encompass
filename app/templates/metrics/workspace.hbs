@@ -122,12 +122,12 @@
   {{/if}}
   {{#if this.showSubmissions}}
     <EmberTable as |t|>
-      <t.head @columns={{this.submissionsColumns}} />
+      <t.head @columns={{this.submissionsColumns}} @widthConstraint="eq-container" @resizeMode="fluid" @fillMode="last-column" />
       <t.body @rows={{this.model.submissionsRows}} as |b|>
          <b.row as |r|>
           <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
             {{#if (is-equal columnValue.name "Text")}}
-              <ExpandableCell @text={{cellValue}} />
+              {{make-html-safe cellValue}}
             {{else}}
               {{cellValue}}
             {{/if}}

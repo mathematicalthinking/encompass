@@ -3,7 +3,32 @@
   th {
     border: none;
   }
+  tr:hover {
+    td {
+      background-color: transparent;
+    }
+  }
   td {
     font-size: 12px;
+    overflow: scroll;
+  }
+  // .et-toggle-collapse input[type='checkbox'] {
+  //   opacity: 0.001;
+  //   position: absolute;
+  //   height: 100%;
+  //   width: 100%;
+  //   top: 0;
+  //   left: 0;
+  //   z-index: 10;
+  // }
+  // .et-toggle-collapse span::before {
+  //   display: inline-block;
+  //   width: 100%;
+  //   text-align: center;
+  //   font-family: Univers-Next, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  //   content: '▾';
+  // }
+  .et-cell-container {
+    display: flex;
   }
 }
