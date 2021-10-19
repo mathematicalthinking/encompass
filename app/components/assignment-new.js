@@ -17,10 +17,11 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked formId = null;
   @tracked createRecordErrors = [];
   @tracked queryErrors = [];
-  @tracked linkedWorkspacesMode = false;
+  @tracked linkedWorkspacesMode = 'individual';
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
+  @tracked parentWorkspaceAccess = false;
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -67,12 +68,16 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     requried: false,
     inputs: [
       {
-        value: true,
+        value: 'group',
         label: 'By Group',
       },
       {
-        value: false,
+        value: 'individual',
         label: 'By Student',
+      },
+      {
+        value: 'both',
+        label: 'Student and Group',
       },
     ],
   };
@@ -90,8 +95,50 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       },
     ],
   };
+  parentWorkspaceAccessOptions = {
+    groupName: 'accessOptions',
+    required: false,
+    inputs: [
+      {
+        value: true,
+        label: 'Give access',
+      },
+      {
+        value: false,
+        label: 'Keep private',
+      },
+    ],
+  };
 
   @tracked sectionGroups = [];
+  @tracked groupWorkspacesToMake = [];
+  @tracked studentWorkspacesToMake = [];
+  //TODO: refactor
+  @action updateLists(record) {
+    if (record.constructor.modelName === 'user') {
+      this.studentWorkspacesToMake.includes(record.id)
+        ? this.studentWorkspacesToMake.splice(
+            this.studentWorkspacesToMake.indexOf(record.id),
+            1
+          )
+        : (this.studentWorkspacesToMake = [
+            ...this.studentWorkspacesToMake,
+            record.id,
+          ]);
+    } else {
+      this.groupWorkspacesToMake.includes(record.id)
+        ? this.groupWorkspacesToMake.splice(
+            this.groupWorkspacesToMake.indexOf(record.id),
+            1
+          )
+        : (this.groupWorkspacesToMake = [
+            ...this.groupWorkspacesToMake,
+            record.id,
+          ]);
+    }
+    console.log(this.studentWorkspacesToMake);
+    console.log(this.groupWorkspacesToMake);
+  }
 
   @action updateSectionGroups() {
     if (this.selectedSection) {
@@ -146,6 +193,20 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
     return `${title} / ${nameDate}`;
   }
+  //for the 'workspaces to be created' list
+  get workspacesList() {
+    if (this.linkedWorkspacesMode === 'group') {
+      return this.sectionGroups;
+    } else if (this.linkedWorkspacesMode === 'individual') {
+      return this.selectedSection.students.content;
+    } else {
+      return [
+        ...this.sectionGroups.toArray(),
+        ...this.selectedSection.students.content.toArray(),
+      ];
+    }
+  }
+
   constructor() {
     super(...arguments);
     let selectedProblem = this.args.selectedProblem;
@@ -222,12 +283,15 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     createAssignmentData.linkedWorkspacesRequest = {
       doCreate: doCreateLinkedWorkspaces,
       name: linkedNameFormat,
-      linkType: this.linkedWorkspacesMode ? 'group' : 'individual',
+      linkType: this.linkedWorkspacesMode,
+      groupsToMake: this.groupWorkspacesToMake,
+      studentsToMake: this.studentWorkspacesToMake,
     };
 
     createAssignmentData.parentWorkspaceRequest = {
       doCreate: doCreateLinkedWorkspaces ? doCreateParentWorkspace : false,
       name: parentNameFormat,
+      giveAccess: this.parentWorkspaceAccess,
     };
 
     students.forEach((student) => {
@@ -299,9 +363,15 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
   @action updateLinkedWorkspacesMode(val) {
     this.linkedWorkspacesMode = val;
+    //reset chosen linkedWorkspaces
+    this.groupWorkspacesToMake = [];
+    this.studentWorkspacesToMake = [];
   }
   @action updateDoCreateParentWorkspace(val) {
     this.doCreateParentWorkspace = val;
+  }
+  @action updateParentWorkspaceAccess(val) {
+    this.parentWorkspaceAccess = val;
   }
   @action validate() {
     const section = this.selectedSection;

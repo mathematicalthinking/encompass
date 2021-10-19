@@ -37,6 +37,7 @@ export default class AssignmentModel extends Auditable {
         createdWorkspace: null,
         doAutoUpdateFromChildren: false,
         name: null,
+        giveAccess: false,
       };
     },
   })

@@ -258,7 +258,6 @@ const postAssignment = async (req, res, next) => {
     } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
-
     let assignedMoment = moment(assignedDate);
 
     if (!assignedMoment.isValid()) {
@@ -323,6 +322,15 @@ const postAssignment = async (req, res, next) => {
     let parentWorkspace;
     let parentWorkspaceError;
 
+    const [err, teacherWorkspaces] = await generateTeacherWorkspace(
+      assignment,
+      user
+    );
+
+    if (err) {
+      console.log(err);
+    }
+
     if (doCreateLinkedWorkspaces) {
       // create a linked workspace for each student in assignment
       await assignment
@@ -344,13 +352,20 @@ const postAssignment = async (req, res, next) => {
         assignment.linkedWorkspacesRequest.error = err;
       } else {
         if (isNonEmptyArray(linkedWorkspaces)) {
-          let linkedWorkspacesIds = linkedWorkspaces.map((ws) => ws._id);
+          let linkedWorkspacesIds = [
+            ...linkedWorkspaces,
+            ...teacherWorkspaces,
+          ].map((ws) => ws._id);
 
           assignment.linkedWorkspaces = linkedWorkspacesIds;
           assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
 
           if (doCreateParentWorkspace) {
-            let { name, doAutoUpdateFromChildren } = parentWorkspaceRequest;
+            let {
+              name,
+              doAutoUpdateFromChildren,
+              giveAccess,
+            } = parentWorkspaceRequest;
 
             if (typeof doAutoUpdateFromChildren !== 'boolean') {
               doAutoUpdateFromChildren = true;
@@ -367,6 +382,28 @@ const postAssignment = async (req, res, next) => {
               doAutoUpdateFromChildren,
               linkedAssignment: assignment._id,
             };
+            if (giveAccess) {
+              const { students } = await models.Section.findById(
+                assignment.section
+              );
+              parentWsConfig.permissions = students.map((student) => {
+                return {
+                  user: student,
+                  section: assignment.section,
+                  organization: user.organization,
+                  global: 'editor',
+                  submissions: {
+                    all: true,
+                    submissionIds: [],
+                    userOnly: false,
+                  },
+                  folders: 1, // none, see, add new, modify existing folder structure
+                  comments: 1,
+                  selections: 1, // if can delete other selections, can delete other taggings
+                  feedback: 'none',
+                };
+              });
+            }
             [
               parentWorkspaceError,
               parentWorkspace,
@@ -831,6 +868,13 @@ const removeProblem = (req, res, next) => {
   });
 };
 
+/**
+ * @private
+ * @method generateLinkedWorkspacesFromAssignment
+ * @description creates linked workspaces based on linkedWorkspaceRequest in POST to assignments
+ * @todo refactor general methods
+ */
+
 const generateLinkedWorkspacesFromAssignment = async (
   assignment,
   reqUser,
@@ -849,7 +893,14 @@ const generateLinkedWorkspacesFromAssignment = async (
     // assignment will have students, section populated
     let { students, answers, section } = assignment;
 
-    let { mode, name, doAllowSubmissionUpdates, linkType } = wsOptions;
+    let {
+      mode,
+      name,
+      doAllowSubmissionUpdates,
+      linkType,
+      groupsToMake,
+      studentsToMake,
+    } = wsOptions;
 
     await assignment
       .populate({ path: 'linkedWorkspaces', select: 'owner' })
@@ -863,20 +914,33 @@ const generateLinkedWorkspacesFromAssignment = async (
 
     await assignment.depopulate('linkedWorkspaces');
 
+    let groups = await models.Group.find().where({
+      section,
+      isTrashed: false,
+    });
+    await assignment
+      .populate({ path: 'linkedWorkspaces', select: 'group' })
+      .execPopulate();
+    let groupsWithoutWorkspaces = _.reject(groups, (group) => {
+      return _.find(assignment.linkedWorkspaces, (ws) => {
+        return areObjectIdsEqual(ws.group, group._id);
+      });
+    });
+    assignment.depopulate();
     // logger.info('students without workspaces', studentsWithoutWorkspaces.map(s => s.username));
-    if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
-      // should send message detailing this
-      // logger.info('No students without a linked workspace');
-      return ['All students already own a linked workspace', null];
-    }
     // if answers convert answers to submissions
 
     let submissionObjects = await answersToSubmissions(answers);
     let workspaces;
     // create a workspace for each student in assignment
     if (linkType === 'individual') {
+      if (!isNonEmptyArray(studentsWithoutWorkspaces)) {
+        // should send message detailing this
+        // logger.info('No students without a linked workspace');
+        return ['All students already own a linked workspace', null];
+      }
       workspaces = await Promise.all(
-        studentsWithoutWorkspaces.map(async (student) => {
+        studentsToMake.map(async (student) => {
           // create submission record copies
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
@@ -923,21 +987,8 @@ const generateLinkedWorkspacesFromAssignment = async (
         })
       );
     } else if (linkType === 'group') {
-      let groups = await models.Group.find().where({
-        section,
-        isTrashed: false,
-      });
-      await assignment
-        .populate({ path: 'linkedWorkspaces', select: 'group' })
-        .execPopulate();
-      let groupsWithoutWorkspaces = _.reject(groups, (group) => {
-        return _.find(assignment.linkedWorkspaces, (ws) => {
-          return areObjectIdsEqual(ws.group, group._id);
-        });
-      });
-      assignment.depopulate();
       workspaces = await Promise.all(
-        groupsWithoutWorkspaces.map(async (group) => {
+        groupsToMake.map(async (group) => {
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
               let sub = new models.Submission(obj);
@@ -996,6 +1047,119 @@ const generateLinkedWorkspacesFromAssignment = async (
           });
         })
       );
+    } else if (linkType === 'both') {
+      let individualWorkspaces = await Promise.all(
+        studentsToMake.map(async (studentId) => {
+          const student = await models.User.findById(studentId);
+          console.log(student);
+          // create submission record copies
+          let submissionRecords = await Promise.all(
+            submissionObjects.map((obj) => {
+              let sub = new models.Submission(obj);
+              let creatorId;
+
+              let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+              // set creator of submission as the enc user who created it if applicable
+              // else set as importer
+
+              if (isValidMongoId(encUserId)) {
+                creatorId = encUserId;
+              } else {
+                creatorId = reqUser._id;
+              }
+              sub.createdBy = creatorId;
+              sub.createDate = Date.now();
+              sub.lastModifiedDate = Date.now();
+              sub.lastModifiedBy = creatorId;
+              return sub.save();
+            })
+          );
+
+          let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
+
+          let wsName = `${student.username}: ${nameSuffix}`;
+
+          return models.Workspace.create({
+            name: wsName,
+            owner: student._id,
+            createdBy: reqUser._id,
+            lastModifiedBy: reqUser._id,
+            lastModifiedDate: Date.now(),
+            mode: mode || 'private',
+            submissions: submissionRecords.map((s) => s._id),
+            linkedAssignment: assignment._id,
+            organization: reqUser.organization,
+            doAllowSubmissionUpdates:
+              typeof doAllowSubmissionUpdates === 'boolean'
+                ? doAllowSubmissionUpdates
+                : true,
+          });
+        })
+      );
+      let groupWorkspaces = await Promise.all(
+        groupsToMake.map(async (groupId) => {
+          const group = await models.Group.findById(groupId);
+          console.log(group);
+          let submissionRecords = await Promise.all(
+            submissionObjects.map((obj) => {
+              let sub = new models.Submission(obj);
+              let creatorId;
+
+              let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+              // set creator of submission as the enc user who created it if applicable
+              // else set as importer
+
+              if (isValidMongoId(encUserId)) {
+                creatorId = encUserId;
+              } else {
+                creatorId = reqUser._id;
+              }
+              sub.createdBy = creatorId;
+              sub.createDate = Date.now();
+              sub.lastModifiedDate = Date.now();
+              sub.lastModifiedBy = creatorId;
+              return sub.save();
+            })
+          );
+          let nameSuffix = name ? name : `${assignment.name} (${section.name})`;
+          let permissions = group.students.map((student) => {
+            let options = {
+              user: student,
+              global: 'editor',
+              feedback: 'none',
+              comments: 4,
+              selections: 4,
+              folders: 3,
+              submissions: {
+                submissionIds: [],
+                all: true,
+                userOnly: false,
+              },
+            };
+            return options;
+          });
+          return models.Workspace.create({
+            name: `${group.name}: ${nameSuffix}`,
+            owner: reqUser._id,
+            group: group._id,
+            createdBy: reqUser._id,
+            lastModifiedBy: reqUser._id,
+            lastModifiedDate: Date.now(),
+            mode: mode || 'private',
+            submissions: submissionRecords.map((s) => s._id),
+            linkedAssignment: assignment._id,
+            organization: reqUser.organization,
+            permissions,
+            doAllowSubmissionUpdates:
+              typeof doAllowSubmissionUpdates === 'boolean'
+                ? doAllowSubmissionUpdates
+                : true,
+          });
+        })
+      );
+      workspaces = [...individualWorkspaces, ...groupWorkspaces];
     }
     const parentWorkspace = await models.Workspace.findById(
       assignment.parentWorkspace
@@ -1032,6 +1196,37 @@ const generateLinkedWorkspacesFromAssignment = async (
     return [null, workspaces];
   } catch (err) {
     console.log({ generateLinkedWorkspacesFromAssignmentErr: err });
+    return [err, null];
+  }
+};
+
+const generateTeacherWorkspace = async (assignment, reqUser) => {
+  try {
+    if (!assignment) {
+      return ['Missing assignment', null];
+    }
+    const section = await models.Section.findById(assignment.section);
+    const workspaces = await Promise.all(
+      section.teachers.map(async (teacher) => {
+        const teacherDoc = await models.User.findById(teacher);
+        const wsName = `${teacherDoc.username}: ${assignment.name} (${section.name})`;
+        return models.Workspace.create({
+          name: wsName,
+          owner: teacher,
+          createdBy: reqUser._id,
+          lastModifiedBy: reqUser._id,
+          lastModifiedDate: new Date(),
+          mode: 'private',
+          submissions: [],
+          linkedAssignment: assignment._id,
+          organization: reqUser.organization,
+          doAllowSubmissionUpdates: true,
+        });
+      })
+    );
+    return [null, workspaces];
+  } catch (err) {
+    console.log({ generateTeacherWorkspace: err });
     return [err, null];
   }
 };

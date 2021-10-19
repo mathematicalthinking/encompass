@@ -11,7 +11,7 @@ export default Model.extend(Auditable, {
   owner: belongsTo('user', { async: true }),
   editors: hasMany('user', { async: true }),
   folders: hasMany('folder', { async: true }),
-  group: belongsTo('group', { async: true }),
+  group: attr(),
   submissions: hasMany('submission', { async: true }),
   responses: hasMany('response', { async: true }),
   selections: hasMany('selection', { async: true }),

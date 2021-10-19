@@ -8,7 +8,7 @@ const {
   isValidMongoId,
   areObjectIdsEqual,
   auditObjectIdField,
-  didObjectIdArrayFieldChange
+  didObjectIdArrayFieldChange,
 } = require('../../utils/mongoose');
 
 const { capitalizeWord } = require('../../utils/strings');
@@ -19,7 +19,7 @@ const { sendError, sendResponse } = require('../../middleware/requestHandler');
 
 module.exports.post = {};
 
-const generateParentWorkspace = async function(config, user) {
+const generateParentWorkspace = async function (config, user) {
   try {
     let {
       name,
@@ -29,7 +29,8 @@ const generateParentWorkspace = async function(config, user) {
       childWorkspaces,
       mode,
       organization,
-      doAutoUpdateFromChildren
+      doAutoUpdateFromChildren,
+      permissions,
     } = config;
 
     if (typeof doAutoUpdateFromChildren !== 'boolean') {
@@ -60,6 +61,7 @@ const generateParentWorkspace = async function(config, user) {
       childWorkspaces,
       doAutoUpdateFromChildren,
       doAllowSubmissionUpdates: false,
+      permissions: permissions || [],
     });
 
     let popChildWorkspaces = await populateChildWorkspaces(childWorkspaces);
@@ -69,7 +71,7 @@ const generateParentWorkspace = async function(config, user) {
       {
         parentOwner: owner,
         parentCreator: createdBy,
-        parentId: parentWorkspace._id
+        parentId: parentWorkspace._id,
       }
     );
 
@@ -91,37 +93,36 @@ const generateParentWorkspace = async function(config, user) {
     // selections that were not tagged
 
     parentWorkspace.selections = withUpdatedRelationships.selections.map(
-      s => s._id
+      (s) => s._id
     );
-    parentWorkspace.folders = withUpdatedRelationships.folders.map(s => s._id);
+    parentWorkspace.folders = withUpdatedRelationships.folders.map(
+      (s) => s._id
+    );
     parentWorkspace.comments = withUpdatedRelationships.comments.map(
-      s => s._id
+      (s) => s._id
     );
     parentWorkspace.taggings = withUpdatedRelationships.taggings.map(
-      s => s._id
+      (s) => s._id
     );
     parentWorkspace.responses = withUpdatedRelationships.responses.map(
-      s => s._id
+      (s) => s._id
     );
     parentWorkspace.submissions = withUpdatedRelationships.submissions.map(
-      s => s._id
+      (s) => s._id
     );
 
     parentWorkspace.lastModifiedDate = Date.now();
     parentWorkspace.createDate = Date.now();
 
     await parentWorkspace.save();
-    return [
-      null,
-      parentWorkspace,
-    ];
+    return [null, parentWorkspace];
   } catch (err) {
     console.log({ generateParentWorkspaceErr: err });
     return [err, null];
   }
 };
 
-const populateChildWorkspaces = workspaceIds => {
+const populateChildWorkspaces = (workspaceIds) => {
   if (!isNonEmptyArray(workspaceIds)) {
     return [];
   }
@@ -129,7 +130,7 @@ const populateChildWorkspaces = workspaceIds => {
   let answerOptions = [
     { path: 'createdBy', select: 'username' },
     { path: 'problem', select: 'title' },
-    { path: 'section', select: ['name', 'teachers'] }
+    { path: 'section', select: ['name', 'teachers'] },
   ];
 
   return models.Workspace.find({ _id: { $in: workspaceIds } })
@@ -139,19 +140,19 @@ const populateChildWorkspaces = workspaceIds => {
         { path: 'answer', populate: answerOptions },
         { path: 'selections' },
         { path: 'responses' },
-        { path: 'comments' }
-      ]
+        { path: 'comments' },
+      ],
     })
     .populate('selections')
     .populate({
       path: 'comments',
-      populate: [{ path: 'children' }, { path: 'ancestors' }]
+      populate: [{ path: 'children' }, { path: 'ancestors' }],
     })
     .populate({ path: 'folders', populate: 'taggings' })
     .populate('taggings')
     .populate({
       path: 'responses',
-      populate: [{ path: 'selections' }, { path: 'comments' }]
+      populate: [{ path: 'selections' }, { path: 'comments' }],
     })
     .lean();
 };
@@ -163,15 +164,15 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
       comments: [],
       folders: [],
       taggings: [],
-      responses: []
+      responses: [],
     },
     oldToNewMap: {
       selection: {},
       comment: {},
       folder: {},
       tagging: {},
-      response: {}
-    }
+      response: {},
+    },
   };
 
   let { parentCreator, parentOwner, parentId } = parentWsInfo;
@@ -188,14 +189,14 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
         createdBy: parentCreator,
         lastModifiedBy: parentCreator,
         workspace: parentId,
-        srcChildWs: workspace._id
+        srcChildWs: workspace._id,
       });
 
       let defaultTaggings = [];
 
       acc.combinedWorkspace.selections = acc.combinedWorkspace.selections.concat(
-        workspace.selections.map(oldSelection => {
-          let copyOldSelection = {...oldSelection };
+        workspace.selections.map((oldSelection) => {
+          let copyOldSelection = { ...oldSelection };
           let oldId = copyOldSelection._id;
           delete copyOldSelection._id;
 
@@ -225,16 +226,20 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
         })
       );
 
-      newParentFolder.taggings = defaultTaggings.map(t => t._id);
+      newParentFolder.taggings = defaultTaggings.map((t) => t._id);
       // copy comments
       acc.combinedWorkspace.comments = acc.combinedWorkspace.comments.concat(
-        workspace.comments.map(oldComment => {
+        workspace.comments.map((oldComment) => {
           let oldId = oldComment._id;
           delete oldComment._id;
 
           oldComment.originalComment = oldId;
-          oldComment.children = rejectTrashedDocs(oldComment.children).map(child => child._id);
-          oldComment.ancestors = rejectTrashedDocs(oldComment.ancestors).map(ancestor => ancestor._id);
+          oldComment.children = rejectTrashedDocs(oldComment.children).map(
+            (child) => child._id
+          );
+          oldComment.ancestors = rejectTrashedDocs(oldComment.ancestors).map(
+            (ancestor) => ancestor._id
+          );
 
           let newComment = new models.Comment(oldComment);
           newComment.createDate = new Date();
@@ -252,7 +257,7 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
       acc.combinedWorkspace.folders.push(newParentFolder);
 
       acc.combinedWorkspace.folders = acc.combinedWorkspace.folders.concat(
-        workspace.folders.map(oldFolder => {
+        workspace.folders.map((oldFolder) => {
           let oldId = oldFolder._id;
           delete oldFolder._id;
           // each workspace needs to have one top level folder that's name is the name of the workspace
@@ -263,8 +268,10 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
           if (isTopLevel) {
             oldFolder.parent = newParentFolder._id;
             if (!isValidMongoId(oldId)) {
-              logger.error(`oldFolder: ${oldFolder}, oldFolderId: ${oldId}, workspacename: ${workspace.name}`);
-              throw(new Error('Invalid child folder'));
+              logger.error(
+                `oldFolder: ${oldFolder}, oldFolderId: ${oldId}, workspacename: ${workspace.name}`
+              );
+              throw new Error('Invalid child folder');
             }
             newParentFolder.children.push(oldId);
           }
@@ -282,10 +289,12 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
       );
 
       // copy taggings
-      acc.combinedWorkspace.taggings = acc.combinedWorkspace.taggings.concat(defaultTaggings);
+      acc.combinedWorkspace.taggings = acc.combinedWorkspace.taggings.concat(
+        defaultTaggings
+      );
 
       acc.combinedWorkspace.taggings = acc.combinedWorkspace.taggings.concat(
-        workspace.taggings.map(oldTagging => {
+        workspace.taggings.map((oldTagging) => {
           let oldId = oldTagging._id;
           delete oldTagging._id;
 
@@ -296,7 +305,6 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
           newTagging.lastModifiedBy = parentCreator;
           newTagging.createdBy = parentCreator;
 
-
           acc.oldToNewMap.tagging[oldId] = newTagging._id;
           return newTagging;
         })
@@ -304,15 +312,19 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
 
       // copy responses
       acc.combinedWorkspace.responses = acc.combinedWorkspace.responses.concat(
-        workspace.responses.map(oldResponse => {
+        workspace.responses.map((oldResponse) => {
           let oldId = oldResponse._id;
           delete oldResponse._id;
 
           oldResponse.originalResponse = oldId;
 
           // there are rare cases of response referencing trashed selections comments
-          oldResponse.selections = rejectTrashedDocs(oldResponse.selections).map(selection => selection._id);
-          oldResponse.comments = rejectTrashedDocs(oldResponse.comments).map(comment => comment._id);
+          oldResponse.selections = rejectTrashedDocs(
+            oldResponse.selections
+          ).map((selection) => selection._id);
+          oldResponse.comments = rejectTrashedDocs(oldResponse.comments).map(
+            (comment) => comment._id
+          );
 
           let newResponse = new models.Response(oldResponse);
 
@@ -338,18 +350,18 @@ function rejectTrashedDocs(docArray) {
   }
   return docArray.filter((doc) => {
     if (isValidMongoId(doc)) {
-      throw(new Error('got object Id when should be populated doc'));
+      throw new Error('got object Id when should be populated doc');
     }
     return doc && !doc.isTrashed;
   });
 }
 
-const combineSubmissions = workspaces => {
+const combineSubmissions = (workspaces) => {
   let oldToNewMap = {};
 
   let submissionHash = workspaces.reduce((acc, workspace) => {
     let submissions = workspace.submissions || [];
-    submissions.forEach(submission => {
+    submissions.forEach((submission) => {
       // submission has answer, responses, comments, selections populated
       let answer = submission.answer;
       if (!acc[answer._id]) {
@@ -362,13 +374,13 @@ const combineSubmissions = workspaces => {
         // filter out trashed responses, comments, selections
 
         submission.selections = rejectTrashedDocs(submission.selections).map(
-          selection => selection._id
+          (selection) => selection._id
         );
         submission.comments = rejectTrashedDocs(submission.comments).map(
-          comment => comment._id
+          (comment) => comment._id
         );
         submission.responses = rejectTrashedDocs(submission.responses).map(
-          response => response._id
+          (response) => response._id
         );
 
         let newSubmission = new models.Submission(submission);
@@ -379,15 +391,19 @@ const combineSubmissions = workspaces => {
         // only take NON trashed markup
         // if trashed markup is later untrashed, will get pulled in by update
         acc[answer._id].selections = acc[answer._id].selections.concat(
-          rejectTrashedDocs(submission.selections).map(selection => selection._id)
+          rejectTrashedDocs(submission.selections).map(
+            (selection) => selection._id
+          )
         );
 
         acc[answer._id].comments = acc[answer._id].comments.concat(
-          rejectTrashedDocs(submission.comments).map(comment => comment._id)
+          rejectTrashedDocs(submission.comments).map((comment) => comment._id)
         );
 
         acc[answer._id].responses = acc[answer._id].responses.concat(
-          rejectTrashedDocs(submission.responses).map(response => response._id)
+          rejectTrashedDocs(submission.responses).map(
+            (response) => response._id
+          )
         );
 
         oldToNewMap[submission._id] = acc[answer._id]._id;
@@ -398,7 +414,7 @@ const combineSubmissions = workspaces => {
 
   return {
     combinedSubmissions: Object.values(submissionHash),
-    subOldToNewMap: oldToNewMap
+    subOldToNewMap: oldToNewMap,
   };
 };
 
@@ -409,16 +425,16 @@ const updateRelationships = (
   parentWs
 ) => {
   combinedWorkspace.submissions = combinedWorkspace.submissions.map(
-    submission => {
-      submission.selections = submission.selections.map(selection => {
+    (submission) => {
+      submission.selections = submission.selections.map((selection) => {
         // selection is objectId
         return oldToNewMap.selection[selection];
       });
-      submission.responses = submission.responses.map(response => {
+      submission.responses = submission.responses.map((response) => {
         // response is objectId
         return oldToNewMap.response[response];
       });
-      submission.comments = submission.comments.map(comment => {
+      submission.comments = submission.comments.map((comment) => {
         // comment is objectId
         return oldToNewMap.comment[comment];
       });
@@ -427,23 +443,25 @@ const updateRelationships = (
     }
   );
 
-  combinedWorkspace.selections = combinedWorkspace.selections.map(selection => {
-    selection.taggings = selection.taggings.map(tagging => {
-      // tagging is objectId
-      return oldToNewMap.tagging[tagging];
-    });
-    selection.comments = selection.comments.map(comment => {
-      // comment is objectId
-      return oldToNewMap.comment[comment];
-    });
+  combinedWorkspace.selections = combinedWorkspace.selections.map(
+    (selection) => {
+      selection.taggings = selection.taggings.map((tagging) => {
+        // tagging is objectId
+        return oldToNewMap.tagging[tagging];
+      });
+      selection.comments = selection.comments.map((comment) => {
+        // comment is objectId
+        return oldToNewMap.comment[comment];
+      });
 
-    selection.submission = subOldToNewMap[selection.submission];
-    selection.workspace = parentWs._id;
-    return selection;
-  });
+      selection.submission = subOldToNewMap[selection.submission];
+      selection.workspace = parentWs._id;
+      return selection;
+    }
+  );
 
-  combinedWorkspace.comments = combinedWorkspace.comments.map(comment => {
-    comment.ancestors = comment.ancestors.map(ancestor => {
+  combinedWorkspace.comments = combinedWorkspace.comments.map((comment) => {
+    comment.ancestors = comment.ancestors.map((ancestor) => {
       // ancestor is objectId
       let isAncestorFromSameWs = isValidMongoId(oldToNewMap.comment[ancestor]);
 
@@ -456,7 +474,7 @@ const updateRelationships = (
       return ancestor;
     });
 
-    comment.children = comment.children.map(child => {
+    comment.children = comment.children.map((child) => {
       // child is objectId
       if (!isValidMongoId(child)) {
         throw new Error('expected object id for child');
@@ -473,12 +491,16 @@ const updateRelationships = (
     // one can reuse a comment from another workspace, and that
     // comment will be this comment's parent
 
-    let isParentFromSameWs = isValidMongoId(oldToNewMap.comment[comment.parent]);
+    let isParentFromSameWs = isValidMongoId(
+      oldToNewMap.comment[comment.parent]
+    );
 
     if (isParentFromSameWs) {
       comment.parent = oldToNewMap.comment[comment.parent];
     } else if (comment.parent) {
-      logger.info(`comment originated from reusing a comment from another workspace: ${comment.parent}`);
+      logger.info(
+        `comment originated from reusing a comment from another workspace: ${comment.parent}`
+      );
     }
 
     comment.submission = subOldToNewMap[comment.submission];
@@ -488,13 +510,19 @@ const updateRelationships = (
     return comment;
   });
 
-  combinedWorkspace.folders = combinedWorkspace.folders.map(folder => {
-    folder.children = folder.children.map(child => {
+  combinedWorkspace.folders = combinedWorkspace.folders.map((folder) => {
+    folder.children = folder.children.map((child) => {
       let newChildId = oldToNewMap.folder[child];
 
       if (!newChildId) {
-        logger.error(`folder: ${folder}, oldToNewMap.folder: ${JSON.stringify(oldToNewMap.folder, null, 2)}`);
-        throw(new Error('invalid child folder'));
+        logger.error(
+          `folder: ${folder}, oldToNewMap.folder: ${JSON.stringify(
+            oldToNewMap.folder,
+            null,
+            2
+          )}`
+        );
+        throw new Error('invalid child folder');
       }
       return newChildId;
     });
@@ -503,7 +531,7 @@ const updateRelationships = (
       // we do not want to update the parent of folders that were previously top level
 
       folder.parent = oldToNewMap.folder[folder.parent];
-      folder.taggings = folder.taggings.map(tagging => {
+      folder.taggings = folder.taggings.map((tagging) => {
         return oldToNewMap.tagging[tagging];
       });
       folder.workspace = parentWs._id;
@@ -512,7 +540,7 @@ const updateRelationships = (
     return folder;
   });
 
-  combinedWorkspace.taggings = combinedWorkspace.taggings.map(tagging => {
+  combinedWorkspace.taggings = combinedWorkspace.taggings.map((tagging) => {
     if (isValidMongoId(tagging.originalTagging)) {
       // do not want to update default taggings that were creating
       // during the combining process
@@ -523,13 +551,13 @@ const updateRelationships = (
     return tagging;
   });
 
-  combinedWorkspace.responses = combinedWorkspace.responses.map(response => {
-    response.selections = response.selections.map(selection => {
+  combinedWorkspace.responses = combinedWorkspace.responses.map((response) => {
+    response.selections = response.selections.map((selection) => {
       // selection is objectId
       return oldToNewMap.selection[selection];
     });
 
-    response.comments = response.comments.map(comment => {
+    response.comments = response.comments.map((comment) => {
       // comment is objectId
       return oldToNewMap.comment[comment];
     });
@@ -543,39 +571,39 @@ const updateRelationships = (
   return combinedWorkspace;
 };
 
-const saveAllCombinedDocs = combinedWorkspace => {
+const saveAllCombinedDocs = (combinedWorkspace) => {
   let savedSubmissions = Promise.all(
-    combinedWorkspace.submissions.map(submission => {
+    combinedWorkspace.submissions.map((submission) => {
       return submission.save({ validateBeforeSave: false });
     })
   );
 
   let savedSelections = Promise.all(
-    combinedWorkspace.selections.map(selection => {
+    combinedWorkspace.selections.map((selection) => {
       return selection.save({ validateBeforeSave: false });
     })
   );
 
   let savedComments = Promise.all(
-    combinedWorkspace.comments.map(comment => {
+    combinedWorkspace.comments.map((comment) => {
       return comment.save({ validateBeforeSave: false });
     })
   );
 
   let savedFolders = Promise.all(
-    combinedWorkspace.folders.map(folder => {
+    combinedWorkspace.folders.map((folder) => {
       return folder.save({ validateBeforeSave: false });
     })
   );
 
   let savedTaggings = Promise.all(
-    combinedWorkspace.taggings.map(tagging => {
+    combinedWorkspace.taggings.map((tagging) => {
       return tagging.save({ validateBeforeSave: false });
     })
   );
 
   let savedResponses = Promise.all(
-    combinedWorkspace.responses.map(response => {
+    combinedWorkspace.responses.map((response) => {
       return response.save({ validateBeforeSave: false });
     })
   );
@@ -586,14 +614,14 @@ const saveAllCombinedDocs = combinedWorkspace => {
     savedSelections,
     savedFolders,
     savedTaggings,
-    savedResponses
+    savedResponses,
   ]);
 };
 
 const postParentWorkspace = async (req, res, next) => {
   try {
     let user = requireUser(req);
-    let { parentWorkspaceRequest }  = req.body;
+    let { parentWorkspaceRequest } = req.body;
 
     let results = await generateParentWorkspace(parentWorkspaceRequest, user);
 
@@ -603,18 +631,21 @@ const postParentWorkspace = async (req, res, next) => {
 
     if (parentWorkspace) {
       parentWorkspaceRequest.createdWorkspace = parentWorkspace._id;
-      data.workspace = [ parentWorkspace ];
+      data.workspace = [parentWorkspace];
 
       // update childWorkspaces with id of parent Workspace
       if (isNonEmptyArray(parentWorkspace.childWorkspaces)) {
-        models.Workspace.updateMany({_id: {$in: parentWorkspace.childWorkspaces}}, {$addToSet: {parentWorkspaces: parentWorkspace._id}});
+        models.Workspace.updateMany(
+          { _id: { $in: parentWorkspace.childWorkspaces } },
+          { $addToSet: { parentWorkspaces: parentWorkspace._id } }
+        );
       }
     }
 
     parentWorkspaceRequest.createWorkspaceError = errorMsg;
 
     return sendResponse(res, data);
-  }catch(err) {
+  } catch (err) {
     console.log(`postParentWorkspace err: ${err}`);
     return sendError.InternalError(null, res);
   }
@@ -623,7 +654,7 @@ const postParentWorkspace = async (req, res, next) => {
 const updateSubmissions = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any answers that parentWs doesn't
 
-  let parentWsAnswerIds = parentWs.submissions.map(submission => {
+  let parentWsAnswerIds = parentWs.submissions.map((submission) => {
     return submission.answer;
   });
 
@@ -643,11 +674,11 @@ const updateSubmissions = async (userId, parentWs, childWorkspaces) => {
   );
 
   let createdSubmissions = await Promise.all(
-    childSubmissionsToAdd.map(childSubmission => {
+    childSubmissionsToAdd.map((childSubmission) => {
       return createParentSubmissionCopy(userId, childSubmission, parentWs._id);
     })
   );
-  return [ createdSubmissions, updatedSubmissions ];
+  return [createdSubmissions, updatedSubmissions];
 };
 
 const createParentSubmissionCopy = (
@@ -674,7 +705,7 @@ const createParentSubmissionCopy = (
     'responses',
     'workspaces',
     'comments',
-    'selections'
+    'selections',
   ];
 
   let childCopy = _.omit(childPlain, fieldsToOmit);
@@ -691,18 +722,22 @@ const createParentSubmissionCopy = (
       return results;
     })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
-const createParentSelectionCopy = async (userId, childSelection, parentWorkspace) => {
+const createParentSelectionCopy = async (
+  userId,
+  childSelection,
+  parentWorkspace
+) => {
   // expect childSelection to be a mongoose document
   // expect parentWorkspaceId to be populated workspace
   try {
     let results = {
       createdRecord: null,
       errorMsg: null,
-      createdDefaultTagging: null
+      createdDefaultTagging: null,
     };
 
     await childSelection.populate('submission').execPopulate();
@@ -732,7 +767,7 @@ const createParentSelectionCopy = async (userId, childSelection, parentWorkspace
 
     let childAnswerId = childCopy.submission.answer;
 
-    let parentSub = _.find(parentWorkspace.submissions, popSubmission => {
+    let parentSub = _.find(parentWorkspace.submissions, (popSubmission) => {
       return areObjectIdsEqual(popSubmission.answer, childAnswerId);
     });
 
@@ -742,7 +777,6 @@ const createParentSelectionCopy = async (userId, childSelection, parentWorkspace
       return results;
     }
 
-
     childCopy.submission = parentSub._id;
 
     // new selection will not have any comments
@@ -750,49 +784,45 @@ const createParentSelectionCopy = async (userId, childSelection, parentWorkspace
     // new selection will never have taggings
     // create default tagging for default workspace folder
 
-    return models.Selection.create(childCopy)
-      .then((selection) => {
-        results.createdRecord = selection;
-        let parentFolder = _.find(parentWorkspace.folders, (popFolder) => {
-          return areObjectIdsEqual(popFolder.srcChildWs, originalWorkspaceId);
-        });
-        if (!parentFolder) {
-          // should never happen
-            // should never happen
-            results.errorMsg = `Could not find default child workspace folder in parent workspace ${parentWorkspace._id} for child selection ${childSelection._id}`;
-            return results;
-        }
-        return models.Tagging.create({
-          selection: selection._id,
-          folder: parentFolder._id,
-          workspace: parentWorkspace._id,
-          createdBy: userId,
-          lastModifiedBy: userId,
-          lastModifiedDate: new Date(),
-          isDefaultTagging: true,
-        })
-          .then((tagging) => {
-            selection.taggings = [ tagging._id ];
-            selection.lastModifiedDate = new Date();
-            results.createdDefaultTagging = tagging;
-            return selection.save()
-            .then((updatedSelection) => {
-              results.createdRecord = updatedSelection;
-              return results;
-            });
-          });
+    return models.Selection.create(childCopy).then((selection) => {
+      results.createdRecord = selection;
+      let parentFolder = _.find(parentWorkspace.folders, (popFolder) => {
+        return areObjectIdsEqual(popFolder.srcChildWs, originalWorkspaceId);
       });
-  }catch(err) {
-    throw(err);
+      if (!parentFolder) {
+        // should never happen
+        // should never happen
+        results.errorMsg = `Could not find default child workspace folder in parent workspace ${parentWorkspace._id} for child selection ${childSelection._id}`;
+        return results;
+      }
+      return models.Tagging.create({
+        selection: selection._id,
+        folder: parentFolder._id,
+        workspace: parentWorkspace._id,
+        createdBy: userId,
+        lastModifiedBy: userId,
+        lastModifiedDate: new Date(),
+        isDefaultTagging: true,
+      }).then((tagging) => {
+        selection.taggings = [tagging._id];
+        selection.lastModifiedDate = new Date();
+        results.createdDefaultTagging = tagging;
+        return selection.save().then((updatedSelection) => {
+          results.createdRecord = updatedSelection;
+          return results;
+        });
+      });
+    });
+  } catch (err) {
+    throw err;
   }
-
 };
 
 const updateSelections = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any selections that parent ws doesnt have
   // or if folders were deleted from child workspaces
 
-  let parentWsChildSelectionIds = parentWs.selections.map(selection => {
+  let parentWsChildSelectionIds = parentWs.selections.map((selection) => {
     return selection.originalSelection;
   });
 
@@ -808,7 +838,7 @@ const updateSelections = async (userId, parentWs, childWorkspaces) => {
 
     // check if need to remove any selections
     updatedSelections = await Promise.all(
-      parentWs.selections.map(async parentSelectionId => {
+      parentWs.selections.map(async (parentSelectionId) => {
         let parentSelection = await models.Selection.findById(
           parentSelectionId
         ).populate('originalSelection');
@@ -824,7 +854,7 @@ const updateSelections = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: errorMsg
+            errorMsg: errorMsg,
           };
         }
         let childSelection = parentSelection.originalSelection;
@@ -832,14 +862,10 @@ const updateSelections = async (userId, parentWs, childWorkspaces) => {
         // determine if fields were modified. for now just do isTrashed
         let modifiedFields = [];
 
-        let simpleFields = [
-          'isTrashed',
-          'relativeCoords',
-          'relativeSize'
-        ];
+        let simpleFields = ['isTrashed', 'relativeCoords', 'relativeSize'];
 
         simpleFields.forEach((field) => {
-          if(!_.isEqual(parentSelection[field], childSelection[field])) {
+          if (!_.isEqual(parentSelection[field], childSelection[field])) {
             modifiedFields.push(field);
           }
         });
@@ -856,25 +882,29 @@ const updateSelections = async (userId, parentWs, childWorkspaces) => {
           didUpdate: false,
           updatedRecord: null,
           modifiedFields: [],
-          errorMsg: 'No modified fields to update'
+          errorMsg: 'No modified fields to update',
         };
       })
     );
   }
 
-  let childSelectionsToAdd = await models.Selection.find(selectionFilter).populate(
-    'submission'
-  );
+  let childSelectionsToAdd = await models.Selection.find(
+    selectionFilter
+  ).populate('submission');
 
   let createdSelections = await Promise.all(
-    childSelectionsToAdd.map(childSelection => {
+    childSelectionsToAdd.map((childSelection) => {
       return createParentSelectionCopy(userId, childSelection, parentWs);
     })
   );
-  return [ createdSelections, updatedSelections ];
+  return [createdSelections, updatedSelections];
 };
 
-const createParentCommentCopy = async (userId, childComment, parentWorkspace) => {
+const createParentCommentCopy = async (
+  userId,
+  childComment,
+  parentWorkspace
+) => {
   // expect childComment to be a mongoose document
   // expect parentWorkspaceId to be populated workspace
   try {
@@ -892,7 +922,7 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
       'lastModifiedDate',
       'lastModifiedBy',
       'createdBy',
-      'workspace'
+      'workspace',
     ];
 
     let childCopy = _.omit(childPlain, fieldsToOmit);
@@ -905,7 +935,7 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
 
     let childAnswerId = childCopy.submission.answer;
 
-    let parentSub = _.find(parentWorkspace.submissions, popSubmission => {
+    let parentSub = _.find(parentWorkspace.submissions, (popSubmission) => {
       return areObjectIdsEqual(popSubmission.answer, childAnswerId);
     });
 
@@ -918,7 +948,7 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
 
     if (isValidMongoId(childCopy.parent)) {
       // find corresponding parent comment in parent ws
-      let parentWsParent = _.find(parentWorkspace.comments, c => {
+      let parentWsParent = _.find(parentWorkspace.comments, (c) => {
         return areObjectIdsEqual(c.originalComment, childCopy.parent);
       });
 
@@ -933,9 +963,9 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
     if (isNonEmptyArray(childCopy.ancestors)) {
       // ancestors do not necessarily have to be from this workspace
       // if someone reeuses your comment, their comment will be a child of yours
-      childCopy.ancestors = childCopy.ancestors.map(ancestor => {
+      childCopy.ancestors = childCopy.ancestors.map((ancestor) => {
         // find this ancestor comment in parent ws
-        let parentWsAncestor = _.find(parentWorkspace.comments, c => {
+        let parentWsAncestor = _.find(parentWorkspace.comments, (c) => {
           return areObjectIdsEqual(c.originalComment, ancestor);
         });
 
@@ -953,9 +983,9 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
     if (isNonEmptyArray(childCopy.children)) {
       // children do not necessarily have to be from this workspace
       // if someone reeuses your comment, their comment will be a child of yours
-      childCopy.children = childCopy.children.map(child => {
+      childCopy.children = childCopy.children.map((child) => {
         // find this child comment in parent ws
-        let parentWsChild = _.find(parentWorkspace.comments, c => {
+        let parentWsChild = _.find(parentWorkspace.comments, (c) => {
           return areObjectIdsEqual(c.originalComment, child);
         });
 
@@ -972,7 +1002,7 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
 
     // find corresponding selection in parentWs
 
-    let parentSelection = _.find(parentWorkspace.selections, s => {
+    let parentSelection = _.find(parentWorkspace.selections, (s) => {
       return areObjectIdsEqual(s.originalSelection, childCopy.selection);
     });
 
@@ -986,33 +1016,32 @@ const createParentCommentCopy = async (userId, childComment, parentWorkspace) =>
     let createdRecord = await models.Comment.create(childCopy);
     results.createdRecord = createdRecord;
     return results;
-
-  }catch(err) {
-    throw(err);
+  } catch (err) {
+    throw err;
   }
 };
 
 const updateComments = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any comments that parent ws doesnt have
 
-  let parentWsCommentIds = parentWs.comments.map(comment => {
+  let parentWsCommentIds = parentWs.comments.map((comment) => {
     return comment.originalComment;
   });
 
   let commentFilter = {
     workspace: { $in: childWorkspaces },
-    isTrashed: false // dont want to create a parent copy for a child record that was trashed
+    isTrashed: false, // dont want to create a parent copy for a child record that was trashed
   };
 
   let updatedComments = [];
 
   if (isNonEmptyArray(parentWsCommentIds)) {
     commentFilter._id = {
-      $nin: parentWsCommentIds
+      $nin: parentWsCommentIds,
     };
 
     updatedComments = await Promise.all(
-      parentWs.comments.map(async parentCommentId => {
+      parentWs.comments.map(async (parentCommentId) => {
         let parentComment = await models.Comment.findById(
           parentCommentId
         ).populate('originalComment');
@@ -1026,19 +1055,34 @@ const updateComments = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: errorMsg
+            errorMsg: errorMsg,
           };
         }
         let childComment = parentComment.originalComment;
 
         let mappedParent = await mapCommentParent(childComment, parentWs._id);
-        let didParentChange = auditObjectIdField(parentComment.parent, mappedParent);
+        let didParentChange = auditObjectIdField(
+          parentComment.parent,
+          mappedParent
+        );
 
-        let mappedAncestors = await mapCommentAncestors(childComment, parentWs._id);
-        let didAncestorsChange = didObjectIdArrayFieldChange(parentComment.ancestors, mappedAncestors);
+        let mappedAncestors = await mapCommentAncestors(
+          childComment,
+          parentWs._id
+        );
+        let didAncestorsChange = didObjectIdArrayFieldChange(
+          parentComment.ancestors,
+          mappedAncestors
+        );
 
-        let mappedChildren = await mapCommentChildren(childComment, parentWs._id);
-        let didChildrenChange = didObjectIdArrayFieldChange(parentComment.children, mappedChildren);
+        let mappedChildren = await mapCommentChildren(
+          childComment,
+          parentWs._id
+        );
+        let didChildrenChange = didObjectIdArrayFieldChange(
+          parentComment.children,
+          mappedChildren
+        );
         // determine if fields were modified. for now just do isTrashed
         let modifiedFields = [];
 
@@ -1072,7 +1116,7 @@ const updateComments = async (userId, parentWs, childWorkspaces) => {
           didUpdate: false,
           updatedRecord: null,
           modifiedFields: [],
-          errorMsg: 'No modified fields to update'
+          errorMsg: 'No modified fields to update',
         };
       })
     );
@@ -1083,76 +1127,88 @@ const updateComments = async (userId, parentWs, childWorkspaces) => {
   );
 
   let createdComments = await Promise.all(
-    childComments.map(childComment => {
+    childComments.map((childComment) => {
       return createParentCommentCopy(userId, childComment, parentWs);
     })
   );
-    return [ createdComments, updatedComments ];
+  return [createdComments, updatedComments];
 };
 
 const mapCommentChildren = (childComment, parentWorkspaceId) => {
   let originalChildren = childComment.children || [];
-  return Promise.all(originalChildren.map((originalChildId) => {
-    let filter = { originalComment: originalChildId, workspace: parentWorkspaceId };
-    // comment children can be from other workspaces
-    return models.Comment.findOne(filter)
-      .then((parentChild) => {
+  return Promise.all(
+    originalChildren.map((originalChildId) => {
+      let filter = {
+        originalComment: originalChildId,
+        workspace: parentWorkspaceId,
+      };
+      // comment children can be from other workspaces
+      return models.Comment.findOne(filter).then((parentChild) => {
         return parentChild ? parentChild._id : originalChildId;
       });
-  }))
-  .then((childrenIds) => {
-    return _.compact(childrenIds);
-  })
-  .catch((err) => {
-    throw(err);
-  });
+    })
+  )
+    .then((childrenIds) => {
+      return _.compact(childrenIds);
+    })
+    .catch((err) => {
+      throw err;
+    });
 };
 
 const mapCommentAncestors = (childComment, parentWorkspaceId) => {
   let originalAncestors = childComment.ancestor || [];
-  return Promise.all(originalAncestors.map((originalAncestorId) => {
-    let filter = { originalComment: originalAncestorId, workspace: parentWorkspaceId };
-    // comment ancestor can be from other workspaces
-    return models.Comment.findOne(filter)
-      .then((parentAncestor) => {
+  return Promise.all(
+    originalAncestors.map((originalAncestorId) => {
+      let filter = {
+        originalComment: originalAncestorId,
+        workspace: parentWorkspaceId,
+      };
+      // comment ancestor can be from other workspaces
+      return models.Comment.findOne(filter).then((parentAncestor) => {
         return parentAncestor ? parentAncestor._id : originalAncestorId;
       });
-  }))
-  .then((ancestorIds) => {
-    return _.compact(ancestorIds);
-  })
-  .catch((err) => {
-    throw(err);
-  });
-
+    })
+  )
+    .then((ancestorIds) => {
+      return _.compact(ancestorIds);
+    })
+    .catch((err) => {
+      throw err;
+    });
 };
 
 const mapCommentParent = (childComment, parentWorkspaceId) => {
   let originalParentId = childComment.parent;
-  return models.Comment.findOne({ originalComment: originalParentId, workspace: parentWorkspaceId})
+  return models.Comment.findOne({
+    originalComment: originalParentId,
+    workspace: parentWorkspaceId,
+  })
     .then((parentParent) => {
       return parentParent ? parentParent._id : originalParentId;
     })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
-
-
 const mapFolderChildren = (childFolder) => {
   let childChildrenIds = childFolder.children || [];
-  return Promise.all(childChildrenIds.map((childId) => {
-    return models.Folder.findOne({ originalFolder: childId })
-    .then((parentChild) => {
-      return parentChild ? parentChild._id : null;
+  return Promise.all(
+    childChildrenIds.map((childId) => {
+      return models.Folder.findOne({ originalFolder: childId }).then(
+        (parentChild) => {
+          return parentChild ? parentChild._id : null;
+        }
+      );
+    })
+  )
+    .then((parentChildrenIds) => {
+      return _.compact(parentChildrenIds);
+    })
+    .catch((err) => {
+      throw err;
     });
-  }))
-  .then((parentChildrenIds) => {
-    return _.compact(parentChildrenIds);
-  }).catch((err) => {
-    throw(err);
-  });
 };
 
 const mapFolderParent = (childFolder, parentWorkspaceId) => {
@@ -1165,15 +1221,15 @@ const mapFolderParent = (childFolder, parentWorkspaceId) => {
     // find default ws folder
     resultParent = models.Folder.findOne({
       srcChildWs: childFolder.workspace,
-      workspace: parentWorkspaceId
+      workspace: parentWorkspaceId,
     });
   }
 
   return resultParent
-    .then(parentParentFolder => {
+    .then((parentParentFolder) => {
       return parentParentFolder ? parentParentFolder._id : null;
     })
-    .catch(err => {
+    .catch((err) => {
       throw err;
     });
 };
@@ -1186,7 +1242,7 @@ const mapResponsePriorRevision = (childResponse) => {
       return parentRevision ? parentRevision._id : null;
     })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
@@ -1198,21 +1254,21 @@ const mapResponseReviewedResponse = (childResponse) => {
       return parentResponse ? parentResponse._id : null;
     })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
 const updateResponses = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any comments that parent ws doesnt have
 
-  let parentWsResponseIds = parentWs.responses.map(response => {
+  let parentWsResponseIds = parentWs.responses.map((response) => {
     return response.originalResponse;
   });
 
   // should we filter out drafts?
   let responseFilter = {
     workspace: { $in: childWorkspaces },
-    isTrashed: false // dont want to create a parent copy for a child record that was trashed
+    isTrashed: false, // dont want to create a parent copy for a child record that was trashed
   };
 
   let updatedResponses = [];
@@ -1221,7 +1277,7 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
     responseFilter._id = { $nin: parentWsResponseIds };
 
     updatedResponses = await Promise.all(
-      parentWs.responses.map(async parentResponseId => {
+      parentWs.responses.map(async (parentResponseId) => {
         let parentResponse = await models.Response.findById(
           parentResponseId
         ).populate('originalResponse');
@@ -1233,7 +1289,7 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: 'Nonexistant parent or original response'
+            errorMsg: 'Nonexistant parent or original response',
           };
         }
         let childResponse = parentResponse.originalResponse;
@@ -1249,22 +1305,27 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
         }
 
         if (childReviewedResponse) {
-          parentReviewedResponse = await mapResponseReviewedResponse(childResponse);
+          parentReviewedResponse = await mapResponseReviewedResponse(
+            childResponse
+          );
         }
 
         let didPriorRevisionChange =
-          auditObjectIdField(parentResponse.priorRevision, parentRevision) !== 0;
+          auditObjectIdField(parentResponse.priorRevision, parentRevision) !==
+          0;
         let didReviewedResponseChange =
-          auditObjectIdField(parentResponse.reviewedResponse, parentReviewedResponse) !== 0;
+          auditObjectIdField(
+            parentResponse.reviewedResponse,
+            parentReviewedResponse
+          ) !== 0;
 
-          console.log(
-            `Did prior revision change for response ${parentResponse}? ${didPriorRevisionChange}`
-          );
+        console.log(
+          `Did prior revision change for response ${parentResponse}? ${didPriorRevisionChange}`
+        );
 
-          console.log(
-            `Did reviewedResponse change for response ${parentResponse}? ${didReviewedResponseChange}`
-          );
-
+        console.log(
+          `Did reviewedResponse change for response ${parentResponse}? ${didReviewedResponseChange}`
+        );
 
         // determine if fields were modified
         let modifiedFields = [];
@@ -1275,7 +1336,6 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
         if (didReviewedResponseChange) {
           modifiedFields.push('reviewedResponse');
         }
-
 
         let simpleFields = [
           'isTrashed',
@@ -1306,7 +1366,7 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
           didUpdate: false,
           updatedRecord: null,
           modifiedFields: [],
-          errorMsg: 'No updated fields to save'
+          errorMsg: 'No updated fields to save',
         };
       })
     );
@@ -1316,14 +1376,18 @@ const updateResponses = async (userId, parentWs, childWorkspaces) => {
     'submission'
   );
   let createdResponses = await Promise.all(
-    childResponses.map(childResponse => {
+    childResponses.map((childResponse) => {
       return createParentResponseCopy(userId, childResponse, parentWs);
     })
   );
-  return [ createdResponses, updatedResponses ];
+  return [createdResponses, updatedResponses];
 };
 
-const createParentResponseCopy = async (userId, childResponse, parentWorkspace) => {
+const createParentResponseCopy = async (
+  userId,
+  childResponse,
+  parentWorkspace
+) => {
   // expect childResponse to be a mongoose document
   // expect parentWorkspace to be populated workspace
   try {
@@ -1342,7 +1406,7 @@ const createParentResponseCopy = async (userId, childResponse, parentWorkspace) 
       'lastModifiedDate',
       'lastModifiedBy',
       'createdBy',
-      'workspace'
+      'workspace',
     ];
 
     let childCopy = _.omit(childPlain, fieldsToOmit);
@@ -1355,7 +1419,7 @@ const createParentResponseCopy = async (userId, childResponse, parentWorkspace) 
 
     let childAnswerId = childCopy.submission.answer;
 
-    let parentSub = _.find(parentWorkspace.submissions, popSubmission => {
+    let parentSub = _.find(parentWorkspace.submissions, (popSubmission) => {
       return areObjectIdsEqual(popSubmission.answer, childAnswerId);
     });
 
@@ -1368,7 +1432,7 @@ const createParentResponseCopy = async (userId, childResponse, parentWorkspace) 
 
     if (isValidMongoId(childCopy.priorRevision)) {
       // find corresponding revision in parent ws
-      let parentWsRevision = _.find(parentWorkspace.responses, r => {
+      let parentWsRevision = _.find(parentWorkspace.responses, (r) => {
         return areObjectIdsEqual(r.originalResponse, childCopy.priorRevision);
       });
 
@@ -1382,8 +1446,11 @@ const createParentResponseCopy = async (userId, childResponse, parentWorkspace) 
 
     if (isValidMongoId(childCopy.reviewedResponse)) {
       // find corresponding revision in parent ws
-      let parentWsRevision = _.find(parentWorkspace.responses, r => {
-        return areObjectIdsEqual(r.originalResponse, childCopy.reviewedResponse);
+      let parentWsRevision = _.find(parentWorkspace.responses, (r) => {
+        return areObjectIdsEqual(
+          r.originalResponse,
+          childCopy.reviewedResponse
+        );
       });
 
       if (!parentWsRevision) {
@@ -1395,32 +1462,36 @@ const createParentResponseCopy = async (userId, childResponse, parentWorkspace) 
     }
 
     if (isNonEmptyArray(childCopy.selections)) {
-      childCopy.selections = childCopy.selections.map(selection => {
+      childCopy.selections = childCopy.selections.map((selection) => {
         // find this selection in parent ws
-        let parentWsSelection = _.find(parentWorkspace.selections, s => {
+        let parentWsSelection = _.find(parentWorkspace.selections, (s) => {
           return areObjectIdsEqual(s.originalSelection, selection);
         });
 
         if (!parentWsSelection) {
           // should never happen
-          logger.error(`Could not find corresponding parent selection in parent workspace ${parentWorkspace._id} for child response ${childResponse._id}`);
+          logger.error(
+            `Could not find corresponding parent selection in parent workspace ${parentWorkspace._id} for child response ${childResponse._id}`
+          );
           return;
-          }
+        }
         return selection;
       });
 
       childCopy.selections = _.compact(childCopy.selections);
     }
     if (isNonEmptyArray(childCopy.comments)) {
-      childCopy.comments = childCopy.comments.map(comment => {
+      childCopy.comments = childCopy.comments.map((comment) => {
         // find this comment in parent ws
-        let parentWsComment = _.find(parentWorkspace.comments, c => {
+        let parentWsComment = _.find(parentWorkspace.comments, (c) => {
           return areObjectIdsEqual(c.originalComment, comment);
         });
 
         if (!parentWsComment) {
           // should never happen
-          logger.error(`Could not find corresponding parent comment in parent workspace ${parentWorkspace._id} for child response ${childResponse._id}`);
+          logger.error(
+            `Could not find corresponding parent comment in parent workspace ${parentWorkspace._id} for child response ${childResponse._id}`
+          );
           return;
         }
         return comment;
@@ -1432,23 +1503,21 @@ const createParentResponseCopy = async (userId, childResponse, parentWorkspace) 
     let createdRecord = await models.Response.create(childCopy);
     results.createdRecord = createdRecord;
     return results;
-
-  }catch(err) {
-    throw(err);
+  } catch (err) {
+    throw err;
   }
 };
 
 const updateFolders = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any folders that parent ws doesnt have
 
-  let parentWsFolderIds = parentWs.folders.map(folder => {
+  let parentWsFolderIds = parentWs.folders.map((folder) => {
     return folder.originalFolder;
   });
 
   let folderFilter = {
     workspace: { $in: childWorkspaces },
-    isTrashed: false // dont want to create a parent copy for a child record that was trashed
-
+    isTrashed: false, // dont want to create a parent copy for a child record that was trashed
   };
 
   let updatedFolders = [];
@@ -1457,7 +1526,7 @@ const updateFolders = async (userId, parentWs, childWorkspaces) => {
     folderFilter._id = { $nin: parentWsFolderIds };
 
     updatedFolders = await Promise.all(
-      parentWs.folders.map(async parentFolderId => {
+      parentWs.folders.map(async (parentFolderId) => {
         let parentFolder = await models.Folder.findById(
           parentFolderId
         ).populate('originalFolder');
@@ -1471,7 +1540,7 @@ const updateFolders = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: errorMsg
+            errorMsg: errorMsg,
           };
         }
 
@@ -1483,7 +1552,7 @@ const updateFolders = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: null
+            errorMsg: null,
           };
         }
         let childFolder = parentFolder.originalFolder;
@@ -1497,18 +1566,26 @@ const updateFolders = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: errorMsg
+            errorMsg: errorMsg,
           };
         }
 
         let parentChildren = await mapFolderChildren(childFolder);
         let parentParent = await mapFolderParent(childFolder, parentWs._id);
 
-        let didParentChange = auditObjectIdField(parentFolder.parent, parentParent) !== 0;
+        let didParentChange =
+          auditObjectIdField(parentFolder.parent, parentParent) !== 0;
 
-        let didChildrenChange = didObjectIdArrayFieldChange(parentFolder.children, parentChildren);
-        console.log(`Did the parent of ${parentFolder.name} change?: ${didParentChange}`);
-        console.log(`Did the children of ${parentFolder.name} change?: ${didChildrenChange}`);
+        let didChildrenChange = didObjectIdArrayFieldChange(
+          parentFolder.children,
+          parentChildren
+        );
+        console.log(
+          `Did the parent of ${parentFolder.name} change?: ${didParentChange}`
+        );
+        console.log(
+          `Did the children of ${parentFolder.name} change?: ${didChildrenChange}`
+        );
 
         let simpleCompares = ['isTrashed', 'name', 'weight'];
 
@@ -1541,7 +1618,7 @@ const updateFolders = async (userId, parentWs, childWorkspaces) => {
           didUpdate: false,
           updatedRecord: null,
           modifiedFields: [],
-          errorMsg: 'No updated fields to save'
+          errorMsg: 'No updated fields to save',
         };
       })
     );
@@ -1550,12 +1627,12 @@ const updateFolders = async (userId, parentWs, childWorkspaces) => {
   let childFolders = await models.Folder.find(folderFilter);
 
   let createdFolders = await Promise.all(
-    childFolders.map(childFolder => {
+    childFolders.map((childFolder) => {
       return createParentFolderCopy(userId, childFolder, parentWs);
     })
   );
 
-  return [ createdFolders, updatedFolders ];
+  return [createdFolders, updatedFolders];
 };
 
 const createParentFolderCopy = (userId, childFolder, parentWorkspace) => {
@@ -1577,7 +1654,7 @@ const createParentFolderCopy = (userId, childFolder, parentWorkspace) => {
     'lastModifiedDate',
     'lastModifiedBy',
     'createdBy',
-    'workspace'
+    'workspace',
   ];
 
   let childCopy = _.omit(childPlain, fieldsToOmit);
@@ -1593,7 +1670,7 @@ const createParentFolderCopy = (userId, childFolder, parentWorkspace) => {
 
   if (isTopLevel) {
     // need to set parent as the 'workspace' folder
-    let childWsFolder = _.find(parentWorkspace.folders, f => {
+    let childWsFolder = _.find(parentWorkspace.folders, (f) => {
       return areObjectIdsEqual(f.srcChildWs, childWsId);
     });
 
@@ -1605,7 +1682,7 @@ const createParentFolderCopy = (userId, childFolder, parentWorkspace) => {
     childCopy.parent = childWsFolder;
   } else {
     // find corresponding parent folder in parent ws
-    let parentWsParent = _.find(parentWorkspace.folders, f => {
+    let parentWsParent = _.find(parentWorkspace.folders, (f) => {
       return areObjectIdsEqual(f.originalFolder, childCopy.parent);
     });
 
@@ -1623,21 +1700,20 @@ const createParentFolderCopy = (userId, childFolder, parentWorkspace) => {
       return results;
     })
     .catch((err) => {
-      throw(err);
+      throw err;
     });
 };
 
 const updateTaggings = async (userId, parentWs, childWorkspaces) => {
   // check if childWorkspaces have any taggings that parent ws doesnt have
 
-  let childWsTaggingIds = parentWs.taggings.map(tagging => {
+  let childWsTaggingIds = parentWs.taggings.map((tagging) => {
     return tagging.originalTagging;
   });
 
-
   let taggingFilter = {
     workspace: { $in: childWorkspaces },
-    isTrashed: false // dont want to create a parent copy for a child record that was trashed
+    isTrashed: false, // dont want to create a parent copy for a child record that was trashed
   };
 
   let updatedTaggings = [];
@@ -1646,7 +1722,7 @@ const updateTaggings = async (userId, parentWs, childWorkspaces) => {
     taggingFilter._id = { $nin: childWsTaggingIds };
 
     updatedTaggings = await Promise.all(
-      parentWs.taggings.map(async parentTaggingId => {
+      parentWs.taggings.map(async (parentTaggingId) => {
         let parentTagging = await models.Tagging.findById(
           parentTaggingId
         ).populate('originalTagging');
@@ -1662,7 +1738,7 @@ const updateTaggings = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: errorMsg
+            errorMsg: errorMsg,
           };
         }
 
@@ -1679,7 +1755,7 @@ const updateTaggings = async (userId, parentWs, childWorkspaces) => {
             didUpdate: false,
             updatedRecord: null,
             modifiedFields: [],
-            errorMsg: errorMsg
+            errorMsg: errorMsg,
           };
         }
 
@@ -1703,7 +1779,7 @@ const updateTaggings = async (userId, parentWs, childWorkspaces) => {
           didUpdate: false,
           updatedRecord: null,
           modifiedFields: [],
-          errorMsg: 'No modified fields to update'
+          errorMsg: 'No modified fields to update',
         };
       })
     );
@@ -1711,11 +1787,11 @@ const updateTaggings = async (userId, parentWs, childWorkspaces) => {
 
   let childTaggings = await models.Tagging.find(taggingFilter);
   let createdTaggings = await Promise.all(
-    childTaggings.map(childTagging => {
+    childTaggings.map((childTagging) => {
       return createParentTaggingCopy(userId, childTagging, parentWs);
     })
   );
-  return [ createdTaggings, updatedTaggings];
+  return [createdTaggings, updatedTaggings];
 };
 
 const createParentTaggingCopy = (userId, childTagging, parentWorkspace) => {
@@ -1735,7 +1811,7 @@ const createParentTaggingCopy = (userId, childTagging, parentWorkspace) => {
     'lastModifiedDate',
     'lastModifiedBy',
     'createdBy',
-    'workspace'
+    'workspace',
   ];
 
   let childCopy = _.omit(childPlain, fieldsToOmit);
@@ -1748,7 +1824,7 @@ const createParentTaggingCopy = (userId, childTagging, parentWorkspace) => {
 
   if (isValidMongoId(childCopy.folder)) {
     // find corresponding folder in parent ws
-    let parentWsFolder = _.find(parentWorkspace.folders, f => {
+    let parentWsFolder = _.find(parentWorkspace.folders, (f) => {
       return areObjectIdsEqual(f.originalFolder, childCopy.folder);
     });
 
@@ -1762,7 +1838,7 @@ const createParentTaggingCopy = (userId, childTagging, parentWorkspace) => {
 
   // find corresponding selection in parentWs
 
-  let parentSelection = _.find(parentWorkspace.selections, s => {
+  let parentSelection = _.find(parentWorkspace.selections, (s) => {
     return areObjectIdsEqual(s.originalSelection, childCopy.selection);
   });
 
@@ -1774,11 +1850,11 @@ const createParentTaggingCopy = (userId, childTagging, parentWorkspace) => {
   childCopy.selection = parentSelection._id;
 
   return models.Tagging.create(childCopy)
-    .then(tagging => {
+    .then((tagging) => {
       results.createdRecord = tagging;
       return results;
     })
-    .catch(err => {
+    .catch((err) => {
       throw err;
     });
 };
@@ -1794,36 +1870,33 @@ const updateParentWorkspace = async (
 
     let didUpdate = false;
 
-    let [ createdSubmissionsResults, updatedSubmissionsResults ] = await updateSubmissions(
-      user._id,
-      popWorkspace,
-      childWorkspaces
-    );
+    let [
+      createdSubmissionsResults,
+      updatedSubmissionsResults,
+    ] = await updateSubmissions(user._id, popWorkspace, childWorkspaces);
 
     let createdSubmissions = createdSubmissionsResults
-      .filter(obj => obj.createdRecord)
-      .map(obj => obj.createdRecord);
+      .filter((obj) => obj.createdRecord)
+      .map((obj) => obj.createdRecord);
 
-    let updatedSubmissions = updatedSubmissionsResults.filter(obj => {
+    let updatedSubmissions = updatedSubmissionsResults.filter((obj) => {
       return obj.didUpdate && obj.updatedRecord;
     });
-
 
     popWorkspace.submissions = popWorkspace.submissions.concat(
       _.compact(createdSubmissions)
     );
 
-    let [ createdSelectionsResults, updatedSelectionsResults ] = await updateSelections(
-      user._id,
-      popWorkspace,
-      childWorkspaces
-    );
+    let [
+      createdSelectionsResults,
+      updatedSelectionsResults,
+    ] = await updateSelections(user._id, popWorkspace, childWorkspaces);
 
     let createdSelections = createdSelectionsResults
-      .filter(obj => obj.createdRecord)
-      .map(obj => obj.createdRecord);
+      .filter((obj) => obj.createdRecord)
+      .map((obj) => obj.createdRecord);
 
-    let updatedSelections = updatedSelectionsResults.filter(obj => {
+    let updatedSelections = updatedSelectionsResults.filter((obj) => {
       return obj.didUpdate && obj.updatedRecord;
     });
 
@@ -1831,17 +1904,17 @@ const updateParentWorkspace = async (
       _.compact(createdSelections)
     );
 
-    let [ createdCommentsResults, updatedCommentsResults ] = await updateComments(
+    let [createdCommentsResults, updatedCommentsResults] = await updateComments(
       user._id,
       popWorkspace,
       childWorkspaces
     );
 
     let createdComments = createdCommentsResults
-      .filter(obj => obj.createdRecord)
-      .map(obj => obj.createdRecord);
+      .filter((obj) => obj.createdRecord)
+      .map((obj) => obj.createdRecord);
 
-    let updatedComments = updatedCommentsResults.filter(obj => {
+    let updatedComments = updatedCommentsResults.filter((obj) => {
       return obj.didUpdate && obj.updatedRecord;
     });
 
@@ -1849,17 +1922,16 @@ const updateParentWorkspace = async (
       _.compact(createdComments)
     );
 
-    let [ createdResponsesResults, updatedResponsesResults ] = await updateResponses(
-      user._id,
-      popWorkspace,
-      childWorkspaces
-    );
+    let [
+      createdResponsesResults,
+      updatedResponsesResults,
+    ] = await updateResponses(user._id, popWorkspace, childWorkspaces);
 
     let createdResponses = createdResponsesResults
-      .filter(obj => obj.createdRecord)
-      .map(obj => obj.createdRecord);
+      .filter((obj) => obj.createdRecord)
+      .map((obj) => obj.createdRecord);
 
-    let updatedResponses = updatedResponsesResults.filter(obj => {
+    let updatedResponses = updatedResponsesResults.filter((obj) => {
       return obj.didUpdate && obj.updatedRecord;
     });
 
@@ -1867,17 +1939,17 @@ const updateParentWorkspace = async (
       _.compact(createdResponses)
     );
 
-    let [ createdFoldersResults, updatedFoldersResults ] = await updateFolders(
+    let [createdFoldersResults, updatedFoldersResults] = await updateFolders(
       user._id,
       popWorkspace,
       childWorkspaces
     );
 
     let createdFolders = createdFoldersResults
-      .filter(obj => obj.createdRecord)
-      .map(obj => obj.createdRecord);
+      .filter((obj) => obj.createdRecord)
+      .map((obj) => obj.createdRecord);
 
-    let updatedFolders = updatedFoldersResults.filter(obj => {
+    let updatedFolders = updatedFoldersResults.filter((obj) => {
       return obj.didUpdate && obj.updatedRecord;
     });
 
@@ -1885,17 +1957,17 @@ const updateParentWorkspace = async (
       _.compact(createdFolders)
     );
 
-    let [ createdTaggingsResults, updatedTaggingsResults ] = await updateTaggings(
+    let [createdTaggingsResults, updatedTaggingsResults] = await updateTaggings(
       user._id,
       popWorkspace,
       childWorkspaces
     );
 
     let createdTaggings = createdTaggingsResults
-      .filter(obj => obj.createdRecord)
-      .map(obj => obj.createdRecord);
+      .filter((obj) => obj.createdRecord)
+      .map((obj) => obj.createdRecord);
 
-    let updatedTaggings = updatedTaggingsResults.filter(obj => {
+    let updatedTaggings = updatedTaggingsResults.filter((obj) => {
       return obj.didUpdate && obj.updatedRecord;
     });
 
@@ -1906,42 +1978,42 @@ const updateParentWorkspace = async (
     if (isNonEmptyArray(createdSubmissions)) {
       didUpdate = true;
       updateWorkspaceRequest.createdParentData.submissions = createdSubmissions.map(
-        submission => submission._id
+        (submission) => submission._id
       );
     }
 
     if (isNonEmptyArray(createdSelections)) {
       didUpdate = true;
       updateWorkspaceRequest.createdParentData.selections = createdSelections.map(
-        selection => selection._id
+        (selection) => selection._id
       );
     }
 
     if (isNonEmptyArray(createdComments)) {
       didUpdate = true;
       updateWorkspaceRequest.createdParentData.comments = createdComments.map(
-        comment => comment._id
+        (comment) => comment._id
       );
     }
 
     if (isNonEmptyArray(createdResponses)) {
       didUpdate = true;
       updateWorkspaceRequest.createdParentData.responses = createdResponses.map(
-        response => response._id
+        (response) => response._id
       );
     }
 
     if (isNonEmptyArray(createdFolders)) {
       didUpdate = true;
       updateWorkspaceRequest.createdParentData.folders = createdFolders.map(
-        folder => folder._id
+        (folder) => folder._id
       );
     }
 
     if (isNonEmptyArray(createdTaggings)) {
       didUpdate = true;
       updateWorkspaceRequest.createdParentData.taggings = createdTaggings.map(
-        tagging => tagging._id
+        (tagging) => tagging._id
       );
     }
 
@@ -1949,7 +2021,7 @@ const updateParentWorkspace = async (
       didUpdate = true;
 
       updateWorkspaceRequest.updatedParentData.submissions = updatedSubmissions.map(
-        obj => {
+        (obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -1957,7 +2029,7 @@ const updateParentWorkspace = async (
             recordId: obj.updatedRecord._id,
             updatedFields: obj.modifiedFields,
             wasJustTrashed: didIsTrashedChange && isTrashed,
-            wasJustRestored: didIsTrashedChange && !isTrashed
+            wasJustRestored: didIsTrashedChange && !isTrashed,
           };
         }
       );
@@ -1965,7 +2037,7 @@ const updateParentWorkspace = async (
     if (isNonEmptyArray(updatedSelections)) {
       didUpdate = true;
       updateWorkspaceRequest.updatedParentData.selections = updatedSelections.map(
-        obj => {
+        (obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -1974,7 +2046,7 @@ const updateParentWorkspace = async (
             recordId: obj.updatedRecord._id,
             updatedFields: obj.modifiedFields,
             wasJustTrashed: didIsTrashedChange && isTrashed,
-            wasJustRestored: didIsTrashedChange && !isTrashed
+            wasJustRestored: didIsTrashedChange && !isTrashed,
           };
         }
       );
@@ -1984,7 +2056,7 @@ const updateParentWorkspace = async (
       didUpdate = true;
 
       updateWorkspaceRequest.updatedParentData.comments = updatedComments.map(
-        obj => {
+        (obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -1992,7 +2064,7 @@ const updateParentWorkspace = async (
             recordId: obj.updatedRecord._id,
             updatedFields: obj.modifiedFields,
             wasJustTrashed: didIsTrashedChange && isTrashed,
-            wasJustRestored: didIsTrashedChange && !isTrashed
+            wasJustRestored: didIsTrashedChange && !isTrashed,
           };
         }
       );
@@ -2002,7 +2074,7 @@ const updateParentWorkspace = async (
       didUpdate = true;
 
       updateWorkspaceRequest.updatedParentData.responses = updatedResponses.map(
-        obj => {
+        (obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -2010,7 +2082,7 @@ const updateParentWorkspace = async (
             recordId: obj.updatedRecord._id,
             updatedFields: obj.modifiedFields,
             wasJustTrashed: didIsTrashedChange && isTrashed,
-            wasJustRestored: didIsTrashedChange && !isTrashed
+            wasJustRestored: didIsTrashedChange && !isTrashed,
           };
         }
       );
@@ -2020,7 +2092,7 @@ const updateParentWorkspace = async (
       didUpdate = true;
 
       updateWorkspaceRequest.updatedParentData.folders = updatedFolders.map(
-        obj => {
+        (obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -2028,7 +2100,7 @@ const updateParentWorkspace = async (
             recordId: obj.updatedRecord._id,
             updatedFields: obj.modifiedFields,
             wasJustTrashed: didIsTrashedChange && isTrashed,
-            wasJustRestored: didIsTrashedChange && !isTrashed
+            wasJustRestored: didIsTrashedChange && !isTrashed,
           };
         }
       );
@@ -2038,7 +2110,7 @@ const updateParentWorkspace = async (
       didUpdate = true;
 
       updateWorkspaceRequest.updatedParentData.taggings = updatedTaggings.map(
-        obj => {
+        (obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -2046,7 +2118,7 @@ const updateParentWorkspace = async (
             recordId: obj.updatedRecord._id,
             updatedFields: obj.modifiedFields,
             wasJustTrashed: didIsTrashedChange && isTrashed,
-            wasJustRestored: didIsTrashedChange && !isTrashed
+            wasJustRestored: didIsTrashedChange && !isTrashed,
           };
         }
       );
@@ -2060,7 +2132,12 @@ const updateParentWorkspace = async (
   }
 };
 
-const updateParentRecord = async (userId, childRecord, recordType, modifiedFields) => {
+const updateParentRecord = async (
+  userId,
+  childRecord,
+  recordType,
+  modifiedFields
+) => {
   let results = {
     didUpdate: false,
     updatedRecord: null,
@@ -2072,7 +2149,7 @@ const updateParentRecord = async (userId, childRecord, recordType, modifiedField
     let originalRecordPropName = `original${capRecordType}`;
 
     let parentCriteria = {
-      [originalRecordPropName]: childRecord._id
+      [originalRecordPropName]: childRecord._id,
     };
 
     let parentRecord = await models[capRecordType].findOne(parentCriteria);
@@ -2088,53 +2165,80 @@ const updateParentRecord = async (userId, childRecord, recordType, modifiedField
       if (recordType === 'folder') {
         if (modifiedFields.includes('children')) {
           parentRecord.children = await mapFolderChildren(childRecord);
-          simpleFields = _.reject(simpleFields, (field => field === 'children'));
+          simpleFields = _.reject(
+            simpleFields,
+            (field) => field === 'children'
+          );
         }
 
         if (modifiedFields.includes('parent')) {
-          parentRecord.parent = await mapFolderParent(childRecord, parentRecord.workspace);
-          simpleFields = _.reject(simpleFields, (field => field === 'parent'));
+          parentRecord.parent = await mapFolderParent(
+            childRecord,
+            parentRecord.workspace
+          );
+          simpleFields = _.reject(simpleFields, (field) => field === 'parent');
         }
       } else if (recordType === 'comment') {
         if (modifiedFields.includes('children')) {
-          parentRecord.children = await mapCommentChildren(childRecord, parentRecord.workspace);
-          simpleFields = _.reject(simpleFields, (field => field === 'children'));
+          parentRecord.children = await mapCommentChildren(
+            childRecord,
+            parentRecord.workspace
+          );
+          simpleFields = _.reject(
+            simpleFields,
+            (field) => field === 'children'
+          );
         }
 
         if (modifiedFields.includes('parent')) {
-          parentRecord.parent = await mapCommentParent(childRecord, parentRecord.workspace);
-          simpleFields = _.reject(simpleFields, (field => field === 'parent'));
+          parentRecord.parent = await mapCommentParent(
+            childRecord,
+            parentRecord.workspace
+          );
+          simpleFields = _.reject(simpleFields, (field) => field === 'parent');
         }
         if (modifiedFields.includes('ancestors')) {
-          parentRecord.ancestors = await mapCommentAncestors(childRecord, parentRecord.workspace);
-          simpleFields = _.reject(simpleFields, (field => field === 'ancestors'));
+          parentRecord.ancestors = await mapCommentAncestors(
+            childRecord,
+            parentRecord.workspace
+          );
+          simpleFields = _.reject(
+            simpleFields,
+            (field) => field === 'ancestors'
+          );
         }
       } else if (recordType === 'response') {
         if (modifiedFields.includes('priorRevision')) {
           parentRecord.parent = await mapResponsePriorRevision(childRecord);
-          simpleFields = _.reject(simpleFields, field => field === 'priorRevision');
+          simpleFields = _.reject(
+            simpleFields,
+            (field) => field === 'priorRevision'
+          );
         }
 
         if (modifiedFields.includes('reviewdResponse')) {
           parentRecord.parent = await mapResponseReviewedResponse(childRecord);
-          simpleFields = _.reject(simpleFields, field => field === 'reviewedResponse');
+          simpleFields = _.reject(
+            simpleFields,
+            (field) => field === 'reviewedResponse'
+          );
         }
       }
 
-      simpleFields.forEach(field => {
+      simpleFields.forEach((field) => {
         parentRecord[field] = childRecord[field];
       });
 
-        parentRecord.lastModifiedBy = userId;
-        parentRecord.lastModifiedDate = new Date();
+      parentRecord.lastModifiedBy = userId;
+      parentRecord.lastModifiedDate = new Date();
 
-        await parentRecord.save();
+      await parentRecord.save();
 
-        results.didUpdate = true;
-        results.modifiedFields = modifiedFields;
-        results.updatedRecord = parentRecord;
+      results.didUpdate = true;
+      results.modifiedFields = modifiedFields;
+      results.updatedRecord = parentRecord;
 
-        return results;
+      return results;
     } else {
       // initiated by updateSubmission
       // needs to be refactored
@@ -2142,114 +2246,138 @@ const updateParentRecord = async (userId, childRecord, recordType, modifiedField
         didUpdate: false,
         updatedRecord: null,
         modifiedFields: [],
-        errorMsg: null
+        errorMsg: null,
       };
       return results;
     }
-
-  }catch(err) {
-    throw(err);
+  } catch (err) {
+    throw err;
   }
 };
 
-const resolveParentUpdates = async (userId, childRecord, childRecordType, modificationType, modifiedFields, options = {}) => {
+const resolveParentUpdates = async (
+  userId,
+  childRecord,
+  childRecordType,
+  modificationType,
+  modifiedFields,
+  options = {}
+) => {
   // this function will run after a record related to a workspace has been saved and response sent
   // any errors will be passed to express next function
 
   // check for parentWorkspaces first
   try {
+    if (!isValidMongoId(userId)) {
+      throw new Error(`Invalid userId in resolveParentUpdates: ${userId}`);
+    }
 
-  if (!isValidMongoId(userId)) {
-    throw new Error(`Invalid userId in resolveParentUpdates: ${userId}`);
+    if (!isValidMongoId(_.propertyOf(childRecord)('_id'))) {
+      throw new Error(
+        `Invalid childRecord in resolveParentUpdates: ${childRecord}`
+      );
+    }
+
+    let allowedModificationTypes = ['create', 'trash', 'update'];
+
+    let allowedChildRecordTypes = [
+      'submission',
+      'selection',
+      'comment',
+      'response',
+      'folder',
+      'tagging',
+    ];
+
+    if (!allowedModificationTypes.includes(modificationType)) {
+      throw new Error(
+        `Invalid modificationType in resolveParentUpdates: ${modificationType}`
+      );
+    }
+
+    if (!allowedChildRecordTypes.includes(childRecordType)) {
+      throw new Error(
+        `Invalid childRecordType in resolveParentUpdates: ${childRecordType}`
+      );
+    }
+
+    let workspaceId =
+      childRecordType === 'submission'
+        ? childRecord.workspaces[0]
+        : childRecord.workspace;
+
+    let parentCriteria = {
+      isTrashed: false,
+      workspaceType: 'parent',
+      childWorkspaces: workspaceId,
+      doAutoUpdateFromChildren: true,
+    };
+
+    let parentWorkspacePopulationHash = {
+      selection: 'submissions folders',
+      comment: 'comments submissions selections',
+      response: 'comments submissions selections',
+      folder: 'folders',
+      tagging: 'folders submissions selections',
+    };
+
+    let popOpts = parentWorkspacePopulationHash[childRecordType];
+
+    let parentWorkspacesToUpdate = await models.Workspace.find(parentCriteria)
+      .populate(popOpts)
+      .exec();
+
+    if (!isNonEmptyArray(parentWorkspacesToUpdate)) {
+      // no workspaces to update
+      // logger.info(`No parent workspaces to update for ${childRecordType} ${childRecord}`);
+      return [];
+    }
+
+    if (modificationType === 'update') {
+      let updateParentRecordResults = await updateParentRecord(
+        userId,
+        childRecord,
+        childRecordType,
+        modifiedFields
+      );
+
+      return updateParentRecordResults;
+    }
+
+    let copyHandlerHash = {
+      submission: {
+        create: createParentSubmissionCopy,
+      },
+      selection: {
+        create: createParentSelectionCopy,
+      },
+      comment: {
+        create: createParentCommentCopy,
+      },
+      response: {
+        create: createParentResponseCopy,
+      },
+      folder: {
+        create: createParentFolderCopy,
+      },
+      tagging: {
+        create: createParentTaggingCopy,
+      },
+    };
+
+    let updatedRecords = parentWorkspacesToUpdate.map((parentWorkspace) => {
+      let handler = copyHandlerHash[childRecordType][modificationType];
+
+      return handler(userId, childRecord, parentWorkspace);
+    });
+
+    return Promise.all(updatedRecords).then((updatedRecordResults) => {
+      // create workspaceUpdateEvent record
+      return updatedRecordResults;
+    });
+  } catch (err) {
+    throw err;
   }
-
-  if (!isValidMongoId(_.propertyOf(childRecord)('_id'))) {
-    throw new Error(`Invalid childRecord in resolveParentUpdates: ${childRecord}`);
-  }
-
-  let allowedModificationTypes = ['create', 'trash', 'update'];
-
-  let allowedChildRecordTypes = ['submission', 'selection', 'comment', 'response', 'folder', 'tagging'];
-
-  if (!allowedModificationTypes.includes(modificationType)) {
-    throw new Error(`Invalid modificationType in resolveParentUpdates: ${modificationType}`);
-  }
-
-  if (!allowedChildRecordTypes.includes(childRecordType)) {
-    throw new Error(`Invalid childRecordType in resolveParentUpdates: ${childRecordType}`);
-  }
-
-  let workspaceId = childRecordType === 'submission' ? childRecord.workspaces[0] : childRecord.workspace;
-
-  let parentCriteria = {
-    isTrashed: false,
-    workspaceType: 'parent',
-    childWorkspaces: workspaceId,
-    doAutoUpdateFromChildren: true,
-  };
-
-  let parentWorkspacePopulationHash = {
-    selection: 'submissions folders',
-    comment: 'comments submissions selections',
-    response: 'comments submissions selections',
-    folder: 'folders',
-    tagging: 'folders submissions selections',
-  };
-
-  let popOpts = parentWorkspacePopulationHash[childRecordType];
-
-  let parentWorkspacesToUpdate = await models.Workspace.find(parentCriteria).populate(popOpts).exec();
-
-  if (!isNonEmptyArray(parentWorkspacesToUpdate)) {
-    // no workspaces to update
-    // logger.info(`No parent workspaces to update for ${childRecordType} ${childRecord}`);
-    return [];
-  }
-
-  if (modificationType === 'update') {
-    let updateParentRecordResults = await updateParentRecord(userId, childRecord, childRecordType, modifiedFields);
-
-    return updateParentRecordResults;
-
-  }
-
-
-  let copyHandlerHash = {
-    submission: {
-      create: createParentSubmissionCopy,
-    },
-    selection: {
-      create: createParentSelectionCopy,
-    },
-    comment: {
-      create: createParentCommentCopy,
-    },
-    response: {
-      create: createParentResponseCopy,
-    },
-    folder: {
-      create: createParentFolderCopy,
-    },
-    tagging: {
-      create: createParentTaggingCopy,
-    },
-  };
-
-  let updatedRecords = parentWorkspacesToUpdate.map((parentWorkspace) => {
-    let handler = copyHandlerHash[childRecordType][modificationType];
-
-    return handler(userId, childRecord, parentWorkspace);
-  });
-
-  return Promise.all(updatedRecords)
-  .then((updatedRecordResults) => {
-    // create workspaceUpdateEvent record
-    return updatedRecordResults;
-  });
-}catch(err) {
-  throw(err);
-}
-
 };
 
 module.exports.generateParentWorkspace = generateParentWorkspace;

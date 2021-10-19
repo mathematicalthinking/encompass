@@ -88,11 +88,7 @@
       </p>
     {{/if}}
       {{#if this.showLinkedWsForm}}
-        {{#if this.linkedByGroup}}
-          <LinkedWorkspacesNew @students={{this.groupsWithoutWorkspaces}} @assignment={{@assignment}} @section={{@section}} @problem={{@problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
-        {{else}}
-          <LinkedWorkspacesNew @students={{this.studentsWithoutWorkspaces}} @assignment={{@assignment}} @section={{@section}} @problem={{@problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
-        {{/if}}
+          <LinkedWorkspacesNew @students={{this.missingWorkspaces}} @assignment={{@assignment}} @section={{@section}} @problem={{@problem}} @onCancel={{action (mut showLinkedWsForm) false}} @store={{this.store}} @handleResults={{action "handleCreatedLinkedWs"}} />
       {{/if}}
       {{#if this.showAddLinkedWsBtn}}
         <button

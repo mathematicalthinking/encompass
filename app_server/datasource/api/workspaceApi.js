@@ -2911,7 +2911,8 @@ const batchCloneWorkspace = async (req, res = {}) => {
       groups.map(async (group) => {
         let reqCopy = { ...req.body.copyWorkspaceRequest };
         reqCopy.name = `${group.name}: ${copyWorkspaceRequest.name}`;
-        reqCopy.owner = group.students[0];
+        reqCopy.owner = req.body.user;
+        reqCopy.group = group._id;
         const workspace = await cloneSingleWorkspace({
           ...req,
           body: { copyWorkspaceRequest: reqCopy },
@@ -2936,7 +2937,7 @@ const batchCloneWorkspace = async (req, res = {}) => {
         return workspace;
       })
     );
-  } else {
+  } else if (copyWorkspaceRequest.batchClone.mode === 'individual') {
     //make batch copies for each student in a class
     createdWorkspaces = await Promise.all(
       copyWorkspaceRequest.batchClone.section.students.map(async (student) => {
@@ -2951,6 +2952,55 @@ const batchCloneWorkspace = async (req, res = {}) => {
         return workspace;
       })
     );
+  } else if (copyWorkspaceRequest.batchClone.mode === 'both') {
+    let groups = await models.Group.find().where({
+      section: copyWorkspaceRequest.batchClone.sectionId,
+      isTrashed: false,
+    });
+    let groupWorkspaces = await Promise.all(
+      groups.map(async (group) => {
+        let reqCopy = { ...req.body.copyWorkspaceRequest };
+        reqCopy.name = `${group.name}: ${copyWorkspaceRequest.name}`;
+        reqCopy.owner = req.body.user;
+        reqCopy.group = group._id;
+        const workspace = await cloneSingleWorkspace({
+          ...req,
+          body: { copyWorkspaceRequest: reqCopy },
+        });
+        workspace.permissions = group.students.map((student) => {
+          let options = {
+            user: student,
+            global: 'editor',
+            feedback: 'none',
+            comments: 4,
+            selections: 4,
+            folders: 3,
+            submissions: {
+              submissionIds: [],
+              all: true,
+              userOnly: false,
+            },
+          };
+          return options;
+        });
+        await workspace.save();
+        return workspace;
+      })
+    );
+    let individualWorkspaces = await Promise.all(
+      copyWorkspaceRequest.batchClone.section.students.map(async (student) => {
+        let reqCopy = { ...req.body.copyWorkspaceRequest };
+        let { username: studentName } = await models.User.findById(student);
+        reqCopy.owner = student;
+        reqCopy.name = ` ${studentName}: ${copyWorkspaceRequest.name}`;
+        const workspace = await cloneSingleWorkspace({
+          ...req,
+          body: { copyWorkspaceRequest: reqCopy },
+        });
+        return workspace;
+      })
+    );
+    createdWorkspaces = [...groupWorkspaces, ...individualWorkspaces];
   }
   //create a parent workspace based on batch copies
   if (copyWorkspaceRequest.batchClone.createParent) {
@@ -3053,7 +3103,7 @@ async function cloneSingleWorkspace(req, res, next) {
     }
 
     // process basic settings
-    const { name, owner, mode, createdBy } = copyWorkspaceRequest;
+    const { name, owner, mode, createdBy, group } = copyWorkspaceRequest;
 
     if (mode === 'public' || mode === 'internet') {
       let isNameUnique = await apiUtils.isRecordUniqueByStringProp(
@@ -3083,6 +3133,7 @@ async function cloneSingleWorkspace(req, res, next) {
       mode: mode || originalWs.mode,
       createdBy: createdBy || user._id,
       organization: ownerOrg,
+      group,
     });
 
     // let savedWs = await newWs.save();

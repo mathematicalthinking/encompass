@@ -7,9 +7,8 @@
  */
 import Controller from '@ember/controller';
 import { computed } from '@ember/object';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Controller.extend(CurrentUserMixin, {
+export default Controller.extend({
   // comments: controller(),
 
   currentSelection: null, //ENC-397, ENC-398

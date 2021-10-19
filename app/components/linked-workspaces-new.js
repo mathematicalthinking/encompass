@@ -23,6 +23,10 @@ export default class LinkedWorkspacesNew extends Component {
     return this.workspaceName || this.defaultName;
   }
 
+  @action update(student) {
+    return this.args.updateLists(student);
+  }
+
   @action cancel() {
     if (this.args.onCancel) {
       this.args.onCancel();

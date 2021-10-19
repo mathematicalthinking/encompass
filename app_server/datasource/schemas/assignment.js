@@ -48,6 +48,7 @@ var AssignmentSchema = new Schema(
       doAutoUpdateFromChildren: { type: Boolean, default: true },
       name: { type: String },
       createDate: { type: Date },
+      giveAccess: { type: Boolean, default: false },
     },
   },
   { versionKey: false }

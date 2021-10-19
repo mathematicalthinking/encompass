@@ -132,7 +132,7 @@
             <div class="group-selection" {{on "click" this.updateSectionGroups}}>
               <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{action "updateLinkedWorkspacesMode"}} @noWidth={{true}} />
             </div>
-              <LinkedWorkspacesNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @mode={{this.linkedWorkspacesMode}} @students={{if this.linkedWorkspacesMode this.sectionGroups this.selectedSection.students.content}} />
+              <LinkedWorkspacesNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @students={{this.workspacesList}} @updateLists={{this.updateLists}} />
           {{/if}}
         </li>
         {{#if this.doCreateLinkedWorkspaces}}
@@ -148,6 +148,15 @@
           <RadioGroup @options={{this.parentWsOptions}} @selectedValue={{action "updateDoCreateParentWorkspace"}} />
 
           {{#if this.showParentWsForm}}
+            <label for="accessOptions">
+              <span
+                  class="label-text simptip-position-right simptip-multiline simptip-smooth"
+                  data-tooltip={{this.tooltips.parentWorkspace}}
+                >
+                Give access to students?
+                </span>
+            </label>
+            <RadioGroup @options={{this.parentWorkspaceAccessOptions}} @selectedValue={{action "updateParentWorkspaceAccess"}} @noWidth={{true}} />
             <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} />
           {{/if}}
         </li>

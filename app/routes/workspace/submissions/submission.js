@@ -6,7 +6,7 @@
   * @since 1.0.1
   * @see workspace_submissions_route
   */
-/*global _:false */
+
 import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
 import { hash } from 'rsvp';
@@ -23,7 +23,13 @@ export default Route.extend(VmtHostMixin, {
 
   async model({ submission_id }) {
     let submissions = await this.modelFor('workspace.submissions');
-    return await submissions.findBy('id', submission_id);
+    let workspace = await this.modelFor('workspace');
+    let assignment = await workspace.get('linkedAssignment');
+    return hash({
+      workspace,
+      assignment,
+      submission: submissions.findBy('id', submission_id),
+    });
   },
 
   afterModel(submission, transition) {
@@ -44,6 +50,11 @@ export default Route.extend(VmtHostMixin, {
 
   setupController: function (controller, model) {
     this._super(controller, model);
+  },
+  resetController(controller, isExiting, transition) {
+    if (isExiting && transition.targetName !== 'error') {
+      controller.set('itemsToDisplay', 'all');
+    }
   },
 
   activate: function () {
@@ -67,8 +78,8 @@ export default Route.extend(VmtHostMixin, {
   },
 
   resolveVmtRoom(submission) {
-    let roomId 
-    if(submission.submission){
+    let roomId;
+    if (submission.submission) {
       roomId = submission.submission.get('vmtRoomInfo.roomId');
     } else {
       roomId = submission.get('vmtRoomInfo.roomId');

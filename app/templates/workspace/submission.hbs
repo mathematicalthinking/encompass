@@ -12,7 +12,15 @@
   {{/each}}
 </div>
   <aside>
-  <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>
+    {{#if this.showOptions}}
+      <label for="dispaly-options">Work to display: </label>
+      <select id="display-options" oninput={{action "updateDisplayInput"}}>
+        <option value="all">All work</option>
+        <option value="individual">Individual work only</option>
+        <option value="group">Group work only</option>
+      </select>
+    {{/if}}
+    <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>
     {{! this needs to be here so the GuideJS can click it when done
         we don't have a better way to propagate actions }}
     <a id="doneTour" style="display:none" {{action 'doneTour'}}>Done Tour</a>
@@ -32,7 +40,7 @@
 
 <!--section class="submissions"-->
 {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
-  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <SubmissionGroup @store={{this.store}} @canRespond={{this.canRespond}} @submissions={{this.currentWorkspace.submissions.content}} @submission={{this.model.submission}} @addSelection={{action "addSelection"}} @deleteSelection={{action "deleteSelection"}} @currentWorkspace={{this.currentWorkspace}} @toNewResponse={{action "toNewResponse"}} @toSubmission={{action "toSubmission"}} @selections={{this.nonTrashedSelections}} @responses={{this.nonTrashedResponses}} @containerLayoutClass={{this.containerLayoutClass}} @canSeeSelections={{this.canSeeSelections}} @currentSelection={{this.currentSelection}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 <!--/section-->
 
@@ -43,7 +51,7 @@
     <button {{action 'toggleCommentDisplay'}}><img src="../assets/images/chevrons-left.svg"></button>
   </div>
   {{/if}}
-  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
+  <CommentList @store={{this.store}} @comments={{this.nonTrashedComments}} @currentWorkspace={{this.currentWorkspace}} @currentSelection={{this.currentSelection}} @currentSubmission={{this.model.submission}} @allowedToComment={{this.permittedToComment}} @resetComment={{action "cancelComment"}} @isHidden={{this.areCommentsHidden}} @hideComments={{action "toggleCommentDisplay"}} @containerLayoutClass={{this.containerLayoutClass}} @isParentWorkspace={{this.isParentWorkspace}} />
 {{!-- </div> --}}
 </div>
 
