@@ -83,8 +83,8 @@ export default Component.extend({
       if (!value) return;
       let section = await this.get('store').findRecord('section', value);
       let { value: mode } = await this.get('alert').showPromptSelect(
-        'Assign to groups or individuals?',
-        { group: 'Groups', individual: 'Individuals' },
+        'Assign to groups, individuals, or both?',
+        { group: 'Groups', individual: 'Individuals', both: 'Both' },
         'Select'
       );
       let { value: parentChoice } = await this.get('alert').showModal(
