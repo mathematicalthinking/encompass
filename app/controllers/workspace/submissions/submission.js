@@ -27,12 +27,8 @@ export default Controller.extend({
   permissions: service('workspace-permissions'),
   guider: service('guiders-create'),
   showOptions: computed('model.assignment', function () {
-    if (
-      this.model.assignment &&
-      this.model.assignment.linkedWorkspacesRequest &&
-      (this.isParentWorkspace || this.model.workspace.group)
-    ) {
-      return this.model.assignment.linkedWorkspacesRequest.linkType === 'both';
+    if (this.isParentWorkspace || this.model.workspace.group) {
+      return true;
     }
     return false;
   }),
