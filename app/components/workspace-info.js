@@ -60,7 +60,7 @@ export default Component.extend(ErrorHandlingMixin, {
     let isOwner = ownerId === currentUser.id;
     let isCreator = creatorId === currentUser.id;
 
-    return isAdmin || isOwner || isCreator;
+    return isAdmin || isCreator;
   }),
 
   canEditCollaborators: computed(
@@ -81,15 +81,22 @@ export default Component.extend(ErrorHandlingMixin, {
     );
   }),
 
-  modes: computed('currentUser.user.isAdmin', 'currentUser.user.isStudent', function () {
-    const basic = ['private', 'org', 'public'];
+  modes: computed(
+    'currentUser.user.isAdmin',
+    'currentUser.user.isStudent',
+    function () {
+      const basic = ['private', 'org', 'public'];
 
-    if (this.get('currentUser.user.isStudent') || !this.get('currentUser.user.isAdmin')) {
-      return basic;
+      if (
+        this.get('currentUser.user.isStudent') ||
+        !this.get('currentUser.user.isAdmin')
+      ) {
+        return basic;
+      }
+
+      return ['private', 'org', 'public', 'internet'];
     }
-
-    return ['private', 'org', 'public', 'internet'];
-  }),
+  ),
 
   globalItems: {
     groupName: 'globalPermissionValue',
