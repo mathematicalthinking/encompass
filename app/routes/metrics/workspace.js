@@ -15,14 +15,12 @@ export default class MetricsWorkspaceRoute extends Route {
         selections.forEach((selection) => {
           selection.type = 'Selection';
         });
+        //answer is a new document and needs to be fetched separately
+        const answer = await submission.get('answer');
         const submissionText = `<div>${
-          submission.shortAnswer
-            ? submission.shortAnswer
-            : submission.answer.answer
+          submission.shortAnswer ? submission.shortAnswer : answer.answer
         } <br> ${
-          submission.longAnswer
-            ? submission.longAnswer
-            : submission.answer.explanation
+          submission.longAnswer ? submission.longAnswer : answer.explanation
         }</div>`;
         return {
           type: 'Submission',
