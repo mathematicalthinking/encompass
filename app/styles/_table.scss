@@ -15,11 +15,17 @@
   .et-toggle-collapse input[type='checkbox'] {
     opacity: 0.001;
     position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
+    // height: 100%;
+    // width: 100%;
+    // top: 0;
+    // left: 0;
     z-index: 10;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    &:checked + :before {
+      transform: rotate(-90deg);
+    }
   }
   .et-toggle-collapse span::before {
     display: inline-block;
@@ -30,5 +36,17 @@
   }
   .et-cell-container {
     display: flex;
+  }
+  .et-toggle-collapse {
+    display: flex;
+    align-items: center;
+    box-sizing: content-box;
+    width: 24px;
+    padding: 0;
+  }
+  .et-cell-content {
+    margin-left: 5px;
+    flex: 1;
+    padding: 4px;
   }
 }
