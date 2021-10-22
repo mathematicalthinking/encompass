@@ -11,8 +11,8 @@ export default class MetricsWorkspaceController extends Controller {
   @tracked showAll = false;
   @tracked showCloud = false;
   submissionsColumns = [
-    { name: 'Record', valuePath: 'type' },
-    { name: 'Name', valuePath: 'name' },
+    { name: 'Record', valuePath: 'constructor.modelName' },
+    { name: 'Creator', valuePath: 'name' },
     { name: 'Text', valuePath: 'text' },
   ];
   @action

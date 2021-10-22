@@ -8,16 +8,16 @@
   <h3>{{this.model.workspace.lastModifiedDate}}</h3>
 </header>
 <div class="metrics__container">
-  <p><LinkTo @route="metrics">back</LinkTo></p>
+  {{!-- <p><LinkTo @route="metrics">back</LinkTo></p> --}}
   <div class="metrics--flex">
-    <button {{on "click" (fn this.handleToggle "showCloud")}} class="primary-button" type="button">Generate Wordcloud</button>
-    <button {{on "click" (fn this.handleToggle "showFolders")}} class="primary-button" type="button">folders: {{this.model.workspace.foldersLength}}</button>
-    <button {{on "click" (fn this.handleToggle "showComments")}} class="primary-button" type="button">comments: {{this.model.workspace.commentsLength}}</button>
-    <button {{on "click" (fn this.handleToggle "showResponses")}} class="primary-button" type="button">responses: {{this.model.workspace.responsesLength}}</button>
-    <button {{on "click" (fn this.handleToggle "showSelections")}} class="primary-button" type="button">selections: {{this.model.workspace.selectionsLength}}</button>
+    {{!-- <button {{on "click" (fn this.handleToggle "showCloud")}} class="primary-button" type="button">Generate Wordcloud</button> --}}
+    {{!-- <button {{on "click" (fn this.handleToggle "showFolders")}} class="primary-button" type="button">folders: {{this.model.workspace.foldersLength}}</button> --}}
+    {{!-- <button {{on "click" (fn this.handleToggle "showComments")}} class="primary-button" type="button">comments: {{this.model.workspace.commentsLength}}</button> --}}
+    {{!-- <button {{on "click" (fn this.handleToggle "showResponses")}} class="primary-button" type="button">responses: {{this.model.workspace.responsesLength}}</button> --}}
+    {{!-- <button {{on "click" (fn this.handleToggle "showSelections")}} class="primary-button" type="button">selections: {{this.model.workspace.selectionsLength}}</button> --}}
     <button {{on "click" (fn this.handleToggle "showSubmissions")}} class="primary-button" type="button">submissions: {{this.model.workspace.submissionsLength}}</button>
   </div>
-  {{#if this.showSelections}}
+  {{!-- {{#if this.showSelections}}
     <p>selections</p>
     <table class="metrics__table">
       <thead>
@@ -119,10 +119,10 @@
         {{/each}}
       </tbody>
     </table>
-  {{/if}}
+  {{/if}} --}}
   {{#if this.showSubmissions}}
     <EmberTable as |t|>
-      <t.head @columns={{this.submissionsColumns}} @widthConstraint="eq-container" @resizeMode="fluid" @fillMode="last-column" />
+      <t.head @columns={{this.submissionsColumns}} @scrollIndicators="all" @widthConstraint="eq-container" @fillMode="last-column" />
       <t.body @rows={{this.model.submissionsRows}} as |b|>
          <b.row as |r|>
           <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
@@ -177,6 +177,6 @@
       </tbody>
     </table> --}}
   {{/if}}
-  <p><LinkTo @route="metrics">back</LinkTo></p>
+  {{!-- <p><LinkTo @route="metrics">back</LinkTo></p> --}}
   <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
 </div>

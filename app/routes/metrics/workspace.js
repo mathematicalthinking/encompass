@@ -9,30 +9,32 @@ export default class MetricsWorkspaceRoute extends Route {
       params.workspace_id
     );
     const submissions = await workspace.submissions;
-    const submissionsRows = await Promise.all(
-      submissions.map(async (submission) => {
-        const selections = await submission.selections.toArray();
-        selections.forEach((selection) => {
-          selection.type = 'Selection';
-        });
-        //answer is a new document and needs to be fetched separately
-        const answer = await submission.get('answer');
-        const submissionText = `<div>${
-          submission.shortAnswer ? submission.shortAnswer : answer.answer
-        } <br> ${
-          submission.longAnswer ? submission.longAnswer : answer.explanation
-        }</div>`;
-        return {
-          type: 'Submission',
-          name: submission.student,
-          text: submissionText,
-          children: selections,
-        };
-      })
-    );
+    const folders = await workspace.folders.toArray();
+    submissions.forEach(async (submission) => {
+      const answer = await submission.get('answer');
+
+      submission.name = submission.student;
+      submission.text = `<div>${
+        submission.shortAnswer ? submission.shortAnswer : answer.answer
+      } <br><br> ${
+        submission.longAnswer ? submission.longAnswer : answer.explanation
+      }</div>`;
+      const selections = await submission.selections.toArray();
+      const comments = await submission.comments.toArray();
+
+      selections.forEach(async (selection) => {
+        const includedFolders = folders.filter((folder) =>
+          folder.cleanTaggings.find(
+            (tagging) => tagging.selection.id === selection.id
+          )
+        );
+        selection.children = [...comments, ...includedFolders];
+      });
+      submission.children = selections;
+    });
     return hash({
       workspace,
-      submissionsRows,
+      submissionsRows: submissions.toArray(),
     });
   }
   resetController(controller, isExiting, transition) {
