@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const { resolveParentUpdates } = require('../api/parentWorkspaceApi');
-const { resolveGroupUpdates } = require('../api/CommentApi');
+const { resolveGroupUpdates } = require('../api/commentApi');
 
 /**
  * @public
