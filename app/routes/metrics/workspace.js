@@ -19,8 +19,8 @@ export default class MetricsWorkspaceRoute extends Route {
       } <br><br> ${
         submission.longAnswer ? submission.longAnswer : answer.explanation
       }</div>`;
-      const selections = await submission.selections.toArray();
-      submission.children = selections;
+      const selections = await submission.selections;
+      submission.children = selections.toArray();
     });
     return hash({
       workspace,
