@@ -38,64 +38,17 @@
 {{#if this.selectedWorkspaces}}
   <EmberTable as |t|>
     <t.head @columns={{this.submissionsColumns}} @scrollIndicators="all" @widthConstraint="eq-container" />
-    <t.body @rows={{this.selectedWorkspaces}} as |b| />
+    <t.body @rows={{this.selectedWorkspaces}} as |b|>
+      <b.row as |r|>
+        <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
+          {{#if (is-equal columnValue.name "Workspace")}}
+            <LinkTo @route="metrics.workspace" @model={{rowValue.workspaces.firstObject.id}}>{{cellValue}}</LinkTo>
+          {{else}}
+            {{cellValue}}
+          {{/if}}
+        </r.cell>
+      </b.row>
+    </t.body>
   </EmberTable>
 {{/if}}
-{{!-- <table>
-  <thead>
-    <tr>
-      <th>
-        Workspace
-      </th>
-      <th>
-        Selections
-      </th>
-      <th>
-        Comments
-      </th>
-      <th>
-        Folders
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each selectedWorkspaces as |submission|}}
-      <tr>
-        <td>
-          {{#each submission.workspaces as |workspace|}}
-            <p>Name: {{workspace.name}}</p>
-            <p>Owner: {{workspace.owner.username}}</p>
-          {{/each}}
-        </td>
-        <td>
-          <table>
-            {{#each submission.selections as |selection|}}
-              <tr>
-                <td>{{selection.text}}</td>
-              </tr>
-            {{/each}}
-          </table>
-        </td>
-        <td>
-          <table>
-            {{#each submission.comments as |comment|}}
-              <tr>
-                <td>{{comment.text}}</td>
-              </tr>
-            {{/each}}
-          </table>
-        </td>
-        <td>
-          <table>
-            {{#each submission.folders as |folder|}}
-              <tr>
-                <td>{{folder.name}}</td>
-              </tr>
-            {{/each}}
-          </table>
-        </td>
-      </tr>
-    {{/each}}
-  </tbody>
-</table> --}}
 </div>
