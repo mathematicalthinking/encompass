@@ -18,9 +18,9 @@ export default class MetricsSubmissionRoute extends Route {
       selections.forEach(async (selection) => {
         let comments = await selection.comments;
         comments = comments.toArray();
-        let folders = await selection.get('folders');
+        let folders = await selection.get('taggings');
         folders = folders.toArray();
-        selection.children = [...comments, ...folders];
+        selection.children = [...folders, ...comments];
       });
       submission.children = selections.toArray();
     });

@@ -17,9 +17,9 @@ export default class MetricsSubmissionController extends Controller {
   submissionsColumns = [
     { name: 'Record', valuePath: 'constructor.modelName' },
     { name: 'Workspace', valuePath: 'workspaces.firstObject.name' },
+    { name: 'Folder Name', valuePath: 'folder.name' },
     { name: 'Creator', valuePath: 'createdBy.username' },
     { name: 'Comment Type', valuePath: 'label' },
-    { name: 'Folder Name', valuePath: 'name' },
     { name: 'Text', valuePath: 'text' },
   ];
 }
