@@ -9,7 +9,6 @@ export default class MetricsWorkspaceRoute extends Route {
       params.workspace_id
     );
     const submissions = await workspace.submissions;
-    const folders = await workspace.folders.toArray();
     submissions.forEach(async (submission) => {
       const answer = await submission.get('answer');
 
@@ -19,8 +18,14 @@ export default class MetricsWorkspaceRoute extends Route {
       } <br><br> ${
         submission.longAnswer ? submission.longAnswer : answer.explanation
       }</div>`;
-      const selections = await submission.selections;
-      submission.children = selections.toArray();
+      let selections = await submission.selections;
+      selections = selections.toArray();
+      selections.forEach(async (selection) => {
+        let comments = await selection.comments;
+        comments = comments.toArray();
+        selection.children = comments;
+      });
+      submission.children = selections;
     });
     return hash({
       workspace,

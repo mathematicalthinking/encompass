@@ -23,8 +23,14 @@
               {{make-html-safe cellValue}}
             {{else if (is-equal cellValue "submission")}}
               <LinkTo @route="metrics.submission" @model={{rowValue.id}}>{{cellValue}}</LinkTo>
+            {{else if (is-equal columnValue.name "Creator")}}
+              {{#if (is-equal rowValue.constructor.modelName "submission")}}
+                {{rowValue.student}}
+              {{else}}
+                {{cellValue}}
+              {{/if}}
             {{else}}
-              {{celValue}}
+              {{cellValue}}
             {{/if}}
           </r.cell>
         </b.row>
