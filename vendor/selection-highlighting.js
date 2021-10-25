@@ -866,7 +866,8 @@ var SelectionHighlighting = function(args) {
     createdHeatMap = false;
 
     // remove any pre-existing highlight divs
-    highlighting.removeAllHighlights();
+    // this is not needed for updated Ember client
+    // highlighting.removeAllHighlights();
 
     // make sure everything in the container has an id
     identifyAllElements(selectableContainer, 1);

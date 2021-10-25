@@ -309,7 +309,7 @@ export default Component.extend({
     },
     onStudentSelect(submissionId) {
       let submission = this.submissionThreadHeads.findBy('id', submissionId);
-      this.toSubmission(submission);
+      this.toSubmission(submission.id);
     },
 
     onStudentBlur() {

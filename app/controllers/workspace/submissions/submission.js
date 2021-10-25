@@ -26,12 +26,7 @@ export default Controller.extend({
   workspaceOwner: alias('currentWorkspace.owner'),
   permissions: service('workspace-permissions'),
   guider: service('guiders-create'),
-  showOptions: computed('model.assignment', function () {
-    if (this.isParentWorkspace || this.model.workspace.group) {
-      return true;
-    }
-    return false;
-  }),
+  showOptions: true,
   areFoldersHidden: false,
   areCommentsHidden: false,
   itemsToDisplay: 'all',

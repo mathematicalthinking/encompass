@@ -96,6 +96,7 @@ export default Component.extend({
       this.imageTagging.removeAllTags();
       // this.set('makingSelection', false);
       // this.set('showingSelections', false);
+      highlighting.removeAllHighlights();
       return this.sendAction('handleTransition', true);
     }
     if (wasSelRemoved) {
