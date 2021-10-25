@@ -1,7 +1,7 @@
 <header>
   <h3>{{this.model.submission.student}}'s Answer to {{this.model.submission.answer.problem.title}}</h3>
+  <LinkTo @route="metrics.workspace" @model={{this.model.submission.workspaces.firstObject.id}}>Back to Worksapce Report</LinkTo>
 </header>
-<p><LinkTo @route="metrics">back</LinkTo></p>
 <div class="metrics__container">
   <div class="metrics--flex">
     <div id="ws-list">
