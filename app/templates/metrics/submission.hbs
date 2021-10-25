@@ -22,6 +22,10 @@
     </div>
     <div id="submission">
       <div class="metrics__card">
+        <h3>Problem</h3>
+        <ExpandableCell @text={{this.model.submission.answer.problem.text}} />
+      </div>
+      <div class="metrics__card">
       <h3>answer</h3>
         <ExpandableCell @text={{if this.model.submission.shortAnswer this.model.submission.shortAnswer this.model.submission.answer.answer}} />
       </div>
