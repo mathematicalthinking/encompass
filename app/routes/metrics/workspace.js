@@ -20,16 +20,6 @@ export default class MetricsWorkspaceRoute extends Route {
         submission.longAnswer ? submission.longAnswer : answer.explanation
       }</div>`;
       const selections = await submission.selections.toArray();
-      const comments = await submission.comments.toArray();
-
-      selections.forEach(async (selection) => {
-        const includedFolders = folders.filter((folder) =>
-          folder.cleanTaggings.find(
-            (tagging) => tagging.selection.id === selection.id
-          )
-        );
-        selection.children = [...comments, ...includedFolders];
-      });
       submission.children = selections;
     });
     return hash({

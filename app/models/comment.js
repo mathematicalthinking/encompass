@@ -8,8 +8,8 @@ export default class CommentModel extends Auditable {
   //the ultimate origin of this comment
   @belongsTo('comment', { inverse: 'ancestors', async: true }) origin;
   @hasMany('comment', { inverse: 'origin', async: true }) ancestors;
-  @belongsTo('comment', { inverse: 'children', async: true }) parent;
-  @hasMany('comment', { inverse: 'parent', async: true }) children;
+  // @belongsTo('comment', { inverse: 'children', async: true }) parent;
+  // @hasMany('comment', { inverse: 'parent', async: true }) children;
   @belongsTo('submission', { async: true }) submission;
   @belongsTo('workspace') workspace;
   relevance = 0; // Used for sorting (gets set by controller)
@@ -20,7 +20,4 @@ export default class CommentModel extends Auditable {
   //   return 'selection';
   // }),
   @belongsTo('comment', { inverse: null }) originalComment;
-  get name() {
-    return this.createdBy.get('username');
-  }
 }

@@ -14,4 +14,12 @@ export default class MetricsSubmissionController extends Controller {
     }
     return this.selectedWorkspaces.pushObject(workspace);
   }
+  submissionsColumns = [
+    { name: 'Record', valuePath: 'constructor.modelName' },
+    { name: 'Workspace', valuePath: 'workspaces.firstObject.name' },
+    { name: 'Creator', valuePath: 'createdBy.username' },
+    { name: 'Comment Type', valuePath: 'label' },
+    { name: 'Folder Name', valuePath: 'name' },
+    { name: 'Text', valuePath: 'text' },
+  ];
 }

@@ -7,9 +7,23 @@ export default class MetricsSubmissionRoute extends Route {
   async model({ submission_id }) {
     const submission = await this.store.findRecord('submission', submission_id);
     const answer = await submission.answer.get('id');
-    const allSubmissions = await this.store.query('submission', {
+    let allSubmissions = await this.store.query('submission', {
       findByAnswer: true,
       answer,
+    });
+    allSubmissions = await allSubmissions.toArray();
+    allSubmissions.forEach(async (submission) => {
+      submission.text = '';
+      const selections = await submission.selections;
+      selections.forEach(async (selection) => {
+        let comments = await selection.comments;
+        comments = comments.toArray();
+        let folders = await selection.get('folders');
+        folders = folders.toArray();
+        console.log(folders);
+        selection.children = [...comments, ...folders];
+      });
+      submission.children = selections.toArray();
     });
     const workspaces = await allSubmissions
       //submission model has an array of workspaces, usually just one workspace, so need to get the first object
