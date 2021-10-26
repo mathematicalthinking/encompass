@@ -742,9 +742,10 @@ NoteInput = function() {
   (function() {
 
     function addEventListener(img) {
-      if (!img.id) {
-        return;
-      }
+      // this was getting in the way of proper setup
+      // if (!img.id) {
+      //   return;
+      // }
       targetImages[targetImages.length] = img;
       img.addEventListener('mousedown', _initiateSelection, false);
       img.addEventListener('touchstart', _initiateSelection, false);

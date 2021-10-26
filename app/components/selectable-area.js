@@ -54,9 +54,9 @@ export default Component.extend({
     //   tag.selectionType = 'image-tag';
     //   this.sendAction('addSelection', tag, isUpdateOnly);
     // });
+    this.imageTagging.loadTags(this.imgTags);
     this.imageTagging.enable();
     this.selectionHighlighting.loadSelections(this.selections);
-    this.imageTagging.loadTags(this.imgTags);
 
     if (this.showingSelections) {
       this.selectionHighlighting.highlightAllSelections();
