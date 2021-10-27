@@ -84,7 +84,7 @@
     "q": "^1.5.1",
     "randomcolor": "^0.6.2",
     "request": "^2.88.2",
-    "sharp": "^0.28.1",
+    "sharp": "^0.29.2",
     "socket.io": "^2.4.0",
     "underscore": "^1.13.1",
     "uuid": "^8.3.2",
