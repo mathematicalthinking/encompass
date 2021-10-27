@@ -16,7 +16,7 @@
         <li><label><Input
               type='checkbox'
               {{on 'change' (fn this.updateSelectedFolders folder)}}
-            />{{folder.name}}
+            />{{if folder.cleanSelections.length '*'}}{{folder.name}}
             -
             {{folder.createdBy.displayName}}</label></li>
       {{/each}}
