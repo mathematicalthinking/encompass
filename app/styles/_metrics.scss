@@ -45,3 +45,8 @@
 .metrics--expandable {
   cursor: pointer;
 }
+
+.metrics--scrollable {
+  height: 200px;
+  overflow: scroll;
+}
