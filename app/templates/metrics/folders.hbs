@@ -1,0 +1,14 @@
+{{page-title 'Folders'}}
+<Input
+  type='text'
+  @placeholder='Search by folder name'
+  @value={{this.searchTerm}}
+/>
+<button {{on 'click' this.searchFoldersByName}}>Search Folders</button>
+<div class='metrics--scrollable'>
+  <ul>
+    {{#each this.foundFolders as |folder|}}
+      <p>{{folder.name}} - {{folder.createdBy.displayName}}</p>
+    {{/each}}
+  </ul>
+</div>
