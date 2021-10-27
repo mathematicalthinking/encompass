@@ -22,8 +22,18 @@ export default class MetricsWorkspaceRoute extends Route {
       selections = selections.toArray();
       selections.forEach(async (selection) => {
         let comments = await selection.comments;
-        comments = comments.toArray();
-        selection.children = comments;
+        let commentsToDisplay = comments.map((comment) => {
+          return {
+            text: comment.text,
+            constructor: {
+              modelName: comment.constructor.modelName,
+            },
+            createdBy: {
+              displayName: comment.get('createdBy.displayName'),
+            },
+          };
+        });
+        selection.children = commentsToDisplay;
       });
       submission.children = selections;
     });

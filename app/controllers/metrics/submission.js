@@ -19,7 +19,7 @@ export default class MetricsSubmissionController extends Controller {
     { name: 'Workspace', valuePath: 'workspaces.firstObject.name' },
     { name: 'Text', valuePath: 'text' },
     { name: 'Folder Name', valuePath: 'folder.name' },
-    { name: 'Creator', valuePath: 'createdBy.username' },
+    { name: 'Creator', valuePath: 'createdBy.displayName' },
     { name: 'Comment Type', valuePath: 'label' },
   ];
 }

@@ -17,10 +17,31 @@ export default class MetricsSubmissionRoute extends Route {
       const selections = await submission.selections;
       selections.forEach(async (selection) => {
         let comments = await selection.comments;
-        comments = comments.toArray();
+        let commentsToDisplay = comments.map((comment) => {
+          return {
+            text: comment.text,
+            constructor: {
+              modelName: comment.constructor.modelName,
+            },
+            createdBy: {
+              displayName: comment.get('createdBy.displayName'),
+            },
+            label: comment.label,
+          };
+        });
         let folders = await selection.get('taggings');
-        folders = folders.toArray();
-        selection.children = [...folders, ...comments];
+        let foldersToDisplay = folders.map((folder) => {
+          return {
+            name: folder.name,
+            constuctor: {
+              modelName: 'folder',
+            },
+            createdBy: {
+              displayName: folder.get('createdBy.displayName'),
+            },
+          };
+        });
+        selection.children = [...foldersToDisplay, ...commentsToDisplay];
       });
       submission.children = selections.toArray();
     });
