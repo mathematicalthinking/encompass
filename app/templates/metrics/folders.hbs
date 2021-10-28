@@ -1,5 +1,5 @@
 {{page-title 'Folders'}}
-{{log this.selectedFolders}}
+{{log this.selectedProblem}}
 <header>
   <h3>Search by Folder</h3>
 </header>
@@ -10,6 +10,8 @@
     @value={{this.searchTerm}}
   />
   <button {{on 'click' this.searchFoldersByName}}>Search Folders</button>
+  <TwitterTypeahead @placeholder="Search by problem" @dataList={{this.model.problems}} @optionLabelPath="title"
+    @selectedValue={{this.selectedProblem}} @setSelectedValueOnChange={{true}} />
   <div class='metrics--scrollable'>
     <ul>
       {{#each this.foundFolders as |folder|}}
