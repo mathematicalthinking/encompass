@@ -64,6 +64,7 @@ export default class MetricsFoldersController extends Controller {
       .mapBy('name')
       .filter((name, idx, array) => array.indexOf(name) === idx);
   }
+
   @action searchFoldersByName() {
     this.foundFolders = this.model.folders.filter(
       (folder) => folder.name.toLowerCase() === this.searchTerm.toLowerCase()
@@ -78,5 +79,19 @@ export default class MetricsFoldersController extends Controller {
   }
   @action updateSelectedProblem(problem) {
     this.selectedProblem = problem;
+  }
+  @action updateSelectizeSingle(val, $item, propToUpdate, model) {
+    let errorProp = `${model}FormErrors`;
+    this[errorProp] = [];
+
+    if ($item === null) {
+      this[propToUpdate] = null;
+      return;
+    }
+    let record = this.store.peekRecord(model, val);
+    if (!record) {
+      return;
+    }
+    this[propToUpdate] = record;
   }
 }

@@ -10,8 +10,7 @@
     @value={{this.searchTerm}}
   />
   <button {{on 'click' this.searchFoldersByName}}>Search Folders</button>
-  <TwitterTypeahead @placeholder="Search by problem" @dataList={{this.model.problems}} @optionLabelPath="title"
-    @selectedValue={{this.selectedProblem}} @setSelectedValueOnChange={{true}} />
+  <SelectizeInput @store={{this.store}} @inputId="problem-select" @initialOptions={{this.model.problems}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="selectedProblem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" />
   <div class='metrics--scrollable'>
     <ul>
       {{#each this.foundFolders as |folder|}}

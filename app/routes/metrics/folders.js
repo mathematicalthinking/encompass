@@ -9,7 +9,7 @@ export default class MetricsFoldersRoute extends Route {
     const problems = await this.store.findAll('problem');
     return hash({
       folders: folders.toArray(),
-      problems,
+      problems: problems.toArray(),
     });
   }
 }
