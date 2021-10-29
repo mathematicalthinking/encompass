@@ -157,7 +157,7 @@
                 </span>
             </label>
             <RadioGroup @options={{this.parentWorkspaceAccessOptions}} @selectedValue={{action "updateParentWorkspaceAccess"}} @noWidth={{true}} />
-            <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} />
+            <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} />
           {{/if}}
         </li>
         {{/if}}
