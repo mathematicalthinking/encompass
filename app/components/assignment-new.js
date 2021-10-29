@@ -35,6 +35,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
     parentWorkspace:
       'If "Yes", an empty Parent workspace will be created from the newly linked student workspaces. The parent workspace will automatically update as the children workspaces are populated with new submissions and markup',
+    parentWorkspaceOptions:
+      '"Give access" allows students to see the contents of the parent workspace. "Keep Private" will restrict access to the teacher only. This can be changed later',
   };
   constraints = {
     section: {
