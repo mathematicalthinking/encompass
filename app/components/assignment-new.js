@@ -17,7 +17,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked formId = null;
   @tracked createRecordErrors = [];
   @tracked queryErrors = [];
-  @tracked linkedWorkspacesMode = '';
+  @tracked linkedWorkspacesMode = 'individual';
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
