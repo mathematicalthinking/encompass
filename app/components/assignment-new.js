@@ -17,7 +17,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked formId = null;
   @tracked createRecordErrors = [];
   @tracked queryErrors = [];
-  @tracked linkedWorkspacesMode = 'individual';
+  @tracked linkedWorkspacesMode = '';
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
@@ -291,7 +291,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     createAssignmentData.parentWorkspaceRequest = {
       doCreate: doCreateLinkedWorkspaces ? doCreateParentWorkspace : false,
       name: parentNameFormat,
-      giveAccess: this.parentWorkspaceAccess,
+      giveAccess: this.parentWorkspaceAccess || false,
     };
 
     students.forEach((student) => {
