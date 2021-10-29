@@ -413,7 +413,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
 
   @action cancel() {
-    if (this.cancel) {
+    if (this.args.cancel) {
       this.args.cancel();
     } else {
       this.router.transitionTo('assignments');
