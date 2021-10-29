@@ -940,7 +940,8 @@ const generateLinkedWorkspacesFromAssignment = async (
         return ['All students already own a linked workspace', null];
       }
       workspaces = await Promise.all(
-        studentsToMake.map(async (student) => {
+        studentsToMake.map(async (studentId) => {
+          const student = await models.User.findById(studentId);
           // create submission record copies
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
@@ -1051,7 +1052,6 @@ const generateLinkedWorkspacesFromAssignment = async (
       let individualWorkspaces = await Promise.all(
         studentsToMake.map(async (studentId) => {
           const student = await models.User.findById(studentId);
-          console.log(student);
           // create submission record copies
           let submissionRecords = await Promise.all(
             submissionObjects.map((obj) => {
