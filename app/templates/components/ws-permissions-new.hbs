@@ -7,7 +7,7 @@
 </p>
 
 <div class="submission-permissions">
-<RadioGroup @options={{submissionItems}} @selectedValue={{action "updateSubmissions"}} />
+<RadioGroup @options={{submissionItems}} @selectedValue={{submissions}} @updateValue={{action "updateSubmissions"}} />
 {{#if closedCustomView}}
   <span class="show-viewer" {{action (mut showCustomSubmissionViewer) true}}>Show Viewer</span>
 {{/if}}
@@ -25,7 +25,7 @@
 </div>
 
 <div class="global-permissions">
-  <RadioGroup @options={{globalItems}} @selectedValue={{action "updateGlobal"}} />
+  <RadioGroup @options={{globalItems}} @selectedValue={{global}} @updateValue={{action "updateGlobal"}} />
   {{#if showCustom}}
   <div class="custom-global-permissions">
     <p class="input-label">
@@ -34,10 +34,10 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    <RadioGroup @options={{selectionItems}} @selectedValue={{action "updateSelections"}} />
-    <RadioGroup @options={{commentItems}} @selectedValue={{action "updateComments"}} />
-    <RadioGroup @options={{folderItems}} @selectedValue={{action "updateFolders"}} />
-    <RadioGroup @options={{feedbackItems}} @selectedValue={{action "updateFeedback"}} />
+    <RadioGroup @options={{selectionItems}} @selectedValue={{selections}} @updateValue={{action "updateSelections"}} />
+    <RadioGroup @options={{commentItems}} @selectedValue={{comments}} @updateValue={{action "updateComments"}} />
+    <RadioGroup @options={{folderItems}} @selectedValue={{folders}} @updateValue={{action "updateFolders"}} />
+    <RadioGroup @options={{feedbackItems}} @selectedValue={{feedback}} @updateValue={{action "updateFeedback"}} />
   </div>
   {{/if}}
 </div>

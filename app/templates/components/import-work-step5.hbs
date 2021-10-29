@@ -4,7 +4,7 @@
     <i class="fas fa-info-circle info-icon"></i>
   </span>
 </p>
-<RadioGroup @options={{createWs}} @selectedValue={{action "updateDoCreateWs"}} />
+<RadioGroup @options={{createWs}} @selectedValue={{this.doCreateWs}} @updateValue={{action "updateDoCreateWs"}} />
 
 {{#if creatingWs}}
 <div class="create-ws-content">
@@ -51,7 +51,7 @@
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    <RadioGroup @options={{modeInputs}} @selectedValue={{action "updateSelectedMode"}} />
+    <RadioGroup @options={{modeInputs}} @selectedValue={{this.selectedMode}} @updateValue={{action "updateSelectedMode"}} />
   </div>
 
 
@@ -77,7 +77,7 @@
           <i class="fas fa-info-circle info-icon"></i>
         </span>
       </p>
-      <RadioGroup @options={{createAssignment}} @selectedValue={{action "updateCreateAssignmentValue"}} />
+      <RadioGroup @options={{createAssignment}} @selectedValue={{this.createAssignmentValue}} @updateValue={{action "updateCreateAssignmentValue"}} />
     </div>
     {{/if}}
   {{/unless}}
