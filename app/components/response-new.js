@@ -39,6 +39,11 @@ export default Component.extend(ErrorHandlingMixin, {
     'emptyReplyError',
     'quillTooLongError',
   ],
+  commentFilter: [
+    { label: 'Notice', value: 'notice', isChecked: true },
+    { label: 'Wonder', value: 'wonder', isChecked: true },
+    { label: 'Feedback', value: 'feedback', isChecked: true },
+  ],
 
   didReceiveAttrs() {
     if (this.isCreating && !this.isEditing) {
@@ -128,12 +133,17 @@ export default Component.extend(ErrorHandlingMixin, {
     return !this.isEditing && this.newReplyStatus !== 'approved';
   }),
 
-  canRevise: computed('creator', 'model.persisted', 'currentUser.user', function () {
-    return (
-      this.get('creator.id') === this.get('currentUser.user.id') &&
-      this.get('model.persisted')
-    );
-  }),
+  canRevise: computed(
+    'creator',
+    'model.persisted',
+    'currentUser.user',
+    function () {
+      return (
+        this.get('creator.id') === this.get('currentUser.user.id') &&
+        this.get('model.persisted')
+      );
+    }
+  ),
   showRevise: computed('canRevise', 'isRevising', function () {
     return this.canRevise && !this.isRevising;
   }),

@@ -92,6 +92,11 @@
           {{/if}}
         </section>
       {{/if}}
+      <div class="comment-filter">
+        {{#each this.commentFilter as |item|}}
+          <label><Input @type="checkbox" @checked={{item.isChecked}} />{{item.label}}</label>
+        {{/each}}
+      </div>
     </section>
     <div class="response-info">
       {{#if explainEmptiness}}
