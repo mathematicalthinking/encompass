@@ -78,6 +78,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   filteredComments: computed(
     'model.comments.@each.isTrashed',
+    'commentFilter.@each.isChecked',
     'doUseOnlyOwnMarkup',
     function () {
       // filter out trashed selections
@@ -90,12 +91,24 @@ export default Component.extend(ErrorHandlingMixin, {
           if (comment.get('isTrashed')) {
             return false;
           }
+          const chosenFilter = this.commentFilter
+            .filter((item) => item.isChecked)
+            .map((item) => item.value);
 
           let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
-          return creatorId === this.get('currentUser.user.id');
+          return (
+            creatorId === this.get('currentUser.user.id') &&
+            chosenFilter.includes(comment.label)
+          );
         });
       }
-      return this.get('model.comments').rejectBy('isTrashed');
+      const chosenFilter = this.commentFilter
+        .filter((item) => item.isChecked)
+        .map((item) => item.value);
+      return (
+        this.get('model.comments').rejectBy('isTrashed') &&
+        chosenFilter.includes(comment.label)
+      );
     }
   ),
 
