@@ -63,7 +63,7 @@
             <ul class="selections-list">
             {{#each filteredSelections as |selection|}}
               <li class="selections-list-item">
-                <LinkTo @route="workspace.submission.selection" @models={{array selection.workspace selection.submission selection}}>
+                <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array selection.workspace.id selection.submission.id selection.id}}>
                   {{#if selection.imageTagLink}}
                     <img src={{selection.imageTagLink}} alt={{selection.text}}>
                   {{else}}
@@ -84,7 +84,7 @@
             <ul class="comments-list">
             {{#each filteredComments as |comment|}}
               <li class="comments-list-item">
-                <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array comment.workspace comment.submission comment.selection}}>
+                <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array comment.workspace.id comment.submission.id comment.selection.id}}>
                 "{{comment.text}}"</LinkTo>
               </li>
             {{/each}}
@@ -92,6 +92,12 @@
           {{/if}}
         </section>
       {{/if}}
+      <div class="comment-filter">
+        <p>Comments to include:</p>
+        {{#each this.commentFilter as |item|}}
+          <label><Input @type="checkbox" @checked={{item.isChecked}} />{{item.label}}</label>
+        {{/each}}
+      </div>
     </section>
     <div class="response-info">
       {{#if explainEmptiness}}

@@ -50,7 +50,6 @@ export default class ResponsesNewSubmissionRoute extends Route.extend(
   }
 
   model(params) {
-    console.log('target route!');
     let submission;
 
     let isDraft = false;

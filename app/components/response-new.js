@@ -1,3 +1,5 @@
+//TODO: find out how Use Only Own Markup is expected to work
+
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { and, not } from '@ember/object/computed';
@@ -39,6 +41,11 @@ export default Component.extend(ErrorHandlingMixin, {
     'emptyReplyError',
     'quillTooLongError',
   ],
+  commentFilter: [
+    { label: 'Notice', value: 'notice', isChecked: true },
+    { label: 'Wonder', value: 'wonder', isChecked: true },
+    { label: 'Feedback', value: 'feedback', isChecked: true },
+  ],
 
   didReceiveAttrs() {
     if (this.isCreating && !this.isEditing) {
@@ -73,24 +80,31 @@ export default Component.extend(ErrorHandlingMixin, {
 
   filteredComments: computed(
     'model.comments.@each.isTrashed',
+    'commentFilter.@each.isChecked',
     'doUseOnlyOwnMarkup',
     function () {
-      // filter out trashed selections
-      // if a user deletes a selection and then immediately after
-      // goes to make a response, the trashed selection may still
-      // be associated with the workspace
-
+      // get array of strings of comment types to include
+      const chosenFilter = this.commentFilter
+        .filter((item) => item.isChecked)
+        .map((item) => item.value);
+      // include only users personal comments
       if (this.doUseOnlyOwnMarkup) {
         return this.get('model.comments').filter((comment) => {
           if (comment.get('isTrashed')) {
             return false;
           }
-
           let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
-          return creatorId === this.get('currentUser.user.id');
+          return (
+            creatorId === this.get('currentUser.user.id') &&
+            chosenFilter.includes(comment.label)
+          );
         });
       }
-      return this.get('model.comments').rejectBy('isTrashed');
+      // use any comment created in workspace
+      return this.get('model.comments').filter(
+        (comment) =>
+          !comment.get('isTrashed') && chosenFilter.includes(comment.label)
+      );
     }
   ),
 
@@ -128,12 +142,17 @@ export default Component.extend(ErrorHandlingMixin, {
     return !this.isEditing && this.newReplyStatus !== 'approved';
   }),
 
-  canRevise: computed('creator', 'model.persisted', 'currentUser.user', function () {
-    return (
-      this.get('creator.id') === this.get('currentUser.user.id') &&
-      this.get('model.persisted')
-    );
-  }),
+  canRevise: computed(
+    'creator',
+    'model.persisted',
+    'currentUser.user',
+    function () {
+      return (
+        this.get('creator.id') === this.get('currentUser.user.id') &&
+        this.get('model.persisted')
+      );
+    }
+  ),
   showRevise: computed('canRevise', 'isRevising', function () {
     return this.canRevise && !this.isRevising;
   }),
@@ -276,10 +295,14 @@ export default Component.extend(ErrorHandlingMixin, {
         });
       });
 
-      this.set('replyText', text);
       this.set('originalText', text);
+      return text;
     }
   },
+
+  replyText: computed('filteredComments', function () {
+    return this.preFormatText();
+  }),
 
   shortText: computed('model.text', function () {
     if (typeof this.get('model.text') !== 'string') {
