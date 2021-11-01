@@ -299,10 +299,14 @@ export default Component.extend(ErrorHandlingMixin, {
         });
       });
 
-      this.set('replyText', text);
       this.set('originalText', text);
+      return text;
     }
   },
+
+  replyText: computed('filteredComments', function () {
+    return this.preFormatText();
+  }),
 
   shortText: computed('model.text', function () {
     if (typeof this.get('model.text') !== 'string') {
