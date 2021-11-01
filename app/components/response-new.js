@@ -85,16 +85,14 @@ export default Component.extend(ErrorHandlingMixin, {
       // if a user deletes a selection and then immediately after
       // goes to make a response, the trashed selection may still
       // be associated with the workspace
-
+      const chosenFilter = this.commentFilter
+        .filter((item) => item.isChecked)
+        .map((item) => item.value);
       if (this.doUseOnlyOwnMarkup) {
         return this.get('model.comments').filter((comment) => {
           if (comment.get('isTrashed')) {
             return false;
           }
-          const chosenFilter = this.commentFilter
-            .filter((item) => item.isChecked)
-            .map((item) => item.value);
-
           let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
           return (
             creatorId === this.get('currentUser.user.id') &&
@@ -102,12 +100,9 @@ export default Component.extend(ErrorHandlingMixin, {
           );
         });
       }
-      const chosenFilter = this.commentFilter
-        .filter((item) => item.isChecked)
-        .map((item) => item.value);
-      return (
-        this.get('model.comments').rejectBy('isTrashed') &&
-        chosenFilter.includes(comment.label)
+      return this.get('model.comments').filter(
+        (comment) =>
+          !comment.get('isTrashed') && chosenFilter.includes(comment.label)
       );
     }
   ),
