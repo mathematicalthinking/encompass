@@ -1,3 +1,5 @@
+//TODO: find out how Use Only Own Markup is expected to work
+
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { and, not } from '@ember/object/computed';
@@ -81,13 +83,11 @@ export default Component.extend(ErrorHandlingMixin, {
     'commentFilter.@each.isChecked',
     'doUseOnlyOwnMarkup',
     function () {
-      // filter out trashed selections
-      // if a user deletes a selection and then immediately after
-      // goes to make a response, the trashed selection may still
-      // be associated with the workspace
+      // get array of strings of comment types to include
       const chosenFilter = this.commentFilter
         .filter((item) => item.isChecked)
         .map((item) => item.value);
+      // include only users personal comments
       if (this.doUseOnlyOwnMarkup) {
         return this.get('model.comments').filter((comment) => {
           if (comment.get('isTrashed')) {
@@ -100,6 +100,7 @@ export default Component.extend(ErrorHandlingMixin, {
           );
         });
       }
+      // use any comment created in workspace
       return this.get('model.comments').filter(
         (comment) =>
           !comment.get('isTrashed') && chosenFilter.includes(comment.label)
