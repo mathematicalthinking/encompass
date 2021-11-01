@@ -93,6 +93,7 @@
         </section>
       {{/if}}
       <div class="comment-filter">
+        <p>Comments to include:</p>
         {{#each this.commentFilter as |item|}}
           <label><Input @type="checkbox" @checked={{item.isChecked}} />{{item.label}}</label>
         {{/each}}
