@@ -1793,7 +1793,8 @@ async function getWorkspaces(req, res, next) {
   let doCollate, byRelevance;
 
   if (sortBy) {
-    sortParam = sortBy.sortParam;
+    // in order to allow search by text, need to add default value for sortParam
+    sortParam = sortBy.sortParam || {};
     doCollate = sortBy.doCollate;
     byRelevance = sortBy.byRelevance;
   }
@@ -1806,7 +1807,6 @@ async function getWorkspaces(req, res, next) {
     isTrashedOnly
   );
   let results, itemCount;
-
   let sortField = Object.keys(sortParam)[0];
   let sortableFields = [
     'submissions',
@@ -1818,7 +1818,7 @@ async function getWorkspaces(req, res, next) {
 
   if (byRelevance) {
     [results, itemCount] = await Promise.all([
-      models.Workspace.find(criteria, { score: { $meta: 'textScore' } })
+      models.Workspace.find(criteria)
         .sort(sortParam)
         .limit(req.query.limit)
         .skip(req.skip)

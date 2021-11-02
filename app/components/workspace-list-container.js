@@ -657,8 +657,9 @@ export default Component.extend(ErrorHandlingMixin, {
   buildSortBy: function () {
     if (this.searchByRelevance) {
       return {
+        // $meta: 'textScore' breaks search by text
         sortParam: {
-          score: { $meta: 'textScore' },
+          // score: { $meta: 'textScore' },
         },
         doCollate: false,
         byRelevance: true,
