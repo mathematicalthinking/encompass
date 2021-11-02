@@ -56,6 +56,7 @@ export default class MetricsWorkspaceController extends Controller {
         text,
         recordType: submission.constructor.modelName,
         creator: submission.student,
+        id: submission.id,
         children,
       };
     });
