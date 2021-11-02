@@ -3,31 +3,62 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class MetricsWorkspaceController extends Controller {
-  @tracked showSelections = false;
-  @tracked showFolders = false;
-  @tracked showComments = false;
-  @tracked showResponses = false;
   @tracked showSubmissions = false;
-  @tracked showAll = false;
   @tracked showCloud = false;
   submissionsColumns = [
-    { name: 'Record', valuePath: 'constructor.modelName' },
-    { name: 'Creator', valuePath: 'createdBy.displayName' },
+    { name: 'Record', valuePath: 'recordType' },
+    { name: 'Creator', valuePath: 'creator' },
     { name: 'Text', valuePath: 'text' },
   ];
   @action
-  toggleShowAll() {
-    this.showAll = !this.showAll;
-  }
-  @action
   handleToggle(prop) {
-    this.showSelections = false;
-    this.showFolders = false;
-    this.showComments = false;
-    this.showResponses = false;
     this.showSubmissions = false;
     this.showCloud = false;
     this[prop] = true;
+  }
+  get tableRows() {
+    return this.model.submissions.map((submission) => {
+      const text = `<div>${
+        submission.shortAnswer
+          ? submission.shortAnswer
+          : submission.get('answer.answer')
+      } <br><br> ${
+        submission.longAnswer
+          ? submission.longAnswer
+          : submission.get('answer.explanation')
+      }</div>`;
+      const selections = submission.get('selections');
+      const children = selections.map((selection) => {
+        const comments = selection.get('comments');
+        const taggings = selection.get('folders');
+        const selectionComments = comments.map((comment) => {
+          return {
+            text: comment.text,
+            recordType: comment.constructor.modelName,
+            creator: comment.get('createdBy.displayName'),
+          };
+        });
+        const selectionTaggings = taggings.map((tagging) => {
+          return {
+            text: tagging.get('name'),
+            recordType: 'folder',
+            creator: tagging.get('createdBy.displayName'),
+          };
+        });
+        return {
+          text: selection.text,
+          recordType: selection.constructor.modelName,
+          creator: selection.get('createdBy.displayName'),
+          children: [...selectionTaggings, ...selectionComments],
+        };
+      });
+      return {
+        text,
+        recordType: submission.constructor.modelName,
+        creator: submission.student,
+        children,
+      };
+    });
   }
   get list() {
     // eslint-disable-next-line prettier/prettier

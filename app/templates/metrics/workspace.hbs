@@ -1,5 +1,4 @@
 <header>
-  {{log this.model}}
   <p>Looking at workspace:</p>
   <h3>{{this.model.workspace.name}}</h3>
   <p>Owner:</p>
@@ -16,7 +15,7 @@
   {{#if this.showSubmissions}}
     <EmberTable as |t|>
       <t.head @columns={{this.submissionsColumns}} @scrollIndicators="all" @widthConstraint="eq-container" @fillMode="last-column" />
-      <t.body @rows={{this.model.submissionsRows}} as |b|>
+      <t.body @rows={{this.tableRows}} as |b|>
          <b.row as |r|>
           <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
             {{#if (is-equal columnValue.name "Text")}}
