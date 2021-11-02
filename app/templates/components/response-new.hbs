@@ -50,13 +50,13 @@
       </div>
       {{/if}}
       <div class="markup-filter">
-        <span class="filter-label">Filter</span><i class="fas fa-filter"></i>
+        <span class="filter-label">Comments Filter</span><i class="fas fa-filter"></i>
         <span class="hover-menu checkbox">
           <ul>
             <li>
               <label>
                 <input type="checkbox" name="ownMarkUpOnly" checked={{doUseOnlyOwnMarkup}} onclick={{action "toggleOwnMarkUpOnly"}}/>
-                Use Only Own Markup
+                My Comments and Selections Only
               </label>
             </li>
           {{#each this.commentFilter as |item|}}
