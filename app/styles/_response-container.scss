@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 #response-container {
   background-color: $filter-list-background-color;
@@ -23,7 +23,9 @@
   .pf-response-text {
     margin-left: 25px;
   }
-  i.far.fa-envelope, i.far.fa-envelope-open, i.fas.fa-user {
+  i.far.fa-envelope,
+  i.far.fa-envelope-open,
+  i.fas.fa-user {
     cursor: default;
   }
 }
@@ -38,9 +40,17 @@
 }
 
 .response-flex-container {
-  @include flex-container(null, null, row, wrap, center, flex-start, flex-start);
+  @include flex-container(
+    null,
+    null,
+    row,
+    wrap,
+    center,
+    flex-start,
+    flex-start
+  );
   width: 100%;
-  .response-flex-item.submission{
+  .response-flex-item.submission {
     @include flex-item(1, flex-start, 1 1 auto);
     width: 40%;
     &.third {
@@ -61,7 +71,6 @@
         max-width: 150px;
       }
     }
-
   }
   .response-flex-item.approver.third {
     @include flex-item(3, flex-start, 1 1 auto);
@@ -84,10 +93,10 @@
     .problem-link-container {
       margin-bottom: 20px;
       a {
-        font-size: .9em;
+        font-size: 0.9em;
         color: $accent-color;
         font-weight: $light-font-weight;
-      &:hover {
+        &:hover {
           font-weight: $main-font-weight;
         }
       }
@@ -115,7 +124,7 @@
       margin-bottom: 15px;
     }
     .submission-time {
-      font-size: .8em;
+      font-size: 0.8em;
       color: black;
       margin-left: 5px;
     }
@@ -134,29 +143,31 @@
       .submission-content {
         margin-top: 10px;
         background-color: $filter-list-background-color;
-        border: .5px solid $input-border;
+        border: 0.5px solid $input-border;
         padding: 20px;
         border-radius: 3px;
-        font-size: .9em;
+        font-size: 0.9em;
 
         ul {
           list-style-type: disc;
           list-style-position: inside;
-       }
-       ol {
+        }
+        ol {
           list-style-type: decimal;
           list-style-position: inside;
-       }
-       ul ul, ol ul {
+        }
+        ul ul,
+        ol ul {
           list-style-type: circle;
           list-style-position: inside;
           margin-left: 15px;
-       }
-       ol ol, ul ol {
+        }
+        ol ol,
+        ul ol {
           list-style-type: lower-latin;
           list-style-position: inside;
           margin-left: 15px;
-       }
+        }
       }
       textarea {
         width: 100%;
@@ -184,10 +195,22 @@
   }
 
   #response-mentor-reply {
+    .markup-filter {
+      padding-bottom: 10px;
+      width: 150px;
+      cursor: pointer;
+    }
+    .markup-filter:hover,
+    .hover-menu:hover {
+      .hover-menu {
+        display: inline-block;
+      }
+    }
     .quill-container {
       width: 100%;
       min-width: 150px;
-      section#mentor-editor, section#response-new-editor {
+      section#mentor-editor,
+      section#response-new-editor {
         width: 100%;
         display: inline-block;
         min-height: 150px;
@@ -195,7 +218,6 @@
           width: 100%;
           display: inline-block;
         }
-
       }
     }
     .bread-crumbs-comp {
@@ -253,7 +275,7 @@
       margin-bottom: 15px;
     }
     .response-time {
-      font-size: .8em;
+      font-size: 0.8em;
       color: black;
       margin-left: 5px;
     }
@@ -275,7 +297,7 @@
       margin-bottom: 30px;
       p {
         line-height: 20px;
-        font-size: .9em;
+        font-size: 0.9em;
       }
       .response-label {
         width: 50px;
@@ -290,10 +312,11 @@
       color: black;
       margin: 10px 0;
     }
-    .response-text, .response-note {
+    .response-text,
+    .response-note {
       margin: 20px 0;
       background-color: $filter-list-background-color;
-      border: .5px solid $input-border;
+      border: 0.5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
       pre {
@@ -306,24 +329,26 @@
       ul {
         list-style-type: disc;
         list-style-position: inside;
-     }
-     ol {
+      }
+      ol {
         list-style-type: decimal;
         list-style-position: inside;
-     }
-     ul ul, ol ul {
+      }
+      ul ul,
+      ol ul {
         list-style-type: circle;
         list-style-position: inside;
         margin-left: 15px;
-     }
-     ol ol, ul ol {
+      }
+      ol ol,
+      ul ol {
         list-style-type: lower-latin;
         list-style-position: inside;
         margin-left: 15px;
-     }
-     &.old-format {
-       white-space: pre-line;
-     }
+      }
+      &.old-format {
+        white-space: pre-line;
+      }
     }
     .edit-response {
       border: 1px solid $input-border;
@@ -353,7 +378,7 @@
         }
         .response-listing {
           margin: 15px 0 0 20px;
-          font-size: .9em;
+          font-size: 0.9em;
           font-weight: $light-font-weight;
           .create-date {
             font-weight: $main-font-weight;
@@ -376,7 +401,7 @@
         font-weight: $main-font-weight;
         line-height: 25px;
         margin-top: 30px;
-        font-size: .9em;
+        font-size: 0.9em;
         a {
           color: $accent-color;
           &:hover {
@@ -407,7 +432,8 @@
         font-size: 1.1em;
         font-weight: $main-font-weight;
       }
-      .selections, .comments {
+      .selections,
+      .comments {
         margin-bottom: 40px;
       }
       .selections-list {
@@ -415,7 +441,7 @@
           margin: 10px 15px;
           a {
             background-color: $pale-accent;
-            font-size: .8em;
+            font-size: 0.8em;
           }
         }
       }
@@ -423,7 +449,7 @@
         .comments-list-item {
           margin: 10px 15px;
           a {
-            font-size: .9em;
+            font-size: 0.9em;
             font-weight: $light-font-weight;
           }
         }
@@ -439,7 +465,7 @@
         .approve-note {
           margin-top: 30px;
           textarea {
-            height: 80px;;
+            height: 80px;
           }
         }
       }
@@ -474,7 +500,7 @@
         color: $filter-list-border-color;
         text-align: left;
         .reply-time {
-          font-size: .8em;
+          font-size: 0.8em;
           color: black;
           margin-left: 5px;
         }
@@ -485,7 +511,7 @@
       .reply-users {
         margin-bottom: 30px;
         p {
-          font-size: .9em;
+          font-size: 0.9em;
         }
         .reply-label {
           width: 50px;
@@ -513,7 +539,7 @@
     .reply-content {
       margin: 20px 0;
       background-color: $filter-list-background-color;
-      border: .5px solid $input-border;
+      border: 0.5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
 
@@ -523,24 +549,26 @@
       ul {
         list-style-type: disc;
         list-style-position: inside;
-     }
-     ol {
+      }
+      ol {
         list-style-type: decimal;
         list-style-position: inside;
-     }
-     ul ul, ol ul {
+      }
+      ul ul,
+      ol ul {
         list-style-type: circle;
         list-style-position: inside;
         margin-left: 15px;
-     }
-     ol ol, ul ol {
+      }
+      ol ol,
+      ul ol {
         list-style-type: lower-latin;
         list-style-position: inside;
         margin-left: 15px;
-     }
-     &.old-format {
-       white-space: pre-line;
-     }
+      }
+      &.old-format {
+        white-space: pre-line;
+      }
     }
     .reply-revise {
       textarea {
@@ -617,7 +645,6 @@
           width: 100%;
           display: inline-block;
         }
-
       }
     }
   }

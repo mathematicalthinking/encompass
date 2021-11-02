@@ -300,7 +300,7 @@ export default Component.extend(ErrorHandlingMixin, {
     }
   },
 
-  replyText: computed('filteredComments', function () {
+  replyText: computed('filteredComments', 'doUseOnlyOwnMarkup', function () {
     return this.preFormatText();
   }),
 
@@ -466,12 +466,6 @@ export default Component.extend(ErrorHandlingMixin, {
 
           this.handleErrors(err, 'recordSaveErrors', response);
         });
-    },
-
-    toggleOwnMarkUpOnly(e) {
-      this.send('toggleProperty', 'doUseOnlyOwnMarkup');
-      this.set('replyText', '');
-      this.preFormatText();
     },
 
     updateQuillText(content, isEmpty, isOverLengthLimit) {

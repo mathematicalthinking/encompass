@@ -49,9 +49,27 @@
         {{/if}}
       </div>
       {{/if}}
-      <input type="checkbox" name="ownMarkUpOnly" checked={{doUseOnlyOwnMarkup}} onclick={{action "toggleOwnMarkUpOnly"}}/>
-      <label>Use Only Own Markup</label>
-
+      <div class="markup-filter">
+        <span class="filter-label">Comments Filter</span><i class="fas fa-filter"></i>
+        <span class="hover-menu checkbox">
+          <ul>
+            <li>
+              <label>
+                <Input @type="checkbox" name="ownMarkUpOnly" @checked={{this.doUseOnlyOwnMarkup}} />
+                My Comments and Selections Only
+              </label>
+            </li>
+          {{#each this.commentFilter as |item|}}
+            <li>
+              <label>
+                <Input @type="checkbox" @checked={{item.isChecked}} />
+                {{item.label}}
+              </label>
+            </li>
+          {{/each}}
+          </ul>
+        </span>
+      </div>
       {{#if filteredSelections.length}}
 
         <section class="selections">
@@ -92,12 +110,12 @@
           {{/if}}
         </section>
       {{/if}}
-      <div class="comment-filter">
+      {{!-- <div class="comment-filter">
         <p>Comments to include:</p>
         {{#each this.commentFilter as |item|}}
           <label><Input @type="checkbox" @checked={{item.isChecked}} />{{item.label}}</label>
         {{/each}}
-      </div>
+      </div> --}}
     </section>
     <div class="response-info">
       {{#if explainEmptiness}}
