@@ -606,9 +606,9 @@ export default Component.extend(
     buildSortBy: function () {
       if (this.searchByRelevance) {
         return {
-          sortParam: {
-            score: { $meta: 'textScore' },
-          },
+          // sortParam: {
+          //   score: { $meta: 'textScore' },
+          // },
           doCollate: false,
           byRelevance: true,
         };
@@ -766,7 +766,6 @@ export default Component.extend(
         }
         return;
       }
-
       this.store
         .query('problem', queryParams)
         .then((results) => {
@@ -909,7 +908,7 @@ export default Component.extend(
       },
       searchCategory(cat) {
         this.selectedCategories.pushObject(cat);
-      }
+      },
     },
   }
 );
