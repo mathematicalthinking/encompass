@@ -1,3 +1,4 @@
+{{page-title this.model.submission.student ": " this.model.submission.answer.problem.title}}
 <header>
   <h3>{{this.model.submission.student}}'s Answer to {{this.model.submission.answer.problem.title}}</h3>
   <LinkTo @route="metrics.workspace" @model={{this.model.submission.workspaces.firstObject.id}}>Back to Worksapce Report</LinkTo>
@@ -38,11 +39,11 @@
 {{#if this.selectedWorkspaces}}
   <EmberTable as |t|>
     <t.head @columns={{this.submissionsColumns}} @scrollIndicators="all" @widthConstraint="eq-container" />
-    <t.body @rows={{this.selectedWorkspaces}} as |b|>
+    <t.body @rows={{this.tableRows}} as |b|>
       <b.row as |r|>
         <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
           {{#if (is-equal columnValue.name "Workspace")}}
-            <LinkTo @route="metrics.workspace" @model={{rowValue.workspaces.firstObject.id}}>{{cellValue}}</LinkTo>
+            <LinkTo @route="metrics.workspace" @model={{rowValue.id}}>{{cellValue}}</LinkTo>
           {{else}}
             {{cellValue}}
           {{/if}}
