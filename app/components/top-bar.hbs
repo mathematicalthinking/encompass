@@ -1,110 +1,18 @@
+<div class="hamburger">
+  <MdcListItemGraphicIcon @icon='menu' {{action "toggleDrawer"}} {{mdc-ripple}} />
+</div>
 <LinkTo @route="index">
-  <h1 id="encompass-logo" class="al_logo">Drexel | EnCoMPASS</h1>
+  <img src="../assets/images/logo-encompass.gif" alt="Encompass logo" class="encompass-logo">
 </LinkTo>
-
-<div class="clear_r"></div>
 
 {{#if this.user.isAuthenticated}}
   <ul class="al_nav menu-toggle" id="main-nav">
-    <li class="menu-items" id="home-btn">
-      <div class="dropdown-skinny">
-        <LinkTo @route="index">my work</LinkTo>
-      </div>
-    </li>
-    {{#unless this.currentUser.isStudent}}
-      <li class="menu-items">
-        <div class="dropdown dropdown-skinny">
-          <LinkTo @route="index">
-            make
-            <i class="fa fa-caret-down caret-down"></i>
-          </LinkTo>
-          <div class="dropdown-content">
-            <LinkTo @route="assignments.new">
-              assignment
-            </LinkTo>
-            <div class="parent-dropdown">
-              <div class="dropdown dropdown-skinny">
-                <LinkTo @route="workspaces.new">
-                  workspace
-                  <i class="fa fa-caret-right caret-right spacing"></i>
-                </LinkTo>
-              </div>
-              <div
-                id="dropdown-hidden"
-                class="dropdown-content dropdown-right dropdown-hidden"
-              >
-                <LinkTo @route="workspaces.new">
-                  new
-                </LinkTo>
-                <LinkTo @route="import">
-                  import
-                </LinkTo>
-                <LinkTo @route="workspaces.copy">
-                  copy
-                </LinkTo>
-                <LinkTo @route="vmt.import">
-                  vmt
-                </LinkTo>
-              </div>
-            </div>
-            <LinkTo @route="problems.new">
-              problem
-            </LinkTo>
-            <LinkTo @route="sections.new">
-              class
-            </LinkTo>
-            <LinkTo @route="users.new">
-              users
-            </LinkTo>
-          </div>
-        </div>
-      </li>
-    {{/unless}}
-    <li class="menu-items">
-      <div class="dropdown dropdown-wide">
-        <LinkTo @route="index">
-          do
-          <i class="fa fa-caret-down caret-down"></i>
-        </LinkTo>
-        <div class="dropdown-content">
-          {{#each this.do as |item|}}
-            {{#if item.restricted}}
-              {{#unless this.currentUser.isStudent}}
-                <LinkTo @route={{item.link}} class={{item.link}}>{{item.text}}</LinkTo>
-              {{/unless}}
-            {{else}}
-              <LinkTo @route={{item.link}} class={{item.link}}>{{item.text}}</LinkTo>
-            {{/if}}
-          {{/each}}
-        </div>
-      </div>
-    </li>
-    <li class="menu-items">
-      <div class="dropdown dropdown-skinny">
-        <LinkTo @route="index">
-          find
-          <i class="fa fa-caret-down caret-down"></i>
-        </LinkTo>
-        <div class="dropdown-content">
-          {{#each this.find as |item|}}
-            {{#if item.restricted}}
-              {{#unless this.currentUser.isStudent}}
-                <LinkTo @route={{item.link}} class={{item.link}}>{{item.text}}</LinkTo>
-              {{/unless}}
-            {{else}}
-              <LinkTo @route={{item.link}} class={{item.link}}>{{item.text}}</LinkTo>
-            {{/if}}
-          {{/each}}
-        </div>
-      </div>
-    </li>
     <li class="menu-items" id="logout-btn">
       <LinkTo @route="logout" class="menu logout">
         <i class="fas fa-power-off logout-icon"></i>
-        <span id="logout-text">log out</span>
       </LinkTo>
     </li>
-    {{#unless this.isStudentAccount}}
+    {{#unless this.currentUser.isStudent}}
       <li id="role-toggle">
         <span class="acting-role">Role: {{this.user.actingRoleName}}</span>
         <span class="toggle-role" {{action "showToggleModal"}}>
@@ -120,54 +28,7 @@
         />
       </LinkTo>
     </li>
-    <li id="user-image">
-      <img id="menu-button" src={{this.user.avatar}} alt="" />
-      {{#if this.newNotifications}}
-        {{circle-ntf displayCount=this.newNotifications.length}}
-      {{/if}}
-    </li>
   </ul>
-
-  <div id="hide-menu" class="hidden animated">
-    <ul>
-      <li>
-        <LinkTo @route="index">home</LinkTo>
-      </li>
-      <li>
-        <LinkTo @route="assignments">assignments</LinkTo>
-      </li>
-      {{#unless this.currentUser.isStudent}}
-        <li>
-          <LinkTo @route="problems">problems</LinkTo>
-        </li>
-      {{/unless}}
-      <li>
-        <LinkTo @route="sections">classes</LinkTo>
-      </li>
-      <li>
-        <LinkTo @route="workspaces">workspaces</LinkTo>
-      </li>
-      {{#unless this.currentUser.isStudent}}
-        <li>
-          <LinkTo @route="import">import</LinkTo>
-        </li>
-      {{/unless}}
-      <li>
-        <LinkTo @route="responses">responses</LinkTo>
-        {{#if this.responseNotifications}}
-          {{circle-ntf displayCount=this.responseNotifications.length}}
-        {{/if}}
-      </li>
-      {{#unless this.currentUser.isStudent}}
-        <li>
-          <LinkTo @route="users">users</LinkTo>
-        </li>
-      {{/unless}}
-      <li id="logout-btn-side">
-        <LinkTo @route="logout">logout</LinkTo>
-      </li>
-    </ul>
-  </div>
 
 {{else}}
   <nav id="topbar-unauth">
@@ -186,21 +47,35 @@
   </nav>
 {{/if}}
 
-<script>
-  $('#menu-button').click(function (e) { 
-    e.stopPropagation();
-    $('#hide-menu').toggleClass('sidemenu-style');
-    $('#hide-menu').addClass('slideInRight'); 
-    }); 
-  $('#hide-menu').click(function(e) { 
-    e.stopPropagation(); 
-  }); 
-  $('body,html').click(function (e) {
-    $('#hide-menu').removeClass('sidemenu-style'); 
-  });
-  $('#hide-menu>li>a').ready(() => { 
-    $('#hide-menu').click(function (e) {
-      $('#hide-menu').removeClass('sidemenu-style'); 
-    }); 
-  })
-</script>
+<MdcDrawer @style='dismissible' @open={{this.open}}>
+  <MdcDrawerContent>
+    <MdcList>
+      <MdcListItemLinkTo @route='index' {{action "toggleDrawer"}} {{mdc-ripple}}>
+        <MdcListItemGraphicIcon @icon='home' />
+        Home
+      </MdcListItemLinkTo>
+      <MdcListItemLinkTo @route='assignments' {{action "toggleDrawer"}} {{mdc-ripple}}>
+        <MdcListItemGraphicIcon @icon='assignment' />
+        Assignments
+      </MdcListItemLinkTo>
+      <MdcListItemLinkTo @route='sections' {{action "toggleDrawer"}} {{mdc-ripple}}>
+        <MdcListItemGraphicIcon @icon='school' />
+        Classes
+      </MdcListItemLinkTo>
+      <MdcListItemLinkTo @route='workspaces' {{action "toggleDrawer"}} {{mdc-ripple}}>
+        <MdcListItemGraphicIcon @icon='group_work' />
+        Workspaces
+      </MdcListItemLinkTo>
+      <MdcListItemLinkTo @route='problems' {{action "toggleDrawer"}} {{mdc-ripple}}>
+        <MdcListItemGraphicIcon @icon='extension' />
+        Problems
+      </MdcListItemLinkTo>
+      {{#unless this.currentUser.isStudent}}
+      <MdcListItemLinkTo @route='users' {{action "toggleDrawer"}} {{mdc-ripple}}>
+        <MdcListItemGraphicIcon @icon='people' />
+        Users
+      </MdcListItemLinkTo>
+      {{/unless}}
+    </MdcList>
+  </MdcDrawerContent>
+</MdcDrawer>

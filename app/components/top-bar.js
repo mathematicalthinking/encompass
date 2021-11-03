@@ -3,8 +3,9 @@ import { computed } from '@ember/object';
 import { not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
   tagName: 'header',
   classNameBindings: ['isSmallHeader:small', 'isHidden:hide'],
   elementId: 'al_header',
@@ -13,40 +14,7 @@ export default Component.extend(ErrorHandlingMixin, {
   openMenu: false,
   toggleRoleErrors: [],
   alert: service('sweet-alert'),
-
-  make: [
-    { text: 'assignment', link: 'assignments.new', restricted: true },
-    {
-      text: 'workspace',
-      link: 'workspaces.new',
-      restricted: true,
-      children: [
-        { link: 'workspaces.new', text: 'new' },
-        { link: 'import', text: 'import' },
-        { link: 'workspaces.copy', text: 'copy' },
-        { link: 'vmt.import', text: 'vmt' },
-      ],
-    },
-    { text: 'problem', link: 'problem' },
-    { text: 'class', link: 'sections.new' },
-    { text: 'users', link: 'users.new' },
-  ],
-
-  do: [
-    { text: 'solve a problem', link: 'assignments', restricted: false },
-    { text: 'review submitted work', link: 'workspaces', restricted: false },
-    { text: 'mentor submission', link: 'responses', restricted: false },
-    { text: 'manage classes', link: 'sections', restricted: true },
-    { text: 'manage users', link: 'users', restricted: true },
-  ],
-
-  find: [
-    { text: 'assignment', link: 'assignments', restricted: false },
-    { text: 'workspace', link: 'workspaces', restricted: false },
-    { text: 'problem', link: 'problems', restricted: false },
-    { text: 'class', link: 'sections', restricted: false },
-    { text: 'users', link: 'users', restricted: true },
-  ],
+  open: false,
 
   isStudent: computed('user.actingRole', 'user.id', function () {
     return (
@@ -64,6 +32,9 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   actions: {
+    toggleDrawer: function () {
+      this.set('open', !this.open);
+    },
     largeHeader: function () {
       this.set('isSmallHeader', false);
     },
