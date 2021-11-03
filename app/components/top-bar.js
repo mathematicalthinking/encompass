@@ -1,28 +1,15 @@
 import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
   tagName: 'header',
-  classNameBindings: ['isSmallHeader:small', 'isHidden:hide'],
   elementId: 'al_header',
-  isSmallHeader: false,
-  isHidden: false,
-  openMenu: false,
   toggleRoleErrors: [],
   alert: service('sweet-alert'),
+  toggleRoleErrors: [],
   open: false,
-
-  isStudent: computed('user.actingRole', 'user.id', function () {
-    return (
-      this.user.get('isStudent') || this.user.get('actingRole') === 'student'
-    );
-  }),
-
-  notStudent: not('isStudent'),
 
   didReceiveAttrs: function () {
     let currentUser = this.currentUser;
@@ -34,15 +21,6 @@ export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
   actions: {
     toggleDrawer: function () {
       this.set('open', !this.open);
-    },
-    largeHeader: function () {
-      this.set('isSmallHeader', false);
-    },
-    smallHeader: function () {
-      this.set('isSmallHeader', true);
-    },
-    toggleMenu: function () {
-      // console.log('toggle called', this.openMenu);
     },
     showToggleModal: function () {
       this.alert

@@ -12,10 +12,10 @@
         <i class="fas fa-power-off logout-icon"></i>
       </LinkTo>
     </li>
-    {{#unless this.currentUser.isStudent}}
+    {{#unless this.isStudentAccount}}
       <li id="role-toggle">
-        <span class="acting-role">Role: {{this.user.actingRoleName}}</span>
         <span class="toggle-role" {{action "showToggleModal"}}>
+        <span class="acting-role">Role: {{this.user.actingRoleName}}</span>
           <i class="fas fa-sync-alt"></i>
         </span>
       </li>

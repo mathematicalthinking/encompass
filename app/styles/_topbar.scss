@@ -2,101 +2,29 @@
 @import 'mixins';
 @import 'responsive-font-size';
 
-@media screen and (min-width: 0) and (max-width: 349px) {
-  #al_header {
-    .al_nav {
-      font-size: 1em;
-      overflow: auto;
-      .menu-items {
-        display: none;
-      }
-    }
-    #topbar-unauth {
-      font-size: 0.8em;
-      width: 220px;
-      li {
-        padding: 0;
-        margin: 0;
-      }
-    }
-  }
-  #encompass-logo {
-    width: 75px;
-    height: 80px;
-    display: block;
-    float: left;
-    position: relative;
-    top: -15px;
-    text-indent: -99999px;
-    background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-}
+// @media screen and (min-width: 0) and (max-width: 349px) {
+//   #al_header {
+//     .menu-items {
+//       display: none;
+//     }
+//   }
+//   #topbar-unauth {
+//     font-size: 0.8em;
+//     width: 220px;
+//     li {
+//       padding: 0;
+//       margin: 0;
+//     }
+//   }
+// }
 
-@media screen and (min-width: 350px) and (max-width: 974px) {
+@media screen and (max-width: 974px) {
   #al_header {
     .al_nav {
       font-size: 1em;
       .menu-items {
         display: none;
       }
-    }
-  }
-  #encompass-logo {
-    width: 75px;
-    height: 80px;
-    display: block;
-    float: left;
-    position: relative;
-    top: -15px;
-    text-indent: -99999px;
-    background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-}
-
-@media screen and (min-width: 975px) and (max-width: 1299px) {
-  #al_header {
-    .menu-toggle {
-      // background-color: blue;
-      font-size: 0.9em;
-      li {
-        padding: 0 10px;
-      }
-      .padding {
-        margin-right: 5px;
-      }
-      #home-btn {
-        display: none;
-      }
-      #menu-btn {
-        display: none;
-      }
-    }
-  }
-  #encompass-logo {
-    width: 75px;
-    height: 80px;
-    display: block;
-    float: left;
-    position: relative;
-    top: -15px;
-    text-indent: -99999px;
-    background: url(images/logo-encompass.gif) 0 0 no-repeat;
-  }
-}
-
-@media screen and (min-width: 1300px) and (max-width: 10000px) {
-  #al_header {
-    .menu-toggle {
-      // background-color: yellow;
-      font-size: 1em;
-    }
-    .al_nav {
-      li {
-        padding: 0 13px;
-      }
-    }
-    #menu-btn {
-      display: none;
     }
   }
 }
@@ -130,9 +58,6 @@
   top: 60px;
 }
 
-.logout {
-}
-
 // TOP BAR STYLING FOR WHEN LOGGED OUT
 #topbar-unauth {
   font-weight: $bolder-font-weight;
@@ -159,15 +84,12 @@
 }
 
 // GENERAL STYLING
-#sidemenu {
-  display: none;
-}
 
 #al_header {
   font-family: $primary-font;
   background-color: $background-body;
   border-bottom: 1px solid #dfdfdf;
-  position: absolute;
+  position: fixed;
   justify-content: center;
   top: 0;
   left: 0;
@@ -180,10 +102,6 @@
   .control {
     display: none;
   }
-}
-
-.small {
-  $topbar-small: true;
 }
 
 #al_header.small {
@@ -222,6 +140,7 @@
   align-items: center;
   li {
     display: inline-block;
+    padding: 0 13px;
   }
   ul {
     font-size: 1em;
@@ -257,36 +176,11 @@
   padding-top: 1px;
 }
 
-#al_welcome {
-  float: right;
-  margin: 8px 20px;
-  display: block;
-}
-
-nav.listing,
-nav.actions {
-  float: left;
-  width: 25%;
-  padding: 5px;
-  background-color: #dfdfdf;
-}
-
-nav.listing,
-nav.actions > ul {
-  padding: 5px;
-  border-bottom: 1px solid #cfcfcf;
-}
-
-#status {
-  padding-left: 300px;
-  margin-top: -80px;
-}
-
-#devTool {
-  float: left;
-  padding-left: 20px;
-}
-
+// #al_welcome {
+//   float: right;
+//   margin: 8px 20px;
+//   display: block;
+// }
 // LOGOUT BUTTON
 .logout {
   font-weight: $main-font-weight;
@@ -330,8 +224,4 @@ nav.actions > ul {
       background: none;
     }
   }
-}
-
-.hidden {
-  display: none;
 }
