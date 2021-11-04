@@ -1,7 +1,7 @@
-<div class="top-tabs">
-  <button {{action (mut this.dataToShow) 'workspace'}}>My Workspaces</button>
-  <button {{action (mut this.dataToShow) 'assignment'}}>My Assignments</button>
-  <button {{action (mut this.dataToShow) 'feedback'}}>My Feedback</button>
+<div class="home-tabs">
+  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'workspace') "home-tabs--active"}}" {{action (mut this.dataToShow) 'workspace'}}>My Workspaces</button>
+  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'assignment') "home-tabs--active"}}" {{action (mut this.dataToShow) 'assignment'}}>My Assignments</button>
+  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'feedback') "home-tabs--active"}}" {{action (mut this.dataToShow) 'feedback'}}>My Feedback</button>
 </div>
 
 <section class="grid-home">
@@ -9,7 +9,7 @@
   <article class="grid-card">
     {{#if (is-equal this.dataToShow 'workspace')}}
     <header class="grid-card__title">
-      <h2><LinkTo @route="workspace.work" @model={{item.id}}>{{item.name}}</LinkTo></h2>
+      <h2><LinkTo class="grid-card--light" @route="workspace.work" @model={{item.id}}>{{item.name}}</LinkTo></h2>
     </header>
     <ul class="grid-card__info">
       <li>owner: {{item.owner.displayName}}</li>
@@ -19,7 +19,7 @@
     </ul>
     {{else if (is-equal this.dataToShow 'assignment')}}
     <header class="grid-card__title">
-      <h2><LinkTo @route={{'assignments.assignment'}} @model={{item.id}}>{{item.name}}</LinkTo></h2>
+      <h2><LinkTo class="grid-card--light" @route={{'assignments.assignment'}} @model={{item.id}}>{{item.name}}</LinkTo></h2>
     </header>
     <ul class="grid-card__info">
       <li>problem: {{item.problem.title}}</li>

@@ -12,24 +12,54 @@ h1 {
   color: $accent-color;
 }
 
+.home-tabs {
+  text-align: center;
+  width: 100%;
+
+  &__tab {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    font-size: 16px;
+    padding-top: 25px;
+    transition: all 0.2s ease-in-out;
+    &:hover {
+      background: linear-gradient(#fff, #fff, $pale-accent);
+    }
+  }
+  &--active {
+    border-bottom: 1px solid $accent-color;
+    background: linear-gradient(#fff, #fff, $pale-accent);
+  }
+}
+
 .grid-home {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  padding: 50px;
   gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  padding: 25px 50px;
 }
 
 .grid-card {
   border: 1px solid #cfcfcf;
   border-radius: 15px;
+  box-shadow: unset;
+  transition: box-shadow 0.2s ease-in-out;
   &__title {
+    background-color: $accent-color;
     border-bottom: 1px solid #cfcfcf;
-    padding: 10px;
-    background-color: #efefef;
     border-radius: 15px 15px 0 0;
+    padding: 10px;
   }
   &__info {
     padding: 10px;
+  }
+  &--light {
+    color: white;
+  }
+  &:hover {
+    box-shadow: $box-shadow;
   }
 }
 
