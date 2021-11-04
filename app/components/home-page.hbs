@@ -1,4 +1,45 @@
-{{#if this.user.isStudent}}
+<div class="top-tabs">
+  <button>My Workspaces</button>
+  <button>My Assignments</button>
+  <button>My Feedback</button>
+</div>
+
+<section class="grid-home">
+  {{#each this.data as |item|}}
+  <article class="grid-card">
+    <header class="grid-card__title">
+      <h2><LinkTo @route="workspace.work" @model={{item.id}}>{{item.name}}</LinkTo></h2>
+    </header>
+    <ul class="grid-card__info">
+      <li>owner: {{item.owner.displayName}}</li>
+      <li>submissions: {{item.submissionsLength}}</li>
+      <li>selections: {{item.selectionsLength}}</li>
+      <li>comments: {{item.commentsLength}}</li>
+    </ul>
+  </article>
+  {{/each}}
+</section>
+
+{{log this.data}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{!-- {{#if this.user.isStudent}}
   <div id="welcome"  class="al_wtf home header-home">
     <h1>Welcome student, {{user.displayName}}!</h1>
         <h1 class="header-home header-font">My Work Landing Page</h1>
@@ -28,4 +69,4 @@
   {{/if}}
 </div>
 
-{{/if}}
+{{/if}} --}}
