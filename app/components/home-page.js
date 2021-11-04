@@ -4,91 +4,9 @@ import { inject } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  testData: [
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-    {
-      name: 'test name',
-      date: '11/4/2021',
-      selectionsLength: 4,
-      submissionsLength: 25,
-      commentsLength: 2,
-      owner: { displayName: 'timleonard' },
-    },
-  ],
-  dataToShow: 'workspaces',
+  dataToShow: 'workspace',
   data: computed('dataToShow', function () {
-    return this.workspaces;
+    return this.dataToShow === 'workspace' ? this.workspaces : this.assignments;
   }),
   // tagName: '',
   // // elementId: 'homepage',

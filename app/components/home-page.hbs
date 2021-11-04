@@ -1,12 +1,13 @@
 <div class="top-tabs">
-  <button>My Workspaces</button>
-  <button>My Assignments</button>
-  <button>My Feedback</button>
+  <button {{action (mut this.dataToShow) 'workspace'}}>My Workspaces</button>
+  <button {{action (mut this.dataToShow) 'assignment'}}>My Assignments</button>
+  <button {{action (mut this.dataToShow) 'feedback'}}>My Feedback</button>
 </div>
 
 <section class="grid-home">
   {{#each this.data as |item|}}
   <article class="grid-card">
+    {{#if (is-equal this.dataToShow 'workspace')}}
     <header class="grid-card__title">
       <h2><LinkTo @route="workspace.work" @model={{item.id}}>{{item.name}}</LinkTo></h2>
     </header>
@@ -16,6 +17,19 @@
       <li>selections: {{item.selectionsLength}}</li>
       <li>comments: {{item.commentsLength}}</li>
     </ul>
+    {{else if (is-equal this.dataToShow 'assignment')}}
+    <header class="grid-card__title">
+      <h2><LinkTo @route={{'assignments.assignment'}} @model={{item.id}}>{{item.name}}</LinkTo></h2>
+    </header>
+    <ul class="grid-card__info">
+      <li>problem: {{item.problem.title}}</li>
+      <li>class: {{item.section.name}}</li>
+      <li>Assigned: {{format-date item.assignDate 'MM/DD/YYYY'}}</li>
+      <li>Due: {{format-date item.dueDate 'MM/DD/YYYY'}}</li>
+      <li>problem: {{item.problem}}</li>
+      <li>To Do: {{item.todo}}</li>
+    </ul>
+    {{/if}}
   </article>
   {{/each}}
 </section>
