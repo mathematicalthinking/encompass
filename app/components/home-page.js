@@ -6,7 +6,16 @@ import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 export default Component.extend(ErrorHandlingMixin, {
   dataToShow: 'workspace',
   data: computed('dataToShow', function () {
-    return this.dataToShow === 'workspace' ? this.workspaces : this.assignments;
+    if (this.dataToShow === 'workspace') {
+      return this.workspaces;
+    }
+    if (this.dataToShow === 'assignment') {
+      return this.assignments;
+    }
+    if (this.dataToShow === 'feedback') {
+      return [];
+    }
+    return [];
   }),
   // tagName: '',
   // // elementId: 'homepage',
