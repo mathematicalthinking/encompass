@@ -10,7 +10,11 @@ export default Component.extend(ErrorHandlingMixin, {
       return this.workspaces;
     }
     if (this.dataToShow === 'assignment') {
-      return this.assignments;
+      return this.assignments
+        .toArray()
+        .filter(
+          (assignment) => assignment.get('createdBy.id') === this.user.id
+        );
     }
     if (this.dataToShow === 'feedback') {
       return [];
