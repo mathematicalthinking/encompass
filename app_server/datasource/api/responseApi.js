@@ -107,7 +107,7 @@ function getResponses(req, res, next) {
             }
           });
 
-          let data = { response: responses };
+          let data = { responses: responses };
 
           return utils.sendResponse(res, data);
         });

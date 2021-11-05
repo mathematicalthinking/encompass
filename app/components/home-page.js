@@ -17,7 +17,7 @@ export default Component.extend(ErrorHandlingMixin, {
         .slice(0, 20);
     }
     if (this.dataToShow === 'feedback') {
-      return [];
+      return this.responses.toArray().reverse();
     }
     return [];
   }),

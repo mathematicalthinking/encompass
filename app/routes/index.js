@@ -34,6 +34,9 @@ export default class IndexRoute extends Route {
     const user = this.modelFor('application');
     const assignments = this.store.findAll('assignment');
     const sections = this.store.findAll('section');
+    const responses = this.store.query('response', {
+      filterBy: { createdBy: user.id },
+    });
 
     //import workspaces created by current user
     const workspaceCriteria = {
@@ -44,7 +47,7 @@ export default class IndexRoute extends Route {
 
     const workspaces = this.store.query('workspace', workspaceCriteria);
 
-    return RSVP.hash({ assignments, sections, user, workspaces });
+    return RSVP.hash({ assignments, sections, user, workspaces, responses });
   }
   renderTemplate() {
     this.render('index');
