@@ -57,6 +57,9 @@ h1 {
   }
   &--light {
     color: white;
+    &:hover {
+      text-decoration: underline;
+    }
   }
   &:hover {
     box-shadow: $box-shadow;
