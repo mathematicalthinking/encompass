@@ -61,15 +61,11 @@
 // TOP BAR STYLING FOR WHEN LOGGED OUT
 #topbar-unauth {
   font-weight: $bolder-font-weight;
-  float: right;
-  margin-top: 12.5px;
+  margin: 30px 20px 30px auto;
   background-color: $background-body;
   li {
-    line-height: 50px;
-    height: 40px;
     display: inline-block;
     padding: 0 10px;
-    vertical-align: middle;
     a {
       color: white;
       margin-right: 10px;

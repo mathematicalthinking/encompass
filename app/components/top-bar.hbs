@@ -1,27 +1,34 @@
-<div class="hamburger">
-  <MdcListItemGraphicIcon @icon='menu' {{action "toggleDrawer"}} {{mdc-ripple}} />
-</div>
-<LinkTo @route="index">
-  <img src="../assets/images/logo-encompass.gif" alt="Encompass logo" class="encompass-logo">
-</LinkTo>
-
 {{#if this.user.isAuthenticated}}
-  <ul class="al_nav menu-toggle" id="main-nav">
-    <li class="menu-items" id="logout-btn">
-      <LinkTo @route="logout" class="menu logout">
-        <i class="fas fa-power-off logout-icon"></i>
+  <div class='hamburger'>
+    <MdcListItemGraphicIcon
+      @icon='menu'
+      {{action 'toggleDrawer'}}
+      {{mdc-ripple}}
+    />
+  </div>
+  <LinkTo @route='index'>
+    <img
+      src='../assets/images/logo-encompass.gif'
+      alt='Encompass logo'
+      class='encompass-logo'
+    />
+  </LinkTo>
+  <ul class='al_nav menu-toggle' id='main-nav'>
+    <li class='menu-items' id='logout-btn'>
+      <LinkTo @route='logout' class='menu logout'>
+        <i class='fas fa-power-off logout-icon'></i>
       </LinkTo>
     </li>
     {{#unless this.isStudentAccount}}
-      <li id="role-toggle">
-        <span class="toggle-role" {{action "showToggleModal"}}>
-        <span class="acting-role">Role: {{this.user.actingRoleName}}</span>
-          <i class="fas fa-sync-alt"></i>
+      <li id='role-toggle'>
+        <span class='toggle-role' {{action 'showToggleModal'}}>
+          <span class='acting-role'>Role: {{this.user.actingRoleName}}</span>
+          <i class='fas fa-sync-alt'></i>
         </span>
       </li>
     {{/unless}}
-    <li id="current-username">
-      <LinkTo @route="users.user" @model={{this.currentUser.id}}>
+    <li id='current-username'>
+      <LinkTo @route='users.user' @model={{this.currentUser.id}}>
         <img
           src={{this.currentUser.avatar}}
           alt={{this.currentUser.username}}
@@ -29,53 +36,82 @@
       </LinkTo>
     </li>
   </ul>
-
+  <MdcDrawer @style='dismissible' @open={{this.open}}>
+    <MdcDrawerContent>
+      <MdcList>
+        <MdcListItemLinkTo
+          @route='index'
+          {{action 'toggleDrawer'}}
+          {{mdc-ripple}}
+        >
+          <MdcListItemGraphicIcon @icon='home' />
+          Home
+        </MdcListItemLinkTo>
+        <MdcListItemLinkTo
+          @route='assignments'
+          {{action 'toggleDrawer'}}
+          {{mdc-ripple}}
+        >
+          <MdcListItemGraphicIcon @icon='assignment' />
+          Assignments
+        </MdcListItemLinkTo>
+        <MdcListItemLinkTo
+          @route='sections'
+          {{action 'toggleDrawer'}}
+          {{mdc-ripple}}
+        >
+          <MdcListItemGraphicIcon @icon='school' />
+          Classes
+        </MdcListItemLinkTo>
+        <MdcListItemLinkTo
+          @route='workspaces'
+          {{action 'toggleDrawer'}}
+          {{mdc-ripple}}
+        >
+          <MdcListItemGraphicIcon @icon='group_work' />
+          Workspaces
+        </MdcListItemLinkTo>
+        <MdcListItemLinkTo
+          @route='problems'
+          {{action 'toggleDrawer'}}
+          {{mdc-ripple}}
+        >
+          <MdcListItemGraphicIcon @icon='extension' />
+          Problems
+        </MdcListItemLinkTo>
+        {{#unless this.currentUser.isStudent}}
+          <MdcListItemLinkTo
+            @route='users'
+            {{action 'toggleDrawer'}}
+            {{mdc-ripple}}
+          >
+            <MdcListItemGraphicIcon @icon='people' />
+            Users
+          </MdcListItemLinkTo>
+        {{/unless}}
+      </MdcList>
+    </MdcDrawerContent>
+  </MdcDrawer>
 {{else}}
-  <nav id="topbar-unauth">
+  <LinkTo @route='index'>
+    <img
+      src='../assets/images/logo-encompass.gif'
+      alt='Encompass logo'
+      class='encompass-logo'
+    />
+  </LinkTo>
+  <nav id='topbar-unauth'>
     <ul>
-      <li data-test="login">
-        <LinkTo @route="auth.login" class="menu login hidden">
+      <li data-test='login'>
+        <LinkTo @route='auth.login' class='menu login hidden'>
           log in
         </LinkTo>
       </li>
-      <li data-test="signup">
-        <LinkTo @route="auth.signup" classNames="menu signup">
+      <li data-test='signup'>
+        <LinkTo @route='auth.signup' classNames='menu signup'>
           sign up
         </LinkTo>
       </li>
     </ul>
   </nav>
 {{/if}}
-
-<MdcDrawer @style='dismissible' @open={{this.open}}>
-  <MdcDrawerContent>
-    <MdcList>
-      <MdcListItemLinkTo @route='index' {{action "toggleDrawer"}} {{mdc-ripple}}>
-        <MdcListItemGraphicIcon @icon='home' />
-        Home
-      </MdcListItemLinkTo>
-      <MdcListItemLinkTo @route='assignments' {{action "toggleDrawer"}} {{mdc-ripple}}>
-        <MdcListItemGraphicIcon @icon='assignment' />
-        Assignments
-      </MdcListItemLinkTo>
-      <MdcListItemLinkTo @route='sections' {{action "toggleDrawer"}} {{mdc-ripple}}>
-        <MdcListItemGraphicIcon @icon='school' />
-        Classes
-      </MdcListItemLinkTo>
-      <MdcListItemLinkTo @route='workspaces' {{action "toggleDrawer"}} {{mdc-ripple}}>
-        <MdcListItemGraphicIcon @icon='group_work' />
-        Workspaces
-      </MdcListItemLinkTo>
-      <MdcListItemLinkTo @route='problems' {{action "toggleDrawer"}} {{mdc-ripple}}>
-        <MdcListItemGraphicIcon @icon='extension' />
-        Problems
-      </MdcListItemLinkTo>
-      {{#unless this.currentUser.isStudent}}
-      <MdcListItemLinkTo @route='users' {{action "toggleDrawer"}} {{mdc-ripple}}>
-        <MdcListItemGraphicIcon @icon='people' />
-        Users
-      </MdcListItemLinkTo>
-      {{/unless}}
-    </MdcList>
-  </MdcDrawerContent>
-</MdcDrawer>
