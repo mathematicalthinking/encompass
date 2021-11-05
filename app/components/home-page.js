@@ -7,14 +7,14 @@ export default Component.extend(ErrorHandlingMixin, {
   dataToShow: 'workspace',
   data: computed('dataToShow', function () {
     if (this.dataToShow === 'workspace') {
-      return this.workspaces;
+      return this.workspaces.toArray().reverse().slice(0, 20);
     }
     if (this.dataToShow === 'assignment') {
       return this.assignments
         .toArray()
-        .filter(
-          (assignment) => assignment.get('createdBy.id') === this.user.id
-        );
+        .filter((assignment) => assignment.get('createdBy.id') === this.user.id)
+        .reverse()
+        .slice(0, 20);
     }
     if (this.dataToShow === 'feedback') {
       return [];
