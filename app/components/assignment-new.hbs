@@ -126,11 +126,11 @@
              Create Student Workspaces Now?
             </span>
           </label>
-          <RadioGroup @options={{this.linkedWsOptions}} @selectedValue={{action "updateDoCreateLinkedWorkspaces"}} />
+          <RadioGroup @options={{this.linkedWsOptions}} @selectedValue={{this.doCreateLinkedWorkspaces}} @updateValue={{action "updateDoCreateLinkedWorkspaces"}} />
 
           {{#if this.showLinkedWsForm}}
             <div class="group-selection" {{on "click" this.updateSectionGroups}}>
-              <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{action "updateLinkedWorkspacesMode"}} @noWidth={{true}} />
+              <RadioGroup @options={{this.groupWsOptions}} @selectedValue={{this.linkedWorkspacesMode}} @updateValue={{action "updateLinkedWorkspacesMode"}} @noWidth={{true}} />
             </div>
               <LinkedWorkspacesNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} @students={{this.workspacesList}} @updateLists={{this.updateLists}} />
           {{/if}}
@@ -145,19 +145,19 @@
             Create Parent Workspace Now?
             </span>
           </label>
-          <RadioGroup @options={{this.parentWsOptions}} @selectedValue={{action "updateDoCreateParentWorkspace"}} />
+          <RadioGroup @options={{this.parentWsOptions}} @selectedValue={{this.doCreateParentWorkspace}} @updateValue={{action "updateDoCreateParentWorkspace"}} />
 
-          {{#if this.showParentWsForm}}
+          {{#if this.doCreateParentWorkspace}}
             <label for="accessOptions">
               <span
                   class="label-text simptip-position-right simptip-multiline simptip-smooth"
-                  data-tooltip={{this.tooltips.parentWorkspace}}
+                  data-tooltip={{this.tooltips.parentWorkspaceOptions}}
                 >
                 Give access to students?
                 </span>
             </label>
-            <RadioGroup @options={{this.parentWorkspaceAccessOptions}} @selectedValue={{action "updateParentWorkspaceAccess"}} @noWidth={{true}} />
-            <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} />
+            <RadioGroup @options={{this.parentWorkspaceAccessOptions}} @selectedValue={{this.parentWorkspaceAccess}} @updateValue={{action "updateParentWorkspaceAccess"}} @noWidth={{true}} />
+            <ParentWorkspaceNew @isDisplayOnly={{true}} @assignmentName={{this.assignmentNamePreview}} @sectionName={{this.selectedSection.name}} />
           {{/if}}
         </li>
         {{/if}}

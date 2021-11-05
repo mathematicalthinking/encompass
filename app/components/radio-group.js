@@ -8,6 +8,6 @@ export default class RadioGroupComponent extends Component {
     if (this.utils.isNullOrUndefined(val)) {
       return;
     }
-    this.args.selectedValue(val);
+    this.args.updateValue(val);
   }
 }

@@ -10,7 +10,7 @@
 
 {{#if selectedCollaborator}}
   <div class="global-permissions">
-    <RadioGroup @options={{globalItems}} @selectedValue={{action "updateGlobalPermissionValue"}} />
+    <RadioGroup @options={{globalItems}} @selectedValue={{this.globalPermissionValue}} @updateValue={{action "updateGlobalPermissionValue"}} />
     <p class="sub-input-label">You can set more custom permissions after you create the workspace</p>
 
     {{#if saveError}}
