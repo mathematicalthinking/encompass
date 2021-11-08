@@ -89,6 +89,14 @@
             Users
           </MdcListItemLinkTo>
         {{/unless}}
+        <MdcListItemLinkTo
+          @route='logout'
+          {{action 'toggleDrawer'}}
+          {{mdc-ripple}}
+        >
+          <MdcListItemGraphicIcon @icon='power_settings_new' />
+          Logout
+        </MdcListItemLinkTo>
       </MdcList>
     </MdcDrawerContent>
   </MdcDrawer>
