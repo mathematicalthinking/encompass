@@ -1,6 +1,13 @@
 @import 'variables';
 @import 'mixins';
 @import 'responsive-font-size';
+// styles for material drawer nav
+:root {
+  --mdc-theme-primary: #3997ee;
+  --mdc-theme-secondary: #ffd204;
+  --mdc-theme-on-primary: #3997ee;
+  --mdc-theme-on-secondary: #ffd204;
+}
 
 // @media screen and (min-width: 0) and (max-width: 349px) {
 //   #al_header {
@@ -56,6 +63,12 @@
 .mdc-drawer {
   height: 100vh;
   top: 60px;
+  .mdc-list-item--activated {
+    color: #3997ee;
+    .mdc-list-item__graphic {
+      color: #3997ee;
+    }
+  }
 }
 
 // TOP BAR STYLING FOR WHEN LOGGED OUT
