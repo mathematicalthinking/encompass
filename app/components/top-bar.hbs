@@ -79,6 +79,14 @@
           <MdcListItemGraphicIcon @icon='extension' />
           Problems
         </MdcListItemLinkTo>
+        <MdcListItemLinkTo
+          @route='responses'
+          {{action 'toggleDrawer'}}
+          {{mdc-ripple}}
+        >
+          <MdcListItemGraphicIcon @icon='rate_review' />
+          Feedback
+        </MdcListItemLinkTo>
         {{#unless this.currentUser.isStudent}}
           <MdcListItemLinkTo
             @route='users'
