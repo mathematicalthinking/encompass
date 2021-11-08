@@ -30,14 +30,16 @@ export default class IndexRoute extends Route {
       this.transitionTo('unauthorized');
     }
   }
-  model() {
+  async model() {
     const user = this.modelFor('application');
     const assignments = this.store.findAll('assignment');
     const sections = this.store.findAll('section');
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
     });
-
+    const collabWorkspaces = await this.store.query('workspace', {
+      filterBy: { _id: { $in: user.collabWorkspaces } },
+    });
     //import workspaces created by current user
     const workspaceCriteria = {
       filterBy: {
@@ -47,7 +49,14 @@ export default class IndexRoute extends Route {
 
     const workspaces = this.store.query('workspace', workspaceCriteria);
 
-    return RSVP.hash({ assignments, sections, user, workspaces, responses });
+    return RSVP.hash({
+      assignments,
+      sections,
+      user,
+      workspaces,
+      responses,
+      collabWorkspaces,
+    });
   }
   renderTemplate() {
     this.render('index');
