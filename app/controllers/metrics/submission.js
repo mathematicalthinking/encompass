@@ -55,7 +55,7 @@ export default class MetricsSubmissionController extends Controller {
         text: 'See Above',
         creator: workspace.get('createdBy'),
         children: selectionsArray,
-        id: workspace.id,
+        id: workspace.get('workspaces.firstObject.id'),
       };
     });
   }
