@@ -17,6 +17,9 @@
     vertical-align: top;
     white-space: normal;
   }
+  a:hover {
+    text-decoration: underline;
+  }
   .et-toggle-collapse input[type='checkbox'] {
     opacity: 0.001;
     position: absolute;
