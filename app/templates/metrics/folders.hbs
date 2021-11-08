@@ -1,0 +1,36 @@
+{{page-title 'Folders'}}
+{{log this.selectedProblem}}
+<header>
+  <h3>Search by Folder</h3>
+</header>
+<div class='metrics__container'>
+  <Input
+    type='text'
+    @placeholder='Search by folder name'
+    @value={{this.searchTerm}}
+  />
+  <button {{on 'click' this.searchFoldersByName}}>Search Folders</button>
+  <SelectizeInput @store={{this.store}} @inputId="problem-select" @initialOptions={{this.model.problems}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="selectedProblem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" />
+  <div class='metrics--scrollable'>
+    <ul>
+      {{#each this.foundFolders as |folder|}}
+        <li><label><Input
+              type='checkbox'
+              {{on 'change' (fn this.updateSelectedFolders folder)}}
+            />{{if folder.cleanSelections.length '*'}}{{folder.name}}
+            -
+            {{folder.createdBy.displayName}}</label></li>
+      {{/each}}
+    </ul>
+  </div>
+  {{#if this.selectedFolders}}
+    <EmberTable as |t|>
+      <t.head
+        @columns={{this.tableColumns}}
+        @scrollIndicators='all'
+        @widthConstraint='eq-container'
+      />
+      <t.body @rows={{this.tableRows}} as |b| />
+    </EmberTable>
+  {{/if}}
+</div>

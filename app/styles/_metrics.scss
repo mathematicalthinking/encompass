@@ -1,11 +1,13 @@
-.metrics__container{
+.metrics__container {
   width: 90%;
   margin: 30px auto;
+  height: 70%;
 }
 
-.metrics__table{
+.metrics__table {
   border: 1px solid black;
-  td,th {
+  td,
+  th {
     border: 1px solid black;
   }
   ul {
@@ -14,26 +16,37 @@
   }
 }
 
-.metrics__card{
+.metrics__card {
   border: 1px solid #ccc;
   padding: 15px;
   border-radius: 5px;
 }
 
-.metrics__list-item{
+.metrics__list-item {
   margin: 10px 0;
 }
 
-.metrics__link:hover{
+.metrics__link:hover {
   text-decoration: underline;
 }
 
-.metrics--flex{
+.metrics--flex {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  #ws-list {
+    flex: 2;
+  }
+  #submission {
+    flex: 1;
+  }
 }
 
-.metrics--expandable{
+.metrics--expandable {
   cursor: pointer;
+}
+
+.metrics--scrollable {
+  height: 200px;
+  overflow: scroll;
 }

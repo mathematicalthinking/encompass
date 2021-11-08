@@ -9,9 +9,10 @@ export default class SelectionModel extends Auditable {
   @hasMany('tagging', { async: true }) taggings;
   @hasMany('comment', { async: true }) comments;
   @belongsTo('submission', { async: true }) submission;
-  @belongsTo('workspace', { async: false }) workspace;
+  @belongsTo('workspace', { async: true }) workspace;
   @attr relativeCoords;
   @attr relativeSize;
+  //for table display in metrics.workspace
   get folders() {
     return this.taggings
       .filterBy('isTrashed', false)
