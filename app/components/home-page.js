@@ -7,7 +7,10 @@ export default Component.extend(ErrorHandlingMixin, {
   dataToShow: 'workspace',
   data: computed('dataToShow', function () {
     if (this.dataToShow === 'workspace') {
-      return this.workspaces.toArray().reverse().slice(0, 20);
+      return [
+        ...this.workspaces.toArray().reverse(),
+        ...this.collabWorkspaces.toArray(),
+      ];
     }
     if (this.dataToShow === 'assignment') {
       return this.assignments
