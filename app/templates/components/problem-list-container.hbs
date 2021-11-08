@@ -7,7 +7,7 @@
     <div class="list-container">
       <h1>Problems</h1>
       <div class="searchbar">
-        <SearchBar @onSearch={{action "searchProblems"}} @showFilter={{true}} @searchOptions={{this.searchOptions}} @basePlaceholder="Search problems" @inputValue={{this.searchInputValue}} @clearSearchResults={{action "clearSearchResults"}} @selectedCriterion={{this.searchCriterion}} />
+        <SearchBar @onSearch={{action "searchProblems"}} @showFilter={{true}} @searchOptions={{this.searchOptions}} @basePlaceholder="Search problems (under construction)" @inputValue={{this.searchInputValue}} @clearSearchResults={{action "clearSearchResults"}} @selectedCriterion={{this.searchCriterion}} />
 
         <LinkTo @route="problems.new" @id="problem-new-link" class="new-link-btn">
           <i class="fas fa-plus" title="Create new problem"></i>

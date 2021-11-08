@@ -34,8 +34,8 @@ export default Component.extend(ErrorHandlingMixin, {
 
   do: [
     { text: 'solve a problem', link: 'assignments', restricted: false },
-    { text: 'review submitted work', link: 'workspaces', restricted: false },
-    { text: 'mentor submission', link: 'responses', restricted: false },
+    { text: 'review workspaces', link: 'workspaces', restricted: false },
+    { text: 'see feedback', link: 'responses', restricted: false },
     { text: 'manage classes', link: 'sections', restricted: true },
     { text: 'manage users', link: 'users', restricted: true },
   ],

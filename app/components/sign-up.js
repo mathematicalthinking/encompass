@@ -160,7 +160,7 @@ export default class SignUpComponent extends UserSignupComponent {
       username: usernameTrim,
       password: password,
       requestReason: requestReason,
-      accountType: 'T',
+      accountType: 'S',
     };
 
     // make sure user did not type in existing org

@@ -49,7 +49,9 @@ export default Component.extend(ErrorHandlingMixin, {
     if (this.canDirectSend) {
       return 'approved';
     }
-    return 'pendingApproval';
+    // TODO: update approver relationships for current encompass use cases
+    // return 'pendingApproval';
+    return 'approved';
   }),
 
   canRevise: computed('isOwnMentorReply', 'isParentWorkspace', function () {

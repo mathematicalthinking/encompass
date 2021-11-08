@@ -20,7 +20,7 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  <RadioGroup @options={{privacyInputs}} @selectedValue={{action "updatePrivacySetting"}} />
+  <RadioGroup @options={{privacyInputs}} @selectedValue={{this.privacySetting}} @updateValue={{action "updatePrivacySetting"}} />
   {{#each privacyErrors as |error|}}
     <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut privacyErrors) null}} />
   {{/each}}
