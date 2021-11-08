@@ -48,7 +48,7 @@
     display: flex;
     align-items: center;
     box-sizing: content-box;
-    width: 24px;
+    width: 10px;
     padding: 0;
   }
   .depth-0 + .et-cell-content {
@@ -61,7 +61,8 @@
     flex: 1;
     padding: 4px;
   }
-  .et-depth-placeholder:not(.depth-0) {
+  .et-depth-placeholder:not(.depth-0),
+  .et-depth-placeholder.depth-0 {
     // Placeholder element for the last child in a tree, takes the place of
     // the collapse toggle and pushes the items further out.
     box-sizing: content-box;
