@@ -108,5 +108,6 @@ Router.map(function () {
     this.route('problem', { path: 'problem/:problem_id' });
     this.route('workspace', { path: 'workspace/:workspace_id' });
     this.route('submission', { path: 'submission/:submission_id' });
+    this.route('folders');
   });
 });

@@ -1,0 +1,86 @@
+.ember-table {
+  margin: 25px auto;
+
+  th {
+    border: none;
+    font-family: 'Roboto';
+  }
+  tr:hover {
+    td {
+      background-color: transparent;
+    }
+  }
+  td {
+    font-size: 12px;
+    // overflow: scroll;
+    padding: 10px;
+    vertical-align: top;
+    white-space: normal;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .et-toggle-collapse input[type='checkbox'] {
+    opacity: 0.001;
+    position: absolute;
+    // height: 100%;
+    // width: 100%;
+    // top: 0;
+    // left: 0;
+    z-index: 10;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    &:checked + :before {
+      transform: rotate(-90deg);
+    }
+  }
+  .et-toggle-collapse span::before {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-family: 'Font Awesome 5 Free';
+    font-size: 16px;
+    content: '\f150';
+  }
+  .et-cell-container {
+    display: flex;
+  }
+  .et-toggle-collapse {
+    display: flex;
+    align-items: center;
+    box-sizing: content-box;
+    width: 10px;
+    padding: 0;
+  }
+  .depth-0 + .et-cell-content {
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+
+  .et-cell-content {
+    margin-left: 5px;
+    flex: 1;
+    padding: 4px;
+  }
+  .et-depth-placeholder:not(.depth-0),
+  .et-depth-placeholder.depth-0 {
+    // Placeholder element for the last child in a tree, takes the place of
+    // the collapse toggle and pushes the items further out.
+    box-sizing: content-box;
+    width: 10px;
+    height: 100%;
+  }
+
+  .et-depth-indent {
+    @for $i from 1 through 10 {
+      &.depth-#{$i} {
+        padding-left: 10px * $i;
+      }
+    }
+  }
+  .is-first-column {
+    padding-top: 6px;
+  }
+}

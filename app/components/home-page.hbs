@@ -1,4 +1,68 @@
-{{#if this.user.isStudent}}
+<div class="home-tabs">
+  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'workspace') "home-tabs--active"}}" {{action (mut this.dataToShow) 'workspace'}}>My Workspaces</button>
+  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'assignment') "home-tabs--active"}}" {{action (mut this.dataToShow) 'assignment'}}>My Assignments</button>
+  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'feedback') "home-tabs--active"}}" {{action (mut this.dataToShow) 'feedback'}}>My Feedback</button>
+</div>
+
+<section class="grid-home">
+  {{#each this.data as |item|}}
+  <article class="grid-card">
+    {{#if (is-equal this.dataToShow 'workspace')}}
+      <header class="grid-card__title">
+        <h2><LinkTo class="grid-card--light" @route="workspace.work" @model={{item.id}}>{{item.name}}</LinkTo></h2>
+      </header>
+      <ul class="grid-card__info">
+        <li>owner: {{item.owner.displayName}}</li>
+        <li>submissions: {{item.submissionsLength}}</li>
+        <li>selections: {{item.selectionsLength}}</li>
+        <li>comments: {{item.commentsLength}}</li>
+      </ul>
+    {{else if (is-equal this.dataToShow 'assignment')}}
+      <header class="grid-card__title">
+        <h2><LinkTo class="grid-card--light" @route={{'assignments.assignment'}} @model={{item.id}}>{{item.name}}</LinkTo></h2>
+      </header>
+      <ul class="grid-card__info">
+        <li>problem: {{item.problem.title}}</li>
+        <li>class: {{item.section.name}}</li>
+        <li>Assigned: {{format-date item.assignedDate 'MM/DD/YYYY'}}</li>
+        <li>Due: {{format-date item.dueDate 'MM/DD/YYYY'}}</li>
+        <li>To Do: {{item.todo}}</li>
+      </ul>
+    {{else if (is-equal this.dataToShow 'feedback')}}
+      <header class="grid-card__title">
+        <h2><LinkTo class="grid-card--light" @route={{'workspace.submissions.submission'}} @models={{array item.workspace.id item.submission.id}}>To: {{item.recipient.displayName}}</LinkTo></h2>
+      </header>
+      <ul class="grid-card__info">
+        <li>Workspace: {{item.workspace.name}}</li>
+        <li>Type: {{item.responseType}}</li>
+        <li>Created on: {{format-date item.createDate 'MM/DD/YYYY'}}</li>
+        <li>Status: {{item.status}}</li>
+      </ul>
+    {{/if}}
+  </article>
+  {{/each}}
+</section>
+
+{{log this.data}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{!-- {{#if this.user.isStudent}}
   <div id="welcome"  class="al_wtf home header-home">
     <h1>Welcome student, {{user.displayName}}!</h1>
         <h1 class="header-home header-font">My Work Landing Page</h1>
@@ -27,4 +91,4 @@
   {{/if}}
 </div>
 
-{{/if}}
+{{/if}} --}}

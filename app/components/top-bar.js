@@ -1,60 +1,16 @@
 import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
   tagName: 'header',
-  classNameBindings: ['isSmallHeader:small', 'isHidden:hide'],
   elementId: 'al_header',
-  isSmallHeader: false,
-  isHidden: false,
-  openMenu: false,
   toggleRoleErrors: [],
   alert: service('sweet-alert'),
 
-  make: [
-    { text: 'assignment', link: 'assignments.new', restricted: true },
-    {
-      text: 'workspace',
-      link: 'workspaces.new',
-      restricted: true,
-      children: [
-        { link: 'workspaces.new', text: 'new' },
-        { link: 'import', text: 'import' },
-        { link: 'workspaces.copy', text: 'copy' },
-        { link: 'vmt.import', text: 'vmt' },
-      ],
-    },
-    { text: 'problem', link: 'problem' },
-    { text: 'class', link: 'sections.new' },
-    { text: 'users', link: 'users.new' },
-  ],
-
-  do: [
-    { text: 'solve a problem', link: 'assignments', restricted: false },
-    { text: 'review workspaces', link: 'workspaces', restricted: false },
-    { text: 'see feedback', link: 'responses', restricted: false },
-    { text: 'manage classes', link: 'sections', restricted: true },
-    { text: 'manage users', link: 'users', restricted: true },
-  ],
-
-  find: [
-    { text: 'assignment', link: 'assignments', restricted: false },
-    { text: 'workspace', link: 'workspaces', restricted: false },
-    { text: 'problem', link: 'problems', restricted: false },
-    { text: 'class', link: 'sections', restricted: false },
-    { text: 'users', link: 'users', restricted: true },
-  ],
-
-  isStudent: computed('user.actingRole', 'user.id', function () {
-    return (
-      this.user.get('isStudent') || this.user.get('actingRole') === 'student'
-    );
-  }),
-
-  notStudent: not('isStudent'),
+  toggleRoleErrors: [],
+  open: false,
 
   didReceiveAttrs: function () {
     let currentUser = this.currentUser;
@@ -64,14 +20,8 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   actions: {
-    largeHeader: function () {
-      this.set('isSmallHeader', false);
-    },
-    smallHeader: function () {
-      this.set('isSmallHeader', true);
-    },
-    toggleMenu: function () {
-      // console.log('toggle called', this.openMenu);
+    toggleDrawer: function () {
+      this.set('open', !this.open);
     },
     showToggleModal: function () {
       this.alert

@@ -14,7 +14,6 @@ export default class ApplicationController extends Controller {
   isHidden = false;
   selectedCategories = [];
   isTouchScreen = false;
-
   get currentUser() {
     return this.model;
   }
