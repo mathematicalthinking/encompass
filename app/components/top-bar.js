@@ -8,6 +8,7 @@ export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
   elementId: 'al_header',
   toggleRoleErrors: [],
   alert: service('sweet-alert'),
+
   toggleRoleErrors: [],
   open: false,
 
