@@ -1,9 +1,8 @@
-
 /**
-  * # Image API
-  * @description This is the API for image based requests
-  * @author Daniel Kelly, Crispina Muriel
-*/
+ * # Image API
+ * @description This is the API for image based requests
+ * @author Daniel Kelly, Crispina Muriel
+ */
 
 //REQUIRE MODULES
 const _ = require('underscore');
@@ -13,15 +12,15 @@ const sharp = require('sharp');
 //REQUIRE FILES
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
-const utils    = require('../../middleware/requestHandler');
+const utils = require('../../middleware/requestHandler');
 const fs = require('fs');
 
 //REQUIRE PDF2PIC DEPENDANCIES
-const { fromPath } = require("pdf2pic");
-const { mkdirsSync } = require("fs-extra");
-const rimraf = require("rimraf");
+const { fromPath } = require('pdf2pic');
+// const { mkdirsSync } = require("fs-extra");
+// const rimraf = require("rimraf");
 
-const pdfParse = require('pdf-parse');
+// const pdfParse = require('pdf-parse');
 
 const { isNonEmptyString } = require('../../utils/objects');
 
@@ -33,14 +32,14 @@ module.exports.put = {};
 module.exports.delete = {};
 
 /**
-  * @public
-  * @method getImages
-  * @description __URL__: /api/images
-  * @returns {Object} An array of image objects
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method getImages
+ * @description __URL__: /api/images
+ * @returns {Object} An array of image objects
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 
 const getImages = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
@@ -50,31 +49,29 @@ const getImages = (req, res, next) => {
     return utils.sendError.InvalidCredentialsError('No user logged in!', res);
   }
 
-  models.Image.find(criteria)
-  .exec((err, images) => {
+  models.Image.find(criteria).exec((err, images) => {
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    const data = {'images': images};
+    const data = { images: images };
     utils.sendResponse(res, data);
     next();
   });
 };
 
 /**
-  * @public
-  * @method getImage
-  * @description __URL__: /api/image/:id
-  * @returns {Object} An image object
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method getImage
+ * @description __URL__: /api/image/:id
+ * @returns {Object} An image object
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 
 const getImage = (req, res, next) => {
-  models.Image.findById(req.params.id)
-  .exec((err, image) => {
+  models.Image.findById(req.params.id).exec((err, image) => {
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
@@ -82,19 +79,23 @@ const getImage = (req, res, next) => {
     if (!image || image.isTrashed) {
       return utils.sendResponse(res, null);
     }
-    const data = {'image': image };
+    const data = { image: image };
     utils.sendResponse(res, data);
     next();
   });
 };
 
 function getMimetypeFromImageData(imageData) {
-  let first30Chars = typeof imageData === 'string' ? imageData.slice(0,29) : '';
+  let first30Chars =
+    typeof imageData === 'string' ? imageData.slice(0, 29) : '';
 
   if (first30Chars.indexOf('png') !== -1) {
     return 'image/png';
   }
-  if (first30Chars.indexOf('jpeg') !== -1 || first30Chars.indexOf('jpg') !== -1) {
+  if (
+    first30Chars.indexOf('jpeg') !== -1 ||
+    first30Chars.indexOf('jpg') !== -1
+  ) {
     return 'image/jpeg';
   }
 
@@ -105,63 +106,66 @@ function getMimetypeFromImageData(imageData) {
 }
 
 const getImageFile = (req, res, next) => {
-  return models.Image.findById(req.params.id).lean().exec()
+  return models.Image.findById(req.params.id)
+    .lean()
+    .exec()
     .then((image) => {
-    if (!image || image.isTrashed || !isNonEmptyString(image.imageData)) {
-      return utils.sendResponse(res, null);
-    }
-
-    let imageData = image.imageData;
-    let target = 'base64,';
-    let targetIx = imageData.indexOf(target);
-    let sliced = imageData.slice(targetIx + target.length);
-    let buffer = Buffer.from(sliced, 'base64');
-
-    let mimetype = image.mimetype;
-
-    if (!isNonEmptyString(mimetype)) {
-      mimetype = getMimetypeFromImageData(imageData);
-      if (mimetype === null) {
-        return utils.sendError.InvalidContentError(`Image contains invalid or unsupported data.`, res);
+      if (!image || image.isTrashed || !isNonEmptyString(image.imageData)) {
+        return utils.sendResponse(res, null);
       }
-    }
 
-    res.contentType(mimetype);
-    return res.send(buffer);
+      let imageData = image.imageData;
+      let target = 'base64,';
+      let targetIx = imageData.indexOf(target);
+      let sliced = imageData.slice(targetIx + target.length);
+      let buffer = Buffer.from(sliced, 'base64');
 
+      let mimetype = image.mimetype;
+
+      if (!isNonEmptyString(mimetype)) {
+        mimetype = getMimetypeFromImageData(imageData);
+        if (mimetype === null) {
+          return utils.sendError.InvalidContentError(
+            `Image contains invalid or unsupported data.`,
+            res
+          );
+        }
+      }
+
+      res.contentType(mimetype);
+      return res.send(buffer);
     })
     .catch((err) => {
       console.error(`Error getImageFile: ${err}`);
       console.trace();
       return utils.sendError.InternalError(null, res);
-  });
+    });
 };
 
 /**
-  * @public
-  * @method postImage
-  * @description __URL__: /api/images
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data saving failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method postImage
+ * @description __URL__: /api/images
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data saving failed
+ * @throws {RestError} Something? went wrong
+ */
 
-
-const readFilePromise = function(file) {
+const readFilePromise = function (file) {
   return new Promise((resolve, reject) => {
     if (!file) {
       return reject(new Error('invalid or missing file provided'));
     }
     fs.readFile(file, (err, data) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(data);
+      if (err) {
+        return reject(err);
+      }
+      return resolve(data);
     });
   });
 };
 
-const postImages = async function(req, res, next) {
+const postImages = async function (req, res, next) {
   try {
     const user = userAuth.requireUser(req);
 
@@ -178,7 +182,7 @@ const postImages = async function(req, res, next) {
     let widthThreshold = 1000; // 1000 pixels wide max
 
     const files = await Promise.all(
-      req.files.map(async f => {
+      req.files.map(async (f) => {
         let data = f.buffer;
         let mimeType = f.mimetype;
         let isPDF = mimeType === 'application/pdf';
@@ -188,7 +192,7 @@ const postImages = async function(req, res, next) {
           buildDir = process.env.BUILD_DIR;
         }
         const saveDir = `./${buildDir}/image_uploads/tmp_pngs`;
-        fs.access(saveDir, fs.constants.F_OK, err => {
+        fs.access(saveDir, fs.constants.F_OK, (err) => {
           if (err) {
             console.error(
               `ERROR - PNG Images directory ${saveDir} does not exist`
@@ -203,7 +207,7 @@ const postImages = async function(req, res, next) {
             density: 100, // output pixels per inch
             savename: f.name, // output file name
             savedir: saveDir, // output file location
-            format: "png", // output file format
+            format: 'png', // output file format
             // size: 500 // output size in pixels
             width: 500,
             height: 646,
@@ -212,7 +216,6 @@ const postImages = async function(req, res, next) {
           let file = f.path;
           console.log(f.path);
           const convert = fromPath(file, options);
-
 
           // TODO: complete edgecase for large pdfs
           // let pdfBuffer = await readFilePromise(file);
@@ -228,13 +231,11 @@ const postImages = async function(req, res, next) {
 
           // let pageOptions = pageCount > maxPages ? pageOptionsArr : -1;
 
-
-
           return convert
             .bulk(-1)
-            .then(results => {
+            .then((results) => {
               return Promise.all(
-                results.map(fileObj => {
+                results.map((fileObj) => {
                   let file = fileObj.path;
                   let pageNum = fileObj.page;
 
@@ -243,11 +244,11 @@ const postImages = async function(req, res, next) {
                     createDate: Date.now(),
                     originalname: f.originalname,
                     pdfPageNum: pageNum,
-                    mimetype: 'image/png'
+                    mimetype: 'image/png',
                   };
 
                   return readFilePromise(file)
-                    .then(data => {
+                    .then((data) => {
                       let newImage = new models.Image(newFile);
 
                       let buffer = Buffer.from(data).toString('base64');
@@ -256,13 +257,13 @@ const postImages = async function(req, res, next) {
                       newImage.imageData = imgData;
                       return newImage;
                     })
-                    .catch(err => {
+                    .catch((err) => {
                       console.error('error converting', err);
                     });
                 })
               );
             })
-            .catch(err => {
+            .catch((err) => {
               console.error(`Pdf conversion error: ${err}`);
               console.trace();
               return utils.sendError.InternalError(err, res);
@@ -281,7 +282,7 @@ const postImages = async function(req, res, next) {
             originalSize: size,
             originalWidth: width,
             originalHeight: height,
-            originalMimetype: `image/${format}`
+            originalMimetype: `image/${format}`,
           });
 
           let isOverSizeLimit = size > sizeThreshold;
@@ -321,7 +322,7 @@ const postImages = async function(req, res, next) {
     let flattened = _.flatten(files);
 
     docs = await Promise.all(
-      flattened.map(f => {
+      flattened.map((f) => {
         return f.save();
       })
     );
@@ -335,13 +336,13 @@ const postImages = async function(req, res, next) {
 };
 
 /**
-  * @public
-  * @method putImage
-  * @description __URL__: /api/images/:id
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method putImage
+ * @description __URL__: /api/images/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 
 const putImage = (req, res, next) => {
   const user = userAuth.requireUser(req);
@@ -352,13 +353,13 @@ const putImage = (req, res, next) => {
 
   // Who can edit the image?
   models.Image.findById(req.params.id, (err, doc) => {
-    if(err) {
+    if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     // make the updates
-    for(var field in req.body.image) {
-      if((field !== '_id') && (field !== undefined)) {
+    for (var field in req.body.image) {
+      if (field !== '_id' && field !== undefined) {
         doc[field] = req.body.image[field];
       }
     }
@@ -367,7 +368,7 @@ const putImage = (req, res, next) => {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'image': image};
+      const data = { image: image };
       utils.sendResponse(res, data);
     });
   });
@@ -403,7 +404,7 @@ const deleteImage = (req, res) => {
 
     const data = {
       message: 'Image successfully deleted',
-      id: image._id
+      id: image._id,
     };
     return utils.sendResponse(res, data);
   });
