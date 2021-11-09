@@ -2,7 +2,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 
 export default Component.extend({
-  dataToShow: 'workspace',
+  dataToShow: 'assignment',
   data: computed('dataToShow', function () {
     if (this.dataToShow === 'workspace') {
       return [

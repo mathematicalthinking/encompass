@@ -5,7 +5,7 @@
  * @since 2.3.0
  */
 import Route from '@ember/routing/route';
-import RSVP from 'rsvp';
+import { hash } from 'rsvp';
 import { inject as service } from '@ember/service';
 
 export default class IndexRoute extends Route {
@@ -31,7 +31,26 @@ export default class IndexRoute extends Route {
     }
   }
   async model() {
+    // school year start is most recent August
+    const schoolYearStart =
+      new Date(new Date().getFullYear(), 7).getTime() < new Date().getTime()
+        ? new Date(new Date().getFullYear(), 7)
+        : new Date(new Date().getFullYear() - 1, 7);
     const user = this.modelFor('application');
+    //user.sections is array of objects {sectionId, role} not direct references to courses
+    const userSections = await Promise.all(
+      user.sections.map(async ({ sectionId, role }) => {
+        const data = await this.store.findRecord('section', sectionId);
+        return {
+          data,
+          role,
+        };
+      })
+    );
+    //active sections were created within current school year
+    const activeSections = userSections.filter(
+      (section) => section.data.createDate.getTime() > schoolYearStart.getTime()
+    );
     const assignments = this.store.findAll('assignment');
     const sections = this.store.findAll('section');
     const responses = this.store.query('response', {
@@ -49,7 +68,8 @@ export default class IndexRoute extends Route {
 
     const workspaces = this.store.query('workspace', workspaceCriteria);
 
-    return RSVP.hash({
+    return hash({
+      activeSections,
       assignments,
       sections,
       user,
@@ -57,8 +77,5 @@ export default class IndexRoute extends Route {
       responses,
       collabWorkspaces,
     });
-  }
-  renderTemplate() {
-    this.render('index');
   }
 }
