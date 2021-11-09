@@ -11,34 +11,27 @@ export default Component.extend({
       ];
     }
     if (this.dataToShow === 'assignment') {
-      return [
-        ...this.assignments
-          .toArray()
-          .filter(
-            (assignment) =>
-              assignment.get('createdBy.id') === this.user.id &&
-              !assignment.isTrashed
-          )
-          .reverse()
-          .slice(0, 10)
-          .map((assignment) => {
-            assignment.todo = 'Review Student Work';
-            return assignment;
-          }),
-        ...this.user.assignments
-          .toArray()
-          .filter((assignment) => !assignment.isTrashed)
-          .reverse()
-          .slice(0, 10)
-          .map((assignment) => {
-            assignment.todo = 'Answer Problem';
-            return assignment;
-          }),
-      ];
+      //create array of assignments from active sections
+      return (
+        this.activeSections
+          .map(({ data, role }) => {
+            const assignments = data.assignments.toArray();
+            const activeAssignments = assignments.filter((assignment) => {
+              //some assignments have no due date
+              return !assignment.dueDate
+                ? true
+                : assignment.dueDate.getTime() >= new Date().getTime();
+            });
+            return { role, activeAssignments, sectionName: data.name };
+          })
+          //don't show class that has no assignments
+          .filter((section) => section.activeAssignments.length)
+      );
     }
     if (this.dataToShow === 'feedback') {
       return this.responses.toArray().reverse().splice(0, 20);
     }
+    //default to empty array
     return [];
   }),
 });
