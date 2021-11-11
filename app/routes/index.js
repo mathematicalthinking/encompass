@@ -54,9 +54,11 @@ export default class IndexRoute extends Route {
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
     });
-    const collabWorkspaces = await this.store.query('workspace', {
-      filterBy: { _id: { $in: user.collabWorkspaces } },
-    });
+    const collabWorkspaces = user.collabWorkspaces.length
+      ? await this.store.query('workspace', {
+          filterBy: { _id: { $in: user.collabWorkspaces } },
+        })
+      : [];
     //import workspaces created by current user
     const workspaceCriteria = {
       filterBy: {
