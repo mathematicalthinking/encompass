@@ -6,8 +6,11 @@ export default Component.extend({
   data: computed('dataToShow', function () {
     if (this.dataToShow === 'workspace') {
       return [
-        ...this.workspaces.toArray().reverse(),
-        ...this.collabWorkspaces.toArray(),
+        { label: 'My Workspaces', workspaces: [...this.activeWorkspaces] },
+        {
+          label: 'My Collab Workspaces',
+          workspaces: [...this.activeCollabWorkspaces],
+        },
       ];
     }
     if (this.dataToShow === 'assignment') {

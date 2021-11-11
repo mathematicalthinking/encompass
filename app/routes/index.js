@@ -51,8 +51,6 @@ export default class IndexRoute extends Route {
     const activeSections = userSections.filter(
       (section) => section.data.createDate.getTime() > schoolYearStart.getTime()
     );
-    const assignments = this.store.findAll('assignment');
-    const sections = this.store.findAll('section');
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
     });
@@ -66,14 +64,23 @@ export default class IndexRoute extends Route {
       },
     };
 
-    const workspaces = this.store.query('workspace', workspaceCriteria);
-
+    const workspaces = await this.store.query('workspace', workspaceCriteria);
+    const activeWorkspaces = workspaces.filter(
+      (workspace) =>
+        workspace.lastModifiedDate.getTime() > schoolYearStart.getTime() ||
+        workspace.createDate.getTime() > schoolYearStart.getTime()
+    );
+    console.log(activeWorkspaces);
+    const activeCollabWorkspaces = collabWorkspaces.filter(
+      (workspace) =>
+        workspace.lastModifiedDate.getTime() > schoolYearStart.getTime()
+    );
     return hash({
       activeSections,
-      assignments,
-      sections,
       user,
       workspaces,
+      activeWorkspaces,
+      activeCollabWorkspaces,
       responses,
       collabWorkspaces,
     });

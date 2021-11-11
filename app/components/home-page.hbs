@@ -1,55 +1,87 @@
-<div class="home-tabs">
-  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'workspace') "home-tabs--active"}}" {{action (mut this.dataToShow) 'workspace'}}>My Workspaces</button>
-  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'assignment') "home-tabs--active"}}" {{action (mut this.dataToShow) 'assignment'}}>My Assignments</button>
-  <button class="home-tabs__tab {{if (is-equal this.dataToShow 'feedback') "home-tabs--active"}}" {{action (mut this.dataToShow) 'feedback'}}>My Feedback</button>
+<div class='home-tabs'>
+  <button
+    class='home-tabs__tab
+      {{if (is-equal this.dataToShow 'workspace') 'home-tabs--active'}}'
+    {{action (mut this.dataToShow) 'workspace'}}
+  >My Workspaces</button>
+  <button
+    class='home-tabs__tab
+      {{if (is-equal this.dataToShow 'assignment') 'home-tabs--active'}}'
+    {{action (mut this.dataToShow) 'assignment'}}
+  >My Assignments</button>
+  <button
+    class='home-tabs__tab
+      {{if (is-equal this.dataToShow 'feedback') 'home-tabs--active'}}'
+    {{action (mut this.dataToShow) 'feedback'}}
+  >My Feedback</button>
 </div>
 {{log this.data}}
-<section class="grid-home">
+<section class='grid-home'>
   {{#each this.data as |item|}}
     {{#if (is-equal this.dataToShow 'workspace')}}
-    <article class="grid-card">
-      <header class="grid-card__title">
-        <h2><LinkTo class="grid-card--light" @route="workspace.work" @model={{item.id}}>{{item.name}}</LinkTo></h2>
-      </header>
-      <ul class="grid-card__info">
-        <li>owner: {{item.owner.displayName}}</li>
-        <li>submissions: {{item.submissionsLength}}</li>
-        <li>selections: {{item.selectionsLength}}</li>
-        <li>comments: {{item.commentsLength}}</li>
-      </ul>
-    </article>
+      <h1>{{item.label}}</h1>
+      {{#each item.workspaces as |workspace|}}
+        <article class='grid-card'>
+          <header class='grid-card__title'>
+            <h2><LinkTo
+                class='grid-card--light'
+                @route='workspace.work'
+                @model={{workspace.id}}
+              >{{workspace.name}}</LinkTo></h2>
+          </header>
+          <ul class='grid-card__info'>
+            <li>owner: {{workspace.owner.displayName}}</li>
+            <li>submissions: {{workspace.submissionsLength}}</li>
+            <li>selections: {{workspace.selectionsLength}}</li>
+            <li>comments: {{workspace.commentsLength}}</li>
+          </ul>
+        </article>
+      {{/each}}
     {{else if (is-equal this.dataToShow 'assignment')}}
-    <h1>Assignments for: {{item.sectionName}}</h1>
-    {{#each item.activeAssignments as |assignment|}}
-    <article class="grid-card">
-      <header class="grid-card__title">
-        <h2><LinkTo class="grid-card--light" @route={{'assignments.assignment'}} @model={{assignment.id}}>{{assignment.name}}</LinkTo></h2>
-      </header>
-      <ul class="grid-card__info">
-        <li>problem: {{assignment.problem.title}}</li>
-        <li>class: {{assignment.section.name}}</li>
-        <li>Assigned: {{format-date assignment.assignedDate 'MM/DD/YYYY'}}</li>
-        <li>Due: {{format-date assignment.dueDate 'MM/DD/YYYY'}}</li>
-        <li>To Do: {{if (is-equal item.role 'teacher') 'Review Submission' 'Answer Problem'}}</li>
-      </ul>
-    </article>
-    {{/each}}
+      <h1>Assignments for: {{item.sectionName}}</h1>
+      {{#each item.activeAssignments as |assignment|}}
+        <article class='grid-card'>
+          <header class='grid-card__title'>
+            <h2><LinkTo
+                class='grid-card--light'
+                @route={{'assignments.assignment'}}
+                @model={{assignment.id}}
+              >{{assignment.name}}</LinkTo></h2>
+          </header>
+          <ul class='grid-card__info'>
+            <li>problem: {{assignment.problem.title}}</li>
+            <li>class: {{assignment.section.name}}</li>
+            <li>Assigned:
+              {{format-date assignment.assignedDate 'MM/DD/YYYY'}}</li>
+            <li>Due: {{format-date assignment.dueDate 'MM/DD/YYYY'}}</li>
+            <li>To Do:
+              {{if
+                (is-equal item.role 'teacher')
+                'Review Submission'
+                'Answer Problem'
+              }}</li>
+          </ul>
+        </article>
+      {{/each}}
     {{else if (is-equal this.dataToShow 'feedback')}}
-    <article class="grid-card">
-      <header class="grid-card__title">
-        <h2><LinkTo class="grid-card--light" @route={{'workspace.submissions.submission'}} @models={{array item.workspace.id item.submission.id}}>To: {{item.recipient.displayName}}</LinkTo></h2>
-      </header>
-      <ul class="grid-card__info">
-        <li>Workspace: {{item.workspace.name}}</li>
-        <li>Type: {{item.responseType}}</li>
-        <li>Created on: {{format-date item.createDate 'MM/DD/YYYY'}}</li>
-        <li>Status: {{item.status}}</li>
-      </ul>
-    </article>
+      <article class='grid-card'>
+        <header class='grid-card__title'>
+          <h2><LinkTo
+              class='grid-card--light'
+              @route={{'workspace.submissions.submission'}}
+              @models={{array item.workspace.id item.submission.id}}
+            >To: {{item.recipient.displayName}}</LinkTo></h2>
+        </header>
+        <ul class='grid-card__info'>
+          <li>Workspace: {{item.workspace.name}}</li>
+          <li>Type: {{item.responseType}}</li>
+          <li>Created on: {{format-date item.createDate 'MM/DD/YYYY'}}</li>
+          <li>Status: {{item.status}}</li>
+        </ul>
+      </article>
     {{/if}}
   {{/each}}
 </section>
-
 
 {{!-- {{#if this.user.isStudent}}
   <div id="welcome"  class="al_wtf home header-home">
