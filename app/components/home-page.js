@@ -6,10 +6,13 @@ export default Component.extend({
   data: computed('dataToShow', function () {
     if (this.dataToShow === 'workspace') {
       return [
-        { label: 'My Workspaces', workspaces: [...this.activeWorkspaces] },
+        {
+          label: 'My Workspaces',
+          workspaces: this.workspaces.toArray().slice(0, 5),
+        },
         {
           label: 'My Collab Workspaces',
-          workspaces: [...this.activeCollabWorkspaces],
+          workspaces: this.collabWorkspaces.toArray().slice(0, 5),
         },
       ];
     }

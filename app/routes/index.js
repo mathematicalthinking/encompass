@@ -67,22 +67,10 @@ export default class IndexRoute extends Route {
     };
 
     const workspaces = await this.store.query('workspace', workspaceCriteria);
-    const activeWorkspaces = workspaces.filter(
-      (workspace) =>
-        workspace.lastModifiedDate.getTime() > schoolYearStart.getTime() ||
-        workspace.createDate.getTime() > schoolYearStart.getTime()
-    );
-    console.log(activeWorkspaces);
-    const activeCollabWorkspaces = collabWorkspaces.filter(
-      (workspace) =>
-        workspace.lastModifiedDate.getTime() > schoolYearStart.getTime()
-    );
     return hash({
       activeSections,
       user,
       workspaces,
-      activeWorkspaces,
-      activeCollabWorkspaces,
       responses,
       collabWorkspaces,
     });

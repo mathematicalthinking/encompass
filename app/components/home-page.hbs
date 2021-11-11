@@ -34,6 +34,8 @@
             <li>submissions: {{workspace.submissionsLength}}</li>
             <li>selections: {{workspace.selectionsLength}}</li>
             <li>comments: {{workspace.commentsLength}}</li>
+            <li>Last Updated:
+              {{format-date workspace.lastModifiedDate 'MM/DD/YYYY'}}</li>
           </ul>
         </article>
       {{/each}}
