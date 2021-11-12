@@ -74,3 +74,18 @@ h1 {
 .header-font {
   font-size: 24px;
 }
+
+.home--container {
+  width: 75%;
+  height: 250px;
+  margin: 25px auto;
+  overflow: hidden;
+  .ember-table {
+    height: 200px;
+    border: none;
+    td,
+    th {
+      border-right: none;
+    }
+  }
+}

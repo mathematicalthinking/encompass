@@ -23,14 +23,20 @@
     <option value='allTime'>All Time</option>
   </select>
 </div>
-<section class='home-grid'>
+<section class='home'>
   {{#each this.data as |item|}}
     {{#if (is-equal this.dataToShow 'workspace')}}
-      <h1>{{item.label}}</h1>
-      <EmberTable as |t|>
-        <t.head @columns={{this.tableColumns}} />
-        <t.body @rows={{item.workspaces}} />
-      </EmberTable>
+      <div class='home--container'>
+        <h1>{{item.label}}</h1>
+        <EmberTable as |t|>
+          <t.head
+            @columns={{this.tableColumns}}
+            @scrollIndicators='all'
+            @widthConstraint='eq-container'
+          />
+          <t.body @rows={{item.workspaces}} />
+        </EmberTable>
+      </div>
       {{!-- {{#each item.workspaces as |workspace|}}
         <article class='grid-card'>
           <header class='grid-card__title'>
@@ -53,7 +59,11 @@
     {{else if (is-equal this.dataToShow 'assignment')}}
       <h1>Assignments for: {{item.sectionName}}</h1>
       <EmberTable as |t|>
-        <t.head @columns={{this.tableColumns}} />
+        <t.head
+          @columns={{this.tableColumns}}
+          @scrollIndicators='all'
+          @widthConstraint='eq-container'
+        />
         <t.body @rows={{item.assignments}} />
       </EmberTable>
       {{!-- {{#each item.assignments as |assignment|}}
@@ -82,8 +92,12 @@
       {{/each}} --}}
     {{else if (is-equal this.dataToShow 'feedback')}}
       <EmberTable as |t|>
-        <t.head @columns={{this.tableColumns}} />
-        <t.body @rows={{item.assignments}} />
+        <t.head
+          @columns={{this.tableColumns}}
+          @scrollIndicators='all'
+          @widthConstraint='eq-container'
+        />
+        <t.body @rows={{item}} />
       </EmberTable>
       {{!-- <article class='grid-card'>
         <header class='grid-card__title'>

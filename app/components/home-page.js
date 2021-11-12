@@ -34,7 +34,7 @@ export default Component.extend({
         { name: 'submissions', valuePath: 'submissionsLength' },
         { name: 'selections', valuePath: 'selectionsLength' },
         { name: 'comments', valuePath: 'commentsLength' },
-        { naem: 'Last Updated', valuePath: 'lastModifiedDate' },
+        { name: 'Last Updated', valuePath: 'lastModifiedDate' },
       ];
     }
     if (this.dataToShow === 'assignment') {
