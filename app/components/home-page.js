@@ -3,7 +3,7 @@ import { computed } from '@ember/object';
 
 export default Component.extend({
   dataToShow: 'workspace',
-  currentBound: 'allTime',
+  currentBound: 'oneWeek',
   dateBounds: {
     oneWeek: new Date(
       new Date().getFullYear(),

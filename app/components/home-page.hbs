@@ -16,9 +16,9 @@
   >My Feedback</button>
   <label>Showing results from: </label>
   <select onchange={{action 'updateCurrentBound'}}>
-    <option value='oneWeek'>One Week Ago</option>
-    <option value='oneMonth'>One Month Ago</option>
-    <option value='sixMonths'>Six Months Ago</option>
+    <option value='oneWeek'>Previous Week</option>
+    <option value='oneMonth'>Previous Month</option>
+    <option value='sixMonths'>Previous Six Months</option>
     <option value='schoolYear'>Current School Year</option>
     <option value='allTime'>All Time</option>
   </select>
@@ -34,7 +34,24 @@
             @scrollIndicators='all'
             @widthConstraint='eq-container'
           />
-          <t.body @rows={{item.workspaces}} />
+          <t.body @rows={{item.workspaces}} as |b|>
+            <b.row as |r|>
+              <r.cell
+                as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+              >
+                {{#if (is-equal columnValue.name 'Last Updated')}}
+                  {{format-date cellValue 'MM/DD/YYYY'}}
+                {{else if (is-equal columnValue.name 'Workspace')}}
+                  <LinkTo
+                    @route={{'workspace.work'}}
+                    @model={{rowValue.id}}
+                  >{{cellValue}}</LinkTo>
+                {{else}}
+                  {{cellValue}}
+                {{/if}}
+              </r.cell>
+            </b.row>
+          </t.body>
         </EmberTable>
       </div>
       {{!-- {{#each item.workspaces as |workspace|}}
@@ -57,15 +74,36 @@
         </article>
       {{/each}} --}}
     {{else if (is-equal this.dataToShow 'assignment')}}
-      <h1>Assignments for: {{item.sectionName}}</h1>
-      <EmberTable as |t|>
-        <t.head
-          @columns={{this.tableColumns}}
-          @scrollIndicators='all'
-          @widthConstraint='eq-container'
-        />
-        <t.body @rows={{item.assignments}} />
-      </EmberTable>
+      <div class='home--container'>
+        <h1>Assignments for: {{item.sectionName}}</h1>
+        <EmberTable as |t|>
+          <t.head
+            @columns={{this.tableColumns}}
+            @scrollIndicators='all'
+            @widthConstraint='eq-container'
+          />
+          <t.body @rows={{item.assignments}} as |b|>
+            <b.row as |r|>
+              <r.cell
+                as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+              >
+                {{#if (is-equal columnValue.name 'Due')}}
+                  {{format-date cellValue 'MM/DD/YYYY'}}
+                {{else if (is-equal columnValue.name 'Assigned')}}
+                  {{format-date cellValue 'MM/DD/YYYY'}}
+                {{else if (is-equal columnValue.name 'Assignment')}}
+                  <LinkTo
+                    @route={{'assignments.assignment'}}
+                    @model={{rowValue.id}}
+                  >{{cellValue}}</LinkTo>
+                {{else}}
+                  {{cellValue}}
+                {{/if}}
+              </r.cell>
+            </b.row>
+          </t.body>
+        </EmberTable>
+      </div>
       {{!-- {{#each item.assignments as |assignment|}}
         <article class='grid-card'>
           <header class='grid-card__title'>
@@ -91,14 +129,16 @@
         </article>
       {{/each}} --}}
     {{else if (is-equal this.dataToShow 'feedback')}}
-      <EmberTable as |t|>
-        <t.head
-          @columns={{this.tableColumns}}
-          @scrollIndicators='all'
-          @widthConstraint='eq-container'
-        />
-        <t.body @rows={{item}} />
-      </EmberTable>
+      <div class='home--container'>
+        <EmberTable as |t|>
+          <t.head
+            @columns={{this.tableColumns}}
+            @scrollIndicators='all'
+            @widthConstraint='eq-container'
+          />
+          <t.body @rows={{item}} />
+        </EmberTable>
+      </div>
       {{!-- <article class='grid-card'>
         <header class='grid-card__title'>
           <h2><LinkTo
@@ -139,7 +179,7 @@
     <DashboardWorkspacesList @store={{this.store}} @user={{this.user}} @workspaces={{this.workspaces}} @assignments={{this.assignments}} />
     <DashboardClassesList @store={{this.store}} @user={{this.user}} @sections={{this.sections}} @assignments={{this.assignments}} />
     <h2 class="header-home"><LinkTo @route="responses">Go to feedback</LinkTo></h2>
-    <p class="footer">EnCoMPASS version 3.1.0 last updated on 11/08/2021.</p>
+    
   {{else}}
     <h2>It looks like you are not logged in</h2>
     <p>Please login <LinkTo @route="auth.login">here</LinkTo></p>
@@ -148,3 +188,5 @@
 </div>
 
 {{/if}} --}}
+
+<p class='footer'>EnCoMPASS version 3.1.0 last updated on 11/08/2021.</p>
