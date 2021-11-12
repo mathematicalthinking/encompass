@@ -1,4 +1,5 @@
 <div class='home-tabs'>
+  {{log this.userSections}}
   <button
     class='home-tabs__tab
       {{if (is-equal this.dataToShow 'workspace') 'home-tabs--active'}}'
@@ -15,7 +16,6 @@
     {{action (mut this.dataToShow) 'feedback'}}
   >My Feedback</button>
 </div>
-{{log this.data}}
 <section class='grid-home'>
   {{#each this.data as |item|}}
     {{#if (is-equal this.dataToShow 'workspace')}}
@@ -41,7 +41,7 @@
       {{/each}}
     {{else if (is-equal this.dataToShow 'assignment')}}
       <h1>Assignments for: {{item.sectionName}}</h1>
-      {{#each item.activeAssignments as |assignment|}}
+      {{#each item.assignments as |assignment|}}
         <article class='grid-card'>
           <header class='grid-card__title'>
             <h2><LinkTo

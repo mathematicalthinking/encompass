@@ -31,26 +31,20 @@ export default class IndexRoute extends Route {
     }
   }
   async model() {
-    // school year start is most recent August
-    const schoolYearStart =
-      new Date(new Date().getFullYear(), 7).getTime() < new Date().getTime()
-        ? new Date(new Date().getFullYear(), 7)
-        : new Date(new Date().getFullYear() - 1, 7);
     const user = this.modelFor('application');
-    //user.sections is array of objects {sectionId, role} not direct references to courses
+    //user.sections is array of objects {sectionId, role} not direct references to section documents in Ember Data
     const userSections = await Promise.all(
       user.sections.map(async ({ sectionId, role }) => {
-        const data = await this.store.findRecord('section', sectionId);
+        const section = await this.store.findRecord('section', sectionId);
+        const assignments = await section.assignments;
         return {
-          data,
+          section,
+          assignments,
           role,
         };
       })
     );
-    //active sections were created within current school year
-    const activeSections = userSections.filter(
-      (section) => section.data.createDate.getTime() > schoolYearStart.getTime()
-    );
+    //TODO: find responses given to a user and responses for user to review
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
     });
@@ -68,7 +62,7 @@ export default class IndexRoute extends Route {
 
     const workspaces = await this.store.query('workspace', workspaceCriteria);
     return hash({
-      activeSections,
+      userSections,
       user,
       workspaces,
       responses,
