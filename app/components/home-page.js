@@ -49,10 +49,10 @@ export default Component.extend({
     if (this.dataToShow === 'feedback') {
       return [
         { name: 'Recipient', valuePath: 'recipient.displayName' },
-        { name: 'Workspaces', valuePath: 'workspace.name' },
+        { name: 'Sent By', valuePath: 'createdBy.displayName' },
+        { name: 'Workspace', valuePath: 'workspace.name' },
         { name: 'Type', valuePath: 'responseType' },
         { name: 'Created', valuePath: 'createDate' },
-        { name: 'Due', valuePath: 'dueDate' },
         { name: 'Status', valuePath: 'status' },
       ];
     }
@@ -61,7 +61,7 @@ export default Component.extend({
     if (this.dataToShow === 'workspace') {
       return [
         {
-          label: 'My Workspaces',
+          label: 'My Workspaces: ',
           workspaces: this.workspaces
             .toArray()
             .filter(
@@ -71,7 +71,7 @@ export default Component.extend({
             ),
         },
         {
-          label: 'My Collab Workspaces',
+          label: 'Workspaces for Collaboration: ',
           workspaces: this.collabWorkspaces
             .toArray()
             .filter(
@@ -100,14 +100,46 @@ export default Component.extend({
       );
     }
     if (this.dataToShow === 'feedback') {
-      return this.responses
+      const responses = this.responses
         .toArray()
         .reverse()
         .filter(
           (response) =>
             response.createDate.getTime() >
             this.dateBounds[this.currentBound].getTime()
-        );
+        )
+        .map((response) => {
+          return {
+            recipient: response.recipient,
+            createdBy: response.createdBy,
+            workspace: response.workspace,
+            responseType: response.responseType,
+            createDate: response.createDate,
+            status: response.status,
+          };
+        });
+      const responsesReceived = this.responsesReceived
+        .toArray()
+        .reverse()
+        .filter(
+          (response) =>
+            response.createDate.getTime() >
+            this.dateBounds[this.currentBound].getTime()
+        )
+        .map((response) => {
+          return {
+            recipient: response.recipient,
+            createdBy: response.createdBy,
+            workspace: response.workspace,
+            responseType: response.responseType,
+            createDate: response.createDate,
+            status: response.status,
+          };
+        });
+      return [
+        { label: 'Feedback Given:', responses },
+        { label: 'Feedback Received: ', responses: responsesReceived },
+      ];
     }
     //default to empty array
     return [];

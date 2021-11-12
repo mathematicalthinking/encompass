@@ -48,6 +48,9 @@ export default class IndexRoute extends Route {
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
     });
+    const responsesReceived = this.store.query('response', {
+      filterBy: { recipient: user.id },
+    });
     const collabWorkspaces = user.collabWorkspaces.length
       ? await this.store.query('workspace', {
           filterBy: { _id: { $in: user.collabWorkspaces } },
@@ -66,6 +69,7 @@ export default class IndexRoute extends Route {
       user,
       workspaces,
       responses,
+      responsesReceived,
       collabWorkspaces,
     });
   }
