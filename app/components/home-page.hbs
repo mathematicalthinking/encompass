@@ -15,6 +15,14 @@
       {{if (is-equal this.dataToShow 'feedback') 'home-tabs--active'}}'
     {{action (mut this.dataToShow) 'feedback'}}
   >My Feedback</button>
+  <label>Showing results from: </label>
+  <select onchange={{action 'updateCurrentBound'}}>
+    <option value='oneWeek'>One Week Ago</option>
+    <option value='oneMonth'>One Month Ago</option>
+    <option value='sixMonths'>Six Months Ago</option>
+    <option value='schoolYear'>Current School Year</option>
+    <option value='allTime'>All Time</option>
+  </select>
 </div>
 <section class='grid-home'>
   {{#each this.data as |item|}}

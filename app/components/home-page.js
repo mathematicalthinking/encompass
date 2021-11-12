@@ -24,8 +24,9 @@ export default Component.extend({
       new Date().getMonth() > 7
         ? new Date(new Date().getFullYear(), 7)
         : new Date(new Date().getFullYear() - 1, 7),
+    allTime: new Date(2012),
   },
-  data: computed('dataToShow', function () {
+  data: computed('dataToShow', 'currentBound', function () {
     if (this.dataToShow === 'workspace') {
       return [
         {
@@ -80,4 +81,10 @@ export default Component.extend({
     //default to empty array
     return [];
   }),
+
+  actions: {
+    updateCurrentBound(e) {
+      this.set('currentBound', e.target.value);
+    },
+  },
 });
