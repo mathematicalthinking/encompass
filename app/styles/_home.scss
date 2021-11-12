@@ -77,11 +77,10 @@ h1 {
 
 .home--container {
   width: 75%;
-  height: 250px;
+  height: min-content;
   margin: 25px auto;
   overflow: hidden;
   .ember-table {
-    height: 200px;
     border: none;
     td,
     th {
