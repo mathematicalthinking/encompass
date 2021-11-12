@@ -1,5 +1,4 @@
 <div class='home-tabs'>
-  {{log this.userSections}}
   <button
     class='home-tabs__tab
       {{if (is-equal this.dataToShow 'workspace') 'home-tabs--active'}}'
@@ -24,11 +23,15 @@
     <option value='allTime'>All Time</option>
   </select>
 </div>
-<section class='grid-home'>
+<section class='home-grid'>
   {{#each this.data as |item|}}
     {{#if (is-equal this.dataToShow 'workspace')}}
       <h1>{{item.label}}</h1>
-      {{#each item.workspaces as |workspace|}}
+      <EmberTable as |t|>
+        <t.head @columns={{this.tableColumns}} />
+        <t.body @rows={{item.workspaces}} />
+      </EmberTable>
+      {{!-- {{#each item.workspaces as |workspace|}}
         <article class='grid-card'>
           <header class='grid-card__title'>
             <h2><LinkTo
@@ -46,10 +49,14 @@
               {{format-date workspace.lastModifiedDate 'MM/DD/YYYY'}}</li>
           </ul>
         </article>
-      {{/each}}
+      {{/each}} --}}
     {{else if (is-equal this.dataToShow 'assignment')}}
       <h1>Assignments for: {{item.sectionName}}</h1>
-      {{#each item.assignments as |assignment|}}
+      <EmberTable as |t|>
+        <t.head @columns={{this.tableColumns}} />
+        <t.body @rows={{item.assignments}} />
+      </EmberTable>
+      {{!-- {{#each item.assignments as |assignment|}}
         <article class='grid-card'>
           <header class='grid-card__title'>
             <h2><LinkTo
@@ -72,9 +79,13 @@
               }}</li>
           </ul>
         </article>
-      {{/each}}
+      {{/each}} --}}
     {{else if (is-equal this.dataToShow 'feedback')}}
-      <article class='grid-card'>
+      <EmberTable as |t|>
+        <t.head @columns={{this.tableColumns}} />
+        <t.body @rows={{item.assignments}} />
+      </EmberTable>
+      {{!-- <article class='grid-card'>
         <header class='grid-card__title'>
           <h2><LinkTo
               class='grid-card--light'
@@ -88,7 +99,7 @@
           <li>Created on: {{format-date item.createDate 'MM/DD/YYYY'}}</li>
           <li>Status: {{item.status}}</li>
         </ul>
-      </article>
+      </article> --}}
     {{/if}}
   {{/each}}
 </section>

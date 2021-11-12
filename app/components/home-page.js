@@ -3,7 +3,7 @@ import { computed } from '@ember/object';
 
 export default Component.extend({
   dataToShow: 'workspace',
-  currentBound: 'oneWeek',
+  currentBound: 'allTime',
   dateBounds: {
     oneWeek: new Date(
       new Date().getFullYear(),
@@ -26,6 +26,37 @@ export default Component.extend({
         : new Date(new Date().getFullYear() - 1, 7),
     allTime: new Date(2012),
   },
+  tableColumns: computed('dataToShow', function () {
+    if (this.dataToShow === 'workspace') {
+      return [
+        { name: 'Workspace', valuePath: 'name' },
+        { name: 'owner', valuePath: 'owner.username' },
+        { name: 'submissions', valuePath: 'submissionsLength' },
+        { name: 'selections', valuePath: 'selectionsLength' },
+        { name: 'comments', valuePath: 'commentsLength' },
+        { naem: 'Last Updated', valuePath: 'lastModifiedDate' },
+      ];
+    }
+    if (this.dataToShow === 'assignment') {
+      return [
+        { name: 'Assignment', valuePath: 'name' },
+        { name: 'Problem', valuePath: 'problem.title' },
+        { name: 'Assigned', valuePath: 'assignedDate' },
+        { name: 'Due', valuePath: 'dueDate' },
+        { name: 'To Do', valuePath: 'name' },
+      ];
+    }
+    if (this.dataToShow === 'feedback') {
+      return [
+        { name: 'Recipient', valuePath: 'recipient.displayName' },
+        { name: 'Workspaces', valuePath: 'workspace.name' },
+        { name: 'Type', valuePath: 'responseType' },
+        { name: 'Created', valuePath: 'createDate' },
+        { name: 'Due', valuePath: 'dueDate' },
+        { name: 'Status', valuePath: 'status' },
+      ];
+    }
+  }),
   data: computed('dataToShow', 'currentBound', function () {
     if (this.dataToShow === 'workspace') {
       return [
