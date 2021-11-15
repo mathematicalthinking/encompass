@@ -66,7 +66,7 @@ export default class HomePageComponent extends Component {
       return [
         {
           label: 'My Workspaces: ',
-          workspaces: this.args.workspaces
+          details: this.args.workspaces
             .toArray()
             .filter(
               (workspace) =>
@@ -76,7 +76,7 @@ export default class HomePageComponent extends Component {
         },
         {
           label: 'Workspaces for Collaboration: ',
-          workspaces: this.args.collabWorkspaces
+          details: this.args.collabWorkspaces
             .toArray()
             .filter(
               (workspace) =>
@@ -88,20 +88,15 @@ export default class HomePageComponent extends Component {
     }
     if (this.dataToShow === 'assignment') {
       //create array of assignments from active sections
-      return (
-        this.args.userSections
-          .map(({ section, assignments, role }) => {
-            const filtered = assignments.toArray().filter((assignment) => {
-              return !assignment.dueDate
-                ? true
-                : assignment.dueDate.getTime() >
-                    this.dateBounds[this.currentBound].getTime();
-            });
-            return { role, assignments: filtered, sectionName: section.name };
-          })
-          //don't show class that has no assignments
-          .filter((section) => section.assignments.length)
-      );
+      return this.args.userSections.map(({ section, assignments, role }) => {
+        const filtered = assignments.toArray().filter((assignment) => {
+          return !assignment.dueDate
+            ? true
+            : assignment.dueDate.getTime() >
+                this.dateBounds[this.currentBound].getTime();
+        });
+        return { role, details: filtered, label: section.name };
+      });
     }
     if (this.dataToShow === 'feedback') {
       const responses = this.args.responses
@@ -142,8 +137,8 @@ export default class HomePageComponent extends Component {
           };
         });
       return [
-        { label: 'Feedback Given:', responses },
-        { label: 'Feedback Received: ', responses: responsesReceived },
+        { label: 'Feedback Given:', details: responses },
+        { label: 'Feedback Received: ', details: responsesReceived },
       ];
     }
     //getter must return a value
