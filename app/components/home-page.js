@@ -109,6 +109,7 @@ export default class HomePageComponent extends Component {
         )
         .map((response) => {
           return {
+            name: response.get('recipient.username'),
             recipient: response.recipient,
             createdBy: response.createdBy,
             workspace: response.workspace,
@@ -127,7 +128,8 @@ export default class HomePageComponent extends Component {
         )
         .map((response) => {
           return {
-            recipient: response.recipient,
+            name: response.student,
+            recipient: response.student,
             createdBy: response.createdBy,
             workspace: response.workspace,
             responseType: response.responseType,
