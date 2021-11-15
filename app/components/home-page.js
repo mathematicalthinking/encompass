@@ -58,6 +58,7 @@ export default class HomePageComponent extends Component {
         { name: 'Status', valuePath: 'status' },
       ];
     }
+    //getter must return a value
     return [];
   }
   get data() {
@@ -145,7 +146,7 @@ export default class HomePageComponent extends Component {
         { label: 'Feedback Received: ', responses: responsesReceived },
       ];
     }
-    //default to empty array
+    //getter must return a value
     return [];
   }
   @action updateCurrentBound(e) {

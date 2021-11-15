@@ -22,33 +22,30 @@
     <option value='schoolYear'>Current School Year</option>
     <option value='allTime'>All Time</option>
   </select>
-  {{#if this.showTable}}
+  <button class='home-tabs__tab'>
     <img
-      src='../assets/images/grid.svg'
+      src={{if
+        this.showTable
+        '../assets/images/grid.svg'
+        '../assets/images/grid-active.svg'
+      }}
       alt='grid'
       {{action (mut this.showTable) false}}
-      title='Show in grid view'
+      title='Show grid view'
     />
+  </button>
+  <button class='home-tabs__tab'>
     <img
-      src='../assets/images/list-active.svg'
+      src={{if
+        this.showTable
+        '../assets/images/list-active.svg'
+        '../assets/images/list.svg'
+      }}
       alt='list'
       {{action (mut this.showTable) true}}
-      title='Currently in list view'
+      title='Show table view'
     />
-  {{else}}
-    <img
-      src='../assets/images/grid-active.svg'
-      alt='grid'
-      {{action (mut this.showTable) false}}
-      title='Currently in grid view'
-    />
-    <img
-      src='../assets/images/list.svg'
-      alt='list'
-      {{action (mut this.showTable) true}}
-      title='Show in list view'
-    />
-  {{/if}}
+  </button>
 </div>
 <section class='home'>
   {{#each this.data as |item|}}
