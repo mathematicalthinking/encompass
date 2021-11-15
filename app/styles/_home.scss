@@ -9,12 +9,11 @@ h1 {
 .home-options {
   width: 100%;
   &__tabs {
-    display: flex;
-    margin: 25px 10%;
+    text-align: center;
+    margin-bottom: 25px;
   }
   &__tab {
     background: linear-gradient(white, white, white);
-    flex: 1;
     border: none;
     border-bottom: 1px solid transparent;
     cursor: pointer;
@@ -44,7 +43,16 @@ h1 {
     }
   }
   &__details {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    width: 75%;
+    margin: auto;
+    select {
+      margin-left: 5px;
+      border: none;
+      border-bottom: 1px solid black;
+      cursor: pointer;
+    }
   }
   &--active {
     border-bottom: 1px solid $accent-color;
@@ -53,12 +61,17 @@ h1 {
   &--right {
     margin-left: auto;
   }
+  &--button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
 }
 
 .grid-home {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(349px, 1fr));
   padding: 25px 0px;
 }
 

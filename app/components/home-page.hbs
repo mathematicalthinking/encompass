@@ -15,8 +15,18 @@
         {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
       {{action (mut this.dataToShow) 'feedback'}}
     ><span>My Feedback</span></button>
+  </div>
+  <div class='home-options__details'>
+    <label>View info from: </label>
+    <select onchange={{action 'updateCurrentBound'}}>
+      <option value='oneWeek'>Previous Week</option>
+      <option value='oneMonth'>Previous Month</option>
+      <option value='sixMonths'>Previous Six Months</option>
+      <option value='schoolYear'>Current School Year</option>
+      <option value='allTime'>All Time</option>
+    </select>
     <div class='home-options--right'>
-      <button class='home-options__tab'>
+      <button class='home-options--button'>
         <img
           src={{if
             this.showTable
@@ -28,7 +38,7 @@
           title='Show grid view'
         />
       </button>
-      <button class='home-options__tab'>
+      <button class='home-options--button'>
         <img
           src={{if
             this.showTable
@@ -41,16 +51,6 @@
         />
       </button>
     </div>
-  </div>
-  <div class='home-options__details'>
-    <label>Showing results from: </label>
-    <select onchange={{action 'updateCurrentBound'}}>
-      <option value='oneWeek'>Previous Week</option>
-      <option value='oneMonth'>Previous Month</option>
-      <option value='sixMonths'>Previous Six Months</option>
-      <option value='schoolYear'>Current School Year</option>
-      <option value='allTime'>All Time</option>
-    </select>
   </div>
 </div>
 
