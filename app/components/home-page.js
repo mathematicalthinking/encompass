@@ -4,6 +4,7 @@ import { computed } from '@ember/object';
 export default Component.extend({
   dataToShow: 'workspace',
   currentBound: 'oneWeek',
+  showTable: true,
   dateBounds: {
     oneWeek: new Date(
       new Date().getFullYear(),
@@ -134,6 +135,7 @@ export default Component.extend({
             responseType: response.responseType,
             createDate: response.createDate,
             status: response.status,
+            submission: response.submission,
           };
         });
       return [

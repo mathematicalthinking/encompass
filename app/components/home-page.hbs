@@ -22,151 +22,202 @@
     <option value='schoolYear'>Current School Year</option>
     <option value='allTime'>All Time</option>
   </select>
+  {{#if this.showTable}}
+    <img
+      src='../assets/images/grid.svg'
+      alt='grid'
+      {{action (mut this.showTable) false}}
+      title='Show in grid view'
+    />
+    <img
+      src='../assets/images/list-active.svg'
+      alt='list'
+      {{action (mut this.showTable) true}}
+      title='Currently in list view'
+    />
+  {{else}}
+    <img
+      src='../assets/images/grid-active.svg'
+      alt='grid'
+      {{action (mut this.showTable) false}}
+      title='Currently in grid view'
+    />
+    <img
+      src='../assets/images/list.svg'
+      alt='list'
+      {{action (mut this.showTable) true}}
+      title='Show in list view'
+    />
+  {{/if}}
 </div>
 <section class='home'>
   {{#each this.data as |item|}}
     {{#if (is-equal this.dataToShow 'workspace')}}
-      <div class='home--container'>
+      {{#if this.showTable}}
+        <div class='home--container'>
+          <h1>{{item.label}}</h1>
+          <EmberTable as |t|>
+            <t.head
+              @columns={{this.tableColumns}}
+              @scrollIndicators='all'
+              @widthConstraint='eq-container'
+            />
+            <t.body @rows={{item.workspaces}} as |b|>
+              <b.row as |r|>
+                <r.cell
+                  as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+                >
+                  {{#if (is-equal columnValue.name 'Last Updated')}}
+                    {{format-date cellValue 'MM/DD/YYYY'}}
+                  {{else if (is-equal columnValue.name 'Workspace')}}
+                    <LinkTo
+                      @route={{'workspace.work'}}
+                      @model={{rowValue.id}}
+                    >{{cellValue}}</LinkTo>
+                  {{else}}
+                    {{cellValue}}
+                  {{/if}}
+                </r.cell>
+              </b.row>
+            </t.body>
+          </EmberTable>
+        </div>
+      {{else}}
         <h1>{{item.label}}</h1>
-        <EmberTable as |t|>
-          <t.head
-            @columns={{this.tableColumns}}
-            @scrollIndicators='all'
-            @widthConstraint='eq-container'
-          />
-          <t.body @rows={{item.workspaces}} as |b|>
-            <b.row as |r|>
-              <r.cell
-                as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-              >
-                {{#if (is-equal columnValue.name 'Last Updated')}}
-                  {{format-date cellValue 'MM/DD/YYYY'}}
-                {{else if (is-equal columnValue.name 'Workspace')}}
-                  <LinkTo
-                    @route={{'workspace.work'}}
-                    @model={{rowValue.id}}
-                  >{{cellValue}}</LinkTo>
-                {{else}}
-                  {{cellValue}}
-                {{/if}}
-              </r.cell>
-            </b.row>
-          </t.body>
-        </EmberTable>
-      </div>
-      {{!-- {{#each item.workspaces as |workspace|}}
-        <article class='grid-card'>
-          <header class='grid-card__title'>
-            <h2><LinkTo
-                class='grid-card--light'
-                @route='workspace.work'
-                @model={{workspace.id}}
-              >{{workspace.name}}</LinkTo></h2>
-          </header>
-          <ul class='grid-card__info'>
-            <li>owner: {{workspace.owner.displayName}}</li>
-            <li>submissions: {{workspace.submissionsLength}}</li>
-            <li>selections: {{workspace.selectionsLength}}</li>
-            <li>comments: {{workspace.commentsLength}}</li>
-            <li>Last Updated:
-              {{format-date workspace.lastModifiedDate 'MM/DD/YYYY'}}</li>
-          </ul>
-        </article>
-      {{/each}} --}}
+        <div class='grid-home'>
+          {{#each item.workspaces as |workspace|}}
+            <article class='grid-card'>
+              <header class='grid-card__title'>
+                <h2><LinkTo
+                    class='grid-card--light'
+                    @route='workspace.work'
+                    @model={{workspace.id}}
+                  >{{workspace.name}}</LinkTo></h2>
+              </header>
+              <ul class='grid-card__info'>
+                <li>owner: {{workspace.owner.displayName}}</li>
+                <li>submissions: {{workspace.submissionsLength}}</li>
+                <li>selections: {{workspace.selectionsLength}}</li>
+                <li>comments: {{workspace.commentsLength}}</li>
+                <li>Last Updated:
+                  {{format-date workspace.lastModifiedDate 'MM/DD/YYYY'}}</li>
+              </ul>
+            </article>
+          {{/each}}
+        </div>
+      {{/if}}
     {{else if (is-equal this.dataToShow 'assignment')}}
-      <div class='home--container'>
-        <h1>Assignments for: {{item.sectionName}}</h1>
-        <EmberTable as |t|>
-          <t.head
-            @columns={{this.tableColumns}}
-            @scrollIndicators='all'
-            @widthConstraint='eq-container'
-          />
-          <t.body @rows={{item.assignments}} as |b|>
-            <b.row as |r|>
-              <r.cell
-                as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-              >
-                {{#if (is-equal columnValue.name 'Due')}}
-                  {{format-date cellValue 'MM/DD/YYYY'}}
-                {{else if (is-equal columnValue.name 'Assigned')}}
-                  {{format-date cellValue 'MM/DD/YYYY'}}
-                {{else if (is-equal columnValue.name 'Assignment')}}
-                  <LinkTo
+      {{#if this.showTable}}
+        <div class='home--container'>
+          <h1>Assignments for: {{item.sectionName}}</h1>
+          <EmberTable as |t|>
+            <t.head
+              @columns={{this.tableColumns}}
+              @scrollIndicators='all'
+              @widthConstraint='eq-container'
+            />
+            <t.body @rows={{item.assignments}} as |b|>
+              <b.row as |r|>
+                <r.cell
+                  as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+                >
+                  {{#if (is-equal columnValue.name 'Due')}}
+                    {{format-date cellValue 'MM/DD/YYYY'}}
+                  {{else if (is-equal columnValue.name 'Assigned')}}
+                    {{format-date cellValue 'MM/DD/YYYY'}}
+                  {{else if (is-equal columnValue.name 'Assignment')}}
+                    <LinkTo
+                      @route={{'assignments.assignment'}}
+                      @model={{rowValue.id}}
+                    >{{cellValue}}</LinkTo>
+                  {{else}}
+                    {{cellValue}}
+                  {{/if}}
+                </r.cell>
+              </b.row>
+            </t.body>
+          </EmberTable>
+        </div>
+      {{else}}
+        <h1>{{item.sectionName}}</h1>
+        <div class='grid-home'>
+          {{#each item.assignments as |assignment|}}
+            <article class='grid-card'>
+              <header class='grid-card__title'>
+                <h2><LinkTo
+                    class='grid-card--light'
                     @route={{'assignments.assignment'}}
-                    @model={{rowValue.id}}
-                  >{{cellValue}}</LinkTo>
-                {{else}}
-                  {{cellValue}}
-                {{/if}}
-              </r.cell>
-            </b.row>
-          </t.body>
-        </EmberTable>
-      </div>
-      {{!-- {{#each item.assignments as |assignment|}}
-        <article class='grid-card'>
-          <header class='grid-card__title'>
-            <h2><LinkTo
-                class='grid-card--light'
-                @route={{'assignments.assignment'}}
-                @model={{assignment.id}}
-              >{{assignment.name}}</LinkTo></h2>
-          </header>
-          <ul class='grid-card__info'>
-            <li>problem: {{assignment.problem.title}}</li>
-            <li>class: {{assignment.section.name}}</li>
-            <li>Assigned:
-              {{format-date assignment.assignedDate 'MM/DD/YYYY'}}</li>
-            <li>Due: {{format-date assignment.dueDate 'MM/DD/YYYY'}}</li>
-            <li>To Do:
-              {{if
-                (is-equal item.role 'teacher')
-                'Review Submission'
-                'Answer Problem'
-              }}</li>
-          </ul>
-        </article>
-      {{/each}} --}}
+                    @model={{assignment.id}}
+                  >{{assignment.name}}</LinkTo></h2>
+              </header>
+              <ul class='grid-card__info'>
+                <li>problem: {{assignment.problem.title}}</li>
+                <li>class: {{assignment.section.name}}</li>
+                <li>Assigned:
+                  {{format-date assignment.assignedDate 'MM/DD/YYYY'}}</li>
+                <li>Due: {{format-date assignment.dueDate 'MM/DD/YYYY'}}</li>
+                <li>To Do:
+                  {{if
+                    (is-equal item.role 'teacher')
+                    'Review Submission'
+                    'Answer Problem'
+                  }}</li>
+              </ul>
+            </article>
+          {{/each}}
+        </div>
+      {{/if}}
     {{else if (is-equal this.dataToShow 'feedback')}}
-      <div class='home--container'>
+      {{#if this.showTable}}
+        <div class='home--container'>
+          <h1>{{item.label}}</h1>
+          <EmberTable as |t|>
+            <t.head
+              @columns={{this.tableColumns}}
+              @scrollIndicators='all'
+              @widthConstraint='eq-container'
+            />
+            <t.body @rows={{item.responses}} as |b|>
+              <b.row as |r|>
+                <r.cell
+                  as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+                >
+                  {{#if (is-equal columnValue.name 'Created')}}
+                    {{format-date cellValue 'MM/DD/YYYY'}}
+                  {{else}}
+                    {{cellValue}}
+                  {{/if}}
+                </r.cell>
+              </b.row>
+            </t.body>
+          </EmberTable>
+        </div>
+      {{else}}
         <h1>{{item.label}}</h1>
-        <EmberTable as |t|>
-          <t.head
-            @columns={{this.tableColumns}}
-            @scrollIndicators='all'
-            @widthConstraint='eq-container'
-          />
-          <t.body @rows={{item.responses}} as |b|>
-            <b.row as |r|>
-              <r.cell
-                as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-              >
-                {{#if (is-equal columnValue.name 'Created')}}
-                  {{format-date cellValue 'MM/DD/YYYY'}}
-                {{else}}
-                  {{cellValue}}
-                {{/if}}
-              </r.cell>
-            </b.row>
-          </t.body>
-        </EmberTable>
-      </div>
-      {{!-- <article class='grid-card'>
-        <header class='grid-card__title'>
-          <h2><LinkTo
-              class='grid-card--light'
-              @route={{'workspace.submissions.submission'}}
-              @models={{array item.workspace.id item.submission.id}}
-            >To: {{item.recipient.displayName}}</LinkTo></h2>
-        </header>
-        <ul class='grid-card__info'>
-          <li>Workspace: {{item.workspace.name}}</li>
-          <li>Type: {{item.responseType}}</li>
-          <li>Created on: {{format-date item.createDate 'MM/DD/YYYY'}}</li>
-          <li>Status: {{item.status}}</li>
-        </ul>
-      </article> --}}
+        <div class='grid-home'>
+          {{#each item.responses as |response|}}
+            <article class='grid-card'>
+              <header class='grid-card__title'>
+                <h2><LinkTo
+                    class='grid-card--light'
+                    @route={{'workspace.submissions.submission'}}
+                    @models={{array
+                      response.workspace.id
+                      response.submission.id
+                    }}
+                  >To: {{response.recipient.displayName}}</LinkTo></h2>
+              </header>
+              <ul class='grid-card__info'>
+                <li>Workspace: {{response.workspace.name}}</li>
+                <li>Type: {{response.responseType}}</li>
+                <li>Created on:
+                  {{format-date response.createDate 'MM/DD/YYYY'}}</li>
+                <li>Status: {{response.status}}</li>
+              </ul>
+            </article>
+          {{/each}}
+        </div>
+      {{/if}}
     {{/if}}
   {{/each}}
 </section>
