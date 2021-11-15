@@ -1,11 +1,12 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  dataToShow: 'workspace',
-  currentBound: 'oneWeek',
-  showTable: true,
-  dateBounds: {
+export default class HomePageComponent extends Component {
+  @tracked dataToShow = 'workspace';
+  @tracked currentBound = 'oneWeek';
+  @tracked showTable = true;
+  dateBounds = {
     oneWeek: new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
@@ -26,8 +27,8 @@ export default Component.extend({
         ? new Date(new Date().getFullYear(), 7)
         : new Date(new Date().getFullYear() - 1, 7),
     allTime: new Date(2012),
-  },
-  tableColumns: computed('dataToShow', function () {
+  };
+  get tableColumns() {
     if (this.dataToShow === 'workspace') {
       return [
         { name: 'Workspace', valuePath: 'name' },
@@ -57,13 +58,14 @@ export default Component.extend({
         { name: 'Status', valuePath: 'status' },
       ];
     }
-  }),
-  data: computed('dataToShow', 'currentBound', function () {
+    return [];
+  }
+  get data() {
     if (this.dataToShow === 'workspace') {
       return [
         {
           label: 'My Workspaces: ',
-          workspaces: this.workspaces
+          workspaces: this.args.workspaces
             .toArray()
             .filter(
               (workspace) =>
@@ -73,7 +75,7 @@ export default Component.extend({
         },
         {
           label: 'Workspaces for Collaboration: ',
-          workspaces: this.collabWorkspaces
+          workspaces: this.args.collabWorkspaces
             .toArray()
             .filter(
               (workspace) =>
@@ -86,7 +88,7 @@ export default Component.extend({
     if (this.dataToShow === 'assignment') {
       //create array of assignments from active sections
       return (
-        this.userSections
+        this.args.userSections
           .map(({ section, assignments, role }) => {
             const filtered = assignments.toArray().filter((assignment) => {
               return !assignment.dueDate
@@ -101,7 +103,7 @@ export default Component.extend({
       );
     }
     if (this.dataToShow === 'feedback') {
-      const responses = this.responses
+      const responses = this.args.responses
         .toArray()
         .reverse()
         .filter(
@@ -119,7 +121,7 @@ export default Component.extend({
             status: response.status,
           };
         });
-      const responsesReceived = this.responsesReceived
+      const responsesReceived = this.args.responsesReceived
         .toArray()
         .reverse()
         .filter(
@@ -145,11 +147,8 @@ export default Component.extend({
     }
     //default to empty array
     return [];
-  }),
-
-  actions: {
-    updateCurrentBound(e) {
-      this.set('currentBound', e.target.value);
-    },
-  },
-});
+  }
+  @action updateCurrentBound(e) {
+    this.currentBound = e.target.value;
+  }
+}
