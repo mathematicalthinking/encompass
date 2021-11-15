@@ -36,8 +36,8 @@ h1 {
 .grid-home {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  padding: 25px 50px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  padding: 25px 0px;
 }
 
 .grid-card {
