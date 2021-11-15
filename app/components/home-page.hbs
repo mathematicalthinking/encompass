@@ -1,52 +1,59 @@
-<div class='home-tabs'>
-  <button
-    class='home-tabs__tab
-      {{if (is-equal this.dataToShow 'workspace') 'home-tabs--active'}}'
-    {{action (mut this.dataToShow) 'workspace'}}
-  >My Workspaces</button>
-  <button
-    class='home-tabs__tab
-      {{if (is-equal this.dataToShow 'assignment') 'home-tabs--active'}}'
-    {{action (mut this.dataToShow) 'assignment'}}
-  >My Assignments</button>
-  <button
-    class='home-tabs__tab
-      {{if (is-equal this.dataToShow 'feedback') 'home-tabs--active'}}'
-    {{action (mut this.dataToShow) 'feedback'}}
-  >My Feedback</button>
-  <label>Showing results from: </label>
-  <select onchange={{action 'updateCurrentBound'}}>
-    <option value='oneWeek'>Previous Week</option>
-    <option value='oneMonth'>Previous Month</option>
-    <option value='sixMonths'>Previous Six Months</option>
-    <option value='schoolYear'>Current School Year</option>
-    <option value='allTime'>All Time</option>
-  </select>
-  <button class='home-tabs__tab'>
-    <img
-      src={{if
-        this.showTable
-        '../assets/images/grid.svg'
-        '../assets/images/grid-active.svg'
-      }}
-      alt='grid'
-      {{action (mut this.showTable) false}}
-      title='Show grid view'
-    />
-  </button>
-  <button class='home-tabs__tab'>
-    <img
-      src={{if
-        this.showTable
-        '../assets/images/list-active.svg'
-        '../assets/images/list.svg'
-      }}
-      alt='list'
-      {{action (mut this.showTable) true}}
-      title='Show table view'
-    />
-  </button>
+<div class='home-options'>
+  <div class='home-options__tabs'>
+    <button
+      class='home-options__tab
+        {{if (is-equal this.dataToShow 'workspace') 'home-options--active'}}'
+      {{action (mut this.dataToShow) 'workspace'}}
+    ><span>My Workspaces</span></button>
+    <button
+      class='home-options__tab
+        {{if (is-equal this.dataToShow 'assignment') 'home-options--active'}}'
+      {{action (mut this.dataToShow) 'assignment'}}
+    ><span>My Assignments</span></button>
+    <button
+      class='home-options__tab
+        {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
+      {{action (mut this.dataToShow) 'feedback'}}
+    ><span>My Feedback</span></button>
+    <div class='home-options--right'>
+      <button class='home-options__tab'>
+        <img
+          src={{if
+            this.showTable
+            '../assets/images/grid.svg'
+            '../assets/images/grid-active.svg'
+          }}
+          alt='grid'
+          {{action (mut this.showTable) false}}
+          title='Show grid view'
+        />
+      </button>
+      <button class='home-options__tab'>
+        <img
+          src={{if
+            this.showTable
+            '../assets/images/list-active.svg'
+            '../assets/images/list.svg'
+          }}
+          alt='list'
+          {{action (mut this.showTable) true}}
+          title='Show table view'
+        />
+      </button>
+    </div>
+  </div>
+  <div class='home-options__details'>
+    <label>Showing results from: </label>
+    <select onchange={{action 'updateCurrentBound'}}>
+      <option value='oneWeek'>Previous Week</option>
+      <option value='oneMonth'>Previous Month</option>
+      <option value='sixMonths'>Previous Six Months</option>
+      <option value='schoolYear'>Current School Year</option>
+      <option value='allTime'>All Time</option>
+    </select>
+  </div>
 </div>
+
 <section class='home'>
   {{#each this.data as |item|}}
     <div class='home--container'>
