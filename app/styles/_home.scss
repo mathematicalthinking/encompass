@@ -23,7 +23,8 @@ h1 {
     transition: all 0.2s ease-in-out;
     position: relative;
     z-index: 1;
-    span {
+    span,
+    img {
       position: relative;
       z-index: 2;
     }
@@ -47,7 +48,7 @@ h1 {
   }
   &--active {
     border-bottom: 1px solid $accent-color;
-    background: linear-gradient(#fff, #fff, $pale-accent);
+    // background: linear-gradient(#fff, #fff, $pale-accent);
   }
   &--right {
     margin-left: auto;
