@@ -1,4 +1,4 @@
-<div class='home--container'>
+<div class='home--container{{unless this.isExpanded ' closed'}}'>
   <h1 {{on 'click' this.updateIsExpanded}}>{{@item.label}}
     -
     {{@item.details.length}}

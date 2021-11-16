@@ -117,5 +117,16 @@ h1 {
   }
   h1 {
     cursor: pointer;
+    white-space: nowrap;
+    &:after {
+      display: inline-block;
+      margin-left: 10px;
+      font-family: 'Font Awesome 5 Free';
+      font-size: 16px;
+      content: '\f150';
+    }
+  }
+  &.closed h1:after {
+    transform: rotate(-90deg);
   }
 }
