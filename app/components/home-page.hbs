@@ -1,120 +1,58 @@
-<div class='home-options'>
-  <div class='home-options__tabs'>
-    <button
-      class='home-options__tab
-        {{if (is-equal this.dataToShow 'workspace') 'home-options--active'}}'
-      {{action (mut this.dataToShow) 'workspace'}}
-    ><span>My Workspaces</span></button>
-    <button
-      class='home-options__tab
-        {{if (is-equal this.dataToShow 'assignment') 'home-options--active'}}'
-      {{action (mut this.dataToShow) 'assignment'}}
-    ><span>My Assignments</span></button>
-    <button
-      class='home-options__tab
-        {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
-      {{action (mut this.dataToShow) 'feedback'}}
-    ><span>My Feedback</span></button>
-  </div>
-  <div class='home-options__details'>
-    <label>View info from: </label>
-    <select onchange={{action 'updateCurrentBound'}}>
-      <option value='oneWeek'>Previous Week</option>
-      <option value='oneMonth'>Previous Month</option>
-      <option value='sixMonths'>Previous Six Months</option>
-      <option value='schoolYear'>Current School Year</option>
-      <option value='allTime'>All Time</option>
-    </select>
-    <div class='home-options--right'>
-      <button class='home-options--button'>
-        <img
-          src={{if
-            this.showTable
-            '../assets/images/grid.svg'
-            '../assets/images/grid-active.svg'
-          }}
-          alt='grid'
-          {{action (mut this.showTable) false}}
-          title='Show grid view'
+<div class='home--container'>
+  <h1 {{on 'click' this.updateIsExpanded}}>{{@item.label}}</h1>
+  {{#if this.isExpanded}}
+    {{#if @showTable}}
+      <EmberTable as |t|>
+        <t.head
+          @columns={{@tableColumns}}
+          @scrollIndicators='all'
+          @widthConstraint='eq-container'
         />
-      </button>
-      <button class='home-options--button'>
-        <img
-          src={{if
-            this.showTable
-            '../assets/images/list-active.svg'
-            '../assets/images/list.svg'
-          }}
-          alt='list'
-          {{action (mut this.showTable) true}}
-          title='Show table view'
-        />
-      </button>
-    </div>
-  </div>
+        <t.body @rows={{@item.details}} as |b|>
+          <b.row as |r|>
+            <r.cell
+              as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+            >
+              {{#if (is-equal columnValue.name 'Workspace')}}
+                <LinkTo
+                  @route={{'workspace.work'}}
+                  @model={{rowValue.id}}
+                >{{cellValue}}</LinkTo>
+              {{else if (is-equal columnValue.name 'Assignment')}}
+                <LinkTo
+                  @route={{'assignments.assignment'}}
+                  @model={{rowValue.id}}
+                >{{cellValue}}</LinkTo>
+              {{else}}
+                {{format-date cellValue 'MM/DD/YYYY'}}
+              {{/if}}
+            </r.cell>
+          </b.row>
+        </t.body>
+      </EmberTable>
+    {{else}}
+      <div class='grid-home'>
+        {{#each @item.details as |detail|}}
+          <article class='grid-card'>
+            <header class='grid-card__title'>
+              <h2><LinkTo
+                  class='grid-card--light'
+                  @route='workspace.work'
+                  @model={{detail.id}}
+                >{{detail.name}}</LinkTo></h2>
+            </header>
+            <ul class='grid-card__info'>
+              {{#each @tableColumns as |row|}}
+                <li>{{row.name}}:
+                  {{format-date
+                    (get-attr detail row.valuePath)
+                    'MM/DD/YYYY'
+                  }}</li>
+              {{/each}}
+            </ul>
+          </article>
+        {{/each}}
+      </div>
+    {{/if}}
+  {{/if}}
 </div>
-
-<section class='home'>
-  {{#each this.data as |item|}}
-    <div class='home--container'>
-      <h1>{{item.label}}</h1>
-      {{#if this.showTable}}
-        <EmberTable as |t|>
-          <t.head
-            @columns={{this.tableColumns}}
-            @scrollIndicators='all'
-            @widthConstraint='eq-container'
-          />
-          <t.body @rows={{item.details}} as |b|>
-            <b.row as |r|>
-              <r.cell
-                as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-              >
-                {{#if (is-equal columnValue.name 'Workspace')}}
-                  <LinkTo
-                    @route={{'workspace.work'}}
-                    @model={{rowValue.id}}
-                  >{{cellValue}}</LinkTo>
-                {{else if (is-equal columnValue.name 'Assignment')}}
-                  <LinkTo
-                    @route={{'assignments.assignment'}}
-                    @model={{rowValue.id}}
-                  >{{cellValue}}</LinkTo>
-                {{else}}
-                  {{format-date cellValue 'MM/DD/YYYY'}}
-                {{/if}}
-              </r.cell>
-            </b.row>
-          </t.body>
-        </EmberTable>
-      {{else}}
-        <div class='grid-home'>
-          {{#each item.details as |detail|}}
-            <article class='grid-card'>
-              <header class='grid-card__title'>
-                <h2><LinkTo
-                    class='grid-card--light'
-                    @route='workspace.work'
-                    @model={{detail.id}}
-                  >{{detail.name}}</LinkTo></h2>
-              </header>
-              <ul class='grid-card__info'>
-                {{#each this.tableColumns as |row|}}
-                  <li>{{row.name}}:
-                    {{format-date
-                      (get-attr detail row.valuePath)
-                      'MM/DD/YYYY'
-                    }}</li>
-                {{/each}}
-              </ul>
-            </article>
-          {{/each}}
-        </div>
-      {{/if}}
-    </div>
-  {{/each}}
-</section>
-
-<footer>
-  <p class='footer'>EnCoMPASS version 3.1.0 last updated on 11/08/2021.</p>
-</footer>

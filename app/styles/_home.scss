@@ -27,6 +27,7 @@ h1 {
       position: relative;
       z-index: 2;
     }
+    // can't directly transition linear-gradient
     &:after {
       background: linear-gradient(#fff, #fff, $pale-accent);
       position: absolute;
