@@ -65,7 +65,7 @@ export default class HomePageComponent extends Component {
     if (this.dataToShow === 'workspace') {
       return [
         {
-          label: 'My Workspaces: ',
+          label: 'Mine: ',
           details: this.args.workspaces
             .toArray()
             .filter(
@@ -75,7 +75,7 @@ export default class HomePageComponent extends Component {
             ),
         },
         {
-          label: 'Workspaces for Collaboration: ',
+          label: 'Collaborative: ',
           details: this.args.collabWorkspaces
             .toArray()
             .filter(
@@ -139,8 +139,8 @@ export default class HomePageComponent extends Component {
           };
         });
       return [
-        { label: 'Feedback Given:', details: responses },
-        { label: 'Feedback Received: ', details: responsesReceived },
+        { label: 'Given:', details: responses },
+        { label: 'Received: ', details: responsesReceived },
       ];
     }
     //getter must return a value
