@@ -1,3 +1,10 @@
+/**
+ * # Index Controller
+ * @description This is the controller for the Index view. It receives the model from the Index Route and filters the data according to the selected date bound (this.currentBound). It also controls the display (this.showTable) and which data to display (this.dataToShow). It renders home-page components.
+ * @author Tim Leonard <tleonard@21pstem.org>
+ * @since 3.1.0
+ */
+
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
