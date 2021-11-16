@@ -19,11 +19,26 @@
   <div class='home-options__details'>
     <label>View info from: </label>
     <select onchange={{action 'updateCurrentBound'}}>
-      <option value='oneWeek'>Previous Week</option>
-      <option value='oneMonth'>Previous Month</option>
-      <option value='sixMonths'>Previous Six Months</option>
-      <option value='schoolYear'>Current School Year</option>
-      <option value='allTime'>All Time</option>
+      <option
+        selected={{is-equal this.currentBound 'oneWeek'}}
+        value='oneWeek'
+      >Previous Week</option>
+      <option
+        selected={{is-equal this.currentBound 'oneMonth'}}
+        value='oneMonth'
+      >Previous Month</option>
+      <option
+        selected={{is-equal this.currentBound 'sixMonths'}}
+        value='sixMonths'
+      >Previous Six Months</option>
+      <option
+        selected={{is-equal this.currentBound 'schoolYear'}}
+        value='schoolYear'
+      >Current School Year</option>
+      <option
+        selected={{is-equal this.currentBound 'allTime'}}
+        value='allTime'
+      >All Time</option>
     </select>
     <div class='home-options--right'>
       <button class='home-options--button'>
