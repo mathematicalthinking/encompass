@@ -65,7 +65,7 @@ export default class IndexController extends Controller {
     if (this.dataToShow === 'workspace') {
       return [
         {
-          label: 'Mine: ',
+          label: 'Mine',
           details: this.model.workspaces
             .toArray()
             .filter(
@@ -75,7 +75,7 @@ export default class IndexController extends Controller {
             ),
         },
         {
-          label: 'Collaborative: ',
+          label: 'Collaborative',
           details: this.model.collabWorkspaces
             .toArray()
             .filter(
@@ -139,8 +139,8 @@ export default class IndexController extends Controller {
           };
         });
       return [
-        { label: 'Given:', details: responses },
-        { label: 'Received: ', details: responsesReceived },
+        { label: 'Given', details: responses },
+        { label: 'Received', details: responsesReceived },
       ];
     }
     //getter must return a value
