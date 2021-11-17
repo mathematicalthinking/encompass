@@ -18,16 +18,22 @@
             <r.cell
               as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
             >
-              {{#if (is-equal columnValue.name 'Workspace')}}
+              {{#if (is-equal rowValue.constructor.modelName 'workspace')}}
                 <LinkTo
                   @route={{'workspace.work'}}
                   @model={{rowValue.id}}
-                >{{cellValue}}</LinkTo>
+                >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
               {{else if (is-equal columnValue.name 'Assignment')}}
                 <LinkTo
                   @route={{'assignments.assignment'}}
                   @model={{rowValue.id}}
                 >{{cellValue}}</LinkTo>
+              {{else if (is-equal columnValue.name 'To Do')}}
+                {{if
+                  (is-equal item.role 'teacher')
+                  'Review Submissions'
+                  'Complete Assignment'
+                }}
               {{else}}
                 {{format-date cellValue 'MM/DD/YYYY'}}
               {{/if}}
