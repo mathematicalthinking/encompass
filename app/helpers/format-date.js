@@ -4,7 +4,7 @@ import moment from 'moment';
 export default buildHelper(function (args) {
   // args is array of arguments passed in from template
   let [date, format, doUseRelativeTime] = args;
-  if (date === null) {
+  if (!date) {
     return 'N/A';
   }
   if (!(date instanceof Date)) {
