@@ -34,6 +34,12 @@
                   'Review Submissions'
                   'Complete Assignment'
                 }}
+              {{else if (is-equal columnValue.name 'Recipient')}}
+                <LinkTo
+                  @route={{'responses.submission'}}
+                  @model={{rowValue.submission.id}}
+                  @query={{hash responseId=rowValue.id}}
+                >{{cellValue}}</LinkTo>
               {{else}}
                 {{format-date cellValue 'MM/DD/YYYY'}}
               {{/if}}
@@ -58,6 +64,13 @@
                     class='grid-card--light'
                     @route='assignments.assignment'
                     @model={{detail.id}}
+                  >{{detail.name}}</LinkTo>
+                {{else if (is-equal detail.type 'response')}}
+                  <LinkTo
+                    class='grid-card--light'
+                    @route={{'responses.submission'}}
+                    @model={{detail.submission.id}}
+                    @query={{hash responseId=detail.id}}
                   >{{detail.name}}</LinkTo>
                 {{else}}
                   {{detail.name}}

@@ -57,7 +57,7 @@ export default class IndexController extends Controller {
     }
     if (this.dataToShow === 'feedback') {
       return [
-        { name: 'Recipient', valuePath: 'recipient.displayName' },
+        { name: 'Recipient', valuePath: 'recipient' },
         { name: 'Sent By', valuePath: 'createdBy.displayName' },
         { name: 'Workspace', valuePath: 'workspace.name' },
         { name: 'Type', valuePath: 'responseType' },
@@ -116,13 +116,16 @@ export default class IndexController extends Controller {
         )
         .map((response) => {
           return {
-            name: response.get('recipient.username'),
-            recipient: response.recipient,
+            name: response.student,
+            recipient: response.student,
             createdBy: response.createdBy,
             workspace: response.workspace,
             responseType: response.responseType,
             createDate: response.createDate,
             status: response.status,
+            submission: response.submission,
+            id: response.id,
+            type: 'response',
           };
         });
       const responsesReceived = this.model.responsesReceived
@@ -135,7 +138,7 @@ export default class IndexController extends Controller {
         )
         .map((response) => {
           return {
-            name: response.student,
+            name: response.get('createdBy.username'),
             recipient: response.student,
             createdBy: response.createdBy,
             workspace: response.workspace,
@@ -143,6 +146,8 @@ export default class IndexController extends Controller {
             createDate: response.createDate,
             status: response.status,
             submission: response.submission,
+            id: response.id,
+            type: 'response',
           };
         });
       return [
