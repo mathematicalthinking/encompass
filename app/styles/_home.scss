@@ -114,10 +114,23 @@ h1 {
     th {
       border-right: none;
     }
+    th {
+      background: white;
+      color: $accent-color;
+    }
   }
   h1 {
     cursor: pointer;
     white-space: nowrap;
+    width: max-content;
+    margin: 0 auto;
+    padding: 5px;
+    border-radius: 5px;
+    background: transparent;
+    transition: background 0.1s ease;
+    &:hover {
+      background: $pale-accent;
+    }
     &:after {
       display: inline-block;
       margin-left: 10px;

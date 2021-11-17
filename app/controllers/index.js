@@ -39,10 +39,10 @@ export default class IndexController extends Controller {
     if (this.dataToShow === 'workspace') {
       return [
         { name: 'Workspace', valuePath: 'name' },
-        { name: 'owner', valuePath: 'owner.username' },
-        { name: 'submissions', valuePath: 'submissionsLength' },
-        { name: 'selections', valuePath: 'selectionsLength' },
-        { name: 'comments', valuePath: 'commentsLength' },
+        { name: 'Owner', valuePath: 'owner.username' },
+        { name: 'Submissions', valuePath: 'submissionsLength' },
+        { name: 'Selections', valuePath: 'selectionsLength' },
+        { name: 'Comments', valuePath: 'commentsLength' },
         { name: 'Last Updated', valuePath: 'lastModifiedDate' },
       ];
     }
