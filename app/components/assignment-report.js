@@ -18,6 +18,10 @@ export default class AssignmentReportComponent extends Component {
       // eslint-disable-next-line prefer-object-spread
       let obj = Object.assign({}, info);
       obj.username = username;
+      //make sure latestRevision is instanceof Date
+      obj.latestRevision = obj.latestRevision
+        ? new Date(obj.latestRevision)
+        : obj.latestRevision;
       items.push(obj);
     });
     let sortValue = this.sortCriterion.sortParam.param || 'username';
