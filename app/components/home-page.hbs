@@ -46,19 +46,37 @@
         {{#each @item.details as |detail|}}
           <article class='grid-card'>
             <header class='grid-card__title'>
-              <h2><LinkTo
-                  class='grid-card--light'
-                  @route='workspace.work'
-                  @model={{detail.id}}
-                >{{detail.name}}</LinkTo></h2>
+              <h2>
+                {{#if (is-equal detail.constructor.modelName 'workspace')}}
+                  <LinkTo
+                    class='grid-card--light'
+                    @route='workspace.work'
+                    @model={{detail.id}}
+                  >{{detail.name}}</LinkTo>
+                {{else if (is-equal detail.constructor.modelName 'assignment')}}
+                  <LinkTo
+                    class='grid-card--light'
+                    @route='assignments.assignment'
+                    @model={{detail.id}}
+                  >{{detail.name}}</LinkTo>
+                {{else}}
+                  {{detail.name}}
+                {{/if}}
+              </h2>
             </header>
             <ul class='grid-card__info'>
               {{#each @tableColumns as |row|}}
                 <li>{{row.name}}:
-                  {{format-date
-                    (get-attr detail row.valuePath)
-                    'MM/DD/YYYY'
-                  }}</li>
+                  {{#if (is-equal row.name 'To Do')}}
+                    {{if
+                      (is-equal item.role 'teacher')
+                      'Review Submissions'
+                      'Complete Assignment'
+                    }}
+                  {{else}}
+                    {{format-date (get-attr detail row.valuePath) 'MM/DD/YYYY'}}
+                  {{/if}}
+                </li>
               {{/each}}
             </ul>
           </article>
