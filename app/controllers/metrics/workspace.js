@@ -1,15 +1,21 @@
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { inject as service } from '@ember/service';
 
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
   @tracked showCloud = false;
+  @service jsonCsv;
   submissionsColumns = [
     { name: 'Record', valuePath: 'recordType' },
     { name: 'Creator', valuePath: 'creator' },
     { name: 'Text', valuePath: 'text' },
   ];
+
+  get workspaceCsv() {
+    return this.jsonCsv.arrayToCsv(this.tableRows);
+  }
   @action
   handleToggle(prop) {
     this.showSubmissions = false;
