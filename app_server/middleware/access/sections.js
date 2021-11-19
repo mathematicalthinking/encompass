@@ -59,8 +59,6 @@ const accessibleSectionsQuery = async function (user, ids) {
     if (accountType === 'P') {
       const userOrg = user.organization;
       if (isValidMongoId(userOrg)) {
-        //PdAdmins need to be able to get sections they are students in but from outside of their organization
-        filter.$or.push({ students: user._id });
         filter.$or.push({ organization: userOrg });
       }
 

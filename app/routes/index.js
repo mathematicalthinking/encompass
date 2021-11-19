@@ -62,15 +62,28 @@ export default class IndexRoute extends Route {
         owner: user.id,
       },
     };
+    const createdByCriteria = {
+      filterBy: {
+        createdBy: user.id,
+      },
+    };
 
-    const workspaces = await this.store.query('workspace', workspaceCriteria);
+    const ownedWorkspaces = await this.store.query(
+      'workspace',
+      workspaceCriteria
+    );
+    const createdWorkspaces = await this.store.query(
+      'workspace',
+      createdByCriteria
+    );
     return hash({
       userSections,
       user,
-      workspaces,
+      workspaces: ownedWorkspaces,
       responses,
       responsesReceived,
       collabWorkspaces,
+      createdWorkspaces,
     });
   }
 }

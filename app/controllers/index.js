@@ -91,6 +91,17 @@ export default class IndexController extends Controller {
                 this.dateBounds[this.currentBound].getTime()
             ),
         },
+        {
+          label: 'Created by me:',
+          details: this.model.createdWorkspaces
+            .toArray()
+            .filter(
+              (workspace) =>
+                workspace.lastModifiedDate.getTime() >
+                  this.dateBounds[this.currentBound].getTime() &&
+                workspace.get('owner.id') !== this.model.user.id
+            ),
+        },
       ];
     }
     if (this.dataToShow === 'assignment') {
