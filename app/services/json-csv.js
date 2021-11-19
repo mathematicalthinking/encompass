@@ -4,7 +4,7 @@ export default class JsonCsvService extends Service {
   arrayToCsv(array) {
     try {
       const keys = [Object.keys(array[0])].concat(array);
-      const res = keys
+      return keys
         .map((row) => {
           return Object.values(row)
             .map((value) => {
@@ -15,8 +15,6 @@ export default class JsonCsvService extends Service {
             .toString();
         })
         .join('\n');
-      console.log(res);
-      return res;
     } catch (err) {
       console.log(err);
       return 'data invalid';
