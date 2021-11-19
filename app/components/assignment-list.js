@@ -19,7 +19,7 @@ export default class AssignmentListComponent extends Component {
 
   get adminList() {
     let currentUser = this.args.currentUser;
-    let adminList = this.args.assignmentList.filter((assignment) => {
+    let adminList = this.args.assignments.filter((assignment) => {
       let userId = currentUser.get('id');
       let assigmentCreatorId = this.utils.getBelongsToId(
         assignment,
@@ -32,7 +32,7 @@ export default class AssignmentListComponent extends Component {
 
   get pdList() {
     let currentUser = this.args.currentUser;
-    let pdList = this.args.assignmentList.filter((assignment) => {
+    let pdList = this.args.assignments.filter((assignment) => {
       let userId = currentUser.get('id');
       let assigmentCreatorId = this.utils.getBelongsToId(
         assignment,
