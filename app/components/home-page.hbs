@@ -1,3 +1,4 @@
+{{log @item}}
 <div class='home--container{{unless this.isExpanded ' closed'}}'>
   <h1 {{on 'click' this.updateIsExpanded}}>{{@item.label}}
     -
@@ -57,7 +58,7 @@
                 >{{cellValue}}</LinkTo>
               {{else if (is-equal columnValue.name 'To Do')}}
                 {{if
-                  (is-equal item.role 'teacher')
+                  (is-equal @item.role 'teacher')
                   'Review Submissions'
                   'Complete Assignment'
                 }}
@@ -126,7 +127,7 @@
                   {{/if}}
                   {{#if (is-equal row.name 'To Do')}}
                     {{if
-                      (is-equal item.role 'teacher')
+                      (is-equal @item.role 'teacher')
                       'Review Submissions'
                       'Complete Assignment'
                     }}
