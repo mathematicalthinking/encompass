@@ -32,18 +32,23 @@ export default class IndexRoute extends Route {
   }
   async model() {
     const user = this.modelFor('application');
-    //user.sections is array of objects {sectionId, role} not direct references to section documents in Ember Data
-    const userSections = await Promise.all(
-      user.sections.map(async ({ sectionId, role }) => {
-        const section = await this.store.findRecord('section', sectionId);
-        const assignments = await section.assignments;
-        return {
-          section,
-          assignments,
-          role,
-        };
-      })
-    );
+    //user.sections isn't reliable. have to query all sections
+    const sections = await this.store.findAll('section');
+    //if user is admin will receive all sections. otherwise should be filtered already according to user role
+    const filteredSections = sections.filter((section) => {
+      const students = section.students;
+      const teachers = section.teachers;
+      return students.includes(user) || teachers.includes(user);
+    });
+    const userSections = filteredSections.map((section) => {
+      const assignments = section.assignments;
+      const teachers = section.teachers;
+      return {
+        section,
+        assignments,
+        role: teachers.includes(user) ? 'teacher' : 'student',
+      };
+    });
     //TODO: find responses given to a user and responses for user to review
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
