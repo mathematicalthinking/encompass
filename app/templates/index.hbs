@@ -1,83 +1,85 @@
-<div class='home-options'>
-  <div class='home-options__tabs'>
-    <button
-      class='home-options__tab
-        {{if (is-equal this.dataToShow 'workspace') 'home-options--active'}}'
-      {{action (mut this.dataToShow) 'workspace'}}
-    ><span>My Workspaces</span></button>
-    <button
-      class='home-options__tab
-        {{if (is-equal this.dataToShow 'assignment') 'home-options--active'}}'
-      {{action (mut this.dataToShow) 'assignment'}}
-    ><span>My Assignments</span></button>
-    <button
-      class='home-options__tab
-        {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
-      {{action (mut this.dataToShow) 'feedback'}}
-    ><span>My Feedback</span></button>
-  </div>
-  <div class='home-options__details'>
-    <label>View info from: </label>
-    <select onchange={{action 'updateCurrentBound'}}>
-      <option
-        selected={{is-equal this.currentBound 'oneWeek'}}
-        value='oneWeek'
-      >Previous Week</option>
-      <option
-        selected={{is-equal this.currentBound 'oneMonth'}}
-        value='oneMonth'
-      >Previous Month</option>
-      <option
-        selected={{is-equal this.currentBound 'sixMonths'}}
-        value='sixMonths'
-      >Previous Six Months</option>
-      <option
-        selected={{is-equal this.currentBound 'schoolYear'}}
-        value='schoolYear'
-      >Current School Year</option>
-      <option
-        selected={{is-equal this.currentBound 'allTime'}}
-        value='allTime'
-      >All Time</option>
-    </select>
-    <div class='home-options--right'>
-      <button class='home-options--button'>
-        <img
-          src={{if
-            this.showTable
-            '../assets/images/grid.svg'
-            '../assets/images/grid-active.svg'
-          }}
-          alt='grid'
-          {{action (mut this.showTable) false}}
-          title='Show grid view'
-        />
-      </button>
-      <button class='home-options--button'>
-        <img
-          src={{if
-            this.showTable
-            '../assets/images/list-active.svg'
-            '../assets/images/list.svg'
-          }}
-          alt='list'
-          {{action (mut this.showTable) true}}
-          title='Show table view'
-        />
-      </button>
+<div class='index'>
+  <div class='home-options'>
+    <div class='home-options__tabs'>
+      <button
+        class='home-options__tab
+          {{if (is-equal this.dataToShow 'workspace') 'home-options--active'}}'
+        {{action (mut this.dataToShow) 'workspace'}}
+      ><span>My Workspaces</span></button>
+      <button
+        class='home-options__tab
+          {{if (is-equal this.dataToShow 'assignment') 'home-options--active'}}'
+        {{action (mut this.dataToShow) 'assignment'}}
+      ><span>My Assignments</span></button>
+      <button
+        class='home-options__tab
+          {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
+        {{action (mut this.dataToShow) 'feedback'}}
+      ><span>My Feedback</span></button>
+    </div>
+    <div class='home-options__details'>
+      <label>View info from: </label>
+      <select onchange={{action 'updateCurrentBound'}}>
+        <option
+          selected={{is-equal this.currentBound 'oneWeek'}}
+          value='oneWeek'
+        >Previous Week</option>
+        <option
+          selected={{is-equal this.currentBound 'oneMonth'}}
+          value='oneMonth'
+        >Previous Month</option>
+        <option
+          selected={{is-equal this.currentBound 'sixMonths'}}
+          value='sixMonths'
+        >Previous Six Months</option>
+        <option
+          selected={{is-equal this.currentBound 'schoolYear'}}
+          value='schoolYear'
+        >Current School Year</option>
+        <option
+          selected={{is-equal this.currentBound 'allTime'}}
+          value='allTime'
+        >All Time</option>
+      </select>
+      <div class='home-options--right'>
+        <button class='home-options--button'>
+          <img
+            src={{if
+              this.showTable
+              '../assets/images/grid.svg'
+              '../assets/images/grid-active.svg'
+            }}
+            alt='grid'
+            {{action (mut this.showTable) false}}
+            title='Show grid view'
+          />
+        </button>
+        <button class='home-options--button'>
+          <img
+            src={{if
+              this.showTable
+              '../assets/images/list-active.svg'
+              '../assets/images/list.svg'
+            }}
+            alt='list'
+            {{action (mut this.showTable) true}}
+            title='Show table view'
+          />
+        </button>
+      </div>
     </div>
   </div>
-</div>
-<section class='home'>
-  {{#each this.data as |item|}}
-    <HomePage
-      @item={{item}}
-      @showTable={{this.showTable}}
-      @tableColumns={{this.tableColumns}}
-    />
-  {{/each}}
-</section>
+  <section class='home'>
+    {{#each this.data as |item|}}
+      <HomePage
+        @item={{item}}
+        @showTable={{this.showTable}}
+        @tableColumns={{this.tableColumns}}
+      />
+    {{/each}}
+  </section>
 
-<footer>
-  <p class='footer'>EnCoMPASS version 3.1.0 last updated on 11/08/2021.</p>
-</footer>
+  <footer>
+    EnCoMPASS version 3.1.0 last updated on 11/08/2021.
+  </footer>
+</div>

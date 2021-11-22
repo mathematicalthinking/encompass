@@ -6,6 +6,12 @@ h1 {
   color: $accent-color;
 }
 
+.index {
+  display: flex;
+  flex-direction: column;
+  height: 90%;
+}
+
 .home-options {
   width: 100%;
   &__tabs {
