@@ -57,8 +57,7 @@ export default class IndexController extends Controller {
     }
     if (this.dataToShow === 'feedback') {
       return [
-        { name: 'Recipient', valuePath: 'recipient' },
-        { name: 'Sent By', valuePath: 'createdBy.displayName' },
+        { name: 'Other Person', valuePath: 'otherPerson' },
         { name: 'Workspace', valuePath: 'workspace.name' },
         { name: 'Type', valuePath: 'responseType' },
         { name: 'Created', valuePath: 'createDate' },
@@ -72,6 +71,7 @@ export default class IndexController extends Controller {
     if (this.dataToShow === 'workspace') {
       return [
         {
+          type: 'workspace',
           label: 'Mine',
           details: this.model.workspaces
             .toArray()
@@ -82,6 +82,7 @@ export default class IndexController extends Controller {
             ),
         },
         {
+          type: 'workspace',
           label: 'Collaborative',
           details: this.model.collabWorkspaces
             .toArray()
@@ -92,7 +93,8 @@ export default class IndexController extends Controller {
             ),
         },
         {
-          label: 'Created by me:',
+          type: 'workspace',
+          label: 'Created by me',
           details: this.model.createdWorkspaces
             .toArray()
             .filter(
@@ -113,7 +115,12 @@ export default class IndexController extends Controller {
             : assignment.dueDate.getTime() >
                 this.dateBounds[this.currentBound].getTime();
         });
-        return { role, details: filtered, label: section.name };
+        return {
+          role,
+          details: filtered,
+          label: section.name,
+          type: 'assignment',
+        };
       });
     }
     if (this.dataToShow === 'feedback') {
@@ -128,8 +135,7 @@ export default class IndexController extends Controller {
         .map((response) => {
           return {
             name: response.student,
-            recipient: response.student,
-            createdBy: response.createdBy,
+            otherPerson: response.student,
             workspace: response.workspace,
             responseType: response.responseType,
             createDate: response.createDate,
@@ -150,8 +156,7 @@ export default class IndexController extends Controller {
         .map((response) => {
           return {
             name: response.get('createdBy.username'),
-            recipient: response.student,
-            createdBy: response.createdBy,
+            otherPerson: response.createdBy,
             workspace: response.workspace,
             responseType: response.responseType,
             createDate: response.createDate,
@@ -162,8 +167,8 @@ export default class IndexController extends Controller {
           };
         });
       return [
-        { label: 'Given', details: responses },
-        { label: 'Received', details: responsesReceived },
+        { label: 'Given', details: responses, type: 'response' },
+        { label: 'Received', details: responsesReceived, type: 'response' },
       ];
     }
     //getter must return a value

@@ -12,17 +12,44 @@
           @widthConstraint='eq-container'
           @sorts={{sorts}}
           @onUpdateSorts={{action (mut sorts)}}
-        />
+          as |h|
+        >
+          <h.row as |r|>
+            <r.cell as |columnValue columnMeta|>
+              {{#if (is-equal @item.type 'response')}}
+                {{#if (is-equal @item.label 'Given')}}
+                  {{#if (is-equal columnValue.name 'Other Person')}}
+                    Recipient
+                  {{else}}
+                    {{columnValue.name}}
+                  {{/if}}
+                {{else if (is-equal @item.label 'Received')}}
+                  {{#if (is-equal columnValue.name 'Other Person')}}
+                    Sent By
+                  {{else}}
+                    {{columnValue.name}}
+                  {{/if}}
+                {{/if}}
+              {{else}}
+                {{columnValue.name}}
+              {{/if}}
+            </r.cell>
+          </h.row>
+        </t.head>
         <t.body @rows={{@item.details}} as |b|>
           <b.row as |r|>
             <r.cell
               as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
             >
-              {{#if (is-equal rowValue.constructor.modelName 'workspace')}}
-                <LinkTo
-                  @route={{'workspace.work'}}
-                  @model={{rowValue.id}}
-                >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
+              {{#if (is-equal @item.type 'workspace')}}
+                {{#if (is-equal columnValue.name 'Workspace')}}
+                  <LinkTo
+                    @route={{'workspace.work'}}
+                    @model={{rowValue.id}}
+                  >{{cellValue}}</LinkTo>
+                {{else}}
+                  {{format-date cellValue 'MM/DD/YYYY'}}
+                {{/if}}
               {{else if (is-equal columnValue.name 'Assignment')}}
                 <LinkTo
                   @route={{'assignments.assignment'}}
@@ -34,7 +61,7 @@
                   'Review Submissions'
                   'Complete Assignment'
                 }}
-              {{else if (is-equal columnValue.name 'Recipient')}}
+              {{else if (is-equal columnValue.name 'Other Person')}}
                 <LinkTo
                   @route={{'responses.submission'}}
                   @model={{rowValue.submission.id}}
@@ -71,7 +98,11 @@
                     @route={{'responses.submission'}}
                     @model={{detail.submission.id}}
                     @query={{hash responseId=detail.id}}
-                  >{{detail.name}}</LinkTo>
+                  >{{if
+                      (is-equal @item.label 'Given')
+                      'To: '
+                      'From: '
+                    }}{{detail.name}}</LinkTo>
                 {{else}}
                   {{detail.name}}
                 {{/if}}
@@ -79,7 +110,20 @@
             </header>
             <ul class='grid-card__info'>
               {{#each @tableColumns as |row|}}
-                <li>{{row.name}}:
+                <li>
+                  {{#if (is-equal @item.type 'response')}}
+                    {{#if (is-equal row.name 'Other Person')}}
+                      {{#if (is-equal @item.label 'Given')}}
+                        Recipient:
+                      {{else}}
+                        Sent By:
+                      {{/if}}
+                    {{else}}
+                      {{row.name}}:
+                    {{/if}}
+                  {{else}}
+                    {{row.name}}:
+                  {{/if}}
                   {{#if (is-equal row.name 'To Do')}}
                     {{if
                       (is-equal item.role 'teacher')
