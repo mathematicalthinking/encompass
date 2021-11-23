@@ -59,3 +59,11 @@ Updates a user
 - Admins can update any user
 - PdAdmin and Teachers can update users they created
 - Anyone can update themself
+
+## GET /api/sections
+
+Returns all sections user has access to
+
+- Admins get all sections
+- all should have access to sections with assignments user is assigned to
+-
