@@ -156,7 +156,7 @@ export default class IndexController extends Controller {
         .map((response) => {
           return {
             name: response.get('createdBy.username'),
-            otherPerson: response.createdBy,
+            otherPerson: response.get('createdBy.username'),
             workspace: response.workspace,
             responseType: response.responseType,
             createDate: response.createDate,
