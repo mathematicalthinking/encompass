@@ -8,6 +8,7 @@ export default Component.extend({
   elementId: ['parent-ws-collab-new'],
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
+  store: service(),
   globalPermissionValue: 'viewOnly',
   addType: 'individual',
   areUsersToAdd: gt('usersToAdd.length', 0),

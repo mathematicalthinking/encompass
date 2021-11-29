@@ -11,6 +11,7 @@ export default Component.extend(ErrorHandlingMixin, {
   alert: service('sweet-alert'),
   permissions: service('workspace-permissions'),
   utils: service('utility-methods'),
+  store: service(),
   selectedMode: null,
   workspacePermissions: alias('workspace.permissions'),
   selectedLinkedAssignment: null,

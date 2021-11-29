@@ -17,7 +17,6 @@
     {{#if this.createNewCollaborator}}
       {{#if this.isParentWorkspace}}
         <ParentWsCollabNew
-          @store={{this.store}}
           @workspace={{this.workspace}}
           @createNewCollaborator={{this.createNewCollaborator}}
           @originalCollaborators={{this.originalCollaborators}}
@@ -29,7 +28,6 @@
         />
       {{else}}
         <WorkspaceInfoCollaboratorsNew
-          @store={{this.store}}
           @workspace={{this.workspace}}
           @createNewCollaborator={{this.createNewCollaborator}}
           @isShowingCustomViewer={{this.isShowingCustomViewer}}

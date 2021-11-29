@@ -10,6 +10,7 @@ export default Component.extend({
   elementId: ['workspace-info-collaborators-new'],
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
+  store: service(),
   globalPermissionValue: 'viewOnly',
   showCustom: equal('globalPermissionValue', 'custom'),
   mainPermissions: [

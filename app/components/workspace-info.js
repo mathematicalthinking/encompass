@@ -10,6 +10,7 @@ export default Component.extend(ErrorHandlingMixin, {
   elementId: 'workspace-info',
   // comments: controller(),
   alert: service('sweet-alert'),
+  store: service(),
   permissions: service('workspace-permissions'),
   utils: service('utility-methods'),
   isEditing: false,
@@ -101,8 +102,7 @@ export default Component.extend(ErrorHandlingMixin, {
   globalItems: {
     groupName: 'globalPermissionValue',
     groupLabel: 'Workspace Permissions',
-    info:
-      'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       {

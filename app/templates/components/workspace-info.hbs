@@ -7,7 +7,6 @@
 <div class='workspace-info-container'>
   {{#unless this.isShowingCustomViewer}}
     <WorkspaceInfoSettings
-      @store={{this.store}}
       @workspace={{this.workspace}}
       @canEdit={{this.canEdit}}
       @isEditing={{this.isEditing}}
@@ -18,7 +17,6 @@
   {{/unless}}
 
   <WorkspaceInfoCollaborators
-    @store={{this.store}}
     @workspace={{this.workspace}}
     @originalCollaborators={{this.originalCollaborators}}
     @isShowingCustomViewer={{this.isShowingCustomViewer}}

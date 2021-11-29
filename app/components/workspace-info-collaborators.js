@@ -7,6 +7,7 @@ import { inject as service } from '@ember/service';
 export default Component.extend({
   currentUser: service('current-user'),
   elementId: ['workspace-info-collaborators'],
+  store: service(),
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
   globalPermissionValue: null,
