@@ -12,7 +12,6 @@ export default Component.extend(ErrorHandlingMixin, {
   store: service(),
   permissions: service('workspace-permissions'),
   utils: service('utility-methods'),
-  selectedMode: null,
   updateRecordErrors: [],
   isShowingCustomViewer: false,
   customSubmissionIds: [],
