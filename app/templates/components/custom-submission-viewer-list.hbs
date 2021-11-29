@@ -1,28 +1,42 @@
+<div id='custom-submission-viewer-list'>
+  <h4>Select Submissions</h4>
 
-<h4>Select Submissions</h4>
-
-<div class="info-bar">
-  <div class="info-bar-item message">{{selectedSubmissionIds.length}} Submissions Selected</div>
-  {{!-- <div class="info-bar-item link">Full view <i class="fas fa-external-link-alt"></i></div> --}}
-  <div class="info-bar-item button">
-    <button class="primary-button" {{action (mut showView) false}}>Done</button>
+  <div class='info-bar'>
+    <div class='info-bar-item message'>{{@selectedSubmissionIds.length}}
+      Submissions Selected</div>
+    {{! <div class="info-bar-item link">Full view <i class="fas fa-external-link-alt"></i></div> }}
+    <div class='info-bar-item button'>
+      <button
+        class='primary-button'
+        {{action (mut @showView) false}}
+      >Done</button>
+    </div>
   </div>
-</div>
 
-<div class="sort-bar">
-  <div class="sort-bar-item check">
-    <input type="checkbox" checked={{isChecked}} name="customIds" value={{isChecked}}
-    onclick={{action "toggleSelect"}}>
+  <div class='sort-bar'>
+    <div class='sort-bar-item check'>
+      <input
+        type='checkbox'
+        checked={{this.isChecked}}
+        name='customIds'
+        value={{this.isChecked}}
+        {{on 'click' this.toggleSelect}}
+      />
+    </div>
+    <p class='sort-bar-item student'>Student</p>
+    <p class='sort-bar-item explanation'>Explanation</p>
+    <p class='sort-bar-item selections'>Selections</p>
+    <p class='sort-bar-item date'>Date</p>
   </div>
-  <p class="sort-bar-item student">Student</p>
-  <p class="sort-bar-item explanation">Explanation</p>
-  <p class="sort-bar-item selections">Selections</p>
-  <p class="sort-bar-item date">Date</p>
+  <ul>
+    <li>
+      {{#each @submissions as |submission|}}
+        <CustomSubmissionViewerListItem
+          @submission={{submission}}
+          @selectedSubmissionIds={{@selectedSubmissionIds}}
+          @onSelect={{this.onSelect}}
+        />
+      {{/each}}
+    </li>
+  </ul>
 </div>
-<ul>
-  <li>
-    {{#each submissions as |submission|}}
-      <CustomSubmissionViewerListItem @submission={{submission}} @selectedSubmissionIds={{selectedSubmissionIds}} @onSelect={{action "onSelect"}} />
-    {{/each}}
-  </li>
-</ul>

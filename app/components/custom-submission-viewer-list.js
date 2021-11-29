@@ -1,41 +1,19 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
+export default class CustomSbumissionViewerComponent extends Component {
+  @tracked isChecked = false;
 
-
-
-
-
-export default Component.extend({
-  elementId: 'custom-submission-viewer-list',
-  isChecked: false,
-
-  didReceiveAttributes() {
-    if (!Array.isArray(this.selectedSubmissionIds)) {
-      this.set('selectedSubmissionIds', []);
-    }
-    this._super(...arguments);
-  },
-
-  actions: {
-    onSelect: function (submissionId) {
-      this.onSelect(submissionId);
-    },
-    toggleSelect: function () {
-      this.set('isChecked', !this.isChecked);
-      if (this.isChecked) {
-        this.send('selectAll');
-      } else {
-        this.send('unselectAll');
-      }
-    },
-    selectAll: function () {
-      this.onSelectAll();
-    },
-    unselectAll: function () {
-      this.onUnselectAll();
-    },
-    doneSelecting: function () {
-      this.onDoneSelecting();
-    },
+  @action onSelect(submissionId) {
+    this.args.onSelect(submissionId);
   }
-});
+  @action toggleSelect() {
+    this.isChecked = !this.isChecked;
+    if (this.isChecked) {
+      this.args.onSelectAll();
+    } else {
+      this.args.onUnselectAll();
+    }
+  }
+}
