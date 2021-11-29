@@ -1,6 +1,3 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 
-export default Component.extend({
-  elementId: ['workspace-info-stats'],
-
-});
+export default class WorkspaceInfoStatsComponent extends Component {}
