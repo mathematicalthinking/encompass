@@ -13,6 +13,50 @@ export default Component.extend({
   isParentWorkspace: equal('workspace.workspaceType', 'parent'),
   globalPermissionValue: null,
   showCustom: equal('globalPermissionValue', 'custom'),
+  globalItems: {
+    groupName: 'globalPermissionValue',
+    groupLabel: 'Workspace Permissions',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    required: true,
+    inputs: [
+      {
+        label: 'View Only',
+        value: 'viewOnly',
+        moreInfo:
+          'This user will be able to see the workspace, but not add or make any changes',
+      },
+      {
+        label: 'Editor',
+        value: 'editor',
+        moreInfo:
+          'This user can add, delete or modify selections, comments, and folders, but they will not be able to see or create new responses',
+      },
+      {
+        label: 'Mentor',
+        value: 'indirectMentor',
+        moreInfo:
+          'This user can create selections, comments, and folders. They can also send feedback that will be delivered once approved by a designated feedback approver',
+      },
+      {
+        label: 'Mentor with Direct Send',
+        value: 'directMentor',
+        moreInfo:
+          'This user can create selections, comments, and folders. They can also send direct feedback that does not require approval',
+      },
+      {
+        label: 'Approver',
+        value: 'approver',
+        moreInfo:
+          'This user can add, delete or modify selections, comments, and folders. They can directly send their own feedback and approve feedback created by other users',
+      },
+      {
+        label: 'Custom',
+        value: 'custom',
+        moreInfo:
+          'Select this if you want to set permissions for each aspect of a workspace',
+      },
+    ],
+  },
   mainPermissions: [
     {
       id: 1,
