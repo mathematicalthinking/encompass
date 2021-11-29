@@ -49,15 +49,12 @@
                       class='fas fa-minus-circle'
                       {{action 'removeCollab' collaborator.userObj}}
                     ></i>
-                  {{/if}}
-                  {{#unless
-                    (is-equal collaborator.userObj selectedCollaborator)
-                  }}
+                  {{else}}
                     <i
                       class='fas fa-edit'
                       {{action 'editCollab' collaborator}}
                     ></i>
-                  {{/unless}}
+                  {{/if}}
                 </span>
               {{/if}}
             </div>
@@ -96,15 +93,12 @@
                       class='fas fa-minus-circle'
                       {{action 'removeCollab' collaborator.userObj}}
                     ></i>
-                  {{/if}}
-                  {{#unless
-                    (is-equal collaborator.userObj selectedCollaborator)
-                  }}
+                  {{else}}
                     <i
                       class='fas fa-edit'
                       {{action 'editCollab' collaborator}}
                     ></i>
-                  {{/unless}}
+                  {{/if}}
                 </span>
               {{/if}}
             </div>
