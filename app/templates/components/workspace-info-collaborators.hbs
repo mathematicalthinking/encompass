@@ -1,213 +1,332 @@
- <div class="info-card">
-  <div class="heading">
+<div class='info-card'>
+  <div class='heading'>
     Collaborators
     {{#if this.canEdit}}
-    <span class="heading-icon" {{action 'addCollaborator'}}>
-      <i class="fas fa-plus"></i>
-    </span>
-    {{#if this.showRemoveSelf}}
-      <button {{action "confirmRemoveSelf"}} class="primary-button remove-self">Remove Self</button>
-    {{/if}}
+      <span class='heading-icon' {{action 'addCollaborator'}}>
+        <i class='fas fa-plus'></i>
+      </span>
+      {{#if this.showRemoveSelf}}
+        <button
+          {{action 'confirmRemoveSelf'}}
+          class='primary-button remove-self'
+        >Remove Self</button>
+      {{/if}}
     {{/if}}
   </div>
-  <div class="card-content">
+  <div class='card-content'>
     {{#if this.createNewCollaborator}}
       {{#if this.isParentWorkspace}}
-        <ParentWsCollabNew @store={{this.store}} @workspace={{this.workspace}} @createNewCollaborator={{this.createNewCollaborator}} @originalCollaborators={{this.originalCollaborators}} @initialCollabOptions={{this.initialCollabOptions}} @selectedCollaborators={{this.selectedCollaborators}} @students={{this.students}} @linkedAssignment={{this.linkedAssignment}} @childWorkspaces={{this.childWorkspaces}} />
+        <ParentWsCollabNew
+          @store={{this.store}}
+          @workspace={{this.workspace}}
+          @createNewCollaborator={{this.createNewCollaborator}}
+          @originalCollaborators={{this.originalCollaborators}}
+          @initialCollabOptions={{this.initialCollabOptions}}
+          @selectedCollaborators={{this.selectedCollaborators}}
+          @students={{this.students}}
+          @linkedAssignment={{this.linkedAssignment}}
+          @childWorkspaces={{this.childWorkspaces}}
+        />
       {{else}}
-        <WorkspaceInfoCollaboratorsNew @store={{this.store}} @workspace={{this.workspace}} @createNewCollaborator={{this.createNewCollaborator}} @isShowingCustomViewer={{this.isShowingCustomViewer}} @customSubmissionIds={{this.customSubmissionIds}} @originalCollaborators={{this.originalCollaborators}} @globalItems={{this.globalItems}} @initialCollabOptions={{this.initialCollabOptions}} @selectedCollaborators={{this.selectedCollaborators}} />
+        <WorkspaceInfoCollaboratorsNew
+          @store={{this.store}}
+          @workspace={{this.workspace}}
+          @createNewCollaborator={{this.createNewCollaborator}}
+          @isShowingCustomViewer={{this.isShowingCustomViewer}}
+          @customSubmissionIds={{this.customSubmissionIds}}
+          @originalCollaborators={{this.originalCollaborators}}
+          @globalItems={{this.globalItems}}
+          @initialCollabOptions={{this.initialCollabOptions}}
+          @selectedCollaborators={{this.selectedCollaborators}}
+        />
       {{/if}}
     {{/if}}
     {{#if this.originalCollaborators}}
       {{#if this.isParentWorkspace}}
-      {{#each this.workspacePermissions as |collaborator|}}
-      <div class="collab-container">
-        <div class="collab-name">
-          <LinkTo @route="users.user" @model={{collaborator.userObj.id}}>{{collaborator.userObj.username}}</LinkTo>
-          {{#if canEdit}}
-          <span class="collab-actions">
-            {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-            <i class="fas fa-minus-circle" {{action 'removeCollab' collaborator.userObj}}></i>
-            {{/if}}
-            {{#unless (is-equal collaborator.userObj selectedCollaborator)}}
-            <i class="fas fa-edit" {{action 'editCollab' collaborator}}></i>
-            {{/unless}}
-          </span>
-          {{/if}}
-        </div>
-        <div class="collab-settings">
-          <div class="card-row">
-            <div class="row-label">
-              Permissions Type
-            </div>
-            <div class="row-value">
-              View Only
-            </div>
-          </div>
-          {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-          <div class="button-row">
-            <button class="primary-button cancel-button" {{action "cancelEditCollab"}}>Cancel</button>
-          </div>
-          {{/if}}
-        </div>
-      </div>
-      {{/each}}
-      {{else}}
         {{#each this.workspacePermissions as |collaborator|}}
-          <div class="collab-container">
-            <div class="collab-name">
-              <LinkTo @route="users.user" @model={{collaborator.userObj.id}}>{{collaborator.userObj.username}}</LinkTo>
+          <div class='collab-container'>
+            <div class='collab-name'>
+              <LinkTo
+                @route='users.user'
+                @model={{collaborator.userObj.id}}
+              >{{collaborator.userObj.username}}</LinkTo>
               {{#if canEdit}}
-              <span class="collab-actions">
-                {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                  <i class="fas fa-minus-circle" {{action 'removeCollab' collaborator.userObj}}></i>
-                {{/if}}
-                {{#unless (is-equal collaborator.userObj selectedCollaborator)}}
-                  <i class="fas fa-edit" {{action 'editCollab' collaborator}}></i>
-                {{/unless}}
-              </span>
+                <span class='collab-actions'>
+                  {{#if (is-equal collaborator.userObj selectedCollaborator)}}
+                    <i
+                      class='fas fa-minus-circle'
+                      {{action 'removeCollab' collaborator.userObj}}
+                    ></i>
+                  {{/if}}
+                  {{#unless
+                    (is-equal collaborator.userObj selectedCollaborator)
+                  }}
+                    <i
+                      class='fas fa-edit'
+                      {{action 'editCollab' collaborator}}
+                    ></i>
+                  {{/unless}}
+                </span>
               {{/if}}
             </div>
-            <div class="collab-settings">
-              <div class="card-row">
+            <div class='collab-settings'>
+              <div class='card-row'>
+                <div class='row-label'>
+                  Permissions Type
+                </div>
+                <div class='row-value'>
+                  View Only
+                </div>
+              </div>
+              {{#if (is-equal collaborator.userObj selectedCollaborator)}}
+                <div class='button-row'>
+                  <button
+                    class='primary-button cancel-button'
+                    {{action 'cancelEditCollab'}}
+                  >Cancel</button>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        {{#each this.workspacePermissions as |collaborator|}}
+          <div class='collab-container'>
+            <div class='collab-name'>
+              <LinkTo
+                @route='users.user'
+                @model={{collaborator.userObj.id}}
+              >{{collaborator.userObj.username}}</LinkTo>
+              {{#if canEdit}}
+                <span class='collab-actions'>
+                  {{#if (is-equal collaborator.userObj selectedCollaborator)}}
+                    <i
+                      class='fas fa-minus-circle'
+                      {{action 'removeCollab' collaborator.userObj}}
+                    ></i>
+                  {{/if}}
+                  {{#unless
+                    (is-equal collaborator.userObj selectedCollaborator)
+                  }}
+                    <i
+                      class='fas fa-edit'
+                      {{action 'editCollab' collaborator}}
+                    ></i>
+                  {{/unless}}
+                </span>
+              {{/if}}
+            </div>
+            <div class='collab-settings'>
+              <div class='card-row'>
                 {{#unless (is-equal collaborator.userObj selectedCollaborator)}}
-                  <div class="row-label">
+                  <div class='row-label'>
                     Permissions Type
                   </div>
                 {{/unless}}
-                <div class="row-value">
+                <div class='row-value'>
                   {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                    <RadioGroup @options={{this.globalItems}} @selectedValue={{globalPermissionValue}} @updateValue={{action "updateGlobalPermissionValue"}} />
+                    <RadioGroup
+                      @options={{this.globalItems}}
+                      @selectedValue={{globalPermissionValue}}
+                      @updateValue={{action 'updateGlobalPermissionValue'}}
+                    />
                   {{else}}
                     {{collab-permissions collaborator.global}}
                     {{#unless (is-equal collaborator.global 'custom')}}
-                      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{collab-global-tooltip collaborator.global}}>
-                        <i class="far fa-question-circle info-icon"></i>
+                      <span
+                        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+                        data-tooltip={{collab-global-tooltip
+                          collaborator.global
+                        }}
+                      >
+                        <i class='far fa-question-circle info-icon'></i>
                       </span>
                     {{/unless}}
                   {{/if}}
                 </div>
               </div>
-            {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-              {{#if showCustom}}
-                  <div class="card-row">
-                    <div class="row-label">
+              {{#if (is-equal collaborator.userObj selectedCollaborator)}}
+                {{#if showCustom}}
+                  <div class='card-row'>
+                    <div class='row-label'>
                       Submissions
                     </div>
-                    <div class="row-value">
-                        <MySelect @cannotBeNull={{true}} @selectedValue={{this.submissions}} @content={{this.submissionPermissions}} @optionLabelPath="display" @action={{action (mut this.submissions)}} />
-                        {{#if (is-equal submissions.value 'custom')}}
-                          <span class="submission-count">{{customSubmissionIds.length}} submissions selected</span>
-                          {{#if isShowingCustomViewer}}
-                            <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Hide Submission Viewer</span>
-                          {{else}}
-                            <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Show Submission Viewer</span>
-                          {{/if}}
+                    <div class='row-value'>
+                      <MySelect
+                        @cannotBeNull={{true}}
+                        @selectedValue={{this.submissions}}
+                        @content={{this.submissionPermissions}}
+                        @optionLabelPath='display'
+                        @action={{action (mut this.submissions)}}
+                      />
+                      {{#if (is-equal submissions.value 'custom')}}
+                        <span
+                          class='submission-count'
+                        >{{customSubmissionIds.length}}
+                          submissions selected</span>
+                        {{#if isShowingCustomViewer}}
+                          <span
+                            class='viewer-toggle'
+                            {{action 'toggleSubmissionView'}}
+                          >Hide Submission Viewer</span>
+                        {{else}}
+                          <span
+                            class='viewer-toggle'
+                            {{action 'toggleSubmissionView'}}
+                          >Show Submission Viewer</span>
                         {{/if}}
+                      {{/if}}
                     </div>
                   </div>
-                  <div class="card-row">
-                    <div class="row-label">
+                  <div class='card-row'>
+                    <div class='row-label'>
                       Selections
                     </div>
-                    <div class="row-value">
-                        <MySelect @cannotBeNull={{true}} @selectedValue={{this.selections}} @content={{this.mainPermissions}} @optionLabelPath="display" @action={{action (mut selections)}} />
+                    <div class='row-value'>
+                      <MySelect
+                        @cannotBeNull={{true}}
+                        @selectedValue={{this.selections}}
+                        @content={{this.mainPermissions}}
+                        @optionLabelPath='display'
+                        @action={{action (mut selections)}}
+                      />
                     </div>
                   </div>
-                  <div class="card-row">
-                    <div class="row-label">
+                  <div class='card-row'>
+                    <div class='row-label'>
                       Comments
                     </div>
-                    <div class="row-value">
-                        <MySelect @cannotBeNull={{true}} @selectedValue={{this.comments}} @content={{this.mainPermissions}} @optionLabelPath="display" @action={{action (mut this.comments)}} />
+                    <div class='row-value'>
+                      <MySelect
+                        @cannotBeNull={{true}}
+                        @selectedValue={{this.comments}}
+                        @content={{this.mainPermissions}}
+                        @optionLabelPath='display'
+                        @action={{action (mut this.comments)}}
+                      />
                     </div>
                   </div>
-                  <div class="card-row">
-                    <div class="row-label">
+                  <div class='card-row'>
+                    <div class='row-label'>
                       Folders
                     </div>
-                    <div class="row-value">
-                        <MySelect @cannotBeNull={{true}} @selectedValue={{this.folders}} @content={{this.mainPermissions}} @optionLabelPath="display" @action={{action (mut this.folders)}} />
+                    <div class='row-value'>
+                      <MySelect
+                        @cannotBeNull={{true}}
+                        @selectedValue={{this.folders}}
+                        @content={{this.mainPermissions}}
+                        @optionLabelPath='display'
+                        @action={{action (mut this.folders)}}
+                      />
                     </div>
                   </div>
-                  <div class="card-row">
-                    <div class="row-label">
+                  <div class='card-row'>
+                    <div class='row-label'>
                       Feedback
                     </div>
-                    <div class="row-value">
-                        <MySelect @cannotBeNull={{true}} @selectedValue={{this.feedback}} @content={{this.feedbackPermissions}} @optionLabelPath="display" @action={{action (mut this.feedback)}} />
+                    <div class='row-value'>
+                      <MySelect
+                        @cannotBeNull={{true}}
+                        @selectedValue={{this.feedback}}
+                        @content={{this.feedbackPermissions}}
+                        @optionLabelPath='display'
+                        @action={{action (mut this.feedback)}}
+                      />
                     </div>
                   </div>
-              {{/if}}
-            {{else}}
-            {{!-- NOT EDITING --}}
-              {{#if (is-equal collaborator.global 'custom')}}
-                <div class="card-row">
-                  <div class="row-label">
-                    Submissions
-                  </div>
-                  <div class="row-value">
-                    {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                      <MySelect @cannotBeNull={{true}} @selectedValue={{submissions}} @content={{submissionPermissions}} @optionLabelPath="display" @action={{action (mut submissions)}} />
-                      {{#if (is-equal submissions.value 'custom')}}
-                        <span class="submission-count">{{customSubmissionIds.length}} submissions selected</span>
-                        {{#if isShowingCustomViewer}}
-                          <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Hide Submission Viewer</span>
+                {{/if}}
+              {{else}}
+                {{! NOT EDITING }}
+                {{#if (is-equal collaborator.global 'custom')}}
+                  <div class='card-row'>
+                    <div class='row-label'>
+                      Submissions
+                    </div>
+                    <div class='row-value'>
+                      {{#if
+                        (is-equal collaborator.userObj selectedCollaborator)
+                      }}
+                        <MySelect
+                          @cannotBeNull={{true}}
+                          @selectedValue={{submissions}}
+                          @content={{submissionPermissions}}
+                          @optionLabelPath='display'
+                          @action={{action (mut submissions)}}
+                        />
+                        {{#if (is-equal submissions.value 'custom')}}
+                          <span
+                            class='submission-count'
+                          >{{customSubmissionIds.length}}
+                            submissions selected</span>
+                          {{#if isShowingCustomViewer}}
+                            <span
+                              class='viewer-toggle'
+                              {{action 'toggleSubmissionView'}}
+                            >Hide Submission Viewer</span>
+                          {{else}}
+                            <span
+                              class='viewer-toggle'
+                              {{action 'toggleSubmissionView'}}
+                            >Show Submission Viewer</span>
+                          {{/if}}
+                        {{/if}}
+                      {{else}}
+                        {{#if collaborator.submissions.all}}
+                          View All
+                        {{else if collaborator.submissions.userOnly}}
+                          Own Only
                         {{else}}
-                          <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Show Submission Viewer</span>
+                          Custom
                         {{/if}}
                       {{/if}}
-                    {{else}}
-                      {{#if collaborator.submissions.all}}
-                        View All
-                      {{else if collaborator.submissions.userOnly}}
-                        Own Only
-                      {{else}}
-                        Custom
-                      {{/if}}
-                    {{/if}}
+                    </div>
                   </div>
-                </div>
-                <div class="card-row">
-                  <div class="row-label">
-                    Selections
+                  <div class='card-row'>
+                    <div class='row-label'>
+                      Selections
+                    </div>
+                    <div class='row-value'>
+                      {{collab-permissions collaborator.selections}}
+                    </div>
                   </div>
-                  <div class="row-value">
-                    {{collab-permissions collaborator.selections}}
+                  <div class='card-row'>
+                    <div class='row-label'>
+                      Comments
+                    </div>
+                    <div class='row-value'>
+                      {{collab-permissions collaborator.comments}}
+                    </div>
                   </div>
-                </div>
-                <div class="card-row">
-                  <div class="row-label">
-                    Comments
+                  <div class='card-row'>
+                    <div class='row-label'>
+                      Folders
+                    </div>
+                    <div class='row-value'>
+                      {{collab-permissions collaborator.folders}}
+                    </div>
                   </div>
-                  <div class="row-value">
-                    {{collab-permissions collaborator.comments}}
-                  </div>
-                </div>
-                <div class="card-row">
-                  <div class="row-label">
-                    Folders
-                  </div>
-                  <div class="row-value">
-                    {{collab-permissions collaborator.folders}}
-                  </div>
-                </div>
-                <div class="card-row">
-                  <div class="row-label">
-                    Feedback
-                  </div>
-                  <div class="row-value">
+                  <div class='card-row'>
+                    <div class='row-label'>
+                      Feedback
+                    </div>
+                    <div class='row-value'>
                       {{collab-permissions collaborator.feedback}}
+                    </div>
                   </div>
-                </div>
+                {{/if}}
               {{/if}}
-            {{/if}}
 
               {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-              <div class="button-row">
-                <button class="primary-button cancel-button" {{action "cancelEditCollab"}}>Cancel</button>
-                <button class="primary-button" {{action 'savePermissions' collaborator}}>Save</button>
-              </div>
+                <div class='button-row'>
+                  <button
+                    class='primary-button cancel-button'
+                    {{action 'cancelEditCollab'}}
+                  >Cancel</button>
+                  <button
+                    class='primary-button'
+                    {{action 'savePermissions' collaborator}}
+                  >Save</button>
+                </div>
               {{/if}}
             </div>
           </div>
@@ -215,9 +334,8 @@
       {{/if}}
     {{else}}
       {{#unless this.createNewCollaborator}}
-        <div class="no-collab">No Collaborators</div>
+        <div class='no-collab'>No Collaborators</div>
       {{/unless}}
     {{/if}}
   </div>
 </div>
-

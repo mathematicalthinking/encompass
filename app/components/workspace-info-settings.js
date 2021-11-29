@@ -7,7 +7,7 @@ import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
   currentUser: service('current-user'),
-  elementId: ['workspace-info-settings'],
+  tagName: '',
   alert: service('sweet-alert'),
   permissions: service('workspace-permissions'),
   utils: service('utility-methods'),
@@ -20,15 +20,15 @@ export default Component.extend(ErrorHandlingMixin, {
   isParentWs: equal('workspace.workspaceType', 'parent'),
   hasChildWorkspaces: gt('childWorkspaces.length', 0),
 
-  didReceiveAttrs() {
-    this._super(...arguments);
-  },
-
-  doShowLinkedAssignment: computed('currentUser.user', 'isParentWs', function () {
-    return (
-      this.permissions.hasOwnerPrivileges(this.workspace) && !this.isParentWs
-    );
-  }),
+  doShowLinkedAssignment: computed(
+    'currentUser.user',
+    'isParentWs',
+    function () {
+      return (
+        this.permissions.hasOwnerPrivileges(this.workspace) && !this.isParentWs
+      );
+    }
+  ),
 
   initialOwnerItem: computed('workspace.owner', function () {
     const owner = this.get('workspace.owner');
@@ -47,21 +47,32 @@ export default Component.extend(ErrorHandlingMixin, {
     return [];
   }),
 
-  doShowChildWorkspaces: computed('currentUser.user', 'isParentWs', function () {
-    return (
-      this.permissions.hasOwnerPrivileges(this.workspace) && this.isParentWs
-    );
-  }),
-
-  modes: computed('currentUser.user.isAdmin', 'currentUser.user.isStudent', function () {
-    const basic = ['private', 'org', 'public'];
-
-    if (this.get('currentUser.user.isStudent') || !this.get('currentUser.user.isAdmin')) {
-      return basic;
+  doShowChildWorkspaces: computed(
+    'currentUser.user',
+    'isParentWs',
+    function () {
+      return (
+        this.permissions.hasOwnerPrivileges(this.workspace) && this.isParentWs
+      );
     }
+  ),
 
-    return ['private', 'org', 'public', 'internet'];
-  }),
+  modes: computed(
+    'currentUser.user.isAdmin',
+    'currentUser.user.isStudent',
+    function () {
+      const basic = ['private', 'org', 'public'];
+
+      if (
+        this.get('currentUser.user.isStudent') ||
+        !this.get('currentUser.user.isAdmin')
+      ) {
+        return basic;
+      }
+
+      return ['private', 'org', 'public', 'internet'];
+    }
+  ),
 
   yesNoMySelect: ['Yes', 'No'],
 
@@ -249,7 +260,7 @@ export default Component.extend(ErrorHandlingMixin, {
       }
     },
     stopEditing() {
-      console.log("stop editing");
+      console.log('stop editing');
       this.set('isEditing', false);
       this.set('didLinkedAssignmentChange', false);
       this.set('selectedLinkedAssignment', null);

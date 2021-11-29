@@ -1,75 +1,139 @@
-<div class="collab-container">
-  <div class="collab-name">
-    <SelectizeInput @store={{this.store}} @inputId="collab-select" @maxItems={{1}} @initialOptions={{initialCollabOptions}} @selectedItemsHash={{selectedCollaborators}} @onItemAdd={{action "setCollab"}} @onItemRemove={{action "setCollab"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search by username" @preload="focus" />
+<div class='collab-container'>
+  <div class='collab-name'>
+    <SelectizeInput
+      @store={{this.store}}
+      @inputId='collab-select'
+      @maxItems={{1}}
+      @initialOptions={{initialCollabOptions}}
+      @selectedItemsHash={{selectedCollaborators}}
+      @onItemAdd={{action 'setCollab'}}
+      @onItemRemove={{action 'setCollab'}}
+      @labelField='username'
+      @valueField='id'
+      @searchField='username'
+      @model='user'
+      @queryParamsKey='usernameSearch'
+      @isAsync={{true}}
+      @placeholder='Search by username'
+      @preload='focus'
+    />
   </div>
-  <div class= "collab-settings global">
-    <RadioGroup @options={{globalItems}} @selectedValue={{this.globalPermissionValue}} @updateValue={{action "updateGlobalPermissionValue"}} />
+  <div class='collab-settings global'>
+    <RadioGroup
+      @options={{globalItems}}
+      @selectedValue={{this.globalPermissionValue}}
+      @updateValue={{action 'updateGlobalPermissionValue'}}
+    />
   </div>
 
-    <div class="collab-settings">
-      {{#if showCustom}}
-        <div class="card-row">
-          <div class="row-label">
-            Submissions
-          </div>
-          <div class="row-value">
-            <MySelect @cannotBeNull={{true}} @selectedValue={{submissions}} @content={{submissionPermissions}} @optionLabelPath="display" @action={{action (mut submissions)}} />
-            {{#if (is-equal submissions.value 'custom')}}
-              <span class="submission-count">{{customSubmissionIds.length}} submissions selected</span>
-              {{#if isShowingCustomViewer}}
-                <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Hide Submission Viewer</span>
-              {{else}}
-                <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Show Submission Viewer</span>
-              {{/if}}
+  <div class='collab-settings'>
+    {{#if showCustom}}
+      <div class='card-row'>
+        <div class='row-label'>
+          Submissions
+        </div>
+        <div class='row-value'>
+          <MySelect
+            @cannotBeNull={{true}}
+            @selectedValue={{submissions}}
+            @content={{submissionPermissions}}
+            @optionLabelPath='display'
+            @action={{action (mut submissions)}}
+          />
+          {{#if (is-equal submissions.value 'custom')}}
+            <span class='submission-count'>{{customSubmissionIds.length}}
+              submissions selected</span>
+            {{#if isShowingCustomViewer}}
+              <span class='viewer-toggle' {{action 'toggleSubmissionView'}}>Hide
+                Submission Viewer</span>
+            {{else}}
+              <span class='viewer-toggle' {{action 'toggleSubmissionView'}}>Show
+                Submission Viewer</span>
             {{/if}}
-          </div>
+          {{/if}}
         </div>
-        <div class="card-row">
-          <div class="row-label">
-            Selections
-          </div>
-          <div class="row-value">
-            <MySelect @cannotBeNull={{true}} @selectedValue={{selections}} @content={{mainPermissions}} @optionLabelPath="display" @action={{action (mut selections)}} />
-          </div>
-        </div>
-        <div class="card-row">
-          <div class="row-label">
-            Comments
-          </div>
-          <div class="row-value">
-            <MySelect @cannotBeNull={{true}} @selectedValue={{comments}} @content={{mainPermissions}} @optionLabelPath="display" @action={{action (mut comments)}} />
-          </div>
-        </div>
-        <div class="card-row">
-          <div class="row-label">
-            Folders
-          </div>
-          <div class="row-value">
-            <MySelect @cannotBeNull={{true}} @selectedValue={{folders}} @content={{mainPermissions}} @optionLabelPath="display" @action={{action (mut folders)}} />
-          </div>
-        </div>
-        <div class="card-row">
-          <div class="row-label">
-            Feedback
-          </div>
-          <div class="row-value">
-            <MySelect @cannotBeNull={{true}} @selectedValue={{feedback}} @content={{feedbackPermissions}} @optionLabelPath="display" @action={{action (mut feedback)}} />
-          </div>
-        </div>
-        {{#if missingUserError}}
-          <div class="card-row">
-            <ErrorBox @error="Please select a user" @resetError={{action (mut missingUserError) null}} @showDismiss={{true}} />
-          </div>
-        {{/if}}
-        {{#if existingUserError}}
-          <div class="card-row">
-            <ErrorBox @error="Collaborator already exists. Edit permissions below" @resetError={{action (mut existingUserError) null}} @showDismiss={{true}} />
-          </div>
-        {{/if}}
-      {{/if}}
-      <div class="button-row">
-        <button class="primary-button cancel-button" {{action "cancelCreateCollab"}}>Cancel</button>
-        <button class="primary-button" {{action 'saveCollab'}}>Save</button>
       </div>
+      <div class='card-row'>
+        <div class='row-label'>
+          Selections
+        </div>
+        <div class='row-value'>
+          <MySelect
+            @cannotBeNull={{true}}
+            @selectedValue={{selections}}
+            @content={{mainPermissions}}
+            @optionLabelPath='display'
+            @action={{action (mut selections)}}
+          />
+        </div>
+      </div>
+      <div class='card-row'>
+        <div class='row-label'>
+          Comments
+        </div>
+        <div class='row-value'>
+          <MySelect
+            @cannotBeNull={{true}}
+            @selectedValue={{comments}}
+            @content={{mainPermissions}}
+            @optionLabelPath='display'
+            @action={{action (mut comments)}}
+          />
+        </div>
+      </div>
+      <div class='card-row'>
+        <div class='row-label'>
+          Folders
+        </div>
+        <div class='row-value'>
+          <MySelect
+            @cannotBeNull={{true}}
+            @selectedValue={{folders}}
+            @content={{mainPermissions}}
+            @optionLabelPath='display'
+            @action={{action (mut folders)}}
+          />
+        </div>
+      </div>
+      <div class='card-row'>
+        <div class='row-label'>
+          Feedback
+        </div>
+        <div class='row-value'>
+          <MySelect
+            @cannotBeNull={{true}}
+            @selectedValue={{feedback}}
+            @content={{feedbackPermissions}}
+            @optionLabelPath='display'
+            @action={{action (mut feedback)}}
+          />
+        </div>
+      </div>
+      {{#if missingUserError}}
+        <div class='card-row'>
+          <ErrorBox
+            @error='Please select a user'
+            @resetError={{action (mut missingUserError) null}}
+            @showDismiss={{true}}
+          />
+        </div>
+      {{/if}}
+      {{#if existingUserError}}
+        <div class='card-row'>
+          <ErrorBox
+            @error='Collaborator already exists. Edit permissions below'
+            @resetError={{action (mut existingUserError) null}}
+            @showDismiss={{true}}
+          />
+        </div>
+      {{/if}}
+    {{/if}}
+    <div class='button-row'>
+      <button
+        class='primary-button cancel-button'
+        {{action 'cancelCreateCollab'}}
+      >Cancel</button>
+      <button class='primary-button' {{action 'saveCollab'}}>Save</button>
     </div>
+  </div>
 </div>
