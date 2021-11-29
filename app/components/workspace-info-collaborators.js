@@ -399,8 +399,5 @@ export default Component.extend({
         this.set('isShowingCustomViewer', false);
       }
     },
-    confirmRemoveSelf() {
-      this.send('removeCollab', this.currentUser.user);
-    },
   },
 });
