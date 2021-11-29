@@ -10,6 +10,7 @@ export default Component.extend({
   store: service(),
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
+  isParentWorkspace: equal('workspace.workspaceType', 'parent'),
   globalPermissionValue: null,
   showCustom: equal('globalPermissionValue', 'custom'),
   mainPermissions: [

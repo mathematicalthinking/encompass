@@ -1,7 +1,6 @@
 import Component from '@ember/component';
 // import { inject as controller } from '@ember/controller';
 import { computed } from '@ember/object';
-import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
@@ -13,13 +12,10 @@ export default Component.extend(ErrorHandlingMixin, {
   store: service(),
   permissions: service('workspace-permissions'),
   utils: service('utility-methods'),
-  isEditing: false,
   selectedMode: null,
   updateRecordErrors: [],
   isShowingCustomViewer: false,
   customSubmissionIds: [],
-  isParentWorkspace: equal('workspace.workspaceType', 'parent'),
-
   didReceiveAttrs() {
     this._super(...arguments);
 
@@ -41,14 +37,6 @@ export default Component.extend(ErrorHandlingMixin, {
       .catch((err) => {
         this.handleErrors(err, 'queryErrors');
       });
-  },
-
-  getLinkedAssignment: function () {
-    return this.get('workspace.linkedAssignment').then((assignment) => {
-      if (!this.isDestroyed && !this.isDestroying) {
-        this.set('linkedAssignment', assignment);
-      }
-    });
   },
 
   canEdit: computed('workspace.id', function () {

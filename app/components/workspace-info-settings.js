@@ -17,7 +17,7 @@ export default Component.extend(ErrorHandlingMixin, {
   selectedLinkedAssignment: null,
   selectedAutoUpdateSetting: null,
   didLinkedAssignmentChange: false,
-
+  isEditing: false,
   isParentWs: equal('workspace.workspaceType', 'parent'),
   hasChildWorkspaces: gt('childWorkspaces.length', 0),
 
