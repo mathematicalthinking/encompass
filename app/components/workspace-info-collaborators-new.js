@@ -286,16 +286,18 @@ export default Component.extend({
           false
         );
         this.set('createNewCollaborator', false);
-        this.set('isShowingCustomViewer', false);
+        if (this.isShowingCustomViewer) {
+          this.toggleIsShowingCustomViewer();
+        }
       });
     },
     toggleSubmissionView: function () {
-      this.set('isShowingCustomViewer', !this.isShowingCustomViewer);
+      this.toggleIsShowingCustomViewer();
     },
     cancelCreateCollab: function () {
       this.set('createNewCollaborator', null);
       if (this.isShowingCustomViewer) {
-        this.set('isShowingCustomViewer', false);
+        this.toggleIsShowingCustomViewer();
       }
     },
   },

@@ -19,6 +19,7 @@
           @students={{this.students}}
           @linkedAssignment={{this.linkedAssignment}}
           @childWorkspaces={{this.childWorkspaces}}
+          @toggleIsShowingCustomViewer={{this.toggleIsShowingCustomViewer}}
         />
       {{else}}
         <WorkspaceInfoCollaboratorsNew
@@ -30,6 +31,7 @@
           @globalItems={{this.globalItems}}
           @initialCollabOptions={{this.initialCollabOptions}}
           @selectedCollaborators={{this.selectedCollaborators}}
+          @toggleIsShowingCustomViewer={{this.toggleIsShowingCustomViewer}}
         />
       {{/if}}
     {{/if}}

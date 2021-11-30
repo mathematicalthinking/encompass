@@ -183,7 +183,7 @@ export default Component.extend({
     cancelCreateCollab: function () {
       this.set('createNewCollaborator', null);
       if (this.isShowingCustomViewer) {
-        this.set('isShowingCustomViewer', false);
+        this.toggleIsShowingCustomViewer();
       }
     },
   },
