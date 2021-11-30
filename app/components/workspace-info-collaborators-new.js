@@ -1,7 +1,5 @@
 import Component from '@ember/component';
-import { computed } from '@ember/object';
 import _ from 'underscore';
-/*global _:false */
 import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 
@@ -79,106 +77,6 @@ export default Component.extend({
       value: 'custom',
     },
   ],
-
-  modes: computed(
-    'currentUser.user.isAdmin',
-    'currentUser.user.isStudent',
-    function () {
-      const basic = ['private', 'org', 'public'];
-
-      if (
-        this.get('currentUser.user.isStudent') ||
-        !this.get('currentUser.user.isAdmin')
-      ) {
-        return basic;
-      }
-
-      return ['private', 'org', 'public', 'internet'];
-    }
-  ),
-
-  createValueObject(val) {
-    let obj = {
-      id: null,
-      display: null,
-      value: val,
-    };
-    switch (val) {
-      case 0:
-        obj.display = 'Hidden';
-        obj.id = 1;
-        break;
-      case 1:
-        obj.display = 'View Only';
-        obj.id = 2;
-        break;
-      case 2:
-        obj.display = 'Create';
-        obj.id = 3;
-        break;
-      case 3:
-        obj.display = 'Add';
-        obj.id = 4;
-        break;
-      case 4:
-        obj.display = 'Delete';
-        obj.id = 5;
-        break;
-      case 'none':
-        obj.display = 'None';
-        obj.id = 1;
-        break;
-      case 'authReq':
-        obj.display = 'Approval Required';
-        obj.id = 2;
-        break;
-      case 'preAuth':
-        obj.display = 'Pre-Approved';
-        obj.id = 3;
-        break;
-      case 'approver':
-        obj.display = 'Approver';
-        obj.id = 4;
-        break;
-      default:
-        break;
-    }
-    return obj;
-  },
-
-  createSubmissionValueObject(subObj) {
-    let obj = {
-      id: null,
-      display: null,
-      value: null,
-    };
-    if (subObj.all) {
-      obj.id = 1;
-      obj.value = 'all';
-      obj.display = 'All';
-    } else if (subObj.userOnly) {
-      obj.id = 2;
-      obj.value = 'userOnly';
-      obj.display = 'Own Only';
-    } else {
-      obj.id = 3;
-      obj.value = 'custom';
-      obj.display = 'Custom';
-      this.set('customSubIds', subObj.submissionIds);
-    }
-    return obj;
-  },
-
-  buildCustomSubmissionIds(submissionsValue) {
-    if (submissionsValue === 'custom') {
-      let ids = this.customSubmissionIds;
-      if (this.utils.isNonEmptyArray(ids)) {
-        return ids;
-      }
-      return [];
-    }
-    return [];
-  },
 
   actions: {
     updateGlobalPermissionValue: function (val) {
