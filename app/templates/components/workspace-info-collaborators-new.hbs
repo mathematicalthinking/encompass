@@ -43,13 +43,9 @@
           {{#if (is-equal submissions.value 'custom')}}
             <span class='submission-count'>{{customSubmissionIds.length}}
               submissions selected</span>
-            {{#if isShowingCustomViewer}}
-              <span class='viewer-toggle' {{action 'toggleSubmissionView'}}>Hide
-                Submission Viewer</span>
-            {{else}}
-              <span class='viewer-toggle' {{action 'toggleSubmissionView'}}>Show
-                Submission Viewer</span>
-            {{/if}}
+            <span class='viewer-toggle' {{action 'toggleSubmissionView'}}>
+              {{if this.isShowingCustomViewer 'Hide' 'Show'}}
+              Submission Viewer</span>
           {{/if}}
         </div>
       </div>
