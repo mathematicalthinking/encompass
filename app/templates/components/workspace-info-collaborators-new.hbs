@@ -109,24 +109,24 @@
           />
         </div>
       </div>
-      {{#if missingUserError}}
-        <div class='card-row'>
-          <ErrorBox
-            @error='Please select a user'
-            @resetError={{action (mut missingUserError) null}}
-            @showDismiss={{true}}
-          />
-        </div>
-      {{/if}}
-      {{#if existingUserError}}
-        <div class='card-row'>
-          <ErrorBox
-            @error='Collaborator already exists. Edit permissions below'
-            @resetError={{action (mut existingUserError) null}}
-            @showDismiss={{true}}
-          />
-        </div>
-      {{/if}}
+    {{/if}}
+    {{#if missingUserError}}
+      <div class='card-row'>
+        <ErrorBox
+          @error='Please select a user'
+          @resetError={{action (mut missingUserError) null}}
+          @showDismiss={{true}}
+        />
+      </div>
+    {{/if}}
+    {{#if existingUserError}}
+      <div class='card-row'>
+        <ErrorBox
+          @error='Collaborator already exists. Edit permissions below'
+          @resetError={{action (mut existingUserError) null}}
+          @showDismiss={{true}}
+        />
+      </div>
     {{/if}}
     <div class='button-row'>
       <button
