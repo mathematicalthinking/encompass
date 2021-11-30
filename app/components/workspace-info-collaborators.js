@@ -430,7 +430,6 @@ export default Component.extend({
         }
       }
     },
-
     addCollaborator: function () {
       this.set('createNewCollaborator', true);
     },
@@ -438,6 +437,7 @@ export default Component.extend({
       this.toggleIsShowingCustomViewer();
     },
     cancelEditCollab: function () {
+      this.set('createNewCollaborator', false);
       this.set('selectedCollaborator', null);
       if (this.isShowingCustomViewer) {
         this.toggleIsShowingCustomViewer();

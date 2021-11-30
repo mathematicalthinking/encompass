@@ -177,14 +177,11 @@ export default Component.extend({
           null,
           false
         );
-        this.set('createNewCollaborator', false);
+        this.cancelEditCollab();
       });
     },
     cancelCreateCollab: function () {
-      this.set('createNewCollaborator', null);
-      if (this.isShowingCustomViewer) {
-        this.toggleIsShowingCustomViewer();
-      }
+      this.cancelEditCollab();
     },
   },
 });

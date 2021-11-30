@@ -285,20 +285,14 @@ export default Component.extend({
           null,
           false
         );
-        this.set('createNewCollaborator', false);
-        if (this.isShowingCustomViewer) {
-          this.toggleIsShowingCustomViewer();
-        }
+        this.cancelEditCollab();
       });
     },
     toggleSubmissionView: function () {
       this.toggleIsShowingCustomViewer();
     },
     cancelCreateCollab: function () {
-      this.set('createNewCollaborator', null);
-      if (this.isShowingCustomViewer) {
-        this.toggleIsShowingCustomViewer();
-      }
+      this.cancelEditCollab();
     },
   },
 });
