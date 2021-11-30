@@ -1,17 +1,27 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import _ from 'underscore';
-import { equal } from '@ember/object/computed';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default Component.extend({
-  currentUser: service('current-user'),
-  elementId: ['workspace-info-collaborators-new'],
-  utils: service('utility-methods'),
-  alert: service('sweet-alert'),
-  store: service(),
-  globalPermissionValue: 'viewOnly',
-  showCustom: equal('globalPermissionValue', 'custom'),
-  mainPermissions: [
+export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
+  @service('current-user') currentUser;
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
+  @service store;
+  @tracked globalPermissionValue = 'viewOnly';
+  @tracked existingUserError = false;
+  @tracked missingUserError = false;
+  @tracked collabUser = {};
+  @tracked submissions = null;
+  @tracked selections = null;
+  @tracked folders = null;
+  @tracked comments = null;
+  @tracked feedback = null;
+  get showCustom() {
+    return this.globalPermissionValue === 'custom';
+  }
+  mainPermissions = [
     {
       id: 1,
       display: 'Hidden',
@@ -37,8 +47,8 @@ export default Component.extend({
       display: 'Delete',
       value: 4,
     },
-  ],
-  feedbackPermissions: [
+  ];
+  feedbackPermissions = [
     {
       id: 1,
       display: 'None',
@@ -59,8 +69,8 @@ export default Component.extend({
       display: 'Approver',
       value: 'approver',
     },
-  ],
-  submissionPermissions: [
+  ];
+  submissionPermissions = [
     {
       id: 1,
       display: 'All',
@@ -76,121 +86,119 @@ export default Component.extend({
       display: 'Custom',
       value: 'custom',
     },
-  ],
+  ];
 
-  actions: {
-    updateGlobalPermissionValue: function (val) {
-      this.set('globalPermissionValue', val);
-    },
-    setCollab(val, $item) {
-      if (!val) {
-        return;
-      }
-      let existingCollab = this.get('workspace.collaborators');
-      const user = this.store.peekRecord('user', val);
-      let alreadyCollab = _.contains(existingCollab, user.get('id'));
+  @action updateGlobalPermissionValue(val) {
+    this.globalPermissionValue = val;
+  }
+  @action setCollab(val) {
+    if (!val) {
+      return;
+    }
+    let existingCollab = this.args.workspace.get('collaborators');
+    const user = this.store.peekRecord('user', val);
+    let alreadyCollab = _.contains(existingCollab, user.get('id'));
 
-      if (alreadyCollab) {
-        this.set('existingUserError', true);
-        return;
-      }
-      if (this.utils.isNonEmptyObject(user)) {
-        this.set('collabUser', user);
-      }
-    },
+    if (alreadyCollab) {
+      this.existingUserError = true;
+      return;
+    }
+    if (this.utils.isNonEmptyObject(user)) {
+      this.collabUser = user;
+    }
+  }
 
-    saveCollab() {
-      if (!this.collabUser) {
-        this.set('missingUserError', true);
-        return;
-      }
-      let ws = this.workspace;
-      let permissions = ws.get('permissions');
+  @action saveCollab() {
+    if (!this.collabUser) {
+      this.missingUserError = true;
+      return;
+    }
+    let ws = this.args.workspace;
+    let permissions = ws.get('permissions');
 
-      let subValue = this.get('submissions.value');
+    let subValue = this.submissions.value;
 
-      let newObj = {
-        user: this.get('collabUser.id'),
-        global: this.globalPermissionValue,
-        submissions: { all: false, userOnly: false, submissionIds: [] },
-      };
+    let newObj = {
+      user: this.collabUser.get('id'),
+      global: this.globalPermissionValue,
+      submissions: { all: false, userOnly: false, submissionIds: [] },
+    };
 
-      let globalSetting = this.globalPermissionValue;
+    let globalSetting = this.globalPermissionValue;
 
-      if (globalSetting === 'viewOnly') {
-        newObj.folders = 1;
-        newObj.selections = 1;
-        newObj.comments = 1;
-        newObj.feedback = 'none';
+    if (globalSetting === 'viewOnly') {
+      newObj.folders = 1;
+      newObj.selections = 1;
+      newObj.comments = 1;
+      newObj.feedback = 'none';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'editor') {
+      newObj.folders = 3;
+      newObj.selections = 4;
+      newObj.comments = 4;
+      newObj.feedback = 'none';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'indirectMentor') {
+      newObj.folders = 2;
+      newObj.selections = 2;
+      newObj.comments = 2;
+      newObj.feedback = 'authReq';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'directMentor') {
+      newObj.folders = 2;
+      newObj.selections = 2;
+      newObj.comments = 2;
+      newObj.feedback = 'preAuth';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'approver') {
+      newObj.folders = 3;
+      newObj.selections = 4;
+      newObj.comments = 4;
+      newObj.feedback = 'approver';
+      newObj.submissions.all = true;
+    }
+    if (globalSetting === 'custom') {
+      newObj.selections = this.selections.value || 0;
+      newObj.folders = this.folders.value || 0;
+      newObj.comments = this.comments.value || 0;
+      newObj.feedback = this.feedback.value || 'none';
+
+      if (subValue === 'all') {
         newObj.submissions.all = true;
+      } else if (subValue === 'userOnly') {
+        newObj.submissions.userOnly = true;
+      } else if (subValue === 'custom') {
+        newObj.submissions.submissionIds = this.args.customSubmissionIds;
       }
+    }
+    this.args.originalCollaborators.addObject(this.collabUser);
 
-      if (globalSetting === 'editor') {
-        newObj.folders = 3;
-        newObj.selections = 4;
-        newObj.comments = 4;
-        newObj.feedback = 'none';
-        newObj.submissions.all = true;
-      }
+    permissions.addObject(newObj);
 
-      if (globalSetting === 'indirectMentor') {
-        newObj.folders = 2;
-        newObj.selections = 2;
-        newObj.comments = 2;
-        newObj.feedback = 'authReq';
-        newObj.submissions.all = true;
-      }
-
-      if (globalSetting === 'directMentor') {
-        newObj.folders = 2;
-        newObj.selections = 2;
-        newObj.comments = 2;
-        newObj.feedback = 'preAuth';
-        newObj.submissions.all = true;
-      }
-
-      if (globalSetting === 'approver') {
-        newObj.folders = 3;
-        newObj.selections = 4;
-        newObj.comments = 4;
-        newObj.feedback = 'approver';
-        newObj.submissions.all = true;
-      }
-      if (globalSetting === 'custom') {
-        newObj.selections = this.get('selections.value') || 0;
-        newObj.folders = this.get('folders.value') || 0;
-        newObj.comments = this.get('comments.value') || 0;
-        newObj.feedback = this.get('feedback.value') || 'none';
-
-        if (subValue === 'all') {
-          newObj.submissions.all = true;
-        } else if (subValue === 'userOnly') {
-          newObj.submissions.userOnly = true;
-        } else if (subValue === 'custom') {
-          newObj.submissions.submissionIds = this.customSubmissionIds;
-        }
-      }
-      this.originalCollaborators.addObject(this.collabUser);
-
-      permissions.addObject(newObj);
-
-      ws.save().then(() => {
-        this.alert.showToast(
-          'success',
-          `${this.collabUser.get('username')} added as collaborator`,
-          'bottom-end',
-          3000,
-          null,
-          false
-        );
-        this.cancelEditCollab();
-      });
-    },
-    toggleSubmissionView: function () {
-      this.toggleIsShowingCustomViewer();
-    },
-    cancelCreateCollab: function () {
-      this.cancelEditCollab();
-    },
-  },
-});
+    ws.save().then(() => {
+      this.alert.showToast(
+        'success',
+        `${this.collabUser.get('username')} added as collaborator`,
+        'bottom-end',
+        3000,
+        null,
+        false
+      );
+      this.args.cancelEditCollab();
+    });
+  }
+  @action toggleSubmissionView() {
+    this.args.toggleIsShowingCustomViewer();
+  }
+  @action cancelCreateCollab() {
+    this.args.cancelEditCollab();
+  }
+}
