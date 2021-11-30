@@ -116,8 +116,6 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
     let ws = this.args.workspace;
     let permissions = ws.get('permissions');
 
-    let subValue = this.submissions.value;
-
     let newObj = {
       user: this.collabUser.get('id'),
       global: this.globalPermissionValue,
@@ -166,6 +164,7 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
       newObj.submissions.all = true;
     }
     if (globalSetting === 'custom') {
+      let subValue = this.submissions.value;
       newObj.selections = this.selections.value || 0;
       newObj.folders = this.folders.value || 0;
       newObj.comments = this.comments.value || 0;
