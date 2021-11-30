@@ -137,5 +137,8 @@ export default Component.extend(ErrorHandlingMixin, {
     deselectAllSubmissions: function () {
       this.set('customSubmissionIds', []);
     },
+    toggleIsShowingCustomViewer: function () {
+      this.set('isShowingCustomViewer', !this.isShowingCustomViewer);
+    },
   },
 });

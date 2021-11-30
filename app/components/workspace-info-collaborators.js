@@ -435,12 +435,12 @@ export default Component.extend({
       this.set('createNewCollaborator', true);
     },
     toggleSubmissionView: function () {
-      this.set('isShowingCustomViewer', !this.isShowingCustomViewer);
+      this.toggleIsShowingCustomViewer();
     },
     cancelEditCollab: function () {
       this.set('selectedCollaborator', null);
       if (this.isShowingCustomViewer) {
-        this.set('isShowingCustomViewer', false);
+        this.toggleIsShowingCustomViewer();
       }
     },
   },
