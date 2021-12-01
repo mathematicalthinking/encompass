@@ -22,6 +22,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
+  allSelected = false;
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -410,6 +411,19 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
 
   @action selectAll() {
+    this.allSelected = !this.allSelected;
+    if (this.linkedWorkspacesMode === 'individual') {
+      this.studentWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+    }
+    if (this.linkedWorkspacesMode === 'group') {
+      this.groupWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+    }
+    if (this.linkedWorkspacesMode === 'both') {
+      this.studentWorkspacesToMake = [
+        ...this.selectedSection.students.content.mapBy('id'),
+      ];
+      this.groupWorkspacesToMake === [...this.sectionGroups.mapBy('id')];
+    }
     console.log('selectAll');
   }
   @action cancel() {
