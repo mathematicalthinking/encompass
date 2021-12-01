@@ -15,28 +15,6 @@ export default class WorkspaceInfoComponent extends ErrorHandlingComponent {
   @tracked updateRecordErrors = [];
   @tracked isShowingCustomViewer = false;
   @tracked customSubmissionIds = [];
-  constructor() {
-    super(...arguments);
-
-    const collaborators = this.args.workspace.get('collaborators');
-    // array of Ids, query for users;
-
-    if (!this.utils.isNonEmptyArray(collaborators)) {
-      this.originalCollaborators = [];
-      return;
-    }
-
-    return this.store
-      .query('user', {
-        ids: collaborators,
-      })
-      .then((users) => {
-        this.originalCollaborators = users.toArray();
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'queryErrors');
-      });
-  }
 
   get canEdit() {
     let workspace = this.args.workspace;
