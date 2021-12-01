@@ -22,7 +22,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
-  allSelected = false;
+  @tracked allSelected = false;
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -117,6 +117,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked studentWorkspacesToMake = [];
   //TODO: refactor
   @action updateLists(record) {
+    this.allSelected = false;
     if (record.constructor.modelName === 'user') {
       this.studentWorkspacesToMake.includes(record.id)
         ? this.studentWorkspacesToMake.splice(
@@ -411,20 +412,27 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
 
   @action selectAll() {
-    this.allSelected = !this.allSelected;
+    if (this.allSelected) {
+      this.studentWorkspacesToMake = [];
+      this.groupWorkspacesToMake = [];
+      this.allSelected = false;
+      return;
+    }
     if (this.linkedWorkspacesMode === 'individual') {
       this.studentWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+      this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'group') {
       this.groupWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+      this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'both') {
       this.studentWorkspacesToMake = [
         ...this.selectedSection.students.content.mapBy('id'),
       ];
       this.groupWorkspacesToMake === [...this.sectionGroups.mapBy('id')];
+      this.allSelected = true;
     }
-    console.log('selectAll');
   }
   @action cancel() {
     if (this.args.cancel) {

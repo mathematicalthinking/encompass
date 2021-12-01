@@ -23,6 +23,13 @@ export default class LinkedWorkspacesNew extends Component {
     return this.workspaceName || this.defaultName;
   }
 
+  get allWsToMake() {
+    return [
+      ...this.args.groupWorkspacesToMake,
+      ...this.args.studentWorkspacesToMake,
+    ];
+  }
+
   @action selectAll() {
     this.args.selectAll();
   }

@@ -35,12 +35,14 @@
         <li><label class='no-width'><Input
               @type='checkbox'
               {{on 'input' this.selectAll}}
+              @checked={{@allSelected}}
             />
             Select All</label></li>
         {{#each @students as |student|}}
           <li><label class='no-width'><Input
                 @type='checkbox'
                 {{on 'input' (fn this.update student)}}
+                @checked={{is-in this.allWsToMake student.id}}
               />
               {{if student.username student.username student.name}}:
               {{this.previewName}}</label></li>
