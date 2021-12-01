@@ -49,7 +49,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
 
   get initialLinkedAssignmentItem() {
-    let linkedAssignmentId = this.args.linkedAssignment.id;
+    let linkedAssignmentId = this.args.linkedAssignment.get('id');
 
     if (linkedAssignmentId) {
       return [linkedAssignmentId];
