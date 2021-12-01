@@ -24,9 +24,9 @@
       @initialCollabOptions={{this.initialCollabOptions}}
       @selectedCollaborators={{this.selectedCollaborators}}
       @canEdit={{this.canEditCollaborators}}
-      @linkedAssignment={{this.workspace.linkedAssignment.content}}
-      @students={{this.workspace.linkedAssignment.students.content}}
-      @childWorkspaces={{this.workspace.childWorkspaces.content}}
+      @linkedAssignment={{@workspace.linkedAssignment.content}}
+      @students={{@workspace.linkedAssignment.students.content}}
+      @childWorkspaces={{@workspace.childWorkspaces.content}}
     />
 
     {{#unless this.isShowingCustomViewer}}
