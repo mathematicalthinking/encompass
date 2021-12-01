@@ -2,7 +2,7 @@
   <div class='info-card'>
     <div class='heading'>
       Workspace Settings
-      {{#if this.canEdit}}
+      {{#if @canEdit}}
         {{#unless this.isEditing}}
           <span
             class='heading-icon'
@@ -25,21 +25,21 @@
               @type='text'
               class='text-input'
               @id='edit-name-input'
-              @value={{this.workspace.name}}
+              @value={{@workspace.name}}
             />
           {{else}}
-            {{this.workspace.name}}
+            {{@workspace.name}}
           {{/if}}
         </div>
       </div>
-      {{#if this.workspace.parentWorkspaces}}
+      {{#if @workspace.parentWorkspaces}}
         <div class='card-row'>
           <div class='row-label'>
             Parent Workspaces
           </div>
           <div class='row-value'>
             <ul>
-              {{#each this.workspace.parentWorkspaces as |ws|}}
+              {{#each @workspace.parentWorkspaces as |ws|}}
                 <li>
                   <LinkTo
                     @route='workspace.work'
@@ -76,8 +76,8 @@
           {{else}}
             <LinkTo
               @route='users.user'
-              @model={{this.workspace.owner.id}}
-            >{{this.workspace.owner.username}}</LinkTo>
+              @model={{@workspace.owner.id}}
+            >{{@workspace.owner.username}}</LinkTo>
           {{/if}}
         </div>
       </div>
@@ -94,7 +94,7 @@
               @action={{action (mut this.selectedMode)}}
             />
           {{else}}
-            {{this.workspace.mode}}
+            {{@workspace.mode}}
           {{/if}}
         </div>
       </div>
@@ -123,11 +123,11 @@
                 @preload='focus'
               />
             {{else}}
-              {{#if this.linkedAssignment}}
+              {{#if @linkedAssignment}}
                 <LinkTo
                   @route='assignments.assignment'
-                  @model={{this.linkedAssignment.id}}
-                >{{this.linkedAssignment.name}}</LinkTo>
+                  @model={{@linkedAssignment.id}}
+                >{{@linkedAssignment.name}}</LinkTo>
               {{else}}
                 N/A
               {{/if}}
@@ -148,7 +148,7 @@
                 @action={{action (mut this.selectedAutoUpdateSetting)}}
               />
             {{else}}
-              {{yes-no this.workspace.doAllowSubmissionUpdates}}
+              {{yes-no @workspace.doAllowSubmissionUpdates}}
             {{/if}}
           </div>
         </div>
@@ -200,39 +200,18 @@
             Child Workspaces
           </div>
           <div data-test='child-workspaces' class='row-value'>
-            {{#if this.isEditing}}
-              {{!-- {{selectize-input
-            store=store
-            inputId="linked-assignment-select"
-            maxItems=1
-            initialItems=initialLinkedAssignmentItem
-            onItemAdd=(action "setLinkedAssignment")
-            onItemRemove=(action "setLinkedAssignment")
-            labelField="name"
-            valueField="id"
-            searchField="name"
-            model="assignment"
-            topLevelQueryParams="filterBy"
-            queryParamsKey="name"
-            isAsync=true
-            placeholder="Search for an assignment by name"
-            preload="focus"
-            }} --}}
-            {{else}}
-              <ul class='child-workspaces'>
-                {{#each this.childWorkspaces as |ws|}}
-                  <li>
-                    <LinkTo
-                      @route='workspace.work'
-                      @model={{ws.id}}
-                    >{{ws.name}}</LinkTo>
-                  </li>
-                {{else}}
-                  <li>N/A</li>
-                {{/each}}
-              </ul>
-
-            {{/if}}
+            <ul class='child-workspaces'>
+              {{#each @childWorkspaces as |ws|}}
+                <li>
+                  <LinkTo
+                    @route='workspace.work'
+                    @model={{ws.id}}
+                  >{{ws.name}}</LinkTo>
+                </li>
+              {{else}}
+                <li>N/A</li>
+              {{/each}}
+            </ul>
           </div>
         </div>
         <div class='card-row'>
@@ -240,7 +219,7 @@
             Allow Automatic Updates From Children
           </div>
           <div data-test='allow-updates' class='row-value'>
-            {{#if isEditing}}
+            {{#if this.isEditing}}
               <MySelect
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}

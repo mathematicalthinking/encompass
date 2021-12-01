@@ -1,349 +1,315 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
-import { alias, equal, gt } from '@ember/object/computed';
+import ErrorHandlingComponent from './error-handling';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import _ from 'underscore';
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
-  currentUser: service('current-user'),
-  tagName: '',
-  alert: service('sweet-alert'),
-  permissions: service('workspace-permissions'),
-  utils: service('utility-methods'),
-  store: service(),
-  selectedMode: null,
-  workspacePermissions: alias('workspace.permissions'),
-  selectedLinkedAssignment: null,
-  selectedAutoUpdateSetting: null,
-  didLinkedAssignmentChange: false,
-  isEditing: false,
-  isParentWs: equal('workspace.workspaceType', 'parent'),
-  hasChildWorkspaces: gt('childWorkspaces.length', 0),
+export default class WorkspaceInfoSettingsComponent extends ErrorHandlingComponent {
+  @service('current-user') currentUser;
+  @service('sweet-alert') alert;
+  @service('workspace-permissions') permissions;
+  @service('utility-methods') utils;
+  @service store;
+  @tracked selectedMode = null;
+  get workspacePermissions() {
+    return this.args.workspace.permissions;
+  }
+  @tracked selectedLinkedAssignment = null;
+  @tracked selectedAutoUpdateSetting = null;
+  @tracked didLinkedAssignmentChange = false;
+  @tracked isEditing = false;
+  @tracked selectedMode = '';
+  @tracked selectedAutoUpdateSetting = 'No';
+  @tracked saveOwner = {};
+  @tracked missingLinkedAssignment = false;
+  @tracked missingChildWorkspaces = false;
+  @tracked isUpdateRequestInProgress = false;
+  @tracked createdParentData = {};
+  @tracked updatedParentData = {};
+  get isParentWs() {
+    return this.args.workspace.workspaceType === 'parent';
+  }
+  get hasChildWorkspaces() {
+    return this.args.childWorkspaces.length > 0;
+  }
 
-  doShowLinkedAssignment: computed(
-    'currentUser.user',
-    'isParentWs',
-    function () {
-      return (
-        this.permissions.hasOwnerPrivileges(this.workspace) && !this.isParentWs
-      );
-    }
-  ),
+  get doShowLinkedAssignment() {
+    return (
+      this.permissions.hasOwnerPrivileges(this.args.workspace) &&
+      !this.isParentWs
+    );
+  }
 
-  initialOwnerItem: computed('workspace.owner', function () {
-    const owner = this.get('workspace.owner');
+  get initialOwnerItem() {
+    const owner = this.args.workspace.get('owner');
     if (this.utils.isNonEmptyObject(owner)) {
       return [owner.get('id')];
     }
     return [];
-  }),
+  }
 
-  initialLinkedAssignmentItem: computed('linkedAssignment', function () {
-    let linkedAssignmentId = this.get('linkedAssignment.id');
+  get initialLinkedAssignmentItem() {
+    let linkedAssignmentId = this.args.linkedAssignment.id;
 
     if (linkedAssignmentId) {
       return [linkedAssignmentId];
     }
     return [];
-  }),
+  }
 
-  doShowChildWorkspaces: computed(
-    'currentUser.user',
-    'isParentWs',
-    function () {
-      return (
-        this.permissions.hasOwnerPrivileges(this.workspace) && this.isParentWs
-      );
+  get doShowChildWorkspaces() {
+    return (
+      this.permissions.hasOwnerPrivileges(this.args.workspace) &&
+      this.isParentWs
+    );
+  }
+
+  get modes() {
+    const basic = ['private', 'org', 'public'];
+
+    if (this.currentUser.user.isStudent || !this.currentUser.user.isAdmin) {
+      return basic;
     }
-  ),
 
-  modes: computed(
-    'currentUser.user.isAdmin',
-    'currentUser.user.isStudent',
-    function () {
-      const basic = ['private', 'org', 'public'];
+    return ['private', 'org', 'public', 'internet'];
+  }
 
-      if (
-        this.get('currentUser.user.isStudent') ||
-        !this.get('currentUser.user.isAdmin')
-      ) {
-        return basic;
-      }
-
-      return ['private', 'org', 'public', 'internet'];
-    }
-  ),
-
-  yesNoMySelect: ['Yes', 'No'],
+  yesNoMySelect = ['Yes', 'No'];
 
   boolToYesNo(boolean) {
     return boolean ? 'Yes' : 'No';
-  },
+  }
 
-  actions: {
-    editWorkspaceInfo() {
-      this.set('isEditing', true);
-      let workspace = this.workspace;
-      this.set('selectedMode', workspace.get('mode'));
+  @action editWorkspaceInfo() {
+    this.isEditing = true;
+    let workspace = this.args.workspace;
+    this.selectedMode = workspace.mode;
 
-      let selectedAutoUpdateSetting = this.isParentWs
-        ? workspace.get('doAutoUpdateFromChildren')
-        : workspace.get('doAllowSubmissionUpdates');
-      this.set(
-        'selectedAutoUpdateSetting',
-        this.boolToYesNo(selectedAutoUpdateSetting)
-      );
-    },
+    let selectedAutoUpdateSetting = this.isParentWs
+      ? workspace.doAutoUpdateFromChildren
+      : workspace.doAllowSubmissionUpdates;
+    this.selectedAutoUpdateSetting = this.boolToYesNo(
+      selectedAutoUpdateSetting
+    );
+  }
 
-    setOwner(val, $item) {
-      const workspace = this.workspace;
+  @action setOwner(val) {
+    const workspace = this.args.workspace;
 
-      if (!val) {
-        return;
-      }
+    if (!val) {
+      return;
+    }
 
-      const user = this.store.peekRecord('user', val);
-      if (this.utils.isNonEmptyObject(user)) {
-        workspace.set('owner', user);
-        let ownerOrg = user.get('organization');
-        let ownerOrgName = ownerOrg.get('name');
-        let ownerOrgId = ownerOrg.get('id');
-        let workspaceOrg = workspace.get('organization');
-        let workspaceOrgName = workspaceOrg.get('name');
-        let workspaceOrgId = workspaceOrg.get('id');
+    const user = this.store.peekRecord('user', val);
+    if (this.utils.isNonEmptyObject(user)) {
+      workspace.set('owner', user);
+      let ownerOrg = user.get('organization');
+      let ownerOrgName = ownerOrg.get('name');
+      let ownerOrgId = ownerOrg.get('id');
+      let workspaceOrg = workspace.get('organization');
+      let workspaceOrgName = workspaceOrg.get('name');
+      let workspaceOrgId = workspaceOrg.get('id');
 
-        if (workspaceOrgId) {
-          if (workspaceOrgId !== ownerOrgId) {
-            this.alert
-              .showModal(
-                'question',
-                `Do you want to change this workspace's organization`,
-                `This owner belongs to ${ownerOrgName} but this workspace belongs to ${workspaceOrgName}`,
-                'Yes, change it',
-                'No, keep it'
-              )
-              .then((results) => {
-                if (results.value) {
-                  workspace.set('organization', ownerOrg);
-                  this.set('saveOwner', user);
-                } else {
-                  workspace.set('organization', workspaceOrg);
-                  this.set('saveOwner', user);
-                }
-              });
-          } else {
-            workspace.set('organization', ownerOrg);
-            this.set('saveOwner', user);
-          }
+      if (workspaceOrgId) {
+        if (workspaceOrgId !== ownerOrgId) {
+          this.alert
+            .showModal(
+              'question',
+              `Do you want to change this workspace's organization`,
+              `This owner belongs to ${ownerOrgName} but this workspace belongs to ${workspaceOrgName}`,
+              'Yes, change it',
+              'No, keep it'
+            )
+            .then((results) => {
+              if (results.value) {
+                workspace.set('organization', ownerOrg);
+                this.saveOwner = user;
+              } else {
+                workspace.set('organization', workspaceOrg);
+                this.saveOwner = user;
+              }
+            });
         } else {
           workspace.set('organization', ownerOrg);
-          this.set('saveOwner', user);
+          this.saveOwner = user;
         }
-      }
-    },
-
-    setLinkedAssignment(val, $item) {
-      if (!val) {
-        return;
-      }
-
-      let linkedAssignmentId = this.get('linkedAssignment.id');
-
-      if (_.isNull($item)) {
-        if (linkedAssignmentId) {
-          this.set('selectedLinkedAssignment', null);
-          this.set('didLinkedAssignmentChange', true);
-        }
-        return;
-      }
-
-      let assignment = this.store.peekRecord('assignment', val);
-
-      if (assignment) {
-        if (assignment.get('id') !== linkedAssignmentId) {
-          this.set('selectedLinkedAssignment', assignment);
-          this.set('didLinkedAssignmentChange', true);
-        }
-      }
-    },
-
-    checkWorkspace: function () {
-      let workspace = this.workspace;
-      let workspaceOrg = workspace.get('organization.content');
-      let workspaceOwner = workspace.get('owner');
-      let ownerOrg = workspaceOwner.get('organization');
-      let ownerOrgName = ownerOrg.get('name');
-      let mode = this.selectedMode;
-      workspace.set('mode', mode);
-      if (mode === 'org' && workspaceOrg === null) {
-        this.alert
-          .showModal(
-            'info',
-            `Do you want to make this workspace visibile to ${ownerOrgName}`,
-            `Everyone in this organization will be able to see this workspace`,
-            'Yes',
-            'No'
-          )
-          .then((results) => {
-            if (results.value) {
-              workspace.set('organization', ownerOrg);
-              this.send('saveWorkspace');
-            }
-          });
       } else {
-        this.send('saveWorkspace');
+        workspace.set('organization', ownerOrg);
+        this.saveOwner = user;
       }
-    },
+    }
+  }
 
-    saveWorkspace: function () {
-      //only make put request if there were changes - works but not for owner
-      let workspace = this.workspace;
+  @action setLinkedAssignment(val, $item) {
+    if (!val) {
+      return;
+    }
 
-      let updateSetting = this.selectedAutoUpdateSetting;
+    let linkedAssignmentId = this.args.linkedAssignment.id;
 
-      let updateSettingBool;
-
-      if (updateSetting === 'Yes') {
-        updateSettingBool = true;
-      } else if (updateSetting === 'No') {
-        updateSettingBool = false;
+    if (_.isNull($item)) {
+      if (linkedAssignmentId) {
+        this.selectedLinkedAssignment = null;
+        this.didLinkedAssignmentChange = true;
       }
+      return;
+    }
 
-      if (typeof updateSettingBool === 'boolean') {
-        let updateProp = this.isParentWs
-          ? 'doAutoUpdateFromChildren'
-          : 'doAllowSubmissionUpdates';
+    let assignment = this.store.peekRecord('assignment', val);
 
-        if (updateSettingBool !== workspace.get(updateProp)) {
-          workspace.set(updateProp, updateSettingBool);
-        }
+    if (assignment) {
+      if (assignment.get('id') !== linkedAssignmentId) {
+        this.selectedLinkedAssignment = assignment;
+        this.didLinkedAssignmentChange = true;
       }
+    }
+  }
 
-      if (this.didLinkedAssignmentChange) {
-        workspace.set('linkedAssignment', this.selectedLinkedAssignment);
-      }
-
-      if (
-        workspace.get('hasDirtyAttributes') ||
-        this.saveOwner ||
-        this.didLinkedAssignmentChange
-      ) {
-        let workspace = this.workspace;
-        workspace
-          .save()
-          .then((res) => {
-            this.alert.showToast(
-              'success',
-              'Workspace Updated',
-              'bottom-end',
-              3000,
-              null,
-              false
-            );
-            this.set('isEditing', false);
-            this.set('saveOwner', null);
-            this.set('didLinkedAssignmentChange', false);
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'updateRecordErrors', workspace);
-          });
-      } else {
-        this.alert.showToast(
+  @action checkWorkspace() {
+    let workspace = this.args.workspace;
+    let workspaceOrg = workspace.get('organization.content');
+    let workspaceOwner = workspace.get('owner');
+    let ownerOrg = workspaceOwner.get('organization');
+    let ownerOrgName = ownerOrg.get('name');
+    let mode = this.selectedMode;
+    workspace.set('mode', mode);
+    if (mode === 'org' && workspaceOrg === null) {
+      this.alert
+        .showModal(
           'info',
-          'No Changes to Save',
-          'bottom-start',
-          3000,
-          false,
-          null
-        );
-        this.set('isEditing', false);
-      }
-    },
-    stopEditing() {
-      console.log('stop editing');
-      this.set('isEditing', false);
-      this.set('didLinkedAssignmentChange', false);
-      this.set('selectedLinkedAssignment', null);
-    },
-
-    updateWithExistingWork() {
-      _.each(
-        [
-          'wereNoAnswersToUpdate',
-          'updateErrors',
-          'addedSubmissions',
-          'missingLinkedAssignment',
-          'serverErrors',
-          'missingChildWorkspaces',
-        ],
-        (prop) => {
-          if (this.get(prop)) {
-            this.set(prop, null);
-          }
-        }
-      );
-
-      let isParentUpdate = this.isParentWs;
-
-      if (!this.workspace) {
-        return;
-      }
-
-      if (!this.linkedAssignment && !isParentUpdate) {
-        this.set('missingLinkedAssignment', true);
-        return;
-      }
-
-      if (isParentUpdate && !this.hasChildWorkspaces) {
-        return this.set('missingChildWorkspaces', true);
-      }
-
-      this.set('isUpdateRequestInProgress', true);
-
-      let newUpdateRequest = this.store.createRecord('updateWorkspaceRequest', {
-        workspace: this.workspace,
-        linkedAssignment: this.linkedAssignment,
-        createdBy: this.currentUser.user,
-        isParentUpdate: this.isParentWs,
-      });
-      newUpdateRequest
-        .save()
+          `Do you want to make this workspace visibile to ${ownerOrgName}`,
+          `Everyone in this organization will be able to see this workspace`,
+          'Yes',
+          'No'
+        )
         .then((results) => {
-          this.set('isUpdateRequestInProgress', false);
-
-          if (isParentUpdate) {
-            if (results.get('wasNoDataToUpdate') === true) {
-              this.alert.showToast(
-                'info',
-                'Workspace Up to Date',
-                'bottom-start',
-                3000,
-                false,
-                null
-              );
-              return;
-            } else {
-              let createdParentData = results.get('createdParentData');
-
-              this.set('createdParentData', createdParentData);
-
-              let updatedParentData = results.get('updatedParentData');
-              this.set('updatedParentData', updatedParentData);
-
-              let msg = 'Successfully updated parent workspace';
-              return this.alert.showToast(
-                'success',
-                msg,
-                'bottom-start',
-                3000,
-                false,
-                null
-              );
-            }
+          if (results.value) {
+            workspace.set('organization', ownerOrg);
+            this.saveWorkspace();
           }
+        });
+    } else {
+      this.saveWorkspace();
+    }
+  }
 
-          if (results.get('wereNoAnswersToUpdate') === true) {
+  @action saveWorkspace() {
+    //only make put request if there were changes - works but not for owner
+    let workspace = this.args.workspace;
+
+    let updateSetting = this.selectedAutoUpdateSetting;
+
+    let updateSettingBool;
+
+    if (updateSetting === 'Yes') {
+      updateSettingBool = true;
+    } else if (updateSetting === 'No') {
+      updateSettingBool = false;
+    }
+
+    if (typeof updateSettingBool === 'boolean') {
+      let updateProp = this.isParentWs
+        ? 'doAutoUpdateFromChildren'
+        : 'doAllowSubmissionUpdates';
+
+      if (updateSettingBool !== workspace.get(updateProp)) {
+        workspace.set(updateProp, updateSettingBool);
+      }
+    }
+
+    if (this.didLinkedAssignmentChange) {
+      workspace.set('linkedAssignment', this.selectedLinkedAssignment);
+    }
+
+    if (
+      workspace.get('hasDirtyAttributes') ||
+      this.saveOwner ||
+      this.didLinkedAssignmentChange
+    ) {
+      let workspace = this.args.workspace;
+      workspace
+        .save()
+        .then(() => {
+          this.alert.showToast(
+            'success',
+            'Workspace Updated',
+            'bottom-end',
+            3000,
+            null,
+            false
+          );
+          this.isEditing = false;
+          this.saveOwner = null;
+          this.didLinkedAssignmentChange = false;
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', workspace);
+        });
+    } else {
+      this.alert.showToast(
+        'info',
+        'No Changes to Save',
+        'bottom-start',
+        3000,
+        false,
+        null
+      );
+      this.isEditing = false;
+    }
+  }
+  @action stopEditing() {
+    this.isEditing = false;
+    this.didLinkedAssignmentChange = false;
+    this.selectedLinkedAssignment = null;
+  }
+
+  @action updateWithExistingWork() {
+    _.each(
+      [
+        'wereNoAnswersToUpdate',
+        'updateErrors',
+        'addedSubmissions',
+        'missingLinkedAssignment',
+        'serverErrors',
+        'missingChildWorkspaces',
+      ],
+      (prop) => {
+        if (this[prop]) {
+          this[prop] = null;
+        }
+      }
+    );
+
+    let isParentUpdate = this.isParentWs;
+
+    if (!this.args.workspace) {
+      return;
+    }
+
+    if (!this.args.linkedAssignment && !isParentUpdate) {
+      this.missingLinkedAssignment = true;
+      return;
+    }
+
+    if (isParentUpdate && !this.hasChildWorkspaces) {
+      return (this.missingChildWorkspaces = true);
+    }
+
+    this.isUpdateRequestInProgress = true;
+
+    let newUpdateRequest = this.store.createRecord('updateWorkspaceRequest', {
+      workspace: this.args.workspace,
+      linkedAssignment: this.args.linkedAssignment,
+      createdBy: this.currentUser.user,
+      isParentUpdate: this.isParentWs,
+    });
+    newUpdateRequest
+      .save()
+      .then((results) => {
+        this.isUpdateRequestInProgress = false;
+
+        if (isParentUpdate) {
+          if (results.get('wasNoDataToUpdate') === true) {
             this.alert.showToast(
               'info',
               'Workspace Up to Date',
@@ -353,18 +319,15 @@ export default Component.extend(ErrorHandlingMixin, {
               null
             );
             return;
-          }
-          if (this.utils.isNonEmptyArray(results.get('updateErrors'))) {
-            this.set('updateErrors', results.get('updateErrors'));
-            return;
-          }
+          } else {
+            let createdParentData = results.createdParentData;
 
-          if (results.get('addedSubmissions')) {
-            let count = results.get('addedSubmissions.length');
-            let msg = `Added ${count} new submissions`;
-            if (count === 1) {
-              msg = 'Added 1 new submission';
-            }
+            this.createdParentData = createdParentData;
+
+            let updatedParentData = results.updatedParentData;
+            this.updatedParentData = updatedParentData;
+
+            let msg = 'Successfully updated parent workspace';
             return this.alert.showToast(
               'success',
               msg,
@@ -374,10 +337,42 @@ export default Component.extend(ErrorHandlingMixin, {
               null
             );
           }
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'serverErrors');
-        });
-    },
-  },
-});
+        }
+
+        if (results.get('wereNoAnswersToUpdate') === true) {
+          this.alert.showToast(
+            'info',
+            'Workspace Up to Date',
+            'bottom-start',
+            3000,
+            false,
+            null
+          );
+          return;
+        }
+        if (this.utils.isNonEmptyArray(results.get('updateErrors'))) {
+          this.updateErrors = results.updateErrors;
+          return;
+        }
+
+        if (results.addedSubmissions) {
+          let count = results.addedSubmissions.length;
+          let msg = `Added ${count} new submissions`;
+          if (count === 1) {
+            msg = 'Added 1 new submission';
+          }
+          return this.alert.showToast(
+            'success',
+            msg,
+            'bottom-start',
+            3000,
+            false,
+            null
+          );
+        }
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'serverErrors');
+      });
+  }
+}
