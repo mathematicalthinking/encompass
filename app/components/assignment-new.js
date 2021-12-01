@@ -29,8 +29,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
     dueDate:
       'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
-    name:
-      'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
+    name: 'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
     linkedWorkspaces:
       'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
     parentWorkspace:
@@ -138,8 +137,6 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
             record.id,
           ]);
     }
-    console.log(this.studentWorkspacesToMake);
-    console.log(this.groupWorkspacesToMake);
   }
 
   @action updateSectionGroups() {
@@ -412,6 +409,9 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     this.createAssignment(values);
   }
 
+  @action selectAll() {
+    console.log('selectAll');
+  }
   @action cancel() {
     if (this.args.cancel) {
       this.args.cancel();

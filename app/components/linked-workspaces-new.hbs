@@ -32,6 +32,11 @@
         Choose Workspaces to be created:
       </p>
       <ul>
+        <li><label class='no-width'><Input
+              @type='checkbox'
+              {{on 'input' this.selectAll}}
+            />
+            Select All</label></li>
         {{#each @students as |student|}}
           <li><label class='no-width'><Input
                 @type='checkbox'

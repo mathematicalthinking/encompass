@@ -23,6 +23,10 @@ export default class LinkedWorkspacesNew extends Component {
     return this.workspaceName || this.defaultName;
   }
 
+  @action selectAll() {
+    this.args.selectAll();
+  }
+
   @action update(student) {
     return this.args.updateLists(student);
   }
