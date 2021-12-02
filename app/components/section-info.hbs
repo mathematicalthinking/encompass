@@ -1,204 +1,321 @@
-<div id="section-info" class="section-info">
-  <header class="info-header">
+<div id='section-info' class='section-info'>
+  <header class='info-header'>
     <h2>Class Details</h2>
-    <div class="clear"></div>
+    <div class='clear'></div>
   </header>
 
   {{#each this.dataLoadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    <p class='error-message'>{{error}}</p>
   {{/each}}
-  <form data-test="section-info-form" id="sectioninfo">
+  <form data-test='section-info-form' id='sectioninfo'>
     <fieldset>
-      <div class="section-info-detail name">
-        <label for="name">Class Name
+      <div class='section-info-detail name'>
+        <label for='name'>Class Name
           {{#unless this.cantEdit}}
             {{#if this.isEditingName}}
-            <i title="Done" {{action "updateSectionName"}} class="fa fa-check"></i>
-          {{else}}
-            <i title="Edit" {{action (mut this.isEditingName) true}} class="far fa-edit"></i>
+              <i
+                title='Done'
+                {{action 'updateSectionName'}}
+                class='fa fa-check'
+              ></i>
+            {{else}}
+              <i
+                title='Edit'
+                {{action (mut this.isEditingName) true}}
+                class='far fa-edit'
+              ></i>
             {{/if}}
           {{/unless}}
         </label>
 
         {{#if this.isEditingName}}
-          <Input @name="name" @id="name" @type="text" @value={{this.currentSection.name}} />
+          <Input
+            @name='name'
+            @id='name'
+            @type='text'
+            @value={{this.currentSection.name}}
+          />
         {{else}}
-          <p data-test="section-name-display" class="section-info">{{@section.name}}</p>
+          <p
+            data-test='section-name-display'
+            class='section-info'
+          >{{@section.name}}</p>
         {{/if}}
       </div>
-        <div class="section-info-detail assignments">
-          <label for="assignments">Assignments
+      <div class='section-info-detail assignments'>
+        <label for='assignments'>Assignments
           {{#unless this.cantEdit}}
             {{#if this.isEditingAssignments}}
-            <i title="Done" {{action (mut this.isEditingAssignments) false}} class="fa fa-check"></i>
-          {{else}}
-            <i title="Edit" {{action (mut this.isEditingAssignments) true}} class="far fa-edit"></i>
-            {{/if}}
-          {{/unless}}
-          </label>
-          <ul class="listing">
-            {{#if @section.assignments}}
-              {{#each @section.assignments as |assignment|}}
-              <li><LinkTo @route="assignments.assignment" @model={{assignment.id}}>{{assignment.name}}</LinkTo></li>
-              {{/each}}
+              <i
+                title='Done'
+                {{action (mut this.isEditingAssignments) false}}
+                class='fa fa-check'
+              ></i>
             {{else}}
-              <li>No Assignments yet</li>
+              <i
+                title='Edit'
+                {{action (mut this.isEditingAssignments) true}}
+                class='far fa-edit'
+              ></i>
             {{/if}}
-          </ul>
-          {{#unless this.cantEdit}}
-
           {{/unless}}
+        </label>
+        <ul class='listing'>
+          {{#if @section.assignments}}
+            {{#each @section.assignments as |assignment|}}
+              <li><LinkTo
+                  @route='assignments.assignment'
+                  @model={{assignment.id}}
+                >{{assignment.name}}</LinkTo></li>
+            {{/each}}
+          {{else}}
+            <li>No Assignments yet</li>
+          {{/if}}
+        </ul>
+        {{#unless this.cantEdit}}{{/unless}}
+      </div>
+      {{#if this.isEditingAssignments}}
+        <div class='btn-container'>
+          <button class='action_button' {{action 'updateShowAssignment'}}>New
+            Assignment</button>
         </div>
-        {{#if this.isEditingAssignments}}
-          <div class="btn-container">
-            <button class="action_button" {{action 'updateShowAssignment'}}>New Assignment</button>
-          </div>
-        {{/if}}
-          <div class="section-info-detail teachers">
-            <label for="teachers">Teachers
-              {{#unless this.cantEdit}}
-                {{#if this.isEditingTeachers}}
-                  <i title="Done" {{action (mut this.isEditingTeachers) false}} class="fa fa-check"></i>
-                {{else}}
-                  <i title="Edit" {{action (mut this.isEditingTeachers) true}} class="far fa-edit"></i>
-                {{/if}}
-              {{/unless}}
-            </label>
-            <ul class="listing">
-              {{#each @section.teachers as |teacher| }}
-                <li>
-                  {{#if @currentUser.isStudent}}
-                    {{teacher.username}}
-                  {{else}}
-                    <LinkTo @route="users.user" @model={{teacher.id}}> {{teacher.username}} </LinkTo>
-                  {{/if}}
-
-                  {{#unless this.cantEdit}}
-                    {{#if this.isEditingTeachers}}
-                      <button class="trash-button" {{action 'removeTeacher' teacher}}>
-                        <i title="remove" class="far fa-times-circle" aria-hidden="true"></i>
-                      </button>
-                    {{/if}}
-                  {{/unless}}
-                </li>
-              {{/each}}
-            </ul>
-            {{#if this.removeTeacherError}}
-              <p class="error-message">You must have at least one teacher</p>
-            {{/if}}
-
-          </div>
+      {{/if}}
+      <div class='section-info-detail teachers'>
+        <label for='teachers'>Teachers
           {{#unless this.cantEdit}}
             {{#if this.isEditingTeachers}}
-              <div class="update-teachers">
-                <label>Add Teacher<i title="Start typing a teacher's username to see suggestions" class="fas fa-info-circle fa-sm"></i></label>
-                  <SelectizeInput @store={{this.store}} @inputId="select-add-teacher" @maxItems={{1}} @initialOptions={{this.initialTeacherOptions}} @onItemAdd={{action "addTeacher"}} @model="user" @isAsync={{true}} @labelField="username" @searchField="username" @valueField="id" @customQueryParams={{this.addTeacherQueryParams}} @queryParamsKey="usernameSearch" />
-
-                {{#each this.updateTeacherErrors as |error|}}
-                  <p class="error-message">{{error}}</p>
-                {{/each}}
-              </div>
+              <i
+                title='Done'
+                {{action (mut this.isEditingTeachers) false}}
+                class='fa fa-check'
+              ></i>
+            {{else}}
+              <i
+                title='Edit'
+                {{action (mut this.isEditingTeachers) true}}
+                class='far fa-edit'
+              ></i>
             {{/if}}
           {{/unless}}
-          <div class="section-info-detail students">
-          <label for="students">Students
-            {{#unless this.cantEdit}}
-              {{#if this.isEditingStudents}}
-                <i title="Done" {{action (mut this.isEditingStudents) false}} class="fa fa-check"></i>
+        </label>
+        <ul class='listing'>
+          {{#each @section.teachers as |teacher|}}
+            <li>
+              {{#if @currentUser.isStudent}}
+                {{teacher.username}}
               {{else}}
-                <i data-test="edit-students" title="Edit" {{action (mut this.isEditingStudents) true}} class="far fa-edit"></i>
+                <LinkTo @route='users.user' @model={{teacher.id}}>
+                  {{teacher.username}}
+                </LinkTo>
               {{/if}}
-            {{/unless}}
-          </label>
-            <ul class="listing">
-              {{#each @section.students as |student|}}
-                <li>
-                  {{#if @currentUser.isStudent}}
-                    {{student.username}}
-                  {{else}}
-                    <LinkTo @route="users.user" @model={{student.id}}> {{student.username}} </LinkTo>
-                  {{/if}}
-                  {{#unless this.cantEdit}}
-                    <LinkTo @route="users.user" @model={{student.id}}> </LinkTo>
-                    {{#if this.isEditingStudents}}
-                      <button class="trash-button" {{action 'removeStudent' student}}>
-                        <i class="far fa-times-circle" aria-hidden="true"></i>
-                      </button>
-                  {{/if}}
-                  {{/unless}}
-                </li>
-              {{else}}
-                <p class="info">No students yet.</p>
-              {{/each}}
-            </ul>
 
-          </div>
-          <div class="update-students">
-            {{#if this.isEditingStudents}}
-              <AddCreateStudent @currentUser={{@currentUser}} @section={{this.currentSection}} @students={{this.studentList}} @sectionPassword={{@section.sectionPassword}} />
-            {{/if}}
-            {{#each this.updateStudentErrors as |error|}}
-              <p class="error-message">{{error}}</p>
-            {{/each}}
-          </div>
-
-          <div class="section-info-detail groups">
-            <label for="groups">Groups:
               {{#unless this.cantEdit}}
-                {{#if this.addGroup}}
-                  <i title="Done" {{on "click" this.toggleAddGroup}} class="fa fa-check"></i>
-                {{else}}
-                  <i title="Edit" {{on "click" this.toggleAddGroup}} class="far fa-edit"></i>
+                {{#if this.isEditingTeachers}}
+                  <button
+                    class='trash-button'
+                    {{action 'removeTeacher' teacher}}
+                  >
+                    <i
+                      title='remove'
+                      class='far fa-times-circle'
+                      aria-hidden='true'
+                    ></i>
+                  </button>
                 {{/if}}
               {{/unless}}
-            </label>
-            {{#if this.addGroup}}
-              <div class="update-students">
-                <Input @value={{this.newGroup.name}} @placeholder="Group Name"></Input>
-                  <SelectizeInput @store={{this.store}} @inputId="group-add-student" @maxItems={{1}}
-                    @initialOptions={{this.selectableStudents}} @onItemAdd={{action "placeStudent"}} @model="user" @isAsync={{false}}
-                    @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
-                {{#each this.newGroup.students as |student|}}
-                  <p>
-                    {{student.username}}
-                    <button class="trash-button" {{action 'updateGroupDraft' student}}>
-                    <i class="far fa-times-circle" aria-hidden="true"></i>
-                    </button>
-                  </p>
-                {{/each}}
-                <button {{on "click" this.saveGroup}}>Save Group</button>
-              </div>
-            {{/if}}
-            <ul class="listing">
-              {{#each @groups as |group|}}
-                {{#unless group.isTrashed}}
-                  <GroupInfo @group={{group}} @addGroup={{this.addGroup}} @selectableStudents={{this.selectableStudents}} @editGroupName={{action "editGroupName"}} @updateGroupStudents={{action "updateGroupStudents"}} @updateGroup={{action "updateGroup"}} @deleteGroup={{action "deleteGroup"}} />
-                {{/unless}}
-              {{/each}}
-            </ul>
-          </div>
+            </li>
+          {{/each}}
+        </ul>
+        {{#if this.removeTeacherError}}
+          <p class='error-message'>You must have at least one teacher</p>
+        {{/if}}
 
-      </fieldset>
+      </div>
+      {{#unless this.cantEdit}}
+        {{#if this.isEditingTeachers}}
+          <div class='update-teachers'>
+            <label>Add Teacher<i
+                title="Start typing a teacher's username to see suggestions"
+                class='fas fa-info-circle fa-sm'
+              ></i></label>
+            <SelectizeInput
+              @store={{this.store}}
+              @inputId='select-add-teacher'
+              @maxItems={{1}}
+              @initialOptions={{this.initialTeacherOptions}}
+              @onItemAdd={{action 'addTeacher'}}
+              @model='user'
+              @isAsync={{true}}
+              @labelField='username'
+              @searchField='username'
+              @valueField='id'
+              @customQueryParams={{this.addTeacherQueryParams}}
+              @queryParamsKey='usernameSearch'
+            />
+
+            {{#each this.updateTeacherErrors as |error|}}
+              <p class='error-message'>{{error}}</p>
+            {{/each}}
+          </div>
+        {{/if}}
+      {{/unless}}
+      <div class='section-info-detail students'>
+        <label for='students'>Students
+          {{#unless this.cantEdit}}
+            {{#if this.isEditingStudents}}
+              <i
+                title='Done'
+                {{action (mut this.isEditingStudents) false}}
+                class='fa fa-check'
+              ></i>
+            {{else}}
+              <i
+                data-test='edit-students'
+                title='Edit'
+                {{action (mut this.isEditingStudents) true}}
+                class='far fa-edit'
+              ></i>
+            {{/if}}
+          {{/unless}}
+        </label>
+        <ul class='listing'>
+          {{#each @section.students as |student|}}
+            <li>
+              {{#if @currentUser.isStudent}}
+                {{student.username}}
+              {{else}}
+                <LinkTo @route='users.user' @model={{student.id}}>
+                  {{student.username}}
+                </LinkTo>
+              {{/if}}
+              {{#unless this.cantEdit}}
+                <LinkTo @route='users.user' @model={{student.id}} />
+                {{#if this.isEditingStudents}}
+                  <button
+                    class='trash-button'
+                    {{action 'removeStudent' student}}
+                  >
+                    <i class='far fa-times-circle' aria-hidden='true'></i>
+                  </button>
+                {{/if}}
+              {{/unless}}
+            </li>
+          {{else}}
+            <p class='info'>No students yet.</p>
+          {{/each}}
+        </ul>
+
+      </div>
+      <div class='update-students'>
+        {{#if this.isEditingStudents}}
+          <AddCreateStudent
+            @currentUser={{@currentUser}}
+            @section={{this.currentSection}}
+            @students={{this.studentList}}
+            @sectionPassword={{@section.sectionPassword}}
+          />
+        {{/if}}
+        {{#each this.updateStudentErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
+      </div>
+
+      <div class='section-info-detail groups'>
+        <label for='groups'>Groups:
+          {{#unless this.cantEdit}}
+            {{#if this.addGroup}}
+              <i
+                title='Done'
+                {{on 'click' this.toggleAddGroup}}
+                class='fa fa-check'
+              ></i>
+            {{else}}
+              <i
+                title='Edit'
+                {{on 'click' this.toggleAddGroup}}
+                class='far fa-edit'
+              ></i>
+            {{/if}}
+          {{/unless}}
+        </label>
+        {{#if this.addGroup}}
+          <div class='update-students'>
+            <Input @value={{this.newGroup.name}} @placeholder='Group Name' />
+            <SelectizeInput
+              @store={{this.store}}
+              @inputId='group-add-student'
+              @maxItems={{1}}
+              @initialOptions={{this.selectableStudents}}
+              @onItemAdd={{action 'placeStudent'}}
+              @model='user'
+              @isAsync={{false}}
+              @labelField='username'
+              @searchField='username'
+              @valueField='id'
+              @queryParamsKey='usernameSearch'
+            />
+            {{#each this.newGroup.students as |student|}}
+              <p>
+                {{student.username}}
+                <button
+                  class='trash-button'
+                  {{action 'updateGroupDraft' student}}
+                >
+                  <i class='far fa-times-circle' aria-hidden='true'></i>
+                </button>
+              </p>
+            {{/each}}
+            <button {{on 'click' this.saveGroup}}>Save Group</button>
+          </div>
+        {{/if}}
+        <ul class='listing'>
+          {{#each @groups as |group|}}
+            {{#unless group.isTrashed}}
+              <GroupInfo
+                @group={{group}}
+                @addGroup={{this.addGroup}}
+                @selectableStudents={{this.selectableStudents}}
+                @updateGroupStudents={{action 'updateGroupStudents'}}
+                @updateGroup={{action 'updateGroup'}}
+                @deleteGroup={{action 'deleteGroup'}}
+              />
+            {{/unless}}
+          {{/each}}
+        </ul>
+      </div>
+
+    </fieldset>
     {{#each this.queryErrors as |error|}}
-      <p class="error-message">{{error}}</p>
+      <p class='error-message'>{{error}}</p>
     {{/each}}
     {{#each this.updateSectionErrors as |error|}}
-      <p class="error-message">{{error}}</p>
+      <p class='error-message'>{{error}}</p>
     {{/each}}
     {{#each this.findRecordErrors as |error|}}
-      <p class="error-message">{{error}}</p>
+      <p class='error-message'>{{error}}</p>
     {{/each}}
-    </form>
-    {{#unless this.cantEdit}}
-      <button id="deleteSection" class="right" {{action 'confirmDelete'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+  </form>
+  {{#unless this.cantEdit}}
+    <button id='deleteSection' class='right' {{action 'confirmDelete'}}><i
+        class='fa fa-trash'
+        aria-hidden='true'
+      ></i></button>
 
-    {{/unless}}
-
+  {{/unless}}
 
   {{#each this.problemLoadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    <p class='error-message'>{{error}}</p>
   {{/each}}
   {{#if this.showAssignment}}
-    <AssignmentNew @currentUser={{@currentUser}} @cachedProblems={{this.cachedProblems}} @cancel={{action (mut this.showAssignment) null}} @fromSectionInfo={{true}} @problems={{this.problemList}} @selectedSection={{@section}} @sections={{this.sectionList}} @store={{this.store}} />
+    <AssignmentNew
+      @currentUser={{@currentUser}}
+      @cachedProblems={{this.cachedProblems}}
+      @cancel={{action (mut this.showAssignment) null}}
+      @fromSectionInfo={{true}}
+      @problems={{this.problemList}}
+      @selectedSection={{@section}}
+      @sections={{this.sectionList}}
+      @store={{this.store}}
+    />
   {{/if}}
 </div>

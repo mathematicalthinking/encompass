@@ -292,37 +292,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @action updateGroupDraft(student) {
     return this.newGroup.students.removeObject(student);
   }
-  @action async editGroupName(group) {
-    const { value } = await this.alert.showPrompt(
-      'text',
-      `Update ${group.name}`,
-      null,
-      'Update'
-    );
-    if (!value) return;
-    group.name = value;
-    try {
-      await group.save();
-      this.alert.showToast(
-        'success',
-        'group updated',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    } catch (err) {
-      console.log(err);
-      this.alert.showToast(
-        'error',
-        'oops...error',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    }
-  }
   @action removeStudent(user) {
     if (!user) {
       return;
