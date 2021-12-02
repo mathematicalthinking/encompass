@@ -16,7 +16,7 @@ export default class SectionsSectionRoute extends AuthenticatedRoute {
     return hash({
       section,
       currentUser,
-      groups,
+      groups: groups.toArray(),
       students,
       cachedProblems,
     });
