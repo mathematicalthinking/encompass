@@ -1,14 +1,22 @@
 <li>
-  <span
-    {{on 'click' this.toggleDisplayStudents}}
-    class='group-name'
-  >{{@group.name}}</span>
+  {{#if this.isUpdating}}
+    <Input @value={{@group.name}} />
+  {{else}}
+    <span
+      {{on 'click' this.toggleDisplayStudents}}
+      class='group-name'
+    >{{@group.name}}</span>
+  {{/if}}
   {{#if @addGroup}}
-    <i title='Edit' {{action this.toggleUpdateGroup}} class='far fa-edit'></i>
     <i
-      class='far fa-times-circle'
+      title='Edit'
+      {{action this.editButton}}
+      class={{if this.isUpdating 'fas fa-save' 'far fa-edit'}}
+    ></i>
+    <i
+      class={{if this.isUpdating 'far fa-times-circle' 'fas fa-trash-alt'}}
       aria-hidden='true'
-      {{action @deleteGroup @group}}
+      {{action this.cancelButton}}
     ></i>
   {{/if}}
   {{#if this.isUpdating}}
