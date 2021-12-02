@@ -239,6 +239,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
   @action async placeStudent(id) {
     let student = await this.store.findRecord('user', id);
+    this.clearSelectizeInput('group-add-student');
     return this.newGroup.students.pushObject(student);
   }
   @action async updateGroup(group, user) {
