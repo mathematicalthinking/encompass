@@ -240,7 +240,11 @@
         </label>
         {{#if this.addGroup}}
           <div class='update-students'>
-            <Input @value={{this.newGroup.name}} @placeholder='Group Name' />
+            <Input
+              @value={{this.newGroup.name}}
+              @placeholder='New Group Name'
+              class='new-group-name'
+            />
             <SelectizeInput
               @store={{this.store}}
               @inputId='group-add-student'
@@ -268,7 +272,11 @@
               {{/each}}
             </ul>
             <button class='primary-button' {{on 'click' this.saveGroup}}>Save
-              Group</button>
+              New Group</button>
+            <button
+              class='primary-button cancel-button'
+              {{on 'click' this.toggleAddGroup}}
+            >Cancel</button>
           </div>
         {{/if}}
         <ul class='listing'>
