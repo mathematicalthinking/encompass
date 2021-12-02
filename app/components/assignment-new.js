@@ -22,6 +22,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
+  @tracked allSelected = false;
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -29,8 +30,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       'Guideline for when students should begin working on assignment (not currently enforced by EnCoMPASS)',
     dueDate:
       'Guideline for when assignment should be completed by (not currently enforced by EnCoMPASS)',
-    name:
-      'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
+    name: 'Give your assignment a specific name or one will be generated based on the name of the problem and date assigned or created',
     linkedWorkspaces:
       'If "Yes", an empty workspace will be created for each member of the selected class (member will be the owner) and linked to this assignment. As answers / revisions are submitted for the assignment, the linked workspaces will automatically update',
     parentWorkspace:
@@ -117,6 +117,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked studentWorkspacesToMake = [];
   //TODO: refactor
   @action updateLists(record) {
+    this.allSelected = false;
     if (record.constructor.modelName === 'user') {
       this.studentWorkspacesToMake.includes(record.id)
         ? this.studentWorkspacesToMake.splice(
@@ -138,8 +139,6 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
             record.id,
           ]);
     }
-    console.log(this.studentWorkspacesToMake);
-    console.log(this.groupWorkspacesToMake);
   }
 
   @action updateSectionGroups() {
@@ -412,6 +411,29 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     this.createAssignment(values);
   }
 
+  @action selectAll() {
+    if (this.allSelected) {
+      this.studentWorkspacesToMake = [];
+      this.groupWorkspacesToMake = [];
+      this.allSelected = false;
+      return;
+    }
+    if (this.linkedWorkspacesMode === 'individual') {
+      this.studentWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+      this.allSelected = true;
+    }
+    if (this.linkedWorkspacesMode === 'group') {
+      this.groupWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+      this.allSelected = true;
+    }
+    if (this.linkedWorkspacesMode === 'both') {
+      this.studentWorkspacesToMake = [
+        ...this.selectedSection.students.content.mapBy('id'),
+      ];
+      this.groupWorkspacesToMake === [...this.sectionGroups.mapBy('id')];
+      this.allSelected = true;
+    }
+  }
   @action cancel() {
     if (this.args.cancel) {
       this.args.cancel();
