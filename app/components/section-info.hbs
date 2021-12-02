@@ -254,18 +254,21 @@
               @valueField='id'
               @queryParamsKey='usernameSearch'
             />
-            {{#each this.newGroup.students as |student|}}
-              <p>
-                {{student.username}}
-                <button
-                  class='trash-button'
-                  {{action 'updateGroupDraft' student}}
-                >
-                  <i class='far fa-times-circle' aria-hidden='true'></i>
-                </button>
-              </p>
-            {{/each}}
-            <button {{on 'click' this.saveGroup}}>Save Group</button>
+            <ul class='listing'>
+              {{#each this.newGroup.students as |student|}}
+                <li>
+                  {{student.username}}
+                  <button
+                    class='trash-button'
+                    {{action 'updateGroupDraft' student}}
+                  >
+                    <i class='far fa-times-circle' aria-hidden='true'></i>
+                  </button>
+                </li>
+              {{/each}}
+            </ul>
+            <button class='primary-button' {{on 'click' this.saveGroup}}>Save
+              Group</button>
           </div>
         {{/if}}
         <ul class='listing'>
