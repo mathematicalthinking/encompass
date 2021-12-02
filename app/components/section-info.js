@@ -235,7 +235,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         null
       );
     }
-    this.addGroup = false;
+    this.clearSelectizeInput(`${group.name}-input`);
   }
   @action async placeStudent(id) {
     let student = await this.store.findRecord('user', id);
