@@ -260,9 +260,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   get groupsWithoutWorkspaces() {
     const existingWorkspaces = this.args.linkedWorkspaces || [];
     const groups = this.args.groups.filter((group) => {
-      const found = existingWorkspaces.find(
-        (ws) => group.id === ws.get('group.id')
-      );
+      const found = existingWorkspaces.find((ws) => group.id === ws.group);
       return !found;
     });
     return groups;
