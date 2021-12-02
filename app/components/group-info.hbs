@@ -1,21 +1,38 @@
 <li>
-  <span {{on "click" this.toggleDisplayStudents}} class="group-name">{{@group.name}}</span>
+  <span
+    {{on 'click' this.toggleDisplayStudents}}
+    class='group-name'
+  >{{@group.name}}</span>
   {{#if @addGroup}}
-    <i title="Edit" {{action @editGroupName @group}} class="far fa-edit"></i>
-    <i class="far fa-times-circle" aria-hidden="true" {{action @deleteGroup @group}}></i>
+    <i title='Edit' {{action this.toggleUpdateGroup}} class='far fa-edit'></i>
+    <i
+      class='far fa-times-circle'
+      aria-hidden='true'
+      {{action @deleteGroup @group}}
+    ></i>
   {{/if}}
-  {{#if @addGroup}}
-    <SelectizeInput @store={{this.store}} @inputId="{{@group.id}}" @maxItems={{1}}
-    @initialOptions={{@selectableStudents}} @onItemAdd={{action @updateGroupStudents @group}} @model="user" @isAsync={{false}}
-    @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
+  {{#if this.isUpdating}}
+    <SelectizeInput
+      @store={{this.store}}
+      @inputId='{{@group.id}}'
+      @maxItems={{1}}
+      @initialOptions={{@selectableStudents}}
+      @onItemAdd={{action @updateGroupStudents @group}}
+      @model='user'
+      @isAsync={{false}}
+      @labelField='username'
+      @searchField='username'
+      @valueField='id'
+      @queryParamsKey='usernameSearch'
+    />
   {{/if}}
   {{#if this.showStudents}}
-    <ul class="listing">
+    <ul class='listing'>
       {{#each @group.students as |student|}}
         <li>{{student.username}}
           {{#if @addGroup}}
-            <button class="trash-button" {{action @updateGroup @group student}}>
-            <i class="far fa-times-circle" aria-hidden="true"></i>
+            <button class='trash-button' {{action @updateGroup @group student}}>
+              <i class='far fa-times-circle' aria-hidden='true'></i>
             </button>
           {{/if}}
         </li>
