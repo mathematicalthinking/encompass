@@ -60,6 +60,9 @@
       li {
         padding: 12px 0;
       }
+      &.groups {
+        display: flex;
+      }
     }
   }
 

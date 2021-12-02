@@ -279,7 +279,7 @@
             >Cancel</button>
           </div>
         {{/if}}
-        <ul class='listing'>
+        <ul class='listing {{if this.addGroup 'groups'}}'>
           {{#each @groups as |group|}}
             {{#unless group.isTrashed}}
               <GroupInfo
