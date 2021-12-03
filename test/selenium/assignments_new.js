@@ -51,8 +51,15 @@ describe('Creating a new Assignment', function () {
       await helpers.navigateAndWait(driver, url, { selector: 'div' });
     });
     it('should display Create Assignment Form', async function () {
+      await driver.sleep(10000);
       let title = await helpers.getWebElements(driver, '#assignmentnewheader');
       expect(title[0]).to.exist;
     });
+    for (let selector of assnSels.formInputs) {
+      it(`should display selector with id ${selector}`, async function () {
+        let input = await helpers.getWebElements(driver, selector);
+        expect(selector[0]).to.exist;
+      });
+    }
   });
 });

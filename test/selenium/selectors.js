@@ -539,6 +539,12 @@ module.exports = {
     },
   },
   assignmentsTeacher: {
+    formInputs: [
+      '#assn-new-section-select',
+      '#assn-new-problem-select',
+      '#assignedDate',
+      '#dueDate',
+    ],
     editAssignment: 'button[data-test="edit-assignment"]',
     trashBtn: 'button[data-test="trash-assn"]',
     confirmTrash:
@@ -576,8 +582,7 @@ module.exports = {
     },
   },
   wsComments: {
-    save:
-      '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.save',
+    save: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.save',
     cancel:
       '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.cancel-button',
     commentText: 'div.comment-flex-item.text > p:nth-child(1) > a',
