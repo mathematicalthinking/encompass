@@ -236,7 +236,7 @@ export default Component.extend(ErrorHandlingMixin, VmtHostMixin, {
   handleNavChanges: observer('isNavMultiLine', 'parentHeight', function () {
     this.setOwnHeight();
   }),
-  isVmt: computed('currentSubmission.vmtRoomInfo.roomId', function () {
+  isVmt: computed('currentSubmission', function () {
     return this.utils.isValidMongoId(
       this.get('currentSubmission.vmtRoomInfo.roomId')
     );
@@ -247,18 +247,18 @@ export default Component.extend(ErrorHandlingMixin, VmtHostMixin, {
     let messageData = {
       messageType: 'VMT_PAUSE_REPLAYER',
     };
-
     window.postMessage(messageData);
-
     let canvases = this.$('canvas');
     let canvas;
-
     if (canvases.length > 1) {
       // geogebra
-      canvas = canvases.filter('.cursor_hit')[0];
+      canvas = canvases[0];
     } else {
       // desmos
       canvas = canvases[0];
+    }
+    if (!canvas) {
+      return;
     }
     let imgSrc = canvas.toDataURL();
     return imgSrc;

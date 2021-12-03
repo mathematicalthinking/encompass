@@ -1,12 +1,22 @@
 import Component from '@ember/component';
 import $ from 'jquery';
-import VmtHostMixin from '../mixins/vmt-host.js';
 
+export default Component.extend({
+  getVmtHost() {
+    let hostname = window.location.hostname;
+    let vmtUrl;
 
-
-
-
-export default Component.extend(VmtHostMixin, {
+    if (hostname === 'localhost') {
+      vmtUrl = 'http://localhost:3001';
+    } else if (hostname === 'enc-test.mathematicalthinking.org') {
+      vmtUrl = 'https://vmt-test.mathematicalthinking.org';
+    } else if (hostname === 'encompass.mathematicalthinking.org') {
+      vmtUrl = 'https://vmt.mathematicalthinking.org';
+    } else {
+      return;
+    }
+    return vmtUrl;
+  },
   didInsertElement() {
     this.fetchReplayer();
     this.fetchCss();
@@ -27,9 +37,9 @@ export default Component.extend(VmtHostMixin, {
     }
 
     let replayerUrl = `${vmtUrl}/enc/replayer/js`;
-    $('body').append(`<script id="vmt-enc-replayer" src=${replayerUrl}></script>`);
-
-
+    $('body').append(
+      `<script id="vmt-enc-replayer" src=${replayerUrl}></script>`
+    );
   },
 
   fetchCss() {
@@ -40,6 +50,8 @@ export default Component.extend(VmtHostMixin, {
     }
 
     let cssUrl = `${vmtUrl}/enc/replayer/css`;
-    $('head').append(`<link id="vmt-enc-replayer-css" href=${cssUrl} rel="stylesheet">`);
-  }
+    $('head').append(
+      `<link id="vmt-enc-replayer-css" href=${cssUrl} rel="stylesheet">`
+    );
+  },
 });
