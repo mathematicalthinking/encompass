@@ -23,6 +23,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
   @tracked allSelected = false;
+  @tracked problemFormErrors = [];
+  @tracked sectionFormErrors = [];
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
