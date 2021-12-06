@@ -9,7 +9,7 @@ export default class JsonCsvService extends Service {
           return Object.values(row)
             .map((value) => {
               return typeof value === 'string'
-                ? JSON.stringify(value).replace(/[#,]/gm, '').slice(0, 100)
+                ? JSON.stringify(value).replace(/[#,]/gm, '')
                 : value;
             })
             .toString();
