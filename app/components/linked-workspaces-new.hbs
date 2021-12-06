@@ -31,11 +31,12 @@
       <p class='label'>
         Choose Workspaces to be created:
       </p>
-      <ul>
+      <ul class='student-workspaces'>
         <li><label class='no-width'><Input
               @type='checkbox'
               {{on 'input' this.selectAll}}
               @checked={{this.showAllSelected}}
+              class='select-all'
             />
             Select All</label></li>
         {{#each @students as |student|}}
