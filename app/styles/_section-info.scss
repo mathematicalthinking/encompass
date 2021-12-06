@@ -60,12 +60,18 @@
       li {
         padding: 12px 0;
       }
+      &.groups {
+        display: flex;
+      }
     }
   }
 
   .update-teachers,
   .update-students {
     width: 100%;
+    .new-group-name {
+      width: 100%;
+    }
   }
   .section-info {
     font-size: 1em;

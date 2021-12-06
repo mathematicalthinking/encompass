@@ -1,21 +1,47 @@
 <li>
-  <span {{on "click" this.toggleDisplayStudents}} class="group-name">{{@group.name}}</span>
-  {{#if @addGroup}}
-    <i title="Edit" {{action @editGroupName @group}} class="far fa-edit"></i>
-    <i class="far fa-times-circle" aria-hidden="true" {{action @deleteGroup @group}}></i>
+  {{#if this.isUpdating}}
+    <Input @value={{@group.name}} />
+  {{else}}
+    <span
+      {{on 'click' this.toggleDisplayStudents}}
+      class='group-name'
+    >{{@group.name}}</span>
   {{/if}}
   {{#if @addGroup}}
-    <SelectizeInput @store={{this.store}} @inputId="{{@group.id}}" @maxItems={{1}}
-    @initialOptions={{@selectableStudents}} @onItemAdd={{action @updateGroupStudents @group}} @model="user" @isAsync={{false}}
-    @labelField="username" @searchField="username" @valueField="id" @queryParamsKey="usernameSearch" />
+    <i
+      title='Edit'
+      {{action this.editButton}}
+      class={{if this.isUpdating 'fas fa-save' 'far fa-edit'}}
+    ></i>
+    <i
+      class={{if this.isUpdating 'far fa-times-circle' 'fas fa-trash-alt'}}
+      aria-hidden='true'
+      {{action this.cancelButton}}
+    ></i>
+  {{/if}}
+  {{#if this.isUpdating}}
+    <SelectizeInput
+      @store={{this.store}}
+      @inputId='{{@group.id}}'
+      @maxItems={{1}}
+      @initialOptions={{@selectableStudents}}
+      @onItemAdd={{action @updateGroupStudents @group}}
+      @inputId='{{@group.name}}-input'
+      @model='user'
+      @isAsync={{false}}
+      @labelField='username'
+      @searchField='username'
+      @valueField='id'
+      @queryParamsKey='usernameSearch'
+    />
   {{/if}}
   {{#if this.showStudents}}
-    <ul class="listing">
+    <ul class='listing'>
       {{#each @group.students as |student|}}
         <li>{{student.username}}
           {{#if @addGroup}}
-            <button class="trash-button" {{action @updateGroup @group student}}>
-            <i class="far fa-times-circle" aria-hidden="true"></i>
+            <button class='trash-button' {{action @updateGroup @group student}}>
+              <i class='far fa-times-circle' aria-hidden='true'></i>
             </button>
           {{/if}}
         </li>

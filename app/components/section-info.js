@@ -186,7 +186,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     this.newGroup.createdBy = this.args.currentUser;
     this.newGroup.createDate = new Date();
     this.newGroup.lastModifiedBy = this.args.currentUser;
-    this.newGroup.lastModifiedDate = this.args.currentUser;
+    this.newGroup.lastModifiedDate = new Date();
     for (let key in this.newGroup) {
       savedGroup[key] = this.newGroup[key];
     }
@@ -207,11 +207,10 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         false,
         null
       );
-      this.args.refresh();
-      this.addGroup = false;
+      this.args.groups.addObject(savedGroup);
     } catch (err) {
       console.log(err);
-      this.alert.showToast('error', `${err}`, 'bottom-end', 3000, false, null);
+      this.alert.showToast('error', `${err}`, 'bottom-end', 5000, false, null);
     }
   }
   @action async updateGroupStudents(group, studentId) {
@@ -236,10 +235,11 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         null
       );
     }
-    this.addGroup = false;
+    this.clearSelectizeInput(`${group.name}-input`);
   }
   @action async placeStudent(id) {
     let student = await this.store.findRecord('user', id);
+    this.clearSelectizeInput('group-add-student');
     return this.newGroup.students.pushObject(student);
   }
   @action async updateGroup(group, user) {
@@ -292,37 +292,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
   @action updateGroupDraft(student) {
     return this.newGroup.students.removeObject(student);
-  }
-  @action async editGroupName(group) {
-    const { value } = await this.alert.showPrompt(
-      'text',
-      `Update ${group.name}`,
-      null,
-      'Update'
-    );
-    if (!value) return;
-    group.name = value;
-    try {
-      await group.save();
-      this.alert.showToast(
-        'success',
-        'group updated',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    } catch (err) {
-      console.log(err);
-      this.alert.showToast(
-        'error',
-        'oops...error',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    }
   }
   @action removeStudent(user) {
     if (!user) {
