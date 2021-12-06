@@ -1,44 +1,23 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+/**
+ * # HomePageComponent
+ * @description This is the dashboard dispaly component. It takes item (obj {label: string, details: obj[] }), tableColumns (array of objects), and showTable (bool) as arguments. It renders either an Ember Table or grid of cards using item.details and tableColumns.
+ * @author Tim Leonard <tleonard@21pstem.org>
+ * @since 3.2.0
+ */
 
-export default Component.extend({
-  dataToShow: 'workspace',
-  data: computed('dataToShow', function () {
-    if (this.dataToShow === 'workspace') {
-      return [
-        ...this.workspaces.toArray().reverse(),
-        ...this.collabWorkspaces.toArray(),
-      ];
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+
+export default class HomePageComponent extends Component {
+  @tracked isExpanded = true;
+  constructor() {
+    super(...arguments);
+    if (this.args.item.details.length === 0) {
+      this.isExpanded = false;
     }
-    if (this.dataToShow === 'assignment') {
-      return [
-        ...this.assignments
-          .toArray()
-          .filter(
-            (assignment) =>
-              assignment.get('createdBy.id') === this.user.id &&
-              !assignment.isTrashed
-          )
-          .reverse()
-          .slice(0, 10)
-          .map((assignment) => {
-            assignment.todo = 'Review Student Work';
-            return assignment;
-          }),
-        ...this.user.assignments
-          .toArray()
-          .filter((assignment) => !assignment.isTrashed)
-          .reverse()
-          .slice(0, 10)
-          .map((assignment) => {
-            assignment.todo = 'Answer Problem';
-            return assignment;
-          }),
-      ];
-    }
-    if (this.dataToShow === 'feedback') {
-      return this.responses.toArray().reverse().splice(0, 20);
-    }
-    return [];
-  }),
-});
+  }
+  @action updateIsExpanded() {
+    this.isExpanded = !this.isExpanded;
+  }
+}

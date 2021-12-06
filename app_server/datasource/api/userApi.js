@@ -1,19 +1,19 @@
 /* jshint ignore:start */
 /**
-  * @description This is the API for user based requests
-  * @author Damola Mabogunje <damola@mathforum.org>
-  * @since 1.0.0
-  */
+ * @description This is the API for user based requests
+ * @author Damola Mabogunje <damola@mathforum.org>
+ * @since 1.0.0
+ */
 
 //REQUIRE MODULES
-const logger   = require('log4js').getLogger('server');
-const _        = require('underscore');
+const logger = require('log4js').getLogger('server');
+const _ = require('underscore');
 
 //REQUIRE FILES
-const models   = require('../schemas');
+const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
-const utils    = require('../../middleware/requestHandler');
-const access   = require('../../middleware/access/users');
+const utils = require('../../middleware/requestHandler');
+const access = require('../../middleware/access/users');
 const auth = require('../../datasource/api/auth');
 const sso = require('../../services/sso');
 
@@ -27,12 +27,12 @@ module.exports.post = {};
 module.exports.put = {};
 
 /**
-  * @private
-  * @method makeGuest
-  * @returns {Object} The default guest user
-  */
+ * @private
+ * @method makeGuest
+ * @returns {Object} The default guest user
+ */
 function makeGuest() {
-  return {_id: 1, username: 'anon', name: 'Guest', isGuest: true};
+  return { _id: 1, username: 'anon', name: 'Guest', isGuest: true };
 }
 
 /**
@@ -53,10 +53,10 @@ async function sendUsers(req, res, next) {
   try {
     const user = userAuth.getUser(req);
 
-    if(!user) {
-    // they aren't authorized just send them a list of the guest user back
-    utils.sendResponse(res, {user: makeGuest()});
-    return next();
+    if (!user) {
+      // they aren't authorized just send them a list of the guest user back
+      utils.sendResponse(res, { user: makeGuest() });
+      return next();
     }
 
     if (req.query.alias === 'current') {
@@ -71,18 +71,27 @@ async function sendUsers(req, res, next) {
       let filterBy = req.query.filterBy;
       var regex;
       // we currently allow emails as usernames so had to fix this to just replace whitespace
-      username = username.replace(/\s+/g, "");
+      username = username.replace(/\s+/g, '');
 
       let exactRegex = new RegExp(`^${username}$`, 'i');
 
       regex = new RegExp(username, 'i');
 
-      criteria = await access.get.users(user, null, null, regex, filterBy, exactRegex);
-
+      criteria = await access.get.users(
+        user,
+        null,
+        null,
+        regex,
+        filterBy,
+        exactRegex
+      );
     } else if (req.query.username) {
       criteria = await access.get.users(user, null, req.query.username);
     } else if (req.query.ids) {
-      criteria = await access.get.users(user, req.query.ids, null);
+      const users = await Promise.all(
+        req.query.ids.map(async (id) => await models.User.findById(id))
+      );
+      return utils.sendResponse(res, { users });
     } else if (req.query.isTrashed) {
       criteria = { isTrashed: true };
     } else {
@@ -92,32 +101,30 @@ async function sendUsers(req, res, next) {
     const requestedUsers = await models.User.find(criteria).lean().exec();
     //TODO filter what is being sent back from user
 
-      requestedUsers.forEach((user) => {
-        delete user.password;
-        delete user.key;
-        delete user.history;
-      });
+    requestedUsers.forEach((user) => {
+      delete user.password;
+      delete user.key;
+      delete user.history;
+    });
 
-    let data = {'user': requestedUsers};
+    let data = { user: requestedUsers };
     return utils.sendResponse(res, data);
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error sendUsers: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);
   }
-
 }
 
 /**
-  * @public
-  * @method sendUser
-  * @description __URL__: /api/users/:id
-  * @see [buildCriteria](.../../middleware/requestHandler.html)
-  * @returns {Object} A 'named' user object: according to specified request criteria
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method sendUser
+ * @description __URL__: /api/users/:id
+ * @see [buildCriteria](.../../middleware/requestHandler.html)
+ * @returns {Object} A 'named' user object: according to specified request criteria
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 async function sendUser(req, res, next) {
   try {
     var user = userAuth.requireUser(req);
@@ -142,12 +149,15 @@ async function sendUser(req, res, next) {
 
     // Record exists but user does not have permission
     if (!hasPermission) {
-      return utils.sendError.NotAuthorizedError('You do not have permission to access this user.', res);
+      return utils.sendError.NotAuthorizedError(
+        'You do not have permission to access this user.',
+        res
+      );
     }
 
     // User exists and has permission
     if (hasPermission && requestedUser) {
-      var data = {'user': requestedUser};
+      var data = { user: requestedUser };
 
       delete data.user.key; //hide key
       delete data.user.history; // hide history
@@ -158,7 +168,7 @@ async function sendUser(req, res, next) {
 
       return utils.sendResponse(res, data);
     }
-  }catch(err) {
+  } catch (err) {
     console.error(`Error sendUser: ${err}`);
     console.trace();
     return utils.sendError.InternalError(err, res);
@@ -166,55 +176,60 @@ async function sendUser(req, res, next) {
 }
 
 /**
-  * @public
-  * @method postUser
-  * @description __URL__: /api/users
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data save failed
-  * @throws {InvalidContentError} User already exists
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method postUser
+ * @description __URL__: /api/users
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data save failed
+ * @throws {InvalidContentError} User already exists
+ * @throws {RestError} Something? went wrong
+ */
 function postUser(req, res, next) {
-
   var user = userAuth.requireUser(req);
   if (!user.isAdmin) {
-    return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+    return utils.sendError.NotAuthorizedError(
+      'You do not have permissions to do this',
+      res
+    );
     //return next(false);
   }
 
   var newUser = new models.User(req.body.user);
 
-  models.User.findOne({username: newUser.username}, function(err, found){
+  models.User.findOne({ username: newUser.username }, function (err, found) {
     if (err || !found) {
-      newUser.save(function(err, saved) {
+      newUser.save(function (err, saved) {
         if (err) {
           logger.error(err);
           return utils.sendError.InternalError(err, res);
         }
-        var data = {'user': saved};
+        var data = { user: saved };
         utils.sendResponse(res, data);
       });
     } else {
-      return utils.sendError.InvalidContentError(`User: ${newUser.username} already exists!`, res);
+      return utils.sendError.InvalidContentError(
+        `User: ${newUser.username} already exists!`,
+        res
+      );
     }
   });
 }
 
 /**
-  * @public
-  * @method putUser
-  * @description __URL__: /api/users/:id
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data save failed
-  * @throws {RestError} Something? went wrong
-  */
-  async function putUser(req, res, next) {
-    try {
-      const requestBody = req.body.user;
-      if (!isNonEmptyObject(requestBody)) {
-        return utils.sendError.InvalidContentError(null, res);
-      }
-       /* These fields are uneditable */
+ * @public
+ * @method putUser
+ * @description __URL__: /api/users/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data save failed
+ * @throws {RestError} Something? went wrong
+ */
+async function putUser(req, res, next) {
+  try {
+    const requestBody = req.body.user;
+    if (!isNonEmptyObject(requestBody)) {
+      return utils.sendError.InvalidContentError(null, res);
+    }
+    /* These fields are uneditable */
     delete requestBody.username;
     delete requestBody.createDate;
     delete requestBody.key;
@@ -227,7 +242,10 @@ function postUser(req, res, next) {
 
     let canModifyUser = await access.canModifyUser(user, req.params.id);
     if (!canModifyUser) {
-      return utils.sendError.NotAuthorizedError('You do not have permissions modify this user.', res);
+      return utils.sendError.NotAuthorizedError(
+        'You do not have permissions modify this user.',
+        res
+      );
     }
 
     let shouldSendAuthEmail = requestBody.shouldSendAuthEmail;
@@ -241,8 +259,7 @@ function postUser(req, res, next) {
       if (!_.isUndefined(requestBody.seenTour)) {
         updateHash.seenTour = requestBody.seenTour;
       }
-    }
-    else if (user.actingRole === 'student') {
+    } else if (user.actingRole === 'student') {
       shouldSendAuthEmail = false;
       if (!_.isUndefined(requestBody.seenTour)) {
         updateHash.seenTour = requestBody.seenTour;
@@ -274,152 +291,161 @@ function postUser(req, res, next) {
       }
     }
 
-    const updatedUser = await models.User.findByIdAndUpdate(req.params.id, updateHash, {new: true}).exec();
+    const updatedUser = await models.User.findByIdAndUpdate(
+      req.params.id,
+      updateHash,
+      { new: true }
+    ).exec();
 
     let confirmEmailResults;
     let ssoConfirmedUser;
 
-
     if (doConfirmEmail) {
       try {
-        confirmEmailResults = await sso.confirmEmailById(updatedUser.ssoId, user);
+        confirmEmailResults = await sso.confirmEmailById(
+          updatedUser.ssoId,
+          user
+        );
 
         ssoConfirmedUser = confirmEmailResults.user;
-      }catch(err) {
+      } catch (err) {
         console.log('sso confirm email error', err);
         // need to notify user that confirm email may have failed?
         // but what if other updates were successfull?
       }
     }
 
-
     const data = { user: ssoConfirmedUser ? ssoConfirmedUser : updatedUser };
     // if shouldSendAuthEmail send email to user confirming that they have been authorized
     if (shouldSendAuthEmail) {
       let recipient = updatedUser.email;
       if (recipient) {
-          // send email but do not wait for success to return user response
-        auth.sendEmailSMTP(recipient, req.headers.host, 'newlyAuthorized', null, updatedUser);
-
-        }
+        // send email but do not wait for success to return user response
+        auth.sendEmailSMTP(
+          recipient,
+          req.headers.host,
+          'newlyAuthorized',
+          null,
+          updatedUser
+        );
       }
-      return utils.sendResponse(res, data);
-    }catch(err) {
-      console.error(`Error userApi putUser: ${err}`);
-      console.trace();
+    }
+    return utils.sendResponse(res, data);
+  } catch (err) {
+    console.error(`Error userApi putUser: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+  }
+}
+/**
+ * @public
+ * @method addSection
+ * @description __URL__: /api/users/addSection/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data save failed
+ * @throws {RestError} Something? went wrong
+ */
+
+const addSection = (req, res, next) => {
+  var user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+  // who can add a section for a user. If they're a teacher they should
+  // be able to add a section to themselves. If they're a student
+  models.User.findByIdAndUpdate(
+    req.params.id,
+    { $push: { sections: req.body.section } },
+    { new: true } // specifying that we want the UPDATED version returned
+  ).exec((err, doc) => {
+    if (err) {
+      logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    const data = { user: doc };
+    utils.sendResponse(res, data);
+  });
+};
 
+/**
+ * @public
+ * @method removeSection
+ * @description __URL__: /api/users/removeSection/:id
+ * @body {sectionId: ObjectId}
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
+const removeSection = (req, res, next) => {
+  const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
   }
-  /**
-    * @public
-    * @method addSection
-    * @description __URL__: /api/users/addSection/:id
-    * @throws {NotAuthorizedError} User has inadequate permissions
-    * @throws {InternalError} Data save failed
-    * @throws {RestError} Something? went wrong
-  */
 
-  const addSection = (req, res, next) => {
-    var user = userAuth.requireUser(req);
-
-    if (!user) {
-      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  models.User.findByIdAndUpdate(
+    req.params.id,
+    { $pull: { sections: { sectionId: req.body.sectionId } } },
+    { new: true }
+  ).exec((err, doc) => {
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
     }
-    // who can add a section for a user. If they're a teacher they should
-    // be able to add a section to themselves. If they're a student
-    models.User.findByIdAndUpdate(
-      req.params.id,
-      {$push: {sections: req.body.section}},
-      {new: true} // specifying that we want the UPDATED version returned
-    ).exec((err, doc) => {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      const data = {'user': doc};
-      utils.sendResponse(res, data);
-    });
-  };
+    const data = { user: doc };
+    utils.sendResponse(res, data);
+  });
+};
 
-  /**
-    * @public
-    * @method removeSection
-    * @description __URL__: /api/users/removeSection/:id
-    * @body {sectionId: ObjectId}
-    * @throws {NotAuthorizedError} User has inadequate permissions
-    * @throws {InternalError} Data update failed
-    * @throws {RestError} Something? went wrong
-  */
-  const removeSection = (req, res, next) => {
-    const user = userAuth.requireUser(req);
+const addAssignment = (req, res, next) => {
+  const user = userAuth.requireUser(req);
 
-    if (!user) {
-      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
+  models.User.findByIdAndUpdate(
+    req.params.id,
+    { $push: { assignments: req.body.assignment } },
+    { new: true }
+  ).exec((err, doc) => {
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
     }
+    const data = { user: doc };
+    utils.sendResponse(res, data);
+  });
+};
 
-    models.User.findByIdAndUpdate(
-      req.params.id,
-      {"$pull": {"sections": {"sectionId": req.body.sectionId}}},
-      {new: true}
-    ).exec((err, doc) => {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      const data = {'user': doc};
-      utils.sendResponse(res, data);
-    });
-  };
+const removeAssignment = (req, res, next) => {
+  const user = userAuth.requireUser(req);
 
-  const addAssignment = (req, res, next) => {
-    const user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
 
-    if (!user) {
-      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  models.User.findByIdAndUpdate(
+    req.params.id,
+    { $pull: { assignments: req.body.assignment } },
+    { new: true }
+  ).exec((err, doc) => {
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
     }
+    const data = { user: doc };
+    utils.sendResponse(res, data);
+  });
+};
 
-    models.User.findByIdAndUpdate(
-      req.params.id,
-      {"$push": {"assignments": req.body.assignment}},
-      {new: true}
-    ).exec((err, doc) => {
-      if (err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      const data = {'user': doc};
-      utils.sendResponse(res, data);
-    });
-  };
-
-  const removeAssignment = (req, res, next) => {
-    const user = userAuth.requireUser(req);
-
-    if (!user) {
-      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-    }
-
-    models.User.findByIdAndUpdate(
-      req.params.id,
-      {"$pull": {"assignments": req.body.assignment}},
-      {new: true}
-    ).exec((err, doc) => {
-      if (err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      const data = {'user': doc};
-      utils.sendResponse(res, data);
-    });
-  };
-
-  module.exports.get.user = sendUser;
-  module.exports.get.users = sendUsers;
-  module.exports.post.user = postUser;
-  module.exports.put.user = putUser;
-  module.exports.put.user.addSection = addSection;
-  module.exports.put.user.removeSection = removeSection;
-  module.exports.put.user.addAssignment = addAssignment;
-  module.exports.put.user.removeAssignment = removeAssignment;
+module.exports.get.user = sendUser;
+module.exports.get.users = sendUsers;
+module.exports.post.user = postUser;
+module.exports.put.user = putUser;
+module.exports.put.user.addSection = addSection;
+module.exports.put.user.removeSection = removeSection;
+module.exports.put.user.addAssignment = addAssignment;
+module.exports.put.user.removeAssignment = removeAssignment;
 /* jshint ignore:end */

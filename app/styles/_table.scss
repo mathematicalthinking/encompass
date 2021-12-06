@@ -72,6 +72,17 @@
     width: 10px;
     height: 100%;
   }
+  .et-sort-indicator:before {
+    font-family: Univers-Next, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    display: inline-block;
+    border: none;
+    line-height: 1;
+    transform: rotate(0);
+    content: '▾';
+  }
+  .et-sort-indicator.is-ascending:before {
+    transform: rotate(180deg);
+  }
 
   .et-depth-indent {
     @for $i from 1 through 10 {

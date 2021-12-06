@@ -5,7 +5,7 @@
  * @since 2.3.0
  */
 import Route from '@ember/routing/route';
-import RSVP from 'rsvp';
+import { hash } from 'rsvp';
 import { inject as service } from '@ember/service';
 
 export default class IndexRoute extends Route {
@@ -32,33 +32,63 @@ export default class IndexRoute extends Route {
   }
   async model() {
     const user = this.modelFor('application');
-    const assignments = this.store.findAll('assignment');
-    const sections = this.store.findAll('section');
+    //user.sections isn't reliable. have to query all sections
+    const sections = await this.store.findAll('section');
+    //if user is admin will receive all sections. otherwise should be filtered already according to user role
+    const filteredSections = sections.filter((section) => {
+      const students = section.students;
+      const teachers = section.teachers;
+      return students.includes(user) || teachers.includes(user);
+    });
+    const userSections = filteredSections.map((section) => {
+      const assignments = section.assignments;
+      const teachers = section.teachers;
+      return {
+        section,
+        assignments,
+        role: teachers.includes(user) ? 'teacher' : 'student',
+      };
+    });
+    //TODO: find responses given to a user and responses for user to review
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
     });
-    const collabWorkspaces = await this.store.query('workspace', {
-      filterBy: { _id: { $in: user.collabWorkspaces } },
+    const responsesReceived = this.store.query('response', {
+      filterBy: { recipient: user.id },
     });
+    const collabWorkspaces = user.collabWorkspaces.length
+      ? await this.store.query('workspace', {
+          filterBy: { _id: { $in: user.collabWorkspaces } },
+        })
+      : [];
     //import workspaces created by current user
     const workspaceCriteria = {
       filterBy: {
         owner: user.id,
       },
     };
+    const createdByCriteria = {
+      filterBy: {
+        createdBy: user.id,
+      },
+    };
 
-    const workspaces = this.store.query('workspace', workspaceCriteria);
-
-    return RSVP.hash({
-      assignments,
-      sections,
+    const ownedWorkspaces = await this.store.query(
+      'workspace',
+      workspaceCriteria
+    );
+    const createdWorkspaces = await this.store.query(
+      'workspace',
+      createdByCriteria
+    );
+    return hash({
+      userSections,
       user,
-      workspaces,
+      workspaces: ownedWorkspaces,
       responses,
+      responsesReceived,
       collabWorkspaces,
+      createdWorkspaces,
     });
-  }
-  renderTemplate() {
-    this.render('index');
   }
 }
