@@ -1,0 +1,47 @@
+<div id='workspace-info'>
+  <header>
+    <h2>{{@workspace.name}}</h2>
+    <span class='link'><LinkTo @route='workspace.work'>Back to Workspace</LinkTo></span>
+    <div class='clear'></div>
+  </header>
+
+  <div class='workspace-info-container'>
+    {{#unless this.isShowingCustomViewer}}
+      <WorkspaceInfoSettings
+        @workspace={{@workspace}}
+        @canEdit={{this.canEdit}}
+        @linkedAssignment={{@workspace.linkedAssignment}}
+        @childWorkspaces={{@workspace.childWorkspaces}}
+      />
+    {{/unless}}
+
+    <WorkspaceInfoCollaborators
+      @workspace={{@workspace}}
+      @originalCollaborators={{@originalCollaborators}}
+      @isShowingCustomViewer={{this.isShowingCustomViewer}}
+      @toggleIsShowingCustomViewer={{action 'toggleIsShowingCustomViewer'}}
+      @customSubmissionIds={{this.customSubmissionIds}}
+      @initialCollabOptions={{this.initialCollabOptions}}
+      @selectedCollaborators={{this.selectedCollaborators}}
+      @canEdit={{this.canEditCollaborators}}
+      @linkedAssignment={{@workspace.linkedAssignment.content}}
+      @students={{@workspace.linkedAssignment.students.content}}
+      @childWorkspaces={{@workspace.childWorkspaces.content}}
+    />
+
+    {{#unless this.isShowingCustomViewer}}
+      <WorkspaceInfoStats @workspace={{@workspace}} />
+    {{/unless}}
+
+    {{#if this.isShowingCustomViewer}}
+      <CustomSubmissionViewerList
+        @submissions={{@workspace.submissions.content}}
+        @selectedSubmissionIds={{this.customSubmissionIds}}
+        @onSelect={{action 'updateCustomSubs'}}
+        @onSelectAll={{action 'selectAllSubmissions'}}
+        @onUnselectAll={{action 'deselectAllSubmissions'}}
+        @showView={{this.isShowingCustomViewer}}
+      />
+    {{/if}}
+  </div>
+</div>

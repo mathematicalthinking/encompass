@@ -1,16 +1,12 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  elementId: ['custom-submission-viewer-list-item'],
+export default class CustomSubmissionViewerListItemComponent extends Component {
+  get isChecked() {
+    return this.args.selectedSubmissionIds.includes(this.args.submission.id);
+  }
 
-  isChecked: computed('selectedSubmissionIds.[]', function () {
-    return this.selectedSubmissionIds.includes(this.get('submission.id'));
-  }),
-
-  actions: {
-    onSelect: function () {
-      this.onSelect(this.get('submission.id'));
-    },
-  },
-});
+  @action onSelect() {
+    this.args.onSelect(this.args.submission.id);
+  }
+}

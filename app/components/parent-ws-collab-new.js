@@ -1,20 +1,26 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import _ from 'underscore';
-import { equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 
-export default Component.extend({
-  elementId: ['parent-ws-collab-new'],
-  utils: service('utility-methods'),
-  alert: service('sweet-alert'),
-  globalPermissionValue: 'viewOnly',
-  addType: 'individual',
-  areUsersToAdd: gt('usersToAdd.length', 0),
+export default class ParentWsCollabNewComponent extends Component {
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
+  @service store;
+  @tracked globalPermissionValue = 'viewOnly';
+  @tracked addType = 'individual';
+  @tracked existingUserError = false;
+  @tracked missingUserError = false;
+  get areUsersToAdd() {
+    return this.usersToAdd.length > 0;
+  }
 
-  isBulkAdd: equal('addType', 'bulk'),
+  get isBulkAdd() {
+    return this.addType === 'bulk';
+  }
 
-  mainPermissions: [
+  mainPermissions = [
     {
       id: 1,
       display: 'Hidden',
@@ -40,9 +46,9 @@ export default Component.extend({
       display: 'Delete',
       value: 4,
     },
-  ],
+  ];
 
-  globalItems: {
+  globalItems = {
     groupName: 'globalPermissionValue',
     groupLabel: 'Workspace Permissions',
     info: 'Currently parent workspaces only support read-only permissions',
@@ -55,9 +61,9 @@ export default Component.extend({
           'This user will be able to see the workspace, but not add or make any changes',
       },
     ],
-  },
+  };
 
-  addTypeItems: {
+  addTypeItems = {
     groupName: 'addType',
     groupLabel: 'Add Collaborator Method',
     info: 'Add collaborators one at a time or in bulk',
@@ -75,115 +81,93 @@ export default Component.extend({
           'Add all students from assignment and/or all owners of child workspaces',
       },
     ],
-  },
+  };
 
-  isNoActionToTake: computed('isBulkAdd', 'areUsersToAdd', function () {
+  get isNoActionToTake() {
     return this.isBulkAdd && !this.areUsersToAdd;
-  }),
+  }
+  collabsToAdd = [];
 
-  init() {
-    this.set('collabsToAdd', []);
-    this._super(...arguments);
-  },
-
-  willDestroyElement() {
-    this.set('collabsToAdd', null);
-    this._super(...arguments);
-  },
-
-  childWorkspaceOwners: computed('childWorkspaces.@each.owner', function () {
-    let workspaces = this.childWorkspaces || [];
+  get childWorkspaceOwners() {
+    let workspaces = this.args.childWorkspaces || [];
     return workspaces.map((ws) => {
       return ws.get('owner.content');
     });
-  }),
+  }
 
-  usersToAdd: computed(
-    'combinedUsers.[]',
-    'workspace.collaborators.[]',
-    function () {
-      let existingCollabs = this.get('workspace.collaborators') || [];
-      let users = this.combinedUsers || [];
-      let ownerId = this.get('workspace.owner.id');
-      let creatorId = this.get('workspace.creator.id');
-      return users.filter((user) => {
-        if (ownerId === user.get('id') || creatorId === user.get('id')) {
-          return false;
-        }
-        return !existingCollabs.includes(user.get('id'));
-      });
+  get usersToAdd() {
+    let existingCollabs = this.args.workspace.get('collaborators') || [];
+    let users = this.combinedUsers || [];
+    let ownerId = this.args.workspace.get('owner.id');
+    let creatorId = this.args.workspace.get('creator.id');
+    return users.filter((user) => {
+      if (ownerId === user.get('id') || creatorId === user.get('id')) {
+        return false;
+      }
+      return !existingCollabs.includes(user.get('id'));
+    });
+  }
+
+  get combinedUsers() {
+    return this.args.students.addObjects(this.childWorkspaceOwners);
+  }
+
+  @action updateAddType(val) {
+    this.addType = val;
+  }
+  @action updateGlobalPermissionValue(val) {
+    this.globalPermissionValue = val;
+  }
+  @action setCollab(val) {
+    if (!val) {
+      return;
     }
-  ),
+    let existingCollab = this.args.workspace.get('collaborators');
+    const user = this.store.peekRecord('user', val);
+    let alreadyCollab = _.contains(existingCollab, user.get('id'));
 
-  combinedUsers: computed(
-    'students.[]',
-    'childWorkspaceOwners.[]',
-    function () {
-      return this.students.addObjects(this.childWorkspaceOwners);
+    if (alreadyCollab) {
+      this.existingUserError = true;
+      return;
     }
-  ),
+    if (this.utils.isNonEmptyObject(user)) {
+      this.collabsToAdd = [user];
+    }
+  }
 
-  actions: {
-    updateAddType: function (val) {
-      this.set('addType', val);
-    },
-    updateGlobalPermissionValue: function (val) {
-      this.set('globalPermissionValue', val);
-    },
-    setCollab(val, $item) {
-      if (!val) {
-        return;
-      }
-      let existingCollab = this.get('workspace.collaborators');
-      const user = this.store.peekRecord('user', val);
-      let alreadyCollab = _.contains(existingCollab, user.get('id'));
+  @action saveCollab() {
+    let collabs = this.collabsToAdd;
+    if (!this.utils.isNonEmptyArray(collabs)) {
+      return (this.missingUserError = true);
+    }
+    let ws = this.args.workspace;
+    let permissions = ws.get('permissions');
 
-      if (alreadyCollab) {
-        this.set('existingUserError', true);
-        return;
-      }
-      if (this.utils.isNonEmptyObject(user)) {
-        this.set('collabsToAdd', [user]);
-      }
-    },
-
-    saveCollab() {
-      let collabs = this.collabsToAdd;
-      if (!this.utils.isNonEmptyArray(collabs)) {
-        return this.set('missingUserError', true);
-      }
-      let ws = this.workspace;
-      let permissions = ws.get('permissions');
-
-      collabs.forEach((collab) => {
-        this.originalCollaborators.addObject(collab);
-        permissions.addObject({
-          user: collab.get('id'),
-          global: 'custom',
-          submissions: { all: true, userOnly: false, submissionIds: [] },
-          folders: 1,
-          selections: 1,
-          feedback: 'approver', // this is a workaround for collabs of a parent workspace to be able to see all of the responses. even tho the setting is approver, they will not be able to modify any responses for this workspace
-        });
+    collabs.forEach((collab) => {
+      this.args.originalCollaborators.addObject(collab);
+      permissions.addObject({
+        user: collab.get('id'),
+        global: 'custom',
+        submissions: { all: true, userOnly: false, submissionIds: [] },
+        folders: 1,
+        selections: 1,
+        feedback: 'approver', // this is a workaround for collabs of a parent workspace to be able to see all of the responses. even tho the setting is approver, they will not be able to modify any responses for this workspace
       });
+    });
 
-      ws.save().then(() => {
-        this.alert.showToast(
-          'success',
-          `Collaborators Added`,
-          'bottom-end',
-          3000,
-          null,
-          false
-        );
-        this.set('createNewCollaborator', false);
-      });
-    },
-    cancelCreateCollab: function () {
-      this.set('createNewCollaborator', null);
-      if (this.isShowingCustomViewer) {
-        this.set('isShowingCustomViewer', false);
-      }
-    },
-  },
-});
+    ws.save().then(() => {
+      this.alert.showToast(
+        'success',
+        `Collaborators Added`,
+        'bottom-end',
+        3000,
+        null,
+        false
+      );
+      this.args.cancelEditCollab();
+    });
+  }
+  @action cancelCreateCollab() {
+    this.args.cancelEditCollab();
+  }
+}

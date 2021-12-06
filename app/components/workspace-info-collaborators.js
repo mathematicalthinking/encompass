@@ -1,17 +1,76 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
-import { equal } from '@ember/object/computed';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default Component.extend({
-  currentUser: service('current-user'),
-  elementId: ['workspace-info-collaborators'],
-  utils: service('utility-methods'),
-  alert: service('sweet-alert'),
-  globalPermissionValue: null,
-  showCustom: equal('globalPermissionValue', 'custom'),
-  mainPermissions: [
+export default class WorkspaceInfoCollaborators extends Component {
+  @service('current-user') currentUser;
+  @service store;
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
+  get isParentWorkspace() {
+    return this.args.workspace.workspaceType === 'parent';
+  }
+  @tracked globalPermissionValue = null;
+  @tracked isEditing = false;
+  @tracked submissions = null;
+  @tracked customSubmissionIds = null;
+  @tracked selections = null;
+  @tracked comments = null;
+  @tracked folders = null;
+  @tracked feedback = null;
+  @tracked selectedUser = null;
+  @tracked selectedCollaborator = null;
+  @tracked createNewCollaborator = false;
+  @tracked customSubIds = [];
+  get showCustom() {
+    return this.globalPermissionValue === 'custom';
+  }
+  globalItems = {
+    groupName: 'globalPermissionValue',
+    groupLabel: 'Workspace Permissions',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    required: true,
+    inputs: [
+      {
+        label: 'View Only',
+        value: 'viewOnly',
+        moreInfo:
+          'This user will be able to see the workspace, but not add or make any changes',
+      },
+      {
+        label: 'Editor',
+        value: 'editor',
+        moreInfo:
+          'This user can add, delete or modify selections, comments, and folders, but they will not be able to see or create new responses',
+      },
+      {
+        label: 'Mentor',
+        value: 'indirectMentor',
+        moreInfo:
+          'This user can create selections, comments, and folders. They can also send feedback that will be delivered once approved by a designated feedback approver',
+      },
+      {
+        label: 'Mentor with Direct Send',
+        value: 'directMentor',
+        moreInfo:
+          'This user can create selections, comments, and folders. They can also send direct feedback that does not require approval',
+      },
+      {
+        label: 'Approver',
+        value: 'approver',
+        moreInfo:
+          'This user can add, delete or modify selections, comments, and folders. They can directly send their own feedback and approve feedback created by other users',
+      },
+      {
+        label: 'Custom',
+        value: 'custom',
+        moreInfo:
+          'Select this if you want to set permissions for each aspect of a workspace',
+      },
+    ],
+  };
+  mainPermissions = [
     {
       id: 1,
       display: 'Hidden',
@@ -37,8 +96,8 @@ export default Component.extend({
       display: 'Delete',
       value: 4,
     },
-  ],
-  feedbackPermissions: [
+  ];
+  feedbackPermission = [
     {
       id: 1,
       display: 'None',
@@ -59,8 +118,8 @@ export default Component.extend({
       display: 'Approver',
       value: 'approver',
     },
-  ],
-  submissionPermissions: [
+  ];
+  submissionPermissions = [
     {
       id: 1,
       display: 'All',
@@ -76,46 +135,35 @@ export default Component.extend({
       display: 'Custom',
       value: 'custom',
     },
-  ],
+  ];
 
-  modes: computed(
-    'currentUser.user.isAdmin',
-    'currentUser.user.isStudent',
-    function () {
-      const basic = ['private', 'org', 'public'];
+  get modes() {
+    const basic = ['private', 'org', 'public'];
 
-      if (
-        this.get('currentUser.user.isStudent') ||
-        !this.get('currentUser.user.isAdmin')
-      ) {
-        return basic;
-      }
-
-      return ['private', 'org', 'public', 'internet'];
+    if (this.currentUser.user.isStudent || !this.currentUser.user.isAdmin) {
+      return basic;
     }
-  ),
 
-  workspacePermissions: computed(
-    'workspace.permissions.[]',
-    'originalCollaborators.[]',
-    function () {
-      let permissions = this.get('workspace.permissions');
-      let collabs = this.originalCollaborators;
+    return ['private', 'org', 'public', 'internet'];
+  }
 
-      if (!this.utils.isNonEmptyArray(permissions)) {
-        return [];
-      }
-      //for each permissions object replace the userId with the user object
-      //start with array of object and return array of objects
-      if (this.utils.isNonEmptyArray(collabs)) {
-        return permissions.map((permission) => {
-          permission.userObj = this.store.peekRecord('user', permission.user);
-          return permission;
-        });
-      }
+  get workspacePermissions() {
+    let permissions = this.args.workspace.get('permissions');
+    let collabs = this.args.originalCollaborators;
+
+    if (!this.utils.isNonEmptyArray(permissions)) {
       return [];
     }
-  ),
+    //for each permissions object replace the userId with the user object
+    //start with array of object and return array of objects
+    if (this.utils.isNonEmptyArray(collabs)) {
+      return permissions.map((permission) => {
+        permission.userObj = this.store.peekRecord('user', permission.user);
+        return permission;
+      });
+    }
+    return [];
+  }
 
   createValueObject(val) {
     let obj = {
@@ -164,7 +212,7 @@ export default Component.extend({
         break;
     }
     return obj;
-  },
+  }
 
   createSubmissionValueObject(subObj) {
     let obj = {
@@ -184,14 +232,14 @@ export default Component.extend({
       obj.id = 3;
       obj.value = 'custom';
       obj.display = 'Custom';
-      this.set('customSubIds', subObj.submissionIds);
+      this.customSubIds = subObj.submissionIds;
     }
     return obj;
-  },
+  }
 
   buildCustomSubmissionIds(submissionsValue) {
     if (submissionsValue === 'custom') {
-      let ids = this.customSubmissionIds;
+      let ids = this.args.customSubmissionIds;
       if (this.utils.isNonEmptyArray(ids)) {
         return ids;
       }
@@ -210,195 +258,189 @@ export default Component.extend({
     //   }
     // }
     return [];
-  },
+  }
 
-  actions: {
-    updateGlobalPermissionValue: function (val) {
-      this.set('globalPermissionValue', val);
-    },
-    editCollab: function (collaborator) {
-      this.set('isEditing', true);
-      if (!this.utils.isNonEmptyObject(collaborator)) {
-        return;
+  @action updateGlobalPermissionValue(val) {
+    this.globalPermissionValue = val;
+  }
+
+  @action editCollab(collaborator) {
+    this.isEditing = true;
+    if (!this.utils.isNonEmptyObject(collaborator)) {
+      return;
+    }
+    this.selectedCollaborator = collaborator.userObj;
+    this.globalPermissionValue = collaborator.global;
+
+    let submissions = this.createSubmissionValueObject(
+      collaborator.submissions
+    );
+    let selections = this.createValueObject(collaborator.selections);
+    let comments = this.createValueObject(collaborator.comments);
+    let folders = this.createValueObject(collaborator.folders);
+    let feedback = this.createValueObject(collaborator.feedback);
+    let customSubIds = collaborator.submissions.submissionIds;
+    this.submissions = submissions;
+    this.customSubmissionIds = customSubIds;
+    this.selections = selections;
+    this.comments = comments;
+    this.folders = folders;
+    this.feedback = feedback;
+  }
+
+  @action savePermissions(permissionsObject) {
+    const ws = this.args.workspace;
+    if (!this.utils.isNonEmptyObject(permissionsObject)) {
+      return;
+    }
+    const permissions = this.args.workspace.get('permissions');
+    let existingObj = permissions.findBy('user', permissionsObject.user);
+
+    this.selectedUser = permissionsObject.userObj;
+
+    if (existingObj) {
+      permissions.removeObject(existingObj);
+    }
+
+    let subValue = this.get('submissions.value');
+
+    let newObj = {
+      user: existingObj.user,
+      global: this.globalPermissionValue,
+      submissions: { all: false, userOnly: false, submissionIds: [] },
+    };
+
+    let globalSetting = this.globalPermissionValue;
+    if (globalSetting === 'viewOnly') {
+      newObj.folders = 1;
+      newObj.selections = 1;
+      newObj.comments = 1;
+      newObj.feedback = 'none';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'editor') {
+      newObj.folders = 3;
+      newObj.selections = 4;
+      newObj.comments = 4;
+      newObj.feedback = 'none';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'indirectMentor') {
+      newObj.folders = 2;
+      newObj.selections = 2;
+      newObj.comments = 2;
+      newObj.feedback = 'authReq';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'directMentor') {
+      newObj.folders = 2;
+      newObj.selections = 2;
+      newObj.comments = 2;
+      newObj.feedback = 'preAuth';
+      newObj.submissions.all = true;
+    }
+
+    if (globalSetting === 'approver') {
+      newObj.folders = 3;
+      newObj.selections = 4;
+      newObj.comments = 4;
+      newObj.feedback = 'approver';
+      newObj.submissions.all = true;
+    }
+    if (globalSetting === 'custom') {
+      newObj.selections = this.selections.value;
+      newObj.folders = this.folders.value;
+      newObj.comments = this.comments.value;
+      newObj.feedback = this.feedback.value;
+
+      if (subValue === 'all') {
+        newObj.submissions.all = true;
+      } else if (subValue === 'userOnly') {
+        newObj.submissions.userOnly = true;
+      } else if (subValue === 'custom') {
+        newObj.submissions.submissionIds = this.args.customSubmissionIds;
       }
-      this.set('selectedCollaborator', collaborator.userObj);
-      this.set('globalPermissionValue', collaborator.global);
+    }
+    permissions.addObject(newObj);
 
-      let submissions = this.createSubmissionValueObject(
-        collaborator.submissions
+    ws.save().then(() => {
+      this.set('globalPermissionValue', null);
+      this.alert.showToast(
+        'success',
+        `Permissions set for ${permissionsObject.userObj.get('username')}`,
+        'bottom-end',
+        3000,
+        null,
+        false
       );
-      let selections = this.createValueObject(collaborator.selections);
-      let comments = this.createValueObject(collaborator.comments);
-      let folders = this.createValueObject(collaborator.folders);
-      let feedback = this.createValueObject(collaborator.feedback);
-      let customSubIds = collaborator.submissions.submissionIds;
-      this.set('submissions', submissions);
-      this.set('customSubmissionIds', customSubIds);
-      this.set('selections', selections);
-      this.set('comments', comments);
-      this.set('folders', folders);
-      this.set('feedback', feedback);
-    },
+      this.selectedCollaborator = null;
+      this.selectedUser = null;
+    });
+  }
 
-    savePermissions(permissionsObject) {
-      const ws = this.workspace;
-      if (!this.utils.isNonEmptyObject(permissionsObject)) {
-        return;
-      }
-      const permissions = this.get('workspace.permissions');
-      let existingObj = permissions.findBy('user', permissionsObject.user);
+  @action removeCollab(user) {
+    let workspace = this.args.workspace;
+    const utils = this.utils;
 
-      this.set('selectedUser', permissionsObject.userObj);
+    if (!utils.isNonEmptyObject(user)) {
+      return;
+    }
+    const permissions = this.args.workspace.get('permissions');
 
-      if (existingObj) {
-        permissions.removeObject(existingObj);
-      }
+    if (utils.isNonEmptyArray(permissions)) {
+      const objToRemove = permissions.findBy('user', user.get('id'));
+      if (objToRemove) {
+        let userDisplay = user.get('username');
+        let pronoun = 'their';
 
-      let subValue = this.get('submissions.value');
+        let isSelf = user.get('id') === this.currentUser.user.id;
 
-      let newObj = {
-        user: existingObj.user,
-        global: this.globalPermissionValue,
-        submissions: { all: false, userOnly: false, submissionIds: [] },
-      };
-
-      let globalSetting = this.globalPermissionValue;
-      if (globalSetting === 'viewOnly') {
-        newObj.folders = 1;
-        newObj.selections = 1;
-        newObj.comments = 1;
-        newObj.feedback = 'none';
-        newObj.submissions.all = true;
-      }
-
-      if (globalSetting === 'editor') {
-        newObj.folders = 3;
-        newObj.selections = 4;
-        newObj.comments = 4;
-        newObj.feedback = 'none';
-        newObj.submissions.all = true;
-      }
-
-      if (globalSetting === 'indirectMentor') {
-        newObj.folders = 2;
-        newObj.selections = 2;
-        newObj.comments = 2;
-        newObj.feedback = 'authReq';
-        newObj.submissions.all = true;
-      }
-
-      if (globalSetting === 'directMentor') {
-        newObj.folders = 2;
-        newObj.selections = 2;
-        newObj.comments = 2;
-        newObj.feedback = 'preAuth';
-        newObj.submissions.all = true;
-      }
-
-      if (globalSetting === 'approver') {
-        newObj.folders = 3;
-        newObj.selections = 4;
-        newObj.comments = 4;
-        newObj.feedback = 'approver';
-        newObj.submissions.all = true;
-      }
-      if (globalSetting === 'custom') {
-        newObj.selections = this.get('selections.value');
-        newObj.folders = this.get('folders.value');
-        newObj.comments = this.get('comments.value');
-        newObj.feedback = this.get('feedback.value');
-
-        if (subValue === 'all') {
-          newObj.submissions.all = true;
-        } else if (subValue === 'userOnly') {
-          newObj.submissions.userOnly = true;
-        } else if (subValue === 'custom') {
-          newObj.submissions.submissionIds = this.customSubmissionIds;
+        if (isSelf) {
+          userDisplay = 'yourself';
+          pronoun = 'your';
         }
+
+        this.alert
+          .showModal(
+            'warning',
+            `Are you sure you want to remove ${userDisplay} as a collaborator?`,
+            `This may affect ${pronoun} ability to access ${this.args.workspace.name} `,
+            'Yes, remove'
+          )
+          .then((result) => {
+            if (result.value) {
+              permissions.removeObject(objToRemove);
+              const collaborators = this.args.originalCollaborators;
+              collaborators.removeObject(user);
+              workspace.save().then(() => {
+                this.alert.showToast(
+                  'success',
+                  `${user.get('username')} removed`,
+                  'bottom-end',
+                  3000,
+                  null,
+                  false
+                );
+              });
+            }
+          });
       }
-      permissions.addObject(newObj);
-
-      ws.save().then(() => {
-        this.set('globalPermissionValue', null);
-        this.alert.showToast(
-          'success',
-          `Permissions set for ${permissionsObject.userObj.get('username')}`,
-          'bottom-end',
-          3000,
-          null,
-          false
-        );
-        this.set('selectedCollaborator', null);
-        this.set('selectedUser', null);
-      });
-    },
-
-    removeCollab(user) {
-      let workspace = this.workspace;
-      const utils = this.utils;
-
-      if (!utils.isNonEmptyObject(user)) {
-        return;
-      }
-      const permissions = this.get('workspace.permissions');
-
-      if (utils.isNonEmptyArray(permissions)) {
-        const objToRemove = permissions.findBy('user', user.get('id'));
-        if (objToRemove) {
-          let userDisplay = user.get('username');
-          let pronoun = 'their';
-
-          let isSelf = user.get('id') === this.get('currentUser.user.id');
-
-          if (isSelf) {
-            userDisplay = 'yourself';
-            pronoun = 'your';
-          }
-
-          this.alert
-            .showModal(
-              'warning',
-              `Are you sure you want to remove ${userDisplay} as a collaborator?`,
-              `This may affect ${pronoun} ability to access ${this.get(
-                'workspace.name'
-              )} `,
-              'Yes, remove'
-            )
-            .then((result) => {
-              if (result.value) {
-                permissions.removeObject(objToRemove);
-                const collaborators = this.originalCollaborators;
-                collaborators.removeObject(user);
-                workspace.save().then(() => {
-                  this.alert.showToast(
-                    'success',
-                    `${user.get('username')} removed`,
-                    'bottom-end',
-                    3000,
-                    null,
-                    false
-                  );
-                });
-              }
-            });
-        }
-      }
-    },
-
-    addCollaborator: function () {
-      this.set('createNewCollaborator', true);
-    },
-    toggleSubmissionView: function () {
-      this.set('isShowingCustomViewer', !this.isShowingCustomViewer);
-    },
-    cancelEditCollab: function () {
-      this.set('selectedCollaborator', null);
-      if (this.isShowingCustomViewer) {
-        this.set('isShowingCustomViewer', false);
-      }
-    },
-    confirmRemoveSelf() {
-      this.send('removeCollab', this.currentUser.user);
-    },
-  },
-});
+    }
+  }
+  @action addCollaborator() {
+    this.createNewCollaborator = true;
+  }
+  @action toggleSubmissionView() {
+    this.args.toggleIsShowingCustomViewer();
+  }
+  @action cancelEditCollab() {
+    this.createNewCollaborator = false;
+    this.selectedCollaborator = null;
+    if (this.args.isShowingCustomViewer) {
+      this.args.toggleIsShowingCustomViewer();
+    }
+  }
+}

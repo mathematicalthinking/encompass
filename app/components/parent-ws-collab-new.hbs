@@ -1,0 +1,79 @@
+<div id='parent-ws-collab-new'>
+  <div class='collab-container'>
+    <RadioGroup
+      @options={{this.addTypeItems}}
+      @selectedValue={{this.addType}}
+      @updateValue={{action 'updateAddType'}}
+    />
+    {{#if isBulkAdd}}
+      <CheckboxList
+        @items={{this.usersToAdd}}
+        @selectedItems={{this.collabsToAdd}}
+        @itemDisplayProp='username'
+        @inputName='bulkAddCollabs'
+        @header='Add users as collaborators'
+        @noItemsMessage='All students have been added already'
+      />
+    {{else}}
+      <div class='collab-name'>
+        <SelectizeInput
+          @store={{this.store}}
+          @inputId='collab-select'
+          @maxItems={{1}}
+          @initialOptions={{@initialCollabOptions}}
+          @selectedItemsHash={{@selectedCollaborators}}
+          @onItemAdd={{action 'setCollab'}}
+          @onItemRemove={{action 'setCollab'}}
+          @labelField='username'
+          @valueField='id'
+          @searchField='username'
+          @model='user'
+          @queryParamsKey='usernameSearch'
+          @isAsync={{true}}
+          @placeholder='Search by username'
+          @preload='focus'
+        />
+      </div>
+    {{/if}}
+    {{#unless this.isNoActionToTake}}
+      <div class='collab-settings global'>
+        <RadioGroup
+          @options={{this.globalItems}}
+          @selectedValue={{this.globalPermissionValue}}
+          @updateValue={{action 'updateGlobalPermissionValue'}}
+        />
+      </div>
+    {{/unless}}
+    <div class='collab-settings'>
+      {{#if this.missingUserError}}
+        <div class='card-row'>
+          <ErrorBox
+            @error='Please select a user'
+            @resetError={{action (mut this.missingUserError) false}}
+            @showDismiss={{true}}
+          />
+        </div>
+      {{/if}}
+      {{#if this.existingUserError}}
+        <div class='card-row'>
+          <ErrorBox
+            @error='Collaborator already exists. Edit permissions below'
+            @resetError={{action (mut this.existingUserError) false}}
+            @showDismiss={{true}}
+          />
+        </div>
+      {{/if}}
+      <div class='button-row'>
+        <button
+          class='primary-button cancel-button'
+          {{action 'cancelCreateCollab'}}
+        >
+          Cancel
+        </button>
+        <button class='primary-button' {{action 'saveCollab'}}>
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

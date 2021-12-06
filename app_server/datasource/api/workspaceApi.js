@@ -69,9 +69,10 @@ function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
 
   // filter submissions to requestedIds
   if (_.propertyOf(submissions)('all') !== true) {
-    let submissionIds = _.propertyOf(submissions)('submissionIds') || [];
+    let submissionIds =
+      _.propertyOf(submissions)('submissionIds').map((id) => id.toString()) ||
+      [];
     let wsSubs = ws.submissions || [];
-
     let filteredSubs;
 
     if (_.propertyOf(submissions)('userOnly') === true) {
@@ -83,10 +84,9 @@ function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
       });
     } else {
       filteredSubs = wsSubs.filter((sub) => {
-        return _.contains(submissionIds, sub._id.toString());
+        return submissionIds.includes(sub._id.toString());
       });
     }
-
     dataMap.submissions = filteredSubs;
     // can only take selections that correspond to these submissions
     if (selections === 0) {
@@ -424,11 +424,8 @@ function filterRequestedWorkspaceData(user, results) {
   return Promise.all(
     _.map(results, (ws) => {
       return resolvePermissionObject(user, ws).then((results) => {
-        let {
-          areNoRestrictions,
-          permissionObject,
-          isBasicStudentAccess,
-        } = results;
+        let { areNoRestrictions, permissionObject, isBasicStudentAccess } =
+          results;
         if (areNoRestrictions) {
           return Promise.resolve(ws);
         }
@@ -568,7 +565,6 @@ async function sendWorkspace(req, res, next) {
       .populate({ path: 'childWorkspaces', populate: { path: 'owner' } })
       .lean()
       .exec();
-
     if (isNil(ws) || ws.isTrashed) {
       return utils.sendResponse(res, null);
     }
@@ -627,6 +623,7 @@ async function sendWorkspace(req, res, next) {
       ws,
       isBasicStudentAccess
     );
+    console.log(restrictedDataMap);
     _.each(restrictedDataMap, (val, key) => {
       if (ws[key]) {
         ws[key] = val;
@@ -1040,9 +1037,8 @@ function updateWorkspaces(workspaces, submissionSet) {
             if (pdA === pdB) {
               ws.update({
                 'submissionSet.lastUpdated': new Date(),
-                'submissionSet.description.firstSubmissionDate': _.min(
-                  startDates
-                ), //ENC-573 - updates date ranges
+                'submissionSet.description.firstSubmissionDate':
+                  _.min(startDates), //ENC-573 - updates date ranges
                 'submissionSet.description.lastSubmissionDate': _.max(endDates),
                 $addToSet: { submissions: { $each: toAdd } },
               }).exec();
@@ -2057,14 +2053,8 @@ async function postWorkspaceEnc(req, res, next) {
   }
 
   const workspaceCriteria = req.body.encWorkspaceRequest;
-  const {
-    requestedName,
-    mode,
-    folderSet,
-    owner,
-    answers,
-    permissionObjects,
-  } = workspaceCriteria;
+  const { requestedName, mode, folderSet, owner, answers, permissionObjects } =
+    workspaceCriteria;
   try {
     const pruned = pruneObj(workspaceCriteria);
 
@@ -3179,11 +3169,8 @@ async function cloneSingleWorkspace(req, res, next) {
     */
     // let [ error, answerSet, submissionsMap] = buildAnswerSetAndSubmissionsMap(originalWs);
 
-    let [
-      error,
-      submissionSet,
-      submissionsMap,
-    ] = buildSubmissionSetAndSubmissionsMap(originalWs);
+    let [error, submissionSet, submissionsMap] =
+      buildSubmissionSetAndSubmissionsMap(originalWs);
 
     if (error) {
       requestDoc.copyWorkspaceError = error;
@@ -3654,11 +3641,8 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
     newUpdateRequest.createDate = new Date();
 
-    let {
-      workspace,
-      linkedAssignment,
-      isParentUpdate,
-    } = req.body.updateWorkspaceRequest;
+    let { workspace, linkedAssignment, isParentUpdate } =
+      req.body.updateWorkspaceRequest;
 
     if (
       !isValidMongoId(workspace) ||
