@@ -51,8 +51,8 @@ describe('Creating a new Assignment', function () {
       await helpers.navigateAndWait(driver, url, { selector: 'div' });
     });
     it('should display Create Assignment Form', async function () {
-      let title = await helpers.getWebElements(driver, '#assignmentnewheader');
-      expect(title[0]).to.exist;
+      let form = await helpers.getWebElements(driver, '#assignment-new');
+      expect(form).to.have.lengthOf(1);
     });
     for (let selector of assnSels.formInputs) {
       it(`should display selector with id ${selector}`, async function () {
@@ -101,6 +101,53 @@ describe('Creating a new Assignment', function () {
       await helpers.findInputAndType(driver, '#assignedDate', '01012020');
       expect(await helpers.isTextInDom(driver, 'Invalid Date Range')).to.be
         .false;
+    });
+    it('should show linked workspaces menu when clicking "yes"', async function () {
+      await helpers.findAndClickElement(
+        driver,
+        '.linked-ws .radio-group input[value="true"]'
+      );
+      expect(await helpers.isTextInDom(driver, 'Workspace Name Format')).to.be
+        .true;
+    });
+    it('should display three options', async function () {
+      expect(await helpers.isTextInDom(driver, 'By Group')).to.be.true;
+      expect(await helpers.isTextInDom(driver, 'By Student')).to.be.true;
+      expect(await helpers.isTextInDom(driver, 'Student and Group')).to.be.true;
+    });
+    it('should select all students when using "Select All"', async function () {
+      await helpers.findAndClickElement(driver, '.select-all');
+    });
+    it('should show parent workspace form when clicking "yes"', async function () {
+      await helpers.findAndClickElement(
+        driver,
+        '.parent-ws .radio-group input[value="true"]'
+      );
+      expect(await helpers.isTextInDom(driver, 'Give access to students?')).to
+        .be.true;
+    });
+  });
+  describe('Creating an assignment', async function () {
+    it('should create a new assignment and display assignment info', async function () {
+      await helpers.findAndClickElement(driver, 'button[data-test="create"]');
+      await helpers.waitForSelector(driver, '#assignment-info-teacher');
+    });
+    it('should display correct title', async function () {
+      expect(
+        await helpers.isTextInDom(driver, 'Alphabetical Problem / Jan 1st 2020')
+      ).to.be.true;
+    });
+    it('should display 4 linked workspaces', async function () {
+      const linkedWsList = await helpers.getWebElements(
+        driver,
+        '.linked-ws-link'
+      );
+      expect(linkedWsList).to.have.lengthOf(4);
+    });
+    it('should display 1 parent workspace', async function () {
+      expect(
+        await helpers.getWebElements(driver, '.parent-ws-link')
+      ).to.have.lengthOf(1);
     });
   });
 });
