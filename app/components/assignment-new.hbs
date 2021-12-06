@@ -126,6 +126,7 @@
                 @name='daterange'
                 @type='date'
                 @value={{this.assignedDate}}
+                {{on 'input' this.cancelDateError}}
               />
               {{#each this.assignedDateFormErrors as |error|}}
                 <p class='error-message'>
@@ -149,6 +150,7 @@
                 @name='daterange'
                 @type='date'
                 @value={{this.dueDate}}
+                {{on 'input' this.cancelDateError}}
               />
               {{#each this.dueDateFormErrors as |error|}}
                 <p class='error-message'>

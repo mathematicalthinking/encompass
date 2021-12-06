@@ -23,6 +23,9 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
   @tracked allSelected = false;
+  @tracked problemFormErrors = [];
+  @tracked sectionFormErrors = [];
+  @tracked invalidDateRange = false;
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -245,7 +248,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
     }
-    if (assignedDate && dueDate && assignedDate > dueDate) {
+    if (assignedDate && dueDate && new Date(assignedDate) > new Date(dueDate)) {
       this.invalidDateRange = true;
       return;
     }
@@ -454,5 +457,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       return;
     }
     this[propToUpdate] = record;
+  }
+  @action cancelDateError() {
+    this.invalidDateRange = false;
   }
 }

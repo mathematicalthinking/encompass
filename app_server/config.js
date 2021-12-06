@@ -20,7 +20,7 @@ nconf.add('release', { type: 'file', file: 'release.json' });
 nconf.defaults({
   port: '8080',
   devPort: '8080',
-  clientPort: '8081',
+  clientPort: '8083', //for selenium tests
   testPort: '8082',
   web: {
     base: '/',

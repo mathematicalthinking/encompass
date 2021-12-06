@@ -36,7 +36,7 @@
     "test-back": "NODE_ENV=seed node app_server/server.js",
     "start-all": "concurrently \"npm:start-front\" \"npm:start-back\"",
     "test": "npm-run-all lint test:*",
-    "start-test": "ember server --proxy=http://localhost:8082",
+    "test-front": "ember server --port=8083 --proxy=http://localhost:8082",
     "selenium": "./node_modules/.bin/mocha test/selenium/*.js",
     "test:ember": "ember test",
     "seed": "node test/seedDb",
