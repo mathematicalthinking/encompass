@@ -51,15 +51,56 @@ describe('Creating a new Assignment', function () {
       await helpers.navigateAndWait(driver, url, { selector: 'div' });
     });
     it('should display Create Assignment Form', async function () {
-      await driver.sleep(10000);
       let title = await helpers.getWebElements(driver, '#assignmentnewheader');
       expect(title[0]).to.exist;
     });
     for (let selector of assnSels.formInputs) {
       it(`should display selector with id ${selector}`, async function () {
         let input = await helpers.getWebElements(driver, selector);
-        expect(selector[0]).to.exist;
+        expect(input[0]).to.exist;
       });
     }
+  });
+  describe('Setting up a new assignment', function () {
+    it('should display validation errors when submitting an empty form', async function () {
+      await helpers.findAndClickElement(driver, 'button');
+      expect(await helpers.isTextInDom(driver, "Section can't be blank")).to.be
+        .true;
+      expect(await helpers.isTextInDom(driver, "Problem can't be blank")).to.be
+        .true;
+    });
+    it('should remove errors when section and problem added', async function () {
+      await helpers.findAndClickElement(
+        driver,
+        '#assn-new-section-select-selectized'
+      );
+      await helpers.findAndClickElement(driver, '.option');
+      await helpers.findInputAndType(
+        driver,
+        '#assn-new-problem-select-selectized',
+        'prob',
+        true
+      );
+      expect(await helpers.isTextInDom(driver, "Section can't be blank")).to.be
+        .false;
+      expect(await helpers.isTextInDom(driver, "Problem can't be blank")).to.be
+        .false;
+    });
+    it('should display correct info in inputs', async function () {
+      expect(await helpers.isTextInDom(driver, 'MTG Period 1'));
+      expect(await helpers.isTextInDom(driver, 'Alphabet Problem'));
+    });
+    it('should show error for invalid date ranges', async function () {
+      await helpers.findInputAndType(driver, '#assignedDate', '01062020');
+      await helpers.findInputAndType(driver, '#dueDate', '01052020');
+      await helpers.findAndClickElement(driver, 'button');
+      expect(await helpers.isTextInDom(driver, 'Invalid Date Range')).to.be
+        .true;
+    });
+    it('should remove error on date change', async function () {
+      await helpers.findInputAndType(driver, '#assignedDate', '01012020');
+      expect(await helpers.isTextInDom(driver, 'Invalid Date Range')).to.be
+        .false;
+    });
   });
 });
