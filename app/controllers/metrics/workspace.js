@@ -15,6 +15,11 @@ export default class MetricsWorkspaceController extends Controller {
   ];
   get prepWorkspaceForCsv() {
     return this.model.submissions.map((submission) => {
+      const selections = submission.get('selections');
+      let taggings = selections.map((selection) =>
+        selection.get('taggings').toArray()
+      );
+      taggings = taggings.flat();
       const text = `<div>${
         submission.shortAnswer
           ? submission.shortAnswer
@@ -31,7 +36,6 @@ export default class MetricsWorkspaceController extends Controller {
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
-      const foldersLength = submission.folders.length;
       const responsesLength = submission.responses.length;
       return {
         text,
@@ -40,7 +44,7 @@ export default class MetricsWorkspaceController extends Controller {
         selectionsLength,
         commentsLength,
         dateOfSubmission,
-        foldersLength,
+        foldersLength: taggings.length,
         responsesLength,
       };
     });
