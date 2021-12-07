@@ -36,7 +36,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       .flat();
   }
   get selectableStudents() {
-    return this.args.students.map((student) => {
+    return this.studentList.map((student) => {
       let data = { username: student.username, id: student.id };
       if (this.groupedStudents.includes(student.id)) {
         data.username += ' ✅';
