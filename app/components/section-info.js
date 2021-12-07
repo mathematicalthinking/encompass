@@ -44,12 +44,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       return data;
     });
   }
-  @tracked newGroup = {
-    name: '',
-    section: null,
-    students: [],
-  };
-
+  @tracked newGroupName = '';
+  @tracked newGroupStudents = [];
   constructor() {
     super(...arguments);
     this.setSectionAttributes();
@@ -182,18 +178,17 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
   @action async saveGroup() {
     const savedGroup = this.store.createRecord('group');
-    this.newGroup.section = this.args.section;
-    this.newGroup.createdBy = this.args.currentUser;
-    this.newGroup.createDate = new Date();
-    this.newGroup.lastModifiedBy = this.args.currentUser;
-    this.newGroup.lastModifiedDate = new Date();
-    for (let key in this.newGroup) {
-      savedGroup[key] = this.newGroup[key];
-    }
+    savedGroup.section = this.args.section;
+    savedGroup.createdBy = this.args.currentUser;
+    savedGroup.createDate = new Date();
+    savedGroup.lastModifiedBy = this.args.currentUser;
+    savedGroup.lastModifiedDate = new Date();
+    savedGroup.name = this.newGroupName;
+    savedGroup.students = this.newGroupStudents;
     try {
       const res = await savedGroup.save();
-      this.newGroup.name = '';
-      this.newGroup.students = [];
+      this.newGroupName = '';
+      this.newGroupStudents = [];
       let selectize = $(`#group-add-student`)[0].selectize;
       if (!selectize) {
         return;
@@ -240,7 +235,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @action async placeStudent(id) {
     let student = await this.store.findRecord('user', id);
     this.clearSelectizeInput('group-add-student');
-    return this.newGroup.students.pushObject(student);
+    return this.newGroupStudents.pushObject(student);
   }
   @action async updateGroup(group, user) {
     if (!user) return;

@@ -241,7 +241,7 @@
         {{#if this.addGroup}}
           <div class='update-students'>
             <Input
-              @value={{this.newGroup.name}}
+              @value={{this.newGroupName}}
               @placeholder='New Group Name'
               class='new-group-name'
             />
@@ -259,7 +259,7 @@
               @queryParamsKey='usernameSearch'
             />
             <ul class='listing'>
-              {{#each this.newGroup.students as |student|}}
+              {{#each this.newGroupStudents as |student|}}
                 <li>
                   {{student.username}}
                   <button
