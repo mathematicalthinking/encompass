@@ -12,14 +12,14 @@ export default class WorkspaceInfoRoute extends Route {
   async model() {
     let workspace = this.modelFor('workspace');
     let originalCollaborators = [];
-    if (workspace.get('collaboraors.length')) {
+    if (workspace.get('collaborators.length')) {
       originalCollaborators = await this.store.query('user', {
-        ids: workspace.get('collaborators'),
+        ids: workspace.collaborators,
       });
     }
     return hash({
       workspace,
-      originalCollaborators,
+      originalCollaborators: originalCollaborators.toArray(),
     });
   }
 }
