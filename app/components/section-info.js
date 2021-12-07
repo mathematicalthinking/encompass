@@ -230,7 +230,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         null
       );
     }
-    this.clearSelectizeInput(`${group.name}-input`);
+    this.clearSelectizeInput(`${group.id}-input`);
   }
   @action async placeStudent(id) {
     let student = await this.store.findRecord('user', id);
