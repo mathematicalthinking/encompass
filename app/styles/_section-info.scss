@@ -62,6 +62,20 @@
       }
       &.groups {
         display: flex;
+        .groups-item {
+          margin: 10px 25px;
+        }
+        .header {
+          display: flex;
+          align-items: center;
+          .groups-item-input {
+            width: unset;
+          }
+          .icons {
+            margin-left: auto;
+            padding-left: 15px;
+          }
+        }
       }
     }
   }
