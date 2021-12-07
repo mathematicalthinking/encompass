@@ -1,21 +1,29 @@
 .ember-table {
   margin: 25px auto;
-
-  th {
-    border: none;
-    font-family: 'Roboto';
-  }
-  tr:hover {
-    td {
-      background-color: transparent;
+  border: none;
+  thead {
+    th {
+      border: none;
+      font-family: 'Roboto';
+      background: white;
+      color: $accent-color;
+      border-bottom: 1px solid #dcdcdc;
     }
   }
-  td {
-    font-size: 12px;
-    // overflow: scroll;
-    padding: 10px;
-    vertical-align: top;
-    white-space: normal;
+  tbody {
+    tr:hover {
+      td {
+        background-color: transparent;
+      }
+    }
+    td {
+      font-size: 12px;
+      // overflow: scroll;
+      padding: 10px;
+      vertical-align: top;
+      white-space: normal;
+      border-right: none;
+    }
   }
   a:hover {
     text-decoration: underline;

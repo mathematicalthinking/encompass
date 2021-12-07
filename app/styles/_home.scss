@@ -114,17 +114,17 @@ h1 {
   margin: 25px auto;
   overflow: hidden;
   text-align: center;
-  .ember-table {
-    border: none;
-    td,
-    th {
-      border-right: none;
-    }
-    th {
-      background: white;
-      color: $accent-color;
-    }
-  }
+  // .ember-table {
+  //   border: none;
+  //   td,
+  //   th {
+  //     border-right: none;
+  //   }
+  //   th {
+  //     background: white;
+  //     color: $accent-color;
+  //   }
+  // }
   h1 {
     cursor: pointer;
     white-space: nowrap;
