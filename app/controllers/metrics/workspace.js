@@ -38,13 +38,13 @@ export default class MetricsWorkspaceController extends Controller {
       );
       const responsesLength = submission.responses.length;
       return {
-        text,
         workspace,
         submitter,
-        selectionsLength,
-        commentsLength,
+        text,
         dateOfSubmission,
+        selectionsLength,
         foldersLength: taggings.length,
+        commentsLength,
         responsesLength,
       };
     });
