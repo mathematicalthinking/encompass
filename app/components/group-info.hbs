@@ -10,13 +10,13 @@
   {{#if @addGroup}}
     <i
       title='Edit'
-      {{action this.editButton}}
+      {{action this.editButton @group}}
       class={{if this.isUpdating 'fas fa-save' 'far fa-edit'}}
     ></i>
     <i
       class={{if this.isUpdating 'far fa-times-circle' 'fas fa-trash-alt'}}
       aria-hidden='true'
-      {{action this.cancelButton}}
+      {{action this.cancelButton @group}}
     ></i>
   {{/if}}
   {{#if this.isUpdating}}
