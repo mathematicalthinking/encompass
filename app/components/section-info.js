@@ -174,9 +174,21 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
 
   @action toggleAddGroup() {
+    if (!this.studentList.length) {
+      return this.alert.showToast('error', 'Please add students to class');
+    }
     return (this.addGroup = !this.addGroup);
   }
   @action async saveGroup() {
+    if (!this.newGroupStudents.length || !this.newGroupName) {
+      return this.alert.showToast('error', 'Please complete all fields');
+    }
+    if (this.args.groups.mapBy('name').includes(this.newGroupName)) {
+      return this.alert.showToast(
+        'error',
+        'Your class alread has a group with this name'
+      );
+    }
     const savedGroup = this.store.createRecord('group');
     savedGroup.section = this.args.section;
     savedGroup.createdBy = this.args.currentUser;
