@@ -422,18 +422,17 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       return;
     }
     if (this.linkedWorkspacesMode === 'individual') {
-      this.studentWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+      this.studentWorkspacesToMake = this.workspacesList.mapBy('id');
       this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'group') {
-      this.groupWorkspacesToMake = [...this.workspacesList.mapBy('id')];
+      this.groupWorkspacesToMake = this.workspacesList.mapBy('id');
       this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'both') {
-      this.studentWorkspacesToMake = [
-        ...this.selectedSection.students.content.mapBy('id'),
-      ];
-      this.groupWorkspacesToMake === [...this.sectionGroups.mapBy('id')];
+      this.studentWorkspacesToMake =
+        this.selectedSection.students.content.mapBy('id');
+      this.groupWorkspacesToMake = this.sectionGroups.mapBy('id');
       this.allSelected = true;
     }
   }
