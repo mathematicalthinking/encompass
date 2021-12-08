@@ -185,10 +185,7 @@
                       @model={{@flaggedBy.id}}
                     >{{@flaggedBy.username}}</LinkTo>
                     on
-                    {{format-date
-                      @problem.flagReason.flaggedDate
-                      'MMM Do YYYY'
-                    }}</p>
+                    {{format-date @flaggedDate 'MMM Do YYYY'}}</p>
                 </div>
               {{else}}
                 <span
