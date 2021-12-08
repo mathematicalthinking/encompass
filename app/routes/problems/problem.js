@@ -13,11 +13,13 @@ export default class ProblemsProblemRoute extends AuthenticatedRoute {
     const orgList = await this.store.findAll('organization');
     let flaggedBy;
     let flaggedDate;
-    if (problem.flagReason) {
+    if (problem.flagReason?.flaggedBy) {
       flaggedBy = await this.store.findRecord(
         'user',
         problem.flagReason.flaggedBy
       );
+    }
+    if (problem.flagReason?.flaggedBy) {
       flaggedDate = new Date(problem.flagReason.flaggedDate);
     }
     return hash({
