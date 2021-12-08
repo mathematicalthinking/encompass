@@ -115,9 +115,6 @@ describe('Creating a new Assignment', function () {
       expect(await helpers.isTextInDom(driver, 'By Student')).to.be.true;
       expect(await helpers.isTextInDom(driver, 'Student and Group')).to.be.true;
     });
-    it('should select all students when using "Select All"', async function () {
-      await helpers.findAndClickElement(driver, '.select-all');
-    });
     it('should show parent workspace form when clicking "yes"', async function () {
       await helpers.findAndClickElement(
         driver,
