@@ -1,4 +1,11 @@
 {{page-title this.model.problem.title}}
-<div id="problem-info" class="side-info">
-  <ProblemInfo @orgList={{this.model.orgList}} @recommendedProblems={{this.model.recommendedProblems}} @problem={{this.model.problem}} @sectionList={{this.model.sectionList}} @currentUser={{this.model.currentUser}} />
+<div id='problem-info' class='side-info'>
+  <ProblemInfo
+    @orgList={{this.model.orgList}}
+    @recommendedProblems={{this.model.recommendedProblems}}
+    @problem={{this.model.problem}}
+    @sectionList={{this.model.sectionList}}
+    @currentUser={{this.model.currentUser}}
+    @flaggedBy={{this.model.flaggedBy}}
+  />
 </div>

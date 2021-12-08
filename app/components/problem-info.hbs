@@ -1,118 +1,200 @@
-<header class="info-header">
-    {{#if this.isEditing}}
-      <span class="top-left-icon">
-        {{{public-private this.privacySettingIcon}}}
-      </span>
-      <div class="select-container">
-        <select name="privacy-settings" id="privacy-select" {{on 'change' this.changePrivacy}}>
-          <option value="E" selected={{is-equal @problem.privacySetting "E"}}>Everyone</option>
-          <option value="O" selected={{is-equal @problem.privacySetting "O"}}>My Org</option>
-          <option value="M" selected={{is-equal @problem.privacySetting "M"}}>Just Me</option>
-        </select>
-      </div>
-    {{else}}
-      <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting @problem.privacySetting}}>
-        {{{public-private @problem.privacySetting}}}
-      </span>
-    {{/if}}
-  <span class="remove-icon" {{action 'hideInfo'}}>
-    <i class="fas fa-times"></i>
+<header class='info-header'>
+  {{#if this.isEditing}}
+    <span class='top-left-icon'>
+      {{{public-private this.privacySettingIcon}}}
+    </span>
+    <div class='select-container'>
+      <select
+        name='privacy-settings'
+        id='privacy-select'
+        {{on 'change' this.changePrivacy}}
+      >
+        <option
+          value='E'
+          selected={{is-equal @problem.privacySetting 'E'}}
+        >Everyone</option>
+        <option value='O' selected={{is-equal @problem.privacySetting 'O'}}>My
+          Org</option>
+        <option value='M' selected={{is-equal @problem.privacySetting 'M'}}>Just
+          Me</option>
+      </select>
+    </div>
+  {{else}}
+    <span
+      class='top-left-icon simptip-position-right simptip-smooth'
+      data-tooltip={{privacy-setting @problem.privacySetting}}
+    >
+      {{{public-private @problem.privacySetting}}}
+    </span>
+  {{/if}}
+  <span class='remove-icon' {{action 'hideInfo'}}>
+    <i class='fas fa-times'></i>
   </span>
 </header>
 
-<div class="side-info-menu">
-  <section class="info-details">
-    <div class="info-main">
-      <div class="heading">
+<div class='side-info-menu'>
+  <section class='info-details'>
+    <div class='info-main'>
+      <div class='heading'>
         {{#if this.isEditing}}
-          <Input @name="title" @id="title" @type="text" @value={{this.problemName}} />
+          <Input
+            @name='title'
+            @id='title'
+            @type='text'
+            @value={{this.problemName}}
+          />
         {{else}}
           {{{@problem.title}}}
         {{/if}}
       </div>
-      <div class="subheading date">{{format-date @problem.createDate 'MM/DD/YYYY'}}</div>
-      <div class="subheading">{{#link-to "metrics.problem" @problem}}See Reports{{/link-to}}</div>
+      <div class='subheading date'>{{format-date
+          @problem.createDate
+          'MM/DD/YYYY'
+        }}</div>
+      <div class='subheading'>{{#link-to 'metrics.problem' @problem}}See Reports{{/link-to}}</div>
     </div>
-    <div class="info-menu">
-      <button class="tab-link general {{if this.showGeneral 'active-btn'}}" {{on 'click' this.toggleGeneral}}>General</button>
-      <button class="tab-link categories {{if this.showCats 'active-btn'}}" {{on 'click' this.toggleCats}}>Categories</button>
-      <button class="tab-link additional {{if this.showAdditional 'active-btn'}}" {{on 'click' this.toggleAdditional}}>Additional</button>
-      <button class="tab-link legal {{if this.showLegal 'active-btn'}}" {{on 'click' this.toggleLegal}}>Legal</button>
+    <div class='info-menu'>
+      <button
+        class='tab-link general {{if this.showGeneral 'active-btn'}}'
+        {{on 'click' this.toggleGeneral}}
+      >General</button>
+      <button
+        class='tab-link categories {{if this.showCats 'active-btn'}}'
+        {{on 'click' this.toggleCats}}
+      >Categories</button>
+      <button
+        class='tab-link additional {{if this.showAdditional 'active-btn'}}'
+        {{on 'click' this.toggleAdditional}}
+      >Additional</button>
+      <button
+        class='tab-link legal {{if this.showLegal 'active-btn'}}'
+        {{on 'click' this.toggleLegal}}
+      >Legal</button>
     </div>
-    <div class="info-content">
+    <div class='info-content'>
       {{#if this.showGeneral}}
-        <p class="info-content-label">Problem Statement</p>
-        <div class="info-content-block statement large-content">
+        <p class='info-content-label'>Problem Statement</p>
+        <div class='info-content-block statement large-content'>
           {{#if this.isEditing}}
-            <QuillContainer @onEditorChange={{action "updateQuillText"}} @startingText={{@problem.text}} />
+            <QuillContainer
+              @onEditorChange={{action 'updateQuillText'}}
+              @startingText={{@problem.text}}
+            />
           {{else}}
             {{{@problem.text}}}
           {{/if}}
         </div>
         {{#if this.isEditing}}
-          <p class="info-content-label">Author</p>
-          <div class="info-content-block author">
+          <p class='info-content-label'>Author</p>
+          <div class='info-content-block author'>
             {{#if @problem.author}}
-              <div class="input-container">
-                <Input @name="author" @id="author" @type="text" @value={{this.author}} />
+              <div class='input-container'>
+                <Input
+                  @name='author'
+                  @id='author'
+                  @type='text'
+                  @value={{this.author}}
+                />
               </div>
             {{else}}
-              <div class="input-container">
-                <Input @name="author" @id="author" @type="text" placeholder="Add author" @value={{this.author}} />
+              <div class='input-container'>
+                <Input
+                  @name='author'
+                  @id='author'
+                  @type='text'
+                  placeholder='Add author'
+                  @value={{this.author}}
+                />
               </div>
             {{/if}}
           </div>
         {{else}}
           {{#if @problem.author}}
-            <p class="info-content-label">Author</p>
-            <div class="info-content-block author">
+            <p class='info-content-label'>Author</p>
+            <div class='info-content-block author'>
               {{@problem.author}}
             </div>
           {{/if}}
         {{/if}}
         {{#if @problem.organization}}
           {{#if @currentUser.isAdmin}}
-          <p class="info-content-label">Organization</p>
-          <div class="info-content-block org">
-            {{#if @problem.organization}}
-              {{@problem.organization.name}}
-            {{/if}}
-          </div>
+            <p class='info-content-label'>Organization</p>
+            <div class='info-content-block org'>
+              {{#if @problem.organization}}
+                {{@problem.organization.name}}
+              {{/if}}
+            </div>
           {{/if}}
         {{/if}}
-        <p class="info-content-label">Problem Status</p>
-        <div class="info-content-block">
+        <p class='info-content-label'>Problem Status</p>
+        <div class='info-content-block'>
           {{#if this.isEditing}}
             {{#if @currentUser.isTeacher}}
-              <svg height="20" width="20">
-                <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
+              <svg height='20' width='20'>
+                <circle
+                  cx='10'
+                  cy='15'
+                  r='5'
+                  fill={{this.statusIconFill}}
+                ></circle>
               </svg>
-              <span class="status-text">
+              <span class='status-text'>
                 {{@problem.status}}
               </span>
             {{else}}
-              <svg height="20" width="20">
-                <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
+              <svg height='20' width='20'>
+                <circle
+                  cx='10'
+                  cy='15'
+                  r='5'
+                  fill={{this.statusIconFill}}
+                ></circle>
               </svg>
-              <MySelect @cannotBeNull={{true}} @selectedValue={{@problem.status}} @content={{this.problemStatusOptions}} @action={{action (mut this.problemStatus)}} @isDisabled={{this.isReadOnly}} />
+              <MySelect
+                @cannotBeNull={{true}}
+                @selectedValue={{@problem.status}}
+                @content={{this.problemStatusOptions}}
+                @action={{action (mut this.problemStatus)}}
+                @isDisabled={{this.isReadOnly}}
+              />
             {{/if}}
           {{else}}
-            <svg height="20" width="20">
-              <circle cx="10" cy="15" r="5" fill={{this.statusIconFill}} />
+            <svg height='20' width='20'>
+              <circle
+                cx='10'
+                cy='15'
+                r='5'
+                fill={{this.statusIconFill}}
+              ></circle>
             </svg>
-            <span class="status-text">
+            <span class='status-text'>
               {{@problem.status}}
             </span>
             {{#if (is-equal @problem.status 'flagged')}}
               {{#if this.showFlagReason}}
-                <span class="show-reason" {{action 'toggleShowFlagReason'}}>Hide</span>
-                <div class="flag-reason">
-                  <p class="reason"><strong>Reason:</strong> {{@problem.flagReason.reason}}</p>
-                  <p class="details">By <LinkTo @route="users.user" @model={{this.flaggedBy.id}}>{{this.flaggedBy.username}}</LinkTo> on {{format-date
-                    @problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
+                <span
+                  class='show-reason'
+                  {{action 'toggleShowFlagReason'}}
+                >Hide</span>
+                <div class='flag-reason'>
+                  <p class='reason'><strong>Reason:</strong>
+                    {{@problem.flagReason.reason}}</p>
+                  <p class='details'>By
+                    <LinkTo
+                      @route='users.user'
+                      @model={{@flaggedBy.id}}
+                    >{{@flaggedBy.username}}</LinkTo>
+                    on
+                    {{format-date
+                      @problem.flagReason.flaggedDate
+                      'MMM Do YYYY'
+                    }}</p>
                 </div>
               {{else}}
-                <span class="show-reason" {{on 'click' this.toggleShowFlagReason}}>Why?</span>
+                <span
+                  class='show-reason'
+                  {{on 'click' this.toggleShowFlagReason}}
+                >Why?</span>
               {{/if}}
             {{/if}}
           {{/if}}
@@ -120,42 +202,68 @@
       {{/if}}
 
       {{#if this.showCats}}
-        <p class="info-content-label">Problem Categories</p>
-        <div class="info-content-block categories">
+        <p class='info-content-label'>Problem Categories</p>
+        <div class='info-content-block categories'>
           {{#if this.isEditing}}
             {{#if @problem.categories}}
               <ul>
                 {{#each @problem.categories as |category|}}
-                  <li class="category-item">
-                    <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
-                    <button class="remove-cat" {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button>
-                    <p class="category-description">{{category.description}}</p>
+                  <li class='category-item'>
+                    <a
+                      href='{{category.url}}'
+                      target='_blank'
+                    >{{category.identifier}}</a>
+                    <button
+                      class='remove-cat'
+                      {{action 'removeCategory' category}}
+                    ><i class='far fa-times-circle'></i></button>
+                    <p class='category-description'>{{category.description}}</p>
                   </li>
                 {{/each}}
               </ul>
               {{#unless this.showCategories}}
-              <div class="button-row-list">
-                <button class="cancel-button" {{action 'toggleCategories'}}>Add Categories</button>
-              </div>
+                <div class='button-row-list'>
+                  <button
+                    class='cancel-button'
+                    {{action 'toggleCategories'}}
+                  >Add Categories</button>
+                </div>
               {{/unless}}
               {{#if this.showCategories}}
-                <div class="button-row-list">
-                  <button class="cancel-button" {{action 'toggleCategories'}}>Hide Categories</button>
+                <div class='button-row-list'>
+                  <button
+                    class='cancel-button'
+                    {{action 'toggleCategories'}}
+                  >Hide Categories</button>
                 </div>
-                <CategoriesMenu @categories={{this.categoryTree}} @store={{this.store}} @addCategories="addCategories" />
+                <CategoriesMenu
+                  @categories={{this.categoryTree}}
+                  @store={{this.store}}
+                  @addCategories='addCategories'
+                />
               {{/if}}
             {{else}}
               {{#unless this.showCategories}}
-                <div class="button-row">
-                  <button class="cancel-button" {{action 'toggleCategories'}}>Add Categories</button>
+                <div class='button-row'>
+                  <button
+                    class='cancel-button'
+                    {{action 'toggleCategories'}}
+                  >Add Categories</button>
                 </div>
               {{/unless}}
               {{#if this.showCategories}}
-                <div class="button-row">
-                  <button class="cancel-button" {{action 'toggleCategories'}}>Hide Categories</button>
+                <div class='button-row'>
+                  <button
+                    class='cancel-button'
+                    {{action 'toggleCategories'}}
+                  >Hide Categories</button>
                 </div>
                 {{#if this.categoryTree}}
-                  <CategoriesMenu @categories={{this.categoryTree}} @store={{this.store}} @addCategories="addCategories" />
+                  <CategoriesMenu
+                    @categories={{this.categoryTree}}
+                    @store={{this.store}}
+                    @addCategories='addCategories'
+                  />
                 {{/if}}
               {{/if}}
             {{/if}}
@@ -163,10 +271,13 @@
             {{#if @problem.categories}}
               <ul>
                 {{#each @problem.categories as |category|}}
-                <li class="category-item">
-                  <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
-                  <p class="category-description">{{category.description}}</p>
-                </li>
+                  <li class='category-item'>
+                    <a
+                      href='{{category.url}}'
+                      target='_blank'
+                    >{{category.identifier}}</a>
+                    <p class='category-description'>{{category.description}}</p>
+                  </li>
                 {{/each}}
               </ul>
             {{else}}
@@ -174,50 +285,75 @@
             {{/if}}
           {{/if}}
         </div>
-        <p class="info-content-label">Problem Keywords</p>
-        <div class="info-content-block keywords">
+        <p class='info-content-label'>Problem Keywords</p>
+        <div class='info-content-block keywords'>
           {{#if this.isEditing}}
-            <SelectizeInput @inputId="select-edit-keywords" @onItemAdd={{action "updateKeywords"}} @onItemRemove={{action "updateKeywords"}} @maxItems={{5}} @create={{true}} @createFilter={{this.keywordFilter}} @persist={{false}} @initialItems={{@problem.keywords}} @initialOptions={{this.keywordSelectOptions}} @labelField="label" @valueField="value" />
-            {{else}}
-              {{#if @problem.keywords}}
-                <ul>
-                  {{#each @problem.keywords as |keyword|}}
+            <SelectizeInput
+              @inputId='select-edit-keywords'
+              @onItemAdd={{action 'updateKeywords'}}
+              @onItemRemove={{action 'updateKeywords'}}
+              @maxItems={{5}}
+              @create={{true}}
+              @createFilter={{this.keywordFilter}}
+              @persist={{false}}
+              @initialItems={{@problem.keywords}}
+              @initialOptions={{this.keywordSelectOptions}}
+              @labelField='label'
+              @valueField='value'
+            />
+          {{else}}
+            {{#if @problem.keywords}}
+              <ul>
+                {{#each @problem.keywords as |keyword|}}
                   <li>
                     {{keyword}}
                   </li>
-                  {{/each}}
-                </ul>
-              {{else}}
-                No Problem Keywords
-              {{/if}}
+                {{/each}}
+              </ul>
+            {{else}}
+              No Problem Keywords
+            {{/if}}
           {{/if}}
 
         </div>
       {{/if}}
 
       {{#if this.showAdditional}}
-        <p class="info-content-label">Additional Info</p>
-          {{#if this.isEditing}}
-          <div class="info-content-block additional">
-            <div class="input-container">
-              <Textarea class="additional-info-area" @value={{this.additionalInfo}} @rows="4" placeholder="Additional info..." />
-              <Input @id="additionalInfo" @type="hidden" @value={{this.additionalInfo}} />
+        <p class='info-content-label'>Additional Info</p>
+        {{#if this.isEditing}}
+          <div class='info-content-block additional'>
+            <div class='input-container'>
+              <Textarea
+                class='additional-info-area'
+                @value={{this.additionalInfo}}
+                @rows='4'
+                placeholder='Additional info...'
+              />
+              <Input
+                @id='additionalInfo'
+                @type='hidden'
+                @value={{this.additionalInfo}}
+              />
             </div>
           </div>
-          {{else}}
-          <div class="info-content-block large-content additional">
+        {{else}}
+          <div class='info-content-block large-content additional'>
             {{#if @problem.additionalInfo}}
               {{{@problem.additionalInfo}}}
             {{else}}
               No Additional Info
             {{/if}}
           </div>
-          {{/if}}
-        <p class="info-content-label">Additional Image</p>
-        <div class="info-content-block image">
+        {{/if}}
+        <p class='info-content-label'>Additional Image</p>
+        <div class='info-content-block image'>
           {{#if @problem.image}}
             <a {{action 'toggleImageSize'}}>
-              <img src="{{@problem.image.imageData}}" alt="Image Error" class="additional-image {{if this.isWide "wide"}}">
+              <img
+                src='{{@problem.image.imageData}}'
+                alt='Image Error'
+                class='additional-image {{if this.isWide 'wide'}}'
+              />
             </a>
           {{else}}
             {{#unless this.isEditing}}
@@ -226,35 +362,53 @@
           {{/if}}
           {{#if this.isEditing}}
             {{#if @problem.image}}
-              <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
+              <button
+                class='edit-image-btn'
+                {{action 'deleteImage'}}
+              >Delete</button>
             {{else}}
-              <div class="input-container" id="image-upload">
-                <ImageUpload @filesToBeUploaded={{this.filesToBeUploaded}} @hideSubmit={{true}} />
+              <div class='input-container' id='image-upload'>
+                <ImageUpload
+                  @filesToBeUploaded={{this.filesToBeUploaded}}
+                  @hideSubmit={{true}}
+                />
               </div>
             {{/if}}
           {{/if}}
         </div>
         {{#if @problem.origin}}
-          <p class="info-content-label">Problem Origin</p>
-          <div class="info-content-block origin">
-            <p><LinkTo @route="problems.problem" @model={{@problem.origin.id}}>{{@problem.origin.title}}</LinkTo></p>
+          <p class='info-content-label'>Problem Origin</p>
+          <div class='info-content-block origin'>
+            <p><LinkTo
+                @route='problems.problem'
+                @model={{@problem.origin.id}}
+              >{{@problem.origin.title}}</LinkTo></p>
           </div>
         {{/if}}
         {{#if @currentUser.isAdmin}}
-        <p class="info-content-label">Created By</p>
-        <div class="info-content-block creator">
-          <p><LinkTo @route="users.user" @model={{@problem.createdBy.id}}>{{@problem.createdBy.username}}</LinkTo></p>
-        </div>
+          <p class='info-content-label'>Created By</p>
+          <div class='info-content-block creator'>
+            <p><LinkTo
+                @route='users.user'
+                @model={{@problem.createdBy.id}}
+              >{{@problem.createdBy.username}}</LinkTo></p>
+          </div>
         {{/if}}
       {{/if}}
 
       {{#if this.showLegal}}
-        <p class="info-content-label">Copyright Notice</p>
-        <div class="info-content-block copyright">
+        <p class='info-content-label'>Copyright Notice</p>
+        <div class='info-content-block copyright'>
           {{#if this.isEditing}}
-            <div class="input-container" id="copyright-container">
-              <span id="icon">&copy;</span>
-              <Input @name="copyright" @id="copyright" @type="text" @value={{this.copyrightNotice}} placeholder="Add Copyright Notice" />
+            <div class='input-container' id='copyright-container'>
+              <span id='icon'>&copy;</span>
+              <Input
+                @name='copyright'
+                @id='copyright'
+                @type='text'
+                @value={{this.copyrightNotice}}
+                placeholder='Add Copyright Notice'
+              />
             </div>
           {{else}}
             {{#if @problem.copyrightNotice}}
@@ -264,11 +418,17 @@
             {{/if}}
           {{/if}}
         </div>
-        <p class="info-content-label">Sharing Authorization</p>
-        <div class="info-content-block sharing">
+        <p class='info-content-label'>Sharing Authorization</p>
+        <div class='info-content-block sharing'>
           {{#if this.isEditing}}
-            <div class="input-container">
-              <Input @name="sharing" @id="sharing" @type="text" @value={{this.sharingAuth}} placeholder="Add Sharing Authorization" />
+            <div class='input-container'>
+              <Input
+                @name='sharing'
+                @id='sharing'
+                @type='text'
+                @value={{this.sharingAuth}}
+                placeholder='Add Sharing Authorization'
+              />
             </div>
           {{else}}
             {{#if @problem.sharingAuth}}
@@ -282,69 +442,106 @@
     </div>
   </section>
 
-  <section class="info-actions">
-    <div class="buttons-container">
-      <span class="left-buttons">
+  <section class='info-actions'>
+    <div class='buttons-container'>
+      <span class='left-buttons'>
         {{#if this.isEditing}}
           {{#unless @problem.isTrashed}}
-          <button class="button-icon" {{on "click" this.deleteProblem}}><i class="fas fa-trash"></i></button>
+            <button class='button-icon' {{on 'click' this.deleteProblem}}><i
+                class='fas fa-trash'
+              ></i></button>
           {{/unless}}
         {{else}}
-          <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Make a Copy of this Problem">
-            <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
+          <span
+            class='info-text-tip simptip-position-right simptip-smooth'
+            data-tooltip='Make a Copy of this Problem'
+          >
+            <button class='button-icon' {{action 'addToMyProblems'}}><i
+                class='far fa-copy'
+              ></i></button>
           </span>
           {{#unless @currentUser.isTeacher}}
             {{#unless @problem.isTrashed}}
-            {{#unless (is-equal @problem.status 'flagged')}}
-              {{#if this.isRecommended}}
-                <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Remove this Problem from Recommended">
-                  <button class="button-icon star-icon" {{action 'removeRecommend'}}>
-                    <i class="fas fa-star star-filled"></i>
-                  </button>
-                </span>
-              {{else}}
-                <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Add this Problem to Recommended">
-                  <button class="button-icon star-icon" {{action 'checkRecommend'}}>
-                    <i class="far fa-star star-line"></i>
-                  </button>
-                </span>
-              {{/if}}
-            {{/unless}}
+              {{#unless (is-equal @problem.status 'flagged')}}
+                {{#if this.isRecommended}}
+                  <span
+                    class='info-text-tip simptip-position-right simptip-smooth'
+                    data-tooltip='Remove this Problem from Recommended'
+                  >
+                    <button
+                      class='button-icon star-icon'
+                      {{action 'removeRecommend'}}
+                    >
+                      <i class='fas fa-star star-filled'></i>
+                    </button>
+                  </span>
+                {{else}}
+                  <span
+                    class='info-text-tip simptip-position-right simptip-smooth'
+                    data-tooltip='Add this Problem to Recommended'
+                  >
+                    <button
+                      class='button-icon star-icon'
+                      {{action 'checkRecommend'}}
+                    >
+                      <i class='far fa-star star-line'></i>
+                    </button>
+                  </span>
+                {{/if}}
+              {{/unless}}
             {{/unless}}
           {{/unless}}
           {{#if @currentUser.isTeacher}}
             {{#if this.isRecommended}}
-              <button class="button-icon star-icon no-cursor">
-                <i class="fas fa-star star-filled"></i>
+              <button class='button-icon star-icon no-cursor'>
+                <i class='fas fa-star star-filled'></i>
               </button>
             {{/if}}
           {{/if}}
         {{/if}}
       </span>
-      <span class="right-buttons">
+      <span class='right-buttons'>
         {{#if this.isEditing}}
-          <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
-          <button class="primary-button save" {{action 'checkPrivacy'}}>Save</button>
+          <button
+            class='action_button cancel-button'
+            {{action 'cancelEdit'}}
+          >Cancel</button>
+          <button
+            class='primary-button save'
+            {{action 'checkPrivacy'}}
+          >Save</button>
         {{else}}
           {{#if this.writePermissions.canEdit}}
             {{#if @problem.isUsed}}
               {{#if @currentUser.isAdmin}}
-                <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
+                <button
+                  class='primary-button edit'
+                  {{action 'editProblem'}}
+                >Edit</button>
               {{/if}}
             {{else}}
-              <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
+              <button
+                class='primary-button edit'
+                {{action 'editProblem'}}
+              >Edit</button>
             {{/if}}
           {{/if}}
-            {{#unless @problem.isTrashed}}
-              {{#unless (is-equal @problem.status 'flagged')}}
-              <button class="primary-button assign" {{action 'toggleAssignment'}}>Assign</button>
-              {{/unless}}
+          {{#unless @problem.isTrashed}}
+            {{#unless (is-equal @problem.status 'flagged')}}
+              <button
+                class='primary-button assign'
+                {{action 'toggleAssignment'}}
+              >Assign</button>
             {{/unless}}
+          {{/unless}}
         {{/if}}
         {{#if @problem.isTrashed}}
           {{#if @currentUser.isAdmin}}
             {{#unless this.isEditing}}
-              <button class="primary-button restore" {{action 'restoreProblem'}}>Restore</button>
+              <button
+                class='primary-button restore'
+                {{action 'restoreProblem'}}
+              >Restore</button>
             {{/unless}}
           {{/if}}
         {{/if}}
@@ -352,23 +549,51 @@
     </div>
   </section>
   {{#if this.isMissingRequiredFields}}
-    <ErrorBox @error="Please fill in all required fields" @showDismiss={{true}} />
+    <ErrorBox
+      @error='Please fill in all required fields'
+      @showDismiss={{true}}
+    />
   {{/if}}
 
   {{#each this.updateProblemErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut this.updateProblemErrors) null}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.updateProblemErrors) null}}
+    />
   {{/each}}
   {{#each this.imageUploadErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut this.imageUploadErrors) null}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.imageUploadErrors) null}}
+    />
   {{/each}}
   {{#each this.createRecordErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut this.createRecordErrors) null}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.createRecordErrors) null}}
+    />
   {{/each}}
   {{#each this.findRecordErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut this.findRecordErrors) null}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.findRecordErrors) null}}
+    />
   {{/each}}
 
   {{#if this.showAssignment}}
-    <AssignmentNew @currentUser={{@currentUser}} @cancel={{action (mut this.showAssignment) null}} @fromProblemInfo={{true}} @problems={{this.problemList}} @selectedProblem={{@problem}} @sections={{@sectionList}} @store={{this.store}} @toAssignmentInfo="toAssignmentInfo" />
+    <AssignmentNew
+      @currentUser={{@currentUser}}
+      @cancel={{action (mut this.showAssignment) null}}
+      @fromProblemInfo={{true}}
+      @problems={{this.problemList}}
+      @selectedProblem={{@problem}}
+      @sections={{@sectionList}}
+      @store={{this.store}}
+      @toAssignmentInfo='toAssignmentInfo'
+    />
   {{/if}}
 </div>
