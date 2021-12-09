@@ -49,10 +49,10 @@ export default class IndexController extends Controller {
     if (this.dataToShow === 'assignment') {
       return [
         { name: 'Assignment', valuePath: 'name' },
+        { name: 'Section', valuePath: 'section.name' },
         { name: 'Problem', valuePath: 'problem.title' },
         { name: 'Assigned', valuePath: 'assignedDate' },
         { name: 'Due', valuePath: 'dueDate' },
-        { name: 'To Do', valuePath: 'name' },
       ];
     }
     if (this.dataToShow === 'feedback') {
@@ -108,20 +108,34 @@ export default class IndexController extends Controller {
     }
     if (this.dataToShow === 'assignment') {
       //create array of assignments from active sections
-      return this.model.userSections.map(({ section, assignments, role }) => {
-        const filtered = assignments.toArray().filter((assignment) => {
+      const teacherFiltered = this.model.teacherSections.filter(
+        (assignment) => {
           return !assignment.dueDate
             ? true
             : assignment.dueDate.getTime() >
                 this.dateBounds[this.currentBound].getTime();
-        });
-        return {
-          role,
-          details: filtered,
-          label: section.name,
+        }
+      );
+      const studentFiltered = this.model.studentSections.filter(
+        (assignment) => {
+          return !assignment.dueDate
+            ? true
+            : assignment.dueDate.getTime() >
+                this.dateBounds[this.currentBound].getTime();
+        }
+      );
+      return [
+        {
+          details: teacherFiltered.reverse(),
+          label: 'Assigned by Me',
           type: 'assignment',
-        };
-      });
+        },
+        {
+          details: studentFiltered.reverse(),
+          label: 'Assigned To Me',
+          type: 'assignment',
+        },
+      ];
     }
     if (this.dataToShow === 'feedback') {
       const responses = this.model.responses

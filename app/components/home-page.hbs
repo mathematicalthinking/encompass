@@ -56,12 +56,6 @@
                   @route={{'assignments.assignment'}}
                   @model={{rowValue.id}}
                 >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
-              {{else if (is-equal columnValue.name 'To Do')}}
-                {{if
-                  (is-equal @item.role 'teacher')
-                  'Review Submissions'
-                  'Complete Assignment'
-                }}
               {{else if (is-equal columnValue.name 'Other Person')}}
                 <LinkTo
                   @route={{'responses.submission'}}

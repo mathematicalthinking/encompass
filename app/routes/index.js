@@ -35,19 +35,21 @@ export default class IndexRoute extends Route {
     //user.sections isn't reliable. have to query all sections
     const sections = await this.store.findAll('section');
     //if user is admin will receive all sections. otherwise should be filtered already according to user role
-    const filteredSections = sections.filter((section) => {
-      const students = section.students;
+    const teacherSections = sections.filter((section) => {
       const teachers = section.teachers;
-      return students.includes(user) || teachers.includes(user);
+      return teachers.includes(user);
     });
-    const userSections = filteredSections.map((section) => {
-      const assignments = section.assignments;
-      const teachers = section.teachers;
-      return {
-        section,
-        assignments,
-        role: teachers.includes(user) ? 'teacher' : 'student',
-      };
+    const studentSections = sections.filter((section) => {
+      const students = section.students;
+      return students.includes(user);
+    });
+    const teacherAssignments = teacherSections.map((section) => {
+      const sectionAssignments = section.assignments.toArray();
+      return sectionAssignments;
+    });
+    const studentAssignments = studentSections.map((section) => {
+      const sectionAssignments = section.assignments.toArray();
+      return sectionAssignments;
     });
     //TODO: find responses given to a user and responses for user to review
     const responses = this.store.query('response', {
@@ -82,7 +84,8 @@ export default class IndexRoute extends Route {
       createdByCriteria
     );
     return hash({
-      userSections,
+      teacherSections: teacherAssignments.flat(),
+      studentSections: studentAssignments.flat(),
       user,
       workspaces: ownedWorkspaces,
       responses,
