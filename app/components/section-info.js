@@ -179,7 +179,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     return (this.addGroup = !this.addGroup);
   }
-  @action async saveGroup() {
+  @action async saveGroup(e) {
+    e.preventDefault(); //not sure why this button was causing a submit...
     if (!this.newGroupStudents.length || !this.newGroupName) {
       return this.alert.showToast('error', 'Please complete all fields');
     }
