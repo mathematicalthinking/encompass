@@ -174,9 +174,21 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
 
   @action toggleAddGroup() {
+    if (!this.studentList.length) {
+      return this.alert.showToast('error', 'Please add students to class');
+    }
     return (this.addGroup = !this.addGroup);
   }
   @action async saveGroup() {
+    if (!this.newGroupStudents.length || !this.newGroupName) {
+      return this.alert.showToast('error', 'Please complete all fields');
+    }
+    if (this.args.groups.mapBy('name').includes(this.newGroupName)) {
+      return this.alert.showToast(
+        'error',
+        'Your class already has a group with this name'
+      );
+    }
     const savedGroup = this.store.createRecord('group');
     savedGroup.section = this.args.section;
     savedGroup.createdBy = this.args.currentUser;
@@ -210,6 +222,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
   @action async updateGroupStudents(group, studentId) {
     let student = await this.store.findRecord('user', studentId);
+    this.clearSelectizeInput(`${group.name}-input`);
+    if (group.students.includes(student)) return;
     group.students.pushObject(student);
     try {
       const res = await group.save();
@@ -235,6 +249,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @action async placeStudent(id) {
     let student = await this.store.findRecord('user', id);
     this.clearSelectizeInput('group-add-student');
+    if (this.newGroupStudents.includes(student)) return;
     return this.newGroupStudents.pushObject(student);
   }
   @action async updateGroup(group, user) {
