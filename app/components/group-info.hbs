@@ -1,24 +1,28 @@
-<li>
-  {{#if this.isUpdating}}
-    <Input @value={{@group.name}} />
-  {{else}}
-    <span
-      {{on 'click' this.toggleDisplayStudents}}
-      class='group-name'
-    >{{@group.name}}</span>
-  {{/if}}
-  {{#if @addGroup}}
-    <i
-      title='Edit'
-      {{action this.editButton @group}}
-      class={{if this.isUpdating 'fas fa-save' 'far fa-edit'}}
-    ></i>
-    <i
-      class={{if this.isUpdating 'far fa-times-circle' 'fas fa-trash-alt'}}
-      aria-hidden='true'
-      {{action this.cancelButton @group}}
-    ></i>
-  {{/if}}
+<li class='groups-item'>
+  <div class='header'>
+    {{#if this.isUpdating}}
+      <Input class='groups-item-input' @value={{@group.name}} />
+    {{else}}
+      <span
+        {{on 'click' this.toggleDisplayStudents}}
+        class='group-name'
+      >{{@group.name}}</span>
+    {{/if}}
+    {{#if @addGroup}}
+      <div class='icons'>
+        <i
+          title='Edit'
+          {{action this.editButton @group}}
+          class={{if this.isUpdating 'fas fa-save' 'far fa-edit'}}
+        ></i>
+        <i
+          class={{if this.isUpdating 'far fa-times-circle' 'fas fa-trash-alt'}}
+          aria-hidden='true'
+          {{action this.cancelButton @group}}
+        ></i>
+      </div>
+    {{/if}}
+  </div>
   {{#if this.isUpdating}}
     <SelectizeInput
       @store={{this.store}}
@@ -26,7 +30,7 @@
       @maxItems={{1}}
       @initialOptions={{@selectableStudents}}
       @onItemAdd={{action @updateGroupStudents @group}}
-      @inputId='{{@group.name}}-input'
+      @inputId='{{@group.id}}-input'
       @model='user'
       @isAsync={{false}}
       @labelField='username'
@@ -36,7 +40,7 @@
     />
   {{/if}}
   {{#if this.showStudents}}
-    <ul class='listing'>
+    <ul>
       {{#each @group.students as |student|}}
         <li>{{student.username}}
           {{#if @addGroup}}
