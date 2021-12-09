@@ -37,7 +37,7 @@
     "start-all": "concurrently \"npm:start-front\" \"npm:start-back\"",
     "test": "npm-run-all lint test:*",
     "test-front": "ember server --port=8083 --proxy=http://localhost:8082",
-    "selenium": "./node_modules/.bin/mocha test/selenium/problems.js",
+    "selenium": "./node_modules/.bin/mocha test/selenium/*.js",
     "test:ember": "ember test",
     "seed": "node test/seedDb",
     "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test",

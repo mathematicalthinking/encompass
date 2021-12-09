@@ -138,8 +138,7 @@
         class='parent-ws-link'
         @route='workspace.work'
         @model={{@parentWorkspace.id}}
-      >
-        {{@parentWorkspace.name}}
+      >{{@parentWorkspace.name}}
       </LinkTo>
     {{else}}
       <p class='value no-parent-ws'>
