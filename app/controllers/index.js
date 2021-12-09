@@ -83,7 +83,7 @@ export default class IndexController extends Controller {
         },
         {
           type: 'workspace',
-          label: 'Collaborative',
+          label: 'Shared',
           details: this.model.collabWorkspaces
             .toArray()
             .filter(
