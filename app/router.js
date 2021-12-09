@@ -90,16 +90,6 @@ Router.map(function () {
     this.route('new');
   });
 
-  // ANSWERS ROUTE
-  this.route('answers', function () {
-    this.route(
-      'answer',
-      { resetNamespace: true, path: '/:answerId' },
-      function () {}
-    );
-    this.route('new');
-    this.route('home');
-  });
   this.route('error', { path: '/*path' });
   this.route('logout');
   this.route('unconfirmed');
