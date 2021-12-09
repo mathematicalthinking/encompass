@@ -66,10 +66,13 @@ function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
 
   const dataMap = {};
   const { submissions, folders, selections, comments, feedback } = permissions;
-
   // filter submissions to requestedIds
-  if (_.propertyOf(submissions)('all') !== true) {
-    let submissionIds =
+  let submissionIds = [];
+  if (
+    _.propertyOf(submissions)('all') !== true &&
+    _.propertyOf(submissions)('submissionIds')
+  ) {
+    submissionIds =
       _.propertyOf(submissions)('submissionIds').map((id) => id.toString()) ||
       [];
     let wsSubs = ws.submissions || [];
@@ -746,7 +749,6 @@ async function sendWorkspace(req, res, next) {
     if (isNonEmptyArray(ws.childWorkspaces)) {
       // sideload any owners of child workspaces that are not being
       // sideloaded already
-
       ws.childWorkspaces.forEach((childWs) => {
         let ownerObj = childWs.owner;
         if (ownerObj) {

@@ -123,7 +123,7 @@ describe('Resetting Password', function () {
 
         it('should automatically log user in and redirect to home', async function () {
           expect(await helpers.getCurrentUrl(driver)).to.eql(
-            `http://localhost:8081/`
+            `http://localhost:8083/`
           );
           // expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(user.name);
         });
@@ -145,7 +145,7 @@ describe('Resetting Password', function () {
           await helpers.waitForSelector(driver, css.topBar.logout);
 
           expect(await helpers.getCurrentUrl(driver)).to.eql(
-            `http://localhost:8081/`
+            `http://localhost:8083/`
           );
         });
       });

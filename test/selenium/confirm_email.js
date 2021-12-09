@@ -73,7 +73,7 @@ describe('Confirm Email', function () {
       let options = {
         selector: css.confirmEmail.successMessage,
       };
-      await helpers.navigateAndWait(driver, 'http://localhost:8081', {
+      await helpers.navigateAndWait(driver, 'http://localhost:8083', {
         selector: 'a',
       });
       await helpers.navigateAndWait(driver, confirmLink, options);

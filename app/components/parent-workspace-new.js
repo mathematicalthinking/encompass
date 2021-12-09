@@ -17,11 +17,11 @@ export default class ParentWorkspaceNewComponent extends Component {
   }
 
   get defaultName() {
-    let base = 'Parent Workspace: ';
+    let base = 'Parent Workspace:';
     let assignmentName = this.args.assignmentName || this.args.assignment.name;
 
     if (assignmentName) {
-      return `${base} ${assignmentName} (${this.args.sectionName})`;
+      return `${base} ${assignmentName} (${this.args.section.name})`;
     }
 
     return base + this.currentUser.user.username;

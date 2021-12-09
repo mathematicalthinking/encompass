@@ -20,6 +20,9 @@ export default class LinkedWorkspacesNew extends Component {
   constructor() {
     super(...arguments);
     this.workspaceName = this.defaultName;
+    if (!this.args.isDisplayOnly) {
+      this.selectAll();
+    }
   }
 
   get defaultName() {

@@ -59,9 +59,15 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   get showFullLinkedWsMsg() {
-    return this.missingWorkspaces.length
-      ? this.isEditing && this.allGroupsHaveWs
-      : this.isEditing && this.allStudentsHaveWs;
+    if (this.args.assignment.linkedWorkspacesRequest.linkType === 'group') {
+      return this.isEditing && this.allGroupsHaveWs;
+    }
+    if (
+      this.args.assignment.linkedWorkspacesRequest.linkType === 'individual'
+    ) {
+      return this.isEditing && this.allStudentsHaveWs;
+    }
+    return this.allStudentsHaveWs && this.allGroupsHaveWs;
   }
   get showNoParentWsMsg() {
     return this.isEditing && this.doesNotHaveLinkedWs;

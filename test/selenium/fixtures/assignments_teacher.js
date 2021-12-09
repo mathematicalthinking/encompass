@@ -4,7 +4,7 @@ module.exports = {
     studentUsernames: ['mtgstudent1', 'mtgstudent2', 'mtgstudent3'],
   },
   parentWorkspace: {
-    defaultName: 'Parent Workspace: MTG Period 1 SCR',
+    defaultName: 'Parent Workspace: MTG Period 1 SCR (MTG Period 1)',
   },
   toasts: {
     finishLinkedWs: 'Please finish or cancel adding of Linked Workspaces',

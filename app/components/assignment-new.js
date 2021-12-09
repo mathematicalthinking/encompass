@@ -22,7 +22,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
-  @tracked allSelected = false;
+  @tracked allSelected = true;
   @tracked problemFormErrors = [];
   @tracked sectionFormErrors = [];
   @tracked invalidDateRange = false;
@@ -117,7 +117,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
   @tracked sectionGroups = [];
   @tracked groupWorkspacesToMake = [];
-  @tracked studentWorkspacesToMake = [];
+  @tracked studentWorkspacesToMake = this.selectedSection.students.mapBy('id');
   //TODO: refactor
   @action updateLists(record) {
     this.allSelected = false;

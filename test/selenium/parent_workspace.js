@@ -145,13 +145,8 @@ describe('Parent Workspace creation and updating', function () {
 
   function checkWorkspaceStats(workspaceName, expectedStats, options = {}) {
     describe('Checking stats for ' + workspaceName, function () {
-      let {
-        submissions,
-        selections,
-        comments,
-        folders,
-        responses,
-      } = expectedStats;
+      let { submissions, selections, comments, folders, responses } =
+        expectedStats;
       before(async function () {
         try {
           await helpers.navigateAndWait(driver, workspacesUrl, {
@@ -224,13 +219,8 @@ describe('Parent Workspace creation and updating', function () {
   }
 
   function checkWorkspaceStatsFromPage(expectedStats) {
-    let {
-      submissions,
-      selections,
-      comments,
-      folders,
-      responses,
-    } = expectedStats;
+    let { submissions, selections, comments, folders, responses } =
+      expectedStats;
 
     it(`should have ${submissions || 0} submissions`, async function () {
       let actualCount = await helpers.findAndGetText(
@@ -408,13 +398,14 @@ describe('Parent Workspace creation and updating', function () {
     let linkedWorkspacesLinks;
 
     it('should have created a linked workspace for each student', function () {
-      let expectedCount = newAssignment.students.length;
+      let expectedCount = newAssignment.students.length + 1;
       let linkSel = css.assignmentsTeacher.linkedWorkspaces.link;
 
       let expectedNames = [
         fixtures.student1.linkedWs.name,
         fixtures.student2.linkedWs.name,
         fixtures.student3.linkedWs.name,
+        fixtures.teacher.linkedWs.name,
       ];
       return helpers.getWebElements(driver, linkSel).then((links) => {
         linkedWorkspacesLinks = links;
@@ -645,7 +636,7 @@ describe('Parent Workspace creation and updating', function () {
       before(async function () {
         try {
           let studentWsUrl = student1WorkspaceHref;
-
+          console.log(studentWsUrl);
           await helpers.logout(driver);
           await helpers.login(driver, host, student);
           let toggleSelectingInput = await helpers.navigateAndWait(
@@ -832,7 +823,7 @@ describe('Parent Workspace creation and updating', function () {
   describe('Checking parent workspace for updates', function () {
     let expectedStats = {
       submissions: 2,
-      folders: 4,
+      folders: 5,
       selections: 1,
       comments: 1,
       responses: 1,
@@ -1061,7 +1052,7 @@ describe('Parent Workspace creation and updating', function () {
       describe('Checking parent workspace did not update automatically', function () {
         let expectedStats = {
           submissions: 2,
-          folders: 4,
+          folders: 5,
           selections: 1,
           comments: 1,
           responses: 1,
@@ -1092,7 +1083,7 @@ describe('Parent Workspace creation and updating', function () {
       describe('Checking that stats updated', function () {
         let expectedStats = {
           submissions: 2,
-          folders: 5,
+          folders: 6,
           selections: 2,
           comments: 2,
           responses: 2,
