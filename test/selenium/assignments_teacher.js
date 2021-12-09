@@ -174,6 +174,7 @@ describe('Assignment Info as Teacher', function () {
           let expected = usernames.map((username) => {
             return `${username}: ${nameVal}`;
           });
+          expected = ['Select All', ...expected];
           let actual = await getLinkedWsNamePreviews(driver);
 
           expect(actual).to.have.members(expected);
@@ -185,7 +186,7 @@ describe('Assignment Info as Teacher', function () {
           let expected = usernames.map((username) => {
             return `${username}: ${original}${newText}`;
           });
-
+          expected = ['Select All', ...expected];
           await helpers.findInputAndType(driver, nameInputSel, newText);
           let actual = await getLinkedWsNamePreviews(driver);
           expect(actual).to.have.members(expected);
@@ -198,6 +199,7 @@ describe('Assignment Info as Teacher', function () {
           let expected = usernames.map((username) => {
             return `${username}: ${nameVal}`;
           });
+          expected = ['Select All', ...expected];
           let actual = await getLinkedWsNamePreviews(driver);
 
           expect(actual).to.have.members(expected);
