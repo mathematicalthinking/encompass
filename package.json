@@ -30,7 +30,7 @@
     "client-test": "ember server --port=8083 --proxy=http://localhost:8082",
     "server": "nodemon app_server/server.js",
     "server-test": "NODE_ENV=seed nodemon app_server/server.js",
-    "selenium": "./node_modules/.bin/mocha test/selenium/*.js",
+    "selenium": "./node_modules/.bin/mocha test/selenium/$npm_config_test",
     "lint": "npm-run-all --aggregate-output --continue-on-error --parallel 'lint:!(fix)'",
     "lint:fix": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*:fix",
     "lint:hbs": "ember-template-lint",
