@@ -166,5 +166,10 @@
   },
   "ember": {
     "edition": "octane"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "app_server/*"
+    ]
   }
 }
