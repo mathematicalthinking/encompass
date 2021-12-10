@@ -579,7 +579,7 @@ export default Controller.extend({
       });
     },
     toSubmission(submission) {
-      this.transitionToRoute('workspace.submissions.submission', submission);
+      this.transitionToRoute('workspace.submissions.submission', submission.id);
     },
     toggleFolderDisplay() {
       this.toggleProperty('areFoldersHidden');
