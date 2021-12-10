@@ -58,9 +58,9 @@ export default class IndexController extends Controller {
     if (this.dataToShow === 'feedback') {
       return [
         { name: 'Other Person', valuePath: 'otherPerson' },
-        { name: 'Workspace', valuePath: 'workspace.name' },
+        { name: 'Original Assignment', valuePath: 'workspace.name' },
         { name: 'Type', valuePath: 'responseType' },
-        { name: 'Created', valuePath: 'createDate' },
+        { name: 'Sent', valuePath: 'createDate' },
         { name: 'Status', valuePath: 'status' },
       ];
     }
@@ -156,7 +156,7 @@ export default class IndexController extends Controller {
           return {
             name: response.student,
             otherPerson: response.student,
-            workspace: response.workspace,
+            workspace: response.workspace.get('linkedAssignment'),
             responseType: response.responseType,
             createDate: response.createDate,
             status: response.status,
@@ -183,7 +183,7 @@ export default class IndexController extends Controller {
           return {
             name: response.get('createdBy.username'),
             otherPerson: response.get('createdBy.username'),
-            workspace: response.workspace,
+            workspace: response.workspace.get('linkedAssignment'),
             responseType: response.responseType,
             createDate: response.createDate,
             status: response.status,
