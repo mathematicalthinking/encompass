@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 .bread-crumbs-comp {
   .breadcrumbs {
@@ -13,7 +13,7 @@
   }
   ul.breadcrumbs {
     li {
-      cursor: pointer;
+      cursor: default;
       font-size: 1.1em;
       font-weight: $light-font-weight;
       abbr {
