@@ -141,11 +141,17 @@ export default class IndexController extends Controller {
       const responses = this.model.responses
         .toArray()
         .reverse()
-        .filter(
-          (response) =>
+        .filter((response) => {
+          //if response has an originalResponse then it is a copy for a parent workspace
+          const originalResponse = response.originalResponse.content;
+          if (originalResponse) {
+            return false;
+          }
+          return (
             response.createDate.getTime() >
             this.dateBounds[this.currentBound].getTime()
-        )
+          );
+        })
         .map((response) => {
           return {
             name: response.student,
@@ -162,11 +168,17 @@ export default class IndexController extends Controller {
       const responsesReceived = this.model.responsesReceived
         .toArray()
         .reverse()
-        .filter(
-          (response) =>
+        .filter((response) => {
+          //if response has an originalResponse then it is a copy for a parent workspace
+          const originalResponse = response.originalResponse.content;
+          if (originalResponse) {
+            return false;
+          }
+          return (
             response.createDate.getTime() >
             this.dateBounds[this.currentBound].getTime()
-        )
+          );
+        })
         .map((response) => {
           return {
             name: response.get('createdBy.username'),
