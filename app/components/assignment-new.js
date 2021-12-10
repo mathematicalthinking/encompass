@@ -106,7 +106,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     inputs: [
       {
         value: true,
-        label: 'Give access',
+        label: 'Share',
       },
       {
         value: false,
