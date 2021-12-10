@@ -26,6 +26,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked problemFormErrors = [];
   @tracked sectionFormErrors = [];
   @tracked invalidDateRange = false;
+  @tracked assignedDate = moment(new Date()).format('YYYY-MM-DD');
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -193,9 +194,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     }
     let title = this.selectedProblem.title;
 
-    let nameDate = this.nameDate;
-
-    return `${title} / ${nameDate}`;
+    return `${title} / ${moment(this.assignedDate).format('MMM Do YYYY')}`;
   }
   //for the 'workspaces to be created' list
   get workspacesList() {
