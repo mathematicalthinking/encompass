@@ -245,29 +245,14 @@
               @placeholder='New Group Name'
               class='new-group-name'
             />
-            <SelectizeInput
-              @store={{this.store}}
-              @inputId='group-add-student'
-              @maxItems={{1}}
-              @initialOptions={{this.selectableStudents}}
-              @onItemAdd={{action 'placeStudent'}}
-              @model='user'
-              @isAsync={{false}}
-              @labelField='username'
-              @searchField='username'
-              @valueField='id'
-              @queryParamsKey='usernameSearch'
-            />
             <ul class='listing'>
-              {{#each this.newGroupStudents as |student|}}
+              {{#each this.studentList as |student|}}
                 <li>
-                  {{student.username}}
-                  <button
-                    class='trash-button'
-                    {{action 'updateGroupDraft' student}}
-                  >
-                    <i class='far fa-times-circle' aria-hidden='true'></i>
-                  </button>
+                  <label><Input
+                      @type='checkbox'
+                      {{on 'input' (fn this.placeStudent student)}}
+                      @checked={{is-in this.newGroupStudents student}}
+                    />{{student.username}}</label>
                 </li>
               {{/each}}
             </ul>

@@ -202,11 +202,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       const res = await savedGroup.save();
       this.newGroupName = '';
       this.newGroupStudents = [];
-      let selectize = $(`#group-add-student`)[0].selectize;
-      if (!selectize) {
-        return;
-      }
-      selectize.clear();
       this.alert.showToast(
         'success',
         `group "${res.name}" created`,
@@ -247,10 +242,10 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     this.clearSelectizeInput(`${group.id}-input`);
   }
-  @action async placeStudent(id) {
-    let student = await this.store.findRecord('user', id);
-    this.clearSelectizeInput('group-add-student');
-    if (this.newGroupStudents.includes(student)) return;
+  @action async placeStudent(student) {
+    if (this.newGroupStudents.includes(student)) {
+      return this.newGroupStudents.removeObject(student);
+    }
     return this.newGroupStudents.pushObject(student);
   }
   @action async updateGroup(group, user) {
