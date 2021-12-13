@@ -1,37 +1,78 @@
-<div id="answer-new">
-  <header id="answernewheader">
+<div id='answer-new'>
+  <header id='answernewheader'>
     <h2>{{if @mainHeaderText @mainHeaderText 'Create New Answer'}}</h2>
-    <div class="clear"></div>
+    <div class='clear'></div>
   </header>
 
-  <section class="third submissions">
+  <section class='third submissions'>
     <form id='newanswerform' class='properForm'>
       <fieldset>
-        <p class="info">To upload images in .jpg or .png format, please use the explanation html editor (by clicking on the square icon in the toolbar). {{!--To upload a pdf, please use the separate file upload input.--}}</p>
-        <div class="new-answer-input brief-summary">
-          <label for="answer">Brief Summary <span class="required-star">*</span></label>
-          <Textarea @name="brief-summary" @cols="80" @value={{answer}} @rows="3" placeholder="Brief Summary..." />
-          <Input @id="answer" required="true" @type="hidden" @value={{answer}} />
+        <p class='info'>To upload images in .jpg or .png format, please use the
+          explanation html editor (by clicking on the square icon in the
+          toolbar).
+          {{!To upload a pdf, please use the separate file upload input.}}</p>
+        <div class='new-answer-input brief-summary'>
+          <label for='answer'>Brief Summary
+            <span class='required-star'>*</span></label>
+          <Textarea
+            @name='brief-summary'
+            @cols='80'
+            @value={{answer}}
+            @rows='3'
+            placeholder='Brief Summary...'
+          />
+          <Input
+            @id='answer'
+            required='true'
+            @type='hidden'
+            @value={{answer}}
+          />
         </div>
         {{#each this.briefSummaryErrors as |error|}}
-          <ErrorBox @error={{error}} @resetError={{action (mut this.briefSummaryErrors) null}} @showDismiss={{true}} />
+          <ErrorBox
+            @error={{error}}
+            @resetError={{action (mut this.briefSummaryErrors) null}}
+            @showDismiss={{true}}
+          />
         {{/each}}
-        <div class="new-answer-input explanation">
-          <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
+        <div class='new-answer-input explanation'>
+          <label for='explanation'>Explain your ideas and how you figured them
+            out
+            <span class='required-star'>*</span></label>
 
-          <QuillContainer @onEditorChange={{action "updateQuillText"}} @attrSectionId={{this.quillEditorId}} @startingText={{this.explanationText}} />
+          <QuillContainer
+            @onEditorChange={{action 'updateQuillText'}}
+            @attrSectionId={{this.quillEditorId}}
+            @startingText={{this.explanationText}}
+          />
         </div>
         {{#each this.explanationErrors as |error|}}
-          <ErrorBox @error={{error}} @resetError={{action (mut this.explanationErrors) null}} @showDismiss={{true}} />
+          <ErrorBox
+            @error={{error}}
+            @resetError={{action (mut this.explanationErrors) null}}
+            @showDismiss={{true}}
+          />
         {{/each}}
-        <div class="new-answer-input uploaded-file">
-          {{!-- <label for="uploadedFile">Upload PDF</label> --}}
-            {{#if this.imageData}}
-              <a {{action 'toggleImageSize'}} class="image {{if this.isWide " wide "}}">
-                <img src="{{this.imageData}}" alt="{{format-date this.answer.createDate 'MMM Do YYYY hh:mm A'}}">
-              </a>
-            <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
-            <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
+        <div class='new-answer-input uploaded-file'>
+          {{! <label for="uploadedFile">Upload PDF</label> }}
+          {{#if this.imageData}}
+            <a
+              {{action 'toggleImageSize'}}
+              class='image {{if this.isWide ' wide '}}'
+            >
+              <img
+                src='{{this.imageData}}'
+                alt='{{format-date
+                  this.answer.createDate
+                  'MMM Do YYYY hh:mm A'
+                }}'
+              />
+            </a>
+            <button
+              class='edit-image-btn'
+              {{action 'deleteImage'}}
+            >Delete</button>
+            <button class='edit-image-btn' {{action 'addImage'}}>Add</button>
             {{!-- {{else}}
               {{image-upload
                 filesToBeUploaded=filesToBeUploaded
@@ -39,68 +80,101 @@
                 acceptMultiple=true
                 isPdfOnly=true
                 }} --}}
-            {{/if}}
-          </div>
-          <div class="new-answer-input contributors">
-            <label for="students">Contributing Students</label>
-            <div class="student-list">
-              <ul>
+          {{/if}}
+        </div>
+        <div class='new-answer-input contributors'>
+          <label for='students'>Contributing Students</label>
+          <div class='student-list'>
+            <ul>
               {{#each this.contributors as |student|}}
                 <li>{{student.username}}
-                  {{#unless (is-equal student this.currentUser)}}
-                    <i {{action "removeStudent" student}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
+                  {{#unless (is-equal student this.currentUser.user)}}
+                    <i
+                      {{action 'removeStudent' student}}
+                      class='far fa-times-circle'
+                      aria-hidden='true'
+                      title='Remove'
+                    ></i>
                   {{/unless}}
-                  </li>
+                </li>
               {{/each}}
-              </ul>
-            </div>
+            </ul>
           </div>
-          <TwitterTypeahead @selectedValue={{this.studentToAdd}} @selectedItems={{this.contributors}} @onSelect="addStudent" @dataList={{@section.students}} @placeholder="username" @optionLabelPath="username" @allowMultiple={{true}} />
+        </div>
+        <TwitterTypeahead
+          @selectedValue={{this.studentToAdd}}
+          @selectedItems={{this.contributors}}
+          @onSelect='addStudent'
+          @dataList={{@section.students}}
+          @placeholder='username'
+          @optionLabelPath='username'
+          @allowMultiple={{true}}
+        />
 
-          {{#if this.addStudentError}}
-              <p class="error-message"></p>Sorry, that user is not in your class.
-            {{/if}}
-            {{#if this.addedStudent}}
-            <p class="success-message"></p>Successfully added student.
-          {{/if}}
+        {{#if this.addStudentError}}
+          <p class='error-message'></p>Sorry, that user is not in your class.
+        {{/if}}
+        {{#if this.addedStudent}}
+          <p class='success-message'></p>Successfully added student.
+        {{/if}}
       </fieldset>
       {{#if this.isMissingRequiredFields}}
-        <ErrorBox @error="Please provide all required fields." @showDismiss={{true}} @resetError={{action (mut this.isMissingRequiredFields) null}} />
+        <ErrorBox
+          @error='Please provide all required fields.'
+          @showDismiss={{true}}
+          @resetError={{action (mut this.isMissingRequiredFields) null}}
+        />
       {{/if}}
       {{#if this.overSizedFileError}}
-        <ErrorBox @error={{this.overSizedFileError}} @showDismiss={{true}} @resetError={{action (mut this.overSizedFileError) null}} />
+        <ErrorBox
+          @error={{this.overSizedFileError}}
+          @showDismiss={{true}}
+          @resetError={{action (mut this.overSizedFileError) null}}
+        />
       {{/if}}
       {{#if this.isExplanationTooLarge}}
-        <ErrorBox @error={{this.tooLargeExplanationMsg}} @showDismiss={{true}} @resetError={{action (mut this.isExplanationTooLarge) null}} />
+        <ErrorBox
+          @error={{this.tooLargeExplanationMsg}}
+          @showDismiss={{true}}
+          @resetError={{action (mut this.isExplanationTooLarge) null}}
+        />
       {{/if}}
     </form>
   </section>
-  <div style="clear: left"></div>
+  <div style='clear: left'></div>
   {{#if this.showLoadingMessage}}
-    <p class="loading-message">Creating Answer... Thank you for your patience.</p>
+    <p class='loading-message'>Creating Answer... Thank you for your patience.</p>
   {{/if}}
   {{#unless this.isCreatingAnswer}}
-    <section class="submit">
+    <section class='submit'>
       <span>
-        <button class="primary-button create" data-test="submit-answer" {{action 'validate'}}>{{if this.createButtonText this.createButtonText 'Create Answer'}}</button>
+        <button
+          class='primary-button create'
+          data-test='submit-answer'
+          {{action 'validate'}}
+        >{{if
+            this.createButtonText
+            this.createButtonText
+            'Create Answer'
+          }}</button>
       </span>
-      <span class="cancelResponse">
-        <button class="action_button cancel-button" {{action 'cancelResponse'}}>Cancel</button>
+      <span class='cancelResponse'>
+        <button
+          class='action_button cancel-button'
+          {{action 'cancelResponse'}}
+        >Cancel</button>
       </span>
 
     </section>
   {{/unless}}
 
-
-
-
   {{#each this.findRecordErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    <p class='error-message'>{{error}}</p>
   {{/each}}
   {{#each this.createRecordErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    <p class='error-message'>{{error}}</p>
   {{/each}}
   {{#each this.uploadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    <p class='error-message'>{{error}}</p>
   {{/each}}
 </div>
