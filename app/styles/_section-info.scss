@@ -86,6 +86,10 @@
     .new-group-name {
       width: 100%;
     }
+    input,
+    label {
+      cursor: pointer;
+    }
   }
   .section-info {
     font-size: 1em;

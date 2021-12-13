@@ -252,10 +252,13 @@
                       @type='checkbox'
                       {{on 'input' (fn this.placeStudent student)}}
                       @checked={{is-in this.newGroupStudents student}}
-                    />{{student.username}}{{if
-                      (is-in this.groupedStudents student.id)
-                      ' ✅'
-                    }}</label>
+                    />{{student.username}}
+                    <i
+                      class={{if
+                        (is-in this.groupedStudents student.id)
+                        'fa fa-check'
+                      }}
+                    ></i></label>
                 </li>
               {{/each}}
             </ul>
@@ -264,7 +267,7 @@
             <button
               class='primary-button cancel-button'
               {{on 'click' this.toggleAddGroup}}
-            >Cancel</button>
+            >Done</button>
           </div>
         {{/if}}
         <ul class='listing {{if this.addGroup 'groups'}}'>
