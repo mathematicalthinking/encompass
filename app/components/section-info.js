@@ -207,32 +207,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       this.alert.showToast('error', `${err}`, 'bottom-end', 5000, false, null);
     }
   }
-  @action async updateGroupStudents(group, studentId) {
-    let student = await this.store.findRecord('user', studentId);
-    this.clearSelectizeInput(`${group.name}-input`);
-    if (group.students.includes(student)) return;
-    group.students.pushObject(student);
-    try {
-      const res = await group.save();
-      this.alert.showToast(
-        'success',
-        `${res.name} updated`,
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    } catch (err) {
-      this.alert.showToast(
-        'error',
-        'oops there was a problem',
-        3000,
-        false,
-        null
-      );
-    }
-    this.clearSelectizeInput(`${group.id}-input`);
-  }
   @action async placeStudent(student) {
     if (this.newGroupStudents.includes(student)) {
       return this.newGroupStudents.removeObject(student);

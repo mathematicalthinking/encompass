@@ -11,17 +11,28 @@ export default class GroupInfoComponent extends Component {
   }
   @tracked displayStudents = false;
   @tracked updateGroup = false;
+  studentsChanged = false;
   @action toggleUpdateGroup() {
     this.updateGroup = !this.updateGroup;
   }
   get isUpdating() {
     return this.args.addGroup && this.updateGroup;
   }
+  get groupStudents() {
+    return this.args.group.students.toArray();
+  }
+  @action addStudent(student) {
+    this.studentsChanged = true;
+    if (this.groupStudents.includes(student)) {
+      return this.args.group.students.removeObject(student);
+    }
+    return this.args.group.students.pushObject(student);
+  }
   @action toggleDisplayStudents() {
     this.displayStudents = !this.displayStudents;
   }
   @action async editButton() {
-    if (this.args.group.hasDirtyAttributes) {
+    if (this.args.group.hasDirtyAttributes || this.studentsChanged) {
       try {
         await this.args.group.save();
         this.sweetAlert.showToast();
@@ -35,6 +46,7 @@ export default class GroupInfoComponent extends Component {
   @action cancelButton(group) {
     if (this.updateGroup) {
       this.args.group.rollbackAttributes();
+      this.studentsChanged = false;
       this.toggleUpdateGroup();
     } else {
       this.args.deleteGroup(group);

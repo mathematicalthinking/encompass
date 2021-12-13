@@ -23,33 +23,30 @@
       </div>
     {{/if}}
   </div>
-  {{#if this.isUpdating}}
-    <SelectizeInput
-      @store={{this.store}}
-      @inputId='{{@group.id}}'
-      @maxItems={{1}}
-      @initialOptions={{@selectableStudents}}
-      @onItemAdd={{action @updateGroupStudents @group}}
-      @inputId='{{@group.id}}-input'
-      @model='user'
-      @isAsync={{false}}
-      @labelField='username'
-      @searchField='username'
-      @valueField='id'
-      @queryParamsKey='usernameSearch'
-    />
-  {{/if}}
   {{#if this.showStudents}}
     <ul>
-      {{#each @group.students as |student|}}
-        <li>{{student.username}}
-          {{#if @addGroup}}
-            <button class='trash-button' {{action @updateGroup @group student}}>
-              <i class='far fa-times-circle' aria-hidden='true'></i>
-            </button>
-          {{/if}}
-        </li>
-      {{/each}}
+      {{#if this.isUpdating}}
+        {{#each @students as |student|}}
+          <li><label><Input
+                @type='checkbox'
+                @checked={{is-in this.groupStudents student}}
+                {{on 'input' (fn this.addStudent student)}}
+              />{{student.username}}</label></li>
+        {{/each}}
+      {{else}}
+        {{#each @group.students as |student|}}
+          <li>{{student.username}}
+            {{#if @addGroup}}
+              <button
+                class='trash-button'
+                {{on 'click' (fn @updateGroup @group student)}}
+              >
+                <i class='far fa-times-circle' aria-hidden='true'></i>
+              </button>
+            {{/if}}
+          </li>
+        {{/each}}
+      {{/if}}
     </ul>
   {{/if}}
 </li>
