@@ -35,15 +35,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       .map((group) => group.students.toArray().map((student) => student.id))
       .flat();
   }
-  get selectableStudents() {
-    return this.studentList.map((student) => {
-      let data = { username: student.username, id: student.id };
-      if (this.groupedStudents.includes(student.id)) {
-        data.username += ' ✅';
-      }
-      return data;
-    });
-  }
   @tracked newGroupName = '';
   @tracked newGroupStudents = [];
   constructor() {

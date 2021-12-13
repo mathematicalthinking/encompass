@@ -252,7 +252,10 @@
                       @type='checkbox'
                       {{on 'input' (fn this.placeStudent student)}}
                       @checked={{is-in this.newGroupStudents student}}
-                    />{{student.username}}</label>
+                    />{{student.username}}{{if
+                      (is-in this.groupedStudents student.id)
+                      ' ✅'
+                    }}</label>
                 </li>
               {{/each}}
             </ul>
