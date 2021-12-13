@@ -152,11 +152,7 @@
           class='primary-button create'
           data-test='submit-answer'
           {{action 'validate'}}
-        >{{if
-            this.createButtonText
-            this.createButtonText
-            'Create Answer'
-          }}</button>
+        >{{if @createButtonText @createButtonText 'Create Answer'}}</button>
       </span>
       <span class='cancelResponse'>
         <button
