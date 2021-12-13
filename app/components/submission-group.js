@@ -81,13 +81,14 @@ export default Component.extend({
   //TODO Use the new thread.threadId property on submissions
   submissionThreads: computed('submissions.[]', function () {
     let threads = {};
-    this.submissions.sortBy('student')
+    this.submissions
+      .sortBy('student')
       .getEach('student')
       .uniq()
       .forEach((student) => {
         if (!threads[student]) {
           const answers = this.studentWork(student);
-          threads[student]=answers;
+          threads[student] = answers;
         }
       });
     return threads;
@@ -305,7 +306,7 @@ export default Component.extend({
       if (!submission) {
         return;
       }
-      this.toSubmission(submission);
+      this.toSubmission(submission.id);
     },
     onStudentSelect(submissionId) {
       let submission = this.submissionThreadHeads.findBy('id', submissionId);

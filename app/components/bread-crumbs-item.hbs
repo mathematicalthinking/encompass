@@ -1,6 +1,7 @@
-{{!-- <li class="bread-crumbs-item {{if this.isSelected "active-crumb"}}" {{action "onSelect" @item}}> --}}
-{{! the action to transition between submissions breaks arrows }}
-<li class='bread-crumbs-item {{if this.isSelected 'active-crumb'}}'>
+<li
+  class='bread-crumbs-item {{if this.isSelected 'active-crumb'}}'
+  {{action 'onSelect' @item}}
+>
   <abbr title='{{unbound this.titleText}}'>
     {{@displayValue}}
   </abbr>
