@@ -120,8 +120,7 @@ describe('Creating a new Assignment', function () {
         driver,
         '.parent-ws .radio-group input[value="true"]'
       );
-      expect(await helpers.isTextInDom(driver, 'Give access to students?')).to
-        .be.true;
+      expect(await helpers.isTextInDom(driver, 'Share')).to.be.true;
     });
   });
   describe('Creating an assignment', async function () {

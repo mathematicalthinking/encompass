@@ -13,10 +13,14 @@
         <i
           title='Edit'
           {{action this.editButton @group}}
-          class={{if this.isUpdating 'fas fa-save' 'far fa-edit'}}
+          class='edit-group{{if this.isUpdating ' fas fa-save' ' far fa-edit'}}'
         ></i>
         <i
-          class={{if this.isUpdating 'far fa-times-circle' 'fas fa-trash-alt'}}
+          class='delete-group{{if
+              this.isUpdating
+              ' far fa-times-circle'
+              ' fas fa-trash-alt'
+            }}'
           aria-hidden='true'
           {{action this.cancelButton @group}}
         ></i>

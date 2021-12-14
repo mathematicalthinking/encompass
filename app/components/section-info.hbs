@@ -245,7 +245,7 @@
               @placeholder='New Group Name'
               class='new-group-name'
             />
-            <ul class='listing'>
+            <ul class='listing group-options'>
               {{#each this.studentList as |student|}}
                 <li>
                   <label><Input
@@ -262,8 +262,10 @@
                 </li>
               {{/each}}
             </ul>
-            <button class='primary-button' {{on 'click' this.saveGroup}}>Save
-              New Group</button>
+            <button
+              class='primary-button save-group'
+              {{on 'click' this.saveGroup}}
+            >Save New Group</button>
             <button
               class='primary-button cancel-button'
               {{on 'click' this.toggleAddGroup}}
