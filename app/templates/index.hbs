@@ -56,7 +56,7 @@
           >All Time</option>
         </select>
       </label>
-      <div class='home-options--right'>
+      {{!-- <div class='home-options--right'>
         <button class='home-options--button'>
           <img
             src={{if
@@ -81,12 +81,12 @@
             title='Show table view'
           />
         </button>
-      </div>
+      </div> --}}
     </div>
   </div>
   <section class='home'>
     <HomePage
-      @showTable={{true}}
+      @showTable={{this.showTable}}
       @tableColumns={{this.tableColumns}}
       @details={{this.selectedData}}
     />
