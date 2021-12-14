@@ -1,8 +1,4 @@
 <div class='home--container{{unless this.isExpanded ' closed'}}'>
-  <h1 {{on 'click' this.updateIsExpanded}}>{{@item.label}}
-    -
-    {{@item.details.length}}
-    {{pluralize @item.details.length 'item'}}</h1>
   {{#if this.isExpanded}}
     {{#if @showTable}}
       <EmberTable as |t|>
@@ -37,7 +33,7 @@
             </r.cell>
           </h.row>
         </t.head>
-        <t.body @rows={{@item.details}} as |b|>
+        <t.body @rows={{@details}} as |b|>
           <b.row as |r|>
             <r.cell
               as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
