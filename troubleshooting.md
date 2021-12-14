@@ -11,3 +11,7 @@
 
 - if the route is creating a hash for the model, all props must include `this.model.<propname>`
 - to force the model to reload when clicking a link, pass the id instead of the whole model to the link `@model={{<item>.id}}`
+
+### Passing arguments to a component action from the template
+
+- use the `fn` helper: `{{on 'click' (fn this.<actionName> <arg1> <arg2> ...)}}`
