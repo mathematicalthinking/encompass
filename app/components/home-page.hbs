@@ -12,14 +12,14 @@
     >
       <h.row as |r|>
         <r.cell as |columnValue columnMeta|>
-          {{#if (is-equal @item.type 'response')}}
-            {{#if (is-equal @item.label 'Given')}}
+          {{#if (is-equal @type 'feedback')}}
+            {{#if (is-equal @activeDetail 'Given')}}
               {{#if (is-equal columnValue.name 'Other Person')}}
                 Recipient
               {{else}}
                 {{columnValue.name}}
               {{/if}}
-            {{else if (is-equal @item.label 'Received')}}
+            {{else if (is-equal @activeDetail 'Received')}}
               {{#if (is-equal columnValue.name 'Other Person')}}
                 Sent By
               {{else}}
@@ -36,7 +36,7 @@
     <t.body @rows={{@details}} as |b|>
       <b.row as |r|>
         <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
-          {{#if (is-equal @item.type 'workspace')}}
+          {{#if (is-equal @type 'workspace')}}
             {{#if (is-equal columnValue.name 'Workspace')}}
               <LinkTo
                 @route={{'workspace.work'}}
@@ -65,7 +65,7 @@
   </EmberTable>
   {{!-- {{else}}
       <div class='grid-home'>
-        {{#each @item.details as |detail|}}
+        {{#each @details.details as |detail|}}
           <article class='grid-card'>
             <header class='grid-card__title'>
               <h2>
@@ -88,7 +88,7 @@
                     @model={{detail.submission.id}}
                     @query={{hash responseId=detail.id}}
                   >{{if
-                      (is-equal @item.label 'Given')
+                      (is-equal @details.label 'Given')
                       'To: '
                       'From: '
                     }}{{detail.name}}</LinkTo>
@@ -100,9 +100,9 @@
             <ul class='grid-card__info'>
               {{#each @tableColumns as |row|}}
                 <li>
-                  {{#if (is-equal @item.type 'response')}}
+                  {{#if (is-equal @details.type 'response')}}
                     {{#if (is-equal row.name 'Other Person')}}
-                      {{#if (is-equal @item.label 'Given')}}
+                      {{#if (is-equal @details.label 'Given')}}
                         Recipient:
                       {{else}}
                         Sent By:
@@ -115,7 +115,7 @@
                   {{/if}}
                   {{#if (is-equal row.name 'To Do')}}
                     {{if
-                      (is-equal @item.role 'teacher')
+                      (is-equal @details.role 'teacher')
                       'Review Submissions'
                       'Complete Assignment'
                     }}
