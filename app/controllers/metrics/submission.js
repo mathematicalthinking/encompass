@@ -1,8 +1,10 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 
 export default class MetricsSubmissionController extends Controller {
+  @service jsonCsv;
   @tracked showWorkspaces = false;
   @tracked selectedWorkspaces = [];
   @action toggleShowWorkspaces() {
@@ -18,9 +20,7 @@ export default class MetricsSubmissionController extends Controller {
     { name: 'Record', valuePath: 'modelName' },
     { name: 'Workspace', valuePath: 'workspaceName' },
     { name: 'Text/Folder Name', valuePath: 'text' },
-    // { name: 'Folder Name', valuePath: 'folder.name' },
     { name: 'Creator', valuePath: 'creator.displayName' },
-    // { name: 'Comment Type', valuePath: 'label' },
   ];
   get tableRows() {
     return this.selectedWorkspaces.map((workspace) => {
@@ -58,5 +58,8 @@ export default class MetricsSubmissionController extends Controller {
         id: workspace.get('workspaces.firstObject.id'),
       };
     });
+  }
+  get csv() {
+    return this.jsonCsv.arrayToCsv(this.tableRows);
   }
 }

@@ -1,19 +1,38 @@
-{{page-title this.model.submission.student ": " this.model.submission.answer.problem.title}}
+{{page-title
+  this.model.submission.student
+  ': '
+  this.model.submission.answer.problem.title
+}}
 <header>
-  <h3>{{this.model.submission.student}}'s Answer to {{this.model.submission.answer.problem.title}}</h3>
-  <LinkTo @route="metrics.workspace" @model={{this.model.submission.workspaces.firstObject.id}}>Back to Worksapce Report</LinkTo>
+  <h3>{{this.model.submission.student}}'s Answer to
+    {{this.model.submission.answer.problem.title}}</h3>
+  <a
+    href='data:text/csv;charset=utf-8,{{this.csv}}'
+    download='{{this.model.submission.student}}_report.csv'
+  >Download CSV</a>
+  <LinkTo
+    @route='metrics.workspace'
+    @model={{this.model.submission.workspaces.firstObject.id}}
+  >Back to Worksapce Report</LinkTo>
 </header>
-<div class="metrics__container">
-  <div class="metrics--flex">
-    <div id="ws-list">
-      <button {{on "click" this.toggleShowWorkspaces}}>Show/Hide Workspaces</button>
+<div class='metrics__container'>
+  <div class='metrics--flex'>
+    <div id='ws-list'>
+      <button {{on 'click' this.toggleShowWorkspaces}}>Show/Hide Workspaces</button>
       {{#if this.showWorkspaces}}
         <ul>
           {{#each this.model.allSubmissions as |submission|}}
             <li>
-              <label><Input @type="checkbox" @checked={{is-in this.selectedWorkspaces submission}} {{on "change" (fn this.updateSelectedWorkspaces submission)}} />
+              <label><Input
+                  @type='checkbox'
+                  @checked={{is-in this.selectedWorkspaces submission}}
+                  {{on 'change' (fn this.updateSelectedWorkspaces submission)}}
+                />
                 {{#each submission.workspaces as |workspace|}}
-                  {{workspace.name}} - {{workspace.owner.username}} {{if (greater-equal submission.selections.length 1) "*"}}
+                  {{workspace.name}}
+                  -
+                  {{workspace.owner.username}}
+                  {{if (greater-equal submission.selections.length 1) '*'}}
                 {{/each}}
               </label>
             </li>
@@ -21,35 +40,56 @@
         </ul>
       {{/if}}
     </div>
-    <div id="submission">
-      <div class="metrics__card">
+    <div id='submission'>
+      <div class='metrics__card'>
         <h3>Problem</h3>
         <ExpandableCell @text={{this.model.submission.answer.problem.text}} />
       </div>
-      <div class="metrics__card">
-      <h3>answer</h3>
-        <ExpandableCell @text={{if this.model.submission.shortAnswer this.model.submission.shortAnswer this.model.submission.answer.answer}} />
+      <div class='metrics__card'>
+        <h3>answer</h3>
+        <ExpandableCell
+          @text={{if
+            this.model.submission.shortAnswer
+            this.model.submission.shortAnswer
+            this.model.submission.answer.answer
+          }}
+        />
       </div>
-      <div class="metrics__card">
-      <h3>explanation</h3>
-        <ExpandableCell @text={{if this.model.submission.longAnswer (make-html-safe this.model.submission.longAnswer) (make-html-safe this.model.submission.answer.explanation)}} />
+      <div class='metrics__card'>
+        <h3>explanation</h3>
+        <ExpandableCell
+          @text={{if
+            this.model.submission.longAnswer
+            (make-html-safe this.model.submission.longAnswer)
+            (make-html-safe this.model.submission.answer.explanation)
+          }}
+        />
       </div>
     </div>
-</div>
-{{#if this.selectedWorkspaces}}
-  <EmberTable as |t|>
-    <t.head @columns={{this.submissionsColumns}} @scrollIndicators="all" @widthConstraint="eq-container" />
-    <t.body @rows={{this.tableRows}} as |b|>
-      <b.row as |r|>
-        <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
-          {{#if (is-equal columnValue.name "Workspace")}}
-            <LinkTo @route="metrics.workspace" @model={{rowValue.id}}>{{cellValue}}</LinkTo>
-          {{else}}
-            {{cellValue}}
-          {{/if}}
-        </r.cell>
-      </b.row>
-    </t.body>
-  </EmberTable>
-{{/if}}
+  </div>
+  {{#if this.selectedWorkspaces}}
+    <EmberTable as |t|>
+      <t.head
+        @columns={{this.submissionsColumns}}
+        @scrollIndicators='all'
+        @widthConstraint='eq-container'
+      />
+      <t.body @rows={{this.tableRows}} as |b|>
+        <b.row as |r|>
+          <r.cell
+            as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+          >
+            {{#if (is-equal columnValue.name 'Workspace')}}
+              <LinkTo
+                @route='metrics.workspace'
+                @model={{rowValue.id}}
+              >{{cellValue}}</LinkTo>
+            {{else}}
+              {{cellValue}}
+            {{/if}}
+          </r.cell>
+        </b.row>
+      </t.body>
+    </EmberTable>
+  {{/if}}
 </div>
