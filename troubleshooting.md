@@ -21,3 +21,7 @@
 - there's probably a lot of dead code, so simplify as much as possible first
 - see if you can move things in the lifecycle hooks to the component itself
 - check out migrating the `{{action}}` helper to `{{on}}`
+
+# store query is immutable
+
+- convert to array with `.toArray()`
