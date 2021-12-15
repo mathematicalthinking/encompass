@@ -1,75 +1,69 @@
 <div class='home--container{{unless this.isExpanded ' closed'}}'>
-  <h1 {{on 'click' this.updateIsExpanded}}>{{@item.label}}
-    -
-    {{@item.details.length}}
-    {{pluralize @item.details.length 'item'}}</h1>
-  {{#if this.isExpanded}}
-    {{#if @showTable}}
-      <EmberTable as |t|>
-        <t.head
-          @columns={{@tableColumns}}
-          @scrollIndicators='all'
-          @widthConstraint='eq-container'
-          @sorts={{sorts}}
-          @onUpdateSorts={{action (mut sorts)}}
-          as |h|
-        >
-          <h.row as |r|>
-            <r.cell as |columnValue columnMeta|>
-              {{#if (is-equal @item.type 'response')}}
-                {{#if (is-equal @item.label 'Given')}}
-                  {{#if (is-equal columnValue.name 'Other Person')}}
-                    Recipient
-                  {{else}}
-                    {{columnValue.name}}
-                  {{/if}}
-                {{else if (is-equal @item.label 'Received')}}
-                  {{#if (is-equal columnValue.name 'Other Person')}}
-                    Sent By
-                  {{else}}
-                    {{columnValue.name}}
-                  {{/if}}
-                {{/if}}
+  {{!-- {{#if this.isExpanded}}
+    {{#if @showTable}} --}}
+  <EmberTable as |t|>
+    <t.head
+      @columns={{@tableColumns}}
+      @scrollIndicators='all'
+      @widthConstraint='eq-container'
+      @sorts={{sorts}}
+      @onUpdateSorts={{action (mut sorts)}}
+      as |h|
+    >
+      <h.row as |r|>
+        <r.cell as |columnValue columnMeta|>
+          {{#if (is-equal @item.type 'response')}}
+            {{#if (is-equal @item.label 'Given')}}
+              {{#if (is-equal columnValue.name 'Other Person')}}
+                Recipient
               {{else}}
                 {{columnValue.name}}
               {{/if}}
-              <EmberTh::SortIndicator @columnMeta={{columnMeta}} />
-            </r.cell>
-          </h.row>
-        </t.head>
-        <t.body @rows={{@item.details}} as |b|>
-          <b.row as |r|>
-            <r.cell
-              as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-            >
-              {{#if (is-equal @item.type 'workspace')}}
-                {{#if (is-equal columnValue.name 'Workspace')}}
-                  <LinkTo
-                    @route={{'workspace.work'}}
-                    @model={{rowValue.id}}
-                  >{{cellValue}}</LinkTo>
-                {{else}}
-                  {{format-date cellValue 'MM/DD/YYYY'}}
-                {{/if}}
-              {{else if (is-equal columnValue.name 'Assignment')}}
-                <LinkTo
-                  @route={{'assignments.assignment'}}
-                  @model={{rowValue.id}}
-                >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
-              {{else if (is-equal columnValue.name 'Other Person')}}
-                <LinkTo
-                  @route={{'responses.submission'}}
-                  @model={{rowValue.submission.id}}
-                  @query={{hash responseId=rowValue.id}}
-                >{{cellValue}}</LinkTo>
+            {{else if (is-equal @item.label 'Received')}}
+              {{#if (is-equal columnValue.name 'Other Person')}}
+                Sent By
               {{else}}
-                {{format-date cellValue 'MM/DD/YYYY'}}
+                {{columnValue.name}}
               {{/if}}
-            </r.cell>
-          </b.row>
-        </t.body>
-      </EmberTable>
-    {{else}}
+            {{/if}}
+          {{else}}
+            {{columnValue.name}}
+          {{/if}}
+          <EmberTh::SortIndicator @columnMeta={{columnMeta}} />
+        </r.cell>
+      </h.row>
+    </t.head>
+    <t.body @rows={{@details}} as |b|>
+      <b.row as |r|>
+        <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
+          {{#if (is-equal @item.type 'workspace')}}
+            {{#if (is-equal columnValue.name 'Workspace')}}
+              <LinkTo
+                @route={{'workspace.work'}}
+                @model={{rowValue.id}}
+              >{{cellValue}}</LinkTo>
+            {{else}}
+              {{format-date cellValue 'MM/DD/YYYY'}}
+            {{/if}}
+          {{else if (is-equal columnValue.name 'Assignment')}}
+            <LinkTo
+              @route={{'assignments.assignment'}}
+              @model={{rowValue.id}}
+            >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
+          {{else if (is-equal columnValue.name 'Other Person')}}
+            <LinkTo
+              @route={{'responses.submission'}}
+              @model={{rowValue.submission.id}}
+              @query={{hash responseId=rowValue.id}}
+            >{{cellValue}}</LinkTo>
+          {{else}}
+            {{format-date cellValue 'MM/DD/YYYY'}}
+          {{/if}}
+        </r.cell>
+      </b.row>
+    </t.body>
+  </EmberTable>
+  {{!-- {{else}}
       <div class='grid-home'>
         {{#each @item.details as |detail|}}
           <article class='grid-card'>
@@ -135,5 +129,5 @@
         {{/each}}
       </div>
     {{/if}}
-  {{/if}}
+  {{/if}} --}}
 </div>

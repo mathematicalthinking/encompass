@@ -52,6 +52,7 @@ h1 {
   &__details {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 75%;
     margin: auto;
     select {
@@ -65,13 +66,37 @@ h1 {
     border-bottom: 1px solid $accent-color;
     // background: linear-gradient(#fff, #fff, $pale-accent);
   }
-  &--right {
-    margin-left: auto;
-  }
   &--button {
     border: none;
     background: transparent;
     cursor: pointer;
+  }
+  .details-tabs {
+    display: flex;
+    position: relative;
+    &:after {
+      position: absolute;
+      content: '';
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      border-bottom: 1px solid #aaa;
+      z-index: 1;
+    }
+    &__tab {
+      button {
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+      }
+    }
+    &--active {
+      button {
+        border: 1px solid #aaa;
+        border-radius: 5px 5px 0 0;
+        border-bottom: none;
+      }
+    }
   }
 }
 

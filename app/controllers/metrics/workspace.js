@@ -1,15 +1,57 @@
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { inject as service } from '@ember/service';
+import moment from 'moment';
 
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
   @tracked showCloud = false;
+  @service jsonCsv;
   submissionsColumns = [
     { name: 'Record', valuePath: 'recordType' },
     { name: 'Creator', valuePath: 'creator' },
     { name: 'Text', valuePath: 'text' },
   ];
+  get prepWorkspaceForCsv() {
+    return this.model.submissions.map((submission) => {
+      const selections = submission.get('selections');
+      let taggings = selections.map((selection) =>
+        selection.get('taggings').toArray()
+      );
+      taggings = taggings.flat();
+      const text = `<div>${
+        submission.shortAnswer
+          ? submission.shortAnswer
+          : submission.get('answer.answer')
+      } <br><br> ${
+        submission.longAnswer
+          ? submission.longAnswer
+          : submission.get('answer.explanation')
+      }</div>`;
+      const workspace = submission.get('workspaces.firstObject.name');
+      const submitter = submission.student;
+      const selectionsLength = submission.selections.length;
+      const commentsLength = submission.comments.length;
+      const dateOfSubmission = moment(submission.createDate).format(
+        'MM/DD/YYYY'
+      );
+      const responsesLength = submission.responses.length;
+      return {
+        workspace,
+        submitter,
+        text,
+        dateOfSubmission,
+        selectionsLength,
+        foldersLength: taggings.length,
+        commentsLength,
+        responsesLength,
+      };
+    });
+  }
+  get workspaceCsv() {
+    return this.jsonCsv.arrayToCsv(this.prepWorkspaceForCsv);
+  }
   @action
   handleToggle(prop) {
     this.showSubmissions = false;
