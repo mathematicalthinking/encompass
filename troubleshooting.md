@@ -15,3 +15,9 @@
 # Passing arguments to a component action from the template
 
 - use the `fn` helper: `{{on 'click' (fn this.<actionName> <arg1> <arg2> ...)}}`
+
+# Migrating a component from classic to Octane
+
+- there's probably a lot of dead code, so simplify as much as possible first
+- see if you can move things in the lifecycle hooks to the component itself
+- check out migrating the `{{action}}` helper to `{{on}}`
