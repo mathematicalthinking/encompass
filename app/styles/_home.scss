@@ -77,7 +77,7 @@ h1 {
     &:after {
       position: absolute;
       content: '';
-      width: 100%;
+      width: 150%;
       bottom: 0;
       left: 0;
       border-bottom: 1px solid #aaa;
@@ -88,12 +88,16 @@ h1 {
         border: none;
         background-color: transparent;
         cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 5px 5px 0 0;
+        &:hover {
+          box-shadow: 0px -2px 2px 2px #aaa;
+        }
       }
     }
     &--active {
       button {
         border: 1px solid #aaa;
-        border-radius: 5px 5px 0 0;
         border-bottom: none;
       }
     }
