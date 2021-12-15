@@ -13,6 +13,8 @@ export default class IndexController extends Controller {
   @tracked dataToShow = 'workspace';
   @tracked currentBound = 'oneWeek';
   @tracked showTable = true;
+  @tracked selectedData = this.data[0].details;
+  @tracked activeDetailTab = 'Mine';
   dateBounds = {
     oneWeek: new Date(
       new Date().getFullYear(),
@@ -202,5 +204,14 @@ export default class IndexController extends Controller {
   }
   @action updateCurrentBound(e) {
     this.currentBound = e.target.value;
+  }
+  @action updateDataToShow(value) {
+    this.dataToShow = value;
+    this.selectedData = this.data[0].details;
+    this.activeDetailTab = this.data[0].label;
+  }
+  @action updateSelectedData(data) {
+    this.selectedData = data.details;
+    this.activeDetailTab = data.label;
   }
 }

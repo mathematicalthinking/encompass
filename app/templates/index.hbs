@@ -5,44 +5,58 @@
       <button
         class='home-options__tab
           {{if (is-equal this.dataToShow 'workspace') 'home-options--active'}}'
-        {{action (mut this.dataToShow) 'workspace'}}
+        {{on 'click' (fn this.updateDataToShow 'workspace')}}
       ><span>My Workspaces</span></button>
       <button
         class='home-options__tab
           {{if (is-equal this.dataToShow 'assignment') 'home-options--active'}}'
-        {{action (mut this.dataToShow) 'assignment'}}
+        {{on 'click' (fn this.updateDataToShow 'assignment')}}
       ><span>My Assignments</span></button>
       <button
         class='home-options__tab
           {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
-        {{action (mut this.dataToShow) 'feedback'}}
+        {{on 'click' (fn this.updateDataToShow 'feedback')}}
       ><span>My Feedback</span></button>
     </div>
     <div class='home-options__details'>
-      <label>View info from: </label>
-      <select onchange={{action 'updateCurrentBound'}}>
-        <option
-          selected={{is-equal this.currentBound 'oneWeek'}}
-          value='oneWeek'
-        >Previous Week</option>
-        <option
-          selected={{is-equal this.currentBound 'oneMonth'}}
-          value='oneMonth'
-        >Previous Month</option>
-        <option
-          selected={{is-equal this.currentBound 'sixMonths'}}
-          value='sixMonths'
-        >Previous Six Months</option>
-        <option
-          selected={{is-equal this.currentBound 'schoolYear'}}
-          value='schoolYear'
-        >Current School Year</option>
-        <option
-          selected={{is-equal this.currentBound 'allTime'}}
-          value='allTime'
-        >All Time</option>
-      </select>
-      <div class='home-options--right'>
+      <ul class='details-tabs'>
+        {{#each this.data as |item|}}
+          <li
+            class='details-tabs__tab{{if
+                (is-equal item.label this.activeDetailTab)
+                ' details-tabs--active'
+              }}'
+          ><button
+              {{on 'click' (fn this.updateSelectedData item)}}
+            >{{item.label}}</button>
+          </li>
+        {{/each}}
+      </ul>
+      <label>View info from:
+        <select onchange={{action 'updateCurrentBound'}}>
+          <option
+            selected={{is-equal this.currentBound 'oneWeek'}}
+            value='oneWeek'
+          >Previous Week</option>
+          <option
+            selected={{is-equal this.currentBound 'oneMonth'}}
+            value='oneMonth'
+          >Previous Month</option>
+          <option
+            selected={{is-equal this.currentBound 'sixMonths'}}
+            value='sixMonths'
+          >Previous Six Months</option>
+          <option
+            selected={{is-equal this.currentBound 'schoolYear'}}
+            value='schoolYear'
+          >Current School Year</option>
+          <option
+            selected={{is-equal this.currentBound 'allTime'}}
+            value='allTime'
+          >All Time</option>
+        </select>
+      </label>
+      {{!-- <div class='home-options--right'>
         <button class='home-options--button'>
           <img
             src={{if
@@ -67,17 +81,15 @@
             title='Show table view'
           />
         </button>
-      </div>
+      </div> --}}
     </div>
   </div>
   <section class='home'>
-    {{#each this.data as |item|}}
-      <HomePage
-        @item={{item}}
-        @showTable={{this.showTable}}
-        @tableColumns={{this.tableColumns}}
-      />
-    {{/each}}
+    <HomePage
+      @showTable={{this.showTable}}
+      @tableColumns={{this.tableColumns}}
+      @details={{this.selectedData}}
+    />
   </section>
 
   <footer>
