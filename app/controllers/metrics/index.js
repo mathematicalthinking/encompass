@@ -14,11 +14,14 @@ export default class MetricsIndexController extends Controller {
     }
     this.selectedSection = userChoice;
   }
-  get folderCsv(){
+  get folderCsv() {
+    if (this.selectedSection) {
+      const assignments = this.selectedSection.get('assignments').toArray();
+      const assignmentsWorkspaces = assignments.map((assignment) =>
+        assignment.get('linkedWorkspaces').toArray()
+      );
+      return assignmentsWorkspaces;
+    }
     return '';
-  }
-  get allFolders(){
-    const students = this.selectedSection.students.toArray();
-    const allStudentWorkspaces = 
   }
 }
