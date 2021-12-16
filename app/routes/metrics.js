@@ -9,6 +9,7 @@ export default class MetricsRoute extends Route {
       workspaces: this.store.findAll('workspace'),
       problems: this.store.findAll('problem'),
       sections: sections.toArray(),
+      users: this.store.findAll('user'),
     });
   }
 }

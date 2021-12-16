@@ -49,6 +49,34 @@ async function getSelections(req, res, next) {
     console.trace();
     return utils.sendError.InternalError(null, res);
   }
+  if (req.query.metrics) {
+    const selections = await models.Selection.find({
+      createdBy: req.query.metrics.user,
+    });
+    const workspaces = await Promise.all(
+      selections.map(
+        async (tagging) => await models.Workspace.findById(tagging.workspace)
+      )
+    );
+    const submissions = await Promise.all(
+      selections.map(
+        async (selection) =>
+          await models.Submission.findById(selection.submission)
+      )
+    );
+    const taggings = await Promise.all(
+      selections.map(
+        async (selection) =>
+          await models.Tagging.find({ _id: { $in: selection.taggings } })
+      )
+    );
+    return utils.sendResponse(res, {
+      selections,
+      workspaces: workspaces.flat(),
+      submissions: submissions.flat(),
+      taggings: taggings.flat(),
+    });
+  }
 
   models.Selection.find(criteria).exec(function (err, selections) {
     if (err) {

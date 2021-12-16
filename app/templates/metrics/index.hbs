@@ -9,18 +9,34 @@
     @maxItems={{1}}
     @initialOptions={{this.model.sections}}
     @onItemAdd={{action 'setSection'}}
-    @model='user'
     @isAsync={{false}}
     @labelField='name'
     @searchField='name'
     @placeholder='Search by section name'
   />
-  <h1>Currently viewing: {{this.selectedSection.name}}</h1>
   <a
     href='data:text/csv;charset=utf-8,{{this.folderCsv}}'
     download='{{this.selectedSection.name}}_report.csv'
-  >Download CSV</a>
-  {{#each this.allFolders as |folder|}}
-    <p>{{folder.name}}</p>
-  {{/each}}
+  >Download CSV for {{this.selectedSection.name}}</a>
+  <SelectizeInput
+    @inputId='select-user'
+    @maxItems={{1}}
+    @initialOptions={{this.usersList}}
+    @onItemAdd={{action 'setUser'}}
+    @model='user'
+    @isAsync={{false}}
+    @labelField='username'
+    @searchField='username'
+    @valueField='id'
+    @queryParamsKey='usernameSearch'
+    @placeholder='Search by username'
+  />
+  {{#if this.isLoading}}
+    <p>Loading....</p>
+  {{else}}
+    <a
+      href='data:text/csv;charset=utf-8,{{this.singleUserFolders}}'
+      download='{{this.selectedUser.username}}_report.csv'
+    >Download CSV for {{this.selectedUser.username}}</a>
+  {{/if}}
 </div>
