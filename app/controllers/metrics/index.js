@@ -10,20 +10,46 @@ export default class MetricsIndexController extends Controller {
   @tracked selectedSection = null;
   @tracked selectedUser = null;
   @tracked userData = [];
-  @tracked isLoading = false;
+  @tracked sectionData = [];
+  @tracked isLoadingSection = false;
+  @tracked isLoadingUser = false;
   //using .toArray() in the route model hook wasn't working correctly for some reason
   get usersList() {
     return this.model.users.toArray();
   }
-  @action setSection(value) {
+  @action async setSection(value) {
+    this.isLoadingSection = true;
     const userChoice = this.store.peekRecord('section', value);
     if (!userChoice) {
       return;
     }
     this.selectedSection = userChoice;
+    const selections = await this.store.query('selection', {
+      metrics: { section: value },
+    });
+    this.sectionData = await Promise.all(
+      selections.toArray().map(async (selection) => {
+        const workspace = await selection.get('workspace');
+        const submission = await selection.get('submission');
+        const taggings = await selection.get('taggings');
+        const folders = await Promise.all(
+          taggings.toArray().map(async (tagging) => await tagging.get('folder'))
+        );
+        const folderNames = folders.map((folder) => folder.name).join('; ');
+        return {
+          workspace: workspace.name,
+          selection: selection.text,
+          mentor: selection.get('createdBy.username'),
+          student: submission.student,
+          folders: folderNames,
+          actionDate: moment(selection.createDate).format('MM/DD/YY hh:mm:ss'),
+        };
+      })
+    );
+    this.isLoadingSection = false;
   }
   @action async setUser(value) {
-    this.isLoading = true;
+    this.isLoadingUser = true;
     const userChoice = this.store.peekRecord('user', value);
     if (!userChoice) {
       return;
@@ -37,45 +63,24 @@ export default class MetricsIndexController extends Controller {
         const workspace = await selection.get('workspace');
         const submission = await selection.get('submission');
         const taggings = await selection.get('taggings');
-        const folders = await taggings.mapBy('folder');
-        console.log(folders.mapBy('name'));
+        const folders = await Promise.all(
+          taggings.toArray().map(async (tagging) => await tagging.get('folder'))
+        );
+        const folderNames = folders.map((folder) => folder.name).join('; ');
         return {
           workspace: workspace.name,
-          folder: await folders.mapBy('name'),
           selection: selection.text,
           mentor: selection.get('createdBy.username'),
           student: submission.student,
+          folders: folderNames,
           actionDate: moment(selection.createDate).format('MM/DD/YY hh:mm:ss'),
         };
       })
     );
-    this.isLoading = false;
+    this.isLoadingUser = false;
   }
   get folderCsv() {
-    if (this.selectedSection) {
-      const assignments = this.selectedSection.get('assignments').toArray();
-      const assignmentsWorkspaces = assignments.map((assignment) =>
-        assignment.get('linkedWorkspaces').toArray()
-      );
-      const folders = assignmentsWorkspaces
-        .flat()
-        .map((workspace) => workspace.get('folders').toArray());
-      const taggings = folders
-        .flat()
-        .map((folder) => folder.get('taggings').toArray());
-      const formatted = taggings.flat().map((tagging) => {
-        return {
-          workspace: tagging.get('workspace.name'),
-          folder: tagging.get('folder.name'),
-          selection: tagging.get('selection.text'),
-          mentor: tagging.get('createdBy.username'),
-          student: tagging.get('selection.submission.student'),
-          actionDate: tagging.createDate,
-        };
-      });
-      return this.JsonCsv.arrayToCsv(formatted);
-    }
-    return '';
+    return this.JsonCsv.arrayToCsv(this.sectionData);
   }
   get singleUserFolders() {
     return this.JsonCsv.arrayToCsv(this.userData);

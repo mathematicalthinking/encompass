@@ -50,19 +50,40 @@ async function getSelections(req, res, next) {
     return utils.sendError.InternalError(null, res);
   }
   if (req.query.metrics) {
-    const selections = await models.Selection.find({
-      createdBy: req.query.metrics.user,
-    });
+    let selections;
+    if (req.query.metrics.user) {
+      selections = await models.Selection.find({
+        createdBy: req.query.metrics.user,
+      });
+    }
+    if (req.query.metrics.section) {
+      const section = await models.Section.findById(req.query.metrics.section);
+      const studentSelections = await Promise.all(
+        section.students.map((student) =>
+          models.Selection.find({ createdBy: student })
+        )
+      );
+      const teacherSelections = await Promise.all(
+        section.teachers.map((teacher) =>
+          models.Selection.find({ createdBy: teacher })
+        )
+      );
+      selections = [...studentSelections, ...teacherSelections].flat();
+    }
     const workspaces = await Promise.all(
       selections.map(
         async (tagging) => await models.Workspace.findById(tagging.workspace)
       )
     );
     const submissions = await Promise.all(
-      selections.map(
-        async (selection) =>
-          await models.Submission.findById(selection.submission)
-      )
+      selections.map(async (selection) => {
+        let submission = await models.Submission.findById(selection.submission);
+        //there seem to be submissions missing in the database
+        if (!submission) {
+          submission = { _id: selection.submission };
+        }
+        return submission;
+      })
     );
     const taggings = await Promise.all(
       selections.map(
