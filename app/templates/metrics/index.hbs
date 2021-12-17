@@ -3,24 +3,50 @@
   <p>You can also go to the info page of a workspace you'd like to get reports
     for.</p>
 </header>
-<div class='metrics__container'>
-  <SelectizeInput
-    @inputId='select-section'
-    @maxItems={{1}}
-    @initialOptions={{this.model.sections}}
-    @onItemAdd={{action 'setSection'}}
-    @model='user'
-    @isAsync={{false}}
-    @labelField='name'
-    @searchField='name'
-    @placeholder='Search by section name'
-  />
-  <h1>Currently viewing: {{this.selectedSection.name}}</h1>
-  <a
-    href='data:text/csv;charset=utf-8,{{this.folderCsv}}'
-    download='{{this.selectedSection.name}}_report.csv'
-  >Download CSV</a>
-  {{#each this.allFolders as |folder|}}
-    <p>{{folder.name}}</p>
-  {{/each}}
+<div class='metrics__container metrics--flex'>
+  <div class='metrics__category'>
+    <h1>Class Search</h1>
+    <SelectizeInput
+      @inputId='select-section'
+      @maxItems={{1}}
+      @initialOptions={{this.model.sections}}
+      @onItemAdd={{action 'setSection'}}
+      @isAsync={{false}}
+      @labelField='name'
+      @searchField='name'
+      @placeholder='Search by section name'
+    />
+    {{#if this.isLoadingSection}}
+      <LoadingElem />
+    {{else}}
+      <a
+        href='data:text/csv;charset=utf-8,{{this.folderCsv}}'
+        download='{{this.selectedSection.name}}_report.csv'
+      >Download CSV for {{this.selectedSection.name}}</a>
+    {{/if}}
+  </div>
+  <div class='metrics__category'>
+    <h1>User Search</h1>
+    <SelectizeInput
+      @inputId='select-user'
+      @maxItems={{1}}
+      @initialOptions={{this.usersList}}
+      @onItemAdd={{action 'setUser'}}
+      @model='user'
+      @isAsync={{false}}
+      @labelField='username'
+      @searchField='username'
+      @valueField='id'
+      @queryParamsKey='usernameSearch'
+      @placeholder='Search by username'
+    />
+    {{#if this.isLoadingUser}}
+      <LoadingElem />
+    {{else}}
+      <a
+        href='data:text/csv;charset=utf-8,{{this.singleUserFolders}}'
+        download='{{this.selectedUser.username}}_report.csv'
+      >Download CSV for {{this.selectedUser.username}}</a>
+    {{/if}}
+  </div>
 </div>

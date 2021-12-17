@@ -2,6 +2,9 @@ import Service from '@ember/service';
 
 export default class JsonCsvService extends Service {
   arrayToCsv(array) {
+    if (!array.length) {
+      return 'No data to display';
+    }
     try {
       const keys = [Object.keys(array[0])].concat(array);
       return keys
@@ -17,7 +20,7 @@ export default class JsonCsvService extends Service {
         .join('\n');
     } catch (err) {
       console.log(err);
-      return 'data invalid';
+      return `error: ${err.message}`;
     }
   }
 }

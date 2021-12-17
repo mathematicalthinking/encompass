@@ -19,6 +19,7 @@ const wsAccess = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/selections');
 
 const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
+const { model } = require('mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -48,6 +49,63 @@ async function getSelections(req, res, next) {
     console.error(`Error building selections criteria: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);
+  }
+  if (req.query.metrics) {
+    let selections;
+    if (req.query.metrics.user) {
+      selections = await models.Selection.find({
+        createdBy: req.query.metrics.user,
+      });
+    }
+    if (req.query.metrics.section) {
+      const section = await models.Section.findById(req.query.metrics.section);
+      const studentSelections = await Promise.all(
+        section.students.map((student) =>
+          models.Selection.find({ createdBy: student })
+        )
+      );
+      const teacherSelections = await Promise.all(
+        section.teachers.map((teacher) =>
+          models.Selection.find({ createdBy: teacher })
+        )
+      );
+      selections = [...studentSelections, ...teacherSelections].flat();
+    }
+    const workspaces = await Promise.all(
+      selections.map(
+        async (tagging) => await models.Workspace.findById(tagging.workspace)
+      )
+    );
+    const submissions = await Promise.all(
+      selections.map(async (selection) => {
+        let submission = await models.Submission.findById(selection.submission);
+        //there seem to be submissions missing in the database
+        if (!submission) {
+          submission = { _id: selection.submission };
+        }
+        return submission;
+      })
+    );
+    const taggings = await Promise.all(
+      selections.map(
+        async (selection) =>
+          await Promise.all(
+            selection.taggings.map(async (taggingId) => {
+              let tagging = await models.Tagging.findById(taggingId);
+              if (!tagging) {
+                tagging = { _id: taggingId };
+              }
+              return tagging;
+            })
+          )
+      )
+    );
+    return utils.sendResponse(res, {
+      selections,
+      workspaces: workspaces.flat(),
+      submissions: submissions.flat(),
+      taggings: taggings.flat(),
+    });
   }
 
   models.Selection.find(criteria).exec(function (err, selections) {
