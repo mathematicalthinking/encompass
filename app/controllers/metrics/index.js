@@ -35,13 +35,16 @@ export default class MetricsIndexController extends Controller {
         const folders = await Promise.all(
           taggings.toArray().map(async (tagging) => await tagging.get('folder'))
         );
-        const folderNames = folders.map((folder) => folder.name).join('; ');
         return {
           workspace: workspace.name,
           selection: selection.text,
           mentor: selection.get('createdBy.username'),
           student: submission.student,
-          folders: folderNames,
+          folders: folders
+            .map((folder) => {
+              return folder ? folder.name : '';
+            })
+            .join('; '),
           actionDate: moment(selection.createDate).format('MM/DD/YY hh:mm:ss'),
         };
       })
@@ -66,13 +69,16 @@ export default class MetricsIndexController extends Controller {
         const folders = await Promise.all(
           taggings.toArray().map(async (tagging) => await tagging.get('folder'))
         );
-        const folderNames = folders.map((folder) => folder.name).join('; ');
         return {
           workspace: workspace.name,
           selection: selection.text,
           mentor: selection.get('createdBy.username'),
           student: submission.student,
-          folders: folderNames,
+          folders: folders
+            .map((folder) => {
+              return folder ? folder.name : '';
+            })
+            .join('; '),
           actionDate: moment(selection.createDate).format('MM/DD/YY hh:mm:ss'),
         };
       })

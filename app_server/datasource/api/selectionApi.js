@@ -19,6 +19,7 @@ const wsAccess = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/selections');
 
 const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
+const { model } = require('mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -88,7 +89,15 @@ async function getSelections(req, res, next) {
     const taggings = await Promise.all(
       selections.map(
         async (selection) =>
-          await models.Tagging.find({ _id: { $in: selection.taggings } })
+          await Promise.all(
+            selection.taggings.map(async (taggingId) => {
+              let tagging = await models.Tagging.findById(taggingId);
+              if (!tagging) {
+                tagging = { _id: taggingId };
+              }
+              return tagging;
+            })
+          )
       )
     );
     return utils.sendResponse(res, {
