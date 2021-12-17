@@ -15,7 +15,7 @@
     @placeholder='Search by section name'
   />
   {{#if this.isLoadingSection}}
-    <p>Loading...</p>
+    <LoadingElem />
   {{else}}
     <a
       href='data:text/csv;charset=utf-8,{{this.folderCsv}}'
@@ -36,7 +36,7 @@
     @placeholder='Search by username'
   />
   {{#if this.isLoadingUser}}
-    <p>Loading....</p>
+    <LoadingElem />
   {{else}}
     <a
       href='data:text/csv;charset=utf-8,{{this.singleUserFolders}}'
