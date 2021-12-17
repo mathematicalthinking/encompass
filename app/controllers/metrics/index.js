@@ -27,28 +27,7 @@ export default class MetricsIndexController extends Controller {
     const selections = await this.store.query('selection', {
       metrics: { section: value },
     });
-    this.sectionData = await Promise.all(
-      selections.toArray().map(async (selection) => {
-        const workspace = await selection.get('workspace');
-        const submission = await selection.get('submission');
-        const taggings = await selection.get('taggings');
-        const folders = await Promise.all(
-          taggings.toArray().map(async (tagging) => await tagging.get('folder'))
-        );
-        return {
-          workspace: workspace.name,
-          selection: selection.text,
-          mentor: selection.get('createdBy.username'),
-          student: submission.student,
-          folders: folders
-            .map((folder) => {
-              return folder ? folder.name : '';
-            })
-            .join('; '),
-          actionDate: moment(selection.createDate).format('MM/DD/YY hh:mm:ss'),
-        };
-      })
-    );
+    this.sectionData = await this.formatData(selections);
     this.isLoadingSection = false;
   }
   @action async setUser(value) {
@@ -61,7 +40,11 @@ export default class MetricsIndexController extends Controller {
     const selections = await this.store.query('selection', {
       metrics: { user: value },
     });
-    this.userData = await Promise.all(
+    this.userData = await this.formatData(selections);
+    this.isLoadingUser = false;
+  }
+  formatData(selections) {
+    return Promise.all(
       selections.toArray().map(async (selection) => {
         const workspace = await selection.get('workspace');
         const submission = await selection.get('submission');
@@ -75,15 +58,12 @@ export default class MetricsIndexController extends Controller {
           mentor: selection.get('createdBy.username'),
           student: submission.student,
           folders: folders
-            .map((folder) => {
-              return folder ? folder.name : '';
-            })
+            .map((folder) => (folder ? folder.name : ''))
             .join('; '),
           actionDate: moment(selection.createDate).format('MM/DD/YY hh:mm:ss'),
         };
       })
     );
-    this.isLoadingUser = false;
   }
   get folderCsv() {
     return this.JsonCsv.arrayToCsv(this.sectionData);
