@@ -204,6 +204,9 @@ export default class IndexController extends Controller {
   }
   @action updateCurrentBound(e) {
     this.currentBound = e.target.value;
+    this.updateSelectedData(
+      this.data.find((item) => item.label === this.activeDetailTab)
+    );
   }
   @action updateDataToShow(value) {
     this.dataToShow = value;
