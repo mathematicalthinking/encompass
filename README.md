@@ -10,37 +10,53 @@ You will need the following things properly installed on your computer.
 - [Node.js](https://nodejs.org/) (with npm)
 - [Ember CLI](https://ember-cli.com/)
 - [Google Chrome](https://google.com/chrome/)
+- MongoDB
+- Mt-sso
+- vmt
 
 ## Installation
 
-- `git clone <repository-url>` this repository
-- `cd encompass`
-- `npm install`
+- see developer guide in company docs
 
 ## Running / Development
 
-- `npm run dev`
+- start MongoDB `mongod --config /usr/local/etc/mongod.conf`
+- start mt-sso `npm run start` (in mt-sso directory)
+- start vmt (optional) `npm run dev` (in vmt/server)
+- `npm run dev` (in encompass)
 - Visit your app at [http://localhost:8081](http://localhost:8081).
 
-### Code Generators
+## Branching Strategy
 
-Make use of the many generators for code, try `ember help generate` for more details
+- develop is the default branch for this repo. all PR's go through develop first for integration
+- all feature branches should originate from develop and merge back into develop
+- enc-test.mathematicalthinking.org is the deployment for develop
+- encompass.mathematicalthinking.org is the deployment for main
 
 ### Running Tests
 
+- in /mt-sso: `npm run test`
 - `npm run test`
 - `npm run selenium --test=[filename]`
+- see README.md in /test
+
+### Ports (see app_server/config.js)
+
+- dev server: 8080
+- dev client: 8081
+- test server: 8082
+- test client: 8083
+
+### .env
+
+- There is one .env for the entire project
+- Switch block in app_server/server.js picks out required variables
 
 ### Linting
 
 - `npm run lint:hbs`
 - `npm run lint:js`
 - `npm run lint:js -- --fix`
-
-### Building
-
-- `ember build` (development)
-- `ember build --environment production` (production)
 
 ### Deploying
 

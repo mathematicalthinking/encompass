@@ -59,7 +59,6 @@ const getGroup = async (req, res) => {
  */
 
 const postGroup = async (req, res) => {
-  console.log(req.body);
   const user = userAuth.requireUser(req);
   const sectionGroup = new models.Group(req.body.group);
   sectionGroup.createdBy = user;
