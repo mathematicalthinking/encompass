@@ -2,7 +2,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias, equal, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(CurrentUserMixin, {
@@ -52,7 +52,7 @@ export default Component.extend(CurrentUserMixin, {
           createDate = this.get('selection.createDate');
         }
         let displayDate;
-        displayDate = moment(createDate).format('l h:mm');
+        displayDate = dayjs(createDate).format('l h:mm');
         return `Created ${displayDate}`;
       }
       let startTime = this.get('selection.vmtInfo.startTime');

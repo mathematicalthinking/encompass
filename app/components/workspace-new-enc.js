@@ -4,7 +4,7 @@ import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import AddableProblemsMixin from '../mixins/addable_problems_mixin';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
@@ -38,8 +38,7 @@ export default Component.extend(
         class: 'Find all work completed by this class',
         dateRange: 'Find all accessibile work for this date range',
         owner: 'Who will have ownership of this workspace',
-        name:
-          'Give your workspace a name. If not, workspace names are generated based off given criteria',
+        name: 'Give your workspace a name. If not, workspace names are generated based off given criteria',
         folders: 'Choose a starter folder set, you can create your own later',
         privacy:
           'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
@@ -120,8 +119,8 @@ export default Component.extend(
       if (isEmpty(start) || isEmpty(end)) {
         return false;
       }
-      start = moment(start, htmlFormat);
-      end = moment(end, htmlFormat);
+      start = dayjs(start, htmlFormat);
+      end = dayjs(end, htmlFormat);
 
       return end > start;
     }),
@@ -131,7 +130,7 @@ export default Component.extend(
       if (typeof htmlDateString !== 'string') {
         return;
       }
-      let dateMoment = moment(htmlDateString, htmlFormat);
+      let dateMoment = dayjs(htmlDateString, htmlFormat);
       return new Date(dateMoment);
     },
 
@@ -140,7 +139,7 @@ export default Component.extend(
       if (typeof htmlDateString !== 'string') {
         return;
       }
-      let dateMoment = moment(htmlDateString, htmlFormat);
+      let dateMoment = dayjs(htmlDateString, htmlFormat);
       let date = new Date(dateMoment);
       date.setHours(23, 59, 59);
       return date;

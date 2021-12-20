@@ -2,7 +2,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias, equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import Encompass from '../app';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 import './Draggable';
@@ -72,7 +72,7 @@ export default Component.extend(
       if (!this.isVmtClip) {
         let createDate = this.get('selection.createDate');
 
-        let displayDate = moment(createDate).format('l h:mm');
+        let displayDate = dayjs(createDate).format('M/D/YYYY h:mm');
         return `Created ${displayDate}`;
       }
       let startTime = this.get('selection.vmtInfo.startTime');

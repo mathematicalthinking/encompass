@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export default class UserInfoComponent extends Component {
   @service('sweet-alert') alert;
@@ -150,7 +150,7 @@ export default class UserInfoComponent extends Component {
   get tourDate() {
     var date = this.seenTour;
     if (date) {
-      return moment(date).fromNow();
+      return dayjs(date).fromNow();
     }
     return 'no';
   }

@@ -13,7 +13,7 @@ import { inject as service } from '@ember/service';
  */
 import { isEqual } from '@ember/utils';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export default Component.extend({
   elementId: 'submission-group',
@@ -118,7 +118,7 @@ export default Component.extend({
       revisions = thread.map(function (submission, index, thread) {
         return {
           index: index + 1, // Because arrays are zero-indexed
-          label: moment(submission.get('createDate')).format(dateTime),
+          label: dayjs(submission.get('createDate')).format(dateTime),
           revision: submission,
           thread: thread.get('lastObject'),
         };

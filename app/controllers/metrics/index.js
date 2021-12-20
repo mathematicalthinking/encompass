@@ -2,7 +2,7 @@ import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export default class MetricsIndexController extends Controller {
   @service store;
@@ -60,7 +60,7 @@ export default class MetricsIndexController extends Controller {
           folders: folders
             .map((folder) => (folder ? folder.name : ''))
             .join('; '),
-          actionDate: moment(selection.createDate).format('MM/DD/YY hh:mm:ss'),
+          actionDate: dayjs(selection.createDate).format('MM/DD/YY hh:mm:ss'),
         };
       })
     );

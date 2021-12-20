@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @service router;
@@ -26,7 +26,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @tracked problemFormErrors = [];
   @tracked sectionFormErrors = [];
   @tracked invalidDateRange = false;
-  @tracked assignedDate = moment(new Date()).format('YYYY-MM-DD');
+  @tracked assignedDate = dayjs(new Date()).format('YYYY-MM-DD');
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -53,7 +53,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       presence: false,
     },
   };
-  nameDate = moment().format('MMM Do YYYY');
+  nameDate = dayjs().format('MMM Do YYYY');
 
   linkedWsOptions = {
     groupName: 'linkedWorkspaces',
@@ -194,7 +194,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     }
     let title = this.selectedProblem.title;
 
-    return `${title} / ${moment(this.assignedDate).format('MMM Do YYYY')}`;
+    return `${title} / ${dayjs(this.assignedDate).format('MMM Do YYYY')}`;
   }
   //for the 'workspaces to be created' list
   get workspacesList() {
@@ -240,10 +240,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       //   .data('daterangepicker')
       //   .startDate.format('MMM Do YYYY');
       let nameDate = assignedDate
-        ? moment(new Date(assignedDate.replace(/-/g, '/'))).format(
-            'MMM Do YYYY'
-          )
-        : moment(new Date()).format('MMM Do YYYY');
+        ? dayjs(new Date(assignedDate.replace(/-/g, '/'))).format('MMM Do YYYY')
+        : dayjs(new Date()).format('MMM Do YYYY');
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
     }
@@ -324,7 +322,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
+    let dateMoment = dayjs(htmlDateString, htmlFormat);
     return new Date(dateMoment);
   }
 
@@ -333,7 +331,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
+    let dateMoment = dayjs(htmlDateString, htmlFormat);
     let date = new Date(dateMoment);
     date.setHours(23, 59, 59);
     return date;

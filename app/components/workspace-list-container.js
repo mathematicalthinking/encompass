@@ -7,7 +7,7 @@ import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import { isEqual } from '@ember/utils';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
@@ -860,7 +860,7 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   currentAsOf: computed(function () {
-    return moment(this.since).format('H:mm');
+    return dayjs(this.since).format('H:mm');
   }),
 
   listFilter: 'all',

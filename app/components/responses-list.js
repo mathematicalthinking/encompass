@@ -3,7 +3,7 @@ import { computed } from '@ember/object';
 /* eslint-disable complexity */
 import { equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export default Component.extend({
   elementId: 'responses-list',
@@ -144,8 +144,8 @@ export default Component.extend({
         let bPriority = b.get('sortPriority');
 
         if (aPriority === bPriority) {
-          let aDate = moment(a.get('latestReply.createDate'));
-          let bDate = moment(b.get('latestReply.createDate'));
+          let aDate = dayjs(a.get('latestReply.createDate'));
+          let bDate = dayjs(b.get('latestReply.createDate'));
 
           return bDate - aDate;
         }
@@ -163,12 +163,12 @@ export default Component.extend({
         let bPriority = b.get('sortPriority');
 
         if (aPriority === bPriority) {
-          let aDate = moment(a.get('latestReply.createDate'));
-          let bDate = moment(b.get('latestReply.createDate'));
+          let aDate = dayjs(a.get('latestReply.createDate'));
+          let bDate = dayjs(b.get('latestReply.createDate'));
 
           if (aDate === bDate) {
-            aDate = moment(a.get('latestRevision.createDate'));
-            bDate = moment(b.get('latestRevision.createDate'));
+            aDate = dayjs(a.get('latestRevision.createDate'));
+            bDate = dayjs(b.get('latestRevision.createDate'));
           }
           return bDate - aDate;
         }
@@ -185,11 +185,11 @@ export default Component.extend({
         let aPriority = a.get('sortPriority');
         let bPriority = b.get('sortPriority');
         if (aPriority === bPriority) {
-          let aDate = moment(a.get('latestReply.createDate'));
-          let bDate = moment(b.get('latestReply.createDate'));
+          let aDate = dayjs(a.get('latestReply.createDate'));
+          let bDate = dayjs(b.get('latestReply.createDate'));
           if ((!aDate && !bDate) || aDate === bDate) {
-            aDate = moment(a.get('latestRevision.createDate'));
-            bDate = moment(b.get('latestRevision.createDate'));
+            aDate = dayjs(a.get('latestRevision.createDate'));
+            bDate = dayjs(b.get('latestRevision.createDate'));
           }
           return bDate - aDate;
         }
@@ -203,7 +203,8 @@ export default Component.extend({
 
   isAdmin: function () {
     return (
-      this.get('currentUser.user.isAdmin') && !this.get('currentUser.user.isStudent')
+      this.get('currentUser.user.isAdmin') &&
+      !this.get('currentUser.user.isStudent')
     );
   },
 

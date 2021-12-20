@@ -3,7 +3,7 @@ import { computed } from '@ember/object';
 import { equal, or } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 /*global _:false */
 import { all } from 'rsvp';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
@@ -456,7 +456,7 @@ export default Component.extend(ErrorHandlingMixin, {
   },
 
   currentAsOf: computed(function () {
-    return moment(this.since).format('H:mm');
+    return dayjs(this.since).format('H:mm');
   }),
 
   listFilter: 'all',

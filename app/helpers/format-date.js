@@ -1,5 +1,7 @@
 import { helper as buildHelper } from '@ember/component/helper';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+dayjs.extend(advancedFormat);
 
 export default buildHelper(function (args) {
   // args is array of arguments passed in from template
@@ -12,7 +14,7 @@ export default buildHelper(function (args) {
   }
   let formattedDate;
 
-  let momentObj = moment(date);
+  let momentObj = dayjs(date);
 
   if (!momentObj.isValid()) {
     return 'N/A';

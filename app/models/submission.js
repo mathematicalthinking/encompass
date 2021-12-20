@@ -1,7 +1,7 @@
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import Auditable from '../models/_auditable_mixin';
 
 export default Model.extend(Auditable, {

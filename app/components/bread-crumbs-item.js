@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import _ from 'underscore';
 
 export default class BreadCumbsItemComponent extends Component {
@@ -17,7 +17,7 @@ export default class BreadCumbsItemComponent extends Component {
       return this.args.itemTitleText;
     }
     if (this.args.item && this.args.item.createDate) {
-      return moment(this.args.item.createDate).format('MMM Do YYYY h:mm A');
+      return dayjs(this.args.item.createDate).format('MMM Do YYYY h:mm A');
     }
     if (_.isString(this.args.titleTextPath) && _.isObject(this.args.item)) {
       return this.args.item[this.args.titleTextPath];

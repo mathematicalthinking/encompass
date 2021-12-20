@@ -1,11 +1,6 @@
 import { helper as buildHelper } from '@ember/component/helper';
-import moment from 'moment';
-
-
-
-
-
+import * as dayjs from 'dayjs';
 
 export default buildHelper(function (date, format) {
-  return moment(date).format(format);
+  return dayjs(date).format(format);
 });

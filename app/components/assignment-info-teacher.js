@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export default class AssignmentInfoTeacherComponent extends ErrorHandlingComponent {
   @tracked formattedDueDate = null;
@@ -155,7 +155,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
+    let dateMoment = dayjs(htmlDateString, htmlFormat);
     return new Date(dateMoment);
   }
 
@@ -164,7 +164,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
+    let dateMoment = dayjs(htmlDateString, htmlFormat);
     let date = new Date(dateMoment);
     date.setHours(23, 59, 59);
     return date;

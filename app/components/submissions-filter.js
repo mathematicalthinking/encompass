@@ -4,7 +4,7 @@ import { computed } from '@ember/object';
 import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
@@ -25,8 +25,7 @@ export default Component.extend(ErrorHandlingMixin, {
       class: 'Find all work completed by this class',
       dateRange: 'Find all accessibile work for this date range',
       owner: 'Who will have ownership of this workspace',
-      name:
-        'Give your workspace a name. If not, workspace names are generated based off given criteria',
+      name: 'Give your workspace a name. If not, workspace names are generated based off given criteria',
       folders: 'Choose a starter folder set, you can create your own later',
       privacy:
         'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
@@ -40,14 +39,14 @@ export default Component.extend(ErrorHandlingMixin, {
       let endDate = that.get('endDate');
 
       if (!startDate) {
-        startDate = moment().subtract(1, 'years');
+        startDate = dayjs().subtract(1, 'years');
       } else if (_.isString(startDate)) {
-        startDate = moment(startDate);
+        startDate = dayjs(startDate);
       }
       if (!endDate) {
-        endDate = moment();
+        endDate = dayjs();
       } else if (_.isString(endDate)) {
-        endDate = moment(endDate);
+        endDate = dayjs(endDate);
       }
 
       // $('input[name="startDate"]').daterangepicker({
@@ -600,7 +599,7 @@ export default Component.extend(ErrorHandlingMixin, {
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
+    let dateMoment = dayjs(htmlDateString, htmlFormat);
     return new Date(dateMoment);
   },
 
@@ -609,7 +608,7 @@ export default Component.extend(ErrorHandlingMixin, {
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
+    let dateMoment = dayjs(htmlDateString, htmlFormat);
     let date = new Date(dateMoment);
     date.setHours(23, 59, 59);
     return date;
@@ -654,7 +653,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   actions: {
     changeDate: function () {
-      console.log("changing date");
+      console.log('changing date');
       console.log(this.startDate);
       console.log(this.endDate);
     },

@@ -2,7 +2,7 @@ import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
@@ -33,7 +33,7 @@ export default class MetricsWorkspaceController extends Controller {
       const submitter = submission.student;
       const selectionsLength = submission.selections.length;
       const commentsLength = submission.comments.length;
-      const dateOfSubmission = moment(submission.createDate).format(
+      const dateOfSubmission = dayjs(submission.createDate).format(
         'MM/DD/YYYY'
       );
       const responsesLength = submission.responses.length;

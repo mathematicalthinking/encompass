@@ -16,9 +16,10 @@ import { computed } from '@ember/object';
 import { and, equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
+import calendar from 'dayjs/plugin/calendar';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
-
+dayjs.extend(calendar);
 export default Component.extend(ErrorHandlingMixin, {
   currentUser: service('current-user'),
   elementId: 'comment-list',
@@ -93,9 +94,9 @@ export default Component.extend(ErrorHandlingMixin, {
 
   init: function () {
     this._super(...arguments);
-    let oneYearAgo = moment().subtract(365, 'days').calendar();
+    let oneYearAgo = dayjs().calendar(dayjs().subtract(365, 'days'));
     let oneYearAgoDate = new Date(oneYearAgo);
-    let htmlDate = moment(oneYearAgoDate).format('L');
+    let htmlDate = dayjs(oneYearAgoDate).format('MM/DD/YYYY');
 
     this.set('sinceDate', htmlDate);
   },
