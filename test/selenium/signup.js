@@ -212,13 +212,15 @@ describe('Signup form', function () {
     });
 
     // We are not going to automatically login users, they need to be approved, change to approval page
-    it('should redirect to unconfirmed after successful signup', async function () {
+    it('should redirect to unauthorized after successful signup', async function () {
       await driver.sleep(1000);
       await helpers.findAndClickElement(driver, css.signup.submit);
-      await helpers.waitForUrlMatch(driver, /unconfirmed/, 10000);
+      await helpers.waitForUrlMatch(driver, /unauthorized/, 10000);
       await helpers.waitForSelector(driver, css.topBar.logout);
 
-      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/unconfirmed`);
+      expect(await helpers.getCurrentUrl(driver)).to.eql(
+        `${host}/unauthorized`
+      );
     });
   });
 });
