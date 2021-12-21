@@ -349,9 +349,9 @@ describe('Mentoring Interactions', function () {
         // await helpers.waitForSelector(driver, 'span.submission_count');
 
         // click x button on tour box
-        await helpers.findAndClickElement(driver, 'div.guiders_close');
+        // await helpers.findAndClickElement(driver, 'div.guiders_close');
 
-        await helpers.waitForRemoval(driver, 'div#guiders_overlay');
+        // await helpers.waitForRemoval(driver, 'div#guiders_overlay');
 
         // await helpers.dismissWorkspaceTour(driver);
 
