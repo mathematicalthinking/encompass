@@ -1,6 +1,8 @@
 import { helper as buildHelper } from '@ember/component/helper';
 import * as dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
 
 export default buildHelper(function (args) {
