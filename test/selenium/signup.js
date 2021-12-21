@@ -59,8 +59,9 @@ describe('Signup form', function () {
     it('should display missing fields error when omitting username', async function () {
       await helpers.signup(driver, ['username']);
       await helpers.waitForSelector(driver, 'p');
-      expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete))
-        .to.be.true;
+      expect(await helpers.findAndGetText(driver, '.error-message')).to.equal(
+        helpers.signupErrors.incomplete
+      );
     });
 
     it('should remove error when a form field is modified', async function () {
@@ -81,11 +82,9 @@ describe('Signup form', function () {
       let blackListed = 'admin';
 
       await helpers.findAndClickElement(driver, css.signup.submit);
-      await driver.sleep(1000);
       expect(
         await helpers.isTextInDom(driver, helpers.signupErrors.username)
       ).to.eql(true);
-
       let url = await driver.getCurrentUrl();
       expect(url).to.eql(`${host}/auth/signup`);
       let usernameInput = await driver.findElement(
@@ -103,7 +102,7 @@ describe('Signup form', function () {
       expect(await helpers.isTextInDom(driver, expectedMsg)).to.eql(true);
 
       let url = await driver.getCurrentUrl();
-      expect(url).to.eql(`${host}/#/auth/signup`);
+      expect(url).to.eql(`${host}/auth/signup`);
       let usernameInput = await driver.findElement(
         By.css(css.signup.inputs.username)
       );
@@ -128,7 +127,7 @@ describe('Signup form', function () {
       expect(await helpers.isTextInDom(driver, expectedMsg)).to.eql(true);
 
       let url = await driver.getCurrentUrl();
-      expect(url).to.eql(`${host}/#/auth/signup`);
+      expect(url).to.eql(`${host}/auth/signup`);
 
       await usernameInput.clear();
       await usernameInput.sendKeys(helpers.newUser.username);
@@ -140,15 +139,13 @@ describe('Signup form', function () {
       );
       passwordInput.clear();
       passwordInput.sendKeys(invalidPassword);
-
       await helpers.findAndClickElement(driver, css.signup.submit);
-      await driver.sleep(1000);
       expect(
         await helpers.isTextInDom(driver, helpers.signupErrors.password)
       ).to.eql(true);
 
       let url = await driver.getCurrentUrl();
-      expect(url).to.eql(`${host}/#/auth/signup`);
+      expect(url).to.eql(`${host}/auth/signup`);
 
       await passwordInput.clear();
       await passwordInput.sendKeys(helpers.newUser.password);
@@ -179,7 +176,7 @@ describe('Signup form', function () {
         await helpers.waitForTextInDom(driver, errorMsg);
 
         let url = await driver.getCurrentUrl();
-        expect(url).to.eql(`${host}/#/auth/signup`);
+        expect(url).to.eql(`${host}/auth/signup`);
 
         await confirmEmailInput.clear();
 
@@ -221,9 +218,7 @@ describe('Signup form', function () {
       await helpers.waitForUrlMatch(driver, /unconfirmed/, 10000);
       await helpers.waitForSelector(driver, css.topBar.logout);
 
-      expect(await helpers.getCurrentUrl(driver)).to.eql(
-        `${host}/#/unconfirmed`
-      );
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/unconfirmed`);
     });
   });
 });
