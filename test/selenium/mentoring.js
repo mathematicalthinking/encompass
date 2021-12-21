@@ -345,7 +345,6 @@ describe('Mentoring Interactions', function () {
         await helpers.navigateAndWait(driver, url, {
           selector: 'span.submission_count',
         });
-        await driver.sleep(1000);
         // await helpers.waitForSelector(driver, 'span.submission_count');
 
         // click x button on tour box
@@ -358,7 +357,7 @@ describe('Mentoring Interactions', function () {
         return helpers.waitForElementToHaveText(
           driver,
           'span.submission_count',
-          '2'
+          '4'
         );
         // expect(await helpers.findAndGetText(driver,)).to.eql('2');
       });
