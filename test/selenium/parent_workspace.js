@@ -933,7 +933,7 @@ describe('Parent Workspace creation and updating', function () {
               wsSelectors.studentItem,
               studentToMarkup.username
             );
-            await toggleSelectingInput.click();
+            // await toggleSelectingInput.click();
             await helpers.waitForSelector(
               driver,
               wsSelectors.selectableArea.container
@@ -943,7 +943,7 @@ describe('Parent Workspace creation and updating', function () {
           }
         });
 
-        it('Should not create selection just clicking on text', async function () {
+        xit('Should not create selection just clicking on text', async function () {
           let nodeSel = '#node-1';
           let initialCount = selectionsCount;
 
