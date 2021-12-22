@@ -638,21 +638,19 @@ describe('Parent Workspace creation and updating', function () {
           driver,
           selectionLinkSel
         );
-
         expect(selectionLinks).to.have.lengthOf(initialCount);
       });
 
       it('Creating a selection', async function () {
         let nodeSel = '#node-1';
         let node2Sel = '#node-2';
-        let initialCount = selectionsCount;
 
         createdSelection = await createTextSelection(
           nodeSel,
           node2Sel,
-          initialCount + 1
+          selectionsCount
         );
-        console.log(createdSelection);
+        selectionsCount += 1;
         expect(createdSelection).to.exist;
       });
 
