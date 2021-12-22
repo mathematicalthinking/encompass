@@ -1,6 +1,7 @@
 // REQUIRE MODULES
 const { Builder, until } = require('selenium-webdriver');
-const expect = require('chai').expect;
+const { it, describe, before, after } = require('mocha');
+const { expect } = require('chai');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -196,24 +197,16 @@ describe('Sections', async function () {
               });
             } else {
               it(`should display new section form`, async function () {
-                try {
-                  await helpers.findAndClickElement(driver, sel);
-                  await driver.wait(until.urlIs(`${host}/sections/new`), 5000);
-                  await helpers.waitForSelector(driver, css.newSection.form);
-                } catch (err) {
-                  throw err;
-                }
+                await helpers.findAndClickElement(driver, sel);
+                await driver.wait(until.urlIs(`${host}/sections/new`), 5000);
+                await helpers.waitForSelector(driver, css.newSection.form);
               });
             }
           });
 
           describe('Navigating directly', function () {
             before(async function () {
-              try {
-                await driver.get(url);
-              } catch (err) {
-                throw err;
-              }
+              await driver.get(url);
             });
             if (isStudent) {
               it(`should redirect to sections`, async function () {
@@ -224,15 +217,11 @@ describe('Sections', async function () {
               });
             } else {
               it(`should display new section form`, async function () {
-                try {
-                  await helpers.navigateAndWait(
-                    driver,
-                    `${helpers.host}/sections/new`,
-                    { selector: css.newSection.form }
-                  );
-                } catch (err) {
-                  throw err;
-                }
+                await helpers.navigateAndWait(
+                  driver,
+                  `${helpers.host}/sections/new`,
+                  { selector: css.newSection.form }
+                );
               });
             }
           });
@@ -248,16 +237,12 @@ describe('Sections', async function () {
 
               const submitSection = async function (details) {
                 for (let detail of Object.keys(details)) {
-                  try {
-                    // eslint-disable-next-line no-await-in-loop
-                    await helpers.findInputAndType(
-                      driver,
-                      inputs[detail],
-                      details[detail]
-                    );
-                  } catch (err) {
-                    throw err;
-                  }
+                  // eslint-disable-next-line no-await-in-loop
+                  await helpers.findInputAndType(
+                    driver,
+                    inputs[detail],
+                    details[detail]
+                  );
                 }
                 await helpers.findAndClickElement(
                   driver,

@@ -1,16 +1,8 @@
-// 1) Parent Workspace creation and updating
-// Creating markup in child workspaces
-//   Marking up as student1
-//     Creating a response:
-// TimeoutError: Could not find Response Sent in DOM
-// Wait timed out after 8116ms
-
-//For some reason student1 is not able to click "save", doing so manually passes all tests
-
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
 
-const expect = require('chai').expect;
+const { it, describe, before, after, xit } = require('mocha');
+const { expect } = require('chai');
 require('geckodriver');
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -21,7 +13,6 @@ const fixtures = require('./fixtures/parent_workspace');
 const host = helpers.host;
 
 const RadioButtonSelector = require('./utilities/radio_group');
-const SweetAlertDriver = require('./utilities/sweet_alert');
 
 describe('Parent Workspace creation and updating', function () {
   this.timeout(helpers.timeoutTestMsStr);
@@ -63,12 +54,7 @@ describe('Parent Workspace creation and updating', function () {
     driver = new Builder().forBrowser('chrome').build();
     await dbSetup.prepTestDb();
     radioButtonSelector = new RadioButtonSelector(driver);
-    swalDriver = new SweetAlertDriver(driver);
-    try {
-      await helpers.login(driver, host, teacher);
-    } catch (err) {
-      throw err;
-    }
+    await helpers.login(driver, host, teacher);
   });
 
   async function createAssignment(
@@ -82,65 +68,61 @@ describe('Parent Workspace creation and updating', function () {
 
     let parentNameInput = css.assignmentsTeacher.parentWorkspace.nameInput;
 
-    try {
-      await helpers.navigateAndWait(driver, assignmentNewUrl, {
-        selector: css.assignmentsNew.container,
-      });
+    await helpers.navigateAndWait(driver, assignmentNewUrl, {
+      selector: css.assignmentsNew.container,
+    });
 
-      // select section
-      await helpers.selectSingleSelectizeItem(
-        driver,
-        inputSelectors.section.input,
-        section.name,
-        section.id
-      );
+    // select section
+    await helpers.selectSingleSelectizeItem(
+      driver,
+      inputSelectors.section.input,
+      section.name,
+      section.id
+    );
 
-      // select problem
-      await helpers.selectSingleSelectizeItem(
-        driver,
-        inputSelectors.problem.input,
-        problem.name,
-        problem.id
-      );
+    // select problem
+    await helpers.selectSingleSelectizeItem(
+      driver,
+      inputSelectors.problem.input,
+      problem.name,
+      problem.id
+    );
 
-      // assignedDate dueDate optional
+    // assignedDate dueDate optional
 
-      // name optional
+    // name optional
 
-      // select yes for create linked ws
-      await radioButtonSelector.selectRadioButton(
-        inputSelectors.linkedWorkspaces.groupName,
-        inputSelectors.linkedWorkspaces.yes.value
-      );
+    // select yes for create linked ws
+    await radioButtonSelector.selectRadioButton(
+      inputSelectors.linkedWorkspaces.groupName,
+      inputSelectors.linkedWorkspaces.yes.value
+    );
 
-      if (linkedWsName) {
-        // use customName
-        await helpers.clearElement(driver, linkedNameInput);
-        await helpers.findInputAndType(driver, linkedNameInput, linkedWsName);
-      }
-      // select yes for parent ws
-
-      await radioButtonSelector.selectRadioButton(
-        inputSelectors.parentWorkspace.groupName,
-        inputSelectors.parentWorkspace.yes.value
-      );
-
-      if (parentWsName) {
-        await helpers.clearElement(driver, parentNameInput);
-        await helpers.findInputAndType(driver, parentNameInput, parentWsName);
-      }
-      // submit
-
-      await helpers.findAndClickElement(driver, css.assignmentsNew.submitBtn);
-
-      await swalDriver.verifyToast('Assignment Created');
-      // wait for url to match /assignments/id
-
-      let urlRegEx = assignmentInfoUrlRegEx;
-      await helpers.waitForUrlMatch(driver, urlRegEx);
-    } catch (err) {
-      throw err;
+    if (linkedWsName) {
+      // use customName
+      await helpers.clearElement(driver, linkedNameInput);
+      await helpers.findInputAndType(driver, linkedNameInput, linkedWsName);
     }
+    // select yes for parent ws
+
+    await radioButtonSelector.selectRadioButton(
+      inputSelectors.parentWorkspace.groupName,
+      inputSelectors.parentWorkspace.yes.value
+    );
+
+    if (parentWsName) {
+      await helpers.clearElement(driver, parentNameInput);
+      await helpers.findInputAndType(driver, parentNameInput, parentWsName);
+    }
+    // submit
+
+    await helpers.findAndClickElement(driver, css.assignmentsNew.submitBtn);
+
+    await swalDriver.verifyToast('Assignment Created');
+    // wait for url to match /assignments/id
+
+    let urlRegEx = assignmentInfoUrlRegEx;
+    await helpers.waitForUrlMatch(driver, urlRegEx);
   }
 
   function checkWorkspaceStats(workspaceName, expectedStats, options = {}) {
@@ -148,31 +130,27 @@ describe('Parent Workspace creation and updating', function () {
       let { submissions, selections, comments, folders, responses } =
         expectedStats;
       before(async function () {
-        try {
+        await helpers.navigateAndWait(driver, workspacesUrl, {
+          selector: '.results-list',
+        });
+        if (options.doUseHref) {
+          await driver.get(parentWorkspaceHref);
+          await helpers.waitForUrlMatch(
+            driver,
+            new RegExp(parentWorkspaceHref)
+          );
+        } else {
           await helpers.navigateAndWait(driver, workspacesUrl, {
             selector: '.results-list',
           });
-          if (options.doUseHref) {
-            await driver.get(parentWorkspaceHref);
-            await helpers.waitForUrlMatch(
-              driver,
-              new RegExp(parentWorkspaceHref)
-            );
-          } else {
-            await helpers.navigateAndWait(driver, workspacesUrl, {
-              selector: '.results-list',
-            });
-            let link = await driver.findElement(By.linkText(workspaceName));
-            await link.click();
+          let link = await driver.findElement(By.linkText(workspaceName));
+          await link.click();
 
-            await helpers.waitForSelector(driver, '.info-link');
-          }
-          await helpers.dismissWorkspaceTour(driver);
-          await helpers.findAndClickElement(driver, '.info-link > a');
-          await helpers.waitForSelector(driver, '#workspace-info-stats');
-        } catch (err) {
-          throw err;
+          await helpers.waitForSelector(driver, '.info-link');
         }
+        await helpers.dismissWorkspaceTour(driver);
+        await helpers.findAndClickElement(driver, '.info-link > a');
+        await helpers.waitForSelector(driver, '#workspace-info-stats');
       });
       it(`should have ${submissions || 0} submissions`, async function () {
         let actualCount = await helpers.findAndGetText(
@@ -270,35 +248,31 @@ describe('Parent Workspace creation and updating', function () {
     node2Selector,
     initialSelectionsCount
   ) {
-    try {
-      let selectionLinkSelector = css.workspace.selections.selectionLink;
-      let createdSelectionSelector = css.workspace.selections.selectedDraggable;
-      let toastText = 'Selection Created';
+    let selectionLinkSelector = css.workspace.selections.selectionLink;
+    let createdSelectionSelector = css.workspace.selections.selectedDraggable;
+    let toastText = 'Selection Created';
 
-      let [node1, node2] = await Promise.all([
-        helpers.getWebWelementByCss(driver, node1Selector),
-        helpers.getWebWelementByCss(driver, node2Selector),
-      ]);
-      const actions = driver.actions();
+    let [node1, node2] = await Promise.all([
+      helpers.getWebWelementByCss(driver, node1Selector),
+      helpers.getWebWelementByCss(driver, node2Selector),
+    ]);
+    const actions = driver.actions();
 
-      await actions.dragAndDrop(node1, node2).perform();
+    await actions.dragAndDrop(node1, node2).perform();
 
-      await swalDriver.verifyToast(toastText);
+    await swalDriver.verifyToast(toastText);
 
-      let selectionLinks = await helpers.getWebElements(
-        driver,
-        selectionLinkSelector
-      );
-      expect(selectionLinks).to.have.lengthOf(initialSelectionsCount + 1);
+    let selectionLinks = await helpers.getWebElements(
+      driver,
+      selectionLinkSelector
+    );
+    expect(selectionLinks).to.have.lengthOf(initialSelectionsCount + 1);
 
-      let createdSelection = await helpers.getWebWelementByCss(
-        driver,
-        createdSelectionSelector
-      );
-      return createdSelection;
-    } catch (err) {
-      throw err;
-    }
+    let createdSelection = await helpers.getWebWelementByCss(
+      driver,
+      createdSelectionSelector
+    );
+    return createdSelection;
   }
 
   async function createComment(
@@ -307,62 +281,54 @@ describe('Parent Workspace creation and updating', function () {
     text,
     initialCount
   ) {
-    try {
-      let commentTypes = ['notice', 'wonder', 'feedback'];
+    let commentTypes = ['notice', 'wonder', 'feedback'];
 
-      if (!commentTypes.includes(commentType)) {
-        throw new Error(`${commentType} is not a valid comment type`);
-      }
-
-      await selectionWebEl.click();
-
-      await helpers.selectOption(
-        driver,
-        css.wsComments.commentTypeSelect,
-        commentType,
-        true
-      );
-
-      await helpers.findInputAndType(driver, css.wsComments.textArea, text);
-      await helpers.findAndClickElement(driver, css.wsComments.save);
-
-      let toastText = 'Comment Created';
-
-      await swalDriver.verifyToast(toastText);
-
-      let commentListItems = await helpers.getWebElements(
-        driver,
-        css.wsComments.commentListItem
-      );
-
-      expect(commentListItems).to.have.lengthOf(initialCount + 1);
-
-      return commentListItems[0];
-    } catch (err) {
-      throw err;
+    if (!commentTypes.includes(commentType)) {
+      throw new Error(`${commentType} is not a valid comment type`);
     }
+
+    await selectionWebEl.click();
+
+    await helpers.selectOption(
+      driver,
+      css.wsComments.commentTypeSelect,
+      commentType,
+      true
+    );
+
+    await helpers.findInputAndType(driver, css.wsComments.textArea, text);
+    await helpers.findAndClickElement(driver, css.wsComments.save);
+
+    let toastText = 'Comment Created';
+
+    await swalDriver.verifyToast(toastText);
+
+    let commentListItems = await helpers.getWebElements(
+      driver,
+      css.wsComments.commentListItem
+    );
+
+    expect(commentListItems).to.have.lengthOf(initialCount + 1);
+
+    return commentListItems[0];
   }
 
   async function deleteFolderByName(folderName) {
-    try {
-      await helpers.findAndClickElement(driver, css.workspace.folders.edit);
+    await helpers.findAndClickElement(driver, css.workspace.folders.edit);
 
-      let deleteSelector = `span[data-test="trash-${folderName}"]`;
-      let deleteBtn = await helpers.waitForSelector(driver, deleteSelector);
-      await deleteBtn.click();
-      await swalDriver.confirmYesNoModal(`${folderName} deleted`);
+    let deleteSelector = `span[data-test="trash-${folderName}"]`;
+    let deleteBtn = await helpers.waitForSelector(driver, deleteSelector);
+    await deleteBtn.click();
+    await swalDriver.confirmYesNoModal(`${folderName} deleted`);
 
-      console.log(1);
-      await helpers.waitForAndClickElement(
-        driver,
-        css.workspace.folders.doneEditingIcon
-      );
-      console.log(2);
-      await helpers.waitForSelector(driver, css.workspace.folders.edit);
-      console.log(3);
-    } catch (err) {
-      throw err;
-    }
+    console.log(1);
+    await helpers.waitForAndClickElement(
+      driver,
+      css.workspace.folders.doneEditingIcon
+    );
+    console.log(2);
+    await helpers.waitForSelector(driver, css.workspace.folders.edit);
+    console.log(3);
   }
 
   after(() => {
@@ -634,30 +600,26 @@ describe('Parent Workspace creation and updating', function () {
       let secondFolderName;
 
       before(async function () {
-        try {
-          let studentWsUrl = student1WorkspaceHref;
-          console.log(studentWsUrl);
-          await helpers.logout(driver);
-          await helpers.login(driver, host, student);
-          let toggleSelectingInput = await helpers.navigateAndWait(
-            driver,
-            studentWsUrl,
-            { selector: wsSelectors.toggleSelectingInput }
-          );
+        let studentWsUrl = student1WorkspaceHref;
+        console.log(studentWsUrl);
+        await helpers.logout(driver);
+        await helpers.login(driver, host, student);
+        let toggleSelectingInput = await helpers.navigateAndWait(
+          driver,
+          studentWsUrl,
+          { selector: wsSelectors.toggleSelectingInput }
+        );
 
-          await helpers.findAndClickElement(
-            driver,
-            wsSelectors.submissionNav.rightArrow
-          );
-          await helpers.waitForElementToHaveText(
-            driver,
-            wsSelectors.studentItem,
-            studentToMarkup.username
-          );
-          // await toggleSelectingInput.click();
-        } catch (err) {
-          throw err;
-        }
+        await helpers.findAndClickElement(
+          driver,
+          wsSelectors.submissionNav.rightArrow
+        );
+        await helpers.waitForElementToHaveText(
+          driver,
+          wsSelectors.studentItem,
+          studentToMarkup.username
+        );
+        // await toggleSelectingInput.click();
       });
 
       xit('Should not create selection just clicking on text', async function () {
@@ -801,19 +763,12 @@ describe('Parent Workspace creation and updating', function () {
       });
 
       it('Creating a response', async function () {
-        try {
-          await helpers.findAndClickElement(driver, wsSelectors.newResponse);
+        await helpers.findAndClickElement(driver, wsSelectors.newResponse);
 
-          await helpers.waitForAndClickElement(
-            driver,
-            css.responsesNew.saveBtn
-          );
+        await helpers.waitForAndClickElement(driver, css.responsesNew.saveBtn);
 
-          // await helpers.waitForTextInDom(driver, successText);
-          // expect(await helpers.isElementVisible(driver, css.responseInfo.mentorReplyView.unreadIcon)).to.eql(true);
-        } catch (err) {
-          throw err;
-        }
+        // await helpers.waitForTextInDom(driver, successText);
+        // expect(await helpers.isElementVisible(driver, css.responseInfo.mentorReplyView.unreadIcon)).to.eql(true);
       });
 
       xit('Updating a response', async function () {});
@@ -917,30 +872,26 @@ describe('Parent Workspace creation and updating', function () {
         let createdFolder;
 
         before(async function () {
-          try {
-            let studentWsUrl = student2WorkspaceHref;
+          let studentWsUrl = student2WorkspaceHref;
 
-            await helpers.logout(driver);
-            await helpers.login(driver, host, student);
-            let toggleSelectingInput = await helpers.navigateAndWait(
-              driver,
-              studentWsUrl,
-              { selector: wsSelectors.toggleSelectingInput }
-            );
+          await helpers.logout(driver);
+          await helpers.login(driver, host, student);
+          let toggleSelectingInput = await helpers.navigateAndWait(
+            driver,
+            studentWsUrl,
+            { selector: wsSelectors.toggleSelectingInput }
+          );
 
-            await helpers.waitForElementToHaveText(
-              driver,
-              wsSelectors.studentItem,
-              studentToMarkup.username
-            );
-            await toggleSelectingInput.click();
-            await helpers.waitForSelector(
-              driver,
-              wsSelectors.selectableArea.container
-            );
-          } catch (err) {
-            throw err;
-          }
+          await helpers.waitForElementToHaveText(
+            driver,
+            wsSelectors.studentItem,
+            studentToMarkup.username
+          );
+          await toggleSelectingInput.click();
+          await helpers.waitForSelector(
+            driver,
+            wsSelectors.selectableArea.container
+          );
         });
 
         it('Should not create selection just clicking on text', async function () {
@@ -1025,25 +976,21 @@ describe('Parent Workspace creation and updating', function () {
         });
 
         it('Creating a response', async function () {
-          try {
-            let successText = 'Response Sent';
-            await helpers.findAndClickElement(driver, wsSelectors.newResponse);
+          let successText = 'Response Sent';
+          await helpers.findAndClickElement(driver, wsSelectors.newResponse);
 
-            await helpers.waitForAndClickElement(
+          await helpers.waitForAndClickElement(
+            driver,
+            css.responsesNew.saveBtn
+          );
+
+          await helpers.waitForTextInDom(driver, successText);
+          expect(
+            await helpers.existsElement(
               driver,
-              css.responsesNew.saveBtn
-            );
-
-            await helpers.waitForTextInDom(driver, successText);
-            expect(
-              await helpers.existsElement(
-                driver,
-                css.responseInfo.mentorReplyView.unreadIcon
-              )
-            ).to.eql(true);
-          } catch (err) {
-            throw err;
-          }
+              css.responseInfo.mentorReplyView.unreadIcon
+            )
+          ).to.eql(true);
         });
 
         xit('Updating a response', async function () {});
