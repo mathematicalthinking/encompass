@@ -607,6 +607,7 @@ describe('Problems Info', async function () {
                   driver,
                   css.problemInfo.copyButton
                 );
+                await driver.sleep(100);
                 expect(
                   await helpers.findAndGetText(
                     driver,
@@ -838,12 +839,12 @@ describe('Problems Info', async function () {
                   css.problemEdit.saveButton
                 );
                 await driver.sleep(500);
-                if (isPdadmin || isAdmin) {
-                  await helpers.waitForAndClickElement(
-                    driver,
-                    css.sweetAlert.confirmBtn
-                  );
-                }
+                // if (isPdadmin || isAdmin) {
+                await helpers.waitForAndClickElement(
+                  driver,
+                  css.sweetAlert.confirmBtn
+                );
+                // }
                 await driver.sleep(500);
               });
 
@@ -1301,6 +1302,7 @@ describe('Problems Info', async function () {
                   css.problemEdit.problemNameInput
                 )
               ).to.be.true;
+              await driver.sleep(4000);
               await helpers.waitForAndClickElement(
                 driver,
                 css.problemEdit.cancelButton
