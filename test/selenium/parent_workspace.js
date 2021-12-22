@@ -11,7 +11,7 @@ const css = require('./selectors');
 const fixtures = require('./fixtures/parent_workspace');
 
 const host = helpers.host;
-
+const SwalDriver = require('./utilities/sweet_alert');
 const RadioButtonSelector = require('./utilities/radio_group');
 
 describe('Parent Workspace creation and updating', function () {
@@ -53,6 +53,7 @@ describe('Parent Workspace creation and updating', function () {
   before(async function () {
     driver = new Builder().forBrowser('chrome').build();
     await dbSetup.prepTestDb();
+    swalDriver = new SwalDriver(driver);
     radioButtonSelector = new RadioButtonSelector(driver);
     await helpers.login(driver, host, teacher);
   });
@@ -256,10 +257,15 @@ describe('Parent Workspace creation and updating', function () {
       helpers.getWebWelementByCss(driver, node1Selector),
       helpers.getWebWelementByCss(driver, node2Selector),
     ]);
+    const { x, y } = await node2.getRect();
     const actions = driver.actions();
 
-    await actions.dragAndDrop(node1, node2).perform();
-
+    await actions
+      .move({ origin: node2 })
+      .press()
+      .move({ x: parseInt(x + 50), y: parseInt(y) })
+      .release()
+      .perform();
     await swalDriver.verifyToast(toastText);
 
     let selectionLinks = await helpers.getWebElements(
@@ -601,7 +607,6 @@ describe('Parent Workspace creation and updating', function () {
 
       before(async function () {
         let studentWsUrl = student1WorkspaceHref;
-        console.log(studentWsUrl);
         await helpers.logout(driver);
         await helpers.login(driver, host, student);
         let toggleSelectingInput = await helpers.navigateAndWait(
@@ -645,15 +650,16 @@ describe('Parent Workspace creation and updating', function () {
         createdSelection = await createTextSelection(
           nodeSel,
           node2Sel,
-          initialCount
+          initialCount + 1
         );
+        console.log(createdSelection);
         expect(createdSelection).to.exist;
       });
 
       it('Creating a second selection', async function () {
         let nodeSel = '#node-1';
         let node2Sel = '#node-2';
-        let initialCount = selectionsCount + 1;
+        let initialCount = selectionsCount;
 
         secondSelection = await createTextSelection(
           nodeSel,
@@ -887,7 +893,7 @@ describe('Parent Workspace creation and updating', function () {
             wsSelectors.studentItem,
             studentToMarkup.username
           );
-          await toggleSelectingInput.click();
+          // await toggleSelectingInput.click();
           await helpers.waitForSelector(
             driver,
             wsSelectors.selectableArea.container
