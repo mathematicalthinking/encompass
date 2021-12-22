@@ -1,5 +1,6 @@
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
+const { it, describe, before, after } = require('mocha');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
