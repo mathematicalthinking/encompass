@@ -1335,7 +1335,7 @@ describe('Problems', async function () {
                     it('problem more for mine pending should show 2 options', async function () {
                       await helpers.findAndClickElement(
                         driver,
-                        'div.results-message'
+                        '#problem-list-ul li:first-child .item-section.more'
                       );
                       await driver.sleep(500);
                       await helpers.findAndClickElement(
@@ -1723,15 +1723,8 @@ describe('Problems', async function () {
 
               if (isTeacher) {
                 it('edit button in more menu should show problem in edit view', async function () {
-                  await helpers.findAndClickElement(
-                    driver,
-                    '#problem-list-ul li:first-child .item-section.more'
-                  );
-                  await helpers.findAndClickElement(
-                    driver,
-                    '.item-section.more span.click-menu ul li label i.fa-edit'
-                  );
-                  await driver.sleep(800);
+                  await helpers.findAndClickElement(driver, '.more');
+                  await helpers.findAndClickElement(driver, '.fa-edit');
                   expect(
                     await helpers.isElementVisible(
                       driver,
