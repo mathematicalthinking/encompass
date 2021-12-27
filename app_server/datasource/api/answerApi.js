@@ -7,7 +7,7 @@
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
-const moment = require('moment');
+var dayjs = require('dayjs');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -42,13 +42,8 @@ async function getAnswers(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
 
-    let {
-      ids,
-      problem,
-      filterBy,
-      searchBy,
-      didConfirmLargeRequest,
-    } = req.query;
+    let { ids, problem, filterBy, searchBy, didConfirmLargeRequest } =
+      req.query;
 
     if (problem) {
       let criteria = req.query;
@@ -63,8 +58,8 @@ async function getAnswers(req, res, next) {
       let { startDate, endDate, students } = filterBy;
 
       if (startDate && endDate) {
-        let startMoment = moment(startDate).startOf('day');
-        let endMoment = moment(endDate).endOf('day');
+        let startMoment = dayjs(startDate).startOf('day');
+        let endMoment = dayjs(endDate).endOf('day');
         let startDateObj = new Date(startMoment);
 
         let endDateObj = new Date(endMoment);

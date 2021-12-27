@@ -7,7 +7,7 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
-const moment = require('moment');
+const dayjs = require('dayjs');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -74,7 +74,7 @@ async function getComments(req, res, next) {
 
   let sinceDate = req.query.sinceDate;
   if (sinceDate) {
-    let startMoment = moment(sinceDate, 'L').startOf('day');
+    let startMoment = dayjs(sinceDate).startOf('day');
     let startDateObj = new Date(startMoment);
 
     criteria.createDate = { $gte: startDateObj };

@@ -5,8 +5,9 @@
  * @description This is the API for assignment based requests
  * @author Daniel Kelly
  */
-const moment = require('moment');
-
+const dayjs = require('dayjs');
+const advancedFormat = require('dayjs/plugin/advancedFormat');
+dayjs.extend(advancedFormat);
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
 
@@ -258,7 +259,7 @@ const postAssignment = async (req, res, next) => {
     } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
-    let assignedMoment = moment(assignedDate);
+    let assignedMoment = dayjs(assignedDate);
 
     if (!assignedMoment.isValid()) {
       // invalid assigned Date
@@ -267,7 +268,7 @@ const postAssignment = async (req, res, next) => {
       delete req.body.assignment.dueDate;
     }
 
-    let dueMoment = moment(dueDate);
+    let dueMoment = dayjs(dueDate);
 
     if (!dueMoment.isValid()) {
       delete req.body.assignment.dueDate;
@@ -300,8 +301,8 @@ const postAssignment = async (req, res, next) => {
       }
       let formattedDate =
         typeof assignedDate === 'string'
-          ? moment(assignedDate).format('MMM Do YYYY')
-          : moment(new Date()).format('MMM Do YYYY');
+          ? dayjs(assignedDate).format('MMM Do YYYY')
+          : dayjs(new Date()).format('MMM Do YYYY');
       req.body.assignment.name = `${foundProblem.title} / ${formattedDate} `;
     }
 
@@ -339,14 +340,12 @@ const postAssignment = async (req, res, next) => {
         .populate({ path: 'section', select: 'name' })
         .execPopulate();
 
-      let [
-        err,
-        linkedWorkspaces,
-      ] = await generateLinkedWorkspacesFromAssignment(
-        assignment,
-        user,
-        linkedWorkspacesRequest
-      );
+      let [err, linkedWorkspaces] =
+        await generateLinkedWorkspacesFromAssignment(
+          assignment,
+          user,
+          linkedWorkspacesRequest
+        );
 
       if (err) {
         assignment.linkedWorkspacesRequest.error = err;
@@ -358,14 +357,12 @@ const postAssignment = async (req, res, next) => {
           ].map((ws) => ws._id);
 
           assignment.linkedWorkspaces = linkedWorkspacesIds;
-          assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
+          assignment.linkedWorkspacesRequest.createdWorkspaces =
+            linkedWorkspacesIds;
 
           if (doCreateParentWorkspace) {
-            let {
-              name,
-              doAutoUpdateFromChildren,
-              giveAccess,
-            } = parentWorkspaceRequest;
+            let { name, doAutoUpdateFromChildren, giveAccess } =
+              parentWorkspaceRequest;
 
             if (typeof doAutoUpdateFromChildren !== 'boolean') {
               doAutoUpdateFromChildren = true;
@@ -404,10 +401,8 @@ const postAssignment = async (req, res, next) => {
                 };
               });
             }
-            [
-              parentWorkspaceError,
-              parentWorkspace,
-            ] = await generateParentWorkspace(parentWsConfig);
+            [parentWorkspaceError, parentWorkspace] =
+              await generateParentWorkspace(parentWsConfig);
 
             if (parentWorkspaceError) {
               assignment.parentWorkspaceRequest.error = parentWorkspaceError;
@@ -477,10 +472,8 @@ const putAssignment = async (req, res, next) => {
     let assignment = await models.Assignment.findById(req.params.id).exec();
 
     // currently only support 1 request at a time for already existing assn
-    let {
-      linkedWorkspacesRequest,
-      parentWorkspaceRequest,
-    } = req.body.assignment;
+    let { linkedWorkspacesRequest, parentWorkspaceRequest } =
+      req.body.assignment;
 
     let doCreateLinkedWorkspaces =
       _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
@@ -500,14 +493,12 @@ const putAssignment = async (req, res, next) => {
         .populate({ path: 'section', select: 'name' })
         .populate('answers')
         .execPopulate();
-      [
-        linkedWorkspacesErr,
-        linkedWorkspaces,
-      ] = await generateLinkedWorkspacesFromAssignment(
-        assignment,
-        user,
-        linkedWorkspacesRequest
-      );
+      [linkedWorkspacesErr, linkedWorkspaces] =
+        await generateLinkedWorkspacesFromAssignment(
+          assignment,
+          user,
+          linkedWorkspacesRequest
+        );
 
       if (linkedWorkspacesErr) {
         assignment.linkedWorkspacesRequest.error = linkedWorkspacesErr;
@@ -515,10 +506,10 @@ const putAssignment = async (req, res, next) => {
         data.workspaces = linkedWorkspaces;
 
         let linkedWorkspacesIds = linkedWorkspaces.map((ws) => ws._id);
-        assignment.linkedWorkspaces = assignment.linkedWorkspaces.concat(
-          linkedWorkspacesIds
-        );
-        assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
+        assignment.linkedWorkspaces =
+          assignment.linkedWorkspaces.concat(linkedWorkspacesIds);
+        assignment.linkedWorkspacesRequest.createdWorkspaces =
+          linkedWorkspacesIds;
       }
       assignment
         .depopulate('students')
@@ -548,11 +539,8 @@ const putAssignment = async (req, res, next) => {
         data.assignment = assignment;
         return utils.sendResponse(res, data);
       }
-      let {
-        name,
-        doAutoUpdateFromChildren,
-        childWorkspaces,
-      } = parentWorkspaceRequest;
+      let { name, doAutoUpdateFromChildren, childWorkspaces } =
+        parentWorkspaceRequest;
 
       if (typeof doAutoUpdateFromChildren !== 'boolean') {
         doAutoUpdateFromChildren = true;
@@ -569,10 +557,8 @@ const putAssignment = async (req, res, next) => {
         doAutoUpdateFromChildren,
         linkedAssignment: assignment._id,
       };
-      let [
-        parentWorkspaceError,
-        parentWorkspace,
-      ] = await generateParentWorkspace(parentWsConfig);
+      let [parentWorkspaceError, parentWorkspace] =
+        await generateParentWorkspace(parentWsConfig);
 
       if (parentWorkspaceError) {
         assignment.parentWorkspaceRequest.error = parentWorkspaceError;

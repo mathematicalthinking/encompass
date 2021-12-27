@@ -9,7 +9,9 @@
 // REQUIRE MODULES
 const { Builder, until } = require('selenium-webdriver');
 const expect = require('chai').expect;
-const moment = require('moment');
+const dayjs = require('dayjs');
+const relativeTime = require('dayjs/plugin/relativeTime');
+dayjs.extend(relativeTime);
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -169,8 +171,8 @@ describe('Mentoring Interactions', function () {
     it('should display correct information about thread', async function () {
       let values = {
         workspace: workspaceInfo.name,
-        submissionDate: moment(responseInfo.submission.createDate).fromNow(),
-        replyDate: moment(responseInfo.response.createDate).fromNow(),
+        submissionDate: dayjs(responseInfo.submission.createDate).fromNow(),
+        replyDate: dayjs(responseInfo.response.createDate).fromNow(),
         mentors: mentorInfo.displayName,
         problem: workspaceInfo.problem,
       };

@@ -1,18 +1,19 @@
-const moment = require('moment');
-
+const dayjs = require('dayjs');
+const advancedFormat = require('dayjs/plugin/advancedFormat');
+dayjs.extend(advancedFormat);
 module.exports = {
   teacher: {
     username: 'mtgteacher',
     password: 'test',
     parentWorkspace: {
       name: `
-      Parent Ws Custom: Morty's Public / ${moment(new Date()).format(
+      Parent Ws Custom: Morty's Public / ${dayjs(new Date()).format(
         'MMM Do YYYY'
       )} `,
       initialFolders: 4,
     },
     linkedWs: {
-      name: `mtgteacher: Morty's Public / ${moment(new Date()).format(
+      name: `mtgteacher: Morty's Public / ${dayjs(new Date()).format(
         'MMM Do YYYY'
       )} (MTG Period 1)`,
     },
@@ -25,7 +26,7 @@ module.exports = {
       explanation: 'here is my explanation',
     },
     linkedWs: {
-      name: `mtgstudent1: Morty's Public Custom / ${moment(new Date()).format(
+      name: `mtgstudent1: Morty's Public Custom / ${dayjs(new Date()).format(
         'MMM Do YYYY'
       )} (MTG Period 1)`,
       newFolder: {
@@ -44,7 +45,7 @@ module.exports = {
       explanation: 'here is my explanation as student2',
     },
     linkedWs: {
-      name: `mtgstudent2: Morty's Public Custom / ${moment(new Date()).format(
+      name: `mtgstudent2: Morty's Public Custom / ${dayjs(new Date()).format(
         'MMM Do YYYY'
       )} (MTG Period 1)`,
       newFolder: {
@@ -59,13 +60,13 @@ module.exports = {
     username: 'mtgstudent2',
     password: 'test',
     linkedWs: {
-      name: `mtgstudent3: Morty's Public Custom / ${moment(new Date()).format(
+      name: `mtgstudent3: Morty's Public Custom / ${dayjs(new Date()).format(
         'MMM Do YYYY'
       )} (MTG Period 1)`,
     },
   },
   newAssignment: {
-    name: `Morty's Public / ${moment(new Date()).format('MMM Do YYYY')}`,
+    name: `Morty's Public / ${dayjs(new Date()).format('MMM Do YYYY')}`,
     section: {
       id: '5c6eb4d49852e5710311d637',
       name: 'MTG Period 1',
@@ -85,10 +86,10 @@ module.exports = {
         username: 'mtgstudent3',
       },
     ],
-    linkedWsName: `Morty's Public Custom / ${moment(new Date()).format(
+    linkedWsName: `Morty's Public Custom / ${dayjs(new Date()).format(
       'MMM Do YYYY'
     )} (MTG Period 1)`,
-    parentWsName: `Parent Ws Custom: Morty's Public / ${moment(
+    parentWsName: `Parent Ws Custom: Morty's Public / ${dayjs(
       new Date()
     ).format('MMM Do YYYY')}`,
   },
