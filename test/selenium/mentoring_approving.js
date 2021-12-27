@@ -1,9 +1,10 @@
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
-const expect = require('chai').expect;
 const dayjs = require('dayjs');
 const relativeTime = require('dayjs/plugin/relativeTime');
 dayjs.extend(relativeTime);
+const { it, describe, before, after } = require('mocha');
+const { expect } = require('chai');
 // REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
@@ -102,7 +103,7 @@ describe('Mentoring / Approving Interactions', function () {
       await btn[0].click();
       await helpers.waitForUrlMatch(
         driver,
-        /responses\/new\/submission\/[0-9a-f]{24}/
+        `/responses/new/submission/${submissionInfo._id}/`
       );
     });
 

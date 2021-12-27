@@ -3,7 +3,8 @@
 
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
-const expect = require('chai').expect;
+const { it, describe, before, after, xit, xdescribe } = require('mocha');
+const { expect } = require('chai');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -395,7 +396,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing search bar', function () {
+              describe('Testing search bar', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(
@@ -448,7 +449,7 @@ describe('Problems', async function () {
                     let resultsMsg = `Based off your filter criteria, we found ${problems.search.org} problems that contain "problem"`;
                     await helpers.findAndClickElement(
                       driver,
-                      'li.filter-myOrg label.radio-label'
+                      'li.filter-myOrg'
                     );
                     await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(
@@ -463,10 +464,7 @@ describe('Problems', async function () {
                     if (problems.search.mine === 1) {
                       resultsMsg = `Based off your filter criteria, we found ${problems.search.mine} problem that contains "problem"`;
                     }
-                    await helpers.findAndClickElement(
-                      driver,
-                      'li.filter-mine label.radio-label'
-                    );
+                    await helpers.findAndClickElement(driver, 'li.filter-mine');
                     await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(
                       await helpers.findAndGetText(driver, css.resultsMessage)
@@ -480,7 +478,7 @@ describe('Problems', async function () {
                       let resultsMsg = `Based off your filter criteria, we found ${problems.search.all} problems that contain "problem"`;
                       await helpers.findAndClickElement(
                         driver,
-                        'li.filter-all label.radio-label'
+                        'li.filter-all'
                       );
                       await helpers.waitForTextInDom(driver, resultsMsg);
                       expect(
@@ -1334,7 +1332,7 @@ describe('Problems', async function () {
                     it('problem more for mine pending should show 2 options', async function () {
                       await helpers.findAndClickElement(
                         driver,
-                        'div.results-message'
+                        '#problem-list-ul li:first-child .item-section.more'
                       );
                       await driver.sleep(500);
                       await helpers.findAndClickElement(
@@ -1722,15 +1720,8 @@ describe('Problems', async function () {
 
               if (isTeacher) {
                 it('edit button in more menu should show problem in edit view', async function () {
-                  await helpers.findAndClickElement(
-                    driver,
-                    '#problem-list-ul li:first-child .item-section.more'
-                  );
-                  await helpers.findAndClickElement(
-                    driver,
-                    '.item-section.more span.click-menu ul li label i.fa-edit'
-                  );
-                  await driver.sleep(800);
+                  await helpers.findAndClickElement(driver, '.more');
+                  await helpers.findAndClickElement(driver, '.fa-edit');
                   expect(
                     await helpers.isElementVisible(
                       driver,

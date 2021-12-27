@@ -1,6 +1,7 @@
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
-const expect = require('chai').expect;
+const { it, describe, before, after } = require('mocha');
+const { expect } = require('chai');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -59,8 +60,9 @@ describe('Signup form', function () {
     it('should display missing fields error when omitting username', async function () {
       await helpers.signup(driver, ['username']);
       await helpers.waitForSelector(driver, 'p');
-      expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete))
-        .to.be.true;
+      expect(await helpers.findAndGetText(driver, '.error-message')).to.equal(
+        helpers.signupErrors.incomplete
+      );
     });
 
     it('should remove error when a form field is modified', async function () {
@@ -81,11 +83,9 @@ describe('Signup form', function () {
       let blackListed = 'admin';
 
       await helpers.findAndClickElement(driver, css.signup.submit);
-      await driver.sleep(1000);
       expect(
         await helpers.isTextInDom(driver, helpers.signupErrors.username)
       ).to.eql(true);
-
       let url = await driver.getCurrentUrl();
       expect(url).to.eql(`${host}/auth/signup`);
       let usernameInput = await driver.findElement(
@@ -103,7 +103,7 @@ describe('Signup form', function () {
       expect(await helpers.isTextInDom(driver, expectedMsg)).to.eql(true);
 
       let url = await driver.getCurrentUrl();
-      expect(url).to.eql(`${host}/#/auth/signup`);
+      expect(url).to.eql(`${host}/auth/signup`);
       let usernameInput = await driver.findElement(
         By.css(css.signup.inputs.username)
       );
@@ -128,7 +128,7 @@ describe('Signup form', function () {
       expect(await helpers.isTextInDom(driver, expectedMsg)).to.eql(true);
 
       let url = await driver.getCurrentUrl();
-      expect(url).to.eql(`${host}/#/auth/signup`);
+      expect(url).to.eql(`${host}/auth/signup`);
 
       await usernameInput.clear();
       await usernameInput.sendKeys(helpers.newUser.username);
@@ -140,60 +140,54 @@ describe('Signup form', function () {
       );
       passwordInput.clear();
       passwordInput.sendKeys(invalidPassword);
-
       await helpers.findAndClickElement(driver, css.signup.submit);
-      await driver.sleep(1000);
       expect(
         await helpers.isTextInDom(driver, helpers.signupErrors.password)
       ).to.eql(true);
 
       let url = await driver.getCurrentUrl();
-      expect(url).to.eql(`${host}/#/auth/signup`);
+      expect(url).to.eql(`${host}/auth/signup`);
 
       await passwordInput.clear();
       await passwordInput.sendKeys(helpers.newUser.password);
     });
 
     it('should not allow submitting with existing email', async function () {
-      try {
-        let confSel = css.signup.inputs.confirmEmail;
-        let existingEmail = 'glaforge98@gmail.com';
-        let errorMsg = 'Email address has already been used';
+      let confSel = css.signup.inputs.confirmEmail;
+      let existingEmail = 'glaforge98@gmail.com';
+      let errorMsg = 'Email address has already been used';
 
-        let emailInput = await driver.findElement(
-          By.css(css.signup.inputs.email)
-        );
+      let emailInput = await driver.findElement(
+        By.css(css.signup.inputs.email)
+      );
 
-        await emailInput.clear();
-        await emailInput.sendKeys(existingEmail);
+      await emailInput.clear();
+      await emailInput.sendKeys(existingEmail);
 
-        await helpers.waitForSelector(driver, confSel);
+      await helpers.waitForSelector(driver, confSel);
 
-        let confirmEmailInput = await driver.findElement({ css: confSel });
+      let confirmEmailInput = await driver.findElement({ css: confSel });
 
-        await confirmEmailInput.clear();
-        await confirmEmailInput.sendKeys(existingEmail);
+      await confirmEmailInput.clear();
+      await confirmEmailInput.sendKeys(existingEmail);
 
-        await helpers.findAndClickElement(driver, css.signup.submit);
-        await driver.sleep(1000);
-        await helpers.waitForTextInDom(driver, errorMsg);
+      await helpers.findAndClickElement(driver, css.signup.submit);
+      await driver.sleep(1000);
+      await helpers.waitForTextInDom(driver, errorMsg);
 
-        let url = await driver.getCurrentUrl();
-        expect(url).to.eql(`${host}/#/auth/signup`);
+      let url = await driver.getCurrentUrl();
+      expect(url).to.eql(`${host}/auth/signup`);
 
-        await confirmEmailInput.clear();
+      await confirmEmailInput.clear();
 
-        await emailInput.clear();
-        await emailInput.sendKeys(helpers.newUser.email);
+      await emailInput.clear();
+      await emailInput.sendKeys(helpers.newUser.email);
 
-        await helpers.waitForSelector(driver, confSel);
+      await helpers.waitForSelector(driver, confSel);
 
-        confirmEmailInput = await driver.findElement({ css: confSel });
+      confirmEmailInput = await driver.findElement({ css: confSel });
 
-        await confirmEmailInput.sendKeys(helpers.newUser.email);
-      } catch (err) {
-        throw err;
-      }
+      await confirmEmailInput.sendKeys(helpers.newUser.email);
     });
 
     it('should display terms error if submitted without checking agree to terms', async function () {
@@ -215,14 +209,14 @@ describe('Signup form', function () {
     });
 
     // We are not going to automatically login users, they need to be approved, change to approval page
-    it('should redirect to unconfirmed after successful signup', async function () {
+    it('should redirect to unauthorized after successful signup', async function () {
       await driver.sleep(1000);
       await helpers.findAndClickElement(driver, css.signup.submit);
-      await helpers.waitForUrlMatch(driver, /unconfirmed/, 10000);
+      await helpers.waitForUrlMatch(driver, /unauthorized/, 10000);
       await helpers.waitForSelector(driver, css.topBar.logout);
 
       expect(await helpers.getCurrentUrl(driver)).to.eql(
-        `${host}/#/unconfirmed`
+        `${host}/unauthorized`
       );
     });
   });

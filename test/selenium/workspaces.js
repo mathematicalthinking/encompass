@@ -1,6 +1,7 @@
 // REQUIRE MODULES
 const { Builder, By, until } = require('selenium-webdriver');
-const expect = require('chai').expect;
+const { it, describe, before, after, xit } = require('mocha');
+const { expect } = require('chai');
 const _ = require('underscore');
 
 // REQUIRE FILES
@@ -179,40 +180,28 @@ describe('Visiting Workspaces', function () {
     });
 
     it('should hide the list of students if clicked', async function () {
-      try {
-        // click outside of box to close
-        // travis errors when clicking the box because it selects another item
-        await helpers.findAndClickElement(driver, '#al_submission');
-        await helpers.waitForRemoval(driver, '#studentList');
-        return;
-      } catch (err) {
-        throw err;
-      }
+      // click outside of box to close
+      // travis errors when clicking the box because it selects another item
+      await helpers.findAndClickElement(driver, '#al_submission');
+      await helpers.waitForRemoval(driver, '#studentList');
+      return;
     });
   });
 
   describe('clicking the prev/next arrows', function () {
     // The arrow clicks only seem to work once each way?
     it('should change the current student', async function () {
-      try {
-        let studentSelect = css.workspace.studentSelect;
+      let studentSelect = css.workspace.studentSelect;
 
-        await helpers.findAndClickElement(driver, '#leftArrow');
-        await helpers.waitForSelectizeSingleText(
-          driver,
-          studentSelect,
-          'Peg C.'
-        );
+      await helpers.findAndClickElement(driver, '#leftArrow');
+      await helpers.waitForSelectizeSingleText(driver, studentSelect, 'Peg C.');
 
-        await helpers.findAndClickElement(driver, '#rightArrow');
-        await helpers.waitForSelectizeSingleText(
-          driver,
-          studentSelect,
-          'Andrew S.'
-        );
-      } catch (err) {
-        throw err;
-      }
+      await helpers.findAndClickElement(driver, '#rightArrow');
+      await helpers.waitForSelectizeSingleText(
+        driver,
+        studentSelect,
+        'Andrew S.'
+      );
     });
   });
 

@@ -1,7 +1,8 @@
 /*eslint-env node, mocha */
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
-const expect = require('chai').expect;
+const { it, describe, before, after } = require('mocha');
+const { expect } = require('chai');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -95,24 +96,20 @@ describe('Confirm Email', function () {
 
     describe('Navigating to valid link after already confirming', function () {
       it('should display that email is already confirmed', async function () {
-        try {
-          let msg = 'Email address has already been confirmed.';
-          await driver.get(host);
-          let options = {
-            selector: css.confirmEmail.alreadyConfirmed,
-          };
-          await helpers.navigateAndWait(driver, confirmLink, options);
+        let msg = 'Email address has already been confirmed.';
+        await driver.get(host);
+        let options = {
+          selector: css.confirmEmail.alreadyConfirmed,
+        };
+        await helpers.navigateAndWait(driver, confirmLink, options);
 
-          // await helpers.waitForSelector(driver, css.confirmEmail.alreadyConfirmed);
-          console.log('after navand wait alrady conf');
-          return helpers.waitForElementToHaveText(
-            driver,
-            css.confirmEmail.alreadyConfirmed,
-            msg
-          );
-        } catch (err) {
-          throw err;
-        }
+        // await helpers.waitForSelector(driver, css.confirmEmail.alreadyConfirmed);
+        console.log('after navand wait alrady conf');
+        return helpers.waitForElementToHaveText(
+          driver,
+          css.confirmEmail.alreadyConfirmed,
+          msg
+        );
       });
 
       it('should display link to login page', async function () {

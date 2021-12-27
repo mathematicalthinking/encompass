@@ -4,7 +4,8 @@
 
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
-const expect = require('chai').expect;
+const { it, describe, before, after } = require('mocha');
+const { expect } = require('chai');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -574,12 +575,11 @@ describe('Problems Info', async function () {
                   }
 
                   // await helpers.waitForRemoval(driver, css.sweetAlert.modal);
-                  let filledSel =
-                    css.problemInfo.recommendButton + ' i.star-filled';
+                  let filledSel = 'i.star-filled';
                   // await helpers.waitForSelector(driver, filledSel);
 
-                  expect(await helpers.isElementVisible(driver, filledSel)).to
-                    .be.true;
+                  expect(await helpers.existsElement(driver, filledSel)).to.be
+                    .true;
                 });
                 it('should remove fill for star icon when removed from recommended', async function () {
                   //flaky
@@ -606,6 +606,7 @@ describe('Problems Info', async function () {
                   driver,
                   css.problemInfo.copyButton
                 );
+                await driver.sleep(100);
                 expect(
                   await helpers.findAndGetText(
                     driver,
@@ -632,12 +633,12 @@ describe('Problems Info', async function () {
                 `${host}/problems`,
                 options
               );
+              await driver.sleep(500);
               await helpers.findAndClickElement(driver, 'li.filter-mine');
               await helpers.waitForAndClickElement(
                 driver,
                 '#problem-list-ul li:first-child .item-section.name span:first-child'
               );
-              await driver.sleep(5000);
             });
 
             describe(`Checking the following is always visible`, function () {
@@ -799,12 +800,12 @@ describe('Problems Info', async function () {
                       css.problemEdit.problemStatus
                     )
                   ).to.be.true;
-                  await helpers.findInputAndType(
-                    driver,
-                    css.problemEdit.problemStatus,
-                    'pending',
-                    true
-                  );
+                  // await helpers.findInputAndType(
+                  //   driver,
+                  //   css.problemEdit.problemStatus,
+                  //   'pending',
+                  //   true
+                  // );
                 }
               });
 
@@ -837,12 +838,12 @@ describe('Problems Info', async function () {
                   css.problemEdit.saveButton
                 );
                 await driver.sleep(500);
-                if (isPdadmin || isAdmin) {
-                  await helpers.waitForAndClickElement(
-                    driver,
-                    css.sweetAlert.confirmBtn
-                  );
-                }
+                // if (isPdadmin || isAdmin) {
+                await helpers.waitForAndClickElement(
+                  driver,
+                  css.sweetAlert.confirmBtn
+                );
+                // }
                 await driver.sleep(500);
               });
 
@@ -852,7 +853,7 @@ describe('Problems Info', async function () {
                   driver,
                   css.problemInfo.privacySettingParent
                 );
-                await driver.sleep(8000);
+                await driver.sleep(1000);
                 expect(
                   await helpers.hasTooltipValue(
                     driver,
@@ -1300,6 +1301,7 @@ describe('Problems Info', async function () {
                   css.problemEdit.problemNameInput
                 )
               ).to.be.true;
+              await driver.sleep(4000);
               await helpers.waitForAndClickElement(
                 driver,
                 css.problemEdit.cancelButton

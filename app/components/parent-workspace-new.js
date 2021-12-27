@@ -21,7 +21,9 @@ export default class ParentWorkspaceNewComponent extends Component {
     let assignmentName = this.args.assignmentName || this.args.assignment.name;
 
     if (assignmentName) {
-      return `${base} ${assignmentName} (${this.args.sectionName})`;
+      return `${base} ${assignmentName} (${
+        this.args.sectionName || this.args.section.name
+      })`;
     }
 
     return base + this.currentUser.user.username;

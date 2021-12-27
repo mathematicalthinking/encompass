@@ -7,7 +7,7 @@ import CurrentUserMixin from '../mixins/current_user_mixin';
 export default Model.extend(CurrentUserMixin, {
   utils: service('utility-methods'),
   store: service(),
-
+  currentUser: service('current-user'),
   submissions: hasMany('submission'),
   responses: hasMany('response'),
   workspaceName: attr('string'),
@@ -171,7 +171,7 @@ export default Model.extend(CurrentUserMixin, {
         let recipientId = this.utils.getBelongsToId(response, 'recipient');
         return (
           !response.get('wasReadByRecipient') &&
-          recipientId === this.get('currentUser.id')
+          recipientId === this.currentUser.user.id
         );
       });
     }

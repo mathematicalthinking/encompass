@@ -80,11 +80,11 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
     return length >= min && length <= max;
   }
 
-  @action usernameValidate(username) {
+  @action usernameValidate() {
     this.resetErrors();
-    if (username) {
+    if (this.username) {
       var usernamePattern = new RegExp(this.usernameRegEx);
-      var usernameTest = usernamePattern.test(username);
+      var usernameTest = usernamePattern.test(this.username);
 
       if (usernameTest === false) {
         this.usernameError = this.usernameErrors.invalid;
@@ -95,7 +95,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
         // this.set('incorrectUsername', false);
         this.usernameError = null;
         this.missingCredentials = false;
-        this.username = username;
         return;
       }
     }

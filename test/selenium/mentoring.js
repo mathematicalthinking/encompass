@@ -1,17 +1,10 @@
-//7 tests fail
-// 1) Mentoring Interactions
-// On Home page
-//   should have 1 visible response notification:
-// TimeoutError: Wait timed out after 8162ms
-// at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:894:17
-// at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
 // REQUIRE MODULES
 const { Builder, until } = require('selenium-webdriver');
-const expect = require('chai').expect;
 const dayjs = require('dayjs');
 const relativeTime = require('dayjs/plugin/relativeTime');
 dayjs.extend(relativeTime);
+const { it, describe, before, after, xdescribe } = require('mocha');
+const { expect } = require('chai');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -181,58 +174,54 @@ describe('Mentoring Interactions', function () {
     });
 
     it('should indicate that thread has unread reply', async function () {
-      try {
-        // let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
-        // console.log('found item container');
+      // let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
+      // console.log('found item container');
 
-        let unreadReplyClass = '.has-unread-reply';
+      let unreadReplyClass = '.has-unread-reply';
 
-        await helpers.waitForNElements(driver, unreadReplyClass, 1);
-        // await helpers.waitForAttributeToEql(driver, itemContainer[0], 'font-weight', css.general.boldFontWeight, {useCssValue: true});
+      await helpers.waitForNElements(driver, unreadReplyClass, 1);
+      // await helpers.waitForAttributeToEql(driver, itemContainer[0], 'font-weight', css.general.boldFontWeight, {useCssValue: true});
 
-        // expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
+      // expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
 
-        console.log('after fw');
+      console.log('after fw');
 
-        let statusCircle = await helpers.getWebElements(
-          driver,
-          css.responsesList.threadItems.statusCircle
-        );
-        expect(statusCircle).to.have.lengthOf(1);
+      let statusCircle = await helpers.getWebElements(
+        driver,
+        css.responsesList.threadItems.statusCircle
+      );
+      expect(statusCircle).to.have.lengthOf(1);
 
-        let statusCircles = await helpers.waitForNElements(
-          driver,
-          css.responsesList.threadItems.statusCircle,
-          1
-        );
+      let statusCircles = await helpers.waitForNElements(
+        driver,
+        css.responsesList.threadItems.statusCircle,
+        1
+      );
 
-        await helpers.waitForAttributeToEql(
-          driver,
-          statusCircles[0],
-          'fill',
-          css.general.unreadReplyFill,
-          { useCssValue: true }
-        );
+      await helpers.waitForAttributeToEql(
+        driver,
+        statusCircles[0],
+        'fill',
+        css.general.unreadReplyFill,
+        { useCssValue: true }
+      );
 
-        console.log('after sc');
-        // expect(await statusCircle[0].getCssValue('fill')).to.eql(css.general.unreadReplyFill);
+      console.log('after sc');
+      // expect(await statusCircle[0].getCssValue('fill')).to.eql(css.general.unreadReplyFill);
 
-        let ntfBells = await helpers.getWebElements(
-          driver,
-          css.responsesList.threadItems.ntfBell
-        );
+      let ntfBells = await helpers.getWebElements(
+        driver,
+        css.responsesList.threadItems.ntfBell
+      );
 
-        return helpers.waitForAttributeToEql(
-          driver,
-          ntfBells[0],
-          'title',
-          '1 New Notification'
-        );
+      return helpers.waitForAttributeToEql(
+        driver,
+        ntfBells[0],
+        'title',
+        '1 New Notification'
+      );
 
-        // expect(await ntfBell[0].getAttribute('title')).to.eql('1 New Notification');
-      } catch (err) {
-        throw err;
-      }
+      // expect(await ntfBell[0].getAttribute('title')).to.eql('1 New Notification');
     });
   });
 
@@ -347,20 +336,19 @@ describe('Mentoring Interactions', function () {
         await helpers.navigateAndWait(driver, url, {
           selector: 'span.submission_count',
         });
-        await driver.sleep(1000);
         // await helpers.waitForSelector(driver, 'span.submission_count');
 
         // click x button on tour box
-        await helpers.findAndClickElement(driver, 'div.guiders_close');
+        // await helpers.findAndClickElement(driver, 'div.guiders_close');
 
-        await helpers.waitForRemoval(driver, 'div#guiders_overlay');
+        // await helpers.waitForRemoval(driver, 'div#guiders_overlay');
 
         // await helpers.dismissWorkspaceTour(driver);
 
         return helpers.waitForElementToHaveText(
           driver,
           'span.submission_count',
-          '2'
+          '4'
         );
         // expect(await helpers.findAndGetText(driver,)).to.eql('2');
       });
