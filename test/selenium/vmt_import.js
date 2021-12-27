@@ -19,7 +19,7 @@ let user = {
   name: 'jean-luc picard',
 };
 
-xdescribe('Importing VMT Work', function () {
+describe('Importing VMT Work', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
@@ -35,7 +35,7 @@ xdescribe('Importing VMT Work', function () {
 
   describe('Visiting VMT Import Page', function () {
     describe('Using direct link', function () {
-      let url = `${host}/#/vmt/import`;
+      let url = `${host}/vmt/import`;
       before(async function () {
         await helpers.navigateAndWait(driver, url, {
           selector: css.vmtImport.search.container,
@@ -94,7 +94,7 @@ xdescribe('Importing VMT Work', function () {
         console.log('after activities');
       });
 
-      xdescribe('should return both own and public activities', function () {
+      describe('should return both own and public activities', function () {
         // currently no test activities with rooms
         let info = {
           query: 'activity',

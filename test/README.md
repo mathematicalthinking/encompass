@@ -3,10 +3,11 @@
 1. On the 21PSTEM Shared Google Drive get file: Developer/VmtEncompass/mt-sso_env-test
 2. Move file to local mt-sso directory
 3. Start sso server: in /mt-sso `npm run test`
-4. In /encompass `npm run seed`
-5. `npm run test`
-6. In new terminal in /encompass `npm run selenium --test=<filename>.js`
-7. If no test specified, all tests will run (~20 mins)
+4. Start vmt test server: in /vmt/server `npm run test-start`
+5. In /encompass `npm run seed`
+6. `npm run test`
+7. In new terminal in /encompass `npm run selenium --test=<filename>.js`
+8. If no test specified, all tests will run (~20 mins)
 
 ## Overview
 
@@ -32,7 +33,7 @@ Responses X X
 Sections
 Problems X X X X
 
-## 21 out of 23
+## 24 out of 24
 
 ## assignments_new - all pass 12/23/2021
 
@@ -73,6 +74,8 @@ Problems X X X X
 ## signup - all pass 12/23/2021
 
 ## users - all pass 12/23/2021
+
+## vmt_import - all pass 12/27/2021
 
 ## workspace_settings - all pass 12/23/2021
 
