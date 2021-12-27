@@ -101,7 +101,7 @@ describe('Mentoring / Approving Interactions', function () {
       await btn[0].click();
       await helpers.waitForUrlMatch(
         driver,
-        /responses\/new\/submission\/[0-9a-f]{24}/
+        `/responses/new/submission/${submissionInfo._id}/`
       );
     });
 
