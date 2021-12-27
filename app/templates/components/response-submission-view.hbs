@@ -1,51 +1,86 @@
 {{#if displaySubmission}}
- <div class="student-submissions">
-    <BreadCrumbs @items={{sortedStudentSubmissions}} @onSelect={{action "setDisplaySubmission"}} @selectedItem={{displaySubmission}} @starredItems={{mentoredRevisions}} @infoToolTipText={{revisionsToolTip}} />
+  <div class='student-submissions'>
+    <BreadCrumbs
+      @items={{sortedStudentSubmissions}}
+      @onSelect={{action 'setDisplaySubmission'}}
+      @selectedItem={{displaySubmission}}
+      @starredItems={{mentoredRevisions}}
+      @infoToolTipText={{revisionsToolTip}}
+    />
   </div>
-  <div class="submission-container">
-    <div class="workspace-name">
+  <div class='submission-container'>
+    <div class='workspace-name'>
       {{workspace.name}}
     </div>
-    <div class="problem-link-container">
+    <div class='problem-link-container'>
       {{#if displaySubmission.answer}}
-      <a {{action 'openProblem'}} class="problem-link">
-        {{displaySubmission.puzzle.title}}
-        <i class="fas fa-external-link-alt"></i>
-      </a>
+        <a {{action 'openProblem'}} class='problem-link'>
+          {{displaySubmission.puzzle.title}}
+          <i class='fas fa-external-link-alt'></i>
+        </a>
       {{else}}
-      <a class='puzzle' target="_blank" href="{{displaySubmission.puzzleUrl}}">
-        {{displaySubmission.puzzle.title}}
-        <i class="fas fa-external-link-alt"></i>
-      </a>
+        <a
+          class='puzzle'
+          target='_blank'
+          href='{{displaySubmission.puzzleUrl}}'
+        >
+          {{displaySubmission.puzzle.title}}
+          <i class='fas fa-external-link-alt'></i>
+        </a>
       {{/if}}
     </div>
-    <p class="submission-date">{{format-date displaySubmission.createDate 'Do MMM YYYY'}}
-      <span class="submission-time">{{format-date displaySubmission.createDate 'h:mm a'}}</span>
+    <p class='submission-date'>{{format-date
+        displaySubmission.createDate
+        'Do MMM YYYY'
+      }}
+      <span class='submission-time'>{{format-date
+          displaySubmission.createDate
+          'h:mm a'
+        }}</span>
     </p>
-    <div class="submission-student">
-      <i class="fas fa-user"></i><span>{{displaySubmission.student}}</span>
+    <div class='submission-student'>
+      <i class='fas fa-user'></i><span>{{displaySubmission.student}}</span>
     </div>
 
     {{#if isRevising}}
-      <AnswerNew @store={{this.store}} @assignment={{displaySubmission.answer.assignment.content}} @isRevision={{true}} @priorAnswer={{displaySubmission.answer.content}} @section={{displaySubmission.answer.section.content}} @problem={{displaySubmission.answer.problem.content}} @cancelResponse={{action "cancelRevising"}} @createButtonText="Submit Revision" @mainHeaderText="Create New Revision" @handleCreatedAnswer={{action "toSubmissionFromAnswer"}} @workspacesToUpdateIds={{workspacesToUpdateIds}} />
+      <AnswerNew
+        @store={{this.store}}
+        @assignment={{displaySubmission.answer.assignment.content}}
+        @isRevision={{true}}
+        @priorAnswer={{displaySubmission.answer.content}}
+        @section={{displaySubmission.answer.section.content}}
+        @problem={{displaySubmission.answer.problem.content}}
+        @cancelResponse={{action 'cancelRevising'}}
+        @createButtonText='Submit Revision'
+        @mainHeaderText='Create New Revision'
+        @handleCreatedAnswer={{action 'toSubmissionFromAnswer'}}
+        @workspacesToUpdateIds={{this.workspacesToUpdateIds}}
+      />
     {{else}}
-      <div class="submission-content-container short">
+      <div class='submission-content-container short'>
         {{#if isRevising}}
-          <div class="submission-header">
+          <div class='submission-header'>
             <span>Brief Summary</span>
           </div>
         {{else}}
-          <div class="submission-header" {{action 'toggleProperty' 'isShortExpanded'}}>
+          <div
+            class='submission-header'
+            {{action 'toggleProperty' 'isShortExpanded'}}
+          >
             <span>Brief Summary</span>
-            <i class="fas {{if isShortExpanded 'fa-chevron-down'}} {{unless isShortExpanded 'fa-chevron-left'}}"></i>
+            <i
+              class='fas
+                {{if isShortExpanded 'fa-chevron-down'}}
+                {{unless isShortExpanded 'fa-chevron-left'}}'
+            ></i>
           </div>
         {{/if}}
 
         {{#if isRevising}}
-          <Textarea @name="brief-summary" @value={{revisedBriefSummary}} />
+          <Textarea @name='brief-summary' @value={{revisedBriefSummary}} />
         {{else}}
           {{#if isShortExpanded}}
-            <div class="submission-content short">
+            <div class='submission-content short'>
               {{#if displaySubmission.answer.answer}}
                 {{{displaySubmission.answer.answer}}}
               {{else}}
@@ -55,22 +90,29 @@
           {{/if}}
         {{/if}}
       </div>
-      <div class="submission-content-container long">
+      <div class='submission-content-container long'>
         {{#if isRevising}}
-        <div class="submission-header">
-          <span>Explanation</span>
-        </div>
-        {{else}}
-          <div class="submission-header" {{action 'toggleProperty' 'isLongExpanded'}}>
+          <div class='submission-header'>
             <span>Explanation</span>
-            <i class="fas {{if isLongExpanded 'fa-chevron-down'}} {{unless isLongExpanded 'fa-chevron-left'}}"></i>
+          </div>
+        {{else}}
+          <div
+            class='submission-header'
+            {{action 'toggleProperty' 'isLongExpanded'}}
+          >
+            <span>Explanation</span>
+            <i
+              class='fas
+                {{if isLongExpanded 'fa-chevron-down'}}
+                {{unless isLongExpanded 'fa-chevron-left'}}'
+            ></i>
           </div>
         {{/if}}
         {{#if isRevising}}
-          <QuillContainer @setup="insertQuillContent" />
+          <QuillContainer @setup='insertQuillContent' />
         {{else}}
           {{#if isLongExpanded}}
-            <div class="submission-content long">
+            <div class='submission-content long'>
               {{#if displaySubmission.answer.explanation}}
                 {{{displaySubmission.answer.explanation}}}
               {{/if}}
@@ -83,45 +125,76 @@
       </div>
 
       {{#if displaySubmission.answer.explanationImage}}
-      <div class="submission-content-container images">
-        <div class="submission-header" {{action 'toggleProperty' 'isImageExpanded'}}>
-          <span>Addtional Image</span>
-          <i class="fas {{if isImageExpanded 'fa-chevron-down'}} {{unless isImageExpanded 'fa-chevron-left'}}"></i>
-        </div>
-        {{#if isImageExpanded}}
-          <div class="submission-content images">
-            <img src="{{displaySubmission.answer.explanationImage.imageData}}" alt="">
+        <div class='submission-content-container images'>
+          <div
+            class='submission-header'
+            {{action 'toggleProperty' 'isImageExpanded'}}
+          >
+            <span>Addtional Image</span>
+            <i
+              class='fas
+                {{if isImageExpanded 'fa-chevron-down'}}
+                {{unless isImageExpanded 'fa-chevron-left'}}'
+            ></i>
           </div>
-        {{/if}}
-      </div>
+          {{#if isImageExpanded}}
+            <div class='submission-content images'>
+              <img
+                src='{{displaySubmission.answer.explanationImage.imageData}}'
+                alt=''
+              />
+            </div>
+          {{/if}}
+        </div>
       {{/if}}
 
       {{#if displaySubmission.uploadedFile.savedFileName}}
-      <div class="submission-content-container images">
-        <div class="submission-header" {{action 'toggleProperty' 'isUploadExpanded'}}>
-          <span>Uploaded Image</span>
-          <i class="fas {{if isUploadExpanded 'fa-chevron-down'}} {{unless isUploadExpanded 'fa-chevron-left'}}"></i>
-        </div>
-        {{#if isUploadExpanded}}
-          <div class="submission-content images">
-            <div id="submission_images">
-              <a target="_blank" href="{{unbound displaySubmission.imageUrl}}">
-                <img src="{{displaySubmission.imageUrl}}" alt="Login to the PoWs to see image" />
-              </a>
-            </div>
+        <div class='submission-content-container images'>
+          <div
+            class='submission-header'
+            {{action 'toggleProperty' 'isUploadExpanded'}}
+          >
+            <span>Uploaded Image</span>
+            <i
+              class='fas
+                {{if isUploadExpanded 'fa-chevron-down'}}
+                {{unless isUploadExpanded 'fa-chevron-left'}}'
+            ></i>
           </div>
-        {{/if}}
-      </div>
+          {{#if isUploadExpanded}}
+            <div class='submission-content images'>
+              <div id='submission_images'>
+                <a
+                  target='_blank'
+                  href='{{unbound displaySubmission.imageUrl}}'
+                >
+                  <img
+                    src='{{displaySubmission.imageUrl}}'
+                    alt='Login to the PoWs to see image'
+                  />
+                </a>
+              </div>
+            </div>
+          {{/if}}
+        </div>
       {{/if}}
 
       {{#if canRevise}}
-        <div class="mentor-reply-actions button-row">
-        {{#if isRevising}}
-          <button {{action 'cancelRevising'}} class="primary-button cancel-button">Cancel</button>
-          <button {{action 'submitRevision'}} class="primary-button">Submit Revision</button>
-        {{else}}
-          <button data-test="submitter-revise" {{action 'startRevising'}} class="primary-button">Revise</button>
-        {{/if}}
+        <div class='mentor-reply-actions button-row'>
+          {{#if isRevising}}
+            <button
+              {{action 'cancelRevising'}}
+              class='primary-button cancel-button'
+            >Cancel</button>
+            <button {{action 'submitRevision'}} class='primary-button'>Submit
+              Revision</button>
+          {{else}}
+            <button
+              data-test='submitter-revise'
+              {{action 'startRevising'}}
+              class='primary-button'
+            >Revise</button>
+          {{/if}}
         </div>
       {{/if}}
     {{/if}}

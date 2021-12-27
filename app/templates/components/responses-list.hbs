@@ -1,88 +1,116 @@
-{{log submitterThreads}}
-<div class="flex-container-full">
-    <div class="flex-item-full filter-options collapse" id="filter-list-side">
-    </div>
-
-    <div class="flex-item-full list-view">
-      <div class="list-container">
-        <div class="top-row">
-          <h1 class="heading">Responses</h1>
-        </div>
-      </div>
-      <div class="results-list">
-        <div class="results-info">
-          <div class="results-icons" id="response-list-tabs">
-            {{#if showSubmitterTab}}
-              <span {{action 'showSubmitterResponses'}} class="submitter {{if isShowSubmitter "active-filter"}}">
-                Solver {{submitterCounter}}
-              </span>
-            {{/if}}
-            {{#if showMentoringTab}}
-              <span {{action 'showMentoringResponses'}} class="mentoring {{if isShowMentoring "active-filter"}}">
-               Mentoring {{mentoringCounter}}
-              </span>
-            {{/if}}
-            {{#if showApprovingTab}}
-              <span {{action 'showApprovingResponses'}}  class="approving {{if isShowApproving "active-filter"}}">
-                Approving {{approvingCounter}}
-              </span>
-            {{/if}}
-            {{#if showAllFilter}}
-              <span {{action 'showAllResponses'}} class="all {{if isShowAll "active-filter"}}">
-                All
-              </span>
-            {{/if}}
-          </div>
-          <div class="side-icons">
-            <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Responses list"></i>
-          </div>
-        </div>
-        <div class="results-items" id="layout-view">
-          <div class="sort-bar">
-            {{#if showStudentHeader}}
-              <div class="sort-bar-item student">
-                <span>Student</span>
-              </div>
-            {{/if}}
-            <div class="sort-bar-item workspace">
-              <span>Workspace</span>
-            </div>
-            <div class="sort-bar-item submission-date">
-              <span>Latest Revision Date</span>
-            </div>
-            <div class="sort-bar-item problem">
-              <span>Problem</span>
-            </div>
-            {{!-- <div class="sort-bar-item brief-summary">
-              <span>Brief Summary</span>
-            </div> --}}
-            {{#if showMentorHeader}}
-              <div class="sort-bar-item mentor">
-                <span>Mentor</span>
-              </div>
-            {{/if}}
-            <div class="sort-bar-item reply-date">
-              <span>Latest Reply Date</span>
-            </div>
-            <div class="sort-bar-item status">
-              <span>Status</span>
-            </div>
-          </div>
-
-          <div class="main-list">
-  {{#each displayThreads as |thread|}}
-    <ResponseSubmissionThread @toSubmissionResponse={{action "toSubmissionResponse"}} @showStudent={{showStudentHeader}} @showMentor={{showMentorHeader}} @thread={{thread}} @store={{this.store}} @toResponse={{action "toResponse"}} />
-  {{else}}
-    <div class="no-results-container">
-      <p class="notice">{{noResponsesMessage}}</p>
-    </div>
-  {{/each}}
-  {{#if displayThreads}}
-    <PaginationControl @details={{currentMetadata}} @initiatePageChange={{action "initiatePageChange"}} />
-  {{/if}}
-</div>
-        </div>
-      </div>
-    </div>
-
+<div class='flex-container-full'>
+  <div class='flex-item-full filter-options collapse' id='filter-list-side'>
   </div>
+
+  <div class='flex-item-full list-view'>
+    <div class='list-container'>
+      <div class='top-row'>
+        <h1 class='heading'>Responses</h1>
+      </div>
+    </div>
+    <div class='results-list'>
+      <div class='results-info'>
+        <div class='results-icons' id='response-list-tabs'>
+          {{#if showSubmitterTab}}
+            <span
+              {{action 'showSubmitterResponses'}}
+              class='submitter {{if isShowSubmitter 'active-filter'}}'
+            >
+              Solver
+              {{submitterCounter}}
+            </span>
+          {{/if}}
+          {{#if showMentoringTab}}
+            <span
+              {{action 'showMentoringResponses'}}
+              class='mentoring {{if isShowMentoring 'active-filter'}}'
+            >
+              Mentoring
+              {{mentoringCounter}}
+            </span>
+          {{/if}}
+          {{#if showApprovingTab}}
+            <span
+              {{action 'showApprovingResponses'}}
+              class='approving {{if isShowApproving 'active-filter'}}'
+            >
+              Approving
+              {{approvingCounter}}
+            </span>
+          {{/if}}
+          {{#if showAllFilter}}
+            <span
+              {{action 'showAllResponses'}}
+              class='all {{if isShowAll 'active-filter'}}'
+            >
+              All
+            </span>
+          {{/if}}
+        </div>
+        <div class='side-icons'>
+          <i
+            class='fas fa-redo-alt refresh-icon'
+            {{action 'refreshList'}}
+            title='Refresh Responses list'
+          ></i>
+        </div>
+      </div>
+      <div class='results-items' id='layout-view'>
+        <div class='sort-bar'>
+          {{#if showStudentHeader}}
+            <div class='sort-bar-item student'>
+              <span>Student</span>
+            </div>
+          {{/if}}
+          <div class='sort-bar-item workspace'>
+            <span>Workspace</span>
+          </div>
+          <div class='sort-bar-item submission-date'>
+            <span>Latest Revision Date</span>
+          </div>
+          <div class='sort-bar-item problem'>
+            <span>Problem</span>
+          </div>
+          {{! <div class="sort-bar-item brief-summary">
+              <span>Brief Summary</span>
+            </div> }}
+          {{#if showMentorHeader}}
+            <div class='sort-bar-item mentor'>
+              <span>Mentor</span>
+            </div>
+          {{/if}}
+          <div class='sort-bar-item reply-date'>
+            <span>Latest Reply Date</span>
+          </div>
+          <div class='sort-bar-item status'>
+            <span>Status</span>
+          </div>
+        </div>
+
+        <div class='main-list'>
+          {{#each displayThreads as |thread|}}
+            <ResponseSubmissionThread
+              @toSubmissionResponse={{action 'toSubmissionResponse'}}
+              @showStudent={{showStudentHeader}}
+              @showMentor={{showMentorHeader}}
+              @thread={{thread}}
+              @store={{this.store}}
+              @toResponse={{action 'toResponse'}}
+            />
+          {{else}}
+            <div class='no-results-container'>
+              <p class='notice'>{{noResponsesMessage}}</p>
+            </div>
+          {{/each}}
+          {{#if displayThreads}}
+            <PaginationControl
+              @details={{currentMetadata}}
+              @initiatePageChange={{action 'initiatePageChange'}}
+            />
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
