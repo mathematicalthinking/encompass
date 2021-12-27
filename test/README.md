@@ -52,47 +52,9 @@ Problems X X X X
 
 ## linked_workspaces - all pass 12/23/2021
 
-## mentoring_approving - 2 fail 9/29/2021
+## mentoring_approving - all pass 12/27/2021
 
-2. Mentoring / Approving Interactions
-   Submitting response for approval
-   should display new reply with pending approval status:
-
-   AssertionError: expected 'Approved' to deeply equal 'Pending Approval'
-
-   - expected - actual
-
-   -Approved
-   +Pending Approval
-
-   at Context.<anonymous> (test/selenium/mentoring_approving.js:169:48)
-   at runMicrotasks (<anonymous>)
-   at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-3. Mentoring / Approving Interactions
-   Visting Responses List
-   should indicate that thread has pending reply:
-
-   AssertionError: expected 'rgb(53, 168, 83)' to deeply equal 'rgb(255, 210, 4)'
-
-   - expected - actual
-
-   -rgb(53, 168, 83)
-   +rgb(255, 210, 4)
-
-   at Context.<anonymous> (test/selenium/mentoring_approving.js:242:60)
-   at runMicrotasks (<anonymous>)
-   at processTicksAndRejections (internal/process/task_queues.js:97:5)
-
-## mentoring - 1 fail
-
-1. Mentoring Interactions
-   Visting Responses List
-   should indicate that thread has unread reply:
-   TimeoutError: Wait timed out after 10066ms
-   at /Users/timothyleonard/Documents/21PSTEM/mt/encompass/node_modules/selenium-webdriver/lib/webdriver.js:895:17
-   at runMicrotasks (<anonymous>)
-   at processTicksAndRejections (internal/process/task_queues.js:97:5)
+## mentoring - all pass 12/27/2021
 
 ## parent_workspace - all pass 12/23/2021
 

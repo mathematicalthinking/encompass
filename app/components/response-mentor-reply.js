@@ -50,8 +50,7 @@ export default Component.extend(ErrorHandlingMixin, {
       return 'approved';
     }
     // TODO: update approver relationships for current encompass use cases
-    // return 'pendingApproval';
-    return 'approved';
+    return 'pendingApproval';
   }),
 
   canRevise: computed('isOwnMentorReply', 'isParentWorkspace', function () {
