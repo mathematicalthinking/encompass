@@ -28,3 +28,9 @@
 - see docs for more
 
 # nav drawer is [Ember CLI MDC Drawer](https://www.npmjs.com/package/ember-cli-mdc-drawer)
+
+# error like `expected <Workspace.id-number> in adapter payload but not found`
+
+- the server automatically paginates and won't send more than 20 workspaces at a time. sometimes a template needs more than 20 workspaces but only receives 20, throwing an error for Ember Data. I haven't yet tracked down where pagination is handled
+
+- the server also handles user permissions. if a template needs something the user doesn't have permission to view, the server will not send any data back, throwing an error
