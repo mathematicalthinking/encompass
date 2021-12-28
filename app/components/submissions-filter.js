@@ -25,14 +25,14 @@ export default Component.extend(ErrorHandlingMixin, {
       class: 'Find all work completed by this class',
       dateRange: 'Find all accessibile work for this date range',
       owner: 'Who will have ownership of this workspace',
-      name:
-        'Give your workspace a name. If not, workspace names are generated based off given criteria',
+      name: 'Give your workspace a name. If not, workspace names are generated based off given criteria',
       folders: 'Choose a starter folder set, you can create your own later',
       privacy:
         'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
     };
     this.set('tooltips', tooltips);
-
+    this.set('startDate', moment().format('YYYY-MM-DD'));
+    this.set('endDate', moment().format('YYYY-MM-DD'));
     const that = this;
 
     $(function () {
@@ -654,7 +654,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   actions: {
     changeDate: function () {
-      console.log("changing date");
+      console.log('changing date');
       console.log(this.startDate);
       console.log(this.endDate);
     },
