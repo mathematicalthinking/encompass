@@ -14,7 +14,7 @@ const testUsers = require('./fixtures/users');
 const host = helpers.host;
 let url = `${host}/workspaces/new`;
 
-xdescribe('Workspaces New', async function () {
+describe('Workspaces New', async function () {
   this.timeout(helpers.timeoutTestMsStr);
   function runTests(users) {
     function _runTests(user) {
@@ -33,29 +33,20 @@ xdescribe('Workspaces New', async function () {
           return driver.quit();
         });
 
-        describe('Clicking topbar link', function () {
+        describe('Navigating to /workspaces/new', function () {
           if (accountType === 'S' || actingRole === 'student') {
             it('should redirect to homepage', async function () {
-              await helpers.navigateAndWait(driver, `${host}/workspaces`, {});
-              await helpers.navigateAndWait(
-                driver,
-                `${host}/workspaces/new`,
-                {}
-              );
+              await helpers.navigateAndWait(driver, `${host}/workspaces/new`, {
+                selector: 'div',
+              });
 
               await helpers.waitForUrlMatch(driver, /\//);
-
-              expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be
-                .true;
               expect(
                 await helpers.isElementVisible(driver, '#filter-list-side')
               ).to.be.false;
             });
           } else {
             it(`should display new workspace creation form`, async function () {
-              await helpers.navigateAndWait(driver, `${host}/workspaces`, {
-                selector: '#workspace-list-container',
-              });
               await helpers.navigateAndWait(driver, `${host}/workspaces/new`, {
                 selector: '#workspace-new-container',
               });
@@ -67,39 +58,10 @@ xdescribe('Workspaces New', async function () {
           }
         });
 
-        describe('Navigating directly', function () {
-          before(async function () {
-            await driver.get(url);
-          });
-
-          if (accountType === 'S' || actingRole === 'student') {
-            it('should redirect to homepage', async function () {
-              await helpers.waitForUrlMatch(driver, /\//);
-
-              expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be
-                .true;
-              expect(
-                await helpers.isElementVisible(driver, '#filter-list-side')
-              ).to.be.false;
-            });
-          } else {
-            it(`should display new workspace creation form`, async function () {
-              let regex = new RegExp(url);
-              await helpers.waitForUrlMatch(driver, regex);
-
-              expect(
-                await helpers.isElementVisible(driver, '#filter-list-side')
-              ).to.be.true;
-            });
-          }
-        });
-
         if (accountType !== 'S' && actingRole !== 'student') {
           describe('Should display various inputs/ fields', function () {
             describe('Filter Criteria', function () {
               const inputs = css.newWorkspaceEnc.filterCriteria.inputs;
-              const fixedInputs =
-                css.newWorkspaceEnc.filterCriteria.fixedInputs;
               for (let input of Object.keys(inputs)) {
                 if (accountType === 'T' && input === 'teacher') {
                   // eslint-disable-next-line no-loop-func
@@ -107,9 +69,8 @@ xdescribe('Workspaces New', async function () {
                     expect(
                       await helpers.isElementVisible(driver, inputs[input])
                     ).to.be.false;
-                    expect(
-                      await helpers.findAndGetText(driver, fixedInputs.teacher)
-                    ).to.eql(user.username);
+                    expect(await helpers.isTextInDom(driver, user.username)).to
+                      .be.true;
                   });
                 } else {
                   // eslint-disable-next-line no-loop-func
@@ -268,7 +229,7 @@ xdescribe('Workspaces New', async function () {
                 console.log(`Error submitForm: ${err}`);
               }
             }
-            describe('Submitting empty form', function () {
+            xdescribe('Submitting empty form', function () {
               if (accountType === 'T') {
                 it('should create workspace and redirect to workspace page', async function () {
                   await submitForm(false);
