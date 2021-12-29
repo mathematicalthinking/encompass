@@ -146,7 +146,7 @@ module.exports = {
         modePublic: 'input[value="public"]',
       },
       fixedInputs: {
-        owner: 'li.ws-settings.owner p',
+        owner: '#owner-select option',
       },
     },
   },

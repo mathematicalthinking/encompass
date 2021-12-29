@@ -2,7 +2,7 @@
 
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
-const { it, describe, before, after, xdescribe, xit } = require('mocha');
+const { it, describe, before, after } = require('mocha');
 const { expect } = require('chai');
 
 // REQUIRE FILES
@@ -143,10 +143,13 @@ describe('Workspaces New', async function () {
                     it(`owner field should be fixed as teacher's username`, async function () {
                       expect(
                         await helpers.isElementVisible(driver, inputs[input])
-                      ).to.be.false;
+                      );
                       expect(
-                        await helpers.findAndGetText(driver, fixedInputs.owner)
-                      ).to.eql(user.username);
+                        await helpers.getWebElementValue(
+                          driver,
+                          fixedInputs.owner
+                        )
+                      ).to.eql(_id);
                     });
                   } else {
                     // eslint-disable-next-line no-loop-func
@@ -169,130 +172,41 @@ describe('Workspaces New', async function () {
                 });
               });
             });
-
-            xdescribe('teacher pool', function () {
-              let selectors = css.newWorkspaceEnc.filterCriteria;
-              let teacherSel = selectors.inputs.teacher;
-              let test;
-              let fixed = selectors.fixedInputs.teacher;
-              let clearSelector = css.newWorkspaceEnc.clear;
-
-              before(async function () {
-                // teacherInput = await helpers.getWebElements(driver, selector);
-                if (accountType !== 'T') {
-                  test = await helpers.selectOption(
-                    driver,
-                    teacherSel,
-                    _id,
-                    true
-                  );
-                }
-              });
-              if (accountType === 'A' || accountType === 'P') {
-                it('should contain current user', function () {
-                  expect(test).to.eql(true);
-                });
-
-                it('clicking x button should clear input', async function () {
-                  await helpers.findAndClickElement(driver, clearSelector);
-                  let selectText = await helpers.findAndGetText(
-                    driver,
-                    teacherSel
-                  );
-                  await driver.sleep(100);
-                  expect(selectText).to.contain('Please select');
-                });
-              }
-              if (accountType === 'T') {
-                it('should be fixed as current user', async function () {
-                  expect(await helpers.isElementVisible(driver, teacherSel)).to
-                    .be.false;
-                  let text = await helpers.findAndGetText(driver, fixed);
-                  expect(text).to.eql(username);
-                });
-              }
-            });
-            xdescribe('owner pool', function () {
-              let selectors = css.newWorkspaceEnc.workspaceSettings;
-              let ownerSel = selectors.inputs.owner;
-              let test;
-              let fixed = selectors.fixedInputs.owner;
-              let clearSelector = css.newWorkspaceEnc.clear;
-
-              before(async function () {
-                // teacherInput = await helpers.getWebElements(driver, selector);
-                if (accountType !== 'T') {
-                  test = await helpers.selectOption(
-                    driver,
-                    ownerSel,
-                    _id,
-                    true
-                  );
-                }
-              });
-              if (accountType === 'A' || accountType === 'P') {
-                it('should contain current user', function () {
-                  expect(test).to.eql(true);
-                });
-
-                it('clicking x button should clear input', async function () {
-                  await helpers.findAndClickElement(driver, clearSelector);
-                  let selectText = await helpers.findAndGetText(
-                    driver,
-                    ownerSel
-                  );
-                  await driver.sleep(100);
-                  expect(selectText).to.contain('Please select');
-                });
-              }
-              if (accountType === 'T') {
-                it('should be fixed as current user', async function () {
-                  expect(await helpers.isElementVisible(driver, ownerSel)).to.be
-                    .false;
-                  let text = await helpers.findAndGetText(driver, fixed);
-                  expect(text).to.eql(username);
-                });
-              }
-            });
           });
 
-          xdescribe('Creating a new workspace', function () {
-            async function submitForm(shouldFail) {
-              try {
-                const submitButton = await driver.findElement(
-                  By.css(css.newWorkspaceEnc.create)
-                );
-                await submitButton.click();
-                if (shouldFail) {
-                  await helpers.waitForSelector(
-                    driver,
-                    css.general.newErrorMessage
-                  );
-                }
-              } catch (err) {
-                console.log(`Error submitForm: ${err}`);
-              }
-            }
-            xdescribe('Submitting empty form', function () {
-              if (accountType === 'T') {
-                it('should create workspace and redirect to workspace page', async function () {
-                  await submitForm(false);
-                  await helpers.waitForSelector(driver, '.workspace-name');
-                  let url = await helpers.getCurrentUrl(driver);
-                  expect(url).to.include('submissions');
-                });
-              } else {
-                it('should display error message', async function () {
-                  // expect (await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
-                  await submitForm(true);
-                  expect(
-                    await helpers.isTextInDom(
-                      driver,
-                      'Please fill in all required fields'
-                    )
-                  ).to.be.true;
-                });
-              }
+          describe('Creating a new workspace', function () {
+            it('should display error message for empty form', async function () {
+              // expect (await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+              const submitButton = await driver.findElement(
+                By.css(css.newWorkspaceEnc.create)
+              );
+              await submitButton.click();
+              expect(await helpers.isTextInDom(driver, 'Missing required info'))
+                .to.be.true;
+            });
+            it('should create workspace and redirect to workspace page', async function () {
+              await helpers.findInputAndType(
+                driver,
+                '#ws-new-name',
+                `${username}'s New Workspace`
+              );
+              const submitButton = await driver.findElement(
+                By.css(css.newWorkspaceEnc.create)
+              );
+              await submitButton.click();
+              await helpers.waitForSelector(driver, '.workspace-name');
+              let url = await helpers.getCurrentUrl(driver);
+              expect(url).to.include('submissions');
+            });
+            it('should have correct workspace name', async function () {
+              expect(
+                await helpers.findAndGetText(driver, '.workspace-name')
+              ).to.eql(`${username}'s New Workspace`);
+            });
+            it('should have two submissions', async function () {
+              expect(
+                await helpers.findAndGetText(driver, '.submission_count')
+              ).to.eql('2');
             });
           });
         }
