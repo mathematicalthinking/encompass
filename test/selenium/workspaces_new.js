@@ -2,7 +2,7 @@
 
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
-const { it, describe, before, after, xdescribe } = require('mocha');
+const { it, describe, before, after, xdescribe, xit } = require('mocha');
 const { expect } = require('chai');
 
 // REQUIRE FILES
@@ -46,7 +46,7 @@ describe('Workspaces New', async function () {
               ).to.be.false;
             });
           } else {
-            it(`should display new workspace creation form`, async function () {
+            it(`should display submission selection form`, async function () {
               await helpers.navigateAndWait(driver, url, {
                 selector: '#workspace-new-container',
               });
@@ -82,7 +82,43 @@ describe('Workspaces New', async function () {
                 }
               }
             });
-
+            describe('choosing submissions', function () {
+              it('should show 0 submissions for pre-set date range', async function () {
+                await helpers.findAndClickElement(driver, '.search-answers');
+                await driver.sleep(100);
+                expect(
+                  await helpers.isTextInDom(driver, 'No submissions found')
+                ).to.be.true;
+              });
+              if (accountType === 'A' || accountType === 'P') {
+                it('should display an error message for admin and PdAdmin', async function () {
+                  expect(
+                    await helpers.isTextInDom(
+                      driver,
+                      'Please select either a teacher, assignment, problem, class, or at least one student.'
+                    )
+                  ).to.be.true;
+                  // doing this here to avoid adding another if block
+                  await helpers.findInputAndType(
+                    driver,
+                    '#select-add-teacher-selectized',
+                    'ssmith',
+                    true
+                  );
+                });
+              }
+              it('should update submission list when changing date range', async function () {
+                await helpers.findInputAndType(
+                  driver,
+                  '#startDate',
+                  '01011990'
+                );
+                await helpers.findAndClickElement(driver, '.search-answers');
+                expect(
+                  await helpers.isTextInDom(driver, 'No submissions found')
+                ).to.be.false;
+              });
+            });
             xdescribe('Workspace Settings', function () {
               const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
               const fixedInputs =
@@ -117,7 +153,7 @@ describe('Workspaces New', async function () {
               });
             });
 
-            it('should display create button', async function () {
+            xit('should display create button', async function () {
               expect(
                 await helpers.isElementVisible(
                   driver,
