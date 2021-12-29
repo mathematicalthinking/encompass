@@ -248,6 +248,9 @@ export default Component.extend(ErrorHandlingMixin, {
     this.getUserOrg().then((name) => {
       this.set('userOrgName', name);
     });
+    if (this.currentUser.isTeacher) {
+      this.selectedTeacher = this.currentUser;
+    }
     this._super(...arguments);
   },
 

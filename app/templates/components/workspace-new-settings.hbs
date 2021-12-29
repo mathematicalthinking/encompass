@@ -1,77 +1,164 @@
 <h1>Create New Workspace</h1>
-<button class="back-button"{{action 'back'}}> <i class="fas fa-arrow-left"></i> Submission Viewer</button>
-<div class="create-ws-content">
-  <div class="ws-new name">
-    <p class="input-label">
+<button class='back-button' {{action 'back'}}>
+  <i class='fas fa-arrow-left'></i>
+  Submission Viewer</button>
+<div class='create-ws-content'>
+  <div class='ws-new name'>
+    <p class='input-label'>
       Workspace Name
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this workspace">
-        <i class="fas fa-info-circle info-icon"></i>
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Provide an easily identifiable name for this workspace'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
       </span>
     </p>
-    <div class="single-text-input-container">
-      <Input @id="ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
+    <div class='single-text-input-container'>
+      <Input
+        @id='ws-new-name'
+        class='single-text-input'
+        @type='text'
+        @value={{workspaceName}}
+        placeholder='Provide a name for your workspace'
+      />
     </div>
-  {{#each workspaceNameErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut workspaceNameErrors) null}} />
-  {{/each}}
+    {{#each workspaceNameErrors as |error|}}
+      <ErrorBox
+        @error={{error}}
+        @showDismiss={{true}}
+        @resetError={{action (mut workspaceNameErrors) null}}
+      />
+    {{/each}}
   </div>
 
-  <div class="ws-new owner">
-    <p class="input-label">
+  <div class='ws-new owner'>
+    <p class='input-label'>
       Workspace Owner
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="The owner of the workspace has the ability to edit every aspect of this workspace. You can make it yourself">
-        <i class="fas fa-info-circle info-icon"></i>
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='The owner of the workspace has the ability to edit every aspect of this workspace. You can make it yourself'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
       </span>
     </p>
-    <SelectizeInput @store={{this.store}} @inputId="owner-select" @initialOptions={{ownerOptions}} @maxItems={{1}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @propToUpdate="selectedOwner" @placeholder="Search by username to choose as owner" />
+    <SelectizeInput
+      @store={{this.store}}
+      @inputId='owner-select'
+      @initialOptions={{ownerOptions}}
+      @initialItems={{this.initialOwner}}
+      @maxItems={{1}}
+      @onItemAdd={{action 'updateSelectizeSingle'}}
+      @onItemRemove={{action 'updateSelectizeSingle'}}
+      @labelField='username'
+      @valueField='id'
+      @searchField='username'
+      @model='user'
+      @propToUpdate='selectedOwner'
+      @placeholder='Search by username to choose as owner'
+      @isDisabled={{is-equal this.currentUser.accountType 'T'}}
+    />
     {{#each ownerErrors as |error|}}
-      <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut ownerErrors) null}} />
+      <ErrorBox
+        @error={{error}}
+        @showDismiss={{true}}
+        @resetError={{action (mut ownerErrors) null}}
+      />
     {{/each}}
   </div>
 
-  <div class="ws-new mode">
-    <p class="input-label">
+  <div class='ws-new mode'>
+    <p class='input-label'>
       Privacy Setting
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide who can see this workspace, hover over the question mark icons for more info">
-        <i class="fas fa-info-circle info-icon"></i>
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Decide who can see this workspace, hover over the question mark icons for more info'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
       </span>
     </p>
-    <RadioGroup @options={{modeInputs}} @selectedValue={{this.selectedMode}} @updateValue={{action "updateSelectedMode"}} />
+    <RadioGroup
+      @options={{modeInputs}}
+      @selectedValue={{this.selectedMode}}
+      @updateValue={{action 'updateSelectedMode'}}
+    />
     {{#each privacySettingErrors as |error|}}
-      <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut privacySettingErrors) null}} />
+      <ErrorBox
+        @error={{error}}
+        @showDismiss={{true}}
+        @resetError={{action (mut privacySettingErrors) null}}
+      />
     {{/each}}
   </div>
 
-  <div class="ws-new folderset">
-    <p class="input-label">
+  <div class='ws-new folderset'>
+    <p class='input-label'>
       Folder Set
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="You can choose one of your saved folder sets or a provided set">
-        <i class="fas fa-info-circle info-icon"></i>
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='You can choose one of your saved folder sets or a provided set'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
       </span>
     </p>
-    <SelectizeInput @store={{this.store}} @inputId="folderset-select" @initialOptions={{folderSetOptions}} @maxItems={{1}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @valueField="id" @searchField="name" @model="folder-set" @propToUpdate="selectedFolderSet" @placeholder="Select a Folder Set" />
+    <SelectizeInput
+      @store={{this.store}}
+      @inputId='folderset-select'
+      @initialOptions={{folderSetOptions}}
+      @maxItems={{1}}
+      @onItemAdd={{action 'updateSelectizeSingle'}}
+      @onItemRemove={{action 'updateSelectizeSingle'}}
+      @labelField='name'
+      @valueField='id'
+      @searchField='name'
+      @model='folder-set'
+      @propToUpdate='selectedFolderSet'
+      @placeholder='Select a Folder Set'
+    />
     {{#each folderSetErrors as |error|}}
-      <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut folderSetErrors) null}} />
+      <ErrorBox
+        @error={{error}}
+        @showDismiss={{true}}
+        @resetError={{action (mut folderSetErrors) null}}
+      />
     {{/each}}
   </div>
 
-  <div class="ws-new submission-settings">
-    <p class="input-label">
+  <div class='ws-new submission-settings'>
+    <p class='input-label'>
       Submission Settings
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Choose whether to include all revisions or just submissions of record">
-        <i class="fas fa-info-circle info-icon"></i>
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Choose whether to include all revisions or just submissions of record'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
       </span>
     </p>
-    <RadioGroup @options={{submissionSettingsInputs}} @selectedValue={{this.selectedSubmissionSettings}} @updateValue={{action "updateSelectedSubmissionSettings"}} />
+    <RadioGroup
+      @options={{submissionSettingsInputs}}
+      @selectedValue={{this.selectedSubmissionSettings}}
+      @updateValue={{action 'updateSelectedSubmissionSettings'}}
+    />
   </div>
-  <WsNewSettingsPermissions @permissions={{workspacePermissions}} @store={{this.store}} @users={{users}} @isEditing={{isEditingPermissions}} @selectedCollaborator={{unsavedCollaborator}} @initialCollabOptions={{initialCollabOptions}} @selectedCollaborators={{selectedCollaborators}} />
+  <WsNewSettingsPermissions
+    @permissions={{workspacePermissions}}
+    @store={{this.store}}
+    @users={{users}}
+    @isEditing={{isEditingPermissions}}
+    @selectedCollaborator={{unsavedCollaborator}}
+    @initialCollabOptions={{initialCollabOptions}}
+    @selectedCollaborators={{selectedCollaborators}}
+  />
 
-  <div class="create-ws-error">
+  <div class='create-ws-error'>
     {{#if createWorkspaceError}}
-      <ErrorBox @error={{createWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut createWorkspaceError) null}} />
+      <ErrorBox
+        @error={{createWorkspaceError}}
+        @showDismiss={{true}}
+        @resetError={{action (mut createWorkspaceError) null}}
+      />
     {{/if}}
   </div>
 
-  <button class="primary-button create-ws" {{action "handleSettings"}}>Create Workspace</button>
+  <button class='primary-button create-ws' {{action 'handleSettings'}}>Create
+    Workspace</button>
 </div>
-

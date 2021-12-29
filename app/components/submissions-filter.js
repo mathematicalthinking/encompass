@@ -15,76 +15,76 @@ export default Component.extend(ErrorHandlingMixin, {
   utils: service('utility-methods'),
   isVmtOnly: false,
   showVmtFilters: false,
-
+  startDate: '',
+  endDate: '',
+  tooltips: {
+    teacher: 'Find all work related to this teacher',
+    assignment: 'Find all work related to this assignment',
+    problem: 'Find all accessibile work related to this problem',
+    class: 'Find all work completed by this class',
+    dateRange: 'Find all accessibile work for this date range',
+    owner: 'Who will have ownership of this workspace',
+    name: 'Give your workspace a name. If not, workspace names are generated based off given criteria',
+    folders: 'Choose a starter folder set, you can create your own later',
+    privacy:
+      'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
+  },
   init: function () {
     this._super(...arguments);
-    let tooltips = {
-      teacher: 'Find all work related to this teacher',
-      assignment: 'Find all work related to this assignment',
-      problem: 'Find all accessibile work related to this problem',
-      class: 'Find all work completed by this class',
-      dateRange: 'Find all accessibile work for this date range',
-      owner: 'Who will have ownership of this workspace',
-      name:
-        'Give your workspace a name. If not, workspace names are generated based off given criteria',
-      folders: 'Choose a starter folder set, you can create your own later',
-      privacy:
-        'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
-    };
-    this.set('tooltips', tooltips);
+    this.set('startDate', moment().subtract(1, 'y').format('YYYY-MM-DD'));
+    this.set('endDate', moment().format('YYYY-MM-DD'));
+    // const that = this;
 
-    const that = this;
+    // $(function () {
+    //   let startDate = that.get('startDate');
+    //   let endDate = that.get('endDate');
 
-    $(function () {
-      let startDate = that.get('startDate');
-      let endDate = that.get('endDate');
+    //   if (!startDate) {
+    //     startDate = moment().subtract(1, 'years');
+    //   } else if (_.isString(startDate)) {
+    //     startDate = moment(startDate);
+    //   }
+    //   if (!endDate) {
+    //     endDate = moment();
+    //   } else if (_.isString(endDate)) {
+    //     endDate = moment(endDate);
+    //   }
 
-      if (!startDate) {
-        startDate = moment().subtract(1, 'years');
-      } else if (_.isString(startDate)) {
-        startDate = moment(startDate);
-      }
-      if (!endDate) {
-        endDate = moment();
-      } else if (_.isString(endDate)) {
-        endDate = moment(endDate);
-      }
-
-      // $('input[name="startDate"]').daterangepicker({
-      //   singleDatePicker: true,
-      //   showDropdowns: true,
-      //   minYear: 1990,
-      //   autoUpdateInput: true,
-      //   locale: {
-      //     cancelLabel: 'Clear',
-      //   },
-      //   startDate: startDate,
-      // });
-      // $('input[name="endDate"]').daterangepicker({
-      //   singleDatePicker: true,
-      //   showDropdowns: true,
-      //   minYear: 1990,
-      //   autoUpdateInput: true,
-      //   locale: {
-      //     cancelLabel: 'Clear',
-      //   },
-      //   startDate: endDate,
-      // });
-      // $('input[name="startDate"]').on(
-      //   'apply.daterangepicker',
-      //   function (ev, picker) {
-      //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
-      //   }
-      // );
-      // $('input[name="endDate"]').on(
-      //   'apply.daterangepicker',
-      //   function (ev, picker) {
-      //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
-      //   }
-      // );
-      // $('input[name="startDate"]').attr('placeholder', 'mm/dd/yyyy');
-      // $('input[name="endDate"]').attr('placeholder', 'mm/dd/yyyy');
-    });
+    // $('input[name="startDate"]').daterangepicker({
+    //   singleDatePicker: true,
+    //   showDropdowns: true,
+    //   minYear: 1990,
+    //   autoUpdateInput: true,
+    //   locale: {
+    //     cancelLabel: 'Clear',
+    //   },
+    //   startDate: startDate,
+    // });
+    // $('input[name="endDate"]').daterangepicker({
+    //   singleDatePicker: true,
+    //   showDropdowns: true,
+    //   minYear: 1990,
+    //   autoUpdateInput: true,
+    //   locale: {
+    //     cancelLabel: 'Clear',
+    //   },
+    //   startDate: endDate,
+    // });
+    // $('input[name="startDate"]').on(
+    //   'apply.daterangepicker',
+    //   function (ev, picker) {
+    //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
+    //   }
+    // );
+    // $('input[name="endDate"]').on(
+    //   'apply.daterangepicker',
+    //   function (ev, picker) {
+    //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
+    //   }
+    // );
+    // $('input[name="startDate"]').attr('placeholder', 'mm/dd/yyyy');
+    // $('input[name="endDate"]').attr('placeholder', 'mm/dd/yyyy');
+    // });
   },
   missingCriteriaMessage:
     'Please select either a teacher, assignment, problem, class, or at least one student.',
@@ -653,11 +653,6 @@ export default Component.extend(ErrorHandlingMixin, {
   }),
 
   actions: {
-    changeDate: function () {
-      console.log("changing date");
-      console.log(this.startDate);
-      console.log(this.endDate);
-    },
     buildCriteria: function () {
       //clear errors if any
       let errorProps = ['isMissingCriteria', 'isInvalidDateRange'];

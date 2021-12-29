@@ -1,97 +1,217 @@
-<div class="filter-items">
+<div class='filter-items'>
   <h2>Filter Criteria</h2>
-  <ul class="primary-filter-list">
+  <ul class='primary-filter-list'>
     <li>
-      <label>Teacher</label>
-        <SelectizeInput @store={{this.store}} @inputId="select-add-teacher" @maxItems={{1}} @initialItems={{this.initialTeacherItem}} @initialOptions={{this.teacherPoolOptions}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="username" @searchField="username" @valueField="id" @propToUpdate="selectedTeacher" @model="user" @placeholder="Search teachers by username" @isDisabled={{this.isTeacher}} />
+      <label title={{this.tooltips.teacher}}>Teacher</label>
+      <SelectizeInput
+        @store={{this.store}}
+        @inputId='select-add-teacher'
+        @maxItems={{1}}
+        @initialItems={{this.initialTeacherItem}}
+        @initialOptions={{this.teacherPoolOptions}}
+        @onItemAdd={{action 'updateSelectizeSingle'}}
+        @onItemRemove={{action 'updateSelectizeSingle'}}
+        @labelField='username'
+        @searchField='username'
+        @valueField='id'
+        @propToUpdate='selectedTeacher'
+        @model='user'
+        @placeholder='Search teachers by username'
+        @isDisabled={{this.isTeacher}}
+      />
       {{#each this.teacherFormErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+        <p class='error-message'>{{error}}</p>
       {{/each}}
     </li>
     <li>
-      <label>Assignment</label>
-        <SelectizeInput @store={{this.store}} @inputId="select-add-assignment" @maxItems={{1}} @initialOptions={{this.assignmentOptions}} @initialItems={{this.initialAssignmentItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @searchField="name" @valueField="id" @model="assignment" @propToUpdate="selectedAssignment" @placeholder="Search assignments by name" />
+      <label title={{this.tooltips.assignment}}>Assignment</label>
+      <SelectizeInput
+        @store={{this.store}}
+        @inputId='select-add-assignment'
+        @maxItems={{1}}
+        @initialOptions={{this.assignmentOptions}}
+        @initialItems={{this.initialAssignmentItem}}
+        @onItemAdd={{action 'updateSelectizeSingle'}}
+        @onItemRemove={{action 'updateSelectizeSingle'}}
+        @labelField='name'
+        @searchField='name'
+        @valueField='id'
+        @model='assignment'
+        @propToUpdate='selectedAssignment'
+        @placeholder='Search assignments by name'
+      />
 
       {{#each this.assignmentFormErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+        <p class='error-message'>{{error}}</p>
       {{/each}}
     </li>
     <li>
-      <label>Problem</label>
-      <SelectizeInput @store={{this.store}} @inputId="select-add-problem" @isAsync={{true}} @maxItems={{1}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="title" @searchField="title" @valueField="id" @model="problem" @propToUpdate="selectedProblem" @queryParamsKey="title" @topLevelQueryParams="filterBy" @placeholder="Search problems by title" @preload="focus" @secondaryFilters={{this.problemFilters}} />
+      <label title={{this.tooltips.problem}}>Problem</label>
+      <SelectizeInput
+        @store={{this.store}}
+        @inputId='select-add-problem'
+        @isAsync={{true}}
+        @maxItems={{1}}
+        @initialItems={{this.initialProblemItem}}
+        @onItemAdd={{action 'updateSelectizeSingle'}}
+        @onItemRemove={{action 'updateSelectizeSingle'}}
+        @labelField='title'
+        @searchField='title'
+        @valueField='id'
+        @model='problem'
+        @propToUpdate='selectedProblem'
+        @queryParamsKey='title'
+        @topLevelQueryParams='filterBy'
+        @placeholder='Search problems by title'
+        @preload='focus'
+        @secondaryFilters={{this.problemFilters}}
+      />
 
       {{#each this.problemFormErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+        <p class='error-message'>{{error}}</p>
       {{/each}}
     </li>
     <li>
-      <label>Class</label>
-        <SelectizeInput @store={{this.store}} @inputId="select-add-section" @maxItems={{1}} @initialOptions={{this.sectionPoolOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @searchField="name" @valueField="id" @model="section" @propToUpdate="selectedSection" @placeholder="Search classes by name" />
+      <label title={{this.tooltips.class}}>Class</label>
+      <SelectizeInput
+        @store={{this.store}}
+        @inputId='select-add-section'
+        @maxItems={{1}}
+        @initialOptions={{this.sectionPoolOptions}}
+        @initialItems={{this.initialSectionItem}}
+        @onItemAdd={{action 'updateSelectizeSingle'}}
+        @onItemRemove={{action 'updateSelectizeSingle'}}
+        @labelField='name'
+        @searchField='name'
+        @valueField='id'
+        @model='section'
+        @propToUpdate='selectedSection'
+        @placeholder='Search classes by name'
+      />
       {{#each this.sectionFormErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+        <p class='error-message'>{{error}}</p>
       {{/each}}
     </li>
     <li>
       <label>Student</label>
-        <SelectizeInput @store={{this.store}} @inputId="select-add-student" @maxItems={{20}} @initialOptions={{this.studentPoolOptions}} @initialItems={{this.initialStudentItem}} @onItemAdd={{action "updateSelectedStudents"}} @onItemRemove={{action "updateSelectedStudents"}} @labelField="username" @searchField="username" @valueField="id" @propToUpdate="selectedStudents" @model="user" @placeholder="Search students by username" />
+      <SelectizeInput
+        @store={{this.store}}
+        @inputId='select-add-student'
+        @maxItems={{20}}
+        @initialOptions={{this.studentPoolOptions}}
+        @initialItems={{this.initialStudentItem}}
+        @onItemAdd={{action 'updateSelectedStudents'}}
+        @onItemRemove={{action 'updateSelectedStudents'}}
+        @labelField='username'
+        @searchField='username'
+        @valueField='id'
+        @propToUpdate='selectedStudents'
+        @model='user'
+        @placeholder='Search students by username'
+      />
       {{#each this.studentFormErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+        <p class='error-message'>{{error}}</p>
       {{/each}}
     </li>
     <li>
-      <label>Date Range</label>
-      <div class="single-text-input-container">
-        <Input class="single-text-input" @id="startDate" @name="startDate" @type="date" @value={{this.startDate}} {{action 'changeDate' on="change"}} />
-        <span class="seperator"> - </span>
-        <Input class="single-text-input" @id="endDate" @name="endDate" @type="date" @value={{this.endDate}} {{action 'changeDate' on="change"}} />
+      <label title={{this.tooltips.dateRange}}>Date Range</label>
+      <div class='single-text-input-container'>
+        <Input
+          class='single-text-input'
+          @id='startDate'
+          @name='startDate'
+          @type='date'
+          @value={{this.startDate}}
+        />
+        <span class='seperator'> - </span>
+        <Input
+          class='single-text-input'
+          @id='endDate'
+          @name='endDate'
+          @type='date'
+          @value={{this.endDate}}
+        />
       </div>
     </li>
-    <li class="include-pows-input">
-      <Input @type="checkbox" @checked={{this.doIncludeOldPows}} @name="doIncludeOldPows" />
+    <li class='include-pows-input'>
+      <Input
+        @type='checkbox'
+        @checked={{this.doIncludeOldPows}}
+        @name='doIncludeOldPows'
+      />
       <label>Include Old Pows Work</label>
     </li>
 
     {{#if this.currentUser.isAdmin}}
-      <li class="include-trashed-input">
-        <Input @type="checkbox" @checked={{this.isTrashedOnly}} @name="isTrashedOnly" />
+      <li class='include-trashed-input'>
+        <Input
+          @type='checkbox'
+          @checked={{this.isTrashedOnly}}
+          @name='isTrashedOnly'
+        />
         <label>Only Trashed Answers</label>
       </li>
     {{/if}}
 
-    <h3 {{action 'toggleVmtFilters'}} class="vmt-header">
-      <i class="fas {{if this.showVmtFilters 'fa-chevron-down'}}{{unless this.showVmtFilters 'fa-chevron-right'}}"></i> Vmt
+    <h3 {{action 'toggleVmtFilters'}} class='vmt-header'>
+      <i
+        class='fas
+          {{if this.showVmtFilters 'fa-chevron-down'}}{{unless
+            this.showVmtFilters
+            'fa-chevron-right'
+          }}'
+      ></i>
+      Vmt
     </h3>
 
-  {{#if this.showVmtFilters}}
-  <ul class="vmt-filter-list">
-    <li class="vmt-only-input">
-      <Input @type="checkbox" @checked={{this.isVmtOnly}} @name="isVmtOnly" />
-      <label>Include Only VMT Work</label>
-    </li>
-    <li>
-      <div class="vmt-search">
-      <label>Search by room, activity, or username</label>
-      <Input class="single-text-input vmt-search" @name="vmt-search" @type="text" @value={{this.vmtSearchText}} />
-      </div>
-    </li>
-  </ul>
-  {{/if}}
-
+    {{#if this.showVmtFilters}}
+      <ul class='vmt-filter-list'>
+        <li class='vmt-only-input'>
+          <Input
+            @type='checkbox'
+            @checked={{this.isVmtOnly}}
+            @name='isVmtOnly'
+          />
+          <label>Include Only VMT Work</label>
+        </li>
+        <li>
+          <div class='vmt-search'>
+            <label>Search by room, activity, or username</label>
+            <Input
+              class='single-text-input vmt-search'
+              @name='vmt-search'
+              @type='text'
+              @value={{this.vmtSearchText}}
+            />
+          </div>
+        </li>
+      </ul>
+    {{/if}}
 
     {{#if this.isMissingCriteria}}
-      <ErrorBox @error={{this.missingCriteriaMessage}} @showDismiss={{true}} @resetError={{action (mut this.isMissingCriteria) null}} />
+      <ErrorBox
+        @error={{this.missingCriteriaMessage}}
+        @showDismiss={{true}}
+        @resetError={{action (mut this.isMissingCriteria) null}}
+      />
     {{/if}}
 
     {{#if this.isInvalidDateRange}}
-      <ErrorBox @error={{this.invalidDateRangeMessage}} @showDismiss={{true}} @resetError={{action (mut this.isInvalidDateRange) null}} />
+      <ErrorBox
+        @error={{this.invalidDateRangeMessage}}
+        @showDismiss={{true}}
+        @resetError={{action (mut this.isInvalidDateRange) null}}
+      />
     {{/if}}
 
-    <button class="primary-button search-answers" {{action "buildCriteria"}}>Search</button>
+    <button
+      class='primary-button search-answers'
+      {{action 'buildCriteria'}}
+    >Search</button>
   </ul>
 </div>
 
-
-  {{#if this.isRequestInProgress}}
-    <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
-  {{/if}}
-
+{{#if this.isRequestInProgress}}
+  <p class='info'>Workspace creation is in progress... Thank you for your
+    patience.</p>
+{{/if}}
