@@ -139,9 +139,9 @@ module.exports = {
     workspaceSettings: {
       list: 'ol.workspace-settings',
       inputs: {
-        owner: 'li.ws-settings.owner select',
-        name: 'li.ws-settings.name',
-        folders: 'li.ws-settings.folders select',
+        owner: '#owner-select-selectized',
+        name: '#ws-new-name',
+        folders: '#folderset-select-selectized',
         modePrivate: 'input[value="private"]',
         modePublic: 'input[value="public"]',
       },
