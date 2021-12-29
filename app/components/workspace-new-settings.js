@@ -12,7 +12,11 @@ export default Component.extend({
   unsavedCollaborator: null,
   selectedMode: 'private',
   selectedSubmissionSettings: 'all',
-
+  selectedOwner: '',
+  init: function () {
+    this._super(...arguments);
+    this.set('selectedOwner', this.currentUser);
+  },
   validModeValues: computed('modeInputs', function () {
     const modeInputs = this.get('modeInputs.inputs');
 
@@ -102,7 +106,9 @@ export default Component.extend({
       return res;
     }
   ),
-
+  initialOwner: computed('currentUser', function () {
+    return [this.currentUser.id];
+  }),
   ownerOptions: computed('users.[]', function () {
     if (this.users) {
       return this.users.map((user) => {
