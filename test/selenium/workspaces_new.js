@@ -36,7 +36,7 @@ describe('Workspaces New', async function () {
         describe('Navigating to /workspaces/new', function () {
           if (accountType === 'S' || actingRole === 'student') {
             it('should redirect to homepage', async function () {
-              await helpers.navigateAndWait(driver, `${host}/workspaces/new`, {
+              await helpers.navigateAndWait(driver, url, {
                 selector: 'div',
               });
 
@@ -47,7 +47,7 @@ describe('Workspaces New', async function () {
             });
           } else {
             it(`should display new workspace creation form`, async function () {
-              await helpers.navigateAndWait(driver, `${host}/workspaces/new`, {
+              await helpers.navigateAndWait(driver, url, {
                 selector: '#workspace-new-container',
               });
               await helpers.waitForUrlMatch(driver, /workspaces\/new/);
