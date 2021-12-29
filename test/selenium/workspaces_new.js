@@ -118,6 +118,15 @@ describe('Workspaces New', async function () {
                   await helpers.isTextInDom(driver, 'No submissions found')
                 ).to.be.false;
               });
+              it('should display create button after selecting', async function () {
+                await helpers.findAndClickElement(driver, '.toggle-all input');
+                expect(
+                  await helpers.isElementVisible(
+                    driver,
+                    css.newWorkspaceEnc.create
+                  )
+                ).to.be.true;
+              });
             });
             xdescribe('Workspace Settings', function () {
               const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
@@ -151,15 +160,6 @@ describe('Workspaces New', async function () {
                   'true'
                 );
               });
-            });
-
-            xit('should display create button', async function () {
-              expect(
-                await helpers.isElementVisible(
-                  driver,
-                  css.newWorkspaceEnc.create
-                )
-              );
             });
 
             xdescribe('teacher pool', function () {
