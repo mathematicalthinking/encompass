@@ -127,38 +127,46 @@ describe('Workspaces New', async function () {
                   )
                 ).to.be.true;
               });
-            });
-            xdescribe('Workspace Settings', function () {
-              const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
-              const fixedInputs =
-                css.newWorkspaceEnc.workspaceSettings.fixedInputs;
-              for (let input of Object.keys(inputs)) {
-                if (accountType === 'T' && input === 'owner') {
-                  // eslint-disable-next-line no-loop-func
-                  it(`owner field should be fixed as teacher's username`, async function () {
-                    expect(
-                      await helpers.isElementVisible(driver, inputs[input])
-                    ).to.be.false;
-                    expect(
-                      await helpers.findAndGetText(driver, fixedInputs.owner)
-                    ).to.eql(user.username);
-                  });
-                } else {
-                  // eslint-disable-next-line no-loop-func
-                  it(`should display ${input} input`, async function () {
-                    expect(
-                      await helpers.isElementVisible(driver, inputs[input])
-                    ).to.be.true;
-                  });
+              describe('Workspace Settings', function () {
+                it('should advance to settings screen when clicking button', async function () {
+                  await helpers.findAndClickElement(driver, '.create-ws');
+                  expect(
+                    await helpers.isTextInDom(driver, 'Create New Workspace')
+                  ).to.be.true;
+                });
+                const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
+                const fixedInputs =
+                  css.newWorkspaceEnc.workspaceSettings.fixedInputs;
+                for (let input of Object.keys(inputs)) {
+                  if (accountType === 'T' && input === 'owner') {
+                    // eslint-disable-next-line no-loop-func
+                    it(`owner field should be fixed as teacher's username`, async function () {
+                      expect(
+                        await helpers.isElementVisible(driver, inputs[input])
+                      ).to.be.false;
+                      expect(
+                        await helpers.findAndGetText(driver, fixedInputs.owner)
+                      ).to.eql(user.username);
+                    });
+                  } else {
+                    // eslint-disable-next-line no-loop-func
+                    it(`should display ${input} input`, async function () {
+                      expect(
+                        await helpers.isElementVisible(driver, inputs[input])
+                      ).to.be.true;
+                    });
+                  }
                 }
-              }
 
-              it('privacy setting should be private as default', async function () {
-                let privateSel = inputs.modePrivate;
-                let privateMode = await driver.findElement(By.css(privateSel));
-                expect(await privateMode.getAttribute('checked')).to.eql(
-                  'true'
-                );
+                it('privacy setting should be private as default', async function () {
+                  let privateSel = inputs.modePrivate;
+                  let privateMode = await driver.findElement(
+                    By.css(privateSel)
+                  );
+                  expect(await privateMode.getAttribute('checked')).to.eql(
+                    'true'
+                  );
+                });
               });
             });
 
@@ -248,7 +256,7 @@ describe('Workspaces New', async function () {
             });
           });
 
-          describe('Creating a new workspace', function () {
+          xdescribe('Creating a new workspace', function () {
             async function submitForm(shouldFail) {
               try {
                 const submitButton = await driver.findElement(
