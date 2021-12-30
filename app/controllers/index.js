@@ -37,6 +37,7 @@ export default class IndexController extends Controller {
         : new Date(new Date().getFullYear() - 1, 7),
     allTime: new Date(2012),
   };
+  // updates when user changes tabs, gets sent to table
   get tableColumns() {
     if (this.dataToShow === 'workspace') {
       return [
@@ -69,6 +70,8 @@ export default class IndexController extends Controller {
     //getter must return a value
     return [];
   }
+  // updates when user changes tabs and gets sent to table
+  // processes user's information into Ember Data format
   get data() {
     if (this.dataToShow === 'workspace') {
       return [
@@ -202,17 +205,20 @@ export default class IndexController extends Controller {
     //getter must return a value
     return [];
   }
+  // called when user selects different date bound from dashboard display
   @action updateCurrentBound(e) {
     this.currentBound = e.target.value;
     this.updateSelectedData(
       this.data.find((item) => item.label === this.activeDetailTab)
     );
   }
+  // called when user changes top tabs ('my workspaces', 'my assignments', 'my feedback')
   @action updateDataToShow(value) {
     this.dataToShow = value;
     this.selectedData = this.data[0].details;
     this.activeDetailTab = this.data[0].label;
   }
+  // called when user chooses sub tab in category, i.e. 'mine' for 'my workspaces' or 'assigned by me' for 'my assignments'
   @action updateSelectedData(data) {
     this.selectedData = data.details;
     this.activeDetailTab = data.label;

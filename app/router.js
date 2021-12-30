@@ -38,15 +38,14 @@ Router.map(function () {
       { resetNamespace: true, path: '/:workspace_id' },
       function () {
         this.route('info'); // templates/workspace/info.hbs
-        this.route('work'); // redirects to workspace/workspace? is used as main link, though
+        this.route('work'); // will redirect either to /info or /first
         this.route('folders', function () {
           this.route('folder', { path: '/:folder_id' });
         });
         this.route('submissions', function () {
-          this.route('first');
-          // this.resource("workspace.submission", {path: '/:submission_id'}, function()
+          this.route('first'); // finds most recent submission in workspace and redirects to /submission
           this.route('submission', { path: '/:submission_id' }, function () {
-            this.route('response'); //doesn't do anything?
+            this.route('response');
             this.route('selections', function () {
               this.route('selection', { path: '/:selection_id' });
             });
@@ -90,7 +89,7 @@ Router.map(function () {
     this.route('new');
   });
 
-  this.route('error', { path: '/*path' });
+  this.route('error', { path: '/*path' }); // displays 404
   this.route('logout');
   this.route('unconfirmed');
   this.route('unauthorized');
