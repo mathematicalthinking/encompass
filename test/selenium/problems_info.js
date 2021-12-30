@@ -1080,6 +1080,7 @@ describe('Problems Info', async function () {
               });
 
               it('should show and edit additional info', async function () {
+                await driver.sleep(4000);
                 expect(
                   await helpers.getWebElementValue(
                     driver,

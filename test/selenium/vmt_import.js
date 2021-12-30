@@ -106,7 +106,7 @@ describe('Importing VMT Work', function () {
           await helpers.clearElement(driver, searchInput);
           await helpers.findInputAndType(driver, searchInput, info.query);
 
-          await helpers.waitForSelector(driver, css.vmtImport.activityListItem);
+          // await helpers.waitForSelector(driver, css.vmtImport.activityListItem);
         });
 
         it(`Should return ${info.numActivities} activities`, async function () {
