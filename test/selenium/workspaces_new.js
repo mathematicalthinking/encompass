@@ -1,5 +1,3 @@
-//TODO THIS WORKS COMPLETELY DIFFERENLTY NOW
-
 // REQUIRE MODULES
 const { Builder, By } = require('selenium-webdriver');
 const { it, describe, before, after } = require('mocha');
@@ -62,15 +60,18 @@ describe('Workspaces New', async function () {
           describe('Should display various inputs/ fields', function () {
             describe('Filter Criteria', function () {
               const inputs = css.newWorkspaceEnc.filterCriteria.inputs;
+              const fixedInput =
+                css.newWorkspaceEnc.filterCriteria.fixedInputs.teacher;
               for (let input of Object.keys(inputs)) {
                 if (accountType === 'T' && input === 'teacher') {
                   // eslint-disable-next-line no-loop-func
                   it(`teacher field should be fixed as teacher's username`, async function () {
                     expect(
                       await helpers.isElementVisible(driver, inputs[input])
-                    ).to.be.false;
-                    expect(await helpers.isTextInDom(driver, user.username)).to
-                      .be.true;
+                    );
+                    expect(
+                      await helpers.getWebElementValue(driver, fixedInput)
+                    ).to.eql(_id);
                   });
                 } else {
                   // eslint-disable-next-line no-loop-func

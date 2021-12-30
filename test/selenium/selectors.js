@@ -133,7 +133,7 @@ module.exports = {
         date: '#startDate',
       },
       fixedInputs: {
-        teacher: 'li.ws-filter.teacher p',
+        teacher: '#select-add-teacher option',
       },
     },
     workspaceSettings: {
