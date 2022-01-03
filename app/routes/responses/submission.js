@@ -7,12 +7,11 @@ export default AuthenticatedRoute.extend({
   utils: service('utility-methods'),
   queryParams: {
     responseId: {
-      refreshModel: true
-    }
+      refreshModel: true,
+    },
   },
 
   beforeModel(transition) {
-    console.log('responses/submission', transition);
     let responseId;
     if (transition.intent.queryParams) {
       responseId = transition.intent.queryParams.responseId;
@@ -68,18 +67,28 @@ export default AuthenticatedRoute.extend({
         });
       })
       .then((hash) => {
-        let studentSubmissions = hash.submissions.filterBy('student', hash.submission.get('student'));
+        let studentSubmissions = hash.submissions.filterBy(
+          'student',
+          hash.submission.get('student')
+        );
 
         let associatedResponses = allResponses.filter((response) => {
           let subId = response.belongsTo('submission').id();
-          return response.get('id') && !response.get('isTrashed') && subId === hash.submission.get('id');
+          return (
+            response.get('id') &&
+            !response.get('isTrashed') &&
+            subId === hash.submission.get('id')
+          );
         });
-
         let response = this.response;
         if (!this.response) {
           response = associatedResponses
             .filterBy('responseType', 'mentor')
-            .sortBy('createDate').get('lastObject');
+            .sortBy('createDate')
+            .get('lastObject');
+        }
+        if (params.responseId) {
+          response = this.store.findRecord('response', params.responseId);
         }
 
         return {
@@ -103,17 +112,21 @@ export default AuthenticatedRoute.extend({
       this.transitionTo('responses.submission', subId);
     },
     toResponse(submissionId, responseId) {
-      this.transitionTo('responses.submission', submissionId, { queryParams: { responseId: responseId } });
+      this.transitionTo('responses.submission', submissionId, {
+        queryParams: { responseId: responseId },
+      });
     },
     toResponses() {
       this.transitionTo('responses');
     },
     toNewResponse: function (submissionId, workspaceId) {
-      this.transitionTo('responses.new.submission', submissionId, { queryParams: { workspaceId: workspaceId } });
-    }
+      this.transitionTo('responses.new.submission', submissionId, {
+        queryParams: { workspaceId: workspaceId },
+      });
+    },
   },
 
   renderTemplate() {
     this.render('responses/response');
-  }
+  },
 });

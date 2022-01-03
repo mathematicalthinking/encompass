@@ -183,7 +183,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
 
         if (explanation.length > this.explanationLengthLimit) {
           this.isExplanationTooLarge = true;
-          this.sisCreatingAnswer = false;
+          this.isCreatingAnswer = false;
           return;
         }
         const records = students.map((student) => {
