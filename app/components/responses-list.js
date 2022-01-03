@@ -38,8 +38,6 @@ export default Component.extend({
   threadsPerPage: 50,
 
   didReceiveAttrs() {
-    this.set('storeThreads', this.store.peekAll('response-thread'));
-
     let list = [
       {
         name: 'submitterResponses',
@@ -86,8 +84,8 @@ export default Component.extend({
     }
   ),
 
-  newThreads: computed('storeThreads.[]', function () {
-    return this.storeThreads.filterBy('isNewThread');
+  newThreads: computed('threads', function () {
+    return this.threads.filterBy('isNewThread');
   }),
 
   allThreads: computed(
@@ -203,7 +201,8 @@ export default Component.extend({
 
   isAdmin: function () {
     return (
-      this.get('currentUser.user.isAdmin') && !this.get('currentUser.user.isStudent')
+      this.get('currentUser.user.isAdmin') &&
+      !this.get('currentUser.user.isStudent')
     );
   },
 
