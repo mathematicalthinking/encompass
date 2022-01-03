@@ -1,5 +1,3 @@
-//TODO make sure these are actually testing what we want them to
-
 // REQUIRE MODULES
 const { Builder, By, until } = require('selenium-webdriver');
 const { it, describe, before, after, xit } = require('mocha');
@@ -63,13 +61,6 @@ describe('Responses', function () {
       //expect(text).to.equal('Andrew S.');
     });
 
-    // Unclear fhat 'You wrote' is referring to?
-    xit('should have response text', function () {
-      'You wrote'.should.be.textInDOM;
-      'this ends up an identity statement'.should.be.textInDOM;
-      'Good example of using Alg to solve the Extra'.should.be.textInDOM;
-    });
-
     describe('should have buttons', function () {
       it('Save button should be visible', async function () {
         expect(
@@ -106,27 +97,25 @@ describe('Responses', function () {
           await helpers.getWebElements(driver, '.selections-list-item')
         ).to.have.lengthOf(4);
       });
+      it('should populate response field', async function () {
+        const responseText = await helpers.findAndGetText(driver, '.ql-editor');
+        expect(responseText.includes('Hello Andrew,')).to.be.true;
+        expect(responseText.includes('You wrote:')).to.be.true;
+      });
     });
 
     describe('Saving this response', function () {
       it('should be able to edit the text', async function () {
-        try {
-          // await driver.findElement(By.css('button.edit')).click();
-          await driver.findElement(By.css('section#response-new-editor'));
+        await driver.findElement(By.css('section#response-new-editor'));
 
-          expect(
-            await helpers.isElementVisible(driver, 'button.save-response')
-          ).to.eql(true);
-        } catch (err) {
-          console.log(err);
-          throw err;
-        }
+        expect(
+          await helpers.isElementVisible(driver, 'button.save-response')
+        ).to.eql(true);
       });
 
       it('should let us save and take us to a new URL', async function () {
         try {
           let greetingText = 'Hello Andrew,';
-          // type some dummy text
 
           await helpers.waitForElementToHaveText(
             driver,
@@ -145,7 +134,6 @@ describe('Responses', function () {
           expect(
             await helpers.findAndGetText(driver, 'span.status-text')
           ).to.eql('Approved');
-          // expect(await helpers.isElementVisible(driver, 'div.response-info')).to.eql(true);
         } catch (err) {
           console.log(err);
         }
@@ -153,15 +141,11 @@ describe('Responses', function () {
 
       describe('Viewing the list of saved responses', function () {
         it('the one we just saved should show up', async function () {
-          try {
-            await driver.navigateAndWait(driver, `${host}/responses`);
-            expect(await driver.getCurrentUrl()).to.match(/#\/responses.?$/);
-            expect(
-              await helpers.isTextInDom(driver, 'a few seconds ago')
-            ).to.eql(true);
-          } catch (err) {
-            console.log(err);
-          }
+          await helpers.navigateAndWait(driver, `${host}/responses`, {
+            selector: 'div',
+          });
+          expect(await helpers.isTextInDom(driver, 'a few seconds ago')).to.be
+            .true;
         });
       });
     });
