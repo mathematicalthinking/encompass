@@ -90,35 +90,21 @@ describe('Responses', function () {
         }
       }
       validateLinks();
-      it('should display summary', async function () {
-        expect(await helpers.isTextInDom(driver, 'Selections')).to.eql(false);
+      it('should not show any selections or comments for user', async function () {
         expect(
-          await helpers.isTextInDom(
-            driver,
-            'These selections and comments were available'
-          )
-        ).to.eql(false);
+          await helpers.findAndGetText(driver, '.response-prefill')
+        ).to.eql(
+          "It looks like you haven't made any selections or comments for this submission. You can go back to the submission and create some selections and comments."
+        );
       });
-      //not sure this still exists
-      xit('should display details after clicking more details', async function () {
-        await driver.findElement(By.css('a#moreDetails')).click();
+      it('should update to show 4 other user selections', async function () {
+        await helpers.findAndClickElement(driver, '.filter-label');
+        await helpers.findAndClickElement(driver, '.my-work');
+        await helpers.findAndClickElement(driver, '.response-title');
+        await helpers.findAndClickElement(driver, '.response-header');
         expect(
-          await helpers.isTextInDom(
-            driver,
-            'These selections and comments were available'
-          )
-        ).to.eql(true);
-        let commentList = await driver.wait(
-          until.elementsLocated(By.css('section.comments>ul')),
-          2000
-        );
-        let selectionLis = await driver.wait(
-          until.elementsLocated(By.css('section.selections>ul>li')),
-          2000
-        );
-        expect(commentList).to.have.lengthOf(1);
-        expect(selectionLis).to.have.lengthOf(4);
-        //'a.other.response'.should.be.inDOM; TODO Test for other responses (needs a submission with multiple responses)
+          await helpers.getWebElements(driver, '.selections-list-item')
+        ).to.have.lengthOf(4);
       });
     });
 
@@ -141,10 +127,6 @@ describe('Responses', function () {
         try {
           let greetingText = 'Hello Andrew,';
           // type some dummy text
-          await helpers.findAndClickElement(
-            driver,
-            'input[name="ownMarkUpOnly"]'
-          );
 
           await helpers.waitForElementToHaveText(
             driver,
@@ -169,17 +151,14 @@ describe('Responses', function () {
         }
       });
 
-      //TODO: There is a bug when clicking responses after saving a response
       describe('Viewing the list of saved responses', function () {
         it('the one we just saved should show up', async function () {
           try {
-            await driver.findElement(By.css('a.menu.responses')).click();
-            // await driver.wait(until.urlMatches(/#\/responses.?$/));
-            // await driver.wait(until.elementLocated(By.css('table')),3000);
-            // await driver.takeScreenshot();
+            await driver.navigateAndWait(driver, `${host}/responses`);
             expect(await driver.getCurrentUrl()).to.match(/#\/responses.?$/);
-            //expect(await helpers.isTextInDom(driver, 'a few seconds ago')).to.eql(true);
-            //expect(await helpers.isTextInDom(driver, `${helpers.admin} editedHello`)).to.eql(true);
+            expect(
+              await helpers.isTextInDom(driver, 'a few seconds ago')
+            ).to.eql(true);
           } catch (err) {
             console.log(err);
           }
