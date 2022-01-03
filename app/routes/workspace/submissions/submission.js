@@ -18,7 +18,7 @@ import VmtHostMixin from '../../../mixins/vmt-host';
 export default Route.extend(VmtHostMixin, {
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
-
+  currentUser: service('current-user'),
   queryParams: 'vmtRoomId',
 
   async model({ submission_id }) {
@@ -167,7 +167,7 @@ export default Route.extend(VmtHostMixin, {
         workspace,
         selection,
         folder,
-        createdBy: this.currentUser,
+        createdBy: this.currentUser.user,
       });
       tagging
         .save()
