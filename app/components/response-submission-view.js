@@ -5,6 +5,7 @@ import { inject as service } from '@ember/service';
 export default Component.extend({
   utils: service('utility-methods'),
   currentUser: service('current-user'),
+  store: service(),
   elementId: 'response-submission-view',
   isShortExpanded: true,
   isLongExpanded: true,
@@ -143,7 +144,8 @@ export default Component.extend({
         .then((sub) => {
           if (!this.isDestroyed && !this.isDestroying) {
             this.send('cancelRevising');
-            this.sendRevisionNotices(this.submission, sub);
+            // sendRevisionNotices is broken. It's supposed to set up a notification for the mentor who gave feedback
+            // this.sendRevisionNotices(this.submission, sub);
             this.onSubChange(sub);
           }
         })

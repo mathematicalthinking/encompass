@@ -423,7 +423,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       // should find better way to do in post save hook on backend
 
       // add submission to existing thread
-      this.send('handleResponseThread', null, 'submitter', newSub);
+      this.send('handleResponseThread', this.response, 'submitter', newSub);
 
       this.existingSubmissionMentors.forEach((user) => {
         let notification = this.store.createRecord('notification', {
