@@ -31,6 +31,12 @@
 
 # error like `expected <Workspace.id-number> in adapter payload but not found`
 
-- the server automatically paginates and won't send more than 20 workspaces at a time. sometimes a template needs more than 20 workspaces but only receives 20, throwing an error for Ember Data. I haven't yet tracked down where pagination is handled
+- the server automatically paginates and won't send more than 20 workspaces at a time. sometimes a template needs more than 20 workspaces but only receives 20, throwing an error for Ember Data. I haven't yet tracked down where pagination is handled.
 
 - the server also handles user permissions. if a template needs something the user doesn't have permission to view, the server will not send any data back, throwing an error
+
+- this error won't break the app, data just won't load on the screen
+
+# `Error: Assertion Failed: You attempted to update '[]' on '<Array:ember187>', but it had already been used previously in the same computation. Attempting to update a value after using it in a computation can cause logical errors, infinite revalidation bugs, and performance issues, and is not supported.`
+
+- usually this means the model for a route is changing but a component has an attribute that relies on a computed property that gets updated by the model...good chance to refactor unneeded props!
