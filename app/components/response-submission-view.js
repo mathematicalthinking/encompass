@@ -145,7 +145,7 @@ export default Component.extend({
           if (!this.isDestroyed && !this.isDestroying) {
             this.send('cancelRevising');
             // sendRevisionNotices is broken. It's supposed to set up a notification for the mentor who gave feedback
-            // this.sendRevisionNotices(this.submission, sub);
+            this.sendRevisionNotices(this.submission, sub);
             this.onSubChange(sub);
           }
         })

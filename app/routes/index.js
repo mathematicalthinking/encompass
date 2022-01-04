@@ -31,6 +31,12 @@ export default class IndexRoute extends Route {
     }
   }
   async model() {
+    //this fixes a bug to have user's responseThreads in store when navigating directly to response
+    this.store.query('responseThread', {
+      threadType: 'all',
+      page: 1,
+      limit: 50,
+    });
     const user = this.modelFor('application');
     //user.sections isn't reliable. have to query all sections
     const sections = await this.store.findAll('section');
