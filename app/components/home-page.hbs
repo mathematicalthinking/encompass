@@ -26,7 +26,7 @@
             >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
           {{else if (is-equal @type 'feedback')}}
             {{#if (is-equal columnValue.name 'Workspace')}}
-              <LinkTo @route={{'responses'}}>{{cellValue}}</LinkTo>
+              <a {{on 'click' (fn this.toResponse rowValue)}}>{{cellValue}}</a>
             {{else if (is-equal columnValue.name 'Status')}}
               <svg height='20' width='20'>
                 <circle

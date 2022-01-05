@@ -6,9 +6,23 @@
  */
 
 import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 
 export default class HomePageComponent extends Component {
-  constructor() {
-    super(...arguments);
+  @service router;
+  @service('utility-methods') utils;
+  @action toResponse(thread) {
+    let response = thread.get('highestPriorityResponse');
+    if (response) {
+      let responseId = response.get('id');
+      let submissionId = this.utils.getBelongsToId(response, 'submission');
+      this.router.transitionTo('responses.submission', submissionId, {
+        queryParams: { responseId },
+      });
+    } else {
+      let submission = thread.get('highestPrioritySubmission');
+      this.router.transitionTo('responses.submission', submission);
+    }
   }
 }
