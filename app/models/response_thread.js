@@ -15,10 +15,14 @@ export default Model.extend(CurrentUserMixin, {
   uniqueIdentifier: attr(),
   threadType: attr('string'), // submitter, mentor, approver
   studentDisplay: attr('string'),
-  mentors: attr(),
+  mentors: hasMany('user'),
   isNewThread: attr('boolean', { defaultValue: false }),
   hasNewRevision: gt('newRevisions.length', 0),
-
+  mentorDisplay: computed('mentors', function () {
+    return `${this.mentors.get(
+      'firstObject.username'
+    )}${this.mentors.length > 1 ? ', etc.' : ''}`;
+  }),
   inNeedOfRevisions: gt('needsRevisionResponses.length', 0),
   isWaitingForApproval: gt('pendingApprovalResponses.length', 0),
   hasDraft: gt('draftResponses.length', 0),
@@ -379,4 +383,53 @@ export default Model.extend(CurrentUserMixin, {
       return this.yourMentorReplies.sortBy('createDate').get('lastObject');
     }
   ),
+  statusMap: {
+    upToDate: {
+      display: 'Up To Date',
+      statusFill: '#35A853',
+    },
+    hasDraft: {
+      display: 'Unfinished Draft',
+      statusFill: '#778899',
+      counterProp: 'draftCounter',
+    },
+    hasNewRevision: {
+      display: 'New Revision',
+      statusFill: '#3997EE',
+      counterProp: 'newRevisionCounter',
+    },
+    hasUnmentoredRevisions: {
+      display: 'Unmentored Revision',
+      statusFill: '#3997EE',
+      counterProp: 'unmentoredCounter',
+    },
+    hasUnreadReply: {
+      display: 'Unread Reply',
+      statusFill: '#3997EE',
+      counterProp: 'unreadCounter',
+    },
+    isWaitingForApproval: {
+      display: 'Pending Approval',
+      statusFill: '#FFD204',
+      counterProp: 'pendingApprovalCounter',
+    },
+    inNeedOfRevisions: {
+      display: 'Needs Revisions',
+      statusFill: '#EB5757',
+      counterProp: 'needsRevisionCounter',
+    },
+    hasNewlyApprovedReply: {
+      display: 'Newly Approved',
+      statusFill: '#3997EE',
+      counterProp: 'newlyApprovedCounter',
+    },
+  },
+  statusMessage: computed('highestPriorityStatus', function () {
+    const { display } = this.statusMap[this.highestPriorityStatus];
+    return display;
+  }),
+  statusIcon: computed('highestPriorityStatus', function () {
+    const { statusFill } = this.statusMap[this.highestPriorityStatus];
+    return statusFill;
+  }),
 });

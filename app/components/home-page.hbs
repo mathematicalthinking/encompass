@@ -1,6 +1,4 @@
 <div class='home--container{{unless this.isExpanded ' closed'}}'>
-  {{!-- {{#if this.isExpanded}}
-    {{#if @showTable}} --}}
   <EmberTable as |t|>
     <t.head
       @columns={{@tableColumns}}
@@ -8,31 +6,7 @@
       @widthConstraint='eq-container'
       @sorts={{sorts}}
       @onUpdateSorts={{action (mut sorts)}}
-      as |h|
-    >
-      <h.row as |r|>
-        <r.cell as |columnValue columnMeta|>
-          {{#if (is-equal @type 'feedback')}}
-            {{#if (is-equal @activeDetail 'Given')}}
-              {{#if (is-equal columnValue.name 'Other Person')}}
-                Recipient
-              {{else}}
-                {{columnValue.name}}
-              {{/if}}
-            {{else if (is-equal @activeDetail 'Received')}}
-              {{#if (is-equal columnValue.name 'Other Person')}}
-                Sent By
-              {{else}}
-                {{columnValue.name}}
-              {{/if}}
-            {{/if}}
-          {{else}}
-            {{columnValue.name}}
-          {{/if}}
-          <EmberTh::SortIndicator @columnMeta={{columnMeta}} />
-        </r.cell>
-      </h.row>
-    </t.head>
+    />
     <t.body @rows={{@details}} as |b|>
       <b.row as |r|>
         <r.cell as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|>
@@ -50,12 +24,21 @@
               @route={{'assignments.assignment'}}
               @model={{rowValue.id}}
             >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
-          {{else if (is-equal columnValue.name 'Other Person')}}
-            <LinkTo
-              @route={{'responses.submission'}}
-              @model={{rowValue.submission.id}}
-              @query={{hash responseId=rowValue.id}}
-            >{{cellValue}}</LinkTo>
+          {{else if (is-equal @type 'feedback')}}
+            {{#if (is-equal columnValue.name 'Workspace')}}
+              <LinkTo @route={{'responses'}}>{{cellValue}}</LinkTo>
+            {{else if (is-equal columnValue.name 'Status')}}
+              <svg height='20' width='20'>
+                <circle
+                  cx='10'
+                  cy='15'
+                  r='5'
+                  fill={{rowValue.statusIcon}}
+                ></circle>
+              </svg><span>{{cellValue}}</span>
+            {{else}}
+              {{format-date cellValue 'MM/DD/YYYY'}}
+            {{/if}}
           {{else}}
             {{format-date cellValue 'MM/DD/YYYY'}}
           {{/if}}
@@ -63,71 +46,4 @@
       </b.row>
     </t.body>
   </EmberTable>
-  {{!-- {{else}}
-      <div class='grid-home'>
-        {{#each @details.details as |detail|}}
-          <article class='grid-card'>
-            <header class='grid-card__title'>
-              <h2>
-                {{#if (is-equal detail.constructor.modelName 'workspace')}}
-                  <LinkTo
-                    class='grid-card--light'
-                    @route='workspace.work'
-                    @model={{detail.id}}
-                  >{{detail.name}}</LinkTo>
-                {{else if (is-equal detail.constructor.modelName 'assignment')}}
-                  <LinkTo
-                    class='grid-card--light'
-                    @route='assignments.assignment'
-                    @model={{detail.id}}
-                  >{{detail.name}}</LinkTo>
-                {{else if (is-equal detail.type 'response')}}
-                  <LinkTo
-                    class='grid-card--light'
-                    @route={{'responses.submission'}}
-                    @model={{detail.submission.id}}
-                    @query={{hash responseId=detail.id}}
-                  >{{if
-                      (is-equal @details.label 'Given')
-                      'To: '
-                      'From: '
-                    }}{{detail.name}}</LinkTo>
-                {{else}}
-                  {{detail.name}}
-                {{/if}}
-              </h2>
-            </header>
-            <ul class='grid-card__info'>
-              {{#each @tableColumns as |row|}}
-                <li>
-                  {{#if (is-equal @details.type 'response')}}
-                    {{#if (is-equal row.name 'Other Person')}}
-                      {{#if (is-equal @details.label 'Given')}}
-                        Recipient:
-                      {{else}}
-                        Sent By:
-                      {{/if}}
-                    {{else}}
-                      {{row.name}}:
-                    {{/if}}
-                  {{else}}
-                    {{row.name}}:
-                  {{/if}}
-                  {{#if (is-equal row.name 'To Do')}}
-                    {{if
-                      (is-equal @details.role 'teacher')
-                      'Review Submissions'
-                      'Complete Assignment'
-                    }}
-                  {{else}}
-                    {{format-date (get-attr detail row.valuePath) 'MM/DD/YYYY'}}
-                  {{/if}}
-                </li>
-              {{/each}}
-            </ul>
-          </article>
-        {{/each}}
-      </div>
-    {{/if}}
-  {{/if}} --}}
 </div>

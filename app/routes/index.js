@@ -32,7 +32,7 @@ export default class IndexRoute extends Route {
   }
   async model() {
     //this fixes a bug to have user's responseThreads in store when navigating directly to response
-    this.store.query('responseThread', {
+    const responseThreads = await this.store.query('responseThread', {
       threadType: 'all',
       page: 1,
       limit: 50,
@@ -98,6 +98,7 @@ export default class IndexRoute extends Route {
       responsesReceived,
       collabWorkspaces,
       createdWorkspaces,
+      responseThreads: responseThreads.toArray(),
     });
   }
 }

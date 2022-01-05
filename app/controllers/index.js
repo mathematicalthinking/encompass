@@ -60,11 +60,18 @@ export default class IndexController extends Controller {
     }
     if (this.dataToShow === 'feedback') {
       return [
-        { name: 'Other Person', valuePath: 'otherPerson' },
-        { name: 'Original Assignment', valuePath: 'workspace.name' },
-        { name: 'Type', valuePath: 'responseType' },
-        { name: 'Sent', valuePath: 'createDate' },
-        { name: 'Status', valuePath: 'status' },
+        { name: 'Workspace', valuePath: 'workspaceName' },
+        { name: 'Latest Feedback', valuePath: 'latestReply.createDate' },
+        { name: 'Latest Revision', valuePath: 'latestRevision.createDate' },
+        {
+          name: `${this.activeDetailTab === 'Given' ? 'Student' : 'Mentor'}`,
+          valuePath: `${
+            this.activeDetailTab === 'Given'
+              ? 'studentDisplay'
+              : 'mentorDisplay'
+          }`,
+        },
+        { name: 'Status', valuePath: 'statusMessage' },
       ];
     }
     //getter must return a value
@@ -143,63 +150,17 @@ export default class IndexController extends Controller {
       ];
     }
     if (this.dataToShow === 'feedback') {
-      const responses = this.model.responses
-        .toArray()
-        .reverse()
-        .filter((response) => {
-          //if response has an originalResponse then it is a copy for a parent workspace
-          const originalResponse = response.originalResponse.content;
-          if (originalResponse) {
-            return false;
-          }
-          return (
-            response.createDate.getTime() >
-            this.dateBounds[this.currentBound].getTime()
-          );
-        })
-        .map((response) => {
-          return {
-            name: response.student,
-            otherPerson: response.student,
-            workspace: response.workspace.get('linkedAssignment'),
-            responseType: response.responseType,
-            createDate: response.createDate,
-            status: response.status,
-            submission: response.submission,
-            id: response.id,
-            type: 'response',
-          };
-        });
-      const responsesReceived = this.model.responsesReceived
-        .toArray()
-        .reverse()
-        .filter((response) => {
-          //if response has an originalResponse then it is a copy for a parent workspace
-          const originalResponse = response.originalResponse.content;
-          if (originalResponse) {
-            return false;
-          }
-          return (
-            response.createDate.getTime() >
-            this.dateBounds[this.currentBound].getTime()
-          );
-        })
-        .map((response) => {
-          return {
-            name: response.get('createdBy.username'),
-            otherPerson: response.get('createdBy.username'),
-            workspace: response.workspace.get('linkedAssignment'),
-            responseType: response.responseType,
-            createDate: response.createDate,
-            status: response.status,
-            submission: response.submission,
-            id: response.id,
-            type: 'response',
-          };
-        });
+      const responses = this.model.responseThreads;
+      const received = responses.filter(
+        (response) => response.threadType === 'submitter'
+      );
+      const sent = responses.filter(
+        (response) =>
+          response.threadType === 'mentor' || response.threadType === 'approver'
+      );
       return [
-        { label: 'Given', details: responses, type: 'response' },
-        { label: 'Received', details: responsesReceived, type: 'response' },
+        { label: 'Given', details: sent, type: 'response' },
+        { label: 'Received', details: received, type: 'response' },
       ];
     }
     //getter must return a value
