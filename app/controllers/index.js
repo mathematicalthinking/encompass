@@ -150,7 +150,14 @@ export default class IndexController extends Controller {
       ];
     }
     if (this.dataToShow === 'feedback') {
-      const responses = this.model.responseThreads;
+      const responses = this.model.responseThreads.filter((thread) => {
+        return (
+          thread.highestPrioritySubmission?.createDate.getTime() >
+            this.dateBounds[this.currentBound].getTime() ||
+          thread.highestPriorityResponse?.createDate.getTime() >
+            this.dateBounds[this.currentBound].getTime()
+        );
+      });
       const received = responses.filter(
         (response) => response.threadType === 'submitter'
       );
