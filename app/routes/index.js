@@ -1,6 +1,6 @@
 /**
  * # Index Route
- * @description This route is the index route to the application. Its model is creating API calls for data to pass to home-page.hbs, and the child table components of the dashboard.
+ * @description This route is the index route to the application. Its model is creating API calls for data to pass to home-page.hbs, and the child table components of the dashboard. See also: app/controllers/index.js
  * @author Crispina Muriel, Tim Leonard
  * @since 2.3.0
  */

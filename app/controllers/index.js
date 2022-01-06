@@ -165,10 +165,11 @@ export default class IndexController extends Controller {
         (response) =>
           response.threadType === 'mentor' || response.threadType === 'approver'
       );
-      return [
+      const threads = [
         { label: 'Given', details: sent, type: 'response' },
         { label: 'Received', details: received, type: 'response' },
       ];
+      return this.model.user.isStudent ? threads.reverse() : threads;
     }
     //getter must return a value
     return [];
