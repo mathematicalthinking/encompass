@@ -86,6 +86,10 @@ usage of mixins (found in `app/mixins`) are deprecated - they still work for cla
 
 ### routes
 
+Ember has opinionated routing. All routes are found in `app/router.js`. Each route found there corresponds to a file in `app/routes/` e.g. encompass.mathematicalthinking.org/#/workspaces corresponds to `app/routes/workspaces` and encompass.mathematicalthinking.org/#/workspaces/618c38d408dc48628cbd59e7/submissions/61d45c2308dc48628cc0fbed corresponds to `app/routes/workspace/submissions/submission.js` (see `resetNamespace` in `router.js`)
+
+Each route has a corresponding template that gets rendered. It should be in the corresponding place in `app/templates` e.g. `app/templates/workspaces`. A route might have a controller to handle user interaction at the route level, found in the corresponding location in `app/controllers`. These behave slightly differently than components, but can basically be treated like a component.
+
 - the workspaces route is the most complicated:
 
 1. the user clicks a link to /workspaces/:id/work
@@ -99,6 +103,10 @@ Libraries that are not managed by npm are added in the `/vendor` directory and c
 1. selectize input library (see `app/components/selectize-input.js`)
 2. typeahead library (see `app/components/twitter-typeahead.js`)
 3. selection libraries (`vendor/image-tagging.js` and `vendor/selection-highlighting.js`) that are used in `app/components/workspace-submission.js`
+
+### `/helpers`
+
+Ember's template library only allows simple logical checks. For more complex logic, you can use helper functions found in `app/helpers` and appear in templates as `{{<helper-name> arg1 arg2 arg3 ...}}` ex: `{{format-date workspace.createDate 'YYYY-MM-DD'}}` uses format-date.js and returns workspace.createDate in 'YYYY-MM-DD' format.
 
 ### Ember Data
 
