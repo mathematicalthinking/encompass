@@ -2,21 +2,30 @@
 
 EnCoMPASS is a project of the 21st Century Partnership for STEM Education, Mathematical Thinking, and Drexel University.
 
-## Prerequisites
+## Prerequisites:
 
-You will need the following things properly installed on your computer.
 
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/) (with npm)
-- [Ember CLI](https://ember-cli.com/)
-- [Google Chrome](https://google.com/chrome/)
-- MongoDB
-- Mt-sso
-- vmt
+### Install Single Signon App
+[MT-SSO](https://github.com/mathematicalthinking/mt-sso)
 
-## Installation
+Note: these procedures have the general prerequisites for all three apps required to run Encompass, as well as the specific installations to install the mt-sso Single Signon App.
 
-- see developer guide in company docs
+### Install Virtual Math Teams
+[VMT](https://github.com/mathematicalthinking/vmt)
+
+
+### Install Ember CLI
+[Ember CLI](https://ember-cli.com/)
+    npm install ember-cli # note if -g desired, may need sudo
+
+## Install Encompass
+### set up ssh keys in github
+  [ssh access to github](https://github.com/settings/keys)
+  
+    cd <code directory>
+    git clone git@github.com:mathematicalthinking/encompass.git
+
+
 
 ## Running / Development
 
