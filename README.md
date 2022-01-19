@@ -28,8 +28,9 @@ Note: these procedures have the general prerequisites for all three apps require
 
 
 ## Running / Development
-
-- start MongoDB `mongod --config /usr/local/etc/mongod.conf`
+Note: for troubleshooting MongoDB see mt-sso readme.md
+- On M1 Mac start MongoDB `mongod --config /opt/homebrew/etc/mongod.conf`
+- On Intel Mac start MongoDB `mongod --config /usr/local/etc/mongod.conf`
 - start mt-sso `npm run start` (in mt-sso directory)
 - start vmt (optional) `npm run dev` (in vmt/server)
 - `npm run dev` (in encompass)
