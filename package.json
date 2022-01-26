@@ -86,6 +86,7 @@
     "q": "^1.5.1",
     "randomcolor": "^0.6.2",
     "request": "^2.88.2",
+    "selenium-webdriver": "^4.1.1",
     "sharp": "^0.29.2",
     "socket.io": "^2.4.0",
     "underscore": "^1.13.1",
@@ -106,7 +107,7 @@
     "broccoli-asset-rev": "^3.0.0",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
-    "chromedriver": "^95.0.0",
+    "chromedriver": "^97.0.1",
     "concurrently": "^6.0.1",
     "ember-auto-import": "^1.11.2",
     "ember-cli": "~3.25.3",
@@ -157,8 +158,7 @@
     "prettier": "^2.2.1",
     "qunit": "^2.14.1",
     "qunit-dom": "^1.6.0",
-    "sass": "^1.43.4",
-    "selenium-webdriver": "^4.0.0-beta.4"
+    "sass": "^1.43.4"
   },
   "engines": {
     "node": "10.* || >= 12"

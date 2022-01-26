@@ -40,6 +40,9 @@ You will need the following things properly installed on your computer.
 - `npm run selenium --test=[filename]`
 - see README.md in /test
 
+**Note: Please ensure that browser drivers are in correct directory. Also check ensure chrome executable is in Applications directory in order execute.** \
+For more info on Selenium: (https://www.selenium.dev/documentation/webdriver/getting_started/)
+
 ## Ports (see app_server/config.js)
 
 - dev server: 8080
