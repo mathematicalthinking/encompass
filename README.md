@@ -47,8 +47,17 @@ Note: for troubleshooting MongoDB see mt-sso readme.md
 
 - in /mt-sso: `npm run test`
 - `npm run test`
-- `npm run selenium --test=[filename]`
+- `npm run selenium --test=[filename]` (if ran without filename, will run e2e test for entire application ~20 min)
 - see README.md in /test
+
+### **Note:**
+
+If you run into the following error while running tests:
+"WebDriverException: unknown error: cannot find Chrome binary"
+
+- Ensure correct ChromeDriver is installed. (https://chromedriver.chromium.org/downloads)
+- Chrome application must be in Applications directory
+- For more info on Selenium: (https://www.selenium.dev/documentation/webdriver/getting_started/)
 
 ## Ports (see app_server/config.js)
 
