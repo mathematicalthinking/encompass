@@ -156,7 +156,7 @@
   }
   a {
     &:hover {
-      color: $primary-font-color;
+      color: white;
       font-weight: $bolder-font-weight;
     }
     .active {
@@ -192,29 +192,28 @@
 // }
 // LOGOUT BUTTON
 .logout {
-  font-weight: $main-font-weight;
+  font-weight: bold;
   padding: 8px 15px;
   color: white;
   background: $primary-button;
-  border-radius: 3px;
   font-size: 0.9em;
   margin: 0;
   padding: 8px 9px;
-  border-radius: 50%;
+  border-radius: 0.2em;
   &:hover {
-    box-shadow: $button-shadow;
+    background-color: rgb(179, 34, 21);
   }
 }
 
-#logout-btn {
-  a {
-    color: white;
-    &:hover {
-      color: white;
-      font-weight: $main-font-weight;
-    }
-  }
-}
+// #logout-btn {
+//   a {
+//     color: white;
+//     &:hover {
+//       color: white;
+//       font-weight: $main-font-weight;
+//     }
+//   }
+// }
 
 #current-username {
   color: $accent-color;

@@ -1,7 +1,7 @@
 /**
  * # Index Route
  * @description This route is the index route to the application. Its model is creating API calls for data to pass to home-page.hbs, and the child table components of the dashboard. See also: app/controllers/index.js
- * @author Crispina Muriel, Tim Leonard
+ * @author Crispina Muriel, Tim Leonard, Yousof Wakili
  * @since 2.3.0
  */
 import Route from '@ember/routing/route';
@@ -40,6 +40,7 @@ export default class IndexRoute extends Route {
     const user = this.modelFor('application');
     //user.sections isn't reliable. have to query all sections
     const sections = await this.store.findAll('section');
+
     //if user is admin will receive all sections. otherwise should be filtered already according to user role
     const teacherSections = sections.filter((section) => {
       const teachers = section.teachers;
@@ -57,6 +58,18 @@ export default class IndexRoute extends Route {
       const sectionAssignments = section.assignments.toArray();
       return sectionAssignments;
     });
+    // used to check which classes will be rendered when teacher selects classes to filter for workspace.
+    // This is then passed down to the filteredClasses
+    const teacherClasses = user.sections.map((section) => {
+      const teacherSectionId = section.sectionId;
+      return teacherSectionId;
+    });
+    // passes the array of sectionIds that belongs to that user below.
+    const filteredClasses = sections.filter((section) => {
+      const classId = section.id;
+      return teacherClasses.includes(classId);
+    });
+
     //TODO: find responses given to a user and responses for user to review
     const responses = this.store.query('response', {
       filterBy: { createdBy: user.id },
@@ -80,7 +93,6 @@ export default class IndexRoute extends Route {
         createdBy: user.id,
       },
     };
-
     const ownedWorkspaces = await this.store.query(
       'workspace',
       workspaceCriteria
@@ -93,6 +105,8 @@ export default class IndexRoute extends Route {
       teacherSections: teacherAssignments.flat(),
       studentSections: studentAssignments.flat(),
       user,
+      filteredClasses,
+      teacherClasses,
       workspaces: ownedWorkspaces,
       responses,
       responsesReceived,

@@ -1,15 +1,15 @@
 .ember-table {
-  margin: 25px auto;
-
+  margin: auto;
+  font-size: 0.8em;
   th {
     border: none;
     font-family: 'Roboto';
   }
-  tr:hover {
-    td {
-      background-color: transparent;
-    }
-  }
+  // tr:hover {
+  //   td {
+  //     background-color: transparent;
+  //   }
+  // }
   td {
     font-size: 12px;
     // overflow: scroll;
@@ -19,6 +19,10 @@
   }
   a:hover {
     text-decoration: underline;
+    color: rgb(76, 76, 222);
+  }
+  a:active {
+    color: rgb(98, 0, 255);
   }
   .et-toggle-collapse input[type='checkbox'] {
     opacity: 0.001;
