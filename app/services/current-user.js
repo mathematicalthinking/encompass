@@ -5,5 +5,5 @@ export default class CurrentUserService extends Service {
 
   setUser(data) {
     this.user = data;
-  };
+  }
 }

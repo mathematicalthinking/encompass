@@ -1,7 +1,7 @@
 /**
  * # Index Controller
  * @description This is the controller for the Index view. It receives the model from the Index Route and filters the data according to the selected date bound (this.currentBound). It also controls the display (this.showTable) and which data to display (this.dataToShow). It renders home-page components.
- * @author Tim Leonard <tleonard@21pstem.org>
+ * @author Yousof Wakili, Tim Leonard <tleonard@21pstem.org>
  * @since 3.1.0
  */
 
@@ -13,8 +13,10 @@ export default class IndexController extends Controller {
   @tracked dataToShow = 'workspace';
   @tracked currentBound = 'oneWeek';
   @tracked showTable = true;
+  // this changes when user changes the tab. initially starts at "mine"
   @tracked selectedData = this.data[0].details;
   @tracked activeDetailTab = 'Mine';
+
   dateBounds = {
     oneWeek: new Date(
       new Date().getFullYear(),
@@ -180,6 +182,40 @@ export default class IndexController extends Controller {
     this.updateSelectedData(
       this.data.find((item) => item.label === this.activeDetailTab)
     );
+  }
+  // when user selects different classes to filter from the list
+  @action filterByClass(e) {
+    const currentClass = e.target.value;
+    // assignment
+    if (this.dataToShow === 'assignment') {
+      if (currentClass === 'reset') {
+        this.selectedData = this.data.find(
+          (item) => item.label === this.activeDetailTab
+        ).details;
+      } else {
+        this.selectedData = this.data
+          .find((item) => item.label === this.activeDetailTab)
+          .details.filter(
+            (item) => item.get('section').get('sectionId') === currentClass
+          );
+      }
+    }
+    // workspace
+    if (this.dataToShow === 'workspace') {
+      if (currentClass === 'reset') {
+        this.selectedData = this.data.find(
+          (item) => item.label === this.activeDetailTab
+        ).details;
+      } else {
+        this.selectedData = this.data
+          .find((item) => item.label === this.activeDetailTab)
+          .details.filter(
+            (item) =>
+              item.get('linkedAssignment').get('section').get('sectionId') ===
+              currentClass
+          );
+      }
+    }
   }
   // called when user changes top tabs ('my workspaces', 'my assignments', 'my feedback')
   @action updateDataToShow(value) {

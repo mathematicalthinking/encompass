@@ -55,6 +55,28 @@
           >All Time</option>
         </select>
       </label>
+      {{!-- workspace filter --}}
+       {{#if (is-equal this.dataToShow 'workspace')}}
+      <label>Filter workspaces by class:
+        <select onchange={{action 'filterByClass'}} > 
+          <option value="reset">Show All</option>
+        {{#each this.model.filteredClasses as |section|  }}
+         <option value={{section.sectionId}}>{{section.name}}</option> 
+        {{/each}}
+        </select>
+      </label> 
+      {{/if}}
+      {{!-- assignment filter --}}
+       {{#if (is-equal this.dataToShow 'assignment')}}
+      <label>Filter assignments by class:
+        <select onchange={{action 'filterByClass'}} > 
+          <option value="reset">Show All</option>
+        {{#each this.model.filteredClasses as |section|  }}
+         <option value={{section.sectionId}}>{{section.name}}</option> 
+        {{/each}}
+        </select>
+      </label> 
+      {{/if}}
     </div>
   </div>
   <section class='home'>
@@ -68,6 +90,6 @@
   </section>
 
   <footer>
-    EnCoMPASS version 3.2.0 last updated on 01/05/2022.
+    EnCoMPASS version 3.3.0 last updated on 03/07/2022.
   </footer>
 </div>
