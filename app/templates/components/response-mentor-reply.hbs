@@ -2,52 +2,58 @@
   <ResponseNew @store={{this.store}} @isCreating={{isCreating}} @submission={{submission}} @model={{responseNewModel}} @recipient={{recipient}} @newReplyStatus={{newReplyStatus}} @newReplyType="mentor" @onSaveSuccess={{action "onSaveSuccess"}} @canDirectSend={{canDirectSend}} @submissionResponses={{mentorReplies}} @handleResponseThread={{action "handleNewMentorReply"}} />
 {{else}}
   {{#if sortedMentorReplies}}
-    <div class="mentor-replies">
-      <BreadCrumbs @items={{sortedMentorReplies}} @onSelect={{action "setDisplayMentorReply"}} @titleTextPath="shortText" @selectedItem={{displayResponse}} @infoToolTipText={{revisionsToolTip}} />
-    </div>
         <div class="response-info">
       {{#if displayResponse}}
         <p class="response-title">Mentor Response</p>
         <p class="response-date">
           {{#if isParentWorkspace}}
-            {{format-date displayResponse.originalResponse.createDate 'Do MMM YYYY'}}
-            <span class="response-time">{{format-date displayResponse.originalResponse.createDate 'h:mm a'}}</span>
-          {{else}}
-            {{format-date displayResponse.createDate 'Do MMM YYYY'}}
-            <span class="response-time">{{format-date displayResponse.createDate 'h:mm a'}}</span>
-          {{/if}}
-        </p>
-        <div class="response-users">
-          <p>
-            <span class="response-label">To:</span>
-            <span class="response-value recipient">{{displayResponse.recipient.username}}
-            </span>
-            {{#if showRecipientReadUnread}}
-              <span class="response-read-unread"><i title={{recipientReadUnreadIcon.title}} class={{recipientReadUnreadIcon.className}}></i></span>
-            {{/if}}
-          </p>
-          <p>
-            <span class="response-label">From:</span>
-            <span class="response-value">
-              {{#if isParentWorkspace}}
-                {{displayResponse.originalResponse.createdBy.username}}
-              {{else}}
-                {{displayResponse.createdBy.username}}
+          <div class="response-users">
+            <p>
+              <span class="response-label">To:</span>
+              <span class="response-value recipient">{{displayResponse.recipient.username}}
+              </span>
+              {{#if showRecipientReadUnread}}
+                <span class="response-read-unread"><i title={{recipientReadUnreadIcon.title}} class={{recipientReadUnreadIcon.className}}></i></span>
               {{/if}}
+            </p>
+            <p>
+              <span class="response-label">From:</span>
+              <span class="response-value">
+                {{#if isParentWorkspace}}
+                  {{displayResponse.originalResponse.createdBy.username}}
+                {{else}}
+                  {{displayResponse.createdBy.username}}
+                {{/if}}
+              </span>
+          </p> 
+            <span class="response-time">{{format-date displayResponse.originalResponse.createDate 'MMMM Do YYYY'}}, {{format-date displayResponse.originalResponse.createDate 'h:mm a'}}</span>
+        </div>
+           
+          {{else}}
+            <div class="response-users">
+            <p>
+              <span class="response-label">To:</span>
+              <span class="response-value recipient">{{displayResponse.recipient.username}}
+              </span>
+              {{#if showRecipientReadUnread}}
+                <span class="response-read-unread"><i title={{recipientReadUnreadIcon.title}} class={{recipientReadUnreadIcon.className}}></i></span>
+              {{/if}}
+            </p>
+            <p>
+              <span class="response-label">From:</span>
+              <span class="response-value">
+                {{#if isParentWorkspace}}
+                  {{displayResponse.originalResponse.createdBy.username}}
+                {{else}}
+                  {{displayResponse.createdBy.username}}
+                {{/if}}
               </span>
           </p>
-          {{!-- Remove status - possibly need later --}}
-          {{!-- {{#if showStatus}}
-          <p class="response-status">
-            <svg height="20" width="20">
-              <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
-            </svg>
-            <span class="status-text mentor-reply">
-              {{response-status displayResponse.status}}
-            </span>
-          </p>
-          {{/if}} --}}
+            <span class="response-time">{{format-date displayResponse.createDate 'MMMM Do, YYYY'}}, {{format-date displayResponse.createDate 'h:mm a'}}</span>
         </div>
+           
+          {{/if}}
+        </p>
         <div class="response-content">
           <p class="response-header">
             Message
@@ -88,7 +94,8 @@
   {{#if quillTooLongError}}
     <ErrorBox @error={{quillTooLongErrorMsg}} @showDismiss={{true}} @resetError={{action (mut quillTooLongError) null}} />
   {{/if}}
-  <div class="mentor-reply-actions button-row">
+  {{!-- for draft option when mentor saves draft. tech debt --}}
+  {{!-- <div class="mentor-reply-actions button-row">
     {{#if showRevise}}
       <button {{action "handleComposeAction" "isRevising" true false}} class="primary-button">Revise</button>
     {{/if}}
@@ -98,7 +105,7 @@
     {{#if showTrash}}
       <i {{action 'confirmTrash' displayResponse}} class="fas fa-trash"></i>
     {{/if}}
-  </div>
+  </div> --}}
 
   {{#if doShowLoadingMessage}}
     <LoadingElem />
@@ -133,7 +140,9 @@
     {{/if}}
   {{/if}}
 
-
+    <div class="mentor-replies">
+      <BreadCrumbs @items={{sortedMentorReplies}} @onSelect={{action "setDisplayMentorReply"}} @titleTextPath="shortText" @selectedItem={{displayResponse}} @infoToolTipText={{revisionsToolTip}} />
+    </div>
 {{/if}}
 
 

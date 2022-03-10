@@ -33,7 +33,7 @@
 .response-flex-item {
   height: calc(100vh - 150px);
   background-color: white;
-  border: 1px solid black;
+  border: 1px solid rgb(194, 197, 209);
   box-shadow: $box-shadow;
   border-radius: 3px;
   margin: 40px;
@@ -265,6 +265,10 @@
     .top-row {
       @include flex-container(null, null, row, wrap, center, center, center);
     }
+    .response-read-unread {
+      color: blue;
+      opacity: 75%;
+    }
     .response-date {
       @include flex-item(1, flex-start, 1 1 auto);
       font-weight: $light-font-weight;
@@ -274,7 +278,7 @@
       margin-bottom: 15px;
     }
     .response-time {
-      font-size: 0.8em;
+      font-size: 0.9em;
       color: black;
       margin-left: 5px;
     }
@@ -287,25 +291,29 @@
       }
     }
     .response-title {
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: 400;
       color: black;
-      font-weight: $light-font-weight;
-      font-size: 1.5em;
-      margin-bottom: 20px;
     }
     .response-users {
-      margin-bottom: 30px;
-      p {
-        line-height: 20px;
-        font-size: 0.9em;
-      }
-      .response-label {
-        width: 50px;
-        display: inline-block;
-      }
-      .response-value {
-        color: $accent-color;
-        font-weight: $light-font-weight;
-      }
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+      color: black;
+      margin-top: 0.5em;
+      font-size: 1em;
+      text-align: right;
+      font-weight: 200;
+    }
+    // To/From:
+    .response-label {
+      font-weight: 400;
+    }
+    // Student/Teacher username
+    .response-value {
+      font-weight: normal;
+      color: rgb(133, 144, 140);
     }
     .response-status {
       color: black;
@@ -313,11 +321,12 @@
     }
     .response-text,
     .response-note {
-      margin: 20px 0;
-      background-color: $filter-list-background-color;
-      border: 0.5px solid $input-border;
-      border-radius: 3px;
-      padding: 20px;
+      background-color: rgb(237, 244, 246);
+      padding: 2em;
+      height: 30em;
+      font-style: italic;
+      font-size: 1em;
+      margin-bottom: 1em;
       pre {
         word-wrap: break-word;
         overflow-x: auto;
@@ -399,7 +408,7 @@
       .response-info {
         font-weight: $main-font-weight;
         line-height: 25px;
-        margin-top: 30px;
+        margin-bottom: 30px;
         font-size: 0.9em;
         a {
           color: $accent-color;
@@ -413,10 +422,13 @@
         }
       }
       .response-header {
-        margin: 15px 0;
-        color: black;
+        border: 1px solid $input-border;
+        padding: 5px 0;
         font-size: 1.1em;
-        font-weight: $light-font-weight;
+        color: black;
+        font-weight: 500;
+        padding: 1em;
+        background-color: rgb(212, 221, 233);
         i {
           float: right;
           color: $filter-list-border-color;
