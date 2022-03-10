@@ -29,13 +29,15 @@
     cursor: default;
   }
 }
+// container for both the submission and response
 .response-flex-item {
+  height: calc(100vh - 150px);
   background-color: white;
+  border: 1px solid black;
   box-shadow: $box-shadow;
   border-radius: 3px;
-  margin: 20px;
-  padding: 30px 35px;
-  height: calc(100vh - 215px);
+  margin: 40px;
+  padding: 1em;
   overflow-y: auto;
 }
 
@@ -88,65 +90,62 @@
     font-family: $primary-font;
     white-space: pre-wrap;
   }
-
+  // includes the username, timestamp, and problem link.
+  .problem-info {
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    a {
+      text-align: right;
+      font-weight: 400;
+      color: rgb(4, 97, 245);
+    }
+    a:hover {
+      color: rgb(195, 0, 255);
+      text-decoration: underline;
+    }
+    .studentSubmission {
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: 400;
+    }
+  }
   #response-submission-view {
-    .problem-link-container {
-      margin-bottom: 20px;
-      a {
-        font-size: 0.9em;
-        color: $accent-color;
-        font-weight: $light-font-weight;
-        &:hover {
-          font-weight: $main-font-weight;
-        }
-      }
-    }
-    .workspace-name {
-      color: black;
-      font-weight: $light-font-weight;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-    }
     .submission-student {
-      color: $primary-font-color;
+      color: black;
+      margin-top: 0.5em;
       font-size: 1em;
-      margin-bottom: 40px;
-      i {
-        margin-right: 10px;
-      }
+      text-align: right;
+      font-weight: lighter;
     }
     .submission-date {
-      @include flex-item(1, flex-start, 1 1 auto);
-      font-weight: $light-font-weight;
-      font-size: 1.1em;
-      color: $filter-list-border-color;
-      text-align: left;
-      margin-bottom: 15px;
+      text-align: right;
+      font-weight: lighter;
     }
-    .submission-time {
-      font-size: 0.8em;
-      color: black;
-      margin-left: 5px;
-    }
+    // for the submission summary and explanation
     .submission-content-container {
-      margin-bottom: 20px;
+      margin-bottom: 2em;
       .submission-header {
+        border: 1px solid $input-border;
         padding: 5px 0;
         font-size: 1.1em;
         color: black;
         font-weight: $light-font-weight;
+        padding: 1em;
+        background-color: rgb(212, 221, 233);
+        span {
+          font-weight: 500;
+        }
         i {
           float: right;
           color: $filter-list-border-color;
         }
       }
       .submission-content {
-        margin-top: 10px;
-        background-color: $filter-list-background-color;
-        border: 0.5px solid $input-border;
-        padding: 20px;
-        border-radius: 3px;
-        font-size: 0.9em;
+        background-color: rgb(237, 244, 246);
+        padding: 2em;
+        font-style: italic;
+        font-size: 1em;
 
         ul {
           list-style-type: disc;

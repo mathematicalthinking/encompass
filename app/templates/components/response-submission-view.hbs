@@ -1,18 +1,10 @@
 {{#if displaySubmission}}
-  <div class='student-submissions'>
-    <BreadCrumbs
-      @items={{sortedStudentSubmissions}}
-      @onSelect={{action 'setDisplaySubmission'}}
-      @selectedItem={{displaySubmission}}
-      @starredItems={{mentoredRevisions}}
-      @infoToolTipText={{revisionsToolTip}}
-    />
-  </div>
   <div class='submission-container'>
-    <div class='workspace-name'>
-      {{workspace.name}}
-    </div>
-    <div class='problem-link-container'>
+    <div class='submission-student problem-info'>
+      <span class="studentSubmission">Your Submission</span>
+      <span>{{displaySubmission.student}}</span>
+      <span><p class='submission-date'>{{format-date displaySubmission.createDate 'MMMM Do, YYYY'}}, {{format-date displaySubmission.createDate 'h:mm a'}}</p></span>
+      <div class='problem-link-container problem-info '>
       {{#if displaySubmission.answer}}
         <a {{action 'openProblem'}} class='problem-link'>
           {{displaySubmission.puzzle.title}}
@@ -29,19 +21,7 @@
         </a>
       {{/if}}
     </div>
-    <p class='submission-date'>{{format-date
-        displaySubmission.createDate
-        'Do MMM YYYY'
-      }}
-      <span class='submission-time'>{{format-date
-          displaySubmission.createDate
-          'h:mm a'
-        }}</span>
-    </p>
-    <div class='submission-student'>
-      <i class='fas fa-user'></i><span>{{displaySubmission.student}}</span>
     </div>
-
     {{#if isRevising}}
       <AnswerNew
         @store={{this.store}}
@@ -60,7 +40,7 @@
       <div class='submission-content-container short'>
         {{#if isRevising}}
           <div class='submission-header'>
-            <span>Brief Summary</span>
+            <span class="briefSummary">Brief Summary</span>
           </div>
         {{else}}
           <div
@@ -198,5 +178,15 @@
         </div>
       {{/if}}
     {{/if}}
+  </div>
+  {{!-- Page paginiation --}}
+    <div class='student-submissions'>
+    <BreadCrumbs
+      @items={{sortedStudentSubmissions}}
+      @onSelect={{action 'setDisplaySubmission'}}
+      @selectedItem={{displaySubmission}}
+      @starredItems={{mentoredRevisions}}
+      @infoToolTipText={{revisionsToolTip}}
+    />
   </div>
 {{/if}}
