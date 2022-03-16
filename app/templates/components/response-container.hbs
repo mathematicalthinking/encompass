@@ -1,3 +1,4 @@
+<div class="response-container">
 {{#if isCreatingNewMentorReply}}
   <p class="feedback-mode">
     Crafting feedback for <a {{action 'openSubmission' workspace.id submission.id}} class="link">submission</a>
@@ -23,9 +24,11 @@
 
 <div class="response-flex-container ">
   {{!-- <div class="response-flex-item submission{{if showApproverReply ' third'}}"> --}}
-  <div class="response-flex-item submission">
-    <ResponseSubmissionView @store={{this.store}} @response={{response}} @submission={{submission}} @workspace={{workspace}} @wsResponses={{cleanWorkspaceResponses}} @studentSubmissions={{submissions}} @onSubChange={{action "onSubmissionChange"}} @sendRevisionNotices={{action "sendSubmissionRevisionNotices"}} @isParentWorkspace={{isParentWorkspace}} />
+  {{#each this.submissions as |xSubmission|}}
+   <div class="response-flex-item submission">
+    <ResponseSubmissionView @store={{this.store}} @response={{response}} @submission={{xSubmission}} @workspace={{workspace}} @wsResponses={{cleanWorkspaceResponses}} @studentSubmissions={{submissions}} @onSubChange={{action "onSubmissionChange"}} @sendRevisionNotices={{action "sendSubmissionRevisionNotices"}} @isParentWorkspace={{isParentWorkspace}} />
   </div>
+  {{/each}}
   {{!-- TODO: update permissions to see approver panel --}}
   {{!-- <div class="response-flex-item mentor {{if showApproverReply 'third'}}"> --}}
   <div class="response-flex-item mentor">
@@ -38,6 +41,6 @@
     </div>
   {{/if}} --}}
 </div>
-
+</div>
 
 

@@ -2,18 +2,17 @@
 @import 'mixins';
 @import 'responsive-font-size';
 
-#response-container {
-  background-color: $filter-list-background-color;
-  height: calc(100vh - 75px);
+.response-container {
+  background-color: rgb(217, 226, 247);
   .feedback-mode {
     text-align: center;
     position: relative;
-    top: 20px;
-    margin-bottom: 20px;
+    top: 5px;
+    margin-bottom: 5px;
     font-weight: $light-font-weight;
   }
   a.link {
-    color: $accent-color;
+    color: blue;
     cursor: pointer;
     &:hover {
       font-weight: $main-font-weight;
@@ -110,7 +109,7 @@
       font-weight: 400;
     }
   }
-  #response-submission-view {
+  .response-submission-view {
     .submission-student {
       color: black;
       margin-top: 0.5em;
@@ -308,12 +307,12 @@
     }
     // To/From:
     .response-label {
-      font-weight: 400;
+      font-weight: 300;
     }
     // Student/Teacher username
     .response-value {
       font-weight: normal;
-      color: rgb(133, 144, 140);
+      color: rgb(211, 165, 140);
     }
     .response-status {
       color: black;

@@ -1,4 +1,5 @@
 {{#if displaySubmission}}
+<div class="response-submission-view">
   <div class='submission-container'>
     <div class='submission-student problem-info'>
       <span class="studentSubmission">Your Submission</span>
@@ -179,8 +180,9 @@
       {{/if}}
     {{/if}}
   </div>
+  </div>
   {{!-- Page paginiation --}}
-    <div class='student-submissions'>
+    {{!-- <div class='student-submissions'>
     <BreadCrumbs
       @items={{sortedStudentSubmissions}}
       @onSelect={{action 'setDisplaySubmission'}}
@@ -188,5 +190,5 @@
       @starredItems={{mentoredRevisions}}
       @infoToolTipText={{revisionsToolTip}}
     />
-  </div>
+    </div> --}}
 {{/if}}
