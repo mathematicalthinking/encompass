@@ -1,29 +1,30 @@
-{{#if displaySubmission}}
+{{#if this.displaySubmission}}
 <div class="response-submission-view">
+  {{!-- add script that loops through containers, adds an id each submission contaner divs  --}}
+  {{!-- have ul, li each one, should have the description & show hide --}}
   <div class='submission-container'>
     <div class='submission-student problem-info'>
-      <span class="studentSubmission">Your Submission</span>
-      <span>{{displaySubmission.student}}</span>
-      <span><p class='submission-date'>{{format-date displaySubmission.createDate 'MMMM Do, YYYY'}}, {{format-date displaySubmission.createDate 'h:mm a'}}</p></span>
+      <span>{{this.displaySubmission.student}}</span>
+      <span><p class='submission-date'>{{format-date this.displaySubmission.createDate 'MMMM Do, YYYY'}}, {{format-date this.displaySubmission.createDate 'h:mm a'}}</p></span>
       <div class='problem-link-container problem-info '>
-      {{#if displaySubmission.answer}}
+      {{#if this.displaySubmission.answer}}
         <a {{action 'openProblem'}} class='problem-link'>
-          {{displaySubmission.puzzle.title}}
+          {{this.displaySubmission.puzzle.title}}
           <i class='fas fa-external-link-alt'></i>
         </a>
       {{else}}
         <a
           class='puzzle'
           target='_blank'
-          href='{{displaySubmission.puzzleUrl}}'
+          href='{{this.displaySubmission.puzzleUrl}}'
         >
-          {{displaySubmission.puzzle.title}}
+          {{this.displaySubmission.puzzle.title}}
           <i class='fas fa-external-link-alt'></i>
         </a>
       {{/if}}
     </div>
     </div>
-    {{#if isRevising}}
+    {{#if this.isRevising}}
       <AnswerNew
         @store={{this.store}}
         @assignment={{displaySubmission.answer.assignment.content}}
@@ -39,7 +40,7 @@
       />
     {{else}}
       <div class='submission-content-container short'>
-        {{#if isRevising}}
+        {{#if this.isRevising}}
           <div class='submission-header'>
             <span>Brief Summary</span>
           </div>
@@ -51,28 +52,28 @@
             <span>Brief Summary</span>
             <i
               class='fas
-                {{if isShortExpanded 'fa-chevron-down'}}
-                {{unless isShortExpanded 'fa-chevron-left'}}'
+                {{if this.isShortExpanded 'fa-chevron-down'}}
+                {{unless this.isShortExpanded 'fa-chevron-left'}}'
             ></i>
           </div>
         {{/if}}
 
-        {{#if isRevising}}
+        {{#if this.isRevising}}
           <Textarea @name='brief-summary' @value={{revisedBriefSummary}} />
         {{else}}
-          {{#if isShortExpanded}}
+          {{#if this.isShortExpanded}}
             <div class='submission-content short'>
-              {{#if displaySubmission.answer.answer}}
-                {{{displaySubmission.answer.answer}}}
+              {{#if this.displaySubmission.answer.answer}}
+                {{{this.displaySubmission.answer.answer}}}
               {{else}}
-                {{{displaySubmission.shortAnswer}}}
+                {{{this.displaySubmission.shortAnswer}}}
               {{/if}}
             </div>
           {{/if}}
         {{/if}}
       </div>
       <div class='submission-content-container long'>
-        {{#if isRevising}}
+        {{#if this.isRevising}}
           <div class='submission-header'>
             <span>Explanation</span>
           </div>
@@ -84,28 +85,28 @@
             <span>Explanation</span>
             <i
               class='fas
-                {{if isLongExpanded 'fa-chevron-down'}}
-                {{unless isLongExpanded 'fa-chevron-left'}}'
+                {{if this.isLongExpanded 'fa-chevron-down'}}
+                {{unless this.isLongExpanded 'fa-chevron-left'}}'
             ></i>
           </div>
         {{/if}}
-        {{#if isRevising}}
+        {{#if this.isRevising}}
           <QuillContainer @setup='insertQuillContent' />
         {{else}}
-          {{#if isLongExpanded}}
+          {{#if this.isLongExpanded}}
             <div class='submission-content long'>
-              {{#if displaySubmission.answer.explanation}}
-                {{{displaySubmission.answer.explanation}}}
+              {{#if this.displaySubmission.answer.explanation}}
+                {{{this.displaySubmission.answer.explanation}}}
               {{/if}}
-              {{#if displaySubmission.longAnswer}}
-                {{{displaySubmission.longAnswer}}}
+              {{#if this.displaySubmission.longAnswer}}
+                {{{this.displaySubmission.longAnswer}}}
               {{/if}}
             </div>
           {{/if}}
         {{/if}}
       </div>
 
-      {{#if displaySubmission.answer.explanationImage}}
+      {{#if this.displaySubmission.answer.explanationImage}}
         <div class='submission-content-container images'>
           <div
             class='submission-header'
@@ -121,7 +122,7 @@
           {{#if isImageExpanded}}
             <div class='submission-content images'>
               <img
-                src='{{displaySubmission.answer.explanationImage.imageData}}'
+                src='{{this.displaySubmission.answer.explanationImage.imageData}}'
                 alt=''
               />
             </div>
@@ -129,7 +130,7 @@
         </div>
       {{/if}}
 
-      {{#if displaySubmission.uploadedFile.savedFileName}}
+      {{#if this.displaySubmission.uploadedFile.savedFileName}}
         <div class='submission-content-container images'>
           <div
             class='submission-header'
@@ -147,10 +148,10 @@
               <div id='submission_images'>
                 <a
                   target='_blank'
-                  href='{{unbound displaySubmission.imageUrl}}'
+                  href='{{unbound this.displaySubmission.imageUrl}}'
                 >
                   <img
-                    src='{{displaySubmission.imageUrl}}'
+                    src='{{this.displaySubmission.imageUrl}}'
                     alt='Login to the PoWs to see image'
                   />
                 </a>
@@ -160,9 +161,9 @@
         </div>
       {{/if}}
 
-      {{#if canRevise}}
+      {{#if this.canRevise}}
         <div class='mentor-reply-actions button-row'>
-          {{#if isRevising}}
+          {{#if this.isRevising}}
             <button
               {{action 'cancelRevising'}}
               class='primary-button cancel-button'

@@ -39,39 +39,40 @@
   padding: 1em;
   overflow-y: auto;
 }
-
 .response-flex-container {
-  @include flex-container(
-    null,
-    null,
-    row,
-    wrap,
-    center,
-    flex-start,
-    flex-start
-  );
-  width: 100%;
+  display: flex;
+  flex-direction: row;
+  .studentSubmission {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: 400;
+    color: black;
+  }
+  // @include flex-container(
+  //   null,
+  //   null,
+  //   row,
+  //   wrap,
+  //   center,
+  //   flex-start,
+  //   flex-start
+  // );
+
   .response-flex-item.submission {
-    @include flex-item(1, flex-start, 1 1 auto);
-    width: 40%;
-    &.third {
-      @include flex-item(1, flex-start, 1 1 auto);
-      width: 20%;
-      .simptip-position-bottom:after {
-        max-width: 150px;
-      }
-    }
+    width: 50%;
+    height: 100vh;
+  }
+  .submissionChild {
+    background-color: aliceblue;
+    box-shadow: 10px 5px 10px rgb(189, 181, 181);
+    padding: 1em;
+    border-radius: 1em;
+    margin-bottom: 1em;
+    margin-top: 1em;
   }
   .response-flex-item.mentor {
-    @include flex-item(2, flex-start, 1 1 auto);
-    width: 40%;
-    &.third {
-      @include flex-item(2, flex-start, 1 1 auto);
-      width: 20%;
-      .simptip-position-bottom:after {
-        max-width: 150px;
-      }
-    }
+    width: 50%;
+    height: 100vh;
   }
   .response-flex-item.approver.third {
     @include flex-item(3, flex-start, 1 1 auto);
@@ -103,11 +104,6 @@
       color: rgb(195, 0, 255);
       text-decoration: underline;
     }
-    .studentSubmission {
-      text-align: center;
-      font-size: 1.2em;
-      font-weight: 400;
-    }
   }
   .response-submission-view {
     .submission-student {
@@ -126,6 +122,7 @@
       margin-bottom: 2em;
       .submission-header {
         border: 1px solid $input-border;
+        border-radius: 0.3em;
         padding: 5px 0;
         font-size: 1.1em;
         color: black;
@@ -142,9 +139,10 @@
       }
       .submission-content {
         background-color: rgb(237, 244, 246);
-        padding: 2em;
+        padding: 3em;
         font-style: italic;
-        font-size: 1em;
+        font-size: 0.9em;
+        word-break: break-word;
 
         ul {
           list-style-type: disc;
@@ -318,7 +316,13 @@
       color: black;
       margin: 10px 0;
     }
-    .response-text,
+    .response-text {
+      background-color: rgb(237, 244, 246);
+      padding: 3em;
+      font-style: italic;
+      font-size: 0.9em;
+      word-break: break-word;
+    }
     .response-note {
       background-color: rgb(237, 244, 246);
       padding: 2em;
@@ -422,6 +426,7 @@
       }
       .response-header {
         border: 1px solid $input-border;
+        border-radius: 0.3em;
         padding: 5px 0;
         font-size: 1.1em;
         color: black;
