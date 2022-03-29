@@ -40,7 +40,6 @@ export default AuthenticatedRoute.extend({
       return resolve(peeked);
     }
     return this.store.findRecord('workspace', workspaceId);
-
   },
 
   async model(params) {
