@@ -3,10 +3,13 @@ import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default Component.extend({
+  // tagName set to :'';
+  // used to solve ember migration issues (instead of migrating to ember glimmer for now.)
+  tagName: '',
   utils: service('utility-methods'),
   currentUser: service('current-user'),
   store: service(),
-  elementId: 'response-submission-view',
+  // elementId: 'response-submission-view',
   isShortExpanded: true,
   isLongExpanded: true,
   isImageExpanded: false,
