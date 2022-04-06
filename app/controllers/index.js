@@ -209,11 +209,23 @@ export default class IndexController extends Controller {
       } else {
         this.selectedData = this.data
           .find((item) => item.label === this.activeDetailTab)
-          .details.filter(
-            (item) =>
-              item.get('linkedAssignment').get('section').get('sectionId') ===
-              currentClass
-          );
+          .details.filter((item) => {
+            // console.log('linkedAssignment', item.get('linkedAssignment'));
+            // console.log('section', item.get('linkedAssignment').get('section'));
+            // console.log(
+            //   'sectionId',
+            //   item.get('linkedAssignment').get('section').get('sectionId')
+            // );
+            return (
+              // && for error checking
+              (item.get('linkedAssignment') &&
+                item.get('linkedAssignment').get('section') &&
+                item.get('linkedAssignment').get('section').get('sectionId') &&
+                item.get('linkedAssignment').get('section').get('sectionId') ===
+                  currentClass) ||
+              null
+            );
+          });
       }
     }
   }
