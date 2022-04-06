@@ -1,26 +1,34 @@
-import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
+import { attr, belongsTo, hasMany } from '@ember-data/model';
 import moment from 'moment';
-import Auditable from '../models/_auditable_mixin';
-
-export default Model.extend(Auditable, {
-  workspaceId: alias('id'),
-  name: attr('string'),
-  mode: attr('string'),
-  owner: belongsTo('user', { async: true }),
-  editors: hasMany('user', { async: true }),
-  folders: hasMany('folder', { async: true }),
-  group: attr(),
-  submissions: hasMany('submission', { async: true }),
-  responses: hasMany('response', { async: true }),
-  selections: hasMany('selection', { async: true }),
-  comments: hasMany('comment', { async: true }),
-  organization: belongsTo('organization'),
-  taggings: hasMany('tagging', { async: true }),
-  lastViewed: attr('date'),
-  lastModifiedDate: attr('date'),
-  lastViewedDate: computed(function () {
+import _ from 'underscore';
+import Auditable from './auditable';
+import { tracked } from '@glimmer/tracking';
+export default class WorkspaceModel extends Auditable {
+  getWorkspaceId() {
+    return this.id;
+  }
+  @attr('string') name;
+  @attr('string') mode;
+  @belongsTo('user', { async: true }) owner;
+  @hasMany('user', { async: true }) editors;
+  @hasMany('folder', { async: true }) folders;
+  @attr() group;
+  @hasMany('submission', { async: true }) submissions;
+  @hasMany('response', { async: true }) responses;
+  @hasMany('selection', { async: true }) selections;
+  @hasMany('comment', { async: true }) comments;
+  @belongsTo('organization') organization;
+  @belongsTo('assignment') linkedAssignment;
+  @hasMany('tagging', { async: true }) taggings;
+  @attr('date') lastViewed;
+  @attr('date') lastModifiedDate;
+  // @tracked comments = [];
+  // @tracked folders = [];
+  // @tracked selections = [];
+  // @tracked submissions = [];
+  // @tracked taggings = [];
+  @tracked persmissions = [];
+  get lastViewedDate() {
     if (!this.lastViewed) {
       return this.lastModifiedDate;
     } else if (!this.lastModifiedDate) {
@@ -28,57 +36,64 @@ export default Model.extend(Auditable, {
     } else {
       return this.lastViewed;
     }
-  }),
-  lastModifiedDateComp: computed(function () {
+  }
+
+  get lastModifiedDateComp() {
     if (!this.lastModifiedDate) {
       return this.createDate;
     } else {
       return this.lastModifiedDate;
     }
-  }),
-  workspaceType: attr('string'),
-  childWorkspaces: hasMany('workspace', { inverse: null }),
-  parentWorkspaces: hasMany('workspace', { inverse: null }),
+  }
 
-  _collectionLength: function (collection) {
+  @attr('string') workspaceType;
+  @hasMany('workspace', { inverse: null }) childWorkspaces;
+  @hasMany('workspace', { inverse: null }) parentWorkspaces;
+
+  _collectionLength(collections) {
     // https://stackoverflow.com/questions/35405360/ember-data-show-length-of-a-hasmany-relationship-in-a-template-without-downloadi
     /*
     if( this.hasMany( collection ).value() === null ) {
       return 0;
     }
     */
-    return this.hasMany(collection).ids().length;
-  },
-  foldersLength: computed('folders.[]', function () {
+    return this.hasMany(collections).ids().length;
+  }
+  // @tracked folders = [];
+  get foldersLength() {
     return this._collectionLength('folders');
-  }),
-  commentsLength: computed('comments.[]', function () {
+  }
+  // @tracked comments = [];
+  get commentsLength() {
     return this._collectionLength('comments');
-  }),
-  responsesLength: computed('comments.[]', function () {
+  }
+  get responsesLength() {
     return this._collectionLength('responses');
-  }),
-  selectionsLength: computed('selections.[]', function () {
+  }
+  // @tracked selections = [];
+  get selectionsLength() {
     return this._collectionLength('selections');
-  }),
-  submissionsLength: computed('submissions.[]', function () {
-    var length = this._collectionLength('submissions');
+  }
+  get submissionsLength() {
+    const length = this._collectionLength('submissions');
     return length;
     //return this._collectionLength('submissions');
-  }),
-  editorsLength: computed('editors.[]', function () {
+  }
+  // @tracked submissions = [];
+  get editorsLength() {
     return this._collectionLength('editors');
-  }),
-  taggingsLength: computed('taggings.[]', function () {
+  }
+  // @tracked taggings = [];
+  get taggingsLength() {
     return this._collectionLength('taggings');
-  }),
+  }
 
-  firstSubmissionId: computed('submissions', function () {
-    var firstId = this.get('data.submissions.firstObject.id');
+  get firstSubmissionId() {
+    const firstId = this.data.submissions.firstObject.id;
     return firstId;
-  }),
+  }
 
-  firstSubmission: computed('submissions.[]', function () {
+  get firstSubmission() {
     //console.log("First Sub Id: " + this.hasMany( collection ).ids().objectAt(0) );
     return this.hasMany('submissions').ids()[0];
     /*
@@ -96,15 +111,15 @@ export default Model.extend(Auditable, {
 
     return promise;
     */
-  }),
+  }
 
-  submissionDates: computed(function () {
-    var loFmt,
-      lo = this.get('data.submissionSet.description.firstSubmissionDate');
-    var hiFmt,
-      hi = this.get('data.submissionSet.description.lastSubmissionDate');
+  get submissionDates() {
+    let loFmt,
+      lo = this.data.submissionSet.description.firstSubmissionDate;
+    let hiFmt,
+      hi = this.data.submissionSet.description.lastSubmissionDate;
     if (lo > hi) {
-      var tmp = lo;
+      const tmp = lo;
       lo = hi;
       hi = tmp;
     }
@@ -116,29 +131,30 @@ export default Model.extend(Auditable, {
       }
       return loFmt + ' - ' + hiFmt;
     }
-  }),
-  permissions: attr(),
-
-  collaborators: computed('permissions.[]', function () {
+    return null;
+  }
+  // @attr() permissions;
+  // @tracked persmissions = [];
+  get collaborators() {
     const permissions = this.permissions;
 
     if (Array.isArray(permissions)) {
       return permissions.mapBy('user');
     }
     return [];
-  }),
+  }
 
-  feedbackAuthorizers: computed('permissions.@each.feedback', function () {
+  get feedbackAuthorizers() {
     const permissions = this.permissions;
 
     if (Array.isArray(permissions)) {
       return permissions.filterBy('feedback', 'approver').mapBy('user');
     }
     return [];
-  }),
-  sourceWorkspace: attr(), // if workspace is copy
-  linkedAssignment: belongsTo('assignment'),
-  doAllowSubmissionUpdates: attr('boolean', { defaultValue: true }),
-  doOnlyUpdateLastViewed: attr('boolean', { defaultValue: false }),
-  doAutoUpdateFromChildren: attr('boolean', { defaultValue: false }),
-});
+  }
+  // @attr('') sourceWorkspace; // if workspace is copy
+  // @belongsTo('assignment') linkedAssignment;
+  // @attr('boolean', { defaultValue: true }) doAllowSubmissionUpdates;
+  // @attr('boolean', { defaultValue: false }) doOnlyUpdateLastViewed;
+  // @attr('boolean', { defaultValue: false }) doAutoUpdateFromChildren;
+}
