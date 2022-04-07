@@ -29,9 +29,7 @@
   #al_header {
     .al_nav {
       font-size: 1em;
-      .menu-items {
-        display: none;
-      }
+     
     }
   }
 }
@@ -93,13 +91,12 @@
 }
 
 // GENERAL STYLING
-
+// full nav-bar
 #al_header {
   font-family: $primary-font;
   background-color: $background-body;
-  border-bottom: 1px solid #dfdfdf;
-  position: fixed;
-  justify-content: center;
+  box-shadow: 5px 2.5px 2.5px #dfdddd;
+  border-bottom: 1px solid #c7c4c4;
   top: 0;
   left: 0;
   width: 100%;
@@ -144,12 +141,18 @@
 }
 
 .al_nav#main-nav {
-  margin-left: auto;
   display: flex;
+  // flex grow is added to help with look of nav when resizing browser window.
+  flex-grow: .2;
+  margin-left: auto;
+  justify-content: space-around;
   align-items: center;
-  li {
-    display: inline-block;
-    padding: 0 13px;
+  // li {
+  //   display: flex;
+  //   padding: 2px;
+  // }
+  .acting-role{
+    text-transform: capitalize;
   }
   ul {
     font-size: 1em;
@@ -191,17 +194,18 @@
 //   display: block;
 // }
 // LOGOUT BUTTON
-.logout {
-  font-weight: bold;
+.menuButton {
+  font-weight: 200;
   padding: 8px 15px;
-  color: white;
-  background: $primary-button;
+  color: black;
   font-size: 0.9em;
   margin: 0;
   padding: 8px 9px;
-  border-radius: 0.2em;
+  border-radius: 0.4em;
   &:hover {
-    background-color: rgb(179, 34, 21);
+    background-color: rgb(55, 93, 231);
+    color: white;
+    font-weight: 450;
   }
 }
 

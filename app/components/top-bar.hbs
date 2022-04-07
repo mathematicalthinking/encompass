@@ -14,29 +14,33 @@
     />
   </LinkTo>
   <ul class='al_nav menu-toggle' id='main-nav'>
-    <li class='menu-items' id='logout-btn'>
-      <LinkTo @route='logout' class='menu logout'>
-        <span>Log out</span>
-      </LinkTo>
-    </li>
     {{#unless this.isStudentAccount}}
+    {{!-- role: admin, teacher, student etc. --}}
       <li id='role-toggle'>
         <span class='toggle-role' {{action 'showToggleModal'}}>
-          <span class='acting-role'>Role: {{this.user.actingRoleName}}</span>
-          <i class='fas fa-sync-alt'></i>
+          <span class="menuButton">Switch Role: 
+            <span class='acting-role '>{{this.user.actingRoleName}} <i class='fas fa-sync-alt'></i></span>
+          </span>
         </span>
-      </li>
-    {{/unless}}
+      </li>  
+    {{!-- username --}}
     <li id='current-username'>
       <LinkTo @route='users.user' @model={{this.currentUser.id}}>
-        <img
-          src={{this.currentUser.avatar}}
-          alt={{this.currentUser.username}}
-        />
+       <span class="menuButton">View Profile</span>
+      </LinkTo>
+    </li>
+    {{/unless}}  
+    
+  
+    {{!-- logout button --}}
+    <li class='menu-items' id='logout-btn'>
+      <LinkTo @route='logout' class='menu'>
+        <span class="menuButton">Log out</span>
       </LinkTo>
     </li>
   </ul>
-  <MdcDrawer @style='dismissible' @open={{this.open}}>
+  {{!-- material hamburger menu --}}
+  <MdcDrawer @style='modal' @open={{this.open}}>
     <MdcDrawerContent>
       <MdcList>
         <MdcListItemLinkTo
