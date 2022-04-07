@@ -7,7 +7,10 @@
   @include success-message;
   margin: 20px 0 20px 0;
 }
-
+.info-header{
+  margin-top: 1em;
+  text-align: center;
+}
 //assignment-list hbs
 #assignmentlistheader {
   h2 {
@@ -27,7 +30,7 @@ section.assignmentlist {
     font-weight: $bold-font-weight;
   }
 }
-
+.header
 #assignment-info-student {
   section.assignment-info-student {
     margin-bottom: 15px;
