@@ -19,7 +19,7 @@
       <li id='role-toggle'>
         <span class='toggle-role' {{action 'showToggleModal'}}>
           <span class="menuButton">Switch Role: 
-            <span class='acting-role '>{{this.user.actingRoleName}} <i class='fas fa-sync-alt'></i></span>
+            <span class='acting-role '>{{this.user.actingRoleName}} <i class="fas fa-sync-alt"></i></span>
           </span>
         </span>
       </li>  
@@ -40,7 +40,7 @@
     </li>
   </ul>
   {{!-- material hamburger menu --}}
-  <MdcDrawer @style='modal' @open={{this.open}}>
+  <MdcDrawer @style='dismissible' @open={{this.open}}>
     <MdcDrawerContent>
       <MdcList>
         <MdcListItemLinkTo
@@ -107,7 +107,7 @@
           {{mdc-ripple}}
         >
           <MdcListItemGraphicIcon @icon='power_settings_new' />
-          Logout
+          Log out
         </MdcListItemLinkTo>
       </MdcList>
     </MdcDrawerContent>
@@ -120,18 +120,18 @@
       class='encompass-logo'
     />
   </LinkTo>
-  <nav id='topbar-unauth'>
-    <ul>
+  {{!-- navbar when user logout --}}
+    <ul id='topbar-unauth'>
       <li data-test='login'>
         <LinkTo @route='auth.login' class='menu login hidden'>
-          log in
+          <span class="menuButton">Log in</span>
         </LinkTo>
       </li>
       <li data-test='signup'>
         <LinkTo @route='auth.signup' classNames='menu signup'>
-          sign up
+          <span class="menuButton">Sign Up</span>
         </LinkTo>
       </li>
     </ul>
-  </nav>
+
 {{/if}}

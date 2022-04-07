@@ -9,137 +9,59 @@
   --mdc-theme-on-secondary: #ffd204;
 }
 
-// @media screen and (min-width: 0) and (max-width: 349px) {
-//   #al_header {
-//     .menu-items {
-//       display: none;
-//     }
-//   }
-//   #topbar-unauth {
-//     font-size: 0.8em;
-//     width: 220px;
-//     li {
-//       padding: 0;
-//       margin: 0;
-//     }
-//   }
-// }
-
-@media screen and (max-width: 974px) {
-  #al_header {
-    .al_nav {
-      font-size: 1em;
-     
-    }
-  }
-}
-
 // STYLING FOR THE ENCOMPASS LOGO
-.al_logo {
-  width: 230px;
-  height: 80px;
-  display: inline-block;
-  float: none;
-  position: relative;
-  top: -15px;
-  text-indent: -99999px;
-  background: url(images/logo-encompass.gif) 0 0 no-repeat;
-}
 .encompass-logo {
-  height: 60px;
-  width: auto;
+  height: 5em;
 }
-
-.hamburger {
-  margin: auto 25px;
-  i {
-    border-radius: 50%;
-    padding: 10px;
-  }
-}
-
-.mdc-drawer {
-  height: 100vh;
-  top: 60px;
-  .mdc-list-item--activated {
-    color: #3997ee;
-    .mdc-list-item__graphic {
-      color: #3997ee;
-    }
-  }
-}
-
-// TOP BAR STYLING FOR WHEN LOGGED OUT
-#topbar-unauth {
-  font-weight: $bolder-font-weight;
-  margin: 30px 20px 30px auto;
-  background-color: $background-body;
-  li {
-    display: inline-block;
-    padding: 0 10px;
-    a {
-      color: white;
-      margin-right: 10px;
-      background: $primary-button;
-      padding: 10px 30px;
-      border-radius: 3px;
-      &:hover {
-        background-color: darken($primary-button, 10);
-      }
-    }
-  }
-}
-
 // GENERAL STYLING
+
 // full nav-bar
 #al_header {
-  font-family: $primary-font;
-  background-color: $background-body;
-  box-shadow: 5px 2.5px 2.5px #dfdddd;
+  background-color: rgb(5, 33, 144);
+  box-shadow: 5px 2.5px 2.5px #c9cacb;
   border-bottom: 1px solid #c7c4c4;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 10;
-  margin-bottom: 0px;
   display: flex;
-  font-size: 1em; // margin-bottom: 1px;
-  // height: 75px;
-  .control {
-    display: none;
+  font-size: 1em; 
+}
+
+// TOP BAR STYLING FOR WHEN LOGGED OUT
+#topbar-unauth {
+  display: flex;
+  // flex grow is added to help with look of nav when resizing browser window.
+  margin-left: auto;
+  justify-content: space-around;
+  align-items: center;
+  .toggle-role {
+    cursor: pointer;
+  }
+  ul{
+    display: flex;
   }
 }
-
-#al_header.small {
-  line-height: 20px;
-  height: 50px;
+// List items for role, profile, logout. 
+@media screen and (max-width: 590px) {
+  .al_nav#main-nav {
+    font-size: .9em;
+    justify-content: end;
+    flex-direction: column;
+    span{
+      margin-top: 2em;
+    }
+    i{
+      font-size: .5em;
+    }
+  }
+  .menuButton{
+    &:hover{
+      padding: .3em;
+      font-weight:none;
+    }
+  }
 }
-
-#al_header.small > .al_nav {
-  line-height: 20px;
-  height: 20px;
-}
-
-#al_header.small > .al_logo {
-  display: none;
-}
-
-#al_header.small > #status {
-  padding-top: 1px;
-}
-
-#al_header:hover .control {
-  display: inline;
-}
-
-#welcome {
-  margin: 30px;
-}
-
-.spacing {
-  padding-left: 5px;
-}
-
 .al_nav#main-nav {
   display: flex;
   // flex grow is added to help with look of nav when resizing browser window.
@@ -147,93 +69,74 @@
   margin-left: auto;
   justify-content: space-around;
   align-items: center;
-  // li {
-  //   display: flex;
-  //   padding: 2px;
-  // }
+  // Data returns lowercased, uppercases the acting role when as admin
   .acting-role{
     text-transform: capitalize;
   }
-  ul {
-    font-size: 1em;
-  }
-  a {
-    &:hover {
-      color: white;
-      font-weight: $bolder-font-weight;
-    }
-    .active {
-      border-bottom: 2px solid $accent-yellow;
-    }
+  .toggle-role {
+    cursor: pointer;
   }
 }
 
-.toggle-role {
-  cursor: pointer;
-}
-
-.hide-menu {
-  display: none;
-}
-
-#al_header .control {
-  display: none;
-}
-
-#al_header:hover .control {
-  display: inline;
-}
-
-#al_header.small > #status {
-  padding-top: 1px;
-}
-
-// #al_welcome {
-//   float: right;
-//   margin: 8px 20px;
-//   display: block;
-// }
-// LOGOUT BUTTON
+// Nav buttons
 .menuButton {
-  font-weight: 200;
+  font-weight: 400;
   padding: 8px 15px;
-  color: black;
   font-size: 0.9em;
   margin: 0;
   padding: 8px 9px;
   border-radius: 0.4em;
+  position: relative;
+  color: white;
+  text-decoration: none;
   &:hover {
-    background-color: rgb(55, 93, 231);
     color: white;
-    font-weight: 450;
+    font-weight: 500;
   }
 }
-
-// #logout-btn {
-//   a {
-//     color: white;
-//     &:hover {
-//       color: white;
-//       font-weight: $main-font-weight;
-//     }
-//   }
-// }
-
-#current-username {
-  color: $accent-color;
-  font-weight: $bolder-font-weight;
-  margin-right: 10px;
-  // border: 1px solid green;
-  padding: 0;
-  img {
-    height: 48px;
-    position: relative;
+.menuButton::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: rgb(204, 210, 247);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.menuButton:hover::before {
+  transform: scaleX(1);
+  
+}
+// Side nav bar
+.hamburger {
+  margin: auto 25px;
+  i {
+    border-radius: 50%;
+    padding: 10px;
+    color:white;
   }
-  a {
-    color: $accent-color;
-    font-weight: $bolder-font-weight;
-    &.active {
-      background: none;
+}
+.hamburger{
+  &:hover{
+    i {
+      background-color: rgb(164, 183, 213);
+      color:purple;
+    }
+   
+  }
+}
+.mdc-drawer {
+  height: 50vh;
+  top: 80px;
+  border-radius: .5em;
+  background-color: rgb(236, 239, 249);
+  .mdc-list-item--activated {
+    color: #3997ee;
+    .mdc-list-item__graphic {
+      color: #3997ee;
     }
   }
 }
