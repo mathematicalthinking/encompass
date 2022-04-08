@@ -11,7 +11,7 @@
           <div class="response-users">
             <p>
               <span class="response-label">To:</span>
-              <span class="response-value recipient">{{this.displayResponse.recipient.username}}
+              <span class="response-value recipient">{{this.listOfMentorReplies.recipient.username}}
               </span>
               {{#if this.showRecipientReadUnread}}
                 <span class="response-read-unread"><i title={{this.recipientReadUnreadIcon.title}} class={{this.recipientReadUnreadIcon.className}}></i></span>
@@ -21,13 +21,13 @@
               <span class="response-label">From:</span>
               <span class="response-value">
                 {{#if this.isParentWorkspace}}
-                  {{this.displayResponse.originalResponse.createdBy.username}}
+                  {{this.listOfMentorReplies.originalResponse.createdBy.username}}
                 {{else}}
-                  {{this.displayResponse.createdBy.username}}
+                  {{this.listOfMentorReplies.createdBy.username}}
                 {{/if}}
               </span>
           </p> 
-            <span class="response-time">{{format-date displayResponse.originalResponse.createDate 'MMMM Do YYYY'}}, {{format-date displayResponse.originalResponse.createDate 'h:mm a'}}</span>
+            <span class="response-time">{{format-date listOfMentorReplies.originalResponse.createDate 'MMMM Do YYYY'}}, {{format-date listOfMentorReplies.originalResponse.createDate 'h:mm a'}}</span>
         </div>
            {{!-- if not in parent workspace --}}
           {{else}}
@@ -79,7 +79,7 @@
               {{/if}}
               {{#if this.showDisplayNote}}
                 <div class="response-note">
-                  {{displayResponse.note}}
+                  {{listOfMentorReplies.note}}
                 </div>
               {{/if}}
             </div>
