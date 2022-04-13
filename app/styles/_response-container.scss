@@ -3,7 +3,9 @@
 @import 'responsive-font-size';
 
 .response-container {
-  background-color: rgb(217, 226, 247);
+  margin-top:1em;
+  padding:1em;
+  background-color: rgb(233, 237, 245);
   .feedback-mode {
     text-align: center;
     position: relative;
@@ -190,7 +192,7 @@
     }
   }
 
-  #response-mentor-reply {
+  .response-mentor-reply {
     .markup-filter {
       padding-bottom: 10px;
       width: 150px;

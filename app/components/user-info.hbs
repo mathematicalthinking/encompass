@@ -44,7 +44,7 @@
       <td>Email</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@userEmail}} @classNames="user-email" />
+          <Input @value={{@user.email}} @classNames="user-email" />
         {{else}}
           {{@user.email}}
         {{/if}}

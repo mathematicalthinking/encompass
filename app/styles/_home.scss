@@ -12,6 +12,7 @@ h1 {
   height: 90%;
 }
 .home-options {
+  margin-top: 1em;
   font-weight: 500;
   width: 100%;
   &__tabs {
@@ -29,7 +30,7 @@ h1 {
     padding: 0.5em;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 1em;
+    margin-top: 2em;
     transition: all 0.2s ease-in-out;
     position: relative;
     z-index: 1;
