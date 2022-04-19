@@ -7,11 +7,16 @@
   padding:1em;
   background-color: rgb(233, 237, 245);
   .feedback-mode {
+    margin: auto;
+    font-family: 'Quicksand', sans-serif;
     text-align: center;
     position: relative;
-    top: 5px;
-    margin-bottom: 5px;
-    font-weight: $light-font-weight;
+    border:.5px solid rgb(150, 179, 209);
+    border-radius: .5em;
+    width: 80%;
+    background-color: rgb(215, 229, 245);
+    padding: 1em;
+    font-size: .9em;
   }
   a.link {
     color: blue;
@@ -45,9 +50,10 @@
   display: flex;
   flex-direction: row;
   .studentSubmission {
+    font-family: 'Quicksand', sans-serif;
     text-align: center;
-    font-size: 1.2em;
-    font-weight: 400;
+    font-size: 1.5em;
+    font-weight: 500;
     color: black;
   }
   // @include flex-container(
@@ -89,7 +95,6 @@
   }
   pre {
     word-wrap: break-word;
-    font-family: $primary-font;
     white-space: pre-wrap;
   }
   // includes the username, timestamp, and problem link.
@@ -116,6 +121,7 @@
       font-weight: lighter;
     }
     .submission-date {
+      font-family: 'Quicksand', sans-serif;
       text-align: right;
       font-weight: lighter;
     }
@@ -140,9 +146,11 @@
         }
       }
       .submission-content {
+        p{
+           font-family: 'Quicksand', sans-serif;
+        }
         background-color: rgb(237, 244, 246);
         padding: 3em;
-        font-style: italic;
         font-size: 0.9em;
         word-break: break-word;
 
@@ -311,17 +319,21 @@
     }
     // Student/Teacher username
     .response-value {
-      font-weight: normal;
-      color: rgb(211, 165, 140);
+      font-weight:400;
+      color: rgb(15, 139, 6);
     }
     .response-status {
       color: black;
       margin: 10px 0;
     }
     .response-text {
+      p{
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 800;
+      }
+      font-family: 'Quicksand', sans-serif;
       background-color: rgb(237, 244, 246);
       padding: 3em;
-      font-style: italic;
       font-size: 0.9em;
       word-break: break-word;
     }
@@ -329,7 +341,6 @@
       background-color: rgb(237, 244, 246);
       padding: 2em;
       height: 30em;
-      font-style: italic;
       font-size: 1em;
       margin-bottom: 1em;
       pre {
@@ -427,6 +438,7 @@
         }
       }
       .response-header {
+        font-family: 'Quicksand', sans-serif;
         border: 1px solid $input-border;
         border-radius: 0.3em;
         padding: 5px 0;

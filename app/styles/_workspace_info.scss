@@ -4,7 +4,11 @@
 
 
 #workspace-info {
+  margin-top: 1.5em;
   header {
+    h2{
+      font-family: 'Quicksand', sans-serif;
+    }
     background: $background-color;
   }
   .link {
