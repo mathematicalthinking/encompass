@@ -15,7 +15,7 @@ export default class AnswerModel extends Auditable {
   @attr('boolean') isSubmitted;
   @hasMany('users', { inverse: null }) students;
   @attr studentNames;
-  @belongsTo('answer') priorAnswer;
+  @belongsTo('answer', { inverse: null }) priorAnswer;
   @belongsTo('assignment', { async: true }) assignment;
   @belongsTo('image', { inverse: null }) additionalImage;
   @attr workspacesToUpdate;

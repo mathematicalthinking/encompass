@@ -1,4 +1,3 @@
-/* eslint-disable ember/no-jquery */
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { observer, action } from '@ember/object';

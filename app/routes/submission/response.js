@@ -1,13 +1,12 @@
-import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import ConfirmLeavingRoute from '../_confirm_leaving_route';
-
-export default Route.extend(ConfirmLeavingRoute, {
-  utils: service('utility-methods'),
-
-  model: function (params) {
+import { action } from '@ember/object';
+export default class ResponsesRoute extends ConfirmLeavingRoute {
+  @service('utility-methods') utils;
+  @service store;
+  model(params) {
     return this.store.findRecord('response', params.response_id);
-  },
+  }
 
   redirect(model, transition) {
     if (!model) {
@@ -22,19 +21,17 @@ export default Route.extend(ConfirmLeavingRoute, {
         this.transitionTo('responses');
       }
     }
-  },
+  }
 
-  actions: {
-    toResponseInfo(response) {
-      this.transitionTo('response', response.get('id'));
-    },
-    toResponses() {
-      this.transitionTo('responses');
-    },
-    toNewResponse: function (submissionId, workspaceId) {
-      this.transitionTo('responses.new.submission', submissionId, {
-        queryParams: { workspaceId: workspaceId },
-      });
-    },
-  },
-});
+  @action toResponseInfo(response) {
+    this.transitionTo('response', response.get('id'));
+  }
+  @action toResponses() {
+    this.transitionTo('responses');
+  }
+  @action toNewResponse(submissionId, workspaceId) {
+    this.transitionTo('responses.new.submission', submissionId, {
+      queryParams: { workspaceId: workspaceId },
+    });
+  }
+}

@@ -2,14 +2,15 @@ import { resolve, hash } from 'rsvp';
 import { inject as service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 import Ember from 'ember';
-
-export default AuthenticatedRoute.extend({
-  utils: service('utility-methods'),
-  queryParams: {
+import { action } from '@ember/object';
+export default class ResponsesRoute extends AuthenticatedRoute {
+  @service('utility-methods') utils;
+  @service store;
+  queryParams = {
     responseId: {
       refreshModel: true,
     },
-  },
+  };
 
   beforeModel(transition) {
     let responseId;
@@ -21,18 +22,18 @@ export default AuthenticatedRoute.extend({
     if (this.utils.isValidMongoId(responseId)) {
       let response = allResponses.findBy('id', responseId);
 
-      this.set('response', response);
+      this.response = response;
     } else {
-      this.set('response', null);
+      this.response = null;
     }
-  },
+  }
   resolveSubmission(submissionId) {
     let peeked = this.store.peekRecord('submission', submissionId);
     if (peeked) {
       return resolve(peeked);
     }
     return this.store.findRecord('submission', submissionId);
-  },
+  }
 
   resolveWorkspace(workspaceId) {
     let peeked = this.store.peekRecord('workspace', workspaceId);
@@ -40,7 +41,7 @@ export default AuthenticatedRoute.extend({
       return resolve(peeked);
     }
     return this.store.findRecord('workspace', workspaceId);
-  },
+  }
 
   async model(params) {
     if (!params.submission_id) {
@@ -99,33 +100,32 @@ export default AuthenticatedRoute.extend({
           allResponses,
         };
       });
-  },
+  }
 
   redirect(model, transition) {
     if (!model) {
       this.transitionTo('responses');
     }
-  },
-  actions: {
-    toResponseSubmission(subId) {
-      this.transitionTo('responses.submission', subId);
-    },
-    toResponse(submissionId, responseId) {
-      this.transitionTo('responses.submission', submissionId, {
-        queryParams: { responseId: responseId },
-      });
-    },
-    toResponses() {
-      this.transitionTo('responses');
-    },
-    toNewResponse: function (submissionId, workspaceId) {
-      this.transitionTo('responses.new.submission', submissionId, {
-        queryParams: { workspaceId: workspaceId },
-      });
-    },
-  },
+  }
 
-  renderTemplate() {
+  @action toResponseSubmission(subId) {
+    this.transitionTo('responses.submission', subId);
+  }
+  @action toResponse(submissionId, responseId) {
+    this.transitionTo('responses.submission', submissionId, {
+      queryParams: { responseId: responseId },
+    });
+  }
+  @action toResponses() {
+    this.transitionTo('responses');
+  }
+  @action toNewResponse(submissionId, workspaceId) {
+    this.transitionTo('responses.new.submission', submissionId, {
+      queryParams: { workspaceId: workspaceId },
+    });
+  }
+
+  @action renderTemplate() {
     this.render('responses/response');
-  },
-});
+  }
+}

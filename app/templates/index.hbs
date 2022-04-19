@@ -1,5 +1,6 @@
 <div class='index'>
   <div class='home-options'>
+    {{!-- My Workspaces, My problem solving (formerly as assignments), My Feedback buttons --}}
     <div class='home-options__tabs'>
       <button
         class='home-options__tab
@@ -10,13 +11,14 @@
         class='home-options__tab
           {{if (is-equal this.dataToShow 'assignment') 'home-options--active'}}'
         {{on 'click' (fn this.updateDataToShow 'assignment')}}
-      ><span>My Assignments</span></button>
+      ><span>My Problem Solving</span></button>
       <button
         class='home-options__tab
           {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
         {{on 'click' (fn this.updateDataToShow 'feedback')}}
       ><span>My Feedback</span></button>
     </div>
+    {{!-- Mine, shared, createdbyme  and filters--}}
     <div class='home-options__details'>
       <ul class='details-tabs'>
         {{#each this.data as |item|}}

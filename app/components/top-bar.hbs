@@ -14,29 +14,33 @@
     />
   </LinkTo>
   <ul class='al_nav menu-toggle' id='main-nav'>
-    <li class='menu-items' id='logout-btn'>
-      <LinkTo @route='logout' class='menu logout'>
-        <span>Log out</span>
-      </LinkTo>
-    </li>
     {{#unless this.isStudentAccount}}
+    {{!-- role: admin, teacher, student etc. --}}
       <li id='role-toggle'>
         <span class='toggle-role' {{action 'showToggleModal'}}>
-          <span class='acting-role'>Role: {{this.user.actingRoleName}}</span>
-          <i class='fas fa-sync-alt'></i>
+          <span class="menuButton">Switch Role: 
+            <span class='acting-role '>{{this.user.actingRoleName}} <i class="fas fa-sync-alt"></i></span>
+          </span>
         </span>
-      </li>
-    {{/unless}}
+      </li>  
+    {{!-- username --}}
     <li id='current-username'>
       <LinkTo @route='users.user' @model={{this.currentUser.id}}>
-        <img
-          src={{this.currentUser.avatar}}
-          alt={{this.currentUser.username}}
-        />
+       <span class="menuButton">View Profile</span>
+      </LinkTo>
+    </li>
+    {{/unless}}  
+    
+  
+    {{!-- logout button --}}
+    <li class='menu-items' id='logout-btn'>
+      <LinkTo @route='logout' class='menu'>
+        <span class="menuButton">Log out</span>
       </LinkTo>
     </li>
   </ul>
-  <MdcDrawer @style='dismissible' @open={{this.open}}>
+  {{!-- material hamburger menu --}}
+  <MdcDrawer @style='modal' @open={{this.open}}>
     <MdcDrawerContent>
       <MdcList>
         <MdcListItemLinkTo
@@ -103,7 +107,7 @@
           {{mdc-ripple}}
         >
           <MdcListItemGraphicIcon @icon='power_settings_new' />
-          Logout
+          Log out
         </MdcListItemLinkTo>
       </MdcList>
     </MdcDrawerContent>
@@ -116,18 +120,18 @@
       class='encompass-logo'
     />
   </LinkTo>
-  <nav id='topbar-unauth'>
-    <ul>
+  {{!-- navbar when user logout --}}
+    <ul id='topbar-unauth'>
       <li data-test='login'>
         <LinkTo @route='auth.login' class='menu login hidden'>
-          log in
+          <span class="menuButton">Log in</span>
         </LinkTo>
       </li>
       <li data-test='signup'>
         <LinkTo @route='auth.signup' classNames='menu signup'>
-          sign up
+          <span class="menuButton">Sign Up</span>
         </LinkTo>
       </li>
     </ul>
-  </nav>
+
 {{/if}}
