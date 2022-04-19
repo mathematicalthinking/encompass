@@ -2,126 +2,69 @@
 @import 'mixins';
 @import 'responsive-font-size';
 
+// Header for "Enter assignment information below"
 #assignmentnewheader {
+  border-radius:.5em;
+  text-align: center;
+  position: relative;
+  border:.5px solid rgb(150, 179, 209);
+  border-radius: .5em;
+  background-color: rgb(215, 229, 245);
+  padding: 1em;
+  font-size: .9em;
+  margin-top: 1.2em;
+  margin-bottom: 1em;
   color: $accent-color;
   font-weight: bold;
   font-size: 1.5em;
-}
-form#newassignmentform {
-  .required-error {
-    border: 2px solid $error-color;
+  h2{
+    font-family: 'Quicksand', sans-serif;
   }
-  div.mySelect {
-    display: inline-block;
-    padding: 12px 0px;
-    font-size: 1em;
-    width: 70%;
-    select {
-      width: 90%;
-      height: 45px;
-      text-indent: 10px;
-      font-size: 1em;
-      margin-left: 0px;
-      border: 1px solid $input-border;
-      border-radius: 4px;
-      box-sizing: border-box;
-      background: none;
-      &::placeholder {
-        color: $primary-font-color;
+}
+// form containing class, problem, etc for new assignment
+.formContainer{
+  margin: auto;
+  padding:.5em;
+  border: none;
+  span{
+    font-size: 1.1em;
+    font-weight: 800;
+    margin-bottom: .5em;
+  }
+  .assignmentInput{
+    width: 80%;
+    padding: .8em;
+  }
+  // Date assigned and due date
+  .assignmentsDateContainer{
+    display: flex;
+    .dueDate{
+      margin-left: 3em;
+    }
+  }
+  // Create student workspaces, parent workspaces, etc.
+  .linked-ws{
+    margin-top: 1em;
+    .group-selection, .choice-selection{
+      background-color: rgb(239, 246, 250);
+      border-radius: .2em;
+    }
+    .info-flex-item{
+      background-color: rgb(239, 246, 250);
+      padding: .5em;
+      margin-bottom: 1em;
+      p{
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 800;
       }
     }
-  }
-  .flex-input {
-    width: 70%;
-  }
-  .selectize-comp {
-    width: 70%;
-  }
-
-  input[type='text'] {
-    width: 70%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    font-size: 1em;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  p {
-    width: 70%;
-    margin: 8px 0;
-    font-size: 1em;
-    display: inline-block;
-  }
-  li {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  i {
-    margin-left: 3px;
-    font-size: 1em;
-  }
-
-  .radio-group {
-    display: flex;
-  }
-  .group-selection {
-    width: 100%;
-  }
-
-  div.twitter-typeahead {
-    display: inline-block;
-    padding: 12px 0px;
-    font-size: 1em;
-    width: 70%;
-
-    span.twitter-typeahead {
-      width: 100%;
-    }
-
-    input.typeahead {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
+    .single-text-input{
+      width: 80%;
     }
   }
-  input:required {
-    box-shadow: none;
-  }
-  // input:invalid {
-  //   box-shadow: 0 0 3px red;
-  // }
-  label {
-    width: 20%;
-    padding: 12px 10px 20px 10px;
-    font-size: 1em;
-    color: $dark-font-color;
-  }
-  .no-width {
-    width: unset;
-  }
-
-  .error-box {
-    width: 70%;
-    box-sizing: border-box;
-    p {
-      margin: 0;
-    }
-  }
-
-  #linked-workspaces-new {
-    width: 100%;
-    margin-left: 15px;
-  }
-
-  #parent-workspace-new {
-    width: 100%;
-    margin-left: 15px;
+  .parent-ws{
+    background-color: rgb(239, 246, 250);
+      padding: .5em;
+      margin-bottom: 1em;
   }
 }

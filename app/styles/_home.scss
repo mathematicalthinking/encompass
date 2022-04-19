@@ -1,20 +1,24 @@
 @import 'variables';
 @import 'mixins';
 @import 'responsive-font-size';
-
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 h1 {
   color: $accent-color;
 }
-
+*{
+  font-family: 'Quicksand', sans-serif;
+}
 .index {
   display: flex;
   flex-direction: column;
-  height: 90%;
+  // this min view is set to prevent the footer from overlapping content if its fixed, and keep its position at the bottom.
+  min-height: 91vh;
 }
 .home-options {
   margin-top: 1em;
   font-weight: 500;
   width: 100%;
+  // my workspaces, my problem solving, my feedback buttons
   &__tabs {
     text-align: center;
     margin-bottom: 2em;
@@ -39,17 +43,21 @@ h1 {
       position: relative;
       z-index: 2;
     }
-    // can't directly transition linear-gradient
   }
   &__tab :hover {
-    // shadow behijnd?
     color: rgb(236, 48, 34);
   }
+  &--active {
+    border-color: rgb(76, 0, 255);
+    background-color: rgb(229, 229, 243);
+    color: rgb(60, 63, 236);
+  }
   &__details {
+    font-size: 1.1em;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 75%;
+    width: 80%;
     margin: auto;
     select {
       margin-left: 5px;
@@ -57,16 +65,6 @@ h1 {
       border-bottom: 1px solid black;
       cursor: pointer;
     }
-  }
-  &--active {
-    border-color: rgb(76, 0, 255);
-    background-color: rgb(229, 229, 243);
-    color: rgb(60, 63, 236);
-  }
-  &--button {
-    border: none;
-    background: transparent;
-    cursor: pointer;
   }
   .details-tabs {
     display: flex;
@@ -80,20 +78,25 @@ h1 {
       border-bottom: 1px solid #aaa;
       z-index: 1;
     }
+    // mine, shared, created by me tabs
     &__tab {
       button {
+        font-weight: 400;
+        font-size: .9em;
+        font-family: 'Quicksand', sans-serif;
         background-color: white;
         cursor: pointer;
-        padding: 10px 20px;
+        padding: .4em 1em;
         border-radius: 5px 5px 0 0;
         border: 1px solid #aaa;
         border-bottom: none;
-        box-shadow: 0 0 0 0 transparent;
+        box-shadow: 0 0 0 0 rgb(215, 221, 243);
         z-index: 0;
         transition: box-shadow 0.075s ease-in-out, background-color 0.05s linear,
           z-index 0.1s linear;
         &:hover {
-          background-color: $pale-accent;
+          background-color: rgb(209, 211, 219);
+          transition: ease-out .2s;
         }
       }
     }
@@ -101,87 +104,80 @@ h1 {
       button {
         position: relative;
         z-index: 2;
-        box-shadow: 0px -3px 2px 1px #ccc;
+        box-shadow: 0px -2px 2px rgb(140, 163, 245);
+        font-weight: 500;
+        text-decoration: underline;
+        background-color: rgb(255, 247, 235);
+        color:rgb(112, 112, 240);
       }
     }
   }
 }
-
-.grid-home {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(349px, 1fr));
-  padding: 25px 0px;
-}
-
-.grid-card {
-  border: 1px solid #cfcfcf;
-  border-radius: 15px;
-  box-shadow: unset;
-  transition: box-shadow 0.2s ease-in-out;
-  &__title {
-    background-color: $accent-color;
-    border-bottom: 1px solid #cfcfcf;
-    border-radius: 15px 15px 0 0;
-    padding: 10px;
+// footer
+.footer {
+  display: flex;
+  margin-top: auto;
+  font-size: .7em;
+  bottom: 0;
+  width: 100%;
+  padding:.7em;
+  background-color: rgb(244, 245, 249);
+  border: 1px solid;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  margin-top: auto;
+  .footerNote{
+    text-align: center;
+    margin: auto;
   }
-  &__info {
-    padding: 10px;
-    line-height: 25px;
+  img{
+    height: 50px;
+    width: 50px;
+    margin-left: 2em;
   }
-  &--light {
-    color: white;
-    &:hover {
-      text-decoration: underline;
+  p{
+    font-family: 'Quicksand', sans-serif;
+  }
+  a{
+    color:rgb(31, 31, 236);
+    text-decoration: underline;
+    &:hover{
+      color:rgb(102, 55, 242);
     }
   }
-  &:hover {
-    box-shadow: $box-shadow;
-  }
 }
 
+
+// table containing data
 .home--container {
-  width: 80%;
+  width: 90%;
   height: min-content;
-  margin: 25px auto;
+  margin: 1em auto;
   overflow: hidden;
   text-align: center;
   .ember-table {
+    margin-left: 1em;
     td,
     th {
       width: 100%;
-      padding: 1em;
+      padding: 1.2em;
       border-right: none;
       font-size: 1em;
       background-color: rgb(236, 242, 246);
+      font-weight: 400;
     }
     th {
       background: rgb(207, 210, 219);
       color: rgb(68, 113, 228);
-      letter-spacing: 0.5px;
+      letter-spacing: .5px;
+      font-weight: bolder;
+      font-weight: 600;
+      &:hover{
+        font-weight: 700;
+      }
     }
-  }
-  h1 {
-    cursor: pointer;
-    white-space: nowrap;
-    width: max-content;
-    margin: 0 auto;
-    padding: 5px;
-    border-radius: 5px;
-    background: transparent;
-    transition: background 0.1s ease;
-    &:hover {
-      background: $pale-accent;
+    td{
+      font-size: 1.1em;
     }
-    &:after {
-      display: inline-block;
-      margin-left: 10px;
-      font-family: 'Font Awesome 5 Free';
-      font-size: 16px;
-      content: '\f150';
-    }
-  }
-  &.closed h1:after {
-    transform: rotate(-90deg);
   }
 }

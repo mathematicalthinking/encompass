@@ -12,7 +12,7 @@
       {{@assignment.createdBy.username}}
     </LinkTo>
     on
-    {{format-date @assignment.createDate 'Do MMM YYYY'}}
+    {{format-date @assignment.createDate 'MMMM Do, YYYY'}}
   </div>
   <div class='info-flex-item single-line assigned-date'>
     <p class='label'>
@@ -28,7 +28,7 @@
       />
     {{else}}
       <p class='value'>
-        {{format-date @assignment.assignedDate 'Do MMM YYYY'}}
+        {{format-date @assignment.assignedDate 'MMMM Do, YYYY'}}
       </p>
     {{/if}}
   </div>
@@ -46,7 +46,7 @@
       />
     {{else}}
       <p class='value'>
-        {{format-date @assignment.dueDate 'Do MMM YYYY'}}
+        {{format-date @assignment.dueDate 'MMMM Do, YYYY'}}
       </p>
     {{/if}}
   </div>

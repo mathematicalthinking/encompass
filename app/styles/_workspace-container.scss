@@ -64,6 +64,7 @@
     );
     position: relative;
     padding: 10px 20px;
+    margin-top: 1em;
     line-height: normal;
     background-color: $filter-list-background-color;
 
@@ -396,6 +397,7 @@
       width: 100%;
     }
     h2 {
+      font-family: 'Quicksand', sans-serif;
       display: inline-block;
       font-size: 1.4em;
     }

@@ -26,11 +26,15 @@
     {{!-- username --}}
     <li id='current-username'>
       <LinkTo @route='users.user' @model={{this.currentUser.id}}>
-       <span class="menuButton">View Profile</span>
+       <span class="menuButton">{{this.currentUser.username}} <i class="fas fa-user-circle"></i></span>
       </LinkTo>
     </li>
     {{/unless}}  
-    
+    {{#if this.isStudentAccount}}
+       <li id='current-username'>
+       <span class="menuButton">{{this.currentUser.username}} <i class="fas fa-user-circle"></i></span>
+    </li>
+    {{/if}}
   
     {{!-- logout button --}}
     <li class='menu-items' id='logout-btn'>
@@ -40,6 +44,7 @@
     </li>
   </ul>
   {{!-- material hamburger menu --}}
+  <div class="hamburger-menu">
   <MdcDrawer @style='modal' @open={{this.open}}>
     <MdcDrawerContent>
       <MdcList>
@@ -48,7 +53,7 @@
           {{action 'toggleDrawer'}}
           {{mdc-ripple}}
         >
-          <MdcListItemGraphicIcon @icon='home' />
+          <MdcListItemGraphicIcon @icon='home'/>
           Home
         </MdcListItemLinkTo>
         <MdcListItemLinkTo
@@ -112,6 +117,7 @@
       </MdcList>
     </MdcDrawerContent>
   </MdcDrawer>
+  </div>
 {{else}}
   <LinkTo @route='index'>
     <img
