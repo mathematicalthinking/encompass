@@ -10,7 +10,7 @@
   border:.5px solid rgb(150, 179, 209);
   border-radius: .5em;
   background-color: rgb(215, 229, 245);
-  padding: 8em 8em;
+  padding: 7em;
   font-size: .9em;
   h1 {
     text-align: center;
@@ -35,7 +35,7 @@
     letter-spacing: 0.2px;
     padding: .5em;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.5em;
     margin-top: 2em;
     transition: all 0.2s ease-in-out;
     background-color: rgb(88, 137, 165);
@@ -46,6 +46,21 @@
       background-color: aquamarine;
       color: black;
       box-shadow: none;
+    }
+  }
+}
+@media screen and (min-width: 200px) and (max-width: 845px) {
+  .home-view{
+    padding:4em;
+    h1{
+      font-size: 1.5em;
+    }
+    p{
+      font-size: 1em;
+    }
+    .new-link-btn {
+      font-size: .8em;
+      width:100%;
     }
   }
 }

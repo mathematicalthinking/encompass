@@ -5,9 +5,9 @@
     </h2>
     <div class='clear'></div>
   </header>
-  <section class='third submissions'>
+  <section>
     <form id='newassignmentform' class='properForm'>
-      <fieldset>
+      <fieldset class="formContainer">
         <ol>
           <li>
             <label for='section'>
@@ -111,6 +111,7 @@
               </div>
             {{/if}}
           </li>
+          <div class="assignmentsDateContainer">
           <li>
             <label for='assignedDate'>
               <span
@@ -136,7 +137,7 @@
             </div>
           </li>
           <li>
-            <label for='dueDate'>
+            <label for='dueDate' class='dueDate'>
               <span
                 class='label-text simptip-position-right simptip-multiline simptip-smooth'
                 data-tooltip={{this.tooltips.dueDate}}
@@ -144,7 +145,7 @@
                 Due Date
               </span>
             </label>
-            <div class='flex-input'>
+            <div class='flex-input dueDate'>
               <Input
                 @id='dueDate'
                 @name='daterange'
@@ -166,6 +167,7 @@
               {{/if}}
             </div>
           </li>
+          </div>
           <li>
             <label for='name'>
               <span
@@ -180,6 +182,7 @@
                 @type='text'
                 placeholder='Give your assignment a name (optional)'
                 @value={{this.name}}
+                class="assignmentInput"
               />
               {{#each this.nameFormErrors as |error|}}
                 <p class='error-message'>
@@ -197,12 +200,13 @@
                 Create Student Workspaces Now?
               </span>
             </label>
-            <RadioGroup
-              @options={{this.linkedWsOptions}}
-              @selectedValue={{this.doCreateLinkedWorkspaces}}
-              @updateValue={{action 'updateDoCreateLinkedWorkspaces'}}
-            />
-
+            <div class="choice-selection">
+              <RadioGroup
+                @options={{this.linkedWsOptions}}
+                @selectedValue={{this.doCreateLinkedWorkspaces}}
+                @updateValue={{action 'updateDoCreateLinkedWorkspaces'}}
+              />
+            </div>
             {{#if this.showLinkedWsForm}}
               <div
                 class='group-selection'
@@ -229,6 +233,7 @@
             {{/if}}
           </li>
           {{#if this.doCreateLinkedWorkspaces}}
+          <div class="group-selection">
             <li class='parent-ws'>
               <label for='parentWorkspace'>
                 <span
@@ -266,6 +271,7 @@
                 />
               {{/if}}
             </li>
+          </div>
           {{/if}}
         </ol>
       </fieldset>
