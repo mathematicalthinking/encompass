@@ -1,23 +1,24 @@
 <div id='assignment-info-teacher' class={{if this.isEditing 'is-editing'}}>
-  <div class='info-flex-item assignment-name'>
-    {{#if this.isEditing}}
-      <Input @type='text' @value={{@assignment.name}} />
-    {{else}}
-      {{@assignment.name}}
-    {{/if}}
+  <div class='assignment-header-container'>
+    <div class='assignment-name'>
+      {{#if this.isEditing}}
+        <Input @type='text' @value={{@assignment.name}} />
+      {{else}}
+        Problem:
+        {{@assignment.name}}
+      {{/if}}
+    </div>
+    <div class='creation-details'>
+      Assigned by:
+      <LinkTo @route='users.user' @model={{@assignment.createdBy.id}}>
+        <span>{{@assignment.createdBy.username}}</span>
+      </LinkTo>
+      on
+      {{format-date @assignment.createDate 'MMMM Do, YYYY'}}
+    </div>
   </div>
-  <div class='info-flex-item creation-details'>
-    by
-    <LinkTo @route='users.user' @model={{@assignment.createdBy.id}}>
-      {{@assignment.createdBy.username}}
-    </LinkTo>
-    on
-    {{format-date @assignment.createDate 'MMMM Do, YYYY'}}
-  </div>
-  <div class='info-flex-item single-line assigned-date'>
-    <p class='label'>
-      Assigned
-    </p>
+  {{! Assigned, Due }}
+  <div class='assigned-date'>
     {{#if this.showAssignedDateInput}}
       <Input
         @name='daterange'
@@ -27,15 +28,15 @@
         @change={{action 'updateAssignedDate'}}
       />
     {{else}}
-      <p class='value'>
-        {{format-date @assignment.assignedDate 'MMMM Do, YYYY'}}
+      <p class='label'>
+        Assigned:
+        <span class='value'>
+          {{format-date @assignment.assignedDate 'MMMM Do, YYYY'}}
+        </span>
       </p>
     {{/if}}
   </div>
-  <div class='info-flex-item single-line due-date'>
-    <p class='label'>
-      Due
-    </p>
+  <div class='due-date'>
     {{#if this.showDueDateInput}}
       <Input
         @id='dueDate'
@@ -45,59 +46,59 @@
         @change={{action 'updateDueDate'}}
       />
     {{else}}
-      <p class='value'>
-        {{format-date @assignment.dueDate 'MMMM Do, YYYY'}}
+      <p class='label'>
+        Due:
+        <span class='value'>
+          {{format-date @assignment.dueDate 'MMMM Do, YYYY'}}
+        </span>
       </p>
     {{/if}}
   </div>
-  <div class='info-flex-item section'>
-    <p class='label'>
-      Class
-    </p>
+  {{! Class, Problem }}
+  <div class='section-details'>
     {{!-- {{#if this.showSectionInput}}
       <SelectizeInput @inputId="assn-new-section-select" @initialOptions={{this.sectionOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @propToUpdate="section" @placeholder="Search for a section by name" @model="section" @store={{this.store}} />
     {{else}} --}}
-    <LinkTo @route='sections.section' @model={{@section.id}}>
-      {{@section.name}}
-    </LinkTo>
+    <p>
+      Class:
+      <LinkTo @route='sections.section' @model={{@section.id}}>
+        <span>{{@section.name}}</span>
+      </LinkTo>
+    </p>
     {{!-- {{/if}} --}}
   </div>
-  <div class='info-flex-item problem'>
-    <p class='label'>
-      Problem
+  <div class='section-details'>
+    <p>
+      Problem:
+      <LinkTo @route='problems.problem' @model={{@problem.id}}>
+        <span>{{@problem.title}}</span>
+      </LinkTo>
     </p>
     {{!-- {{#if this.showProblemInput}}
       <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="problem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
     {{else}} --}}
-    <LinkTo @route='problems.problem' @model={{@problem.id}}>
-      {{@problem.title}}
-    </LinkTo>
     {{!-- {{/if}} --}}
   </div>
-  <div class='info-flex-item linked-ws'>
-    <p class='label'>
-      Linked Workspaces
-      <i
-        class={{this.displayListsOptions.linkedWs.icon}}
-        {{action 'toggleProperty' 'areLinkedWsExpanded'}}
-      ></i>
+  <div class='workspace-details'>
+    <p class='labelP'>
+      Linked Workspaces:
     </p>
     {{#if this.hasLinkedWorkspaces}}
-      <ul class={{unless this.areLinkedWsExpanded 'hidden'}}>
-        {{#each @linkedWorkspaces as |ws|}}
-          <li>
-            <LinkTo
-              class='linked-ws-link'
-              @route='workspace.work'
-              @model={{ws.id}}
-            >
-              {{ws.name}}
-            </LinkTo>
-          </li>
-        {{else}}
-
-        {{/each}}
-      </ul>
+      <div class='linked-ws'>
+        <ul>
+          {{#each @linkedWorkspaces as |ws|}}
+            <li>
+              <LinkTo
+                class='linked-ws-link'
+                @route='workspace.work'
+                @model={{ws.id}}
+              >
+                <p class='ws-name'>{{ws.name}}</p>
+              </LinkTo>
+            </li>
+          {{/each}}
+        </ul>
+      </div>
     {{else}}
       <p class='value no-linked-ws'>
         N/A
@@ -129,19 +130,19 @@
         have a linked workspace</p>
     {{/if}}
   </div>
-  <div class='info-flex-item parent-ws'>
-    <p class='label'>
-      Parent Workspace
+  <div class='workspace-details'>
+    <p class='labelP'>
+      Parent Workspace:
     </p>
     {{#if @parentWorkspace}}
       <LinkTo
         class='parent-ws-link'
         @route='workspace.work'
         @model={{@parentWorkspace.id}}
-      >{{@parentWorkspace.name}}
+      ><p class='p-ws-name'>{{@parentWorkspace.name}}</p>
       </LinkTo>
     {{else}}
-      <p class='value no-parent-ws'>
+      <p class='labelP'>
         N/A
       </p>
     {{/if}}
@@ -167,10 +168,10 @@
       <p class='info' data-test='info-no-parent-ws'>You must first add linked
         workspaces in order to add a parent workspace</p>
     {{/if}}
-
   </div>
-  <div class='info-flex-item submissions'>
-    <p class='label'>
+  {{! Submissions }}
+  <div class='submissions'>
+    <p class='labelP'>
       Submissions
       <i
         class={{this.displayListsOptions.submissions.icon}}
@@ -184,11 +185,12 @@
       />
     {{/if}}
   </div>
+
   <div class='info-flex-item actions'>
     {{#if this.showEditButton}}
       <button
         data-test='edit-assignment'
-        class='primary-button'
+        class='edit-assignment-button'
         {{action 'editAssignment'}}
       >
         Edit
