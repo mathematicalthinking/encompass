@@ -1,10 +1,10 @@
 <div id='assignment-info-teacher' class={{if this.isEditing 'is-editing'}}>
   <div class='assignment-header-container'>
     <div class='assignment-name'>
+      Problem:
       {{#if this.isEditing}}
         <Input @type='text' @value={{@assignment.name}} />
       {{else}}
-        Problem:
         {{@assignment.name}}
       {{/if}}
     </div>
@@ -118,16 +118,18 @@
     {{#if this.showAddLinkedWsBtn}}
       <button
         data-test='add-linked-ws'
-        class='primary-button'
+        class='add-linkedworkspaces-btn'
         {{action (mut showLinkedWsForm) true}}
       >
         Add Linked Workspaces
+        <i class='fas fa-plus-circle'></i>
       </button>
     {{/if}}
     {{#if this.showFullLinkedWsMsg}}
-      <p class='info' data-test='info-full-linked-ws'>All
+      <p class='linked-ws-error-msg' data-test='info-full-linked-ws'>All
         {{if this.linkedByGroup 'groups' 'students'}}
-        have a linked workspace</p>
+        have a linked workspace
+        <i class='fas fa-check-circle'></i></p>
     {{/if}}
   </div>
   <div class='workspace-details'>
@@ -160,9 +162,9 @@
     {{#if this.showAddParentWsBtn}}
       <button
         data-test='add-parent-ws'
-        class='primary-button'
+        class='add-parent-workspace-btn'
         {{action (mut showParentWsForm) true}}
-      >Add Parent Workspace</button>
+      >Add Parent Workspace <i class='fas fa-plus-circle'></i></button>
     {{/if}}
     {{#if this.showNoParentWsMsg}}
       <p class='info' data-test='info-no-parent-ws'>You must first add linked
@@ -198,18 +200,20 @@
     {{/if}}
     {{#if this.isEditing}}
       <button
-        class='primary-button'
+        class='save-assign-btn'
         data-test='assn-save'
         {{action 'updateAssignment'}}
       >
         Save
+        <i class='fas fa-save'></i>
       </button>
       <button
-        class='primary-button cancel-button'
+        class='cancelEditBtn'
         data-test='assn-cancel'
         {{action 'stopEditing'}}
       >
         Cancel
+        <i class='fas fa-times'></i>
       </button>
       <button data-test='trash-assn' class='right' {{action 'showDeleteModal'}}>
         <i class='fa fa-trash' aria-hidden='true'></i>

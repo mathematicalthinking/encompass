@@ -71,7 +71,7 @@
 }
 .button-row {
   .createAssignment,
-  .cancelAssignment {
+  .cancelBtn {
     background: white;
     border-radius: 0.2em;
     letter-spacing: 0.2px;
@@ -90,7 +90,7 @@
       box-shadow: none;
     }
   }
-  .cancelAssignment {
+  .cancelBtn {
     background-color: rgb(126, 24, 24);
     &:hover {
       background-color: rgb(255, 0, 0);

@@ -29,15 +29,22 @@
 }
 // Name of assignment
 .assignment-header-container {
-  display: flex;
-  justify-content: space-evenly;
-  font-weight: 600;
+  font-weight: 800;
+  .assignment-name {
+    margin-bottom: 2em;
+  }
   span {
     color: blue;
     &:hover {
       font-weight: 700;
       text-decoration: underline;
     }
+  }
+  input {
+    margin-bottom: 1em;
+    margin-left: 1em;
+    width: 80%;
+    padding: 0.5em;
   }
 }
 // Details of assignment
@@ -99,6 +106,17 @@
       border: 1px solid black;
     }
   }
+  .linked-ws-error-msg {
+    color: rgb(16, 67, 79);
+    font-family: 'Quicksand', sans-serif;
+    border: 3px solid rgb(16, 67, 79);
+    border-radius: 0.5em;
+    padding: 0.7em;
+    width: 50%;
+    text-align: center;
+    margin-top: 1em;
+    margin-left: 0.5em;
+  }
   .p-ws-name {
     color: blue;
     font-family: 'Quicksand', sans-serif;
@@ -116,7 +134,11 @@
     font-weight: 800;
   }
 }
-.edit-assignment-button {
+.edit-assignment-button,
+.add-parent-workspace-btn,
+.add-linkedworkspaces-btn,
+.cancelEditBtn,
+.save-assign-btn {
   background: white;
   border-radius: 0.2em;
   letter-spacing: 0.2px;
@@ -124,7 +146,7 @@
   cursor: pointer;
   font-size: 1em;
   margin-top: 2em;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
   background-color: rgb(255, 229, 162);
   color: black;
   box-shadow: 3px 2px 2px rgb(101, 100, 100);
@@ -133,6 +155,31 @@
     background-color: rgb(255, 183, 0);
     color: black;
     box-shadow: none;
+  }
+}
+.add-parent-workspace-btn,
+.add-linkedworkspaces-btn {
+  background-color: rgb(192, 185, 245);
+  color: black;
+  margin-top: 1em;
+  &:hover {
+    background-color: rgb(128, 37, 232);
+    color: white;
+    font-weight: 500;
+  }
+}
+.save-assign-btn {
+  background-color: rgb(65, 135, 221);
+  &:hover {
+    background-color: rgb(139, 191, 255);
+    color: black;
+  }
+}
+.cancelEditBtn {
+  background-color: rgb(194, 40, 40);
+  color: black;
+  &:hover {
+    background-color: rgb(255, 0, 0);
   }
 }
 .header #assignment-info-student {
