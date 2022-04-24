@@ -1,31 +1,31 @@
 <div class='index'>
   <div class='home-options'>
-    {{!-- My Workspaces, My problem solving (formerly as assignments), My Feedback buttons. --}}
+    {{! My Workspaces, My problem solving (formerly as assignments), My Feedback buttons. }}
     <div class='home-options__tabs'>
       <button
         class='home-options__tab
-          {{if (is-equal this.dataToShow 'workspace') 'home-options--active'}}'
+          {{if (is-equal this.dataToShow "workspace") "home-options--active"}}'
         {{on 'click' (fn this.updateDataToShow 'workspace')}}
       ><span>My Workspaces</span></button>
       <button
         class='home-options__tab
-          {{if (is-equal this.dataToShow 'assignment') 'home-options--active'}}'
+          {{if (is-equal this.dataToShow "assignment") "home-options--active"}}'
         {{on 'click' (fn this.updateDataToShow 'assignment')}}
       ><span>My Problem Solving</span></button>
       <button
         class='home-options__tab
-          {{if (is-equal this.dataToShow 'feedback') 'home-options--active'}}'
+          {{if (is-equal this.dataToShow "feedback") "home-options--active"}}'
         {{on 'click' (fn this.updateDataToShow 'feedback')}}
       ><span>My Feedback</span></button>
     </div>
-    {{!-- Mine, shared, createdbyme  and filters--}}
+    {{! Mine, shared, createdbyme  and filters}}
     <div class='home-options__details'>
       <ul class='details-tabs'>
         {{#each this.data as |item|}}
           <li
             class='details-tabs__tab{{if
                 (is-equal item.label this.activeDetailTab)
-                ' details-tabs--active'
+                " details-tabs--active"
               }}'
           ><button
               {{on 'click' (fn this.updateSelectedData item)}}
@@ -57,27 +57,27 @@
           >All Time</option>
         </select>
       </label>
-      {{!-- workspace filter --}}
-       {{#if (is-equal this.dataToShow 'workspace')}}
-      <label>Filter workspaces by class:
-        <select onchange={{action 'filterByClass'}} > 
-          <option value="reset">Show All</option>
-        {{#each this.model.filteredClasses as |section|  }}
-         <option value={{section.sectionId}}>{{section.name}}</option> 
-        {{/each}}
-        </select>
-      </label> 
+      {{! workspace filter }}
+      {{#if (is-equal this.dataToShow 'workspace')}}
+        <label>Filter workspaces by class:
+          <select onchange={{action 'filterByClass'}}>
+            <option value='reset'>Show All</option>
+            {{#each this.model.filteredClasses as |section|}}
+              <option value={{section.sectionId}}>{{section.name}}</option>
+            {{/each}}
+          </select>
+        </label>
       {{/if}}
-      {{!-- assignment filter --}}
-       {{#if (is-equal this.dataToShow 'assignment')}}
-      <label>Filter assignments by class:
-        <select onchange={{action 'filterByClass'}} > 
-          <option value="reset">Show All</option>
-        {{#each this.model.filteredClasses as |section|  }}
-         <option value={{section.sectionId}}>{{section.name}}</option> 
-        {{/each}}
-        </select>
-      </label> 
+      {{! assignment filter }}
+      {{#if (is-equal this.dataToShow 'assignment')}}
+        <label>Filter assignments by class:
+          <select onchange={{action 'filterByClass'}}>
+            <option value='reset'>Show All</option>
+            {{#each this.model.filteredClasses as |section|}}
+              <option value={{section.sectionId}}>{{section.name}}</option>
+            {{/each}}
+          </select>
+        </label>
       {{/if}}
     </div>
   </div>
@@ -90,18 +90,26 @@
       @activeDetail={{this.activeDetailTab}}
     />
   </section>
-  
-    <div class="footer">
-      <div>
-        <img src="https://www.nsf.gov/images/logos/NSF_4-Color_bitmap_Logo.png"/>
-      </div>
-      <div class="footerNote"> 
-        <p>EnCoMPASS version 3.3.3 last updated on 04/19/2022. </p>
-        <p><a href="https://encompassmath.org/" target="_blank">EnCoMPASS</a> is part of the Online Reflection and Community-based Instructional Development System for Mathematics Education (ORCIDS),
-        an NSF-funded collaboration between Drexel University, California State University San Marcos, and 21st Century Partnership for STEM Education (21PSTEM). Maintained by <a href="https://www.21pstem.org/encompass" target="_blank">21PSTEM.org</a>
-        </p>
-      </div>
-     
+
+  <div class='footer'>
+    <div>
+      <img src='https://www.nsf.gov/images/logos/NSF_4-Color_bitmap_Logo.png' />
     </div>
-    
+    <div class='footerNote'>
+      <p>EnCoMPASS version 3.3.3 last updated on 04/26/2022. </p>
+      <p><a href='https://encompassmath.org/' target='_blank'>EnCoMPASS</a>
+        is part of the Online Reflection and Community-based Instructional
+        Development System for Mathematics Education (ORCIDS), an NSF-funded
+        collaboration between Drexel University, California State University San
+        Marcos, and 21st Century Partnership for STEM Education (21PSTEM).
+        Maintained by
+        <a
+          href='https://www.21pstem.org/encompass'
+          target='_blank'
+        >21PSTEM.org</a>
+      </p>
+    </div>
+
+  </div>
+
 </div>
