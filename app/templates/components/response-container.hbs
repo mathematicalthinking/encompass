@@ -6,6 +6,7 @@
   </p>
 {{else}}
   <p class="feedback-mode">
+    {{log this.isOwnSubmission}}
     {{#if this.isOwnSubmission}}
       Viewing feedback for
       {{else if this.isOwnMentorReply}}
@@ -26,7 +27,7 @@
   {{!-- <div class="response-flex-item submission{{if showApproverReply ' third'}}"> --}}
   <div class="response-flex-item submission">
     <p class="studentSubmission">Student Submissions</p>
-      {{#each this.submissions as |listOfSubmissions|}}
+      {{#each this.sortedSubmissions as |listOfSubmissions|}}
         <div class="submissionChild">
           <ResponseSubmissionView @store={{this.store}} @response={{this.response}} @submission={{listOfSubmissions}} @workspace={{this.workspace}} @wsResponses={{this.cleanWorkspaceResponses}} @studentSubmissions={{this.submissions}} @onSubChange={{action "onSubmissionChange"}} @sendRevisionNotices={{action "sendSubmissionRevisionNotices"}} @isParentWorkspace={{this.isParentWorkspace}} />
         </div>

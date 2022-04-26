@@ -64,6 +64,7 @@ export default class ResponsesRoute extends AuthenticatedRoute {
           submission: hash.submission,
           workspace: hash.workspace,
           submissions: hash.workspace.get('submissions'),
+          responses: hash.workspace.get('responses'),
         });
       })
       .then((hash) => {
@@ -71,15 +72,7 @@ export default class ResponsesRoute extends AuthenticatedRoute {
           'student',
           hash.submission.get('student')
         );
-
-        let associatedResponses = allResponses.filter((response) => {
-          let subId = response.belongsTo('submission').id();
-          return (
-            response.get('id') &&
-            !response.get('isTrashed') &&
-            subId === hash.submission.get('id')
-          );
-        });
+        let associatedResponses = hash.responses.filterBy('id').sort();
         let response = this.response;
         if (!this.response) {
           response = associatedResponses

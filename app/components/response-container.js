@@ -126,7 +126,12 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       return this.nonTrashedResponses.addObjects(this.newResponses);
     }
   ),
-
+  sortedSubmissions: computed('submissions.[]', function () {
+    return this.submissions
+      .rejectBy('isTrashed')
+      .sortBy('createDate')
+      .reverse();
+  }),
   studentDescriptor: computed(
     'isOwnSubmission',
     'submission.student',

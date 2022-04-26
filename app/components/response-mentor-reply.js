@@ -126,11 +126,14 @@ export default Component.extend(ErrorHandlingMixin, {
     return this.isComposing && this.newReplyStatus !== 'approved';
   }),
 
-  sortedMentorReplies: computed('mentorReplies.@each.isTrashed', function () {
+  sortedMentorReplies: computed('mentorReplies.[]', function () {
     if (!this.mentorReplies) {
       return [];
     }
-    return this.mentorReplies.rejectBy('isTrashed').sortBy('createDate');
+    return this.mentorReplies
+      .rejectBy('isTrashed')
+      .sortBy('createDate')
+      .reverse();
   }),
 
   showNoteHeader: computed(

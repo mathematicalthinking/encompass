@@ -2,11 +2,10 @@
 <div id="section-home" class="home-view">
   {{#if this.model.currentUser.isStudent}}
     <h1>Welcome to the Classes Page</h1>
-    <p>Click on a class name to see more info about your classes</p>
+    <p>Click on a class name to display information about your classes.</p>
   {{else}}
     <h1>Welcome to the Classes Page</h1>
-    <p>Click on a class name to see more info and add or remove students</p>
-    <p class="or">Or</p>
+    <p>Click on a class to display information, add, or remove students.</p>
     <LinkTo @route="sections.new" id="section-new-link" class="new-link-btn">
     <span>Create New Class</span></LinkTo>
   {{/if}}
