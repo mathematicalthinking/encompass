@@ -20,12 +20,31 @@
   font-size: 1.5em;
   font-family: 'Quicksand', sans-serif;
 }
-#assignment-info-teacher {
+#assignment-info-teacher,
+#assignment-info-student {
   padding: 1em;
   border: 1px solid rgb(121, 121, 144);
   border-radius: 0.5em;
   margin-left: 1em;
   background-color: aliceblue;
+}
+#assignment-info-student {
+  .info-detail {
+    margin-bottom: 1em;
+    p {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      color: rgb(0, 55, 128);
+    }
+    a {
+      color: blue;
+      font-weight: 600;
+      &:hover {
+        text-decoration: underline;
+        font-weight: 800;
+      }
+    }
+  }
 }
 // Name of assignment
 .assignment-header-container {
@@ -47,13 +66,7 @@
     padding: 0.5em;
   }
 }
-// Details of assignment
-.assignment-details-container {
-  margin-top: 1em;
-  margin-bottom: 1em;
-  padding: 1em;
-  border: 2px solid red;
-}
+
 // Assigned, Due
 .assigned-date {
   margin-top: 1em;
@@ -169,7 +182,7 @@
   }
 }
 .save-assign-btn {
-  background-color: rgb(65, 135, 221);
+  background-color: rgb(84, 154, 239);
   &:hover {
     background-color: rgb(139, 191, 255);
     color: black;
@@ -182,99 +195,7 @@
     background-color: rgb(255, 0, 0);
   }
 }
-.header #assignment-info-student {
-  section.assignment-info-student {
-    margin-bottom: 15px;
-
-    div.info-detail {
-      display: flex;
-      margin-top: 8px;
-    }
-
-    p {
-      font-size: 1em;
-      width: 70%;
-      margin: 8px 0;
-      display: inline-block;
-    }
-
-    label {
-      width: 20%;
-      font-size: 1em;
-      color: $dark-font-color;
-      margin-top: 8px;
-      margin-left: 8px;
-    }
-
-    .action_button {
-      padding: 12px 20px;
-    }
-
-    button.action_button {
-      margin: 8px 15px 8px 5px;
-      padding: 10px 15px;
-      font-size: 0.8em;
-      border-radius: 3px;
-      font-weight: $bold-font-weight;
-    }
-  }
-
-  .info-msg-container {
-    margin-bottom: 8px;
-
-    p.info {
-      font-size: 0.9em;
-    }
-  }
-
-  .info-none {
-    margin-top: 16px;
-  }
-
-  div.past-submissions {
-    display: flex;
-    width: 100%;
-    margin-bottom: 50px;
-
-    section.past-submissions-list {
-      width: 20%;
-      display: inline-block;
-
-      p {
-        font-size: 0.8em;
-        padding: 5px;
-        margin: 8px 0px;
-      }
-
-      ol {
-        li {
-          padding: 6px 0 6px 10px;
-          font-size: 0.8em;
-          cursor: pointer;
-
-          &.highlight {
-            font-weight: $bold-font-weight;
-            background-color: lighten($background-color, 5%);
-          }
-        }
-      }
-    }
-
-    section.past-answer-view {
-      width: 70%;
-      display: inline-block;
-    }
-
-    div#answer-info {
-      label {
-        font-size: 1em;
-      }
-
-      border-left: 1px solid;
-    }
-  }
-}
-
+// Students
 #assignment-report {
   h2 {
     margin-bottom: 10px;

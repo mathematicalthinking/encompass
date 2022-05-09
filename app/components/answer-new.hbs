@@ -83,7 +83,7 @@
           {{/if}}
         </div>
         <div class='new-answer-input contributors'>
-          <label for='students'>Contributing Students</label>
+          <label for='students'>Contributing Students:</label>
           <div class='student-list'>
             <ul>
               {{#each this.contributors as |student|}}
@@ -152,7 +152,7 @@
           class='add-parent-workspace-btn create'
           data-test='submit-answer'
           {{action 'validate'}}
-        >{{if @createButtonText @createButtonText 'Submit Answer'}}</button>
+        >{{if @createButtonText @createButtonText 'Submit Answer'}} </button>
       </span>
       <span class='cancelResponse'>
         <button
