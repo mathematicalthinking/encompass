@@ -1,3 +1,10 @@
 {{page-title 'Welcome to EnCoMPASS'}}
-<h1>Landing-page</h1>
-<LinkTo @route='auth.login'><button>click to login</button> </LinkTo>
+<div id='teacherDiv'>
+  <img src='/assets/images/teachers_students.jpg' id='teacher1' />
+</div>
+<div id='landingTitleDiv'>
+  <img src='/assets/images/encompass-oricids.png' />
+  <p>Teachers learning from student work, together.
+    <LinkTo @route='auth.login'><button>Log in to your EnCOMPASS account</button></LinkTo>
+    <LinkTo @route='auth.signup'><button>Sign up for EnCOMPASS today</button></LinkTo></p>
+</div>
