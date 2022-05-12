@@ -5,7 +5,7 @@
 h1 {
   color: $accent-color;
 }
-*{
+* {
   font-family: 'Quicksand', sans-serif;
 }
 .index {
@@ -56,8 +56,8 @@ h1 {
     font-size: 1.1em;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 80%;
+    justify-content: space-around;
+    width: 100%;
     margin: auto;
     select {
       margin-left: 5px;
@@ -72,7 +72,7 @@ h1 {
     &:after {
       position: absolute;
       content: '';
-      width: 150%;
+      width: 120%;
       bottom: 0;
       left: 0;
       border-bottom: 1px solid #aaa;
@@ -82,11 +82,11 @@ h1 {
     &__tab {
       button {
         font-weight: 400;
-        font-size: .9em;
+        font-size: 0.9em;
         font-family: 'Quicksand', sans-serif;
         background-color: white;
         cursor: pointer;
-        padding: .4em 1em;
+        padding: 0.4em 1em;
         border-radius: 5px 5px 0 0;
         border: 1px solid #aaa;
         border-bottom: none;
@@ -96,7 +96,7 @@ h1 {
           z-index 0.1s linear;
         &:hover {
           background-color: rgb(209, 211, 219);
-          transition: ease-out .2s;
+          transition: ease-out 0.2s;
         }
       }
     }
@@ -108,45 +108,45 @@ h1 {
         font-weight: 500;
         text-decoration: underline;
         background-color: rgb(255, 247, 235);
-        color:rgb(112, 112, 240);
+        color: rgb(112, 112, 240);
       }
     }
   }
 }
+
 // footer
 .footer {
   display: flex;
   margin-top: auto;
-  font-size: .7em;
+  font-size: 0.7em;
   bottom: 0;
   width: 100%;
-  padding:.7em;
+  padding: 0.7em;
   background-color: rgb(244, 245, 249);
   border: 1px solid;
   color: rgb(0, 0, 0);
   text-align: center;
   margin-top: auto;
-  .footerNote{
+  .footerNote {
     text-align: center;
     margin: auto;
   }
-  img{
+  img {
     height: 50px;
     width: 50px;
     margin-left: 2em;
   }
-  p{
+  p {
     font-family: 'Quicksand', sans-serif;
   }
-  a{
-    color:rgb(31, 31, 236);
+  a {
+    color: rgb(31, 31, 236);
     text-decoration: underline;
-    &:hover{
-      color:rgb(102, 55, 242);
+    &:hover {
+      color: rgb(102, 55, 242);
     }
   }
 }
-
 
 // table containing data
 .home--container {
@@ -169,15 +169,45 @@ h1 {
     th {
       background: rgb(207, 210, 219);
       color: rgb(68, 113, 228);
-      letter-spacing: .5px;
+      letter-spacing: 0.5px;
       font-weight: bolder;
       font-weight: 600;
-      &:hover{
+      &:hover {
         font-weight: 700;
       }
     }
-    td{
+    td {
       font-size: 1.1em;
+    }
+  }
+}
+// responsive design
+@media screen and (max-width: 786px) {
+  .home--container {
+    font-size: 0.5em;
+  }
+  .home-options {
+    &__details {
+      flex-direction: column;
+      font-size: 0.9em;
+      text-align: left;
+    }
+  }
+}
+@media screen and (min-width: 787px) and (max-width: 910px) {
+  .home--container {
+    font-size: 0.7em;
+  }
+  .home-options {
+    &__details {
+      font-size: 0.9em;
+    }
+    .details-tabs {
+      &__tab {
+        button {
+          padding: 0.5em;
+        }
+      }
     }
   }
 }

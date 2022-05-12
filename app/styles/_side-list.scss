@@ -2,7 +2,7 @@
 @import 'mixins';
 @import 'responsive-font-size';
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 859px) { 
+@media screen and (min-width: $screen-xs-min) and (max-width: 859px) {
   .list-side {
     width: 35%;
     .list-header {

@@ -1,282 +1,201 @@
 //general
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 .success-message {
   @include success-message;
   margin: 20px 0 20px 0;
 }
-.info-header{
-  border-radius:.5em;
+// Assignment Details
+.info-header {
+  border-radius: 0.5em;
   text-align: center;
   position: relative;
-  border:.5px solid rgb(150, 179, 209);
-  background-color: rgb(215, 229, 245);
-  padding: 1em;
+  padding: 0.5em;
+  text-decoration: underline;
   margin-top: 1.2em;
-  margin-bottom: 1em;
   color: $accent-color;
   font-weight: bold;
   font-size: 1.5em;
   font-family: 'Quicksand', sans-serif;
 }
-//assignment-list hbs
-#assignmentlistheader {
-  h2 {
-    color: $accent-color;
-    font-weight: $bold-font-weight;
-  }
-}
-
-section.assignmentlist {
-  h2 {
-    color: $accent-color;
-    font-weight: $bold-font-weight;
-  }
-
-  #assignment-new-link {
-    color: $accent-color;
-    font-weight: $bold-font-weight;
-  }
-}
-.header
+#assignment-info-teacher,
 #assignment-info-student {
-  section.assignment-info-student {
-    margin-bottom: 15px;
-
-    div.info-detail {
-      display: flex;
-      margin-top: 8px;
-    }
-
+  padding: 1em;
+  border: 1px solid rgb(121, 121, 144);
+  border-radius: 0.5em;
+  margin-left: 1em;
+  background-color: aliceblue;
+}
+#assignment-info-student {
+  .info-detail {
+    margin-bottom: 1em;
     p {
-      font-size: 1em;
-      width: 70%;
-      margin: 8px 0;
-      display: inline-block;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      color: rgb(0, 55, 128);
     }
-
-    label {
-      width: 20%;
-      font-size: 1em;
-      color: $dark-font-color;
-      margin-top: 8px;
-      margin-left: 8px;
-    }
-
-    .action_button {
-      padding: 12px 20px;
-    }
-
-    button.action_button {
-      margin: 8px 15px 8px 5px;
-      padding: 10px 15px;
-      font-size: .8em;
-      border-radius: 3px;
-      font-weight: $bold-font-weight;
-    }
-  }
-
-  .info-msg-container {
-    margin-bottom: 8px;
-
-    p.info {
-      font-size: 0.9em;
-    }
-  }
-
-  .info-none {
-    margin-top: 16px;
-  }
-
-
-  div.past-submissions {
-    display: flex;
-    width: 100%;
-    margin-bottom: 50px;
-
-    section.past-submissions-list {
-      width: 20%;
-      display: inline-block;
-
-      p {
-        font-size: 0.8em;
-        padding: 5px;
-        margin: 8px 0px;
+    a {
+      color: blue;
+      font-weight: 600;
+      &:hover {
+        text-decoration: underline;
+        font-weight: 800;
       }
-
-      ol {
-        li {
-          padding: 6px 0 6px 10px;
-          font-size: 0.8em;
-          cursor: pointer;
-
-          &.highlight {
-            font-weight: $bold-font-weight;
-            background-color: lighten($background-color, 5%);
-          }
-        }
-      }
-    }
-
-    section.past-answer-view {
-      width: 70%;
-      display: inline-block;
-    }
-
-    div#answer-info {
-      label {
-        font-size: 1em;
-      }
-
-      border-left: 1px solid;
     }
   }
 }
-
-
-section.assignment-info-teacher {
-  #assignment-info-form {
-    div.mySelect {
-      display: inline-block;
-      padding: 12px 0px;
-      margin: 8px 0;
-      font-size: 1em;
-      width: 70%;
-
-      select {
-        width: 100%;
-        font-size: 1em;
-        margin-left: 0px;
-        height: 45px;
-        text-indent: 10px;
-        border: 1px solid $input-border;
-        border-radius: 4px;
-        box-sizing: border-box;
-        background: none;
-
-        &::placeholder {
-          color: $primary-font-color;
-        }
-      }
-
-    }
-
-    input[type=text],
-    input[type=date] {
-      font-size: 1em;
-      color: $primary-font-color;
-      width: 70%;
-      padding: 12px 20px;
-      margin: 8px 0px;
-      display: inline-block;
-      border: 1px solid $input-border;
-      border-radius: 4px;
-      box-sizing: border-box;
-      background: none;
-
-      &::placeholder {
-        color: $primary-font-color;
-      }
-    }
-
-    div.twitter-typeahead {
-      display: inline-block;
-      padding: 12px 0px;
-      font-size: 1em;
-      width: 70%;
-
-      span.twitter-typeahead {
-        width: 100%;
-      }
-
-      input.typeahead {
-        width: 100%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        font-size: 1em;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-      }
-    }
-
-    label {
-      width: 20%;
-      font-size: 1em;
-      padding: 12px 20px;
-      color: $dark-font-color;
-    }
-
-    p.assignment-info {
-      font-size: 1em;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-
-      input[type=text],
-      input[type=date] {
-        border: none;
-      }
-    }
-
-    .selectize-comp {
-      width: 70%;
-      display: inline-block;
-    }
+// Name of assignment
+.assignment-header-container {
+  font-weight: 800;
+  .assignment-name {
+    margin-bottom: 2em;
   }
-
-  #assignment-info {
-    .assignment-info {
-      font-size: 1em;
-      width: 70%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: none;
-      border-radius: 4px;
-      box-sizing: border-box;
-      background: none;
-
-      &::placeholder {
-        color: $primary-font-color;
-      }
-
-    }
-
-    label {
-      width: 20%;
-      font-size: 1em;
-      padding: 12px 20px;
-      color: $dark-font-color;
-    }
-
-    .action_button {
-      padding: 12px 20px;
-    }
-  }
-
-  button.action_button {
-    margin: 8px 15px 8px 5px;
-    padding: 10px 15px;
-    font-size: .8em;
-    border-radius: 3px;
-    font-weight: $bold-font-weight;
-  }
-
-  .right {
-    float: right;
-    font-size: 1.5em;
-    color: $primary-font-color;
-    border: none;
-
+  span {
+    color: blue;
     &:hover {
-      color: lighten($primary-font-color, 10);
+      font-weight: 700;
+      text-decoration: underline;
     }
+  }
+  input {
+    margin-bottom: 1em;
+    margin-left: 1em;
+    width: 80%;
+    padding: 0.5em;
   }
 }
 
+// Assigned, Due
+.assigned-date {
+  margin-top: 1em;
+  p {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 800;
+  }
+}
+.due-date {
+  margin-top: 1em;
+  p {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 800;
+  }
+}
+// Class (section), Assignment (Problem)
+.section-details {
+  margin-top: 1em;
+  p {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 800;
+  }
+  span {
+    color: blue;
+    &:hover {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  }
+}
+// Linked, Parent Workspace
+.workspace-details {
+  margin-top: 1em;
+  .labelP {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 800;
+  }
+  .ws-name {
+    font-family: 'Quicksand', sans-serif;
+    color: blue;
+    &:hover {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  }
+  .linked-ws {
+    margin-top: 0.5em;
+    display: flex;
+    span {
+      border: 1px solid black;
+    }
+  }
+  .linked-ws-error-msg {
+    color: rgb(16, 67, 79);
+    font-family: 'Quicksand', sans-serif;
+    border: 3px solid rgb(16, 67, 79);
+    border-radius: 0.5em;
+    padding: 0.7em;
+    width: 50%;
+    text-align: center;
+    margin-top: 1em;
+    margin-left: 0.5em;
+  }
+  .p-ws-name {
+    color: blue;
+    font-family: 'Quicksand', sans-serif;
+    &:hover {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  }
+}
+// Submissions table
+.submissions {
+  margin-top: 1em;
+  .labelP {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 800;
+  }
+}
+.edit-assignment-button,
+.add-parent-workspace-btn,
+.add-linkedworkspaces-btn,
+.cancelEditBtn,
+.save-assign-btn {
+  background: white;
+  border-radius: 0.2em;
+  letter-spacing: 0.2px;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 2em;
+  transition: all 0.1s ease-in-out;
+  background-color: rgb(255, 229, 162);
+  color: black;
+  box-shadow: 3px 2px 2px rgb(101, 100, 100);
+  &:hover {
+    cursor: pointer;
+    background-color: rgb(255, 183, 0);
+    color: black;
+    box-shadow: none;
+  }
+}
+.add-parent-workspace-btn,
+.add-linkedworkspaces-btn {
+  background-color: rgb(192, 185, 245);
+  color: black;
+  margin-top: 1em;
+  &:hover {
+    background-color: rgb(128, 37, 232);
+    color: white;
+    font-weight: 500;
+  }
+}
+.save-assign-btn {
+  background-color: rgb(84, 154, 239);
+  &:hover {
+    background-color: rgb(139, 191, 255);
+    color: black;
+  }
+}
+.cancelEditBtn {
+  background-color: rgb(194, 40, 40);
+  color: black;
+  &:hover {
+    background-color: rgb(255, 0, 0);
+  }
+}
+// Students
 #assignment-report {
   h2 {
     margin-bottom: 10px;
@@ -284,14 +203,14 @@ section.assignment-info-teacher {
 
   .info-summary {
     margin-bottom: 10px;
-    margin-left: 5px;
+    font-family: 'Quicksand', sans-serif;
   }
 
   table {
     margin-left: 5px;
 
     th {
-      background: $pale-accent
+      background: $pale-accent;
     }
 
     td {
@@ -299,171 +218,4 @@ section.assignment-info-teacher {
       border: 1px solid $pale-accent;
     }
   }
-
-}
-
-#assignment-info-teacher {
-  display: flex;
-  flex-direction: column;
-
-  a {
-    @include accent-link
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .selectize-comp {
-    width: 90%;
-    max-width: 500px;
-  }
-
-  input[type=text] {
-    background-color: $background-body;
-    border-radius: 3px;
-    font-size: 0.9em;
-  }
-
-  input[name=daterange] {
-    padding: 6px 9px;
-  }
-
-  .info-flex-item {
-    width: 100%;
-    margin-bottom: 15px;
-
-    ul {
-      li {
-        padding: 5px;
-      }
-    }
-
-    &.assignment-name {
-      @include flex-item(1, flex-start, 1 1 auto);
-      color: black;
-      font-weight: $light-font-weight;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-
-      input[type=text] {
-        width: 90%;
-        max-width: 500px;
-        padding: 10px 15px;
-      }
-    }
-
-    &.creation-details {
-      @include flex-item(2, flex-start, 1 1 auto);
-      margin-bottom: 20px;
-      font-size: 0.9em;
-
-      a {
-        color: $accent-color;
-        font-weight: $light-font-weight;
-
-        &:hover {
-          font-weight: $main-font-weight;
-        }
-      }
-
-    }
-
-    &.assigned-date {
-      @include flex-item(3, flex-start, 1 1 auto);
-    }
-
-    &.due-date {
-      @include flex-item(4, flex-start, 1 1 auto);
-    }
-
-    &.section {
-      @include flex-item(5, flex-start, 1 1 auto);
-    }
-
-    &.problem {
-      @include flex-item(6, flex-start, 1 1 auto);
-    }
-
-    &.linked-ws {
-      @include flex-item(7, flex-start, 1 1 auto);
-
-      .primary-button {
-        margin-top: 10px;
-      }
-    }
-
-    &.parent-ws {
-      @include flex-item(8, flex-start, 1 1 auto);
-      margin-bottom: 25px;
-
-      .primary-button {
-        margin-top: 10px;
-      }
-    }
-
-    &.submissions {
-      @include flex-item(9, flex-start, 1 1 auto);
-    }
-
-    &.actions {
-      @include flex-item(10, flex-start, 1 1 auto);
-
-      .cancel-button {
-        margin-left: 10px;
-      }
-    }
-
-    &.errors {
-      @include flex-item(11, flex-start, 1 1 auto);
-    }
-
-    .label {
-      min-width: 120px;
-      max-width: 300px;
-      font-size: 1.2em;
-      color: black;
-      margin-bottom: 10px;
-
-      i {
-        color: $filter-list-border-color;
-      }
-    }
-
-    .value {
-      min-width: 200px;
-    }
-
-    &.single-line {
-      .label {
-        max-width: 75px;
-        display: inline-block;
-      }
-
-      .value {
-        min-width: 120px;
-        display: inline-block;
-      }
-    }
-  }
-
-  #linked-workspaces-new,
-  #parent-workspace-new {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 20px;
-
-    .info {
-      margin-bottom: 10px;
-    }
-
-    input[type=text] {
-      max-width: 500px;
-    }
-
-    .label {
-      font-size: 1.1em;
-    }
-  }
-
 }
