@@ -1,13 +1,14 @@
 <div id='assignment-new'>
   <header id='assignmentnewheader'>
     <h2>
-      Enter assignment information below <i class="fas fa-info-circle"></i>
+      Enter assignment information below
+      <i class='fas fa-info-circle'></i>
     </h2>
     <div class='clear'></div>
   </header>
   <section>
     <form id='newassignmentform' class='properForm'>
-      <fieldset class="formContainer">
+      <fieldset class='formContainer'>
         <ol>
           <li>
             <label for='section'>
@@ -111,62 +112,62 @@
               </div>
             {{/if}}
           </li>
-          <div class="assignmentsDateContainer">
-          <li>
-            <label for='assignedDate'>
-              <span
-                class='label-text simptip-position-right simptip-multiline simptip-smooth'
-                data-tooltip={{this.tooltips.dateAssigned}}
-              >
-                Date Assigned
-              </span>
-            </label>
-            <div class='flex-input'>
-              <Input
-                @id='assignedDate'
-                @name='daterange'
-                @type='date'
-                @value={{this.assignedDate}}
-                {{on 'input' this.cancelDateError}}
-              />
-              {{#each this.assignedDateFormErrors as |error|}}
-                <p class='error-message'>
-                  {{error}}
-                </p>
-              {{/each}}
-            </div>
-          </li>
-          <li>
-            <label for='dueDate' class='dueDate'>
-              <span
-                class='label-text simptip-position-right simptip-multiline simptip-smooth'
-                data-tooltip={{this.tooltips.dueDate}}
-              >
-                Due Date
-              </span>
-            </label>
-            <div class='flex-input dueDate'>
-              <Input
-                @id='dueDate'
-                @name='daterange'
-                @type='date'
-                @value={{this.dueDate}}
-                {{on 'input' this.cancelDateError}}
-              />
-              {{#each this.dueDateFormErrors as |error|}}
-                <p class='error-message'>
-                  {{error}}
-                </p>
-              {{/each}}
-              {{#if this.invalidDateRange}}
-                <ErrorBox
-                  @error='Invalid Date Range'
-                  @showDismiss={{true}}
-                  @resetError={{action (mut this.invalidDateRange) null}}
+          <div class='assignmentsDateContainer'>
+            <li>
+              <label for='assignedDate'>
+                <span
+                  class='label-text simptip-position-right simptip-multiline simptip-smooth'
+                  data-tooltip={{this.tooltips.dateAssigned}}
+                >
+                  Date Assigned
+                </span>
+              </label>
+              <div class='flex-input'>
+                <Input
+                  @id='assignedDate'
+                  @name='daterange'
+                  @type='date'
+                  @value={{this.assignedDate}}
+                  {{on 'input' this.cancelDateError}}
                 />
-              {{/if}}
-            </div>
-          </li>
+                {{#each this.assignedDateFormErrors as |error|}}
+                  <p class='error-message'>
+                    {{error}}
+                  </p>
+                {{/each}}
+              </div>
+            </li>
+            <li>
+              <label for='dueDate' class='dueDate'>
+                <span
+                  class='label-text simptip-position-right simptip-multiline simptip-smooth'
+                  data-tooltip={{this.tooltips.dueDate}}
+                >
+                  Due Date
+                </span>
+              </label>
+              <div class='flex-input dueDate'>
+                <Input
+                  @id='dueDate'
+                  @name='daterange'
+                  @type='date'
+                  @value={{this.dueDate}}
+                  {{on 'input' this.cancelDateError}}
+                />
+                {{#each this.dueDateFormErrors as |error|}}
+                  <p class='error-message'>
+                    {{error}}
+                  </p>
+                {{/each}}
+                {{#if this.invalidDateRange}}
+                  <ErrorBox
+                    @error='Invalid Date Range'
+                    @showDismiss={{true}}
+                    @resetError={{action (mut this.invalidDateRange) null}}
+                  />
+                {{/if}}
+              </div>
+            </li>
           </div>
           <li>
             <label for='name'>
@@ -182,7 +183,7 @@
                 @type='text'
                 placeholder='Give your assignment a name (optional)'
                 @value={{this.name}}
-                class="assignmentInput"
+                class='assignmentInput'
               />
               {{#each this.nameFormErrors as |error|}}
                 <p class='error-message'>
@@ -200,7 +201,7 @@
                 Create Student Workspaces Now?
               </span>
             </label>
-            <div class="choice-selection">
+            <div class='choice-selection'>
               <RadioGroup
                 @options={{this.linkedWsOptions}}
                 @selectedValue={{this.doCreateLinkedWorkspaces}}
@@ -233,45 +234,45 @@
             {{/if}}
           </li>
           {{#if this.doCreateLinkedWorkspaces}}
-          <div class="group-selection">
-            <li class='parent-ws'>
-              <label for='parentWorkspace'>
-                <span
-                  class='label-text simptip-position-right simptip-multiline simptip-smooth'
-                  data-tooltip={{this.tooltips.parentWorkspace}}
-                >
-                  Create Parent Workspace Now?
-                </span>
-              </label>
-              <RadioGroup
-                @options={{this.parentWsOptions}}
-                @selectedValue={{this.doCreateParentWorkspace}}
-                @updateValue={{action 'updateDoCreateParentWorkspace'}}
-              />
-
-              {{#if this.doCreateParentWorkspace}}
-                <label for='accessOptions'>
+            <div class='group-selection'>
+              <li class='parent-ws'>
+                <label for='parentWorkspace'>
                   <span
                     class='label-text simptip-position-right simptip-multiline simptip-smooth'
-                    data-tooltip={{this.tooltips.parentWorkspaceOptions}}
+                    data-tooltip={{this.tooltips.parentWorkspace}}
                   >
-                    Share parent workspace with students?
+                    Create Parent Workspace Now?
                   </span>
                 </label>
                 <RadioGroup
-                  @options={{this.parentWorkspaceAccessOptions}}
-                  @selectedValue={{this.parentWorkspaceAccess}}
-                  @updateValue={{action 'updateParentWorkspaceAccess'}}
-                  @noWidth={{true}}
+                  @options={{this.parentWsOptions}}
+                  @selectedValue={{this.doCreateParentWorkspace}}
+                  @updateValue={{action 'updateDoCreateParentWorkspace'}}
                 />
-                <ParentWorkspaceNew
-                  @isDisplayOnly={{true}}
-                  @assignmentName={{this.assignmentNamePreview}}
-                  @sectionName={{this.selectedSection.name}}
-                />
-              {{/if}}
-            </li>
-          </div>
+
+                {{#if this.doCreateParentWorkspace}}
+                  <label for='accessOptions'>
+                    <span
+                      class='label-text simptip-position-right simptip-multiline simptip-smooth'
+                      data-tooltip={{this.tooltips.parentWorkspaceOptions}}
+                    >
+                      Share parent workspace with students?
+                    </span>
+                  </label>
+                  <RadioGroup
+                    @options={{this.parentWorkspaceAccessOptions}}
+                    @selectedValue={{this.parentWorkspaceAccess}}
+                    @updateValue={{action 'updateParentWorkspaceAccess'}}
+                    @noWidth={{true}}
+                  />
+                  <ParentWorkspaceNew
+                    @isDisplayOnly={{true}}
+                    @assignmentName={{this.assignmentNamePreview}}
+                    @sectionName={{this.selectedSection.name}}
+                  />
+                {{/if}}
+              </li>
+            </div>
           {{/if}}
         </ol>
       </fieldset>
@@ -282,13 +283,14 @@
       {{/if}}
     </form>
   </section>
-  <div style='clear: left'></div>
   <section class='submit button-row'>
-    <button class='primary-button' data-test='create' {{action 'validate'}}>
+    <button class='createAssignment' data-test='create' {{action 'validate'}}>
       Create Assignment
+      <i class='fas fa-plus-circle'></i>
     </button>
-    <button class='primary-button cancel-button' {{action 'cancel'}}>
+    <button class='cancelBtn' {{action 'cancel'}}>
       Cancel
+      <i class='fas fa-times'></i>
     </button>
   </section>
   {{#each this.createRecordErrors as |error|}}

@@ -1,29 +1,25 @@
 // FONT VARIABLES
 
-$primary-font: 'Roboto',
-sans-serif;
-$secondary-font: "Helvetica Neue",
-Helvetica,
-sans-serif;
-
+$primary-font: 'Quicksand', sans-serif;
+$secondary-font: 'Helvetica Neue', Helvetica, sans-serif;
 // COLOR VARIABLES
 $primary-font-color: #5e5e5e;
 $dark-font-color: black;
 $background-color: #dfdfdf;
-$filter-list-background-color: #F7F7F7;
+$filter-list-background-color: #f7f7f7;
 $filter-list-border-color: #979797;
 $background-body: #fefefe;
-$error-color: #EB5757;
+$error-color: #eb5757;
 $error-border-color: #ffcccc;
-$error-background-color: #FFE0E0;
-$accent-color: #3997EE;
-$pale-accent: #C9E3FA;
+$error-background-color: #ffe0e0;
+$accent-color: #3997ee;
+$pale-accent: #c9e3fa;
 $accent-yellow: #ffd204;
-$success-color: #4BB543;
-$warning-color: #FFA500;
-$notification-color: #FA6400;
+$success-color: #4bb543;
+$warning-color: #ffa500;
+$notification-color: #fa6400;
 $input-border: #ccc;
-$cancel-color: #EFEFEF;
+$cancel-color: #efefef;
 $list-hover-color: #f9fcff;
 $soft-yellow: #fdfd96;
 
@@ -34,22 +30,18 @@ $bold-font-weight: 500;
 $bolder-font-weight: 700;
 
 // BUTTONS
-$primary-button: #3997EE;
+$primary-button: #3997ee;
 $inactive-button: grey;
 
 //BOX SHADOW
-$box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16),
-0 3px 6px rgba(0, 0, 0, 0.23);
+$box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 $button-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-0 3px 1px -2px rgba(0, 0, 0, 0.12),
-0 1px 5px 0 rgba(0, 0, 0, 0.2);
-$card-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
-0 1px 2px rgba(0, 0, 0, 0.24);
-$card-hover: 0 14px 28px rgba(0, 0, 0, 0.25),
-0 10px 10px rgba(0, 0, 0, 0.22);
+  0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+$card-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+$card-hover: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 
 // LINKS
-$primary-link: #3997EE;
+$primary-link: #3997ee;
 
 // SIZES
 $max-width: 1180px;
@@ -65,7 +57,6 @@ $hover-color: yellow;
 $hover-underline: yellow;
 
 // BORDER VARIABLES
-
 
 // BREAKPOINTS
 $screen-xs-min: 0px;

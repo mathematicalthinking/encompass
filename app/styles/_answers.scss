@@ -49,51 +49,48 @@
 }
 
 #answer-new {
-  .new-answer-input {
-    display: flex;
-    align-items: center;
-    margin: 20px 0;
-  }
-
-  .quill-container {
-    width: 65%;
-    min-width: 150px;
-    margin: 15px 0;
-    background-color: white;
-    section#approver-editor {
-      width: 100%;
-      display: inline-block;
-      min-height: 150px;
-      .ql-editor {
-        width: 100%;
-        display: inline-block;
-      }
+  #answernewheader {
+    h2 {
+      font-weight: 700;
+      text-decoration: underline;
+      color: darkcyan;
+      text-align: center;
+      margin-top: 1em;
     }
   }
-
-  label {
-    width: 20%;
-    font-size: 1em;
-    padding: 12px 20px;
-    color: $dark-font-color;
+  @media only screen and (max-width: 1182px) {
+    textarea {
+      width: 100%;
+    }
   }
-  .ql-editor {
-    height: 10em;
-    overflow-y: scroll;
-    resize: vertical;
+  .new-answer-input {
+    display: flex;
+    flex-direction: column;
   }
-  .ql-toolbar.ql-snow {
+  .contributors {
+    .student-list {
+      font-style: italic;
+    }
+  }
+  .properForm {
     width: 100%;
-    background: rgb(180, 175, 175);
-    display: inline-block;
   }
-
-  .student-list {
-    display: block;
+  h2 {
+    font-family: 'Quicksand', sans-serif;
   }
-
-  .error-box {
-    width: 50%;
-    margin-left: 20px;
+  .brief-summary,
+  .explanation,
+  .contributors {
+    margin-top: 0.5em;
+    label {
+      font-weight: 600;
+    }
+  }
+  textarea {
+    margin-top: 1em;
+  }
+  .quill-container {
+    background-color: rgb(255, 252, 252);
+    margin-top: 1em;
   }
 }

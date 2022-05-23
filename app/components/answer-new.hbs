@@ -58,13 +58,13 @@
           {{#if this.imageData}}
             <a
               {{action 'toggleImageSize'}}
-              class='image {{if this.isWide ' wide '}}'
+              class='image {{if this.isWide " wide "}}'
             >
               <img
                 src='{{this.imageData}}'
                 alt='{{format-date
                   this.answer.createDate
-                  'MMM Do YYYY hh:mm A'
+                  "MMM Do YYYY hh:mm A"
                 }}'
               />
             </a>
@@ -83,7 +83,7 @@
           {{/if}}
         </div>
         <div class='new-answer-input contributors'>
-          <label for='students'>Contributing Students</label>
+          <label for='students'>Contributing Students:</label>
           <div class='student-list'>
             <ul>
               {{#each this.contributors as |student|}}
@@ -149,14 +149,14 @@
     <section class='submit'>
       <span>
         <button
-          class='primary-button create'
+          class='add-parent-workspace-btn create'
           data-test='submit-answer'
           {{action 'validate'}}
-        >{{if @createButtonText @createButtonText 'Create Answer'}}</button>
+        >{{if @createButtonText @createButtonText 'Submit Answer'}} </button>
       </span>
       <span class='cancelResponse'>
         <button
-          class='action_button cancel-button'
+          class='cancelEditBtn'
           {{action 'cancelResponse'}}
         >Cancel</button>
       </span>
