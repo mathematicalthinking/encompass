@@ -12,8 +12,8 @@
     </div>
     <div class='info-detail'>
       <label>Class:</label>
-      <p><LinkTo @route='sections.section' @model={{@assignment.section.id}}>
-          {{@assignment.section.name}}</LinkTo></p>
+      <a><LinkTo @route='sections.section' @model={{@assignment.section.id}}>
+          {{@assignment.section.name}}</LinkTo></a>
     </div>
 
     <div class='info-detail'>
@@ -80,15 +80,14 @@
   {{/if}}
   {{#if this.showReviseButton}}
     <button
-      class='primary-button revise'
+      class='edit-assignment-button'
       {{action 'reviseAssignmentResponse'}}
-    >Revise</button>
+    >Revise <i class='fas fa-edit'></i></button>
   {{/if}}
   {{#if this.showRespondButton}}
-    <button
-      class='primary-button respond'
-      {{action 'beginAssignmentResponse'}}
-    >Share Your Ideas</button>
+    <button class='save-assign-btn' {{action 'beginAssignmentResponse'}}>Share
+      Your Ideas
+      <i class='fas fa-lightbulb'></i></button>
   {{/if}}
 
   <div class='info-msg-container'>

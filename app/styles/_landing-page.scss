@@ -1,0 +1,140 @@
+#landingTitleDiv {
+  display: flex;
+  justify-content: space-around;
+  height: 40em;
+  align-items: center;
+  background: linear-gradient(-45deg, #ffffff, #f1e79bfe, #a4dff4, #92bcf3);
+  background-size: 400% 400%;
+  animation: gradient 10s ease infinite;
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  h1,
+  p {
+    font-family: $primary-font;
+    font-weight: 800;
+  }
+  p {
+    font-size: 3em;
+    color: rgb(46, 62, 101);
+  }
+}
+#msg-landing-container {
+  margin-top: 3em;
+  text-align: center;
+  h1 {
+    font-family: $primary-font;
+    font-weight: 700;
+    font-size: 2em;
+    color: rgba(48, 48, 48, 0.856);
+  }
+  p {
+    font-family: $primary-font;
+    margin: auto;
+    margin-top: 1.5em;
+    width: 50%;
+    font-weight: 600;
+  }
+}
+#btns-landing-page {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 3em;
+  padding: 2em;
+  span {
+    background-color: rgb(255, 255, 255);
+    border-radius: 1em;
+    border: 2px solid rgb(92, 146, 255);
+    transition: all 0.2s;
+    font-size: 1em;
+    padding: 1em 2em;
+    font-weight: 600;
+    color: rgb(29, 113, 239);
+    cursor: pointer;
+    &:hover {
+      background-color: rgb(93, 184, 245);
+      color: white;
+    }
+  }
+}
+#image-landing-page {
+  img {
+    display: block;
+    max-width: 700px;
+    max-height: 500px;
+    width: 650px;
+    height: auto;
+  }
+  div {
+    display: flex;
+    margin-top: 1em;
+    padding: 1em;
+    text-align: left;
+  }
+  .image-info {
+    h1 {
+      text-align: center;
+    }
+  }
+}
+// responsive
+@media only screen and (max-width: 852px) {
+  #landingTitleDiv {
+    flex-direction: column;
+    font-size: 0.7em;
+  }
+  #image-landing-page {
+    img {
+      width: auto;
+    }
+    div {
+      flex-direction: column;
+      #feedbackImg {
+        order: 2;
+      }
+      #image-info {
+        order: 1;
+      }
+    }
+  }
+}
+.footer {
+  display: flex;
+  margin-top: auto;
+  font-size: 0.7em;
+  bottom: 0;
+  width: 99%;
+  padding: 0.7em;
+  background-color: rgb(244, 245, 249);
+  border: 1px solid;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  margin-top: auto;
+  .footerNote {
+    text-align: center;
+    margin: auto;
+  }
+  img {
+    height: 50px;
+    width: 50px;
+    margin-left: 2em;
+  }
+  p {
+    font-family: 'Quicksand', sans-serif;
+  }
+  a {
+    color: rgb(31, 31, 236);
+    text-decoration: underline;
+    &:hover {
+      color: rgb(102, 55, 242);
+    }
+  }
+}
