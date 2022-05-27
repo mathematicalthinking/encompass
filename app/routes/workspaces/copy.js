@@ -8,7 +8,7 @@ export default class WorkspacesCopyRoute extends AuthenticatedRoute {
   workspaceToCopy = null;
   workspaceId = null;
   beforeModel(transition) {
-    if(transition.intent.queryParams){
+    if (transition.intent.queryParams) {
       this.workspaceId = transition.intent.queryParams.workspace;
     }
   }
