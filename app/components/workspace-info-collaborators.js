@@ -302,7 +302,7 @@ export default class WorkspaceInfoCollaborators extends Component {
       permissions.removeObject(existingObj);
     }
 
-    let subValue = this.get('submissions.value');
+    let subValue = this.submissions.value;
 
     let newObj = {
       user: existingObj.user,
@@ -367,7 +367,7 @@ export default class WorkspaceInfoCollaborators extends Component {
     permissions.addObject(newObj);
 
     ws.save().then(() => {
-      this.set('globalPermissionValue', null);
+      this.globalPermissionValue = null;
       this.alert.showToast(
         'success',
         `Permissions set for ${permissionsObject.userObj.get('username')}`,

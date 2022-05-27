@@ -179,7 +179,6 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
       }
     }
     this.args.originalCollaborators.addObject(this.collabUser);
-
     permissions.addObject(newObj);
 
     ws.save().then(() => {

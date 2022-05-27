@@ -2,7 +2,6 @@ import { attr, belongsTo, hasMany } from '@ember-data/model';
 import moment from 'moment';
 import _ from 'underscore';
 import Auditable from './auditable';
-import { tracked } from '@glimmer/tracking';
 export default class WorkspaceModel extends Auditable {
   getWorkspaceId() {
     return this.id;
@@ -22,12 +21,6 @@ export default class WorkspaceModel extends Auditable {
   @hasMany('tagging', { async: true }) taggings;
   @attr('date') lastViewed;
   @attr('date') lastModifiedDate;
-  // @tracked comments = [];
-  // @tracked folders = [];
-  // @tracked selections = [];
-  // @tracked submissions = [];
-  // @tracked taggings = [];
-  @tracked persmissions = [];
   get lastViewedDate() {
     if (!this.lastViewed) {
       return this.lastModifiedDate;
@@ -133,15 +126,14 @@ export default class WorkspaceModel extends Auditable {
     }
     return null;
   }
-  // @attr() permissions;
-  // @tracked persmissions = [];
+
+  @attr() permissions;
   get collaborators() {
     const permissions = this.permissions;
-
     if (Array.isArray(permissions)) {
       return permissions.mapBy('user');
     }
-    return [];
+    return permissions;
   }
 
   get feedbackAuthorizers() {
@@ -152,9 +144,9 @@ export default class WorkspaceModel extends Auditable {
     }
     return [];
   }
-  // @attr('') sourceWorkspace; // if workspace is copy
+  @attr('') sourceWorkspace; // if workspace is copy
   // @belongsTo('assignment') linkedAssignment;
-  // @attr('boolean', { defaultValue: true }) doAllowSubmissionUpdates;
-  // @attr('boolean', { defaultValue: false }) doOnlyUpdateLastViewed;
-  // @attr('boolean', { defaultValue: false }) doAutoUpdateFromChildren;
+  @attr('boolean', { defaultValue: true }) doAllowSubmissionUpdates;
+  @attr('boolean', { defaultValue: false }) doOnlyUpdateLastViewed;
+  @attr('boolean', { defaultValue: false }) doAutoUpdateFromChildren;
 }
