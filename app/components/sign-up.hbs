@@ -159,7 +159,10 @@
         {{on 'input' this.resetErrors}}
       />
       <label for='terms'>Do you accept our
-        <a href=''>Terms and Conditions</a></label>
+        <LinkTo @route='terms'>
+          <span>Terms and conditions?</span>
+        </LinkTo></label>
+
     </div>
 
     <div class='terms-error'>

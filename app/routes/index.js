@@ -18,7 +18,6 @@ export default class IndexRoute extends Route {
     //this is duplicated here,AuthentecatedRoute, and in ApplicationRoute
     var user = this.modelFor('application');
     if (!user.get('isAuthenticated')) {
-      console.log('here');
       this.store.unloadAll();
       this.transitionTo('landing-page');
     } else if (
