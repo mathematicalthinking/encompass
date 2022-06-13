@@ -28,7 +28,7 @@
   width: 100%;
   z-index: 10;
   display: flex;
-  font-size: 1em; 
+  font-size: 1em;
 }
 
 // TOP BAR STYLING FOR WHEN LOGGED OUT
@@ -41,45 +41,45 @@
   .toggle-role {
     cursor: pointer;
   }
-  ul{
+  ul {
     display: flex;
   }
 }
-// List items for role, profile, logout. 
+// List items for role, profile, logout.
 @media screen and (max-width: 590px) {
   .al_nav#main-nav {
-    font-size: .9em;
+    font-size: 0.9em;
     justify-content: end;
     flex-direction: column;
-    span{
+    span {
       margin-top: 2em;
     }
-    i{
-      font-size: .5em;
+    i {
+      font-size: 0.5em;
     }
   }
-  .menuButton{
-    &:hover{
-      padding: .3em;
-      font-weight:none;
+  .menuButton {
+    &:hover {
+      padding: 0.3em;
+      font-weight: none;
     }
   }
 }
-.userName{
+.userName {
   font-size: 1.2em;
 }
-#current-username{
+#current-username {
   text-transform: capitalize;
 }
 .al_nav#main-nav {
   display: flex;
   // flex grow is added to help with look of nav when resizing browser window.
-  flex-grow: .2;
+  flex-grow: 0.2;
   margin-left: auto;
   justify-content: space-around;
   align-items: center;
   // Data returns lowercased, uppercases the acting role when as admin
-  .acting-role{
+  .acting-role {
     text-transform: capitalize;
   }
   .toggle-role {
@@ -104,7 +104,7 @@
   }
 }
 .menuButton::before {
-  content: "";
+  content: '';
   position: absolute;
   display: block;
   width: 100%;
@@ -117,7 +117,6 @@
 }
 .menuButton:hover::before {
   transform: scaleX(1);
-  
 }
 // Side nav bar
 .hamburger {
@@ -125,22 +124,20 @@
   i {
     border-radius: 50%;
     padding: 10px;
-    color:white;
+    color: white;
   }
 }
-.hamburger{
-  &:hover{
+.hamburger {
+  &:hover {
     i {
       background-color: rgb(164, 183, 213);
-      color:purple;
+      color: purple;
     }
-   
   }
 }
 .mdc-drawer {
-  height: 50vh;
   top: 80px;
-  border-radius: .5em;
+  border-radius: 0.5em;
   background-color: rgb(236, 239, 249);
   .mdc-list-item--activated {
     color: #653df6;
