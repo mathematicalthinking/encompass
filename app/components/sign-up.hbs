@@ -151,6 +151,10 @@
       {{/if}}
     </div>
     <div id='checkbox'>
+      <label for='terms'>Do you accept our
+        <LinkTo @route='terms'>
+          <span>Terms and conditions?</span>
+        </LinkTo></label>
       <Input
         @type='checkbox'
         @id='terms'
@@ -158,8 +162,6 @@
         @checked={{this.agreedToTerms}}
         {{on 'input' this.resetErrors}}
       />
-      <label for='terms'>Do you accept our
-        <a href=''>Terms and Conditions</a></label>
     </div>
 
     <div class='terms-error'>

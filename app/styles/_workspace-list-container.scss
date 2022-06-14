@@ -1,11 +1,11 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
-
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 1131px) {
   #workspace-list-container {
-    .sort-bar-item, .item-section {
+    .sort-bar-item,
+    .item-section {
       &.comments {
         display: none;
       }
@@ -15,7 +15,8 @@
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 1401px) {
   #workspace-list-container {
-    .sort-bar-item, .item-section {
+    .sort-bar-item,
+    .item-section {
       &.responses {
         display: none;
       }
@@ -24,14 +25,19 @@
 }
 
 #workspace-list-container {
-  .sort-bar-item, .item-section {
-    font-size: .8em;
+  .sort-bar-item,
+  .item-section {
+    font-size: 0.8em;
     text-align: center;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
-      font-size: .7em;
+    padding: 0.4em 0;
+    .fa-minus,
+    .fa-arrow-up,
+    .fa-arrow-down,
+    .fa-filter {
+      font-size: 0.7em;
       position: relative;
       top: -1px;
     }
@@ -40,7 +46,7 @@
       color: black;
     }
     &.mode {
-      @include flex-item(1, center, .05 0 auto);
+      @include flex-item(1, center, 0.05 0 auto);
       width: 5%;
       &:hover {
         cursor: pointer;
@@ -51,46 +57,53 @@
       }
     }
     &.info-item {
-      @include flex-item(2, center, .02 0 auto);
+      @include flex-item(2, center, 1 0 auto);
       width: 2%;
       text-align: left;
       overflow: visible;
     }
     &.name {
-      @include flex-item(3, center, .23 0 auto);
+      @include flex-item(3, center, 1 0 auto);
       width: 23%;
       text-align: left;
+      font-size: 0.7em;
     }
     &.last-viewed {
-      @include flex-item(4, center, .08 0 auto);
+      @include flex-item(4, center, 1 0 auto);
       width: 8%;
+      font-size: 0.9em;
     }
     &.submissions {
-      @include flex-item(5, center, .08 0 auto);
+      @include flex-item(5, center, 1 0 auto);
       width: 8%;
+      font-size: 0.9em;
     }
     &.selections {
-      @include flex-item(6, center, .07 0 auto);
+      @include flex-item(6, center, 1 0 auto);
       width: 7%;
+      font-size: 0.9em;
     }
     &.comments {
-      @include flex-item(7, center, .07 0 auto);
+      @include flex-item(7, center, 1 0 auto);
       width: 7%;
+      font-size: 0.9em;
     }
     &.responses {
-      @include flex-item(8, center, .07 0 auto);
+      @include flex-item(8, center, 1 0 auto);
       width: 7%;
     }
     &.owner {
-      @include flex-item(9, center, .08 0 auto);
+      @include flex-item(9, center, 1 0 auto);
       width: 8%;
+      font-size: 0.7em;
     }
     &.editors {
-      @include flex-item(10, center, .06 0 auto);
+      @include flex-item(10, center, 1 0 auto);
       width: 6%;
+      font-size: 0.9em;
     }
     &.more {
-      @include flex-item(11, center, .01 0 auto);
+      @include flex-item(11, center, 0.01 0 auto);
       width: 1%;
       text-align: left;
       overflow: visible;
@@ -111,38 +124,40 @@
           min-width: fit-content;
           margin: 0 10px;
           &.mode {
-            @include flex-item(1, center, .07 0 auto);
+            @include flex-item(1, center, 0.07 0 auto);
             width: 7%;
           }
           &.name {
-            @include flex-item(2, center, .15 0 auto);
+            @include flex-item(2, center, 0.15 0 auto);
             width: 15%;
           }
           &.last-viewed {
-            @include flex-item(3, center, .10 0 auto);
+            @include flex-item(3, center, 0.1 0 auto);
             width: 10%;
           }
           &.submissions {
-            @include flex-item(4, center, .10 0 auto);
+            @include flex-item(4, center, 0.1 0 auto);
             width: 10%;
           }
           &.selections {
-            @include flex-item(5, center, .10 0 auto);
+            @include flex-item(5, center, 0.1 0 auto);
             width: 10%;
           }
           &.comments {
-            @include flex-item(6, center, .10 0 auto);
+            @include flex-item(6, center, 0.1 0 auto);
             width: 10%;
           }
           &.responses {
-            @include flex-item(7, center, .10 0 auto);
+            @include flex-item(7, center, 0.1 0 auto);
             width: 10%;
           }
           &.editors {
-            @include flex-item(8, center, .10 0 auto);
+            @include flex-item(8, center, 0.1 0 auto);
             width: 10%;
           }
-          &.info-item, &.owner, &.more {
+          &.info-item,
+          &.owner,
+          &.more {
             display: none;
           }
         }
@@ -150,7 +165,15 @@
       #workspace-list {
         width: inherit;
         .main-list {
-          @include flex-container(auto, auto, row, wrap, center, center, center);
+          @include flex-container(
+            auto,
+            auto,
+            row,
+            wrap,
+            center,
+            center,
+            center
+          );
         }
         .workspace-list-item {
           @include flex-item(1, auto, 1 1 auto);
@@ -161,7 +184,15 @@
             border-radius: 5px;
             padding: 10px;
             display: block;
-            @include flex-container(auto, hidden, column, wrap, space-between, stretch, stretch);
+            @include flex-container(
+              auto,
+              hidden,
+              column,
+              wrap,
+              space-between,
+              stretch,
+              stretch
+            );
             &:hover {
               background-color: $list-hover-color;
             }
@@ -217,7 +248,15 @@
                 padding: 15px 10px 20px 10px;
                 .workspace-stats {
                   text-align: center;
-                  @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
+                  @include flex-container(
+                    auto,
+                    auto,
+                    row,
+                    wrap,
+                    space-between,
+                    stretch,
+                    stretch
+                  );
                   li {
                     @include flex-item(1, auto, 1 0 auto);
                     line-height: 2em;
@@ -252,7 +291,7 @@
     background-color: $cancel-color;
     color: $primary-font-color;
     padding: 10px 10px 10px 5px;
-    font-size: .8em;
+    font-size: 0.8em;
     border: none;
     border-radius: 3px;
     cursor: pointer;
@@ -268,7 +307,7 @@
     font-size: 1.2em;
     i {
       color: $primary-font-color;
-      font-size: .9em;
+      font-size: 0.9em;
     }
   }
   .ws-new {
@@ -305,11 +344,11 @@
       margin-bottom: 10px;
       i {
         margin-left: 15px;
-        font-size: .9em;
+        font-size: 0.9em;
       }
     }
     .sub-input-label {
-      font-size: .9em;
+      font-size: 0.9em;
       margin-left: 20px;
     }
   }
@@ -324,7 +363,7 @@
       border-radius: 3px;
       border: 0;
       padding: 8px 10px;
-      font-size: .75em;
+      font-size: 0.75em;
       margin-right: 10px;
       &.cancel-button {
         background-color: $cancel-color;
@@ -346,6 +385,3 @@
     }
   }
 }
-
-
-
