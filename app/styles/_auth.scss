@@ -1,12 +1,14 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 @media screen and (min-width: 0) and (max-width: 530px) {
-  .login-page, .signup-page {
+  .login-page,
+  .signup-page {
     background-color: white;
   }
-  .login-box, .signup-box {
+  .login-box,
+  .signup-box {
     box-shadow: none;
     position: relative;
     top: 0;
@@ -14,10 +16,12 @@
 }
 
 @media screen and (min-width: 531px) and (max-width: 100000px) {
-  .login-page, .signup-page {
+  .login-page,
+  .signup-page {
     background-color: $filter-list-background-color;
   }
-  .login-box, .signup-box {
+  .login-box,
+  .signup-box {
     box-shadow: $button-shadow;
     position: relative;
   }
@@ -30,7 +34,12 @@
 }
 
 // GENERAL STYLING
-.auth-page, .login-page, .signup-page, .forgot-page, .reset-page, .confirm-page {
+.auth-page,
+.login-page,
+.signup-page,
+.forgot-page,
+.reset-page,
+.confirm-page {
   // background-color: $filter-list-background-color;
   width: 100%;
   font-family: $primary-font;
@@ -56,14 +65,22 @@
   padding: 30px 30px 0 30px;
   border-radius: 5px;
   background-color: white;
-  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
+  @include flex-container(
+    auto,
+    null,
+    column,
+    wrap,
+    space-between,
+    stretch,
+    stretch
+  );
   .encompass-logo {
-    @include flex-item(1, center, .1 0 auto);
+    @include flex-item(1, center, 0.1 0 auto);
     max-width: 200px;
     margin-bottom: 30px;
   }
   .form-signin {
-    @include flex-item(2, auto, .6 0 auto);
+    @include flex-item(2, auto, 0.6 0 auto);
   }
   .auth-form-input {
     margin: 0 auto;
@@ -98,14 +115,14 @@
     margin-top: 40px;
   }
   .bottom-info {
-    @include flex-item(3, auto, .3 0 auto);
+    @include flex-item(3, auto, 0.3 0 auto);
   }
   .or {
     margin-top: 20px;
     font-weight: $light-font-weight;
     text-align: center;
   }
-  .signup-link  {
+  .signup-link {
     margin-top: 30px;
     padding-bottom: 20px;
     font-weight: $light-font-weight;
@@ -136,31 +153,38 @@
   margin-top: 1em;
 }
 
-
 .signup-box {
   margin: 0 auto;
   max-width: 450px;
   padding: 20px 30px 0 30px;
   border-radius: 5px;
   background-color: white;
-  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
+  @include flex-container(
+    auto,
+    null,
+    column,
+    wrap,
+    space-between,
+    stretch,
+    stretch
+  );
   .encompass-logo {
-    @include flex-item(1, center, .1 0 auto);
+    @include flex-item(1, center, 0.1 0 auto);
     max-width: 200px;
     margin-bottom: 20px;
   }
   .form-signup {
-    @include flex-item(2, auto, .6 0 auto);
+    @include flex-item(2, auto, 0.6 0 auto);
   }
   .auth-form-input {
     margin: 0 auto;
     margin-bottom: 10px;
     padding: 0;
     max-width: 350px;
-    font-size: .9em;
+    font-size: 0.9em;
   }
   .bottom-info {
-    @include flex-item(3, auto, .3 0 auto);
+    @include flex-item(3, auto, 0.3 0 auto);
   }
   // #org-select {
   .selectize-control {
@@ -194,22 +218,9 @@
     }
   }
   #checkbox {
+    display: flex;
+    width: 50%;
     margin: 0 auto;
-    margin-bottom: 40px;
-    margin-top: 25px;
-    padding: 0;
-    width: 350px;
-    font-size: .9em;
-    input  {
-      width: 50px;
-      margin-bottom: 0;
-      float: left;
-    }
-    label {
-      float: right;
-      position: relative;
-      left: -55px;
-    }
     a {
       @include main-link;
     }
@@ -218,11 +229,12 @@
     @include auth-button;
     margin-top: 20px;
   }
-  .terms-error, .post-error {
+  .terms-error,
+  .post-error {
     margin: 0 auto;
     padding-top: 10px;
     width: 350px;
-    font-size: .9em;
+    font-size: 0.9em;
   }
   .login-link {
     margin-top: 20px;
@@ -339,7 +351,9 @@
       @include main-link;
     }
   }
-  .info, .error-message, .success-message {
+  .info,
+  .error-message,
+  .success-message {
     margin-bottom: 20px;
     font-weight: $light-font-weight;
     text-align: center;
@@ -430,7 +444,6 @@
       font-size: 1.2em;
     }
 
-
     .signup-box {
       padding-bottom: 20px;
       .auth-button {
@@ -439,7 +452,7 @@
     }
   }
 
-  p.info{
+  p.info {
     font-size: 1.2em;
   }
 }
@@ -475,5 +488,4 @@
       padding: 20px 50px;
     }
   }
-
 }

@@ -100,4 +100,5 @@ Router.map(function () {
     this.route('folders');
   });
   this.route('landing-page');
+  this.route('terms');
 });

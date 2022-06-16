@@ -51,6 +51,7 @@ export default class Application extends Route {
       'auth.forgot',
       'auth.login',
       'auth.signup',
+      'terms',
     ];
     const targetPath = transition.targetName;
 
