@@ -1,0 +1,23 @@
+FROM node:12.16.1@sha256:8fa78144d1864f2b08ca4a2d28e9cc32930d78850630652ff338793291a91f0c
+RUN apt update -y && apt upgrade -y && apt install -y curl wget bash iputils-ping net-tools dnsutils
+
+# install ember
+RUN npm install -g ember-cli
+
+WORKDIR /web
+
+# copy the package files into the image
+COPY  package*.json ./
+
+# install dev dependencies
+RUN npm i --unsafe=true
+
+# copy the code into the image for building
+COPY . ./
+
+# run the build script
+RUN npm run build
+
+EXPOSE 1338
+CMD ["node", "/web/app_server/server.js"]
+#CMD ["tail", "-f", "/dev/null"] # uncomment this line to keep a crashing container up for troubleshooting
