@@ -1,0 +1,104 @@
+pipeline {
+    environment {
+        registry = 'mathematicalthinking/encompass'
+        registryCredential = 'mt-docker-hub-credentials'
+        dockerImage = ''
+        deploymentHost = 'mttest'
+        githubRepo = 'git@github.com:mathematicalthinking/encompass.git'
+        githubBranch = 'develop'
+    }
+    agent any    
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                // notify slack build started
+                slackSend message:"Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+                // checkout github repo
+                git branch: "${githubBranch}", credentialsId: 'jenkins-docker-ssh', url: "${githubRepo}"
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // set the docker build context to local, assumes contexts have been set on the build server
+                    sh 'docker context use default'
+                    // build the docker image
+                    dockerImage = docker.build(registry + ":dev-build-$BUILD_NUMBER", "-f Dockerfile-dev .")                    
+                    }
+                }
+            }
+        
+        stage('Push Docker Image to DockerHub') {
+            steps {
+                script {
+                    // push docker image to registry
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                        dockerImage.push('dev-latest')
+                    }
+                    // clean up build image
+                    sh "docker rmi $registry:dev-build-$BUILD_NUMBER"                    
+                }
+            }
+        }
+        stage('Deploy to test server') {
+            steps {
+                script {
+                    // checkout the devops git repo to get the swarm stack file
+                    checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'refs/heads/main']],
+                    doGenerateSubmoduleConfigurations: false, 
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'DevOpsTemp']], 
+                    submoduleCfg: [], 
+                    userRemoteConfigs: [[credentialsId: 'jenkins-docker-ssh', url: 'git@github.com:21pstem/devops.git']]
+                    ])                    
+                    // copy .env files into same dir as stack file
+                    sh 'cp /home/jenkins/app-config/mt/environments/test/.env* DevOpsTemp/mt/'                    
+                    // use sshagent plugin to ssh to remote server
+                    sshagent(['jenkins-docker-ssh']) {
+                        sh """
+                            # setup the /mtdocker folder on remote host (for manual manipulation of stack)
+                            ssh ${deploymentHost} 'mkdir -p /mtdocker'
+                            scp DevOpsTemp/mt/docker-compose*.yml DevOpsTemp/mt/swarm-monitoring/docker-compose*.yml DevOpsTemp/mt/.env* jenkins@${deploymentHost}:/mtdocker
+                            ssh ${deploymentHost} 'chown -R :docker /mtdocker && chmod -R 770 /mtdocker'    
+
+                            # set the docker remote host context
+                            docker context use ${deploymentHost}
+                            
+                            # pull the latest image
+                            docker pull ${registry}:dev-latest
+                                                        
+                            # remove the docker swarm service
+                            docker service rm mt-test_encompass
+
+                            # redeploy the app service                            
+                            docker stack deploy --compose-file DevOpsTemp/mt/docker-compose-mt-apps-test.yml mt-test
+
+                            # restart nginx (clears the cache and reconnects the backend service)
+                            docker service update --force mt-test_nginx
+
+                            # set the docker build context back to local
+                            docker context use default
+                        """
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            slackSend message:"Build deployed successfully - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+        failure {
+            slackSend failOnError:true, message:"Build failed  - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+        // clean workspace after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true)
+        }
+    }
+}
