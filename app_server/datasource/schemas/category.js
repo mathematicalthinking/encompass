@@ -3,29 +3,31 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 /**
-  * @public
-  * @class Category
-  * @description Categories are used to categorize problems
-  * @todo Create or use external categories for problem?
-  */
-var CategorySchema = new Schema({
-  //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User' },
-  createDate: { type: Date, 'default': Date.now() },
-  isTrashed: { type: Boolean, 'default': false },
-  lastModifiedBy: { type: ObjectId, ref: 'User' },
-  lastModifiedDate: { type: Date, 'default': Date.now() },
-  //====
-  identifier: { type: String, required: true },
-  description: { type: String },
-  url: { type: String },
-
-}, { versionKey: false });
+ * @public
+ * @class Category
+ * @description Categories are used to categorize problems
+ * @todo Create or use external categories for problem?
+ */
+var CategorySchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
+    createdBy: { type: ObjectId, ref: 'User' },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
+    lastModifiedBy: { type: ObjectId, ref: 'User' },
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
+    identifier: { type: String, required: true },
+    description: { type: String },
+    url: { type: String },
+  },
+  { versionKey: false }
+);
 
 /**
-  * ## Pre-Validation
-  * Before saving we must verify (synchonously) that:
-  */
+ * ## Pre-Validation
+ * Before saving we must verify (synchonously) that:
+ */
 // CategorySchema.pre('save', function (next) {
 //   var toObjectId = function (elem, ind, arr) {
 //     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
@@ -48,9 +50,9 @@ var CategorySchema = new Schema({
 // });
 
 /**
-  * ## Post-Validation
-  * After saving we must ensure (synchonously) that:
-  */
+ * ## Post-Validation
+ * After saving we must ensure (synchonously) that:
+ */
 // CategorySchema.post('save', function (Category) {
 //   var update = { $addToSet: { 'Categorys': Category } };
 //   if (Category.isTrashed) {
