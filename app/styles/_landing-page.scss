@@ -29,18 +29,20 @@
 }
 #msg-landing-container {
   margin-top: 3em;
-  text-align: center;
   h1 {
     font-family: $primary-font;
     font-weight: 700;
     font-size: 2em;
     color: rgba(48, 48, 48, 0.856);
+    width: 75%;
+    margin: auto;
   }
   p {
     font-family: $primary-font;
-    margin: auto;
-    margin-top: 1.5em;
+    margin-left: auto;
+    margin-right: auto;
     width: 50%;
+    margin-top: 2em;
     font-weight: 600;
   }
 }

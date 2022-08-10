@@ -1,55 +1,79 @@
-<div style="position:fixed; top: 0; width:100%; z-index:2;">
-<div id="folder_header">
-  <div id="menubar">
-    <span class="al_sprite al_folder al_open"></span>
-    <h1> {{model.name}} </h1>
+<div style=''>
+  <div id='folder_header'>
+    <div id='menubar'>
+      <span class='al_sprite al_folder al_open'></span>
+      <h1> {{model.name}} </h1>
+    </div>
+    <div id='statusbar'>
+      <span>{{model._submissions.length}} submission(s), </span>
+      <span>{{evidence.length}} selection(s)</span>
+    </div>
   </div>
-  <div id="statusbar">
-    <span>{{model._submissions.length}} submission(s), </span>
-    <span>{{evidence.length}} selection(s)</span>
+
+  <div id='controls'>
+    Browse:
+
+    <label><input
+        type='radio'
+        name='browser2'
+        value='0'
+        onclick={{action (mut browseOption) 0}}
+        checked={{is-equal browseOption 0}}
+      />By Student</label>
+
+    <label id='showEvidence'>
+      <input
+        type='radio'
+        name='browser2'
+        value='1'
+        onclick={{action (mut browseOption) 1}}
+        checked={{is-equal browseOption 1}}
+      />By Evidence (selection)</label>
+
+    <label id='showSubFolders'>
+      <Input @type='checkbox' @checked={{includeSubfolders}} />
+      Include Sub-Folders
+    </label>
   </div>
 </div>
-
-
-<div id="controls"> Browse:
-
-  <label><input type="radio" name="browser2" value="0" onclick={{action (mut browseOption) 0}} checked={{is-equal browseOption 0}}>By Student</label>
-
-
-  <label id="showEvidence"> <input type="radio" name="browser2" value="1" onclick={{action (mut browseOption) 1}} checked={{is-equal browseOption 1}}>By Evidence (selection)</label>
-
-  <label id="showSubFolders">
-    <Input @type="checkbox" @checked={{includeSubfolders}} />
-    Include Sub-Folders
-  </label>
-</div>
-</div>
-<div id="subcontrols">
+<div id='subcontrols'>
   Show:
   {{#if bySubmission}}
-  <ul>
+    <ul>
 
-    <li><label id="showEvidence">
-      <Input @type="checkbox" @name={{showSubmissionSelections}} @checked={{showSubmissionSelections}} />
-      Evidence
-    </label></li>
+      <li><label id='showEvidence'>
+          <Input
+            @type='checkbox'
+            @name={{showSubmissionSelections}}
+            @checked={{showSubmissionSelections}}
+          />
+          Evidence
+        </label></li>
 
-    {{#if showSubmissionSelections}}
-      <li><ul>
-      <li><label id="showSubmComments">
-        <Input @type="checkbox" @name={{showSubmissionSelectionsComments}} @checked={{showSubmissionSelectionsComments}} />
-        Comments
-      </label></li>
+      {{#if showSubmissionSelections}}
+        <li><ul>
+            <li><label id='showSubmComments'>
+                <Input
+                  @type='checkbox'
+                  @name={{showSubmissionSelectionsComments}}
+                  @checked={{showSubmissionSelectionsComments}}
+                />
+                Comments
+              </label></li>
 
-      <li><label id="showSubmFolders">
-        <Input @type="checkbox" @name={{showSubmissionSelectionsFolders}} @checked={{showSubmissionSelectionsFolders}} />
-        Folders
-      </label></li>
+            <li><label id='showSubmFolders'>
+                <Input
+                  @type='checkbox'
+                  @name={{showSubmissionSelectionsFolders}}
+                  @checked={{showSubmissionSelectionsFolders}}
+                />
+                Folders
+              </label></li>
 
-      </ul></li>
-    {{/if}}
+          </ul></li>
+      {{/if}}
 
-<!-- Do we need these?
+      <!-- Do we need these?
     <li><label>
       {{!input type="checkbox" name=showSubmissionComments checked=showSubmissionComments}}
       comments
@@ -63,213 +87,240 @@
     </ul>
   {{/if}}
   {{#if bySelection}}
-    <label id="showSubmissions">
-      <Input @type="checkbox" @checked={{showSelectionSubmission}} />
+    <label id='showSubmissions'>
+      <Input @type='checkbox' @checked={{showSelectionSubmission}} />
       Student
     </label>
 
-    <label id="showSelComments">
-      <Input @type="checkbox" @checked={{showSelectionComments}} />
+    <label id='showSelComments'>
+      <Input @type='checkbox' @checked={{showSelectionComments}} />
       Comments
     </label>
 
-    <label id="showSelFolders">
-      <Input @type="checkbox" @checked={{showSelectionFolders}} />
+    <label id='showSelFolders'>
+      <Input @type='checkbox' @checked={{showSelectionFolders}} />
       Folders
     </label>
   {{/if}}
 </div>
 
-<div class="al_wtf">
-{{#if bySubmission}}
-<table align="right" id="folder_contents">
-  <!-- <caption>Submissions</caption> -->
-  <thead>
-    <tr class="header">
-      <th>Student</th>
+<div class='al_wtf'>
+  {{#if bySubmission}}
+    <table align='right' id='folder_contents'>
+      <!-- <caption>Submissions</caption> -->
+      <thead>
+        <tr class='header'>
+          <th>Student</th>
 
-      {{#if showSubmissionComments}}
-        <th>Comments</th>
-      {{/if}}
+          {{#if showSubmissionComments}}
+            <th>Comments</th>
+          {{/if}}
 
-      {{#if showSubmissionFolders}}
-        <th>Folders</th>
-      {{/if}}
+          {{#if showSubmissionFolders}}
+            <th>Folders</th>
+          {{/if}}
 
-      {{#if showSubmissionSelections}}
-        <th>Evidence</th>
-      {{/if}}
+          {{#if showSubmissionSelections}}
+            <th>Evidence</th>
+          {{/if}}
 
-    </tr>
-  </thead>
-  <tbody>
-    {{#each selectedSubmissions as |sub|}}
-    <tr>
-      <td>
-        <a class="change-submission" {{action 'changeSubmission' sub}}>
-          {{sub.student}}
-        </a>
-      </td>
-      {{#if showSubmissionComments}}
-        <td>
-          <ul>
-          {{#each sub.comments as |com|}}
-            <li>
-              {{com.text}}
-            </li>
-          {{/each}}
-          </ul>
-        </td>
-      {{/if}}
-      {{#if showSubmissionFolders}}
-        <td style="white-space: nowrap;">
-          <ul>
-            {{#each sub.folders as |folder|}}
-              <li>{{folder.name}}</li>
-            {{/each}}
-          </ul>
-        </td>
-      {{/if}}
-      {{#if showSubmissionSelections}}
-        <td>
-          {{#if showSubmissionSelectionsStuff}}
-          <table style="width: 100%">
-            <thead>
-              <tr>
-                <th style="width: 30%">Selection</th>
-
-                {{#if showSubmissionSelectionsComments}}
-                  <th style="width: 30%">Comments</th>
-                {{/if}}
-
-                {{#if showSubmissionSelectionsFolders}}
-                  <th style="width: 30%">Folders</th>
-                {{/if}}
-              </tr>
-            </thead>
-            <tbody>
-              {{#each evidence as |sel|}}
-              <tr>
-                <td>
-                  <a class="selection-text {{if sel.imageTagLink "selection-image"}} " {{action 'changeSelection' sel}}>
-                   {{#if sel.imageTagLink}}
-                      <img class="img-tag-thmb" src={{sel.imageTagLink}} alt={{sel.text}}>
-                    {{else}}
-                      {{sel.text}}
-                    {{/if}}
-                  </a>
-                  <br/>
-                </td>
-
-                {{#if showSubmissionSelectionsComments}}
-                  <td>
-                    <ul>
-                      {{#each sel.comments as |comment|}}
-                        <li>{{comment.text}}</li>
-                      {{/each}}
-                    </ul>
-                  </td>
-                {{/if}}
-
-                {{#if showSubmissionSelectionsFolders}}
-                  <td>
-                    <ul>
-                      {{#each sel.folders as |folder|}}
-                        <li>
-                          {{folder.name}}
-                          {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
-                            <span class="remove-sel" {{action 'removeSelection' sel folder}}><i class="far fa-times-circle"></i></span>
-                          {{/if}}
-                        </li>
-                      {{/each}}
-                    </ul>
-                  </td>
-                {{/if}}
-              </tr>
-              {{/each}}
-            </tbody>
-        </table>
-        {{/if}}
-        </td>
-      {{/if}}
-    </tr>
-    {{/each}}
-  </tbody>
-</table>
-{{/if}}
-
-{{#if bySelection}}
-  <table id="folder_contents" align="right">
-    <!-- <caption>Evidence</caption> -->
-    <thead>
-      <tr class="header">
-        <th style="width: 30%">Selection</th>
-
-        {{#if showSelectionSubmission}}
-          <th style="width: 20%">Student</th>
-        {{/if}}
-
-        {{#if showSelectionComments}}
-          <th style="width: 30%">Comments</th>
-        {{/if}}
-
-        {{#if showSelectionFolders}}
-          <th style="width: 20%; white-space:nowrap;">Folders</th>
-        {{/if}}
-      </tr>
-    </thead>
-    <tbody>
-      {{#each evidence as |sel|}}
-      <tr>
-        <td>
-          <a class="selection-text {{if sel.imageTagLink "selection-image"}}" {{action 'changeSelection' sel}}>
-            {{#if sel.imageTagLink}}
-              <img class="img-tag-thmb" src={{sel.imageTagLink}} alt={{sel.text}}>
-            {{else}}
-              {{sel.text}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each selectedSubmissions as |sub|}}
+          <tr>
+            <td>
+              <a class='change-submission' {{action 'changeSubmission' sub}}>
+                {{sub.student}}
+              </a>
+            </td>
+            {{#if showSubmissionComments}}
+              <td>
+                <ul>
+                  {{#each sub.comments as |com|}}
+                    <li>
+                      {{com.text}}
+                    </li>
+                  {{/each}}
+                </ul>
+              </td>
             {{/if}}
-          </a>
-        </td>
-        {{#if showSelectionSubmission}}
-          <td>
-            <a class="change-submission" {{action 'changeSubmission' sel.submission}}>
-              {{sel.submission.student}}
-            </a>
-          </td>
-        {{/if}}
+            {{#if showSubmissionFolders}}
+              <td style='white-space: nowrap;'>
+                <ul>
+                  {{#each sub.folders as |folder|}}
+                    <li>{{folder.name}}</li>
+                  {{/each}}
+                </ul>
+              </td>
+            {{/if}}
+            {{#if showSubmissionSelections}}
+              <td>
+                {{#if showSubmissionSelectionsStuff}}
+                  <table style='width: 100%'>
+                    <thead>
+                      <tr>
+                        <th style='width: 30%'>Selection</th>
 
+                        {{#if showSubmissionSelectionsComments}}
+                          <th style='width: 30%'>Comments</th>
+                        {{/if}}
 
-        {{#if showSelectionComments}}
-          <td>
-            <ul>
-              {{#each sel.comments as |comment|}}
-                <li>{{comment.text}}</li>
-              {{/each}}
-            </ul>
-          </td>
-        {{/if}}
+                        {{#if showSubmissionSelectionsFolders}}
+                          <th style='width: 30%'>Folders</th>
+                        {{/if}}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#each evidence as |sel|}}
+                        <tr>
+                          <td>
+                            <a
+                              class='selection-text
+                                {{if sel.imageTagLink "selection-image"}}
+                                '
+                              {{action 'changeSelection' sel}}
+                            >
+                              {{#if sel.imageTagLink}}
+                                <img
+                                  class='img-tag-thmb'
+                                  src={{sel.imageTagLink}}
+                                  alt={{sel.text}}
+                                />
+                              {{else}}
+                                {{sel.text}}
+                              {{/if}}
+                            </a>
+                            <br />
+                          </td>
 
-        {{#if showSelectionFolders}}
-          <td style="white-space: nowrap;">
-            <ul>
-              {{#each sel.folders as |folder|}}
-                <li>
-                  {{folder.name}}
-                  {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
-                    <span class="remove-sel" {{action 'removeSelection' sel folder}}><i class="far fa-times-circle"></i></span>
-                  {{/if}}
-                </li>
-              {{/each}}
-            </ul>
-          </td>
-        {{/if}}
-      </tr>
-      {{else}}
-        <p>Sorry, no selections were found in this folder.</p>
-      {{/each}}
-    </tbody>
-  </table>
-{{/if}}
+                          {{#if showSubmissionSelectionsComments}}
+                            <td>
+                              <ul>
+                                {{#each sel.comments as |comment|}}
+                                  <li>{{comment.text}}</li>
+                                {{/each}}
+                              </ul>
+                            </td>
+                          {{/if}}
+
+                          {{#if showSubmissionSelectionsFolders}}
+                            <td>
+                              <ul>
+                                {{#each sel.folders as |folder|}}
+                                  <li>
+                                    {{folder.name}}
+                                    {{#if canEdit}}
+                                      {{!ENC-574 Add a delete button per folder}}
+                                      <span
+                                        class='remove-sel'
+                                        {{action 'removeSelection' sel folder}}
+                                      ><i
+                                          class='far fa-times-circle'
+                                        ></i></span>
+                                    {{/if}}
+                                  </li>
+                                {{/each}}
+                              </ul>
+                            </td>
+                          {{/if}}
+                        </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                {{/if}}
+              </td>
+            {{/if}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+
+  {{#if bySelection}}
+    <table id='folder_contents' align='right'>
+      <!-- <caption>Evidence</caption> -->
+      <thead>
+        <tr class='header'>
+          <th style='width: 30%'>Selection</th>
+
+          {{#if showSelectionSubmission}}
+            <th style='width: 20%'>Student</th>
+          {{/if}}
+
+          {{#if showSelectionComments}}
+            <th style='width: 30%'>Comments</th>
+          {{/if}}
+
+          {{#if showSelectionFolders}}
+            <th style='width: 20%; white-space:nowrap;'>Folders</th>
+          {{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each evidence as |sel|}}
+          <tr>
+            <td>
+              <a
+                class='selection-text {{if sel.imageTagLink "selection-image"}}'
+                {{action 'changeSelection' sel}}
+              >
+                {{#if sel.imageTagLink}}
+                  <img
+                    class='img-tag-thmb'
+                    src={{sel.imageTagLink}}
+                    alt={{sel.text}}
+                  />
+                {{else}}
+                  {{sel.text}}
+                {{/if}}
+              </a>
+            </td>
+            {{#if showSelectionSubmission}}
+              <td>
+                <a
+                  class='change-submission'
+                  {{action 'changeSubmission' sel.submission}}
+                >
+                  {{sel.submission.student}}
+                </a>
+              </td>
+            {{/if}}
+
+            {{#if showSelectionComments}}
+              <td>
+                <ul>
+                  {{#each sel.comments as |comment|}}
+                    <li>{{comment.text}}</li>
+                  {{/each}}
+                </ul>
+              </td>
+            {{/if}}
+
+            {{#if showSelectionFolders}}
+              <td style='white-space: nowrap;'>
+                <ul>
+                  {{#each sel.folders as |folder|}}
+                    <li>
+                      {{folder.name}}
+                      {{#if canEdit}}
+                        {{!ENC-574 Add a delete button per folder}}
+                        <span
+                          class='remove-sel'
+                          {{action 'removeSelection' sel folder}}
+                        ><i class='far fa-times-circle'></i></span>
+                      {{/if}}
+                    </li>
+                  {{/each}}
+                </ul>
+              </td>
+            {{/if}}
+          </tr>
+        {{else}}
+          <p>Sorry, no selections were found in this folder.</p>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
 
 </div>
-
