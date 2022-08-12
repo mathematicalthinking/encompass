@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 #folder_contents {
   a {
@@ -15,8 +15,5 @@
 }
 
 ul#al_folders.hidden {
-
-    display: none;
-
+  display: none;
 }
-
