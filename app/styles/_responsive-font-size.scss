@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @mixin responsive-font-size($min-font-size, $max-font-size, $min-screen-width, $max-screen-width, $font-size-step: 0.1em) {
   font-size: $max-font-size;
   @media all and (max-width: $min-screen-width) {
@@ -7,18 +9,18 @@
     @warn "parameter to responsive-font-size: font-size-step must be greater than 0";
   }
   @else {
-    $min-scale-factor: $min-font-size / $min-screen-width / 1em * 1px;
-    $max-scale-factor: $max-font-size / $max-screen-width / 1em * 1px;
+    $min-scale-factor: math.div(math.div($min-font-size, $min-screen-width), 1em) * 1px;
+    $max-scale-factor: math.div(math.div($max-font-size, $max-screen-width), 1em) * 1px;
     $screen-width: round($max-screen-width);
     $font-size: $max-font-size;
     @while $screen-width>=$min-screen-width {
-      $progress: ($screen-width - $min-screen-width) / ($max-screen-width - $min-screen-width);
+      $progress: math.div($screen-width - $min-screen-width, $max-screen-width - $min-screen-width);
       $scale-factor: $min-scale-factor + $progress * ($max-scale-factor - $min-scale-factor);
-      $font-size: $screen-width * $scale-factor / 1px * 1em;
+      $font-size: math.div($screen-width * $scale-factor, 1px) * 1em;
       @media all and (max-width: $screen-width) {
         font-size: $font-size;
       }
-      $screen-width-step: $font-size-step / $scale-factor / 1em * 1px;
+      $screen-width-step: math.div(math.div($font-size-step, $scale-factor), 1em) * 1px;
       @if $screen-width-step < 1px {
         $screen-width-step: 1px;
       }
