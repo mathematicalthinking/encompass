@@ -20,7 +20,7 @@
 // full nav-bar
 #al_header {
   position: fixed;
-  background-color: rgb(5, 33, 144);
+  background-color: rgb(255, 255, 255);
   box-shadow: 5px 2.5px 2.5px #c9cacb;
   border-bottom: 1px solid #c7c4c4;
   top: 0;
@@ -96,10 +96,10 @@
   padding: 8px 9px;
   border-radius: 0.4em;
   position: relative;
-  color: white;
+  color: black;
   text-decoration: none;
   &:hover {
-    color: rgb(118, 223, 247);
+    color: rgb(1, 104, 155);
     font-weight: 600;
   }
 }
@@ -111,7 +111,7 @@
   height: 2px;
   bottom: 0;
   left: 0;
-  background-color: rgb(204, 210, 247);
+  background-color: rgb(0, 0, 0);
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
@@ -124,10 +124,12 @@
   i {
     border-radius: 50%;
     padding: 10px;
-    color: white;
+    color: rgb(0, 0, 0);
   }
+  transition: all;
 }
 .hamburger {
+  transition: all;
   &:hover {
     i {
       background-color: rgb(164, 183, 213);
