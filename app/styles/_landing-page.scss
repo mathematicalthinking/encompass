@@ -1,22 +1,18 @@
+#landing-image-div {
+  background-image: url('../assets/images/encompass-team.webp');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 20em;
+}
 #landingTitleDiv {
   display: flex;
   justify-content: space-around;
-  height: 40em;
+  height: 20em;
+  box-shadow: 1px;
   align-items: center;
-  background: linear-gradient(-45deg, #ffffff, #f1e79bfe, #a4dff4, #92bcf3);
-  background-size: 400% 400%;
-  animation: gradient 10s ease infinite;
-  @keyframes gradient {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  background-color: rgb(249, 244, 244);
+
   h1,
   p {
     font-family: $primary-font;
@@ -91,7 +87,23 @@
 @media only screen and (max-width: 852px) {
   #landingTitleDiv {
     flex-direction: column;
-    font-size: 0.7em;
+    font-size: 0.5em;
+    height: 50vh;
+  }
+  #landing-image-div {
+    background-size: contain;
+    height: 10em;
+  }
+  #msg-landing-container {
+    font-size: 0.8em;
+    h1 {
+      text-align: left;
+      font-size: 1.5em;
+    }
+    p {
+      width: 100%;
+      padding: 1em;
+    }
   }
   #image-landing-page {
     img {
