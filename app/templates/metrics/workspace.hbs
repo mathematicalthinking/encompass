@@ -1,13 +1,15 @@
-<header>
-  <h3>Looking at workspace: {{this.model.workspace.name}}</h3>
-  <h3>Owner: {{this.model.workspace.owner.displayName}}</h3>
-  <h3>Last Updated:
-    {{format-date this.model.workspace.lastModifiedDate 'MM/DD/YYYY'}}</h3>
-  <a
-    href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
-    download='{{this.model.workspace.name}}_report.csv'
-  >Download CSV</a>
-</header>
+<div class='metrics-header-container'><header>
+    <h3>Current Workspace: {{this.model.workspace.name}}</h3>
+    <h3>Owner: {{this.model.workspace.owner.displayName}}</h3>
+    <h3>Last Updated:
+      {{format-date this.model.workspace.lastModifiedDate 'MM/DD/YYYY'}}</h3>
+
+    <a
+      href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
+      download='{{this.model.workspace.name}}_report.csv'
+    >Download CSV</a>
+  </header></div>
+
 <div class='metrics__container'>
   {{! <p><LinkTo @route="metrics">back</LinkTo></p> }}
   <div class='metrics--flex'>
