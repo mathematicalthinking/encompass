@@ -1,18 +1,17 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
-
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 #workspace-info {
   margin-top: 1.5em;
   header {
-    h2{
+    h2 {
       font-family: 'Quicksand', sans-serif;
     }
     background: $background-color;
   }
   .link {
-    font-size: .9em;
+    font-size: 0.9em;
     margin-left: 10px;
     a {
       color: $accent-color;
@@ -25,18 +24,18 @@
     select {
       border: 1px solid input-border;
       width: 100%;
-      font-size: .9em;
+      font-size: 0.9em;
       background: none;
       height: 25px;
     }
   }
   .viewer-toggle {
     color: $accent-color;
-    font-size: .9em;
+    font-size: 0.9em;
     cursor: pointer;
   }
   .submission-count {
-    font-size: .9em;
+    font-size: 0.9em;
   }
   #custom-submission-viewer-list {
     @include flex-item(1, center, 1 0 100px);
@@ -49,7 +48,15 @@
 }
 
 .workspace-info-container {
-  @include flex-container(auto, auto, row, wrap, space-between, center, space-between);
+  @include flex-container(
+    auto,
+    auto,
+    row,
+    wrap,
+    space-between,
+    center,
+    space-between
+  );
   padding: 20px 15px;
 }
 
@@ -74,7 +81,7 @@
     width: 95%;
     padding: 10px;
     border-radius: 3px;
-    font-size: .9em;
+    font-size: 0.9em;
     background: none;
     border: 1px solid $input-border;
   }
@@ -83,7 +90,7 @@
     select {
       border: 1px solid input-border;
       width: 100%;
-      font-size: .9em;
+      font-size: 0.9em;
       background: none;
       height: 34px;
     }
@@ -95,7 +102,7 @@
     .update-results {
       margin-top: 15px;
       font-size: 1em;
-      }
+    }
   }
   .child-workspaces {
     li {
@@ -117,7 +124,7 @@
       margin: 15px 0 40px 0;
       .collab-name {
         font-size: 1.1em;
-        border-bottom: .5px solid $input-border;
+        border-bottom: 0.5px solid $input-border;
         padding-bottom: 15px;
         a {
           color: $accent-color;
@@ -134,7 +141,15 @@
       .collab-settings {
         padding-left: 25px;
         .card-row {
-          @include flex-container(auto, null, row, wrap, flex-start, center, center);
+          @include flex-container(
+            auto,
+            null,
+            row,
+            wrap,
+            flex-start,
+            center,
+            center
+          );
           .row-label {
             @include flex-item(1, flex-start, 0 1 auto);
             width: 150px;
@@ -187,7 +202,7 @@
     font-size: 1.1em;
     background-color: $cancel-color;
     padding: 20px 20px 15px 20px;
-    border-bottom: .5px solid $input-border;
+    border-bottom: 0.5px solid $input-border;
     .heading-icon {
       color: $primary-font-color;
       float: right;
@@ -233,7 +248,6 @@
 #parent-ws-collab-new {
   .checkbox-list {
     margin-top: 10px;
-
   }
   .collab-settings.global {
     .radio-group {

@@ -20,15 +20,19 @@ export default class MetricsWorkspaceController extends Controller {
         selection.get('taggings').toArray()
       );
       taggings = taggings.flat();
-      const text = `<div>${
+      // regex used on below to remove <p> tags, model returning such tags.
+      const text = `${
         submission.shortAnswer
           ? submission.shortAnswer
           : submission.get('answer.answer')
-      } <br><br> ${
+      }  ${
         submission.longAnswer
           ? submission.longAnswer
           : submission.get('answer.explanation')
-      }</div>`;
+          ? submission.get('answer.explanation').replace(/<\/?[^>]+(>|$)/g, '')
+          : ''
+      }`;
+
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
       const selectionsLength = submission.selections.length;
