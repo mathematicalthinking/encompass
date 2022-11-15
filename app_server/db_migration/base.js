@@ -2,12 +2,14 @@ const models = require('../datasource/schemas');
 const _ = require('underscore');
 
 function getProblemsFromPuzzleIds() {
-  return models.Submission.find({ 'publication.puzzle.puzzleId': { $exists: true } })
+  return models.Submission.find({
+    'publication.puzzle.puzzleId': { $exists: true },
+  })
     .then((subs) => {
       let problems = subs.map((sub) => {
         let res = {
           title: sub.publication.puzzle.title,
-          puzzleId: sub.publication.puzzle.puzzleId
+          puzzleId: sub.publication.puzzle.puzzleId,
         };
         return res;
       });
@@ -27,28 +29,32 @@ function getProblemsFromPuzzleIds() {
 }
 
 function getAnswersFromSubmissions() {
-  return models.Submission.find({ 'publication.puzzle.puzzleId': { $exists: true } })
+  return models.Submission.find({
+    'publication.puzzle.puzzleId': { $exists: true },
+  })
     .then((subs) => {
       let answers = subs.map((sub) => {
         let ans = {
           studentName: sub.creator.safeName,
           answer: sub.shortAnswer,
           explanation: sub.longAnswer,
-          createDate: sub.createDate
+          createDate: sub.createDate,
         };
-        return models.Problem.find({ puzzleId: sub.publication.puzzle.puzzleId })
-          .then((prob) => {
-            ans.problemId = prob[0]._id;
-            return models.Section.find({ sectionId: sub.clazz.clazzId })
-              .then((sect) => {
-                if (sect.length > 0) {
-                  ans.sectionId = sect[0]._id;
-                } else {
-                  ans.sectionId = null;
-                }
-                return ans;
-              });
-          });
+        return models.Problem.find({
+          puzzleId: sub.publication.puzzle.puzzleId,
+        }).then((prob) => {
+          ans.problemId = prob[0]._id;
+          return models.Section.find({ sectionId: sub.clazz.clazzId }).then(
+            (sect) => {
+              if (sect.length > 0) {
+                ans.sectionId = sect[0]._id;
+              } else {
+                ans.sectionId = null;
+              }
+              return ans;
+            }
+          );
+        });
       });
       return Promise.all(answers);
     })
@@ -68,7 +74,9 @@ function getAnswersFromSubmissions() {
 }
 
 function getSectionsFromSubmissions() {
-  return models.Submission.find({ 'publication.puzzle.puzzleId': { $exists: true } })
+  return models.Submission.find({
+    'publication.puzzle.puzzleId': { $exists: true },
+  })
     .then((subs) => {
       let sections = {};
       subs.forEach((sub) => {
@@ -90,7 +98,12 @@ function getSectionsFromSubmissions() {
             if (!_.contains(sections[clazzId].students, sub.creator.safeName)) {
               sections[clazzId].students.push(sub.creator.safeName);
             }
-            if (!_.contains(sections[clazzId].problems, sub.publication.puzzle.puzzleId)) {
+            if (
+              !_.contains(
+                sections[clazzId].problems,
+                sub.publication.puzzle.puzzleId
+              )
+            ) {
               sections[clazzId].problems.push(sub.publication.puzzle.puzzleId);
             }
           }
@@ -102,14 +115,13 @@ function getSectionsFromSubmissions() {
         let sect = {
           sectionId: tup[0],
           name: tup[1].name,
-          students: tup[1].students
+          students: tup[1].students,
         };
 
         let probIds = tup[1].problems.map((prob) => {
-          return models.Problem.find({ puzzleId: prob })
-            .then((prob) => {
-              return prob[0]._id;
-            });
+          return models.Problem.find({ puzzleId: prob }).then((prob) => {
+            return prob[0]._id;
+          });
         });
 
         return Promise.all(probIds)
@@ -119,35 +131,33 @@ function getSectionsFromSubmissions() {
           })
           .then(() => {
             let teacherIds = tup[1].teachers.map((username) => {
-              return models.User.find({ username: username })
-                .then((user) => {
-                  return user[0]._id;
-                });
+              return models.User.find({ username: username }).then((user) => {
+                return user[0]._id;
+              });
             });
 
-            return Promise.all(teacherIds)
-              .then((ids) => {
-                sect.teachers = ids;
-                return sect;
-              });
+            return Promise.all(teacherIds).then((ids) => {
+              sect.teachers = ids;
+              return sect;
+            });
           });
       });
 
-      return Promise.all(inserts)
-        .then((sects) => {
-          return models.Section.insertMany(sects, (err, sections) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(`Inserted ${sections.length} sections.`);
-            }
-          });
+      return Promise.all(inserts).then((sects) => {
+        return models.Section.insertMany(sects, (err, sections) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(`Inserted ${sections.length} sections.`);
+          }
         });
+      });
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 }
 
-function migrate() { // eslint-disable-line no-unused-vars
+function migrate() {
+  // eslint-disable-line no-unused-vars
   getProblemsFromPuzzleIds()
     .then(getSectionsFromSubmissions)
     .then(getAnswersFromSubmissions)
@@ -156,5 +166,3 @@ function migrate() { // eslint-disable-line no-unused-vars
 // run this only when loading in new data from POWS
 //   or when rebuilding POWS replacements (answers, problems, sections)
 // migrate();
-
-
