@@ -1,44 +1,56 @@
-<div class="comment-flex-item text">
+<div class='comment-flex-item text'>
   <p>
     {{#if isForCurrentWorkspace}}
-      <LinkTo @route="workspace.submissions.submission.selections.selection" @models={{array comment.selection.submission comment.selection}} @classNames="comment comment-text">
+      <LinkTo
+        @route='workspace.submissions.submission.selections.selection'
+        @models={{array comment.selection.submission comment.selection}}
+        @classNames='comment comment-text'
+      >
         {{comment.text}}
       </LinkTo>
     {{else}}
-    <a class="newWindow comment-text" target="_blank" href="{{comment.selection.link}}">{{comment.text}}</a>
+      <a
+        class='newWindow comment-text'
+        target='_blank'
+        href='{{comment.selection.link}}'
+      >{{comment.text}}</a>
     {{/if}}
   </p>
-    <p class="meta">
-      by <span class="creator">
-        {{#if isParentWorkspace}}
-          {{comment.originalComment.createdBy.username}}
-        {{else}}
-          {{comment.createdBy.username}}
-        {{/if}}
-        </span>
-      in <span class="workspace">
-        {{#if isParentWorkspace }}
-          {{comment.originalComment.workspace.name}}
-        {{else}}
-          {{comment.workspace.name}}
-        {{/if}}
-        </span>
-      {{metaText}}
-    </p>
+  <p class='meta'>
+    by
+    <span class='creator'>
+      {{#if isParentWorkspace}}
+        {{comment.originalComment.createdBy.username}}
+      {{else}}
+        {{comment.createdBy.username}}
+      {{/if}}
+    </span>
+    in
+    <span class='workspace'>
+      {{#if isParentWorkspace}}
+        {{comment.originalComment.workspace.name}}
+      {{else}}
+        {{comment.workspace.name}}
+      {{/if}}
+    </span>
+    {{metaText}}
+  </p>
 </div>
-<div class="comment-flex-item actions">
+<div class='comment-flex-item actions'>
   {{#if canDelete}}
-    <span {{action deleteComment comment}} class="delete_button"><i class="fas fa-minus-circle"></i></span>
+    <span {{action deleteComment comment}} class='delete_button'><i
+        class='fas fa-minus-circle'
+      ></i></span>
   {{/if}}
   {{#if permittedToComment}}
-    <a {{action reuseComment comment}} title="reuse this comment">
+    <a {{action reuseComment comment}} title='reuse this comment'>
       {{#if childrenLength}}
         {{childrenLength}}
       {{else}}
-        <i class="fas fa-plus"></i>
+        <i class='fas fa-plus'></i>
       {{/if}}
     </a>
   {{/if}}
 </div>
 
-<div class="clear"></div>
+<div class='clear'></div>
