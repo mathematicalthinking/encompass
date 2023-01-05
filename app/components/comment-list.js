@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 /**
@@ -136,7 +137,6 @@ export default Component.extend(ErrorHandlingMixin, {
     'currentSelection',
     function () {
       let results;
-
       let isOwnOnly = this.myCommentsOnly;
       let isSubOnly = this.thisSubmissionOnly;
       let isWsOnly = this.thisWorkspaceOnly;
