@@ -138,8 +138,8 @@
     Searching for comments. Thank you for your patience.
   {{else}}
     <ul>
-      {{log this}}
-      {{#each this.comments as |comment|}}
+
+      {{#each this.sortedDisplayList as |comment|}}
         <WorkspaceComment
           @wsComments={{this.comments}}
           @comment={{comment}}

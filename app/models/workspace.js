@@ -2,6 +2,7 @@ import { attr, belongsTo, hasMany } from '@ember-data/model';
 import moment from 'moment';
 import _ from 'underscore';
 import Auditable from './auditable';
+
 export default class WorkspaceModel extends Auditable {
   getWorkspaceId() {
     return this.id;
@@ -15,7 +16,7 @@ export default class WorkspaceModel extends Auditable {
   @hasMany('submission', { async: true }) submissions;
   @hasMany('response', { async: true }) responses;
   @hasMany('selection', { async: true }) selections;
-  @hasMany('comment', { async: true }) comments;
+  @hasMany('comments', { async: true }) comments;
   @belongsTo('organization') organization;
   @belongsTo('assignment') linkedAssignment;
   @hasMany('tagging', { async: true }) taggings;
@@ -56,7 +57,7 @@ export default class WorkspaceModel extends Auditable {
   get foldersLength() {
     return this._collectionLength('folders');
   }
-  // @tracked comments = [];
+
   get commentsLength() {
     return this._collectionLength('comments');
   }
