@@ -29,4 +29,11 @@ h1 {
     margin: auto;
     margin-top: 0.5em;
   }
+  .faq-link {
+    font-weight: 600;
+    color: blue;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
