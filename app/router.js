@@ -101,4 +101,5 @@ Router.map(function () {
   });
   this.route('landing-page');
   this.route('terms');
+  this.route('faq');
 });

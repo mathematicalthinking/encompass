@@ -38,6 +38,18 @@
           <i class='fas fa-user-circle'></i></span>
       </li>
     {{/if}}
+    {{! link to terms }}
+    <li class='menu-items' id='logout-btn'>
+      <LinkTo @route='terms' class='menu'>
+        <span class='menuButton'>Terms &amp; Privacy Policy</span>
+      </LinkTo>
+    </li>
+    {{! link to faq }}
+    <li class='menu-items' id='logout-btn'>
+      <LinkTo @route='faq' class='menu'>
+        <span class='menuButton'>FAQ</span>
+      </LinkTo>
+    </li>
 
     {{! logout button }}
     <li class='menu-items' id='logout-btn'>
@@ -139,6 +151,14 @@
     <li data-test='signup'>
       <LinkTo @route='auth.signup' classNames='menu signup'>
         <span class='menuButton'>Sign Up</span>
+      </LinkTo>
+    </li>
+    <li>
+      <LinkTo @route='faq' classNames='menu signup'>
+        <span class='menuButton'>FAQ</span>
+      </LinkTo>
+      <LinkTo @route='terms' classNames='menu signup'>
+        <span class='menuButton'>Terms &amp; Privacy Policy</span>
       </LinkTo>
     </li>
   </ul>

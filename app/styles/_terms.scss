@@ -21,12 +21,30 @@ h1 {
 
 .terms-paragraph {
   margin-top: 5em;
+  h2,
   p {
     font-family: 'Quicksand', sans-serif;
-    font-weight: 500;
     font-size: 1em;
     width: 85%;
     margin: auto;
     margin-top: 0.5em;
+  }
+  p {
+    font-weight: 400;
+  }
+  h2 {
+    font-weight: 800;
+  }
+  .faq-link {
+    font-weight: 600;
+    color: blue;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  #terms-space {
+    padding-top: 5em;
+    padding-bottom: 5em;
+    font-weight: 900;
   }
 }
