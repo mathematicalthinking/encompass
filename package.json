@@ -115,7 +115,7 @@
     "ember-cli-babel": "^7.26.11",
     "ember-cli-custom-properties": "^2.0.2",
     "ember-cli-dependency-checker": "^3.2.0",
-    "ember-cli-favicon": "^2.2.0",
+    "ember-cli-favicon": "^3.0.0",
     "ember-cli-htmlbars": "^5.7.1",
     "ember-cli-inject-live-reload": "^2.0.2",
     "ember-cli-mdc-animation": "^2.0.19",
