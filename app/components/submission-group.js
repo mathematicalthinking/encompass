@@ -3,6 +3,7 @@ import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { alias, equal, gte, or, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+/* eslint-disable */
 /**
  * Passed in by template:
  * - submissions
@@ -18,6 +19,7 @@ import moment from 'moment';
 export default Component.extend({
   elementId: 'submission-group',
   utils: service('utility-methods'),
+  currentUrl: service(),
   classNameBindings: [
     'makingSelection:al_makeselect',
     'isHidden:hidden',
@@ -42,6 +44,10 @@ export default Component.extend({
   init() {
     this.set('onNavResize', this.handleNavHeight.bind(this));
     this._super(...arguments);
+    const currentURL = window.location.href;
+
+    // Set the current URL in the service
+    this.currentUrl.setCurrentUrl(currentURL);
   },
 
   didInsertElement() {

@@ -8,6 +8,7 @@ export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
   @tracked showCloud = false;
   @service jsonCsv;
+  @service currentUrl;
   submissionsColumns = [
     { name: 'Record', valuePath: 'recordType' },
     { name: 'Creator', valuePath: 'creator' },
@@ -32,7 +33,8 @@ export default class MetricsWorkspaceController extends Controller {
           ? submission.get('answer.explanation').replace(/<\/?[^>]+(>|$)/g, '')
           : ''
       }`;
-
+      const workspaceUrl = this.currentUrl.currentUrl;
+      console.log(workspaceUrl);
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
       const selectionsLength = submission.selections.length;
@@ -43,6 +45,7 @@ export default class MetricsWorkspaceController extends Controller {
       const responsesLength = submission.responses.length;
       return {
         workspace,
+        workspaceUrl,
         submitter,
         text,
         dateOfSubmission,
