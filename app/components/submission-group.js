@@ -46,7 +46,7 @@ export default Component.extend({
     this._super(...arguments);
     const currentURL = window.location.href;
 
-    // Set the current URL in the service
+    // Set the current URL in the service, gets passed to current-url.js. State is stored for metrics component used to export data.
     this.currentUrl.setCurrentUrl(currentURL);
   },
 

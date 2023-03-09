@@ -7,12 +7,13 @@ export default class JsonCsvService extends Service {
     }
     try {
       const keys = [Object.keys(array[0])].concat(array);
+
       return keys
         .map((row) => {
           return Object.values(row)
             .map((value) => {
               return typeof value === 'string'
-                ? JSON.stringify(value).replace(/[#,]/gm, '')
+                ? encodeURIComponent(JSON.stringify(value)).replace(/,/g, '')
                 : value;
             })
             .toString();

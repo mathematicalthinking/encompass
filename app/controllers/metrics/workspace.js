@@ -34,7 +34,6 @@ export default class MetricsWorkspaceController extends Controller {
           : ''
       }`;
       const workspaceUrl = this.currentUrl.currentUrl;
-      console.log(workspaceUrl);
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
       const selectionsLength = submission.selections.length;
