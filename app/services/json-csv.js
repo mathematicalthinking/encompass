@@ -7,7 +7,6 @@ export default class JsonCsvService extends Service {
     }
     try {
       const keys = [Object.keys(array[0])].concat(array);
-
       return keys
         .map((row) => {
           return Object.values(row)

@@ -36,22 +36,37 @@ export default class MetricsWorkspaceController extends Controller {
       const workspaceUrl = this.currentUrl.currentUrl;
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
-      const selectionsLength = submission.selections.length;
-      const commentsLength = submission.comments.length;
+
+      // Set object is used to keep copy of original selector without producing duplicates.
+      const selector = submission.selections.map((item) => {
+        return item.comments
+          .map((comment) => {
+            const username = comment.get('createdBy.username');
+            const text = comment.text;
+            return ` Selection by: ${
+              username && username.trim()
+            }, Feedback: ${text}`; // concatenate username and text
+          })
+          .filter(Boolean)
+          .join('');
+      });
+
+      const feedback = selector.filter(Boolean).join(', '); // added .filter(Boolean) to filter out empty strings
+
+      // **Maybe use in future again**
+      // const selectionsLength = submission.selections.length;
+      // const commentsLength = submission.comments.length;
+      // const responsesLength = submission.responses.length;
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
-      const responsesLength = submission.responses.length;
       return {
         workspace,
         workspaceUrl,
         submitter,
         text,
         dateOfSubmission,
-        selectionsLength,
-        foldersLength: taggings.length,
-        commentsLength,
-        responsesLength,
+        feedback,
       };
     });
   }
