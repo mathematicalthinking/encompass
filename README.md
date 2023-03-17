@@ -1,5 +1,5 @@
 # encompass 
- 
+
 EnCoMPASS is a project of the 21st Century Partnership for STEM Education, Mathematical Thinking, and Drexel University.
 
 ## Prerequisites:
