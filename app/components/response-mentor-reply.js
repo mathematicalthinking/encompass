@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
@@ -125,15 +126,30 @@ export default Component.extend(ErrorHandlingMixin, {
   showApproverNoteInput: computed('newReplyStatus', 'isComposing', function () {
     return this.isComposing && this.newReplyStatus !== 'approved';
   }),
-
-  sortedMentorReplies: computed('mentorReplies.[]', function () {
+  // here lies the problem, with all mentor replies
+  sortedMentorReplies: computed('mentorReplies.[]', 'currentUser', function () {
     if (!this.mentorReplies) {
       return [];
     }
-    return this.mentorReplies
+
+    let userFromReplies = this.mentorReplies.map((reply) => {
+      return reply.get('createdBy.username');
+    });
+
+    let currentUser = this.currentUser.user.username;
+
+    let filteredReplies = this.mentorReplies
       .rejectBy('isTrashed')
+      .filter((reply) => {
+        return (
+          userFromReplies.includes(currentUser) &&
+          reply.get('createdBy.username') === currentUser
+        );
+      })
       .sortBy('createDate')
       .reverse();
+
+    return filteredReplies;
   }),
 
   showNoteHeader: computed(
