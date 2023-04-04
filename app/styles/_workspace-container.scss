@@ -18,6 +18,10 @@
 #workspace-container {
   background-color: $filter-list-background-color;
   height: calc(100vh - 75px);
+  #workspace-name {
+    font-size: 1em;
+    font-family: $primary-font;
+  }
 
   .toggle-display {
     position: absolute;
@@ -366,11 +370,18 @@
           );
         }
         &.problem-link {
+          span {
+            font-weight: 400;
+            margin-bottom: 0.2em;
+
+            font-family: $primary-font;
+          }
           @include flex-item(2, center, auto);
-          max-width: 35%;
+          max-width: 50%;
           text-align: center;
           a {
             color: $accent-color;
+            font-weight: 700;
           }
         }
         &.new-response {
