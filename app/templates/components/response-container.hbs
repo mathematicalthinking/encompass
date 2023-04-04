@@ -39,6 +39,7 @@
     <div class='response-flex-item submission'>
       <p class='studentSubmission'>Student Submissions</p>
       {{#each this.sortedSubmissions as |listOfSubmissions|}}
+
         <div class='submissionChild'>
           <ResponseSubmissionView
             @store={{this.store}}
