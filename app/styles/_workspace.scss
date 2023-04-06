@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 749px) {
   #workspace-new-enc {
@@ -21,8 +21,8 @@
           width: 100%;
           padding: 10px 0 5px 5px;
         }
-        input[type=date],
-        input[type=text],
+        input[type='date'],
+        input[type='text'],
         .workspace-info {
           width: 100%;
         }
@@ -61,8 +61,8 @@
           width: 20%;
           padding: 12px 10px 20px 10px;
         }
-        input[type=date],
-        input[type=text],
+        input[type='date'],
+        input[type='text'],
         .workspace-info {
           width: 70%;
         }
@@ -74,14 +74,13 @@
   }
 }
 
-
 .create-new-workspace {
   margin: 20px;
   a {
     margin-left: 5px;
-      &:hover {
-        color: $accent-color;
-      }
+    &:hover {
+      color: $accent-color;
+    }
   }
   &:hover {
     color: $accent-color;
@@ -106,7 +105,7 @@
   background: white;
   border-radius: 5px;
   margin: 20px 10px;
-  border: .5px solid $input-border;
+  border: 0.5px solid $input-border;
 }
 
 .flex-item:nth-child(1) {
@@ -119,7 +118,7 @@
 }
 
 .flex-item:nth-child(3) {
-  @include flex-item(3, auto, .5 0 0);
+  @include flex-item(3, auto, 0.5 0 0);
   padding: 0;
   box-shadow: none;
   border: none;
@@ -194,7 +193,7 @@
       display: inline-block;
       font-size: 1em;
       span.twitter-typeahead {
-        width:100%;
+        width: 100%;
       }
       input.typeahead {
         width: 100%;
@@ -242,11 +241,11 @@
         .selectize-input {
           height: 45px;
           text-indent: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        background: none;
-        // -webkit-appearance:none;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+          background: none;
+          // -webkit-appearance:none;
           input {
             font-size: 1em;
             font-family: $primary-font;
@@ -269,7 +268,9 @@
     .spacing {
       margin-top: 40px;
     }
-    input[type=date], input[type=text], .workspace-info {
+    input[type='date'],
+    input[type='text'],
+    .workspace-info {
       width: 38.5%;
       padding: 12px 20px;
       margin: 8px 0;
@@ -284,7 +285,7 @@
       font-size: 1em;
       display: inline-block;
     }
-    input[type=radio] {
+    input[type='radio'] {
       padding: 12px 20px;
       margin: 22px 2px;
     }
@@ -300,7 +301,9 @@
     }
   }
 }
-
+#workspace-header-container {
+  background-color: red;
+}
 .workspace-listing-header {
   background: $background-color;
   padding: 7px 0px;
@@ -315,11 +318,6 @@
     display: inline-block;
     padding: 12px 20px;
   }
-}
-
-.workspace-name {
-  font-family: 'Quicksand', sans-serif;
-  margin-right: 0;
 }
 
 #workspace_listing {
@@ -337,21 +335,20 @@
   font-weight: $main-font-weight;
   font-family: $primary-font;
   border-radius: 3px;
-  font-size: .8em;
+  font-size: 0.8em;
   padding: 0px 15px;
   margin-left: 10px;
   border: none;
   line-height: 35px;
   &.active-filter {
     font-weight: $bolder-font-weight;
-    background: darken($accent-yellow, 5%)
+    background: darken($accent-yellow, 5%);
   }
   &:hover {
     font-weight: $bold-font-weight;
     cursor: pointer;
     background: lighten($accent-yellow, 10%);
   }
-
 }
 
 .problem-link {
@@ -367,7 +364,8 @@
   font-weight: $main-font-weight;
 }
 
-.fa-trash, .fa-plus {
+.fa-trash,
+.fa-plus {
   cursor: pointer;
 }
 
@@ -410,12 +408,13 @@ span.meta.response-count.existing {
     font-weight: 300;
     margin-left: 10px;
   }
-  .submission.short, .submission-short {
+  .submission.short,
+  .submission-short {
     background-color: $background-body;
     border: 0.5px solid #ccc;
     padding: 20px;
     border-radius: 3px;
-    font-size: .9em;
+    font-size: 0.9em;
 
     &.vmt-summary {
       ul {
@@ -423,30 +422,33 @@ span.meta.response-count.existing {
       }
     }
   }
-  .submission.long, .submission-long {
+  .submission.long,
+  .submission-long {
     background-color: $background-body;
     border: 0.5px solid #ccc;
     padding: 20px;
     border-radius: 3px;
-    font-size: .9em;
+    font-size: 0.9em;
     ul {
       list-style-type: disc;
       list-style-position: inside;
-   }
-   ol {
+    }
+    ol {
       list-style-type: decimal;
       list-style-position: inside;
-   }
-   ul ul, ol ul {
+    }
+    ul ul,
+    ol ul {
       list-style-type: circle;
       list-style-position: inside;
       margin-left: 15px;
-   }
-   ol ol, ul ol {
+    }
+    ol ol,
+    ul ol {
       list-style-type: lower-latin;
       list-style-position: inside;
       margin-left: 15px;
-   }
+    }
   }
   .full-image {
     position: fixed;
@@ -458,7 +460,7 @@ span.meta.response-count.existing {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.262);
     z-index: 9998;
-    transition: .5s ease;
+    transition: 0.5s ease;
     i {
       position: absolute;
       right: 50px;
@@ -500,7 +502,6 @@ span.meta.response-count.existing {
     margin-left: 10px;
     margin-top: 10px;
     li {
-
       i {
         margin-left: 2px;
       }
