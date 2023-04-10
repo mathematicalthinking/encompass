@@ -28,7 +28,7 @@
   h1 {
     font-family: $primary-font;
     font-weight: 700;
-    font-size: 2em;
+    font-size: 1.7em;
     color: rgba(48, 48, 48, 0.856);
     width: 75%;
     margin: auto;
@@ -66,10 +66,11 @@
 #image-landing-page {
   img {
     display: block;
-    max-width: 700px;
+
     max-height: 500px;
-    width: 650px;
-    height: auto;
+    width: 800px;
+
+    object-fit: cover;
   }
   div {
     display: flex;
