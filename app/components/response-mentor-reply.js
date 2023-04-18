@@ -132,20 +132,11 @@ export default Component.extend(ErrorHandlingMixin, {
       return [];
     }
 
-    let userFromReplies = this.mentorReplies.map((reply) => {
-      return reply.get('createdBy.username');
-    });
-
-    let currentUser = this.currentUser.user.username;
-
+    // Grabs the current student from the current submission.
+    let currentStudent = this.submission.student;
+    // Filters the mentor repleis to that student only.
     let filteredReplies = this.mentorReplies
-      .rejectBy('isTrashed')
-      .filter((reply) => {
-        return (
-          userFromReplies.includes(currentUser) &&
-          reply.get('createdBy.username') === currentUser
-        );
-      })
+      .filter((reply) => currentStudent === reply.get('submission.student'))
       .sortBy('createDate')
       .reverse();
 
