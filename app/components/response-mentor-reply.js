@@ -133,6 +133,7 @@ export default Component.extend(ErrorHandlingMixin, {
     }
 
     let userFromReplies = this.mentorReplies.map((reply) => {
+      console.log(reply);
       return reply.get('createdBy.username');
     });
 
@@ -140,12 +141,6 @@ export default Component.extend(ErrorHandlingMixin, {
 
     let filteredReplies = this.mentorReplies
       .rejectBy('isTrashed')
-      .filter((reply) => {
-        return (
-          userFromReplies.includes(currentUser) &&
-          reply.get('createdBy.username') === currentUser
-        );
-      })
       .sortBy('createDate')
       .reverse();
 
