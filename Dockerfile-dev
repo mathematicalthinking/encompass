@@ -1,4 +1,4 @@
-FROM node:12.16.1@sha256:8fa78144d1864f2b08ca4a2d28e9cc32930d78850630652ff338793291a91f0c
+FROM node:14.19.3@sha256:02b43f48cbecaef7402988542d6f1a5377d9c4eae8d77156a6e33b15a37283c4
 RUN apt update -y && apt upgrade -y && apt install -y curl wget bash iputils-ping net-tools dnsutils
 
 # install ember
