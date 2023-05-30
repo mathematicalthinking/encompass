@@ -1,11 +1,6 @@
 /*global _:false */
+
 import Service from '@ember/service';
-
-
-
-
-
-
 
 export default Service.extend({
   isNullOrUndefined(val) {
@@ -21,14 +16,22 @@ export default Service.extend({
   },
   // not array or function
   isNonEmptyObject(val) {
-    return _.isObject(val) && !_.isArray(val) && !_.isFunction(val) && !_.isEmpty(val);
+    return (
+      _.isObject(val) &&
+      !_.isArray(val) &&
+      !_.isFunction(val) &&
+      !_.isEmpty(val)
+    );
   },
   isValidMongoId(val) {
-    let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+    let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
     return checkForHexRegExp.test(val);
   },
   getBelongsToId(record, relationshipName) {
-    if (!this.isNonEmptyObject(record) || !this.isNonEmptyString(relationshipName)) {
+    if (
+      !this.isNonEmptyObject(record) ||
+      !this.isNonEmptyString(relationshipName)
+    ) {
       return null;
     }
 
@@ -57,7 +60,10 @@ export default Service.extend({
     return null;
   },
   getHasManyIds(record, relationshipName) {
-    if (!this.isNonEmptyObject(record) || !this.isNonEmptyString(relationshipName)) {
+    if (
+      !this.isNonEmptyObject(record) ||
+      !this.isNonEmptyString(relationshipName)
+    ) {
       return [];
     }
     let hasEachRelationship = 'eachRelationship' in record;
@@ -118,7 +124,7 @@ export default Service.extend({
     if (!ms > 0) {
       return [0, 0, 0];
     }
-    let fullHours = ms * (0.001) * (1 / 60) * (1 / 60);
+    let fullHours = ms * 0.001 * (1 / 60) * (1 / 60);
 
     let hourStr = fullHours.toString();
     let decimalIx = hourStr.indexOf('.');
@@ -141,8 +147,11 @@ export default Service.extend({
 
     let fullSeconds = Number(fullMinStr.slice(decimalIx));
 
-    return [Math.floor(fullHours), Math.floor(fullMinutes), Math.floor(fullSeconds * 60)];
-
+    return [
+      Math.floor(fullHours),
+      Math.floor(fullMinutes),
+      Math.floor(fullSeconds * 60),
+    ];
   },
   extractMsFromTimeString(timeString) {
     // expect format of hh:mm:ss
@@ -161,11 +170,10 @@ export default Service.extend({
     let seconds = parseInt(split[2], 10);
 
     if (hours >= 0 && minutes >= 0 && seconds >= 0) {
-      return (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000);
+      return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000;
     }
 
     return null;
-
   },
   getTimeStringFromMs(ms) {
     let [hours, minutes, seconds] = this.extractHoursMinsSecondsFromMs(ms);
@@ -174,6 +182,5 @@ export default Service.extend({
     let displaySeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 
     return `${displayHours}:${displayMinutes}:${displaySeconds}`;
-
   },
 });

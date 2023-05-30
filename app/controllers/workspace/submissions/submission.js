@@ -203,8 +203,8 @@ export default Controller.extend({
       return this.permissions.canEdit(cws, 'comments', 1);
     }
   ),
-
-  cannotSeeComments: not('canSeeComments'),
+  // Feature is disabled below - primarily used to disable viewing comments for students in parent workspaces.
+  // cannotSeeComments: not('canSeeComments'),
 
   showFoldersToggle: computed('areFoldersHidden', 'canSeeFolders', function () {
     return this.areFoldersHidden && this.canSeeFolders;

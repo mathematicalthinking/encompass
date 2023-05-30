@@ -2,6 +2,7 @@ import { A } from '@ember/array';
 import Controller, { inject as controller } from '@ember/controller';
 import EmberObject, { computed } from '@ember/object';
 import { alias, equal, or } from '@ember/object/computed';
+
 /**
  * # Folder Controller
  * TODO: - remove selection sometimes generates an error.

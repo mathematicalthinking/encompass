@@ -1,6 +1,7 @@
 import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { inject as service } from '@ember/service';
+
 /**
  * Passed in by template:
  * - currentSubmission
