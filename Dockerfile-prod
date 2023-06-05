@@ -1,4 +1,4 @@
-FROM node:12.16.1-alpine@sha256:5e1a147114839599442784549d04b45821c7b178f7fc09d4ab9853543ae1388e AS appbuild
+FROM node:14.21.3-alpine@sha256:4e84c956cd276af9ed14a8b2939a734364c2b0042485e90e1b97175e73dfd548 AS appbuild
 RUN apk update
 
 # install ember
@@ -19,7 +19,7 @@ COPY . ./
 RUN npm run build
 
 # make a 2 part Dockerfile in order reduce overall image size of the final prod image
-FROM node:12.16.1-alpine@sha256:5e1a147114839599442784549d04b45821c7b178f7fc09d4ab9853543ae1388e
+FROM node:14.21.3-alpine@sha256:4e84c956cd276af9ed14a8b2939a734364c2b0042485e90e1b97175e73dfd548
 RUN apk update && apk upgrade && apk add curl && rm -rf /var/cache/apk/*
 RUN mkdir -p /web && chown -R node:node /web
 USER node
