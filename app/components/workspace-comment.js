@@ -2,7 +2,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-
+/* eslint-disable */
 export default Component.extend({
   currentUser: service('current-user'),
   tagName: 'li',
@@ -63,7 +63,26 @@ export default Component.extend({
   isFromCurrentSelection: computed(
     'currentSelection',
     'comment.selection',
+    // TO DO:
+    // Original function had the selection from the comment model.
+    // Last two digits of ID were mutating - need to investiage further.
+
+    // Checks below if workspace type is parent to avoid issues with css
+    // If its a group workspace, will make the selection/comment display together.
+
     function () {
+      if (!this.currentWorkspace.workspaceType === 'parent') {
+        if (this.currentSelection) {
+          const groupSelection = this.currentSelection.originalSelection;
+          if (groupSelection.get('id')) {
+            return (
+              this.utils.getBelongsToId(this.comment, 'selection') ===
+              groupSelection.get('id')
+            );
+          }
+        }
+      }
+
       return (
         this.utils.getBelongsToId(this.comment, 'selection') ===
         this.get('currentSelection.id')
