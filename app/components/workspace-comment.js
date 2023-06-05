@@ -71,7 +71,7 @@ export default Component.extend({
     // If its a group workspace, will make the selection/comment display together.
 
     function () {
-      if (!this.currentWorkspace.workspaceType === 'parent') {
+      if (this.currentWorkspace.workspaceType !== 'parent') {
         if (this.currentSelection) {
           const groupSelection = this.currentSelection.originalSelection;
           if (groupSelection.get('id')) {
