@@ -279,6 +279,7 @@ export default Component.extend({
         'student',
         currentStudent
       );
+
       return [threadHead.get('id')];
     }
   ),

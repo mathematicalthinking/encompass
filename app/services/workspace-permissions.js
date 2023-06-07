@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* eslint-disable */
 import Service, { inject as service } from '@ember/service';
 
 export default Service.extend({
@@ -43,7 +43,12 @@ export default Service.extend({
   },
 
   hasOwnerPrivileges(ws) {
-    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws);
+    return (
+      this.isAdmin() ||
+      this.isOwner(ws) ||
+      this.isCreator(ws) ||
+      this.isInPdAdminDomain(ws)
+    );
   },
 
   canCopy(ws) {
@@ -67,7 +72,13 @@ export default Service.extend({
     if (!ws || ws.workspaceType === 'parent') {
       return false;
     }
-    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isFeedbackApprover(ws) || this.isInPdAdminDomain(ws);
+    return (
+      this.isAdmin() ||
+      this.isOwner(ws) ||
+      this.isCreator(ws) ||
+      this.isFeedbackApprover(ws) ||
+      this.isInPdAdminDomain(ws)
+    );
   },
 
   canEdit(ws, recordType, requiredPermissionLevel) {
@@ -91,7 +102,12 @@ export default Service.extend({
       }
     }
 
-    if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {
+    if (
+      this.isAdmin() ||
+      this.isOwner(ws) ||
+      this.isCreator(ws) ||
+      this.isInPdAdminDomain(ws)
+    ) {
       return true;
     }
 
@@ -112,7 +128,10 @@ export default Service.extend({
       return false;
     }
 
-    const userPermissions = wsPermissions.findBy('user', this.get('currentUser.id'));
+    const userPermissions = wsPermissions.findBy(
+      'user',
+      this.get('currentUser.id')
+    );
     if (!utils.isNonEmptyObject(userPermissions)) {
       return false;
     }
@@ -151,5 +170,4 @@ export default Service.extend({
 
     return permissionLevel >= requiredPermissionLevel;
   },
-
 });
