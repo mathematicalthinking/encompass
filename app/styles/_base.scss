@@ -977,11 +977,11 @@ section > h2 {
 #subcontrols {
   position: fixed;
   background: #ddd;
+  margin-right: 2em;
   padding: 0.25em;
   height: 100%;
-  width: 19%;
+  width: 10%;
   float: left;
-  margin-top: 0.5em;
 }
 
 #subcontrols label {
@@ -990,7 +990,6 @@ section > h2 {
 
 #folder_contents {
   border: solid 1px;
-  width: 80%;
   margin-top: 1.75em;
 }
 
