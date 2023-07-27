@@ -941,46 +941,24 @@ section > h2 {
   font-weight: bold;
 }
 
-.al_sprite {
-  position: relative;
-  background: url(../assets/images/sprites.png) 0 0 no-repeat;
-  display: inline-block;
-  zoom: 1;
-}
-
-.al_sprite.al_folder {
-  top: -3px;
-  width: 31px;
-  height: 31px;
-  background-position: -7px -3px;
-  vertical-align: middle;
-}
-
-.al_sprite.al_folder.al_open {
-  background-position: -52px -3px;
-}
-
 /* -- Folder View -- */
 
 #folder_header {
   display: block;
-  background-color: #f0e68c;
-  vertical-align: middle;
   border-bottom: solid 1px #778899;
+  border: 0.5px solid black;
+  padding-bottom: 0.5em;
+  background-color: #f5f5f5;
 }
 
-#folder_header #beta {
-  font: 1.5em;
-  padding: 0.75em;
-  margin: auto;
+#menubar {
   display: inline-block;
-  float: right;
-  background: #c7bb54;
-}
 
-#folder_header > div#menubar > h1,
-#folder_header > div#menubar > h1 > span {
-  display: inline-block;
+  h1 {
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
 }
 
 #folder_header > div#statusbar {
@@ -999,11 +977,11 @@ section > h2 {
 #subcontrols {
   position: fixed;
   background: #ddd;
+  margin-right: 2em;
   padding: 0.25em;
   height: 100%;
-  width: 19%;
+  width: 10%;
   float: left;
-  margin-top: 0.5em;
 }
 
 #subcontrols label {
@@ -1012,7 +990,6 @@ section > h2 {
 
 #folder_contents {
   border: solid 1px;
-  width: 80%;
   margin-top: 1.75em;
 }
 
