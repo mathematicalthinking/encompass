@@ -8,6 +8,7 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import config from 'encompass/config/environment';
 
 export default class IndexController extends Controller {
   @tracked dataToShow = 'workspace';
@@ -16,6 +17,9 @@ export default class IndexController extends Controller {
   // this changes when user changes the tab. initially starts at "mine"
   @tracked selectedData = this.data[0].details;
   @tracked activeDetailTab = 'Mine';
+
+  version = config.APP.VERSION;
+  buildDate = config.APP.BUILD_DATE;
 
   dateBounds = {
     oneWeek: new Date(
