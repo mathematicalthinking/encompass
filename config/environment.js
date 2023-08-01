@@ -23,7 +23,7 @@ module.exports = function (environment) {
       // Here you can pass flags/options to your application instance
       // when it is created
 
-      BUILD_DATE: new Date().toISOString(),
+      BUILD_DATE: new Date().toLocaleString(),
       VERSION: pkg.version,
     },
   };
