@@ -4,6 +4,8 @@ import config from 'encompass/config/environment';
 export default class Router extends EmberRouter {
   location = config.locationType;
   rootURL = config.rootURL;
+  version = config.APP.VERSION;
+  buildDate = config.APP.BUILD_DATE;
 }
 
 Router.map(function () {
