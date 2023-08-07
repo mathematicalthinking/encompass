@@ -10,7 +10,7 @@
   </div>
   <div class="item-section explanation">
     {{#if isVmt}}
-      {{#with answer.vmtRoomInfo as |room|}}
+      {{#let answer.vmtRoomInfo as |room|}}
         <p>Room Name: {{room.roomName}}</p>
         <p>Activity Name:
           {{#if room.activityName}}
@@ -35,7 +35,7 @@
             N/A
           {{/each}}
         </ul>
-      {{/with}}
+      {{/let}}
     {{else}}
       {{{answer.explanation}}}
     {{/if}}

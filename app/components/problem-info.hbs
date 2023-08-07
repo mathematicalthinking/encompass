@@ -51,7 +51,7 @@
           @problem.createDate
           'MM/DD/YYYY'
         }}</div>
-      <div class='subheading'>{{#link-to 'metrics.problem' @problem}}See Reports{{/link-to}}</div>
+      <div class='subheading'><LinkTo @route='metrics.problem' @model={{@problem}}>See Reports</LinkTo></div>
     </div>
     <div class='info-menu'>
       <button
