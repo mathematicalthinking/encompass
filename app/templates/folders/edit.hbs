@@ -1,12 +1,12 @@
 <div style=''>
   <div id='folder_header'>
     <div id='menubar'>
-      <span class='al_sprite al_folder al_open'></span>
-      <h1> {{model.name}} </h1>
+
+      <h1> Assignment Name: {{model.name}} </h1>
     </div>
     <div id='statusbar'>
-      <span>{{model._submissions.length}} submission(s), </span>
-      <span>{{evidence.length}} selection(s)</span>
+      <div>Number of submissions: {{model._submissions.length}} </div>
+      <div>Number of selections: {{evidence.length}}</div>
     </div>
   </div>
 
@@ -35,73 +35,59 @@
       Include Sub-Folders
     </label>
   </div>
-</div>
-<div id='subcontrols'>
-  Show:
-  {{#if bySubmission}}
-    <ul>
+  <div id='controls'>Show:
+    {{#if bySubmission}}
+      <ul>
 
-      <li><label id='showEvidence'>
-          <Input
-            @type='checkbox'
-            @name={{showSubmissionSelections}}
-            @checked={{showSubmissionSelections}}
-          />
-          Evidence
-        </label></li>
+        <li><label id='showEvidence'>
+            <Input
+              @type='checkbox'
+              @name={{showSubmissionSelections}}
+              @checked={{showSubmissionSelections}}
+            />
+            Evidence
+          </label></li>
 
-      {{#if showSubmissionSelections}}
-        <li><ul>
-            <li><label id='showSubmComments'>
-                <Input
-                  @type='checkbox'
-                  @name={{showSubmissionSelectionsComments}}
-                  @checked={{showSubmissionSelectionsComments}}
-                />
-                Comments
-              </label></li>
+        {{#if showSubmissionSelections}}
+          <li><ul>
+              <li><label id='showSubmComments'>
+                  <Input
+                    @type='checkbox'
+                    @name={{showSubmissionSelectionsComments}}
+                    @checked={{showSubmissionSelectionsComments}}
+                  />
+                  Comments
+                </label></li>
 
-            <li><label id='showSubmFolders'>
-                <Input
-                  @type='checkbox'
-                  @name={{showSubmissionSelectionsFolders}}
-                  @checked={{showSubmissionSelectionsFolders}}
-                />
-                Folders
-              </label></li>
+              <li><label id='showSubmFolders'>
+                  <Input
+                    @type='checkbox'
+                    @name={{showSubmissionSelectionsFolders}}
+                    @checked={{showSubmissionSelectionsFolders}}
+                  />
+                  Folders
+                </label></li>
 
-          </ul></li>
-      {{/if}}
+            </ul></li>
+        {{/if}}
+      </ul>
+    {{/if}}
+    {{#if bySelection}}
+      <label id='showSubmissions'>
+        <Input @type='checkbox' @checked={{showSelectionSubmission}} />
+        Student
+      </label>
 
-      <!-- Do we need these?
-    <li><label>
-      {{!input type="checkbox" name=showSubmissionComments checked=showSubmissionComments}}
-      comments
-    </label></li>
+      <label id='showSelComments'>
+        <Input @type='checkbox' @checked={{showSelectionComments}} />
+        Comments
+      </label>
 
-    <li><label>
-      {{!input type="checkbox" name=showSubmissionFolders checked=showSubmissionFolders}}
-      folders
-    </label></li>
--->
-    </ul>
-  {{/if}}
-  {{#if bySelection}}
-    <label id='showSubmissions'>
-      <Input @type='checkbox' @checked={{showSelectionSubmission}} />
-      Student
-    </label>
-
-    <label id='showSelComments'>
-      <Input @type='checkbox' @checked={{showSelectionComments}} />
-      Comments
-    </label>
-
-    <label id='showSelFolders'>
-      <Input @type='checkbox' @checked={{showSelectionFolders}} />
-      Folders
-    </label>
-  {{/if}}
+      <label id='showSelFolders'>
+        <Input @type='checkbox' @checked={{showSelectionFolders}} />
+        Folders
+      </label>
+    {{/if}}</div>
 </div>
 
 <div class='al_wtf'>
