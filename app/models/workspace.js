@@ -1,6 +1,5 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
 import moment from 'moment';
-import _ from 'underscore';
 import Auditable from './auditable';
 
 export default class WorkspaceModel extends Auditable {
