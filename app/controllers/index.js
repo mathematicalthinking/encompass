@@ -9,14 +9,19 @@ import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import config from 'encompass/config/environment';
-
+import { inject as service } from '@ember/service';
 export default class IndexController extends Controller {
-  @tracked dataToShow = 'workspace';
+  @tracked dataToShow = this.basePermissions.isStudent
+    ? 'assignment'
+    : 'workspace';
   @tracked currentBound = 'oneWeek';
   @tracked showTable = true;
   // this changes when user changes the tab. initially starts at "mine"
   @tracked selectedData = this.data[0].details;
-  @tracked activeDetailTab = 'Mine';
+  @tracked activeDetailTab = this.basePermissions.isStudent
+    ? 'Assigned To Me'
+    : 'Mine';
+  @service('edit-permissions') basePermissions;
 
   version = config.APP.VERSION;
   buildDate = config.APP.BUILD_DATE;
