@@ -1,10 +1,8 @@
 import Service, { inject as service } from '@ember/service';
 
-export default Service.extend({
-  base: service("edit-permissions"),
-  utils: service("utility-methods"),
-  // admins, creators,
-
+export default class PermissionService extends Service {
+  @service('edit-permissions') base;
+  @service('utility-methods') utils;
   // permission tiers for assignments
   // highest admin - 4
   // pdAdmin for org - 3
@@ -12,106 +10,70 @@ export default Service.extend({
   // teacher - 1
   // rest 0
   // next highest teachers from assignment section
-  getPermissionsLevel(assignment, section, user = this.get("base.user")) {
-    if (!user) {
-      return 0;
-    }
-    if (this.get("base.isActingAdmin")) {
-      return 4;
-    }
-    // assignments do not have org field but section does
-    if (this.base.isRecordInPdDomain(section)) {
-      return 3;
-    }
-
-    if (this.base.isCreator(assignment)) {
-      return 2;
-    }
-
-    if (section) {
-      if (this.isSectionTeacher(assignment, section)) {
-        return 1;
-      }
-    }
+  getPermissionsLevel(assignment, section, user = this.base.user) {
+    if (!user) return 0;
+    if (this.base.isActingAdmin) return 4;
+    if (this.base.isRecordInPdDomain(section)) return 3;
+    if (this.base.isCreator(assignment)) return 2;
+    if (section && this.isSectionTeacher(assignment, section)) return 1;
     return 0;
-  },
+  }
 
   isSectionTeacher(assignment, section) {
-    if (!assignment || !section) {
-      return;
-    }
+    if (!assignment || !section) return false;
 
-    let assnSectionId = this.utils.getBelongsToId(assignment, "section");
-    if (assnSectionId !== section.get("id")) {
-      return false;
-    }
+    let assnSectionId = this.utils.getBelongsToId(assignment, 'section');
+    let teacherIds = this.utils.getHasManyIds(section, 'teachers');
 
-    let teacherIds = this.utils.getHasManyIds(section, "teachers");
-    if (!this.utils.isNonEmptyArray(teacherIds)) {
-      return false;
-    }
-    return teacherIds.includes(this.get("base.userId"));
-  },
+    return (
+      assnSectionId === section.get('id') &&
+      this.utils.isNonEmptyArray(teacherIds) &&
+      teacherIds.includes(this.base.userId)
+    );
+  }
 
-  canDelete: function (assignment) {
-    if (this.get("base.isActingAdmin")) {
-      return true;
-    }
-    if (this.haveAnswersBeenSubmitted(assignment)) {
-      return false;
-    }
-  },
+  canDelete(assignment) {
+    return (
+      this.base.isActingAdmin || !this.haveAnswersBeenSubmitted(assignment)
+    );
+  }
 
   canEditProblem(assignment, section) {
-    if (this.get("base.isActingAdmin")) {
-      return true;
-    }
-    if (this.haveAnswersBeenSubmitted(assignment)) {
-      return false;
-    }
-    return this.getPermissionsLevel(assignment, section) > 1;
-  },
+    return (
+      this.base.isActingAdmin ||
+      (!this.haveAnswersBeenSubmitted(assignment) &&
+        this.getPermissionsLevel(assignment, section) > 1)
+    );
+  }
+
   canEditLinkedWorkspace(assignment) {
-    if (this.get("base.isActingAdmin")) {
-      return true;
-    }
+    return this.base.isActingAdmin || this.base.isCreator(assignment);
+  }
 
-    if (this.base.isCreator(assignment)) {
-      return true;
-    }
-
-    // teachers?
-  },
-  isNowBeforeAssignedDate: function (assignment) {
+  isNowBeforeAssignedDate(assignment) {
     // true if assignedDate is in future
-    if (!assignment) {
-      return;
-    }
+    if (!assignment) return false;
+
     const currentDate = new Date();
-    const assignedDate = assignment.get("assignedDate");
+    const assignedDate = assignment.get('assignedDate');
+
     return currentDate < assignedDate;
-  },
+  }
 
   canEditAssignedDate(assignment) {
     return (
-      !assignment.get("assignedDate") ||
+      !assignment.get('assignedDate') ||
       !this.haveAnswersBeenSubmitted(assignment) ||
       this.isNowBeforeAssignedDate(assignment)
     );
-  },
+  }
 
   canEditDueDate(assignment) {
-    if (this.get("base.isActingAdmin")) {
-      return true;
-    }
-
-    if (this.base.isCreator(assignment)) {
-      return true;
-    }
-  },
+    return this.base.isActingAdmin || this.base.isCreator(assignment);
+  }
 
   haveAnswersBeenSubmitted(assignment) {
-    let answerIds = this.utils.getHasManyIds(assignment, "answers");
+    let answerIds = this.utils.getHasManyIds(assignment, 'answers');
     return this.utils.isNonEmptyArray(answerIds);
-  },
-});
+  }
+}
