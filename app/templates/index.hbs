@@ -34,6 +34,7 @@
         {{/each}}
       </ul>
       {{! time filter }}
+
       <label>View info from:
         <select onchange={{action 'updateCurrentBound'}}>
           <option
@@ -102,11 +103,11 @@
     </div>
     <div class='footerNote'>
 
-
-
-      <p>EnCoMPASS version {{this.version}} last updated on {{this.buildDate}}. </p>
-
-
+      <p>EnCoMPASS version
+        {{this.version}}
+        last updated on
+        {{this.buildDate}}.
+      </p>
 
       <p><a href='https://encompassmath.org/' target='_blank'>EnCoMPASS</a>
         is part of the Online Reflection and Community-based Instructional
