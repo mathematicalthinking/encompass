@@ -21,7 +21,6 @@ export default Service.extend({
   userOrgId: computed('user', function () {
     return this.utils.getBelongsToId(this.user, 'organization');
   }),
-
   isActingAdmin: computed('isPseudoStudent', 'isAdmin', function () {
     return !this.isPseudoStudent && this.isAdmin;
   }),

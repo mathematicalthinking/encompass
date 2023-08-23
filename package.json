@@ -1,6 +1,6 @@
 {
   "name": "encompass",
-  "version": "3.5.7",
+  "version": "3.5.8",
   "private": true,
   "description": "enCoMPASS",
   "keywords": [
@@ -161,7 +161,7 @@
     "sass": "^1.62.1"
   },
   "engines": {
-    "node": "10.* || >= 12"
+    "node": "^14.0.0"
   },
   "ember": {
     "edition": "octane"
