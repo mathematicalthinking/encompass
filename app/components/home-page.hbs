@@ -4,8 +4,8 @@
       @columns={{@tableColumns}}
       @scrollIndicators='all'
       @widthConstraint='eq-container'
-      @sorts={{sorts}}
-      @onUpdateSorts={{action (mut sorts)}}
+      @sorts={{this.sorts}}
+      @onUpdateSorts={{action (mut this.sorts)}}
     />
     <t.body @rows={{@details}} as |b|>
       <b.row as |r|>
