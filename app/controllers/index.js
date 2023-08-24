@@ -133,6 +133,7 @@ export default class IndexController extends Controller {
         },
       ];
     }
+    // todo: refractor this to be in routes instead of controller.
     if (this.dataToShow === 'assignment') {
       //create array of assignments from active sections
       const teacherFiltered = this.model.teacherSections.filter(
@@ -151,7 +152,7 @@ export default class IndexController extends Controller {
                 this.dateBounds[this.currentBound].getTime();
         }
       );
-      return [
+      const menuItems = [
         {
           details: teacherFiltered.reverse(),
           label: 'Assigned by Me',
@@ -163,6 +164,7 @@ export default class IndexController extends Controller {
           type: 'assignment',
         },
       ];
+      return this.model.user.isStudent ? menuItems.reverse() : menuItems;
     }
     if (this.dataToShow === 'feedback') {
       const responses = this.model.responseThreads.filter((thread) => {
