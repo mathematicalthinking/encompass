@@ -1,5 +1,7 @@
 'use strict';
 
+const pkg = require('../package.json');
+
 module.exports = function (environment) {
   let ENV = {
     modulePrefix: 'encompass',
@@ -20,6 +22,9 @@ module.exports = function (environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+
+      BUILD_DATE: new Date().toLocaleString(),
+      VERSION: pkg.version,
     },
   };
 

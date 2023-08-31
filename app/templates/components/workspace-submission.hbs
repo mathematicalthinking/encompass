@@ -106,7 +106,7 @@
       <div id='submission_container'>
         <div class='submission-short {{if this.isVmt "vmt-summary"}}'>
           {{#if this.isVmt}}
-            {{#with this.currentSubmission.vmtRoomInfo as |room|}}
+            {{#let this.currentSubmission.vmtRoomInfo as |room|}}
               <p>Room Name: {{this.room.roomName}}</p>
               <p>Activity Name:
                 {{#if this.room.activityName}}
@@ -131,7 +131,7 @@
                   N/A
                 {{/each}}
               </ul>
-            {{/with}}
+            {{/let}}
           {{else if this.currentSubmission.answer.answer}}
             {{{this.currentSubmission.answer.answer}}}
           {{else}}
@@ -154,7 +154,7 @@
       <h5 class='submission-header summary'>Brief Summary</h5>
       <div class='submission short {{if this.isVmt "vmt-summary"}}'>
         {{#if this.isVmt}}
-          {{#with this.currentSubmission.vmtRoomInfo as |room|}}
+          {{#let this.currentSubmission.vmtRoomInfo as |room|}}
             {{log room}}
             <p>Room Name: {{room.roomName}}</p>
             <p>Activity Name:
@@ -180,7 +180,7 @@
                 N/A
               {{/each}}
             </ul>
-          {{/with}}
+          {{/let}}
         {{else if this.currentSubmission.answer.answer}}
           {{{this.currentSubmission.answer.answer}}}
         {{else}}

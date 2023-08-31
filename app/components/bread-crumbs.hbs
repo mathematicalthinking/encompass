@@ -8,17 +8,17 @@
     <span class="revisions">{{this.itemsLabelText}}</span>
     {{#if this.showTruncatedView}}
       <ul class="breadcrumbs truncated">
-          {{#with this.itemsList.firstObject as |firstItem|}}
+          {{#let this.itemsList.firstObject as |firstItem|}}
             <BreadCrumbsItem @item={{firstItem}} @displayValue={{1}} @onSelect={{action "onItemSelect"}} @selectedItem={{@selectedItem}} @titleTextPath={{@titleTextPath}} @starredItemsList={{this.starredItemsList}} />
-          {{/with}}
+          {{/let}}
           <abbr title="expand">
             <span {{action "showAllItems"}} class="truncate">
               ...
             </span>
           </abbr>
-          {{#with this.itemsList.lastObject as |lastItem|}}
+          {{#let this.itemsList.lastObject as |lastItem|}}
             <BreadCrumbsItem @item={{this.lastItem}} @displayValue={{this.lastItemValue}} @onSelect={{action "onItemSelect"}} @selectedItem={{@selectedItem}} @titleTextPath={{@titleTextPath}} @starredItemsList={{this.starredItemsList}} />
-          {{/with}}
+          {{/let}}
       </ul>
     {{else}}
       <ul class="breadcrumbs">
