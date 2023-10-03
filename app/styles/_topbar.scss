@@ -1,7 +1,10 @@
 @import 'variables';
 @import 'mixins';
 @import 'responsive-font-size';
-
+$breakpoint-small: 600px;
+$breakpoint-medium: 768px;
+$breakpoint-large: 992px;
+$breakpoint-xlarge: 1200px;
 // styles for material drawer nav
 :root {
   --mdc-theme-primary: #3997ee;
@@ -16,135 +19,121 @@
 }
 
 // GENERAL STYLING
-
-// full nav-bar
 #al_header {
   position: fixed;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 5px 2.5px 2.5px #c9cacb;
-  border-bottom: 1px solid #c7c4c4;
+  align-items: center;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  background-color: #f6f5f4;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 10;
   display: flex;
   font-size: 0.9em;
-}
-
-// TOP BAR STYLING FOR WHEN LOGGED OUT
-#topbar-unauth {
-  display: flex;
-  // flex grow is added to help with look of nav when resizing browser window.
-  margin-left: auto;
-  justify-content: space-around;
-  align-items: center;
-  .toggle-role {
-    cursor: pointer;
-  }
-  ul {
+  justify-content: space-between;
+  #topbar-unauth {
     display: flex;
+    gap: 1em;
   }
-}
-// List items for role, profile, logout.
-@media screen and (max-width: 590px) {
   .al_nav#main-nav {
-    font-size: 0.9em;
-    justify-content: end;
-    flex-direction: column;
-    span {
-      margin-top: 2em;
+    display: flex;
+    padding: 0 2em;
+    flex-grow: 0.2;
+    margin-left: auto;
+    justify-content: space-around;
+    align-items: center;
+
+    li {
+      margin: 0 15px;
     }
-    i {
-      font-size: 0.5em;
+
+    .acting-role {
+      text-transform: capitalize;
     }
-  }
-  .menuButton {
-    &:hover {
-      padding: 0.3em;
-      font-weight: none;
+
+    .toggle-role {
+      cursor: pointer;
     }
-  }
-}
-.userName {
-  font-size: 1.2em;
-}
-#current-username {
-  text-transform: capitalize;
-}
-.al_nav#main-nav {
-  display: flex;
-  // flex grow is added to help with look of nav when resizing browser window.
-  flex-grow: 0.2;
-  margin-left: auto;
-  justify-content: space-around;
-  align-items: center;
-  // Data returns lowercased, uppercases the acting role when as admin
-  .acting-role {
-    text-transform: capitalize;
-  }
-  .toggle-role {
-    cursor: pointer;
   }
 }
 
-// Nav buttons
 .menuButton {
   font-weight: 400;
   padding: 8px 15px;
-  font-size: 1em;
+  font-size: 0.85em;
   margin: 0;
-  padding: 8px 9px;
-  border-radius: 0.4em;
+  margin-left: 1em;
   position: relative;
   color: black;
-  text-decoration: none;
+  border-radius: 0.5em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+
   &:hover {
+    background-color: rgba(1, 104, 155, 0.1);
     color: rgb(1, 104, 155);
-    font-weight: 600;
+    font-weight: 500;
   }
 }
-.menuButton::before {
-  content: '';
-  position: absolute;
-  display: block;
-  width: 100%;
-  height: 2px;
-  bottom: 0;
-  left: 0;
-  background-color: rgb(0, 0, 0);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-.menuButton:hover::before {
-  transform: scaleX(1);
-}
-// Side nav bar
+
 .hamburger {
-  margin: auto 25px;
   i {
-    border-radius: 50%;
-    padding: 10px;
     color: rgb(0, 0, 0);
-  }
-  transition: all;
-}
-.hamburger {
-  transition: all;
-  &:hover {
-    i {
-      background-color: rgb(164, 183, 213);
-      color: purple;
+    font-size: 1.5em;
+    margin-right: 1em;
+    padding: 1em;
+    border-radius: 50%;
+    transition: color 0.3s, transform 0.3s, background-color 0.3s,
+      box-shadow 0.3s;
+
+    &:hover {
+      color: #3997ee; // Blue color from your theme
+      background-color: rgba(57, 151, 238, 0.1); // A very light blue background
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // A slight shadow for depth
+      transform: scale(1.05); // Slightly scale the icon
     }
   }
 }
-.mdc-drawer {
-  top: 80px;
-  border-radius: 0.5em;
-  background-color: rgb(236, 239, 249);
-  .mdc-list-item--activated {
-    color: #653df6;
-    .mdc-list-item__graphic {
-      color: #653df6;
+
+// Slide-out menu from the left
+.hamburger-menu {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  bottom: 0;
+  width: 300px;
+  background-color: rgba(236, 239, 249, 0.95);
+  transition: left 0.3s ease;
+  z-index: 999;
+
+  &.open {
+    left: 0;
+  }
+
+  .drawer {
+    height: 100%;
+    overflow-y: auto;
+
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+
+      li {
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+
+        &:hover {
+          background-color: rgba(1, 104, 155, 0.1);
+          transform: translateX(10px);
+        }
+
+        i {
+          margin-right: 10px;
+        }
+      }
     }
   }
 }

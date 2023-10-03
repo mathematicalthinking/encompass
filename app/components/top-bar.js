@@ -12,6 +12,27 @@ export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
   toggleRoleErrors: [],
   open: false,
 
+  init() {
+    this._super(...arguments);
+    this.handleClickOutside = this._handleClickOutside.bind(this);
+  },
+
+  didInsertElement() {
+    this._super(...arguments);
+    document.addEventListener('click', this.handleClickOutside);
+  },
+
+  willDestroyElement() {
+    this._super(...arguments);
+    document.removeEventListener('click', this.handleClickOutside);
+  },
+
+  _handleClickOutside(event) {
+    if (this.open && !this.element.contains(event.target)) {
+      this.set('open', false);
+    }
+  },
+
   didReceiveAttrs: function () {
     let currentUser = this.currentUser;
     if (currentUser) {
@@ -23,6 +44,7 @@ export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
     toggleDrawer: function () {
       this.set('open', !this.open);
     },
+
     showToggleModal: function () {
       this.alert
         .showModal(
@@ -39,9 +61,7 @@ export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
     },
 
     toggleActingRole: function () {
-      // should this action be moved to the application controller?
       const currentUser = this.currentUser;
-      // student account types cannot toggle to teacher role
       if (currentUser.accountType === 'S') {
         return;
       }
@@ -67,10 +87,8 @@ export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
           );
         })
         .catch((err) => {
-          // handle error
           this.handleErrors(err, 'toggleRoleErrors', currentUser);
           this.set('isToggleError', true);
-          // send error up to application level to handle?
         });
     },
   },
