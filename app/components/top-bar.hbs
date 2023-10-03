@@ -1,6 +1,6 @@
 {{#if this.user.isAuthenticated}}
   <div class='hamburger' {{action 'toggleDrawer'}}>
-    <i class='material-icons'>menu</i>
+    <i class='fa fa-bars hamburger-icon'></i>
 
   </div>
   <LinkTo @route='index'>
@@ -10,6 +10,8 @@
       class='encompass-logo'
     />
   </LinkTo>
+  <div class='overlay {{if this.open "show"}}' {{action 'toggleDrawer'}}></div>
+
   <ul class='al_nav menu-toggle' id='main-nav'>
     {{#unless this.isStudentAccount}}
       {{! role: admin, teacher, student etc. }}
@@ -55,58 +57,70 @@
       </LinkTo>
     </li>
   </ul>
-
+  {{! side bar content when logged in }}
   <div class='hamburger-menu {{if this.open "open"}}'>
     <div class='drawer'>
       <ul>
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='index'>
-            <i class='icon-home'></i>
-            Home
+            <div class='testHome'><i class='fa fa-home'></i>
+              Home</div>
+
           </LinkTo>
         </li>
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='assignments'>
-            <i class='icon-assignment'></i>
-            Assignments
+            <div class='testHome'>
+              <i class='fa fa-clipboard'></i>
+              Assignments</div>
           </LinkTo>
         </li>
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='sections'>
-            <i class='icon-school'></i>
-            Classes
+            <div class='testHome'>
+              <i class='fa fa-graduation-cap'></i>
+              Classes</div>
+
           </LinkTo>
         </li>
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='workspaces'>
-            <i class='icon-group_work'></i>
-            Workspaces
+            <div class='testHome'>
+              <i class='fa fa-building'></i>
+              Workspaces</div>
+
           </LinkTo>
         </li>
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='problems'>
-            <i class='icon-extension'></i>
-            Problems
+            <div class='testHome'>
+              <i class='fa fa-puzzle-piece'></i>
+              Problems</div>
+
           </LinkTo>
         </li>
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='responses'>
-            <i class='icon-rate_review'></i>
-            Feedback
+            <div class='testHome'>
+              <i class='fa fa-comments'></i>
+              Feedback</div>
+
           </LinkTo>
         </li>
         {{#unless this.currentUser.isStudent}}
           <li {{action 'toggleDrawer'}}>
             <LinkTo @route='users'>
-              <i class='icon-people'></i>
-              Users
+              <div class='testHome'><i class='fa fa-users'></i>
+                Users</div>
+
             </LinkTo>
           </li>
         {{/unless}}
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='logout'>
-            <i class='icon-power_settings_new'></i>
-            Log out
+            <div class='testHome'><i class='fa fa-power-off'></i>
+              Log out</div>
+
           </LinkTo>
         </li>
       </ul>

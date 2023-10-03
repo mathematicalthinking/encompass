@@ -2,10 +2,14 @@
 @import 'mixins';
 @import 'responsive-font-size';
 $breakpoint-small: 600px;
-$breakpoint-medium: 768px;
-$breakpoint-large: 992px;
+$breakpoint-medium: 783px;
+$breakpoint-large: 967px;
 $breakpoint-xlarge: 1200px;
-// styles for material drawer nav
+
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
+
 :root {
   --mdc-theme-primary: #3997ee;
   --mdc-theme-secondary: #ffd204;
@@ -13,17 +17,14 @@ $breakpoint-xlarge: 1200px;
   --mdc-theme-on-secondary: #ffd204;
 }
 
-// STYLING FOR THE ENCOMPASS LOGO
 .encompass-logo {
   height: 5em;
 }
 
-// GENERAL STYLING
 #al_header {
   position: fixed;
   align-items: center;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-  background-color: #f6f5f4;
   top: 0;
   left: 0;
   width: 100%;
@@ -31,10 +32,12 @@ $breakpoint-xlarge: 1200px;
   display: flex;
   font-size: 0.9em;
   justify-content: space-between;
+
   #topbar-unauth {
     display: flex;
     gap: 1em;
   }
+
   .al_nav#main-nav {
     display: flex;
     padding: 0 2em;
@@ -60,9 +63,8 @@ $breakpoint-xlarge: 1200px;
 .menuButton {
   font-weight: 400;
   padding: 8px 15px;
-  font-size: 0.85em;
+  font-size: 1em;
   margin: 0;
-  margin-left: 1em;
   position: relative;
   color: black;
   border-radius: 0.5em;
@@ -76,34 +78,36 @@ $breakpoint-xlarge: 1200px;
 }
 
 .hamburger {
-  i {
+  .hamburger-icon {
     color: rgb(0, 0, 0);
-    font-size: 1.5em;
-    margin-right: 1em;
+    font-size: 1.2em;
+    margin-right: 1.5em;
+    margin-top: 0.3em;
     padding: 1em;
     border-radius: 50%;
     transition: color 0.3s, transform 0.3s, background-color 0.3s,
       box-shadow 0.3s;
 
     &:hover {
-      color: #3997ee; // Blue color from your theme
-      background-color: rgba(57, 151, 238, 0.1); // A very light blue background
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // A slight shadow for depth
-      transform: scale(1.05); // Slightly scale the icon
+      color: #3997ee;
+      background-color: rgba(57, 151, 238, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transform: scale(1.05);
     }
   }
 }
 
-// Slide-out menu from the left
 .hamburger-menu {
   position: fixed;
   top: 0;
   left: -300px;
   bottom: 0;
-  width: 300px;
-  background-color: rgba(236, 239, 249, 0.95);
+  width: 200px;
+  border-radius: 0.5em;
+  background-color: #daeafd;
   transition: left 0.3s ease;
   z-index: 999;
+  margin-top: 5em;
 
   &.open {
     left: 0;
@@ -112,28 +116,61 @@ $breakpoint-xlarge: 1200px;
   .drawer {
     height: 100%;
     overflow-y: auto;
-
+    .testHome {
+      i {
+        font-size: 1.2em;
+        width: 1.2em;
+        height: 1.2em;
+        text-align: center;
+      }
+      display: flex;
+      align-items: center;
+      gap: 1.2em;
+    }
     ul {
-      padding: 0;
-      margin: 0;
-      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
 
       li {
         padding: 10px 20px;
-        display: flex;
-        align-items: center;
         cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition: background-color 0.5s ease, transform 0.3s ease,
+          box-shadow 0.3s ease, color 0.3s ease;
 
         &:hover {
-          background-color: rgba(1, 104, 155, 0.1);
-          transform: translateX(10px);
-        }
-
-        i {
-          margin-right: 10px;
+          background-image: linear-gradient(
+            145deg,
+            rgba(1, 104, 155, 0.08),
+            rgba(1, 104, 155, 0.2)
+          );
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          transform: translateX(10px) translateY(-2px);
+          color: #3997ee;
         }
       }
     }
+  }
+}
+
+@media (max-width: $breakpoint-medium) {
+  .menuButton {
+    font-size: 0.7em; // Adjusted font-size
+    padding: 0.5em 1em; // Adjusted padding
+  }
+}
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  transition: opacity 0.3s ease;
+
+  &.show {
+    display: block;
   }
 }
