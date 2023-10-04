@@ -11,7 +11,7 @@
     />
   </LinkTo>
   <div class='overlay {{if this.open "show"}}' {{action 'toggleDrawer'}}></div>
-
+  {{! main nav bar  }}
   <ul class='al_nav menu-toggle' id='main-nav'>
     {{#unless this.isStudentAccount}}
       {{! role: admin, teacher, student etc. }}
@@ -23,33 +23,7 @@
           </span>
         </span>
       </li>
-      {{! username }}
-      <li id='current-username'>
-        <LinkTo @route='users.user' @model={{this.currentUser.id}}>
-          <span class='menuButton'>{{this.currentUser.username}}
-            <i class='fas fa-user-circle'></i></span>
-        </LinkTo>
-      </li>
     {{/unless}}
-    {{#if this.isStudentAccount}}
-      <li id='current-username'>
-        <span class='menuButton'>{{this.currentUser.username}}
-          <i class='fas fa-user-circle'></i></span>
-      </li>
-    {{/if}}
-    {{! link to terms }}
-    <li class='menu-items' id='logout-btn'>
-      <LinkTo @route='terms' class='menu'>
-        <span class='menuButton'>Terms &amp; Privacy Policy</span>
-      </LinkTo>
-    </li>
-    {{! link to faq }}
-    <li class='menu-items' id='logout-btn'>
-      <LinkTo @route='faq' class='menu'>
-        <span class='menuButton'>FAQ</span>
-      </LinkTo>
-    </li>
-
     {{! logout button }}
     <li class='menu-items' id='logout-btn'>
       <LinkTo @route='logout' class='menu'>
@@ -65,7 +39,6 @@
           <LinkTo @route='index'>
             <div class='testHome'><i class='fa fa-home'></i>
               Home</div>
-
           </LinkTo>
         </li>
         <li {{action 'toggleDrawer'}}>
@@ -107,15 +80,31 @@
 
           </LinkTo>
         </li>
-        {{#unless this.currentUser.isStudent}}
+        {{#unless this.isStudentAccount}}
           <li {{action 'toggleDrawer'}}>
-            <LinkTo @route='users'>
-              <div class='testHome'><i class='fa fa-users'></i>
-                Users</div>
-
+            <LinkTo @route='users.user' @model={{this.currentUser.id}}>
+              <div class='testHome'><i class='fas fa-user-circle'></i>
+                My Account</div>
             </LinkTo>
           </li>
         {{/unless}}
+        {{! link to faq }}
+        <li class='menu-items' id='logout-btn'>
+
+          <LinkTo @route='faq'>
+            <div class='testHome'>
+              <i class='fa fa-question-circle'></i>
+              FAQ
+            </div>
+          </LinkTo>
+        </li>
+        {{! link to terms }}
+        <li class='menu-items'>
+          <LinkTo @route='terms' class='menu'>
+            <div class='testHome'><i class='fa fa-book'></i>
+              Privacy Policy</div>
+          </LinkTo>
+        </li>
         <li {{action 'toggleDrawer'}}>
           <LinkTo @route='logout'>
             <div class='testHome'><i class='fa fa-power-off'></i>
@@ -151,7 +140,7 @@
         <span class='menuButton'>FAQ</span>
       </LinkTo>
       <LinkTo @route='terms' classNames='menu signup'>
-        <span class='menuButton'>Terms &amp; Privacy Policy</span>
+        <span class='menuButton'> Terms &amp; Privacy Policy</span>
       </LinkTo>
     </li>
   </ul>
