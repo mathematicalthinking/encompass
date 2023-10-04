@@ -1,10 +1,7 @@
 {{#if this.user.isAuthenticated}}
-  <div class='hamburger'>
-    <MdcListItemGraphicIcon
-      @icon='menu'
-      {{action 'toggleDrawer'}}
-      {{mdc-ripple}}
-    />
+  <div class='hamburger' {{action 'toggleDrawer'}}>
+    <i class='fa fa-bars hamburger-icon'></i>
+
   </div>
   <LinkTo @route='index'>
     <img
@@ -13,6 +10,8 @@
       class='encompass-logo'
     />
   </LinkTo>
+  <div class='overlay {{if this.open "show"}}' {{action 'toggleDrawer'}}></div>
+  {{! main nav bar  }}
   <ul class='al_nav menu-toggle' id='main-nav'>
     {{#unless this.isStudentAccount}}
       {{! role: admin, teacher, student etc. }}
@@ -24,33 +23,7 @@
           </span>
         </span>
       </li>
-      {{! username }}
-      <li id='current-username'>
-        <LinkTo @route='users.user' @model={{this.currentUser.id}}>
-          <span class='menuButton'>{{this.currentUser.username}}
-            <i class='fas fa-user-circle'></i></span>
-        </LinkTo>
-      </li>
     {{/unless}}
-    {{#if this.isStudentAccount}}
-      <li id='current-username'>
-        <span class='menuButton'>{{this.currentUser.username}}
-          <i class='fas fa-user-circle'></i></span>
-      </li>
-    {{/if}}
-    {{! link to terms }}
-    <li class='menu-items' id='logout-btn'>
-      <LinkTo @route='terms' class='menu'>
-        <span class='menuButton'>Terms &amp; Privacy Policy</span>
-      </LinkTo>
-    </li>
-    {{! link to faq }}
-    <li class='menu-items' id='logout-btn'>
-      <LinkTo @route='faq' class='menu'>
-        <span class='menuButton'>FAQ</span>
-      </LinkTo>
-    </li>
-
     {{! logout button }}
     <li class='menu-items' id='logout-btn'>
       <LinkTo @route='logout' class='menu'>
@@ -58,80 +31,89 @@
       </LinkTo>
     </li>
   </ul>
-  {{! material hamburger menu }}
-  <div class='hamburger-menu'>
-    <MdcDrawer @style='modal' @open={{this.open}}>
-      <MdcDrawerContent>
-        <MdcList>
-          <MdcListItemLinkTo
-            @route='index'
-            {{action 'toggleDrawer'}}
-            {{mdc-ripple}}
-          >
-            <MdcListItemGraphicIcon @icon='home' />
-            Home
-          </MdcListItemLinkTo>
-          <MdcListItemLinkTo
-            @route='assignments'
-            {{action 'toggleDrawer'}}
-            {{mdc-ripple}}
-          >
-            <MdcListItemGraphicIcon @icon='assignment' />
-            Assignments
-          </MdcListItemLinkTo>
-          <MdcListItemLinkTo
-            @route='sections'
-            {{action 'toggleDrawer'}}
-            {{mdc-ripple}}
-          >
-            <MdcListItemGraphicIcon @icon='school' />
-            Classes
-          </MdcListItemLinkTo>
-          <MdcListItemLinkTo
-            @route='workspaces'
-            {{action 'toggleDrawer'}}
-            {{mdc-ripple}}
-          >
-            <MdcListItemGraphicIcon @icon='group_work' />
-            Workspaces
-          </MdcListItemLinkTo>
-          <MdcListItemLinkTo
-            @route='problems'
-            {{action 'toggleDrawer'}}
-            {{mdc-ripple}}
-          >
-            <MdcListItemGraphicIcon @icon='extension' />
-            Problems
-          </MdcListItemLinkTo>
-          <MdcListItemLinkTo
-            @route='responses'
-            {{action 'toggleDrawer'}}
-            {{mdc-ripple}}
-          >
-            <MdcListItemGraphicIcon @icon='rate_review' />
-            Feedback
-          </MdcListItemLinkTo>
-          {{#unless this.currentUser.isStudent}}
-            <MdcListItemLinkTo
-              @route='users'
-              {{action 'toggleDrawer'}}
-              {{mdc-ripple}}
-            >
-              <MdcListItemGraphicIcon @icon='people' />
-              Users
-            </MdcListItemLinkTo>
-          {{/unless}}
-          <MdcListItemLinkTo
-            @route='logout'
-            {{action 'toggleDrawer'}}
-            {{mdc-ripple}}
-          >
-            <MdcListItemGraphicIcon @icon='power_settings_new' />
-            Log out
-          </MdcListItemLinkTo>
-        </MdcList>
-      </MdcDrawerContent>
-    </MdcDrawer>
+  {{! side bar content when logged in }}
+  <div class='hamburger-menu {{if this.open "open"}}'>
+    <div class='drawer'>
+      <ul>
+        <li {{action 'toggleDrawer'}}>
+          <LinkTo @route='index'>
+            <div class='testHome'><i class='fa fa-home'></i>
+              Home</div>
+          </LinkTo>
+        </li>
+        <li {{action 'toggleDrawer'}}>
+          <LinkTo @route='assignments'>
+            <div class='testHome'>
+              <i class='fa fa-clipboard'></i>
+              Assignments</div>
+          </LinkTo>
+        </li>
+        <li {{action 'toggleDrawer'}}>
+          <LinkTo @route='sections'>
+            <div class='testHome'>
+              <i class='fa fa-graduation-cap'></i>
+              Classes</div>
+
+          </LinkTo>
+        </li>
+        <li {{action 'toggleDrawer'}}>
+          <LinkTo @route='workspaces'>
+            <div class='testHome'>
+              <i class='fa fa-building'></i>
+              Workspaces</div>
+
+          </LinkTo>
+        </li>
+        <li {{action 'toggleDrawer'}}>
+          <LinkTo @route='problems'>
+            <div class='testHome'>
+              <i class='fa fa-puzzle-piece'></i>
+              Problems</div>
+
+          </LinkTo>
+        </li>
+        <li {{action 'toggleDrawer'}}>
+          <LinkTo @route='responses'>
+            <div class='testHome'>
+              <i class='fa fa-comments'></i>
+              Feedback</div>
+
+          </LinkTo>
+        </li>
+        {{#unless this.isStudentAccount}}
+          <li {{action 'toggleDrawer'}}>
+            <LinkTo @route='users.user' @model={{this.currentUser.id}}>
+              <div class='testHome'><i class='fas fa-user-circle'></i>
+                My Account</div>
+            </LinkTo>
+          </li>
+        {{/unless}}
+        {{! link to faq }}
+        <li class='menu-items' id='logout-btn'>
+
+          <LinkTo @route='faq'>
+            <div class='testHome'>
+              <i class='fa fa-question-circle'></i>
+              FAQ
+            </div>
+          </LinkTo>
+        </li>
+        {{! link to terms }}
+        <li class='menu-items'>
+          <LinkTo @route='terms' class='menu'>
+            <div class='testHome'><i class='fa fa-book'></i>
+              Privacy Policy</div>
+          </LinkTo>
+        </li>
+        <li {{action 'toggleDrawer'}}>
+          <LinkTo @route='logout'>
+            <div class='testHome'><i class='fa fa-power-off'></i>
+              Log out</div>
+
+          </LinkTo>
+        </li>
+      </ul>
+    </div>
   </div>
 {{else}}
   <LinkTo @route='index'>
@@ -158,7 +140,7 @@
         <span class='menuButton'>FAQ</span>
       </LinkTo>
       <LinkTo @route='terms' classNames='menu signup'>
-        <span class='menuButton'>Terms &amp; Privacy Policy</span>
+        <span class='menuButton'> Terms &amp; Privacy Policy</span>
       </LinkTo>
     </li>
   </ul>
