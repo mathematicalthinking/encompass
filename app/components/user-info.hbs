@@ -1,9 +1,9 @@
-<h3><span class="username">{{@user.username}}</span>'s Account Details</h3>
+<h3><span class='username'>{{@user.username}}</span>'s Account Details</h3>
 {{#each this.errorHandling.loadOrgsErrors as |error|}}
-<p class="error-message">{{error}}</p>
+  <p class='error-message'>{{error}}</p>
 {{/each}}
-<article class="user">
-  <table class="values rows">
+<article class='user'>
+  <table class='values rows'>
     <tr>
       <th>Label</th>
       <th>Value</th>
@@ -11,14 +11,23 @@
     <tr>
       <td>Username</td>
       <td>
-        {{@user.username}}
+        {{#if this.isEditing}}
+          <Input
+            @value={{@user.username}}
+            @classNames='user-username'
+            {{on 'input' (fn (mut user.username) value='target.value')}}
+          />
+        {{else}}
+          {{@user.username}}
+        {{/if}}
       </td>
     </tr>
+
     <tr>
       <td>First Name</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@user.firstName}} @classNames="user-first-name" />
+          <Input @value={{@user.firstName}} @classNames='user-first-name' />
         {{else}}
           {{@user.firstName}}
         {{/if}}
@@ -28,7 +37,7 @@
       <td>Last Name</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@user.lastName}} @classNames="user-last-name" />
+          <Input @value={{@user.lastName}} @classNames='user-last-name' />
         {{else}}
           {{@user.lastName}}
         {{/if}}
@@ -44,7 +53,7 @@
       <td>Email</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@user.email}} @classNames="user-email" />
+          <Input @value={{@user.email}} @classNames='user-email' />
         {{else}}
           {{@user.email}}
         {{/if}}
@@ -54,13 +63,17 @@
     {{#if this.canConfirm}}
       <tr>
         <td>Email Confirmed</td>
-        <td class="is-email-confirm">
+        <td class='is-email-confirm'>
           {{#if this.isEditing}}
             {{#if this.unconfirmedEmail}}
               {{#if @user.email}}
-                <input class="user-email-auth" type="checkbox" checked={{@user.isEmailConfirmed}}
-                  onclick={{action "onManualConfirm" @user.isEmailConfirmed}} />
-                <label for="">Manually confirm email?</label>
+                <input
+                  class='user-email-auth'
+                  type='checkbox'
+                  checked={{@user.isEmailConfirmed}}
+                  onclick={{action 'onManualConfirm' @user.isEmailConfirmed}}
+                />
+                <label for=''>Manually confirm email?</label>
               {{/if}}
             {{else}}
               {{@user.isEmailConfirmed}}
@@ -74,15 +87,24 @@
     {{#if this.isEditing}}
       <tr>
         <td>Password</td>
-        <td><button class='reset-password' {{action 'resetPassword'}}>Reset Password</button></td>
+        <td><button class='reset-password' {{action 'resetPassword'}}>Reset
+            Password</button></td>
       </tr>
     {{/if}}
     {{#unless @user.organizationRequest}}
       <tr>
-        <td>Organization {{#if this.isEditing}}<span class="required-star">*</span>{{/if}}</td>
+        <td>Organization
+          {{#if this.isEditing}}<span class='required-star'>*</span>{{/if}}</td>
         {{#if this.isEditing}}
           {{#if @currentUser.isAdmin}}
-            <td><TwitterTypeahead @dataList={{@orgList}} @selectedValue={{@user.organization}} @onSelect="setOrg" @minLength={{0}} @optionLabelPath="name" @setSelectedValueOnChange={{true}} /></td>
+            <td><TwitterTypeahead
+                @dataList={{@orgList}}
+                @selectedValue={{@user.organization}}
+                @onSelect='setOrg'
+                @minLength={{0}}
+                @optionLabelPath='name'
+                @setSelectedValueOnChange={{true}}
+              /></td>
           {{else}}
             <td>{{@user.organization.name}}</td>
           {{/if}}
@@ -97,26 +119,30 @@
         {{#if this.isEditing}}
           {{#if @currentUser.isAdmin}}
             <td>
-              Would you like to create {{@user.organizationRequest}}<br />
-              <button {{action 'confirmOrgModal' }}>Yes</button>
-              <button {{action 'removeOrg' }}>No</button>
+              Would you like to create
+              {{@user.organizationRequest}}<br />
+              <button {{action 'confirmOrgModal'}}>Yes</button>
+              <button {{action 'removeOrg'}}>No</button>
             </td>
           {{else}}
             {{@user.organizationRequest}}
           {{/if}}
-          {{else}}
-            <td>
-              {{@user.organizationRequest}}
-            </td>
-          {{/if}}
-        </tr>
+        {{else}}
+          <td>
+            {{@user.organizationRequest}}
+          </td>
+        {{/if}}
+      </tr>
     {{/if}}
     {{#if @user.sections}}
       <tr>
         <td>User's Sections</td>
         <td>
           {{#each @userSections as |section|}}
-          <p><LinkTo @route="sections.section" @model={{section.id}}>{{section.name}}</LinkTo></p>
+            <p><LinkTo
+                @route='sections.section'
+                @model={{section.id}}
+              >{{section.name}}</LinkTo></p>
           {{/each}}
         </td>
       </tr>
@@ -125,132 +151,177 @@
       <td>Location</td>
       <td>
         {{#if this.isEditing}}
-        <Input @value={{@user.location}} @classNames="user-location" />
+          <Input @value={{@user.location}} @classNames='user-location' />
         {{else}}
-        {{@user.location}}
+          {{@user.location}}
         {{/if}}
       </td>
     </tr>
     <tr>
       <td>Seen Tour</td>
       <td>
-        {{#if this.isEditing}} {{#if this.seenTour}}
-        <button class='clearTour' {{action 'clearTour' }}>re-take tour</button>
-        {{else}}
-        <button class='doneTour' {{action 'doneTour' }}>don't show the tour</button>
-        {{/if}} {{/if}}
+        {{#if this.isEditing}}
+          {{#if this.seenTour}}
+            <button class='clearTour' {{action 'clearTour'}}>re-take tour</button>
+          {{else}}
+            <button class='doneTour' {{action 'doneTour'}}>don't show the tour</button>
+          {{/if}}
+        {{/if}}
         <span class='tourDate'>{{this.tourDate}}</span>
       </td>
     </tr>
     <tr>
       <td>Last Seen</td>
       {{#if @user.lastSeen}}
-      <td>{{format-date @user.lastSeen 'MMM Do YYYY'}} at {{format-date @user.lastSeen 'hh:mma'}}</td>
+        <td>{{format-date @user.lastSeen 'MMM Do YYYY'}}
+          at
+          {{format-date @user.lastSeen 'hh:mma'}}</td>
       {{else}}
-      <td>Never</td>
+        <td>Never</td>
       {{/if}}
     </tr>
     {{#if @user.lastModifiedBy}}
-    <tr>
-      <td>Last Modified</td>
-      <td>{{format-date @user.lastModifiedDate 'MMM Do YYYY'}} by {{@user.lastModifiedBy.username}}</td>
-    </tr>
+      <tr>
+        <td>Last Modified</td>
+        <td>{{format-date @user.lastModifiedDate 'MMM Do YYYY'}}
+          by
+          {{@user.lastModifiedBy.username}}</td>
+      </tr>
     {{/if}}
     <tr>
-      <td>Account Type {{#if this.isEditing}}<span class="required-star">*</span>{{/if}}</td>
+      <td>Account Type
+        {{#if this.isEditing}}<span class='required-star'>*</span>{{/if}}</td>
       {{#if this.isEditing}}
-      <td>
-        {{#if this.canEdit}}
-        <MySelect @selectedValue={{this.selectedType}} @cannotBeNull={{true}} @content={{this.accountTypes}} @action={{action (mut this.selectedType)}} />
-        <Input required={{true}} @type="hidden" @value={{this.selectedType}} />
-        {{/if}}
-      </td>
+        <td>
+          {{#if this.canEdit}}
+            <MySelect
+              @selectedValue={{this.selectedType}}
+              @cannotBeNull={{true}}
+              @content={{this.accountTypes}}
+              @action={{action (mut this.selectedType)}}
+            />
+            <Input
+              required={{true}}
+              @type='hidden'
+              @value={{this.selectedType}}
+            />
+          {{/if}}
+        </td>
       {{else}}
-      <td>{{account-types @user.accountType}}</td>
+        <td>{{account-types @user.accountType}}</td>
       {{/if}}
     </tr>
     {{#if @user.isAuthorized}}
-    <tr>
-      <td>Authorized</td>
-      <td>
-        {{#if this.isEditing}}
-        {{#if this.canEdit}}
-        <Input @type="checkbox" @checked={{@user.isAuthorized}} @classNames="user-isAuth" />
-        {{else}}
-        {{@user.isAuthorized}}
-        {{/if}}
-        {{else}}
-        {{@user.isAuthorized}}
-        {{/if}}
-      </td>
-    </tr>
-    {{#if @user.authorizedBy}}
-    <tr>
-      <td>Authorized By</td>
-      <td>{{@user.authorizedBy.username}}</td>
-    </tr>
-    {{/if}}
+      <tr>
+        <td>Authorized</td>
+        <td>
+          {{#if this.isEditing}}
+            {{#if this.canEdit}}
+              <Input
+                @type='checkbox'
+                @checked={{@user.isAuthorized}}
+                @classNames='user-isAuth'
+              />
+            {{else}}
+              {{@user.isAuthorized}}
+            {{/if}}
+          {{else}}
+            {{@user.isAuthorized}}
+          {{/if}}
+        </td>
+      </tr>
+      {{#if @user.authorizedBy}}
+        <tr>
+          <td>Authorized By</td>
+          <td>{{@user.authorizedBy.username}}</td>
+        </tr>
+      {{/if}}
     {{else}}
-    <tr>
-      <td>Request Reason</td>
-      <td>
-        {{@user.requestReason}}
-      </td>
-    </tr>
-    {{#if this.isEditing}}
-    <tr>
-      <td>Authorize</td>
-      <td>
-        {{#if this.canEdit}}
-        <Input @type="checkbox" @checked={{@user.isAuthorized}} @name="isAuthorized" @classNames="user-isAuth" />
-        {{else}}
-        {{@user.isAuthorized}}
-        {{/if}}
-      </td>
-    </tr>
-    {{else}}
-    <tr>
-      <td>Authorized</td>
-      <td>
-        No
-      </td>
-    </tr>
-    {{/if}}
+      <tr>
+        <td>Request Reason</td>
+        <td>
+          {{@user.requestReason}}
+        </td>
+      </tr>
+      {{#if this.isEditing}}
+        <tr>
+          <td>Authorize</td>
+          <td>
+            {{#if this.canEdit}}
+              <Input
+                @type='checkbox'
+                @checked={{@user.isAuthorized}}
+                @name='isAuthorized'
+                @classNames='user-isAuth'
+              />
+            {{else}}
+              {{@user.isAuthorized}}
+            {{/if}}
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td>Authorized</td>
+          <td>
+            No
+          </td>
+        </tr>
+      {{/if}}
     {{/if}}
   </table>
   {{#if this.canEdit}}
     {{#if this.isEditing}}
       {{#if this.isResettingPassword}}
-        <ResetPasswordUser @user={{@user}} @handleResetSuccess={{action "handleResetSuccess"}} @cancelReset={{action "handleCancelForm"}} />
+        <ResetPasswordUser
+          @user={{@user}}
+          @handleResetSuccess={{action 'handleResetSuccess'}}
+          @cancelReset={{action 'handleCancelForm'}}
+        />
       {{/if}}
-    {{#unless this.isResettingPassword}}
-      <div class="button-row">
-        <button class='action_button save-user' {{action 'checkOrgExists' }}>Save</button>
-        <button class='action_button cancel-button cancel-user' {{action 'cancel' }}>Cancel</button>
-      </div>
-    {{/unless}}
+      {{#unless this.isResettingPassword}}
+        <div class='button-row'>
+          <button
+            class='action_button save-user'
+            {{action 'checkOrgExists'}}
+          >Save</button>
+          <button
+            class='action_button cancel-button cancel-user'
+            {{action 'cancel'}}
+          >Cancel</button>
+        </div>
+      {{/unless}}
     {{else}}
-      <div class="button-row">
-        <button class='action_button edit-user' {{action 'editUser' }}>Edit</button>
+      <div class='button-row'>
+        <button
+          class='action_button edit-user'
+          {{action 'editUser'}}
+        >Edit</button>
         {{#if @currentUser.isAdmin}}
           {{#if @user.isTrashed}}
-            <button class='action_button restore-button' {{action 'restoreUser' }}>Restore User</button>
+            <button
+              class='action_button restore-button'
+              {{action 'restoreUser'}}
+            >Restore User</button>
           {{else}}
-            <button class='action_button delete-button' {{action 'deleteUser' }}>Delete</button>
+            <button
+              class='action_button delete-button'
+              {{action 'deleteUser'}}
+            >Delete</button>
           {{/if}}
         {{/if}}
       </div>
     {{/if}}
   {{else}}
-    <p class="warning-message">You can't edit users you haven't created. Contact an admin to make changes.</p>
+    <p class='warning-message'>You can't edit users you haven't created. Contact
+      an admin to make changes.</p>
   {{/if}}
 </article>
 {{#each this.errorHandling.findRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
+  <p class='error-message'>{{error}}</p>
 {{/each}}
 {{#each this.errorHandling.createRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
+  <p class='error-message'>{{error}}</p>
 {{/each}}
 {{#each this.errorHandling.updateRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
+  <p class='error-message'>{{error}}</p>
 {{/each}}

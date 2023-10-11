@@ -230,7 +230,7 @@ async function putUser(req, res, next) {
       return utils.sendError.InvalidContentError(null, res);
     }
     /* These fields are uneditable */
-    delete requestBody.username;
+    // delete requestBody.username;
     delete requestBody.createDate;
     delete requestBody.key;
     delete requestBody.password;
