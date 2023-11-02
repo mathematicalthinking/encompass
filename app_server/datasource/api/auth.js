@@ -347,6 +347,24 @@ const ssoUpdateUser = async (req, res, next) => {
   }
 };
 
+const ssoUpdateUsers = async (req, res, next) => {
+  try {
+    let authToken = extractBearerToken(req);
+    await verifyJwt(authToken, secret);
+    const { users } = req.body;
+    const bulkOps = users.map((user) => ({
+      updateOne: {
+        filter: { _id: user._id },
+        update: { username: user.username },
+      },
+    }));
+    await User.bulkWrite(bulkOps);
+    return res.json(users);
+  } catch (err) {
+    utils.handleError(err, res);
+  }
+};
+
 const resolveTransporter = function (username, password) {
   return new Promise((resolve, reject) => {
     let isTestEnv = process.env.NODE_ENV === 'seed';
@@ -422,3 +440,4 @@ module.exports.resendConfirmationEmail = resendConfirmationEmail;
 module.exports.sendEmailsToAdmins = sendEmailsToAdmins;
 module.exports.insertNewMtUser = insertNewMtUser;
 module.exports.ssoUpdateUser = ssoUpdateUser;
+module.exports.ssoUpdateUsers = ssoUpdateUsers;
