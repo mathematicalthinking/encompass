@@ -135,7 +135,7 @@ module.exports.confirmEmailById = (ssoId, reqUser) => {
 module.exports.updateUsername = async (id, username, reqUser) => {
   return this.put(
     `/auth/user/updateNames`,
-    { users: [{ _id: id, username }] },
+    { users: [{ id, username }] },
     reqUser
   );
 };
