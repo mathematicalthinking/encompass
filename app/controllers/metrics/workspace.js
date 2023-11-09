@@ -2,84 +2,20 @@ import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-import moment from 'moment';
-import { select } from 'underscore';
 
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
   @tracked showCloud = false;
-  @service jsonCsv;
-  @service currentUrl;
+  @service workspaceReports;
+
   submissionsColumns = [
     { name: 'Record', valuePath: 'recordType' },
     { name: 'Creator', valuePath: 'creator' },
     { name: 'Text', valuePath: 'text' },
   ];
-  get prepWorkspaceForCsv() {
-    return this.model.submissions.map((submission) => {
-      // regex used on below to remove <p> tags, model returning such tags.
-      const text = `${
-        submission.shortAnswer
-          ? submission.shortAnswer
-          : submission.get('answer.answer')
-      }  ${
-        submission.longAnswer
-          ? submission.longAnswer
-          : submission.get('answer.explanation')
-          ? submission.get('answer.explanation').replace(/<\/?[^>]+(>|$)/g, '')
-          : ''
-      }`;
-      const workspaceUrl = this.currentUrl.currentUrl;
-      const workspace = submission.get('workspaces.firstObject.name');
-      const submitter = submission.student;
-      const workspaceOwner = this.model.workspace.get('owner.username');
-
-      const selector = submission.selections.map((item) => {
-        return item.comments
-          .map((comment) => {
-            const usernameOfSelector = comment.get('createdBy.username');
-            return usernameOfSelector;
-          })
-          .filter(Boolean)
-          .join('');
-      });
-      const filteredSelector = selector.filter(Boolean).join(', ');
-      const textOfSelection = submission.selections.map((item) => {
-        return item.text;
-      });
-      const filteredTextOfSelection = textOfSelection
-        .filter(Boolean)
-        .join(', ');
-
-      // This is returning multiple different dates, adding new columns in csv file.
-      // What do we want to do when there are multiple selections? Do we want the original date? Do we add columns (can get messy)
-      const selectionDate = submission.selections.map((item) => {
-        return moment(item.createDate).format('MM/DD/YYYY');
-      });
-      console.log('submission:', submission);
-      const foldersLength = this.model.workspace.foldersLength;
-      const commentsLength = this.model.workspace.commentsLength;
-      const dateOfSubmission = moment(submission.createDate).format(
-        'MM/DD/YYYY'
-      );
-      return {
-        'Name of workspace': workspace,
-        'Workspace URL': workspaceUrl,
-        'Workspace Owner': workspaceOwner,
-        'Original Submitter': submitter,
-        'Text of Submission': text,
-        'Date of Submission': dateOfSubmission,
-        'Selector of text': filteredSelector,
-        'Text of Selection': filteredTextOfSelection,
-        'Date of Selection': selectionDate,
-        'Number of Folders': foldersLength,
-        'Number of Notice/Wonder/Feedback': commentsLength,
-      };
-    });
-  }
 
   get workspaceCsv() {
-    return this.jsonCsv.arrayToCsv(this.prepWorkspaceForCsv);
+    return this.workspaceReports.submissionReport(this.model);
   }
   @action
   handleToggle(prop) {
