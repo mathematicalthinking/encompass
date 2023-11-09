@@ -1,74 +1,90 @@
-.metrics__container {
-  width: 90%;
-  margin: 30px auto;
-  height: 70%;
-}
+// Metrics header container
 .metrics-header-container {
   padding: 1em;
-  background-color: rgb(215, 241, 250);
+  background-color: #f1f5fa;
+
   header {
     display: flex;
     flex-direction: column;
     gap: 2em;
-  }
-  a {
-    border: 1px solid black;
-    max-width: 10%;
-    text-align: center;
-    font-weight: 600;
-    &:hover {
-      background-color: rgb(227, 217, 204);
+
+    h3 {
+      font-family: var(--font-family);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    a {
+      border: 1px solid var(--border-color);
+      max-width: 10%;
+      text-align: center;
+      font-family: var(--font-family);
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgb(227, 217, 204);
+      }
     }
   }
 }
-.metrics__table {
-  border: 1px solid black;
-  td,
-  th {
-    border: 1px solid black;
+
+// Metrics container
+.metrics__container {
+  width: 90%;
+  margin: 0 auto 30px auto;
+  height: 70%;
+
+  .metrics--flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    button {
+      margin-right: 10px;
+      font-family: var(--font-family);
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+    }
   }
-  ul {
-    list-style: unset;
-    list-style-position: inside;
+
+  .ember-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      th {
+        background-color: #f5f5f5;
+        padding: 10px;
+        font-family: var(--font-family);
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          padding: 10px;
+          font-family: var(--font-family);
+          font-size: 1rem;
+        }
+      }
+    }
   }
-}
 
-.metrics__category {
-  flex: 1;
-  padding: 10px;
-}
-
-.metrics__card {
-  border: 1px solid #ccc;
-  padding: 15px;
-  border-radius: 5px;
-}
-
-.metrics__list-item {
-  margin: 10px 0;
-}
-
-.metrics__link:hover {
-  text-decoration: underline;
-}
-
-.metrics--flex {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  #ws-list {
-    flex: 2;
+  .wordcloud-container {
+    width: 100%;
+    height: 300px;
   }
-  #submission {
-    flex: 1;
-  }
-}
-
-.metrics--expandable {
-  cursor: pointer;
-}
-
-.metrics--scrollable {
-  height: 200px;
-  overflow: scroll;
 }

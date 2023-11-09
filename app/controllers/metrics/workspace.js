@@ -52,9 +52,11 @@ export default class MetricsWorkspaceController extends Controller {
         .join(', ');
 
       // This is returning multiple different dates, adding new columns in csv file.
+      // What do we want to do when there are multiple selections? Do we want the original date? Do we add columns (can get messy)
       const selectionDate = submission.selections.map((item) => {
         return moment(item.createDate).format('MM/DD/YYYY');
       });
+      console.log('submission:', submission);
       const foldersLength = this.model.workspace.foldersLength;
       const commentsLength = this.model.workspace.commentsLength;
       const dateOfSubmission = moment(submission.createDate).format(
@@ -75,6 +77,7 @@ export default class MetricsWorkspaceController extends Controller {
       };
     });
   }
+
   get workspaceCsv() {
     return this.jsonCsv.arrayToCsv(this.prepWorkspaceForCsv);
   }
