@@ -3,6 +3,7 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import moment from 'moment';
+import { select } from 'underscore';
 
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
@@ -16,11 +17,6 @@ export default class MetricsWorkspaceController extends Controller {
   ];
   get prepWorkspaceForCsv() {
     return this.model.submissions.map((submission) => {
-      const selections = submission.get('selections');
-      let taggings = selections.map((selection) =>
-        selection.get('taggings').toArray()
-      );
-      taggings = taggings.flat();
       // regex used on below to remove <p> tags, model returning such tags.
       const text = `${
         submission.shortAnswer
@@ -36,37 +32,46 @@ export default class MetricsWorkspaceController extends Controller {
       const workspaceUrl = this.currentUrl.currentUrl;
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
+      const workspaceOwner = this.model.workspace.get('owner.username');
 
-      // Set object is used to keep copy of original selector without producing duplicates.
       const selector = submission.selections.map((item) => {
         return item.comments
           .map((comment) => {
-            const username = comment.get('createdBy.username');
-            const text = comment.text;
-            return ` Selection by: ${
-              username && username.trim()
-            }, Feedback: ${text}`; // concatenate username and text
+            const usernameOfSelector = comment.get('createdBy.username');
+            return usernameOfSelector;
           })
           .filter(Boolean)
           .join('');
       });
+      const filteredSelector = selector.filter(Boolean).join(', ');
+      const textOfSelection = submission.selections.map((item) => {
+        return item.text;
+      });
+      const filteredTextOfSelection = textOfSelection
+        .filter(Boolean)
+        .join(', ');
 
-      const feedback = selector.filter(Boolean).join(', '); // added .filter(Boolean) to filter out empty strings
-
-      // **Maybe use in future again**
-      // const selectionsLength = submission.selections.length;
-      // const commentsLength = submission.comments.length;
-      // const responsesLength = submission.responses.length;
+      // This is returning multiple different dates, adding new columns in csv file.
+      const selectionDate = submission.selections.map((item) => {
+        return moment(item.createDate).format('MM/DD/YYYY');
+      });
+      const foldersLength = this.model.workspace.foldersLength;
+      const commentsLength = this.model.workspace.commentsLength;
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
       return {
-        workspace,
-        workspaceUrl,
-        submitter,
-        text,
-        dateOfSubmission,
-        feedback,
+        'Name of workspace': workspace,
+        'Workspace URL': workspaceUrl,
+        'Workspace Owner': workspaceOwner,
+        'Original Submitter': submitter,
+        'Text of Submission': text,
+        'Date of Submission': dateOfSubmission,
+        'Selector of text': filteredSelector,
+        'Text of Selection': filteredTextOfSelection,
+        'Date of Selection': selectionDate,
+        'Number of Folders': foldersLength,
+        'Number of Notice/Wonder/Feedback': commentsLength,
       };
     });
   }
