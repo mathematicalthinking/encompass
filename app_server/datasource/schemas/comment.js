@@ -102,6 +102,7 @@ CommentSchema.pre('save', function (next) {
 });
 
 /* + The Workspace exists */
+// Could change last modified date - to the last comment date.
 CommentSchema.pre('save', function (next) {
   mongoose.models.Workspace.findById(this.workspace)
     .lean()

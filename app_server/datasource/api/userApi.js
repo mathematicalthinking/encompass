@@ -8,7 +8,6 @@
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
-
 //REQUIRE FILES
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
@@ -230,7 +229,7 @@ async function putUser(req, res, next) {
       return utils.sendError.InvalidContentError(null, res);
     }
     /* These fields are uneditable */
-    delete requestBody.username;
+    // delete requestBody.username; this was commented out
     delete requestBody.createDate;
     delete requestBody.key;
     delete requestBody.password;
@@ -290,7 +289,15 @@ async function putUser(req, res, next) {
         updateHash.notifications = requestBody.notifications;
       }
     }
-
+    const oldUser = await models.User.findById(req.params.id).exec();
+    if (oldUser.username !== requestBody.username) {
+      // THIS IS WHERE MT-SSO GETS CALLED
+      await sso.updateUsername(
+        req.mt.auth.user.ssoId,
+        requestBody.username,
+        req.body.user
+      );
+    }
     const updatedUser = await models.User.findByIdAndUpdate(
       req.params.id,
       updateHash,

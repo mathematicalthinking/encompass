@@ -22,34 +22,6 @@ export default class UserInfoComponent extends Component {
   @tracked findRecordErrors = [];
   @tracked isResettingPassword = false;
 
-  // this was returning undefined if you are logged in and viewing your own profile and
-  // your account does not have a createdBy
-  // should teachers who sign up through the site themselves have createdBy be set to their own id?
-
-  // didReceiveAttrs: function () {
-  //   this.set('isEditing', false);
-  //   let user = this.args.user;
-  //   if (user.get('sections')) {
-  //     this.getUserSections();
-  //   }
-  //   this.set('org', null);
-  //   this.errorHandling.removeMessages(
-  //     'updateRecordErrors',
-  //     'createRecordErrors',
-  //     'findRecordErrors'
-  //   );
-
-  //   this.store
-  //     .findAll('organization')
-  //     .then((orgs) => {
-  //       this.set('orgList', orgs);
-  //       this.errorHandling.removeMessages('loadOrgErrors');
-  //     })
-  //     .catch((err) => {
-  //       this.errorHandling.handleErrors(err, 'loadOrgsErrors');
-  //     });
-  // },
-
   get canEdit() {
     let user = this.args.user;
     let currentUser = this.args.currentUser;
@@ -95,33 +67,6 @@ export default class UserInfoComponent extends Component {
     return !this.args.user.isEmailConfirmed;
   }
 
-  // get userSections() {
-  //   let user = this.args.user;
-  //   let sections = user.sections;
-  //   let sectionIds = sections.map((section) => {
-  //     return section.sectionId;
-  //   });
-
-  //   return this.store.query('section', {
-  //     ids: sectionIds,
-  //   });
-  // }
-
-  // removeSuccessMessages: observer(
-  //   'isResettingPassword',
-  //   'isEditing',
-  //   'user.id',
-  //   function () {
-  //     const succesStates = ['resetPasswordSuccess'];
-
-  //     for (let state of succesStates) {
-  //       if (this.get(state)) {
-  //         this.set(state, false);
-  //       }
-  //     }
-  //   }
-  // ),
-
   get accountTypes() {
     let accountType = this.args.currentUser.get('accountType');
     let accountTypes;
@@ -139,14 +84,6 @@ export default class UserInfoComponent extends Component {
     return accountTypes;
   }
 
-  // get lastSeenDate() {
-  //   var last = this.lastSeen;
-  //   if (last) {
-  //     return moment(last).fromNow();
-  //   }
-  //   return 'never';
-  // }
-
   get tourDate() {
     var date = this.seenTour;
     if (date) {
@@ -155,19 +92,10 @@ export default class UserInfoComponent extends Component {
     return 'no';
   }
 
-  // authorizedBy: observer('user.isAuthorized', function () {
-  //   let isAuth = this.get('user.isAuthorized');
-  //   let authBy = this.get('user.authorizedBy.content');
-  //   if (isAuth && !authBy) {
-  //     let user = this.args.user;
-  //     user.set('authorizedBy', this.args.currentUser);
-  //     user.set('shouldSendAuthEmail', true);
-  //   }
-  // }),
-
   @action editUser() {
     let user = this.args.user;
     this.userEmail = user.email;
+
     let accountType = user.get('accountType');
     if (accountType === 'S') {
       this.selectedType = 'Student';

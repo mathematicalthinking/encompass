@@ -93,9 +93,9 @@
       <div class="item-card name">
         <LinkTo @route="workspace.work" @model={{this.workspace.id}} class="workspace-name">
           <span class={{if this.workspace.isTrashed 'strikethrough'}}>{{{this.workspace.name}}}</span>
-            <LinkTo @route="workspace.info" @model={{this.workspace.id}}>
-              <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
-            </LinkTo>
+        </LinkTo>
+        <LinkTo @route="workspace.info" @model={{this.workspace.id}}>
+          <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
         </LinkTo>
       </div>
     </div>
