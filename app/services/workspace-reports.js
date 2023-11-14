@@ -33,24 +33,6 @@ export default class WorkspaceReportsService extends Service {
       const submitter = submission.student;
       const workspaceOwner = model.workspace.get('owner.username');
 
-      const selector = submission.selections.map((item) => {
-        return item.comments
-          .map((comment) => {
-            const usernameOfSelector = comment.get('createdBy.username');
-            return usernameOfSelector;
-          })
-          .filter(Boolean)
-          .join('');
-      });
-      const filteredSelector = selector.toArray()[0];
-      const textOfSelection = submission.selections.toArray()[0].text;
-
-      const selectionDate = moment(
-        submission.selections.toArray().length > 0
-          ? submission.selections.toArray()[0].createDate
-          : ''
-      ).format('MM/DD/YYYY');
-
       const submissionNumber = index + 1;
       const submissionId = submission.id;
       const foldersLength = model.workspace.foldersLength;
@@ -58,6 +40,10 @@ export default class WorkspaceReportsService extends Service {
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
+
+      const firstSelector = submission.get('selectors.firstObject');
+      const selectorInfo = this.createSelectorInfo(firstSelector);
+
       return {
         'Name of workspace': workspace,
         'Workspace URL': workspaceUrl,
@@ -67,14 +53,34 @@ export default class WorkspaceReportsService extends Service {
         'Date of Submission': dateOfSubmission,
         'Submission #': submissionNumber,
         'Submission ID': submissionId,
-        'Selector of text': filteredSelector,
-        'Text of Selection': textOfSelection,
-        'Date of Selection':
-          selectionDate === 'Invalid date' ? '' : selectionDate,
+        'Selector of text': selectorInfo.username,
+        'Text of Selection': selectorInfo.text,
+        'Date of Selection': selectorInfo.createDate,
         'Number of Folders': foldersLength,
         'Number of Notice/Wonder/Feedback': commentsLength,
       };
     });
+  }
+
+  createSelectorInfo(selector) {
+    const defaultSelection = {
+      createDate: '',
+      text: '',
+      username: '',
+      annotator: '',
+      annotatorText: '',
+    };
+
+    // Extract values, potentially undefined
+    const createDate = selector.get('createDate');
+    const text = selector.get('text');
+    const username = selector.get('comments.firstObject.createdBy.username');
+
+    // Create an object with the extracted values
+    const selectorInfo = { createDate, text, username };
+
+    // Use Object.assign to fill in defaults for undefined values
+    return Object.assign({}, defaultSelection, selectorInfo);
   }
 
   submissionReport(model) {
