@@ -7,7 +7,7 @@ export default class WorkspaceReportsService extends Service {
   @service currentUrl;
 
   submissionReportCsv(model) {
-    const submissionsArray = [...model.submissions];
+    const submissionsArray = model.submissions.toArray();
 
     // Sort the submissions by date in descending order
     const sortedSubmissions = submissionsArray.sort((a, b) => {
@@ -42,19 +42,15 @@ export default class WorkspaceReportsService extends Service {
           .filter(Boolean)
           .join('');
       });
-      const filteredSelector = selector.filter(Boolean).join(', ');
-      const textOfSelection = submission.selections.map((item) => {
-        return item.text;
-      });
-      const filteredTextOfSelection = textOfSelection
-        .filter(Boolean)
-        .join(', ');
+      const filteredSelector = selector.toArray()[0];
+      const textOfSelection = submission.selections.toArray()[0].text;
 
-      // This is returning multiple different dates, adding new columns in csv file.
-      // What do we want to do when there are multiple selections? Do we want the original date? Do we add columns (can get messy)
-      const selectionDate = submission.selections.map((item) => {
-        return moment(item.createDate).format('MM/DD/YYYY');
-      });
+      const selectionDate = moment(
+        submission.selections.toArray().length > 0
+          ? submission.selections.toArray()[0].createDate
+          : ''
+      ).format('MM/DD/YYYY');
+
       const submissionNumber = index + 1;
       const submissionId = submission.id;
       const foldersLength = model.workspace.foldersLength;
@@ -70,10 +66,11 @@ export default class WorkspaceReportsService extends Service {
         'Text of Submission': text,
         'Date of Submission': dateOfSubmission,
         'Submission #': submissionNumber,
-        'Submission ID': submissionId,,
+        'Submission ID': submissionId,
         'Selector of text': filteredSelector,
-        'Text of Selection': filteredTextOfSelection,
-        'Date of Selection': selectionDate,
+        'Text of Selection': textOfSelection,
+        'Date of Selection':
+          selectionDate === 'Invalid date' ? '' : selectionDate,
         'Number of Folders': foldersLength,
         'Number of Notice/Wonder/Feedback': commentsLength,
       };
