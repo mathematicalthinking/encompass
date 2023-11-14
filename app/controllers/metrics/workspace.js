@@ -2,18 +2,21 @@ import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
+
 import moment from 'moment';
+
 
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
   @tracked showCloud = false;
-  @service jsonCsv;
-  @service currentUrl;
+  @service workspaceReports;
+
   submissionsColumns = [
     { name: 'Record', valuePath: 'recordType' },
     { name: 'Creator', valuePath: 'creator' },
     { name: 'Text', valuePath: 'text' },
   ];
+
   get prepWorkspaceForCsv() {
     const submissionsArray = this.model.submissions.map(
       (submission) => submission
@@ -94,8 +97,9 @@ export default class MetricsWorkspaceController extends Controller {
     });
   }
 
+
   get workspaceCsv() {
-    return this.jsonCsv.arrayToCsv(this.prepWorkspaceForCsv);
+    return this.workspaceReports.submissionReport(this.model);
   }
   @action
   handleToggle(prop) {
