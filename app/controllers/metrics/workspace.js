@@ -3,7 +3,6 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import moment from 'moment';
-import { select } from 'underscore';
 
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
@@ -16,7 +15,18 @@ export default class MetricsWorkspaceController extends Controller {
     { name: 'Text', valuePath: 'text' },
   ];
   get prepWorkspaceForCsv() {
-    return this.model.submissions.map((submission) => {
+    const submissionsArray = this.model.submissions.map(
+      (submission) => submission
+    );
+
+    // Sort the submissions by date in descending order
+    const sortedSubmissions = submissionsArray.sort((a, b) => {
+      const dateA = new Date(a.createDate);
+      const dateB = new Date(b.createDate);
+      return dateA - dateB; // For descending order
+    });
+
+    return sortedSubmissions.map((submission, index) => {
       // regex used on below to remove <p> tags, model returning such tags.
       const text = `${
         submission.shortAnswer
@@ -52,20 +62,26 @@ export default class MetricsWorkspaceController extends Controller {
         .join(', ');
 
       // This is returning multiple different dates, adding new columns in csv file.
-      // What do we want to do when there are multiple selections? Do we want the original date? Do we add columns (can get messy)
+      // What do we want to do when there are multiple selections?
+      //  Do we want the original date? Do we add columns (can get messy)
       const selectionDate = submission.selections.map((item) => {
         return moment(item.createDate).format('MM/DD/YYYY');
       });
-      console.log('submission:', submission);
-      const foldersLength = this.model.workspace.foldersLength;
-      const commentsLength = this.model.workspace.commentsLength;
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
+      // Calculate the submission number
+      const submissionNumber = index + 1;
+      const submissionId = submission.id;
+      const foldersLength = this.model.workspace.foldersLength;
+      const commentsLength = this.model.workspace.commentsLength;
+
       return {
         'Name of workspace': workspace,
         'Workspace URL': workspaceUrl,
         'Workspace Owner': workspaceOwner,
+        'Submission #': submissionNumber,
+        'Submission ID': submissionId,
         'Original Submitter': submitter,
         'Text of Submission': text,
         'Date of Submission': dateOfSubmission,

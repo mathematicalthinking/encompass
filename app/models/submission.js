@@ -101,15 +101,15 @@ export default Model.extend(Auditable, {
     }
   ),
 
-  // label: computed('student', 'createDate', 'data.thread.threadId', function () {
-  //   var label = this.student;
-  //   var createDate = this.createDate;
-  //   if (createDate) {
-  //     label += ' on ' + moment(createDate).format('l');
-  //   }
-  //   label += ' (' + this.get('data.thread.threadId') + ')';
-  //   return label;
-  // }),
+  label: computed('student', 'createDate', 'data.thread.threadId', function () {
+    var label = this.student;
+    var createDate = this.createDate;
+    if (createDate) {
+      label += ' on ' + moment(createDate).format('l');
+    }
+    label += ' (' + this.get('data.thread.threadId') + ')';
+    return label;
+  }),
 
   isStatic: computed('powId', function () {
     return !this.powId;
