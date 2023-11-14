@@ -7,7 +7,15 @@ export default class WorkspaceReportsService extends Service {
   @service currentUrl;
 
   submissionReportCsv(model) {
-    return model.submissions.map((submission) => {
+    const submissionsArray = [...model.submissions];
+
+    // Sort the submissions by date in descending order
+    const sortedSubmissions = submissionsArray.sort((a, b) => {
+      const dateA = new Date(a.createDate);
+      const dateB = new Date(b.createDate);
+      return dateA - dateB; // For descending order
+    });
+    return sortedSubmissions.map((submission, index) => {
       // regex used on below to remove <p> tags, model returning such tags.
       const text = `${
         submission.shortAnswer
@@ -47,7 +55,8 @@ export default class WorkspaceReportsService extends Service {
       const selectionDate = submission.selections.map((item) => {
         return moment(item.createDate).format('MM/DD/YYYY');
       });
-      console.log('submission:', submission);
+      const submissionNumber = index + 1;
+      const submissionId = submission.id;
       const foldersLength = model.workspace.foldersLength;
       const commentsLength = model.workspace.commentsLength;
       const dateOfSubmission = moment(submission.createDate).format(
@@ -60,6 +69,8 @@ export default class WorkspaceReportsService extends Service {
         'Original Submitter': submitter,
         'Text of Submission': text,
         'Date of Submission': dateOfSubmission,
+        'Submission #': submissionNumber,
+        'Submission ID': submissionId,,
         'Selector of text': filteredSelector,
         'Text of Selection': filteredTextOfSelection,
         'Date of Selection': selectionDate,
