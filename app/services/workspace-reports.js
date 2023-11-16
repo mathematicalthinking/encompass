@@ -8,13 +8,12 @@ export default class WorkspaceReportsService extends Service {
 
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
-
-    // Sort the submissions by date in descending order
     const sortedSubmissions = submissionsArray.sort((a, b) => {
       const dateA = new Date(a.createDate);
       const dateB = new Date(b.createDate);
       return dateA - dateB; // For descending order
     });
+
     return sortedSubmissions.map((submission, index) => {
       // regex used on below to remove <p> tags, model returning such tags.
       const text = `${
@@ -28,6 +27,7 @@ export default class WorkspaceReportsService extends Service {
           ? submission.get('answer.explanation').replace(/<\/?[^>]+(>|$)/g, '')
           : ''
       }`;
+
       const workspaceUrl = this.currentUrl.currentUrl;
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
@@ -40,9 +40,12 @@ export default class WorkspaceReportsService extends Service {
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
-
-      const firstSelector = submission.get('selectors.firstObject');
+      const firstSelector = submission.get('selections.firstObject');
       const selectorInfo = this.createSelectorInfo(firstSelector);
+      const annotator = firstSelector
+        ? firstSelector.get('comment.createdBy.username')
+        : '';
+      const annotatorText = firstSelector ? firstSelector.get('text') : '';
 
       return {
         'Name of workspace': workspace,
@@ -53,6 +56,9 @@ export default class WorkspaceReportsService extends Service {
         'Date of Submission': dateOfSubmission,
         'Submission #': submissionNumber,
         'Submission ID': submissionId,
+        'Original Annotator': annotator,
+        'Text of annotator': annotatorText,
+        'Date of annotation': selectorInfo.createDate,
         'Selector of text': selectorInfo.username,
         'Text of Selection': selectorInfo.text,
         'Date of Selection': selectorInfo.createDate,
@@ -67,15 +73,12 @@ export default class WorkspaceReportsService extends Service {
       createDate: '',
       text: '',
       username: '',
-      annotator: '',
-      annotatorText: '',
     };
-
+    if (!selector) return defaultSelection;
     // Extract values, potentially undefined
     const createDate = selector.get('createDate');
     const text = selector.get('text');
     const username = selector.get('comments.firstObject.createdBy.username');
-
     // Create an object with the extracted values
     const selectorInfo = { createDate, text, username };
 
@@ -83,11 +86,52 @@ export default class WorkspaceReportsService extends Service {
     return Object.assign({}, defaultSelection, selectorInfo);
   }
 
+  responseReportCsv(model) {
+    const submissionsArray = model.submissions.toArray();
+    const sortedSubmissions = submissionsArray.sort((a, b) => {
+      const dateA = new Date(a.createDate);
+      const dateB = new Date(b.createDate);
+      return dateA - dateB; // For descending order
+    });
+    return sortedSubmissions.map((submission, index) => {
+      const mentoringResponder = submission.get('createdBy.username');
+      const submissionNumber = index + 1;
+      const responseText = submission.responses
+        .map((response) => {
+          if (response.text !== undefined && response.text !== null) {
+            if (typeof response.text === 'string') {
+              return response.text.replace(/<\/?[^>]+(>|$)/g, '');
+            }
+          }
+          return ''; // Ensure that there is always a return value.
+        })
+        .join('\n'); // Join responses with a newline character.
+      const responseCreateDate = submission.responses
+        .map((response) => {
+          return response.createDate
+            ? moment(response.createDate).format('MM/DD/YYYY')
+            : 'No Date';
+        })
+        .join('\n');
+      const responseId = submission.responses
+        .map((response) => {
+          return response.id;
+        })
+        .join('\n');
+      return {
+        'Mentoring Responder': mentoringResponder,
+        'Submission #': submissionNumber,
+        'Text of mentoring response': responseText,
+        'Date of response': responseCreateDate,
+        'Response ID': responseId,
+      };
+    });
+  }
   submissionReport(model) {
     return this.jsonCsv.arrayToCsv(this.submissionReportCsv(model));
   }
 
-  //   responseReport(model) {
-  //     return this.jsonCsv.arrayToCsv(this.responseReportCsv(model));
-  //   }
+  responseReport(model) {
+    return this.jsonCsv.arrayToCsv(this.responseReportCsv(model));
+  }
 }

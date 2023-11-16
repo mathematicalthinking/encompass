@@ -1,90 +1,132 @@
-// Metrics header container
-.metrics-header-container {
-  padding: 1em;
-  background-color: #f1f5fa;
+.metrics-page {
+  font-family: 'Quicksand', sans-serif;
+  color: #333;
 
-  header {
+  .reports-tab {
+    background-color: #f8f9fa; // Light grey background for subtle contrast
+    border-radius: 8px; // Rounded corners
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
-    flex-direction: column;
-    gap: 2em;
-
-    h3 {
-      font-family: var(--font-family);
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    a {
-      border: 1px solid var(--border-color);
-      max-width: 10%;
-      text-align: center;
-      font-family: var(--font-family);
-      font-weight: 600;
-      transition: background-color 0.2s ease;
-
-      &:hover {
-        background-color: rgb(227, 217, 204);
-      }
-    }
-  }
-}
-
-// Metrics container
-.metrics__container {
-  width: 90%;
-  margin: 0 auto 30px auto;
-  height: 70%;
-
-  .metrics--flex {
-    display: flex;
-    align-items: center;
     justify-content: space-between;
+    margin-top: 1em;
+    padding: 1em;
 
-    button {
-      margin-right: 10px;
-      font-family: var(--font-family);
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background-color 0.2s ease;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.1);
-      }
-    }
-
-    .primary-button {
-      background-color: #007bff;
-      color: white;
+    p {
+      font-weight: bold;
+      color: #0056b3; // Dark blue color for text
+      margin: 0; // Remove default margin
     }
   }
 
-  .ember-table {
-    width: 100%;
-    border-collapse: collapse;
+  .metrics-header {
+    padding: 20px;
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-    thead {
-      th {
-        background-color: #f5f5f5;
-        padding: 10px;
-        font-family: var(--font-family);
-        font-size: 1rem;
-        font-weight: 600;
+      .workspace-info {
+        h2 {
+          margin: 0;
+          font-size: 18px;
+        }
       }
-    }
 
-    tbody {
-      tr {
-        td {
-          padding: 10px;
-          font-family: var(--font-family);
-          font-size: 1rem;
+      .export-buttons {
+        a {
+          color: white;
+          text-decoration: none;
+          background-color: #0056b3;
+          padding: 10px 20px;
+          border-radius: 5px;
+          margin-left: 10px;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: #003d82;
+          }
         }
       }
     }
   }
 
-  .wordcloud-container {
-    width: 100%;
-    height: 300px;
+  .metrics-container {
+    padding: 20px;
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+
+  // Media queries for responsiveness
+  @media (max-width: 1024px) {
+    .reports-tab {
+      flex-direction: column;
+      align-items: center;
+
+      p {
+        margin-bottom: 10px;
+      }
+    }
+
+    .metrics-header .header-content {
+      flex-direction: column;
+      align-items: center;
+
+      .export-buttons {
+        margin-top: 10px;
+      }
+    }
+
+    .metrics-container .controls {
+      flex-direction: column;
+      align-items: center;
+
+      button {
+        margin-bottom: 10px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    // Further adjustments for tablet and mobile views
+    .metrics-header,
+    .metrics-container {
+      padding: 10px;
+    }
+
+    .metrics-header .header-content .workspace-info h2,
+    .metrics-container .controls button {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    // Adjustments for mobile views
+    .metrics-header,
+    .metrics-container {
+      padding: 5px;
+    }
+
+    .metrics-header .header-content .workspace-info h2,
+    .metrics-container .controls button {
+      font-size: 14px;
+    }
   }
 }
