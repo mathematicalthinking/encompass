@@ -294,7 +294,9 @@ async function putUser(req, res, next) {
     // notifies any other apps that it handles.
     const oldUser = await models.User.findById(req.params.id).exec();
     if (oldUser.username !== requestBody.username) {
-      await sso.updateUsername(req);
+      const ssoRes = await sso.updateUsername(req);
+      console.log(ssoRes);
+      if (ssoRes.status !== 200) delete updateHash.username;
     }
     const updatedUser = await models.User.findByIdAndUpdate(
       req.params.id,
