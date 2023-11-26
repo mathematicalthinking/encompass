@@ -171,7 +171,7 @@ server.get('/auth/resend/confirm', auth.resendConfirmationEmail);
 
 server.post('/auth/newMtUser', auth.insertNewMtUser);
 server.put('/auth/sso/user/:id', auth.ssoUpdateUser);
-server.put('/auth/sso/users', auth.ssoUpdateUsers);
+server.put('/auth/sso/usernames', auth.ssoUpdateUsernames);
 
 // VMT
 server.get('/api/vmt/rooms/:id', path.validateId(), api.get.vmtRoom);

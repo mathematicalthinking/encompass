@@ -347,17 +347,26 @@ const ssoUpdateUser = async (req, res, next) => {
   }
 };
 
-const ssoUpdateUsers = async (req, res, next) => {
+// In the request that comes in from SSO, all the _ids are ssoIds, so we need to map them
+// to local _ids.
+const ssoUpdateUsernames = async (req, res, next) => {
   try {
     let authToken = extractBearerToken(req);
     await verifyJwt(authToken, secret);
     const { users } = req.body;
-    const bulkOps = users.map((user) => ({
+
+    const usernameMap = new Map(users.map((user) => [user._id, user.username]));
+
+    const updatedUserIds = users.map((user) => user._id);
+    const updatedUsers = await User.find({ ssoId: { $in: updatedUserIds } });
+
+    const bulkOps = updatedUsers.map((user) => ({
       updateOne: {
         filter: { _id: user._id },
-        update: { username: user.username },
+        update: { username: usernameMap.get(user.ssoId) },
       },
     }));
+
     await User.bulkWrite(bulkOps);
     return res.json(users);
   } catch (err) {
@@ -440,4 +449,4 @@ module.exports.resendConfirmationEmail = resendConfirmationEmail;
 module.exports.sendEmailsToAdmins = sendEmailsToAdmins;
 module.exports.insertNewMtUser = insertNewMtUser;
 module.exports.ssoUpdateUser = ssoUpdateUser;
-module.exports.ssoUpdateUsers = ssoUpdateUsers;
+module.exports.ssoUpdateUsernames = ssoUpdateUsernames;
