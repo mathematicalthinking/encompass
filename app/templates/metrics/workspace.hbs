@@ -1,4 +1,28 @@
 <div class='metrics-page'>
+  <header class='metrics-header'>
+    <div class='header-content'>
+      <div class='workspace-info'>
+        <h2>Current Workspace: <span>{{this.model.workspace.name}}</span></h2>
+        <h2>Owner: <span>{{this.model.workspace.owner.displayName}}</span></h2>
+        <h2>Last Updated:
+          <span>{{format-date
+              this.model.workspace.lastModifiedDate
+              'MM/DD/YYYY'
+            }}</span></h2>
+      </div>
+
+      <div class='export-buttons'>
+        <a
+          href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
+          download='{{this.model.workspace.name}}_report.csv'
+        >Export Report 1</a>
+        <a
+          href='data:text/csv;charset=utf-8,{{this.responseCsv}}'
+          download='{{this.model.workspace.name}}_report.csv'
+        >Export Report 2</a>
+      </div>
+    </div>
+  </header>
   <div class='reports-tab'>
     <div>
       <p>Report 1 will have the following data sets to export:</p>
@@ -33,30 +57,6 @@
         <li>Revision Id</li>
       </ul></div>
   </div>
-
-  <header class='metrics-header'>
-    <div class='header-content'>
-      <div class='workspace-info'>
-        <h2>Current Workspace: {{this.model.workspace.name}}</h2>
-        <h2>Owner: {{this.model.workspace.owner.displayName}}</h2>
-        <h2>Last Updated:
-          {{format-date
-            this.model.workspace.lastModifiedDate
-            'MM/DD/YYYY'
-          }}</h2>
-      </div>
-      <div class='export-buttons'>
-        <a
-          href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
-          download='{{this.model.workspace.name}}_report.csv'
-        >Export Report 1</a>
-        <a
-          href='data:text/csv;charset=utf-8,{{this.responseCsv}}'
-          download='{{this.model.workspace.name}}_report.csv'
-        >Export Report 2</a>
-      </div>
-    </div>
-  </header>
 
   <div class='metrics-container'>
     <div class='controls'>

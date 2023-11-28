@@ -3,8 +3,8 @@
   color: #333;
 
   .reports-tab {
-    background-color: #f8f9fa; // Light grey background for subtle contrast
-    border-radius: 8px; // Rounded corners
+    background-color: #f8f9fa;
+    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
@@ -13,8 +13,8 @@
 
     p {
       font-weight: bold;
-      color: #0056b3; // Dark blue color for text
-      margin: 0; // Remove default margin
+      color: #0056b3;
+      margin: 0;
     }
   }
 
@@ -26,9 +26,22 @@
       align-items: center;
 
       .workspace-info {
+        background-color: #f2f4f8;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        max-width: 500px;
+
         h2 {
-          margin: 0;
-          font-size: 18px;
+          margin: 10px 0;
+          font-size: 15px;
+          color: #333;
+          font-weight: 500;
+
+          span {
+            font-weight: 300;
+            color: #555;
+          }
         }
       }
 
