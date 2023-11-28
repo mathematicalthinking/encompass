@@ -1,63 +1,108 @@
-<div class='metrics-header-container'><header>
-    <h3>Current Workspace: {{this.model.workspace.name}}</h3>
-    <h3>Owner: {{this.model.workspace.owner.displayName}}</h3>
-    <h3>Last Updated:
-      {{format-date this.model.workspace.lastModifiedDate 'MM/DD/YYYY'}}</h3>
+<div class='metrics-page'>
+  <header class='metrics-header'>
+    <div class='header-content'>
+      <div class='workspace-info'>
+        <h2>Current Workspace: <span>{{this.model.workspace.name}}</span></h2>
+        <h2>Owner: <span>{{this.model.workspace.owner.displayName}}</span></h2>
+        <h2>Last Updated:
+          <span>{{format-date
+              this.model.workspace.lastModifiedDate
+              'MM/DD/YYYY'
+            }}</span></h2>
+      </div>
 
-    <a
-      href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
-      download='{{this.model.workspace.name}}_report.csv'
-    >Download CSV</a>
-  </header></div>
-
-<div class='metrics__container'>
-  {{! <p><LinkTo @route="metrics">back</LinkTo></p> }}
-  <div class='metrics--flex'>
-    <button
-      {{on 'click' (fn this.handleToggle 'showCloud')}}
-      class='primary-button'
-      type='button'
-    >Generate Wordcloud</button>
-    <button
-      {{on 'click' (fn this.handleToggle 'showSubmissions')}}
-      class='primary-button'
-      type='button'
-    >submissions: {{this.model.workspace.submissionsLength}}</button>
+      <div class='export-buttons'>
+        <a
+          href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
+          download='{{this.model.workspace.name}}_report.csv'
+        >Export Report 1</a>
+        <a
+          href='data:text/csv;charset=utf-8,{{this.responseCsv}}'
+          download='{{this.model.workspace.name}}_report.csv'
+        >Export Report 2</a>
+      </div>
+    </div>
+  </header>
+  <div class='reports-tab'>
+    <div>
+      <p>Report 1 will have the following data sets to export:</p>
+      <ul>
+        <li>
+          Workspace Name
+        </li>
+        <li>Workspace Owner</li>
+        <li>Problem Solution Submiter</li>
+        <li>Submission Id</li>
+        <li>Submission Number</li>
+        <li>Text of Submission</li>
+        <li>Date of Submission</li>
+        <li>Selector</li>
+        <li>Text of Selection</li>
+        <li>Date of Selection</li>
+        <li>Annotator</li>
+        <li>Text of Annotation</li>
+        <li>Date of Annotation</li>
+        <li>Stats</li>
+      </ul></div>
+    <div>
+      <p>Report 2 will have the following data sets to export:</p>
+      <ul>
+        <li>
+          Mentoring Responder
+        </li>
+        <li>Submission Number</li>
+        <li>Text of Mentoring Response</li>
+        <li>Date of Mentoring Response</li>
+        <li>Number of revisions</li>
+        <li>Revision Id</li>
+      </ul></div>
   </div>
-  {{#if this.showSubmissions}}
-    <EmberTable as |t|>
-      <t.head
-        @columns={{this.submissionsColumns}}
-        @scrollIndicators='all'
-        @widthConstraint='eq-container'
-        @fillMode='last-column'
-      />
-      <t.body @rows={{this.tableRows}} as |b|>
-        <b.row as |r|>
-          <r.cell
-            as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-          >
-            {{#if (is-equal columnValue.name 'Text')}}
-              {{make-html-safe cellValue}}
-            {{else if (is-equal cellValue 'submission')}}
-              <LinkTo
-                @route='metrics.submission'
-                @model={{rowValue.id}}
-              >{{cellValue}}</LinkTo>
-            {{else if (is-equal columnValue.name 'Creator')}}
-              {{#if (is-equal rowValue.constructor.modelName 'submission')}}
-                {{rowValue.student}}
+
+  <div class='metrics-container'>
+    <div class='controls'>
+      <button {{on 'click' (fn this.handleToggle 'showCloud')}}>Generate
+        Wordcloud</button>
+      <button
+        {{on 'click' (fn this.handleToggle 'showSubmissions')}}
+      >Submissions: {{this.model.workspace.submissionsLength}}</button>
+    </div>
+
+    {{#if this.showSubmissions}}
+      <EmberTable as |t|>
+        <t.head
+          @columns={{this.submissionsColumns}}
+          @scrollIndicators='all'
+          @widthConstraint='eq-container'
+          @fillMode='last-column'
+        />
+        <t.body @rows={{this.tableRows}} as |b|>
+          <b.row as |r|>
+            <r.cell
+              as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
+            >
+              {{#if (is-equal columnValue.name 'Text')}}
+                {{make-html-safe cellValue}}
+              {{else if (is-equal cellValue 'submission')}}
+                <LinkTo
+                  @route='metrics.submission'
+                  @model={{rowValue.id}}
+                >{{cellValue}}</LinkTo>
+              {{else if (is-equal columnValue.name 'Creator')}}
+                {{#if (is-equal rowValue.constructor.modelName 'submission')}}
+                  {{rowValue.student}}
+                {{else}}
+                  {{cellValue}}
+                {{/if}}
               {{else}}
                 {{cellValue}}
               {{/if}}
-            {{else}}
-              {{cellValue}}
-            {{/if}}
-          </r.cell>
-        </b.row>
-      </t.body>
-    </EmberTable>
-  {{/if}}
-  {{! <p><LinkTo @route="metrics">back</LinkTo></p> }}
-  <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
+            </r.cell>
+          </b.row>
+        </t.body>
+      </EmberTable>
+    {{/if}}
+
+    <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
+  </div>
+
 </div>

@@ -2,76 +2,22 @@ import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-import moment from 'moment';
-
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
   @tracked showCloud = false;
-  @service jsonCsv;
-  @service currentUrl;
+  @service workspaceReports;
+
   submissionsColumns = [
     { name: 'Record', valuePath: 'recordType' },
     { name: 'Creator', valuePath: 'creator' },
     { name: 'Text', valuePath: 'text' },
   ];
-  get prepWorkspaceForCsv() {
-    return this.model.submissions.map((submission) => {
-      const selections = submission.get('selections');
-      let taggings = selections.map((selection) =>
-        selection.get('taggings').toArray()
-      );
-      taggings = taggings.flat();
-      // regex used on below to remove <p> tags, model returning such tags.
-      const text = `${
-        submission.shortAnswer
-          ? submission.shortAnswer
-          : submission.get('answer.answer')
-      }  ${
-        submission.longAnswer
-          ? submission.longAnswer
-          : submission.get('answer.explanation')
-          ? submission.get('answer.explanation').replace(/<\/?[^>]+(>|$)/g, '')
-          : ''
-      }`;
-      const workspaceUrl = this.currentUrl.currentUrl;
-      const workspace = submission.get('workspaces.firstObject.name');
-      const submitter = submission.student;
 
-      // Set object is used to keep copy of original selector without producing duplicates.
-      const selector = submission.selections.map((item) => {
-        return item.comments
-          .map((comment) => {
-            const username = comment.get('createdBy.username');
-            const text = comment.text;
-            return ` Selection by: ${
-              username && username.trim()
-            }, Feedback: ${text}`; // concatenate username and text
-          })
-          .filter(Boolean)
-          .join('');
-      });
-
-      const feedback = selector.filter(Boolean).join(', '); // added .filter(Boolean) to filter out empty strings
-
-      // **Maybe use in future again**
-      // const selectionsLength = submission.selections.length;
-      // const commentsLength = submission.comments.length;
-      // const responsesLength = submission.responses.length;
-      const dateOfSubmission = moment(submission.createDate).format(
-        'MM/DD/YYYY'
-      );
-      return {
-        workspace,
-        workspaceUrl,
-        submitter,
-        text,
-        dateOfSubmission,
-        feedback,
-      };
-    });
-  }
   get workspaceCsv() {
-    return this.jsonCsv.arrayToCsv(this.prepWorkspaceForCsv);
+    return this.workspaceReports.submissionReport(this.model);
+  }
+  get responseCsv() {
+    return this.workspaceReports.responseReport(this.model);
   }
   @action
   handleToggle(prop) {

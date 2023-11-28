@@ -6,8 +6,8 @@ export default class JsonCsvService extends Service {
       return 'No data to display';
     }
     try {
-      const keys = [Object.keys(array[0])].concat(array);
-      return keys
+      const rows = [Object.keys(array[0])].concat(array);
+      return rows
         .map((row) => {
           return Object.values(row)
             .map((value) => {
