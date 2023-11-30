@@ -9,16 +9,18 @@
               this.model.workspace.lastModifiedDate
               'MM/DD/YYYY'
             }}</span></h2>
+        <LinkTo @route='workspace.work' @model={{this.model.workspace.id}}>Back
+          to Workspace</LinkTo>
       </div>
 
       <div class='export-buttons'>
         <a
           href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
-          download='{{this.model.workspace.name}}_report.csv'
+          download='workspace_report.csv'
         >Export Report 1</a>
         <a
           href='data:text/csv;charset=utf-8,{{this.responseCsv}}'
-          download='{{this.model.workspace.name}}_report.csv'
+          download='mentoring_report.csv'
         >Export Report 2</a>
       </div>
     </div>
