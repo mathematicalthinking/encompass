@@ -54,7 +54,6 @@ export default class WorkspaceReportsService extends Service {
         'Original Submitter': submitter,
         'Text of Submission': text,
         'Date of Submission': dateOfSubmission,
-        'Submission #': submissionNumber,
         'Submission ID': submissionId,
         'Original Annotator': annotator,
         'Text of annotator': annotatorText,
@@ -64,6 +63,7 @@ export default class WorkspaceReportsService extends Service {
         'Date of Selection': selectorInfo.createDate,
         'Number of Folders': foldersLength,
         'Number of Notice/Wonder/Feedback': commentsLength,
+        'Submission Order': submissionNumber,
       };
     });
   }
