@@ -16,11 +16,12 @@ export default class WorkspaceReportsService extends Service {
 
     return sortedSubmissions.map((submission, index) => {
       // regex used on below to remove <p> tags, model returning such tags.
-      const text = `${
+      // Submission answers should describe the short answer (which is the summary), and the long answer (which is the full answer).
+      const text = `Summary: ${
         submission.shortAnswer
           ? submission.shortAnswer
           : submission.get('answer.answer')
-      }  ${
+      }  Full Answer: ${
         submission.longAnswer
           ? submission.longAnswer
           : submission.get('answer.explanation')
@@ -41,6 +42,8 @@ export default class WorkspaceReportsService extends Service {
         'MM/DD/YYYY'
       );
       const firstSelector = submission.get('selections.firstObject');
+      // Selector info is only getting the first selector info, not all of them for the annotator.
+      // The annotator needs to bring all the selectors, not just the first one.
       const selectorInfo = this.createSelectorInfo(firstSelector);
       const annotator = firstSelector
         ? firstSelector.get('comment.createdBy.username')
@@ -93,9 +96,10 @@ export default class WorkspaceReportsService extends Service {
       const dateB = new Date(b.createDate);
       return dateA - dateB; // For descending order
     });
-    return sortedSubmissions.map((submission, index) => {
+    return sortedSubmissions.map((submission) => {
       const mentoringResponder = submission.get('createdBy.username');
-      const submissionNumber = index + 1;
+      const submitter = submission.student;
+      const submissionId = submission.id;
       const responseText = submission.responses
         .map((response) => {
           if (response.text !== undefined && response.text !== null) {
@@ -120,7 +124,8 @@ export default class WorkspaceReportsService extends Service {
         .join('\n');
       return {
         'Mentoring Responder': mentoringResponder,
-        'Submission #': submissionNumber,
+        'Original Submitter': submitter,
+        'Submission #': submissionId,
         'Text of mentoring response': responseText,
         'Date of response': responseCreateDate,
         'Response ID': responseId,
