@@ -9,8 +9,11 @@
               this.model.workspace.lastModifiedDate
               'MM/DD/YYYY'
             }}</span></h2>
-        <LinkTo @route='workspace.work' @model={{this.model.workspace.id}}>Back
-          to Workspace</LinkTo>
+        <button id='metrics-workspace-button'>
+          <LinkTo
+            @route='workspace.work'
+            @model={{this.model.workspace.id}}
+          >Back to Workspace</LinkTo></button>
       </div>
 
       <div class='export-buttons'>
