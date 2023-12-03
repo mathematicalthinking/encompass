@@ -8,20 +8,22 @@ export default class WorkspaceReportsService extends Service {
 
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
-    // submissionsArray.map((submission) =>
-    //   submission.selections.map((selection) =>
-    //     selection.comments.map((comment) => console.log(comment))
-    //   )
-    // );
     const sortedSubmissions = submissionsArray.sort((a, b) => {
       const dateA = new Date(a.createDate);
       const dateB = new Date(b.createDate);
       return dateA - dateB; // For descending order
     });
 
+    let maxRevisions = 0;
+    sortedSubmissions.forEach((submission, index) => {
+      submission.submissionLabel =
+        index === 0 ? 'Original Submission' : `Revision: ${index}`;
+      if (index > maxRevisions) {
+        maxRevisions = index;
+      }
+    });
+
     return sortedSubmissions.map((submission, index) => {
-      // regex used on below to remove <p> tags, model returning such tags.
-      // Submission answers should describe the short answer (which is the summary), and the long answer (which is the full answer).
       const text = `Summary: ${
         submission.shortAnswer
           ? submission.shortAnswer
@@ -38,7 +40,6 @@ export default class WorkspaceReportsService extends Service {
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
       const workspaceOwner = model.workspace.get('owner.username');
-
       const submissionNumber = index + 1;
       const submissionId = submission.id;
       const foldersLength = model.workspace.foldersLength;
@@ -48,8 +49,7 @@ export default class WorkspaceReportsService extends Service {
       );
 
       let selectorInfo = null;
-
-      submission.get('selections').map((selection) => {
+      submission.get('selections').forEach((selection) => {
         selectorInfo = this.createSelectorInfo(selection);
       });
 
@@ -61,6 +61,7 @@ export default class WorkspaceReportsService extends Service {
         'Text of Submission': text,
         'Date of Submission': dateOfSubmission,
         'Submission ID': submissionId,
+        'Submission or Revision': submission.submissionLabel,
         'Selector of text': selectorInfo.username,
         'Text of Selection': selectorInfo.text,
         'Date of Selection': selectorInfo.createDate,
@@ -85,13 +86,21 @@ export default class WorkspaceReportsService extends Service {
     if (!selector) return defaultSelection;
 
     const createDate = moment(selector.get('createDate')).format('MM/DD/YYYY');
-
     const text = selector.get('text');
     const username = selector.get('comments.firstObject.createdBy.username');
-    const commentText = selector.get('comments.firstObject.text'); // Get the text of the first comment
+    const commentText = selector.get('comments.firstObject.text');
 
     const selectorInfo = { createDate, text, username, commentText };
     return Object.assign({}, defaultSelection, selectorInfo);
+  }
+
+  generateRevisionFields(submissionLabel, maxRevisions) {
+    let revisionFields = {};
+    for (let i = 1; i <= maxRevisions; i++) {
+      revisionFields[`R${i}`] =
+        submissionLabel === `R${i}` ? moment().format('MM/DD/YYYY') : '';
+    }
+    return revisionFields;
   }
 
   responseReportCsv(model) {
