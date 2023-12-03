@@ -8,6 +8,11 @@ export default class WorkspaceReportsService extends Service {
 
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
+    // submissionsArray.map((submission) =>
+    //   submission.selections.map((selection) =>
+    //     selection.comments.map((comment) => console.log(comment))
+    //   )
+    // );
     const sortedSubmissions = submissionsArray.sort((a, b) => {
       const dateA = new Date(a.createDate);
       const dateB = new Date(b.createDate);
@@ -41,14 +46,12 @@ export default class WorkspaceReportsService extends Service {
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
-      const firstSelector = submission.get('selections.firstObject');
-      // Selector info is only getting the first selector info, not all of them for the annotator.
-      // The annotator needs to bring all the selectors, not just the first one.
-      const selectorInfo = this.createSelectorInfo(firstSelector);
-      const annotator = firstSelector
-        ? firstSelector.get('comment.createdBy.username')
-        : '';
-      const annotatorText = firstSelector ? firstSelector.get('text') : '';
+
+      let selectorInfo = null;
+
+      submission.get('selections').map((selection) => {
+        selectorInfo = this.createSelectorInfo(selection);
+      });
 
       return {
         'Name of workspace': workspace,
@@ -58,12 +61,12 @@ export default class WorkspaceReportsService extends Service {
         'Text of Submission': text,
         'Date of Submission': dateOfSubmission,
         'Submission ID': submissionId,
-        'Original Annotator': annotator,
-        'Text of annotator': annotatorText,
-        'Date of annotation': selectorInfo.createDate,
         'Selector of text': selectorInfo.username,
         'Text of Selection': selectorInfo.text,
         'Date of Selection': selectorInfo.createDate,
+        'Original Annotator': selectorInfo.username,
+        'Text of annotator': selectorInfo.commentText,
+        'Date of annotation': selectorInfo.createDate,
         'Number of Folders': foldersLength,
         'Number of Notice/Wonder/Feedback': commentsLength,
         'Submission Order': submissionNumber,
@@ -76,16 +79,18 @@ export default class WorkspaceReportsService extends Service {
       createDate: '',
       text: '',
       username: '',
+      commentText: '',
     };
+
     if (!selector) return defaultSelection;
-    // Extract values, potentially undefined
-    const createDate = selector.get('createDate');
+
+    const createDate = moment(selector.get('createDate')).format('MM/DD/YYYY');
+
     const text = selector.get('text');
     const username = selector.get('comments.firstObject.createdBy.username');
-    // Create an object with the extracted values
-    const selectorInfo = { createDate, text, username };
+    const commentText = selector.get('comments.firstObject.text'); // Get the text of the first comment
 
-    // Use Object.assign to fill in defaults for undefined values
+    const selectorInfo = { createDate, text, username, commentText };
     return Object.assign({}, defaultSelection, selectorInfo);
   }
 
