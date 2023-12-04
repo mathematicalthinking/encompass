@@ -50,7 +50,6 @@ export default class WorkspaceReportsService extends Service {
 
       let selectorInfo = {};
       submission.get('selections').map((selection) => {
-        console.log('RIght here', selection);
         selectorInfo = this.createSelectorInfo(selection);
       });
 
