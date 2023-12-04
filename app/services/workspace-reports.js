@@ -14,9 +14,16 @@ export default class WorkspaceReportsService extends Service {
       return dateA - dateB; // For descending order
     });
 
+    let maxRevisions = 0;
+    sortedSubmissions.forEach((submission, index) => {
+      submission.submissionLabel =
+        index === 0 ? 'Original Submission' : `Revision: ${index}`;
+      if (index > maxRevisions) {
+        maxRevisions = index;
+      }
+    });
+
     return sortedSubmissions.map((submission, index) => {
-      // regex used on below to remove <p> tags, model returning such tags.
-      // Submission answers should describe the short answer (which is the summary), and the long answer (which is the full answer).
       const text = `Summary: ${
         submission.shortAnswer
           ? submission.shortAnswer
@@ -33,7 +40,6 @@ export default class WorkspaceReportsService extends Service {
       const workspace = submission.get('workspaces.firstObject.name');
       const submitter = submission.student;
       const workspaceOwner = model.workspace.get('owner.username');
-
       const submissionNumber = index + 1;
       const submissionId = submission.id;
       const foldersLength = model.workspace.foldersLength;
@@ -41,14 +47,11 @@ export default class WorkspaceReportsService extends Service {
       const dateOfSubmission = moment(submission.createDate).format(
         'MM/DD/YYYY'
       );
-      const firstSelector = submission.get('selections.firstObject');
-      // Selector info is only getting the first selector info, not all of them for the annotator.
-      // The annotator needs to bring all the selectors, not just the first one.
-      const selectorInfo = this.createSelectorInfo(firstSelector);
-      const annotator = firstSelector
-        ? firstSelector.get('comment.createdBy.username')
-        : '';
-      const annotatorText = firstSelector ? firstSelector.get('text') : '';
+
+      let selectorInfo = null;
+      submission.get('selections').forEach((selection) => {
+        selectorInfo = this.createSelectorInfo(selection);
+      });
 
       return {
         'Name of workspace': workspace,
@@ -58,12 +61,13 @@ export default class WorkspaceReportsService extends Service {
         'Text of Submission': text,
         'Date of Submission': dateOfSubmission,
         'Submission ID': submissionId,
-        'Original Annotator': annotator,
-        'Text of annotator': annotatorText,
-        'Date of annotation': selectorInfo.createDate,
+        'Submission or Revision': submission.submissionLabel,
         'Selector of text': selectorInfo.username,
         'Text of Selection': selectorInfo.text,
         'Date of Selection': selectorInfo.createDate,
+        'Original Annotator': selectorInfo.username,
+        'Text of annotator': selectorInfo.commentText,
+        'Date of annotation': selectorInfo.createDate,
         'Number of Folders': foldersLength,
         'Number of Notice/Wonder/Feedback': commentsLength,
         'Submission Order': submissionNumber,
@@ -76,17 +80,27 @@ export default class WorkspaceReportsService extends Service {
       createDate: '',
       text: '',
       username: '',
+      commentText: '',
     };
+
     if (!selector) return defaultSelection;
-    // Extract values, potentially undefined
-    const createDate = selector.get('createDate');
+
+    const createDate = moment(selector.get('createDate')).format('MM/DD/YYYY');
     const text = selector.get('text');
     const username = selector.get('comments.firstObject.createdBy.username');
-    // Create an object with the extracted values
-    const selectorInfo = { createDate, text, username };
+    const commentText = selector.get('comments.firstObject.text');
 
-    // Use Object.assign to fill in defaults for undefined values
+    const selectorInfo = { createDate, text, username, commentText };
     return Object.assign({}, defaultSelection, selectorInfo);
+  }
+
+  generateRevisionFields(submissionLabel, maxRevisions) {
+    let revisionFields = {};
+    for (let i = 1; i <= maxRevisions; i++) {
+      revisionFields[`R${i}`] =
+        submissionLabel === `R${i}` ? moment().format('MM/DD/YYYY') : '';
+    }
+    return revisionFields;
   }
 
   responseReportCsv(model) {
