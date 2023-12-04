@@ -48,8 +48,9 @@ export default class WorkspaceReportsService extends Service {
         'MM/DD/YYYY'
       );
 
-      let selectorInfo = null;
-      submission.get('selections').forEach((selection) => {
+      let selectorInfo = {};
+      submission.get('selections').map((selection) => {
+        console.log('RIght here', selection);
         selectorInfo = this.createSelectorInfo(selection);
       });
 
@@ -87,7 +88,7 @@ export default class WorkspaceReportsService extends Service {
 
     const createDate = moment(selector.get('createDate')).format('MM/DD/YYYY');
     const text = selector.get('text');
-    const username = selector.get('comments.firstObject.createdBy.username');
+    const username = selector.get('createdBy.username');
     const commentText = selector.get('comments.firstObject.text');
 
     const selectorInfo = { createDate, text, username, commentText };
