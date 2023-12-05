@@ -132,10 +132,14 @@ module.exports.confirmEmailById = (ssoId, reqUser) => {
   return this.post(`/auth/confirmEmail/confirm/user`, { ssoId }, reqUser);
 };
 
-module.exports.updateUsername = async (id, username, reqUser) => {
+module.exports.updateUsername = async (req) => {
+  const _id = req.mt.auth.user.ssoId;
+  const reqUser = req.body.user;
+  const username = reqUser.username;
+  const app = req.headers.host;
   return this.put(
-    `/auth/user/updateNames/${id}`,
-    { ssoId: id, users: [{ id, username }] },
+    `/auth/user/updateNames/${_id}`,
+    { users: [{ _id, username }], app },
     reqUser
   );
 };

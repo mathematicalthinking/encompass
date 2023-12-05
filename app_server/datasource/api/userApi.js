@@ -289,14 +289,13 @@ async function putUser(req, res, next) {
         updateHash.notifications = requestBody.notifications;
       }
     }
+
+    // If the username was changed, we have to notify MT-SSO who, in turn,
+    // notifies any other apps that it handles.
     const oldUser = await models.User.findById(req.params.id).exec();
     if (oldUser.username !== requestBody.username) {
-      // THIS IS WHERE MT-SSO GETS CALLED
-      await sso.updateUsername(
-        req.mt.auth.user.ssoId,
-        requestBody.username,
-        req.body.user
-      );
+      const ssoRes = await sso.updateUsername(req);
+      if (!ssoRes.isSuccess) delete updateHash.username;
     }
     const updatedUser = await models.User.findByIdAndUpdate(
       req.params.id,
