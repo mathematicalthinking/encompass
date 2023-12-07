@@ -8,22 +8,34 @@ export default class WorkspaceReportsService extends Service {
 
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
-    const sortedSubmissions = submissionsArray.sort((a, b) => {
-      const dateA = new Date(a.createDate);
-      const dateB = new Date(b.createDate);
-      return dateA - dateB; // For descending order
-    });
 
-    let maxRevisions = 0;
-    sortedSubmissions.forEach((submission, index) => {
-      submission.submissionLabel =
-        index === 0 ? 'Original Submission' : `Revision: ${index}`;
-      if (index > maxRevisions) {
-        maxRevisions = index;
+    // Group submissions by submitter
+    const submissionsByUser = submissionsArray.reduce((acc, submission) => {
+      const submitter = submission.student;
+      if (!acc[submitter]) {
+        acc[submitter] = [];
       }
+      acc[submitter].push(submission);
+      return acc;
+    }, {});
+
+    // Sort each group by date and label submissions
+    Object.keys(submissionsByUser).forEach((submitter) => {
+      submissionsByUser[submitter].sort(
+        (a, b) => new Date(a.createDate) - new Date(b.createDate)
+      );
+
+      submissionsByUser[submitter].forEach((submission, index) => {
+        submission.submissionLabel =
+          index === 0 ? 'Original Submission' : `R${index}`;
+      });
     });
 
-    return sortedSubmissions.map((submission, index) => {
+    // Flatten the grouped submissions back into an array
+    const labeledSubmissions = [].concat(...Object.values(submissionsByUser));
+
+    // Rest of the mapping logic remains the same
+    return labeledSubmissions.map((submission, index) => {
       const text = `Summary: ${
         submission.shortAnswer
           ? submission.shortAnswer
@@ -102,7 +114,7 @@ export default class WorkspaceReportsService extends Service {
     }
     return revisionFields;
   }
-
+  // ignore here
   responseReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
     const sortedSubmissions = submissionsArray.sort((a, b) => {
@@ -112,6 +124,7 @@ export default class WorkspaceReportsService extends Service {
     });
     return sortedSubmissions.map((submission) => {
       const mentoringResponder = submission.get('createdBy.username');
+      // This original submitter needs to restart the new count if its a original submitter or revision.
       const submitter = submission.student;
       const submissionId = submission.id;
       const responseText = submission.responses
