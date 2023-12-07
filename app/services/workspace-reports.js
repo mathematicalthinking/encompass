@@ -34,7 +34,6 @@ export default class WorkspaceReportsService extends Service {
     // Flatten the grouped submissions back into an array
     const labeledSubmissions = [].concat(...Object.values(submissionsByUser));
 
-    // Rest of the mapping logic remains the same
     return labeledSubmissions.map((submission, index) => {
       const text = `Summary: ${
         submission.shortAnswer
