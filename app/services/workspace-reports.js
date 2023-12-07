@@ -8,64 +8,82 @@ export default class WorkspaceReportsService extends Service {
 
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
-    let allRows = []; // This will store all the rows for the CSV file
 
-    const sortedSubmissions = submissionsArray.sort((a, b) => {
-      const dateA = new Date(a.createDate);
-      const dateB = new Date(b.createDate);
-      return dateA - dateB; // For descending order
-    });
-
-    sortedSubmissions.forEach((submission, index) => {
-      // Common data for all rows related to this workspace report
-      const commonData = {
-        'Name of workspace': submission.get('workspaces.firstObject.name'),
-        'Workspace URL': this.currentUrl.currentUrl,
-        'Workspace Owner': model.workspace.get('owner.username'),
-        'Original Submitter': submission.student,
-        'Text of Submission':
-          submission.shortAnswer || submission.get('answer.answer') || '',
-        'Date of Submission': moment(submission.createDate).format(
-          'MM/DD/YYYY'
-        ),
-        'Submission ID': submission.id,
-        'Submission or Revision':
-          index === 0 ? 'Original Submission' : `Revision: ${index}`,
-        'Number of Folders': model.workspace.foldersLength,
-        'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
-        'Submission Order': index + 1,
-      };
-
-      // If no selections, output the submission with empty selection details
-      if (!submission.get('selections.length')) {
-        allRows.push({
-          ...commonData,
-          'Selector of text': '',
-          'Text of Selection': '',
-          'Date of Selection': '',
-          'Original Annotator': '',
-          'Text of annotator': '',
-          'Date of annotation': '',
-        });
-      } else {
-        // For submissions with selections, output a row for each selection
-        submission.get('selections').forEach((selection) => {
-          const selectorInfo = this.createSelectorInfo(selection);
-          let selectionRow = {
-            ...commonData, // Spread common data
-            'Selector of text': selectorInfo.username,
-            'Text of Selection': selectorInfo.text,
-            'Date of Selection': selectorInfo.createDate,
-            'Original Annotator': selectorInfo.username,
-            'Text of annotator': selectorInfo.commentText,
-            'Date of annotation': selectorInfo.createDate,
-          };
-          allRows.push(selectionRow);
-        });
+    // Group submissions by submitter
+    const submissionsByUser = submissionsArray.reduce((acc, submission) => {
+      const submitter = submission.student;
+      if (!acc[submitter]) {
+        acc[submitter] = [];
       }
+      acc[submitter].push(submission);
+      return acc;
+    }, {});
+
+    // Sort each group by date and label submissions
+    Object.keys(submissionsByUser).forEach((submitter) => {
+      submissionsByUser[submitter].sort(
+        (a, b) => new Date(a.createDate) - new Date(b.createDate)
+      );
+
+      submissionsByUser[submitter].forEach((submission, index) => {
+        submission.submissionLabel =
+          index === 0 ? 'Original Submission' : `R${index}`;
+      });
     });
 
-    return allRows;
+    // Flatten the grouped submissions back into an array
+    const labeledSubmissions = [].concat(...Object.values(submissionsByUser));
+
+    return labeledSubmissions.map((submission, index) => {
+      const text = `Summary: ${
+        submission.shortAnswer
+          ? submission.shortAnswer
+          : submission.get('answer.answer')
+      }  Full Answer: ${
+        submission.longAnswer
+          ? submission.longAnswer
+          : submission.get('answer.explanation')
+          ? submission.get('answer.explanation').replace(/<\/?[^>]+(>|$)/g, '')
+          : ''
+      }`;
+
+      const workspaceUrl = this.currentUrl.currentUrl;
+      const workspace = submission.get('workspaces.firstObject.name');
+      const submitter = submission.student;
+      const workspaceOwner = model.workspace.get('owner.username');
+      const submissionNumber = index + 1;
+      const submissionId = submission.id;
+      const foldersLength = model.workspace.foldersLength;
+      const commentsLength = model.workspace.commentsLength;
+      const dateOfSubmission = moment(submission.createDate).format(
+        'MM/DD/YYYY'
+      );
+
+      let selectorInfo = {};
+      submission.get('selections').map((selection) => {
+        selectorInfo = this.createSelectorInfo(selection);
+      });
+
+      return {
+        'Name of workspace': workspace,
+        'Workspace URL': workspaceUrl,
+        'Workspace Owner': workspaceOwner,
+        'Original Submitter': submitter,
+        'Text of Submission': text,
+        'Date of Submission': dateOfSubmission,
+        'Submission ID': submissionId,
+        'Submission or Revision': submission.submissionLabel,
+        'Selector of text': selectorInfo.username,
+        'Text of Selection': selectorInfo.text,
+        'Date of Selection': selectorInfo.createDate,
+        'Original Annotator': selectorInfo.username,
+        'Text of annotator': selectorInfo.commentText,
+        'Date of annotation': selectorInfo.createDate,
+        'Number of Folders': foldersLength,
+        'Number of Notice/Wonder/Feedback': commentsLength,
+        'Submission Order': submissionNumber,
+      };
+    });
   }
 
   createSelectorInfo(selector) {
@@ -76,21 +94,15 @@ export default class WorkspaceReportsService extends Service {
       commentText: '',
     };
 
-    if (!selector) {
-      return defaultSelection;
-    }
+    if (!selector) return defaultSelection;
 
     const createDate = moment(selector.get('createDate')).format('MM/DD/YYYY');
     const text = selector.get('text');
     const username = selector.get('createdBy.username');
     const commentText = selector.get('comments.firstObject.text');
 
-    return {
-      createDate: createDate,
-      text: text,
-      username: username,
-      commentText: commentText,
-    };
+    const selectorInfo = { createDate, text, username, commentText };
+    return Object.assign({}, defaultSelection, selectorInfo);
   }
 
   generateRevisionFields(submissionLabel, maxRevisions) {
@@ -101,7 +113,6 @@ export default class WorkspaceReportsService extends Service {
     }
     return revisionFields;
   }
-
   responseReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
     const sortedSubmissions = submissionsArray.sort((a, b) => {

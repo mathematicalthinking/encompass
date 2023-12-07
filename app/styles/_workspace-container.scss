@@ -2,26 +2,9 @@
 @import 'mixins';
 @import 'responsive-font-size';
 
-// is this necessary?
-@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
-  #workspace-container {
-    .comment-flex-item.tri-paneled {
-      &.filter {
-        .filter-label {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
 #workspace-container {
   background-color: $filter-list-background-color;
   height: calc(100vh - 75px);
-  #workspace-name {
-    font-size: 1em;
-    font-family: $primary-font;
-  }
 
   .toggle-display {
     position: absolute;
@@ -57,38 +40,44 @@
   }
 
   .ws-header {
-    @include flex-container(
-      null,
-      null,
-      row,
-      wrap,
-      flex-start,
-      flex-start,
-      center
-    );
-    position: relative;
-    padding: 10px 20px;
-    margin-top: 1em;
-    line-height: normal;
     background-color: $filter-list-background-color;
-
-    h2 {
-      display: inline-block;
-      font-weight: 300;
-      font-size: 1.5em;
-    }
-
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     .ws-meta {
-      order: 1;
-    }
-    aside {
-      order: 2;
-      margin-left: auto;
-    }
-    .parent-link {
-      color: #3997ee;
-      margin-left: 25px;
-      margin-top: 5px;
+      display: flex;
+      flex-direction: column;
+      max-width: 70%;
+      .ws-title {
+        font-size: 0.8em;
+        text-align: left;
+        font-weight: bold;
+        color: $primary-font-color;
+        margin-bottom: 5px;
+      }
+
+      .ws-links {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        button {
+          cursor: pointer;
+          font-size: 0.8em;
+          margin-bottom: 1em;
+          padding: 0.5em;
+          text-align: center;
+          background-color: rgb(231, 228, 228);
+          border-radius: 3px;
+          text-decoration: none;
+          color: $accent-color;
+          border: none;
+          transition: background-color 0.3s ease;
+          &:hover {
+            background-color: darken(rgb(241, 240, 240), 10%);
+          }
+        }
+      }
     }
   }
 
