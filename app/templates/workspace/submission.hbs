@@ -1,41 +1,50 @@
 <div id='workspace-container'>
   <header class='{{this.makingSelection}} ws-header'>
     <div class='ws-meta'>
+      <h1 class='ws-title'>{{this.currentWorkspace.name}}</h1>
+      <p class='ws-owner'>by {{this.currentWorkspace.owner.displayName}}</p>
 
-      <h2 id='workspace-name'>Viewing workspace for:
-        {{this.currentWorkspace.name}}</h2>
-      <span class='info-link'><LinkTo
+      <div class='ws-links'>
+        <LinkTo
           @route='workspace.info'
           @model={{this.currentWorkspace.id}}
-        ><i class='fa fa-info-circle' aria-hidden='true'></i>
+          class='workspace-link'
+        >
+          View Workspace Stats
         </LinkTo>
-      </span>
-      <span
-        class='info workspaceOwner {{if this.isMyWorkspace "isMine" "notMine"}}'
-      >by {{this.currentWorkspace.owner.displayName}} </span>
-      {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
+
         <LinkTo
-          @route='workspace.work'
-          @model={{ws.id}}
-          @class='parent-link info'
-        >{{ws.name}}</LinkTo>
-      {{/each}}
+          @route='responses.submission'
+          @model={{this.model.submission.id}}
+          class='response-link'
+        >
+          View All Responses
+        </LinkTo>
+
+        {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
+          <LinkTo
+            @route='workspace.work'
+            @model={{ws.id}}
+            class='parent-link info'
+          >
+            {{ws.name}}
+          </LinkTo>
+        {{/each}}
+      </div>
     </div>
+
     <aside>
       {{#if this.showOptions}}
-        <label for='dispaly-options'>Work to display: </label>
-        <select id='display-options' oninput={{action 'updateDisplayInput'}}>
+        <label for='display-options'>Work to display: </label>
+        <select id='display-options' onchange={{action 'updateDisplayInput'}}>
           <option value='all'>All work</option>
           <option value='individual'>Individual work only</option>
           <option value='group'>Group work only</option>
         </select>
       {{/if}}
       <a id='takeTour' class='action_button' {{action 'startTour'}}>Take Tour</a>
-      {{! this needs to be here so the GuideJS can click it when done
-        we don't have a better way to propagate actions }}
-      <a id='doneTour' style='display:none' {{action 'doneTour'}}>Done Tour</a>
+      {{!-- <a id='doneTour' class='hidden' {{action 'doneTour'}}>Done Tour</a> --}}
     </aside>
-    <div class='clear'></div>
   </header>
 
   <div

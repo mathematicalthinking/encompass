@@ -2,26 +2,9 @@
 @import 'mixins';
 @import 'responsive-font-size';
 
-// is this necessary?
-@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
-  #workspace-container {
-    .comment-flex-item.tri-paneled {
-      &.filter {
-        .filter-label {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
 #workspace-container {
   background-color: $filter-list-background-color;
   height: calc(100vh - 75px);
-  #workspace-name {
-    font-size: 1em;
-    font-family: $primary-font;
-  }
 
   .toggle-display {
     position: absolute;
@@ -57,38 +40,46 @@
   }
 
   .ws-header {
-    @include flex-container(
-      null,
-      null,
-      row,
-      wrap,
-      flex-start,
-      flex-start,
-      center
-    );
-    position: relative;
-    padding: 10px 20px;
-    margin-top: 1em;
-    line-height: normal;
     background-color: $filter-list-background-color;
-
-    h2 {
-      display: inline-block;
-      font-weight: 300;
-      font-size: 1.5em;
-    }
-
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     .ws-meta {
-      order: 1;
-    }
-    aside {
-      order: 2;
-      margin-left: auto;
-    }
-    .parent-link {
-      color: #3997ee;
-      margin-left: 25px;
-      margin-top: 5px;
+      .ws-title {
+        font-size: 1em;
+        font-weight: bold;
+        color: $primary-font-color;
+        margin-bottom: 5px;
+      }
+
+      .ws-owner {
+        font-size: 1em;
+        color: lighten($primary-font-color, 20%);
+        margin-bottom: 15px;
+      }
+
+      .ws-links {
+        display: flex;
+        flex-direction: column;
+
+        .workspace-link,
+        .response-link,
+        .parent-link {
+          padding: 8px 12px;
+          margin-bottom: 5px;
+          background-color: rgb(239, 239, 239);
+          border-radius: 4px;
+          text-decoration: none;
+          color: $accent-color;
+          transition: background-color 0.3s ease;
+          width: 50%;
+
+          &:hover {
+            background-color: darken(rgb(241, 240, 240), 10%);
+          }
+        }
+      }
     }
   }
 

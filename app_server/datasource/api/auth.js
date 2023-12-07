@@ -363,7 +363,7 @@ const ssoUpdateUsernames = async (req, res, next) => {
     const bulkOps = updatedUsers.map((user) => ({
       updateOne: {
         filter: { _id: user._id },
-        update: { username: usernameMap.get(user.ssoId) },
+        update: { username: usernameMap.get(user.ssoId.toString()) },
       },
     }));
 

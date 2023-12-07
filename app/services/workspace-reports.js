@@ -9,6 +9,7 @@ export default class WorkspaceReportsService extends Service {
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
 
+
     // Group submissions by submitter
     const submissionsByUser = submissionsArray.reduce((acc, submission) => {
       const submitter = submission.student;
@@ -113,7 +114,6 @@ export default class WorkspaceReportsService extends Service {
     }
     return revisionFields;
   }
-  // ignore here
   responseReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
     const sortedSubmissions = submissionsArray.sort((a, b) => {
@@ -123,7 +123,6 @@ export default class WorkspaceReportsService extends Service {
     });
     return sortedSubmissions.map((submission) => {
       const mentoringResponder = submission.get('createdBy.username');
-      // This original submitter needs to restart the new count if its a original submitter or revision.
       const submitter = submission.student;
       const submissionId = submission.id;
       const responseText = submission.responses
