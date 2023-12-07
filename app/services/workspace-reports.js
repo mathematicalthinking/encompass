@@ -9,7 +9,6 @@ export default class WorkspaceReportsService extends Service {
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.toArray();
 
-
     // Group submissions by submitter
     const submissionsByUser = submissionsArray.reduce((acc, submission) => {
       const submitter = submission.student;

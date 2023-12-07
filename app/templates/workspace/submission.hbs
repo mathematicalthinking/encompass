@@ -1,16 +1,18 @@
 <div id='workspace-container'>
   <header class='{{this.makingSelection}} ws-header'>
     <div class='ws-meta'>
-      <h1 class='ws-title'>{{this.currentWorkspace.name}}</h1>
-      <p class='ws-owner'>by {{this.currentWorkspace.owner.displayName}}</p>
+      <h1 class='ws-title'>{{this.currentWorkspace.name}}
+        by
+        {{this.currentWorkspace.owner.displayName}}</h1>
 
       <div class='ws-links'>
+
         <LinkTo
           @route='workspace.info'
           @model={{this.currentWorkspace.id}}
           class='workspace-link'
         >
-          View Workspace Stats
+          <button>View Workspace Stats</button>
         </LinkTo>
 
         <LinkTo
@@ -18,7 +20,7 @@
           @model={{this.model.submission.id}}
           class='response-link'
         >
-          View All Responses
+          <button>View All Responses</button>
         </LinkTo>
 
         {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
@@ -27,7 +29,7 @@
             @model={{ws.id}}
             class='parent-link info'
           >
-            {{ws.name}}
+            <button> {{ws.name}}</button>
           </LinkTo>
         {{/each}}
       </div>
