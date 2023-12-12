@@ -76,22 +76,16 @@ export default class WorkspaceReportsService extends Service {
         return [baseData];
       } else {
         // For submissions with selections, add additional columns
-        return selections.map((selection, selIndex) => {
+        return selections.map((selection) => {
           const selectorInfo = this.createSelectorInfo(selection);
           let selectionData = {
-            [`Selector ${selIndex + 1} Username`]: selectorInfo.username,
-            [`Selector ${selIndex + 1} Text`]: selectorInfo.text,
-            [`Selector ${selIndex + 1} Comment`]: selectorInfo.commentText,
-            [`Selector ${selIndex + 1} Date`]: selectorInfo.createDate,
+            [`Selector of Text`]: selectorInfo.username,
+            [`Text of Selection`]: selectorInfo.text,
+            [`Selector Date`]: selectorInfo.selectionCreateDate,
+            [`Annotator`]: selectorInfo.commentText,
+            [`Text of Annotator`]: selectorInfo.annotatorUsername,
+            ['Annotator Date']: selectorInfo.annotatorCreateDate,
           };
-
-          // Fill in empty fields for submissions with fewer selections
-          for (let i = selIndex + 2; i <= maxSelections; i++) {
-            selectionData[`Selector ${i} Username`] = '';
-            selectionData[`Selector ${i} Text`] = '';
-            selectionData[`Selector ${i} Comment`] = '';
-            selectionData[`Selector ${i} Date`] = '';
-          }
 
           return { ...baseData, ...selectionData };
         });
@@ -109,12 +103,26 @@ export default class WorkspaceReportsService extends Service {
 
     if (!selector) return defaultSelection;
 
-    const createDate = moment(selector.get('createDate')).format('MM/DD/YYYY');
+    const selectionCreateDate = moment(selector.get('createDate')).format(
+      'MM/DD/YYYY'
+    );
     const text = selector.get('text');
     const username = selector.get('createdBy.username');
-    const commentText = selector.get('comments.firstObject.text');
-
-    const selectorInfo = { createDate, text, username, commentText };
+    const annotatorText = selector.get('comments.firstObject.text');
+    const annotatorUsername = selector.get(
+      'comments.firstObject.createdBy.username'
+    );
+    const annotatorCreateDate = moment(
+      selector.get('comments.firstObject.createDate')
+    ).format('MM/DD/YYYY');
+    const selectorInfo = {
+      selectionCreateDate,
+      text,
+      username,
+      annotatorText,
+      annotatorUsername,
+      annotatorCreateDate,
+    };
     return Object.assign({}, defaultSelection, selectorInfo);
   }
 
