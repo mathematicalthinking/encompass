@@ -34,55 +34,68 @@ export default class WorkspaceReportsService extends Service {
     // Flatten the grouped submissions back into an array
     const labeledSubmissions = [].concat(...Object.values(submissionsByUser));
 
-    return labeledSubmissions.map((submission, index) => {
-      const text = `Summary: ${
-        submission.shortAnswer
-          ? submission.shortAnswer
-          : submission.get('answer.answer')
-      }  Full Answer: ${
-        submission.longAnswer
-          ? submission.longAnswer
-          : submission.get('answer.explanation')
-          ? submission.get('answer.explanation').replace(/<\/?[^>]+(>|$)/g, '')
-          : ''
-      }`;
+    // Determine the maximum number of selections
+    let maxSelections = 0;
+    labeledSubmissions.forEach((submission) => {
+      const selectionsCount = submission.get('selections').length;
+      if (selectionsCount > maxSelections) {
+        maxSelections = selectionsCount;
+      }
+    });
 
-      const workspaceUrl = this.currentUrl.currentUrl;
-      const workspace = submission.get('workspaces.firstObject.name');
-      const submitter = submission.student;
-      const workspaceOwner = model.workspace.get('owner.username');
-      const submissionNumber = index + 1;
-      const submissionId = submission.id;
-      const foldersLength = model.workspace.foldersLength;
-      const commentsLength = model.workspace.commentsLength;
-      const dateOfSubmission = moment(submission.createDate).format(
-        'MM/DD/YYYY'
-      );
-
-      let selectorInfo = {};
-      submission.get('selections').map((selection) => {
-        selectorInfo = this.createSelectorInfo(selection);
-      });
-
-      return {
-        'Name of workspace': workspace,
-        'Workspace URL': workspaceUrl,
-        'Workspace Owner': workspaceOwner,
-        'Original Submitter': submitter,
-        'Text of Submission': text,
-        'Date of Submission': dateOfSubmission,
-        'Submission ID': submissionId,
+    // Generate CSV data with dynamic columns for selections
+    return labeledSubmissions.flatMap((submission, index) => {
+      const baseData = {
+        'Name of workspace': submission.get('workspaces.firstObject.name'),
+        'Workspace URL': this.currentUrl.currentUrl,
+        'Workspace Owner': model.workspace.get('owner.username'),
+        'Original Submitter': submission.student,
+        'Text of Submission': `Summary: ${
+          submission.shortAnswer
+            ? submission.shortAnswer
+            : submission.get('answer.answer')
+        }  Full Answer: ${
+          submission.longAnswer
+            ? submission.longAnswer
+            : submission.get('answer.explanation')
+            ? submission
+                .get('answer.explanation')
+                .replace(/<\/?[^>]+(>|$)/g, '')
+            : ''
+        }`,
+        'Submission ID': submission.id,
         'Submission or Revision': submission.submissionLabel,
-        'Selector of text': selectorInfo.username,
-        'Text of Selection': selectorInfo.text,
-        'Date of Selection': selectorInfo.createDate,
-        'Original Annotator': selectorInfo.username,
-        'Text of annotator': selectorInfo.commentText,
-        'Date of annotation': selectorInfo.createDate,
-        'Number of Folders': foldersLength,
-        'Number of Notice/Wonder/Feedback': commentsLength,
-        'Submission Order': submissionNumber,
+        'Number of Folders': model.workspace.foldersLength,
+        'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
+        'Submission Order': index + 1,
       };
+
+      const selections = submission.get('selections').toArray();
+      if (selections.length === 0) {
+        // For submissions without selections, return the base data only
+        return [baseData];
+      } else {
+        // For submissions with selections, add additional columns
+        return selections.map((selection, selIndex) => {
+          const selectorInfo = this.createSelectorInfo(selection);
+          let selectionData = {
+            [`Selector ${selIndex + 1} Username`]: selectorInfo.username,
+            [`Selector ${selIndex + 1} Text`]: selectorInfo.text,
+            [`Selector ${selIndex + 1} Comment`]: selectorInfo.commentText,
+            [`Selector ${selIndex + 1} Date`]: selectorInfo.createDate,
+          };
+
+          // Fill in empty fields for submissions with fewer selections
+          for (let i = selIndex + 2; i <= maxSelections; i++) {
+            selectionData[`Selector ${i} Username`] = '';
+            selectionData[`Selector ${i} Text`] = '';
+            selectionData[`Selector ${i} Comment`] = '';
+            selectionData[`Selector ${i} Date`] = '';
+          }
+
+          return { ...baseData, ...selectionData };
+        });
+      }
     });
   }
 
