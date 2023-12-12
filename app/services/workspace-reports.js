@@ -82,8 +82,8 @@ export default class WorkspaceReportsService extends Service {
             [`Selector of Text`]: selectorInfo.username,
             [`Text of Selection`]: selectorInfo.text,
             [`Selector Date`]: selectorInfo.selectionCreateDate,
-            [`Annotator`]: selectorInfo.annotatorText,
-            [`Text of Annotator`]: selectorInfo.annotatorUsername,
+            [`Annotator`]: selectorInfo.annotatorUsername,
+            [`Text of Annotator`]: selectorInfo.annotatorText,
             ['Annotator Date']: selectorInfo.annotatorCreateDate,
           };
 
