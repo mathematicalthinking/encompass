@@ -295,7 +295,13 @@ async function putUser(req, res, next) {
     const oldUser = await models.User.findById(req.params.id).exec();
     if (oldUser.username !== requestBody.username) {
       const ssoRes = await sso.updateUsername(req);
-      if (!ssoRes.isSuccess) delete updateHash.username;
+      if (!ssoRes.isSuccess) {
+        // Don't change the username if it didn't happen on the MT-SSO side.
+        // @TODO: Really should do more than just log the error on the server. Should
+        // notify the user.
+        delete updateHash.username;
+        console.log('Error: Username not updated');
+      }
     }
     const updatedUser = await models.User.findByIdAndUpdate(
       req.params.id,
