@@ -141,7 +141,7 @@
 }
 // Submissions table
 .submissions {
-  margin-top: 1em;
+  // margin-top: 1em; // this messes up workspace list bc same class name
   .labelP {
     font-family: 'Quicksand', sans-serif;
     font-weight: 800;
