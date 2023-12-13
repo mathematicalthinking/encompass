@@ -665,7 +665,7 @@
           .main-list {
             .item-container {
               border-bottom: .5px solid $input-border;
-              padding: 25px 0;
+              padding:  0;
               display: inline-block;
               @include flex-container(100%, null, row, wrap, space-between, center, stretch);
 
@@ -703,7 +703,7 @@
                   // text-overflow: ellipsis;
                   // white-space: nowrap;
                   max-height: 48px;
-                  word-break: break-all;
+                  word-break: break-word;
                 }
                 &.date {
                   @include flex-item(4, center, .07 0 auto);
