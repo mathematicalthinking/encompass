@@ -26,7 +26,7 @@ export default class BreadCrumbsComponent extends Component {
   }
 
   get itemsLabelText() {
-    return this.args.labelText || 'Rev.';
+    return this.args.labelText || 'Current Revision:';
   }
 
   get showInfoToolTip() {

@@ -44,7 +44,7 @@ export default class WorkspaceReportsService extends Service {
     });
 
     // Generate CSV data with dynamic columns for selections
-    return labeledSubmissions.flatMap((submission, index) => {
+    return labeledSubmissions.flatMap((submission) => {
       const baseData = {
         'Name of workspace': submission.get('workspaces.firstObject.name'),
         'Workspace URL': this.currentUrl.currentUrl,
@@ -67,7 +67,8 @@ export default class WorkspaceReportsService extends Service {
         'Submission or Revision': submission.submissionLabel,
         'Number of Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
-        'Submission Order': index + 1,
+        // Do we need this? Submission order currently inaccurate due to sorting of array.
+        // 'Submission Order': index + 1,
       };
 
       const selections = submission.get('selections').toArray();
@@ -142,7 +143,9 @@ export default class WorkspaceReportsService extends Service {
       return dateA - dateB; // For descending order
     });
     return sortedSubmissions.map((submission) => {
-      const mentoringResponder = submission.get('createdBy.username');
+      // TODO: Name of mentoring responder should not be the submission creator
+      // - grab through submission.response? Username
+      // const mentoringResponder = submission.get('createdBy.username')
       const submitter = submission.student;
       const submissionId = submission.id;
       const responseText = submission.responses
@@ -167,6 +170,12 @@ export default class WorkspaceReportsService extends Service {
           return response.id;
         })
         .join('\n');
+      // ** TODO ** Add another mentoring responder to make sure this looks good.
+      const mentoringResponder = submission.responses.map((response) => {
+        return response.get('createdBy.username')
+          ? response.get('createdBy.username')
+          : 'No Mentoring Responder';
+      });
       return {
         'Mentoring Responder': mentoringResponder,
         'Original Submitter': submitter,
