@@ -1,0 +1,11 @@
+{{page-title 'WorkspaceHistory'}}
+{{! this is the submission answers - short answers/summary }}
+{{#each this.model.submissions as |submission|}}
+  {{#if submission.answer.answer}}
+    <div class='workspace-history-container'>
+      <h2>Summary:</h2><p>{{submission.answer.answer}}</p>
+      <p>Explanation: {{sanitize-html-tags submission.answer.explanation}}</p>
+
+    </div>
+  {{/if}}
+{{/each}}
