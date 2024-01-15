@@ -3,9 +3,21 @@
 {{#each this.model.submissions as |submission|}}
   {{#if submission.answer.answer}}
     <div class='workspace-history-container'>
+      {{! Student Submission }}
+      <h2>Student Submission by: {{submission.createdBy.username}}</h2>
       <h2>Summary:</h2><p>{{submission.answer.answer}}</p>
+      <p>Date: {{dates submission.createDate 'MMMM D, YYYY h:mm A'}}</p>
       <p>Explanation: {{sanitize-html-tags submission.answer.explanation}}</p>
+      {{! Mentor reply }}
+      {{#each submission.responses as |response|}}
+        {{#if response.text}}
+          {{#if response.createdBy.username}}
+            <h2>Mentor reply by: {{response.createdBy.username}}</h2>{{/if}}
 
+          <p>Date: {{dates response.createDate 'MMMM D, YYYY h:mm A'}}</p>
+          <p>Response: {{sanitize-html-tags response.text}}</p>
+        {{/if}}
+      {{/each}}
     </div>
   {{/if}}
 {{/each}}
