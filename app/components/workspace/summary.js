@@ -5,6 +5,6 @@ import { action } from '@ember/object';
 
 export default class WorkspaceSummaryComponent extends Component {
   isLogged() {
-    console.log('isLogged');
+    return 'I am logged';
   }
 }
