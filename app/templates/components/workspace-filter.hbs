@@ -26,22 +26,10 @@
       </li>
     {{/each}}
   </ul>
-    <h3 {{action 'toggleMoreFilters'}} class="more-header {{if this.closedMenu 'closed'}}">
-      <i class="fas {{if this.showMoreFilters 'fa-chevron-down'}}{{unless this.showMoreFilters 'fa-chevron-right'}}"></i> More
-    </h3>
-    {{#if this.showMoreFilters}}
+          <h3>Show:</h3>
       <ul class="more-filter-list">
-        <h5>Hidden Workspaces</h5>
-        <label class="subfilter">
-          <Input @id="toggle-hidden" @type="checkbox" @checked={{this.showHiddenWorkspaces}} @change={{action "toggleHiddenWorkspaces"}} /> <span>Show All Hidden Workspaces</span>
-        </label>
-      {{#if this.currentUser.user.isAdmin}}
-        <h5>Trashed Workspaces</h5>
-        <label class="subfilter">
-          <Input @id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedWorkspaces}} @change={{action "toggleTrashedWorkspaces"}} /> <span>Show All Trashed Workspaces</span>
-        </label>
-      {{/if}}
+          <Input @id="toggle-hidden" @type="checkbox" @checked={{this.showHiddenWorkspaces}} @change={{action "toggleHiddenWorkspaces"}} /> <span>Hidden Workspaces</span><br/>
+          <Input @id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedWorkspaces}} @change={{action "toggleTrashedWorkspaces"}} /> <span>Trashed Workspaces</span>
       </ul>
-    {{/if}}
   </div>
 

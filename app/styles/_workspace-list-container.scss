@@ -13,16 +13,16 @@
   }
 }
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 1401px) {
-  #workspace-list-container {
-    .sort-bar-item,
-    .item-section {
-      &.responses {
-        display: none;
-      }
-    }
-  }
-}
+// @media screen and (min-width: $screen-xs-min) and (max-width: 1401px) {
+//   #workspace-list-container {
+//     .sort-bar-item,
+//     .item-section {
+//       &.responses {
+//         display: none;
+//       }
+//     }
+//   }
+// }
 
 #workspace-list-container {
   .sort-bar-item,
@@ -93,6 +93,7 @@
     &.responses {
       @include flex-item(8, center, 1 0 auto);
       width: 7%;
+      font-size: 0.9em;
     }
     &.owner {
       @include flex-item(9, center, 1 0 auto);
@@ -184,7 +185,7 @@
             margin: 5px;
             box-shadow: $box-shadow;
             border-radius: 5px;
-            padding: 10px;
+            padding: 0;
             display: block;
             @include flex-container(
               auto,
@@ -201,7 +202,7 @@
             .item-card {
               &.row-1 {
                 @include flex-item(1, auto, 1 0 auto);
-                padding: 15px 10px;
+                padding: 5px;
                 .privacy {
                   text-align: left;
                   float: left;
@@ -224,7 +225,7 @@
               }
               &.row-2 {
                 @include flex-item(2, auto, 1 0 auto);
-                padding: 20px 15px 15px 15px;
+                padding: 5px;
                 a {
                   color: black;
                   &.active {
@@ -237,7 +238,7 @@
               }
               &.row-3 {
                 @include flex-item(3, auto, 1 0 auto);
-                padding: 0px 15px 15px 15px;
+                padding: 5px;
                 a {
                   &.active {
                     font-weight: $bolder-font-weight;
@@ -247,7 +248,7 @@
               }
               &.row-4 {
                 @include flex-item(4, auto, 1 0 auto);
-                padding: 15px 10px 20px 10px;
+                padding: 5px;
                 .workspace-stats {
                   text-align: center;
                   @include flex-container(

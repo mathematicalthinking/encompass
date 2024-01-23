@@ -130,10 +130,7 @@
 }
 
 @media screen and (min-width: 901px) and (max-width: 100000px) {
-  .flex-container-full {
-    display: grid;
-    grid-template-columns: 350px auto auto auto auto;
-  }
+
   .toggle-filter-menu {
     display: none;
   }
@@ -296,18 +293,17 @@
   }
 }
 
+.flex-container-full {
+  display: grid;
+  grid-template-columns: 15% 1fr;
+}
 
 .flex-container-full {
   .flex-item-full {
     &.filter-options {
-      grid-column-start: 0;
+      grid-column-start: 1;
       grid-column-end: 2;
       background-color: $filter-list-background-color;
-      position: fixed;
-      width: 350px;
-      height: 95%;
-      // min-width: 300px;
-      // width: 350px;
       .filter-items {
         width: inherit;
         margin-top: 35px;
@@ -501,7 +497,7 @@
     }
     &.list-view {
       grid-column-start: 2;
-      grid-column-end: 7;
+      grid-column-end: 3;
       justify-content: left;
       padding: 20px;
       overflow: auto;
