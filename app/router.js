@@ -37,6 +37,7 @@ Router.map(function () {
       'workspace',
       { resetNamespace: true, path: '/:workspace_id' },
       function () {
+        this.route('summary');
         this.route('info'); // templates/workspace/info.hbs
         this.route('work'); // will redirect either to /info or /first
         this.route('folders', function () {

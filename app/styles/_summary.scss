@@ -1,0 +1,55 @@
+// _summary.scss
+
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-top: 1em;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 10px; // Adjusted padding
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px; // Reduced font size
+  }
+
+  th {
+    background-color: #4caf50;
+    color: #ffffff;
+  }
+
+  tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .details-row {
+    display: none;
+    background-color: #f9f9f9;
+  }
+
+  @media (max-width: 768px) {
+    th,
+    td {
+      padding: 8px; // Adjusted padding for smaller screens
+      font-size: 12px; // Reduced font size for smaller screens
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    th {
+      text-align: center;
+    }
+  }
+}
