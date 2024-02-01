@@ -1,51 +1,54 @@
 <!-- summary-list.hbs -->
 
-{{#each sortedSubmissions as |submission|}}
-  {{#if submission.newestSubmission.answer.answer}}
-    <div
-      class='summary-container'
-      id={{concat 'submission-row-' submission.newestSubmission.id}}
-    >
-      <div class='cell-container'>
-        <div class='label'>Submitted By:</div>
-        <div
-          class='value'
-        >{{submission.newestSubmission.createdBy.username}}</div>
-      </div>
-      <div class='cell-container'>
-        <div class='label'>Newest Submission:</div>
-        <div class='value'>{{submission.newestSubmission.answer.answer}}</div>
-      </div>
-      <div class='cell-container'>
-        <div class='label'>Date:</div>
-        <div class='value'>
-          {{dates submission.newestSubmission.createDate 'MM-D-YYYY @h:mm A'}}
-        </div>
-      </div>
-      <a {{on 'click' (fn this.toggleDetailsRow submission)}}>
-        {{submission.showDetails 'Show Details' 'Hide Details'}}
-        RIGHT HERE
-      </a>
-      <!-- Details row -->
-      {{#if submission.showDetails}}
-        <div class='cell-container'>
-          <div class='label'>Number of mentor replies:</div>
-          <div class='value'>
-            <LinkTo
-              @route='responses.submission'
-              @model={{submission.newestSubmission.id}}
-              class='response-link'
-            > {{submission.responsesCount}}</LinkTo>
-          </div>
-        </div>
-        <div class='details-container'>
-          <!-- Render additional details here -->
-          <p>Explanation:
-            {{sanitize-html-tags
-              submission.newestSubmission.answer.explanation
-            }}</p>
-        </div>
-      {{/if}}
+{{#each this.sortedSubmissions as |submission|}}
+
+  <div
+    class='summary-container'
+    id={{concat 'submission-row-' submission.newestSubmission.id}}
+  >
+    <div class='cell-container'>
+      <div class='label'>Submitted By:</div>
+      <div
+        class='value'
+      >{{submission.newestSubmission.createdBy.username}}</div>
     </div>
-  {{/if}}
+    <div class='cell-container'>
+      <div class='label'>Newest Submission:</div>
+      <div class='value'>{{submission.newestSubmission.answer.answer}}</div>
+    </div>
+    <div class='cell-container'>
+      <div class='label'>Date:</div>
+      <div class='value'>
+        {{dates submission.newestSubmission.createDate 'MM-D-YYYY @h:mm A'}}
+      </div>
+    </div>
+
+    <!-- ON CLICK HERE -->
+    <a {{on 'click' (fn this.toggleShowing submission)}}>
+      RIGHT HERE
+    </a>
+
+    <!-- Details row -->
+    {{log this.isShowing}}
+    {{#if this.isShowing}}
+      <div class='cell-container'>
+        <div class='label'>Number of mentor replies:</div>
+        <div class='value'>
+          <LinkTo
+            @route='responses.submission'
+            @model={{submission.newestSubmission.id}}
+            class='response-link'
+          > {{submission.responsesCount}}</LinkTo>
+        </div>
+      </div>
+      <div class='details-container'>
+        <!-- Render additional details here -->
+        <p>Explanation:
+          {{sanitize-html-tags
+            submission.newestSubmission.answer.explanation
+          }}</p>
+      </div>
+    {{/if}}
+  </div>
+
 {{/each}}
