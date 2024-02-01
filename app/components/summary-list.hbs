@@ -1,37 +1,51 @@
-<div class='table-container'>
-  <table>
-    <thead>
-      <tr>
-        <th>Student Submission</th>
-        <th>Summary</th>
-        <th>Date</th>
-        <th>Explanation</th>
-        <th>Mentor:</th>
-        <th>Date</th>
-        <th>Response</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each this.sortedSubmissions as |submission|}}
-        {{#if submission.answer.answer}}
-          <tr class='summary-container'>
-            <td> {{submission.createdBy.username}}</td>
-            <td>{{submission.answer.answer}}</td>
-            {{! use moment to use number month, not name of month }}
-            <td>{{dates submission.createDate 'MMMM D, YYYY h:mm A'}}</td>
-            <td>{{sanitize-html-tags submission.answer.explanation}}</td>
-            {{#each submission.responses as |response|}}
-              {{! make a single data cell, with the length of the responses, that should link the user to the responses page specific to that submissions }}
-              {{#if response.text}}
-                <td>{{response.createdBy.username}}</td>
+<!-- summary-list.hbs -->
 
-                <td>{{dates response.createDate 'MMMM D, YYYY h:mm A'}}</td>
-                <td>{{sanitize-html-tags response.text}}</td>
-              {{/if}}
-            {{/each}}
-          </tr>
-        {{/if}}
-      {{/each}}
-    </tbody>
-  </table>
-</div>
+{{#each sortedSubmissions as |submission|}}
+  {{#if submission.newestSubmission.answer.answer}}
+    <div
+      class='summary-container'
+      id={{concat 'submission-row-' submission.newestSubmission.id}}
+    >
+      <div class='cell-container'>
+        <div class='label'>Submitted By:</div>
+        <div
+          class='value'
+        >{{submission.newestSubmission.createdBy.username}}</div>
+      </div>
+      <div class='cell-container'>
+        <div class='label'>Newest Submission:</div>
+        <div class='value'>{{submission.newestSubmission.answer.answer}}</div>
+      </div>
+      <div class='cell-container'>
+        <div class='label'>Date:</div>
+        <div class='value'>
+          {{dates submission.newestSubmission.createDate 'MM-D-YYYY @h:mm A'}}
+        </div>
+      </div>
+      <a {{on 'click' (fn this.toggleDetailsRow submission)}}>
+        {{submission.showDetails 'Show Details' 'Hide Details'}}
+        RIGHT HERE
+      </a>
+      <!-- Details row -->
+      {{#if submission.showDetails}}
+        <div class='cell-container'>
+          <div class='label'>Number of mentor replies:</div>
+          <div class='value'>
+            <LinkTo
+              @route='responses.submission'
+              @model={{submission.newestSubmission.id}}
+              class='response-link'
+            > {{submission.responsesCount}}</LinkTo>
+          </div>
+        </div>
+        <div class='details-container'>
+          <!-- Render additional details here -->
+          <p>Explanation:
+            {{sanitize-html-tags
+              submission.newestSubmission.answer.explanation
+            }}</p>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+{{/each}}
