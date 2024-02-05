@@ -1,51 +1,48 @@
-// summary.scss
-.main-summary-container {
+/* summary.scss */
+.summary-header-container {
   display: flex;
-}
-.summary-list-container {
-  display: flex;
-  margin: 1em;
   justify-content: space-between;
   flex-direction: column;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Optional: Add box shadow for depth
+  margin: 1em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
   h1 {
     margin: 0;
-    font-size: 1em; // Adjust the font size as needed
+    font-size: 1.5em;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #333;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.2em;
     font-weight: 400;
     line-height: 1.2;
-    color: black;
+    color: #666;
   }
 }
+
 .summary-container {
-  margin-top: 1em;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  padding: 10px;
-  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
 
-  &:hover {
-    background-color: #f5f5f5;
-  }
-
-  .cell-container {
+  .summary-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 8px;
 
     .label {
       font-weight: bold;
-      margin-right: 8px;
+      text-align: left;
+      width: 20%; /* Adjust as needed */
     }
 
     .value {
-      flex-grow: 1;
+      text-align: left;
+      width: 30%; /* Adjust as needed */
     }
-  }
-
-  .details-container {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #ccc;
   }
 }
