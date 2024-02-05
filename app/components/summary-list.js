@@ -15,7 +15,9 @@ export default class SummaryList extends Component {
       if (!studentData) {
         studentData = {
           newestSubmission: null,
+          newestMentorResponse: null,
           responsesCount: 0,
+          numOfRevisions: 0,
         };
       }
 
@@ -25,9 +27,15 @@ export default class SummaryList extends Component {
       ) {
         studentData.newestSubmission = submission;
       }
+      const responses = submission.get('responses');
+      if (responses && responses.length > 0) {
+        // Sort the responses and get the most recent one
+        const mostRecentResponse = responses.sortBy('createDate').reverse()[0];
+        studentData.newestResponse = mostRecentResponse;
+      }
 
       studentData.responsesCount += submission.responses.length;
-
+      studentData.numOfRevisions++;
       studentDataMap.set(username, studentData);
     });
 
@@ -40,6 +48,22 @@ export default class SummaryList extends Component {
     });
 
     return studentDataArray;
+  }
+  get workspaceInfo() {
+    let workspaceData = {};
+    const assignment = this.args.workspaces.get('linkedAssignment.name');
+    const workspaceOwner = this.args.workspaces.get('createdBy.username');
+    const problem = this.args.workspaces.get('linkedAssignment.problem.title');
+    if (assignment) {
+      workspaceData.assignment = assignment;
+    }
+    if (problem) {
+      workspaceData.problem = problem;
+    }
+    if (workspaceOwner) {
+      workspaceData.workspaceOwner = workspaceOwner;
+    }
+    return workspaceData;
   }
 
   @action

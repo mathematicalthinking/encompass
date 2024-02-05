@@ -1,5 +1,21 @@
 // summary.scss
-
+.main-summary-container {
+  display: flex;
+}
+.summary-list-container {
+  display: flex;
+  margin: 1em;
+  justify-content: space-between;
+  flex-direction: column;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Optional: Add box shadow for depth
+  h1 {
+    margin: 0;
+    font-size: 1em; // Adjust the font size as needed
+    font-weight: 400;
+    line-height: 1.2;
+    color: black;
+  }
+}
 .summary-container {
   margin-top: 1em;
   border: 1px solid #ccc;

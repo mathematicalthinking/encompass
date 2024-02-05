@@ -1,54 +1,75 @@
 <!-- summary-list.hbs -->
+{{! Name of the workspace, including problem name x}}
+{{! Add # of revisions x}}
+{{! Add # of mentor replies x}}
+{{! Each row will have the history between every submission or revision with a student or teacher }}
+{{! Date of recent revision x }}
+{{! Date of the recent reply - hyperlinnk to existing thread (Responses page) x}}
+<header class='summary-list-container'>
+  <div>
+    <h1>Workspace Responses</h1>
+    <h1>Workspace Owner: {{this.workspaceInfo.workspaceOwner}}</h1>
+    <h1>{{this.workspaceInfo.assignment}}</h1>
+    <h1>{{this.workspaceInfo.problem}}</h1></div>
+</header>
 
 {{#each this.sortedSubmissions as |submission|}}
-
   <div
     class='summary-container'
     id={{concat 'submission-row-' submission.newestSubmission.id}}
   >
     <div class='cell-container'>
-      <div class='label'>Submitted By:</div>
+      <div class='label'>Submitter:</div>
       <div
         class='value'
       >{{submission.newestSubmission.createdBy.username}}</div>
     </div>
     <div class='cell-container'>
-      <div class='label'>Newest Submission:</div>
-      <div class='value'>{{submission.newestSubmission.answer.answer}}</div>
-    </div>
-    <div class='cell-container'>
-      <div class='label'>Date:</div>
+      <div class='label'>Date of Revision</div>
       <div class='value'>
         {{dates submission.newestSubmission.createDate 'MM-D-YYYY @h:mm A'}}
       </div>
     </div>
-
-    <!-- ON CLICK HERE -->
+    <div class='cell-container'>
+      <div class='label'># Of Revisions</div>
+      <div class='value'>
+        {{submission.numOfRevisions}}
+      </div>
+    </div>
+    {{!-- <!-- ON CLICK HERE -->
     <a {{on 'click' (fn this.toggleShowing submission)}}>
-      RIGHT HERE
-    </a>
+      Expand details
+    </a> --}}
 
     <!-- Details row -->
-    {{log this.isShowing}}
-    {{#if this.isShowing}}
-      <div class='cell-container'>
-        <div class='label'>Number of mentor replies:</div>
-        <div class='value'>
-          <LinkTo
-            @route='responses.submission'
-            @model={{submission.newestSubmission.id}}
-            class='response-link'
-          > {{submission.responsesCount}}</LinkTo>
-        </div>
+
+    {{! Name of mentor }}
+    {{! WE NEED A MENTOR REPLY FOR EVERY SUBMISSION OR REVISION }}
+    {{!-- {{#if this.isShowing}} --}}
+    <div class='cell-container'>
+      <div class='label'>Number of mentor replies:</div>
+      <div class='value responses-text'>
+        <LinkTo
+          @route='responses.submission'
+          @model={{submission.newestSubmission.id}}
+          class='response-link'
+        > {{submission.responsesCount}}</LinkTo>
       </div>
-      <div class='details-container'>
-        <!-- Render additional details here -->
+    </div>
+    <div class='cell-container'>
+      <div class='label'>Date of newest mentor reply</div>
+      <div class='value'>{{dates
+          submission.newestResponse.createDate
+          'MM-D-YYYY @h:mm A'
+        }}</div>
+    </div>
+    {{!-- <div class='details-container'>
         <p>Explanation:
           {{sanitize-html-tags
             submission.newestSubmission.answer.explanation
           }}</p>
-      </div>
-    {{/if}}
+      </div> --}}
+    {{!-- {{/if}} --}}
   </div>
 
 {{/each}}
