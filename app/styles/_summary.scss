@@ -1,0 +1,66 @@
+@import 'variables';
+.summary-header-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 1em 0;
+  padding: 1em;
+  text-align: center;
+  a {
+    color: $accent-color;
+    transition: all 0.3s;
+    &:hover {
+      text-decoration: underline;
+      font-weight: 500;
+    }
+  }
+  h1 {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+  h2 {
+    font-weight: 500;
+    font-size: 0.9em;
+  }
+}
+
+/* summary.scss */
+.summary-container {
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ccc;
+
+    .label {
+      font-weight: bold;
+      text-align: left;
+      width: 20%;
+      padding: 8px;
+    }
+
+    .value {
+      text-align: left;
+      width: 30%;
+      padding: 8px;
+      a {
+        color: $accent-color;
+        transition: all 0.3s;
+        &:hover {
+          text-decoration: underline;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .summary-row:last-child {
+    border-bottom: none; /* Remove the border on the last row for a cleaner finish */
+  }
+}

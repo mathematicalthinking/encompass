@@ -37,6 +37,7 @@ Router.map(function () {
       'workspace',
       { resetNamespace: true, path: '/:workspace_id' },
       function () {
+        this.route('summary');
         this.route('info'); // templates/workspace/info.hbs
         this.route('work'); // will redirect either to /info or /first
         this.route('folders', function () {
@@ -69,6 +70,9 @@ Router.map(function () {
         //this.route("print");
       }
     );
+    this.route('workspace-history', {
+      path: '/workspace-history/:workspace_id',
+    });
   });
   // USERS PARENT ROUTE
   this.route('users', function () {
