@@ -9,6 +9,8 @@ export default class SummaryList extends Component {
 
     this.args.submissions.forEach((submission) => {
       const username = submission.get('createdBy.username') || '';
+      console.log(submission, 'submission in summary-list.js');
+      console.log('username', username);
       const currentDate = submission.get('createDate');
 
       let studentData = studentDataMap.get(username);
