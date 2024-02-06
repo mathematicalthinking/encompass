@@ -42,8 +42,8 @@ export default class SummaryList extends Component {
     const studentDataArray = Array.from(studentDataMap.values());
 
     studentDataArray.sort((data1, data2) => {
-      const username1 = data1.newestSubmission.get('createdBy.username') || '';
-      const username2 = data2.newestSubmission.get('createdBy.username') || '';
+      const username1 = data1.newestSubmission.get('createdBy.username');
+      const username2 = data2.newestSubmission.get('createdBy.username');
       return username1.localeCompare(username2);
     });
 
