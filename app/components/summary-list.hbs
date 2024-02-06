@@ -4,6 +4,13 @@
   <h2>Workspace Owner: {{this.workspaceInfo.workspaceOwner}}</h2>
   <h2>{{this.workspaceInfo.assignment}}</h2>
   <h2>{{this.workspaceInfo.problem}}</h2>
+  <a>
+    <LinkTo
+      @route='workspace.submissions.submission'
+      @model={{this.workspaceInfo.submissionId}}
+    >Go back to workspace</LinkTo>
+
+  </a>
 </div>
 
 <div class='summary-container'>
@@ -31,17 +38,20 @@
         {{submission.numOfRevisions}}
       </div>
       <div class='value mentor-replies'>
-        <a>
-          <LinkTo
-            @route='responses.submission'
-            @model={{submission.newestSubmission.id}}
-            class='response-link'
-          >{{submission.responsesCount}}</LinkTo></a>
 
+        {{submission.responsesCount}}
       </div>
 
       <div class='value newest-reply-date'>
-        {{dates submission.newestResponse.createDate 'MM-D-YYYY @h:mm A'}}
+        <LinkTo
+          @route='responses.submission'
+          @model={{submission.newestSubmission.id}}
+          class='response-link'
+        >
+          {{dates
+            submission.newestResponse.createDate
+            'MM-DD-YYYY @h:mm A'
+          }}</LinkTo>
       </div>
     </div>
   {{/each}}

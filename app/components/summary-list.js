@@ -54,6 +54,8 @@ export default class SummaryList extends Component {
     const assignment = this.args.workspaces.get('linkedAssignment.name');
     const workspaceOwner = this.args.workspaces.get('createdBy.username');
     const problem = this.args.workspaces.get('linkedAssignment.problem.title');
+    const submissionId = this.args.workspaces.submissions.toArray()[0].id;
+
     if (assignment) {
       workspaceData.assignment = assignment;
     }
@@ -62,6 +64,9 @@ export default class SummaryList extends Component {
     }
     if (workspaceOwner) {
       workspaceData.workspaceOwner = workspaceOwner;
+    }
+    if (submissionId) {
+      workspaceData.submissionId = submissionId;
     }
     return workspaceData;
   }
