@@ -8,14 +8,22 @@ export default class SummaryList extends Component {
     const studentDataMap = new Map();
 
     this.args.submissions.forEach((submission) => {
-      const username = submission.get('createdBy.username') || '';
+      let username = '';
+      if (submission.get('createdBy.username')) {
+        username = submission.get('createdBy.username');
+      } else if (submission.get('creator.username')) {
+        username = submission.get('creator.username');
+      } else {
+        username = '';
+      }
+
       const currentDate = submission.get('createDate');
 
       let studentData = studentDataMap.get(username);
       if (!studentData) {
         studentData = {
           newestSubmission: null,
-          newestMentorResponse: null,
+          id: null,
           responsesCount: 0,
           numOfRevisions: 0,
         };
@@ -29,23 +37,37 @@ export default class SummaryList extends Component {
       }
       const responses = submission.get('responses');
       if (responses && responses.length > 0) {
-        // Sort the responses and get the most recent one
+        studentData.responsesCount += responses.filter(
+          (response) => response.text
+        ).length;
+
         const mostRecentResponse = responses.sortBy('createDate').reverse()[0];
         studentData.newestResponse = mostRecentResponse;
       }
 
       studentData.responsesCount += submission.responses.length;
       studentData.numOfRevisions++;
+      studentData.id = submission.id;
       studentDataMap.set(username, studentData);
     });
 
     const studentDataArray = Array.from(studentDataMap.values());
 
     studentDataArray.sort((data1, data2) => {
-      const username1 = data1.newestSubmission.get('createdBy.username');
-      const username2 = data2.newestSubmission.get('createdBy.username');
+      const username1 = getUsername(data1.newestSubmission);
+      const username2 = getUsername(data2.newestSubmission);
       return username1.localeCompare(username2);
     });
+
+    // Add a separate function to get the username based on the available properties
+    function getUsername(newestSubmission) {
+      if (newestSubmission) {
+        return (
+          newestSubmission.get('createdBy.username') ||
+          newestSubmission.get('creator.username')
+        );
+      }
+    }
 
     return studentDataArray;
   }
@@ -58,6 +80,8 @@ export default class SummaryList extends Component {
 
     if (assignment) {
       workspaceData.assignment = assignment;
+    } else {
+      workspaceData.assignment = this.args.workspaces.name;
     }
     if (problem) {
       workspaceData.problem = problem;

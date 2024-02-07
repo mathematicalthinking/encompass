@@ -40,15 +40,20 @@
 
     .label {
       font-weight: bold;
+      font-size: 0.8em;
       text-align: left;
       width: 20%;
       padding: 8px;
     }
 
     .value {
+      font-size: 0.8em;
       text-align: left;
       width: 30%;
-      padding: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
       a {
         color: $accent-color;
         transition: all 0.3s;
