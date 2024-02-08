@@ -13,6 +13,7 @@ export default Component.extend(ErrorHandlingMixin, {
   store: service(),
   isRevising: false,
   isFinishingDraft: false,
+  replyBeingEdited: null,
 
   currentDisplayResponseId: null,
   quillEditorId: 'mentor-editor',
@@ -282,6 +283,10 @@ export default Component.extend(ErrorHandlingMixin, {
   revisionsToolTip: 'Replies are sorted from oldest to newest, left to right.',
 
   actions: {
+    setReplyBeingEdited(reply) {
+      this.replyBeingEdited = reply;
+    },
+
     onSaveSuccess(submission, response) {
       this.onSaveSuccess(submission, response);
     },

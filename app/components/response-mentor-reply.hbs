@@ -17,10 +17,9 @@
   {{#each this.sortedMentorReplies as |mentorReply|}}
     <ResponseMentorSingleReply
       @mentorReply={{mentorReply}}
-      @displayResponse={{this.displayResponse}}
       @isParentWorkspace={{this.isParentWorkspace}}
-      @showRecipientReadUnread={{this.showRecipientReadUnread}}
-      @recipientReadUnreadIcon={{this.recipientReadUnreadIcon}}
+      @isMentorRecipient={{this.isMentorRecipient}}
+      @canDirectSend={{this.canDirectSend}}
       @isComposing={{this.isComposing}}
       @quillEditorId={{this.quillEditorId}}
       @editRevisionText={{this.editRevisionText}}
@@ -31,6 +30,9 @@
       @updateQuillText={{action 'updateQuillText'}}
       @handleComposeAction={{action 'handleComposeAction'}}
       @confirmTrash={{action 'confirmTrash'}}
+      @replyBeingEdited={{this.replyBeingEdited}}
+      @setReplyBeingEdited={{action 'setReplyBeingEdited'}}
+      @saveDraft={{action 'saveDraft'}}
     />
   {{/each}}
   {{#if this.emptyReplyError}}
