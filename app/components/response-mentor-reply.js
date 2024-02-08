@@ -10,6 +10,7 @@ export default Component.extend(ErrorHandlingMixin, {
   utils: service('utility-methods'),
   loading: service('loading-display'),
   currentUser: service('current-user'),
+  store: service(),
   isRevising: false,
   isFinishingDraft: false,
 

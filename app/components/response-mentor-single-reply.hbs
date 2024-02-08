@@ -1,0 +1,70 @@
+<div class='submissionChild'>
+  <div class='response-info'>
+    {{#if @displayResponse}}
+      <ResponseMentorDate
+        @reply={{if
+          @isParentWorkspace
+          @mentorReply.originalResponse
+          @mentorReply
+        }}
+        @showRecipientReadUnread={{@showRecipientReadUnread}}
+        @recipientReadUnreadIcon={{@recipientReadUnreadIcon}}
+      />
+      <div class='response-content'>
+        <p class='response-header'>
+          Message
+        </p>
+        <div class='response-text-container'>
+          {{#if @isComposing}}
+            <QuillContainer
+              @onEditorChange={{@updateQuillText}}
+              @attrSectionId={{@quillEditorId}}
+              @startingText={{@editRevisionText}}
+            />
+          {{else}}
+            <div
+              class='response-text
+                {{if @isOldFormatDisplayResponse "old-format"}}'
+            >
+              {{{@mentorReply.text}}}
+            </div>
+          {{/if}}
+        </div>
+        {{#if @showNoteHeader}}
+          <div class='response-note-container'>
+            <p class='response-header'>Note for Approver</p>
+            {{#if @showApproverNoteInput}}
+              <Textarea
+                class='edit-note'
+                @name='mentor-approver-note'
+                @value={{@editRevisionNote}}
+              />
+            {{/if}}
+            {{#if @showDisplayNote}}
+              <div class='response-note'>
+                {{@mentorReply.note}}
+              </div>
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+    {{else}}
+      <p>No response to display</p>
+    {{/if}}
+  </div>
+  {{! for draft option when mentor saves draft. tech debt }}
+  {{#if (is-reply-draft @mentorReply)}}
+    <div class='mentor-reply-actions button-row'>
+      <button
+        {{on 'click' (fn @handleComposeAction 'isFinishingDraft' true false)}}
+        class='primary-button'
+      >
+        Resume Draft
+      </button>
+      <i
+        {{on 'click' (fn @confirmTrash @displayResponse)}}
+        class='fas fa-trash'
+      />
+    </div>
+  {{/if}}
+</div>

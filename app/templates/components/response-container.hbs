@@ -38,13 +38,13 @@
     {{!-- <div class="response-flex-item submission{{if showApproverReply ' third'}}"> --}}
     <div class='response-flex-item submission'>
       <p class='studentSubmission'>Student Submissions</p>
-      {{#each this.sortedSubmissions as |listOfSubmissions|}}
+      {{#each this.sortedSubmissions as |submission|}}
 
         <div class='submissionChild'>
           <ResponseSubmissionView
             @store={{this.store}}
             @response={{this.response}}
-            @submission={{listOfSubmissions}}
+            @submission={{submission}}
             @workspace={{this.workspace}}
             @wsResponses={{this.cleanWorkspaceResponses}}
             @studentSubmissions={{this.submissions}}

@@ -13,6 +13,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   utils: service('utility-methods'),
   loading: service('loading-display'),
+  store: service(),
 
   isEditing: false,
   isCreating: false,

@@ -31,48 +31,6 @@
   </div>
   <section class='response-content'>
     <section class='response-more-details'>
-      {{#if existingResponses.length}}
-        <div class='response-existing-container'>
-          <p class='response-existing'>
-            There
-            {{pluralize existingResponses.length 'is' 'are'}}
-            {{#unless model.persisted}}already{{/unless}}
-            {{existingResponses.length}}
-            other
-            {{pluralize existingResponses.length 'response' 'responses'}}
-            for this
-            {{model.source}}.
-            <span
-              class='response-link'
-              {{action toggleProperty 'showExisting'}}
-            >
-              {{#if showExisting}}
-                Hide
-              {{else}}
-                Show
-              {{/if}}
-            </span>
-          </p>
-          {{#if showExisting}}
-            <ul class='response-listing'>
-              {{#each existingResponses as |response|}}
-                <li>
-                  <span class='create-date'>{{format-date
-                      response.createDate
-                      'l h:mm a'
-                    }}</span>
-                  {{{response.shortText}}}...
-                  <LinkTo
-                    @route='responses.submission'
-                    @model={{submission.id}}
-                    @query={{hash responseId=response.id}}
-                  > View</LinkTo>
-                </li>
-              {{/each}}
-            </ul>
-          {{/if}}
-        </div>
-      {{/if}}
       <div class='markup-filter'>
         <span class='filter-label'>Comments Filter</span><i
           class='fas fa-filter'
