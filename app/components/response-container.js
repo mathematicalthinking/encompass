@@ -13,6 +13,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   currentUser: service('current-user'),
   // elementId: 'response-container',
   wsPermissions: service('workspace-permissions'),
+  store: service(),
   submission: null,
   subResponses: [],
   primaryResponseType: alias('response.responseType'),

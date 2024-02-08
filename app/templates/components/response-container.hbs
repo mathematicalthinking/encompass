@@ -42,7 +42,6 @@
 
         <div class='submissionChild'>
           <ResponseSubmissionView
-            @store={{this.store}}
             @response={{this.response}}
             @submission={{submission}}
             @workspace={{this.workspace}}
@@ -63,7 +62,6 @@
       <div class='response-mentor-reply'>
         <p class='studentSubmission'>Mentor Responses</p>
         <ResponseMentorReply
-          @store={{this.store}}
           @isCreating={{this.isCreatingNewMentorReply}}
           @response={{this.response}}
           @submission={{this.submission}}
