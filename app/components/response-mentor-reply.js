@@ -284,7 +284,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   actions: {
     setReplyBeingEdited(reply) {
-      this.replyBeingEdited = reply;
+      this.set('replyBeingEdited', reply);
     },
 
     onSaveSuccess(submission, response) {

@@ -26,23 +26,37 @@ const BUTTON_CONFIG = {
   ],
 };
 
+const STATUS_TEXT = {
+  approved: 'Approved',
+  draft: 'Draft',
+  pendingApproval: 'Pending Approval',
+  needsRevisions: 'Needs Revisions',
+  superceded: 'Superceded',
+  trashed: 'Trashed', // just for completeness
+};
+
 export default class ResponseMentorSingleReply extends Component {
   get status() {
     if (this.args.mentorReply.isTrashed) return 'trashed';
-    if (this.isEditing)
-      return this.args.canSendDirect ? 'composingDirect' : 'composingApproval';
+    if (this.isEditing) {
+      return this.args.canDirectSend ? 'composingDirect' : 'composingApproval';
+    }
     return this.args.mentorReply.status;
   }
 
+  get statusText() {
+    return STATUS_TEXT[this.args.mentorReply.status] || 'unknown';
+  }
+
   get isEditing() {
-    return this.args.replyBeingEdited === this;
+    return this.args.replyBeingEdited === this.args.mentorReply;
   }
 
   get otherBeingEdited() {
     return !this.isEditing && this.args.replyBeingEdited;
   }
 
-  get buttons() {
+  get actionButtons() {
     return BUTTON_CONFIG[this.status] || [];
   }
 
@@ -59,7 +73,7 @@ export default class ResponseMentorSingleReply extends Component {
 
   // show the action buttons if there are buttons to show and the user isn't editng another reply
   get showButtons() {
-    return this.buttons.length > 0 && !this.otherBeingEdited;
+    return this.actionButtons.length > 0 && !this.otherBeingEdited;
   }
 
   get recipientReadUnreadIcon() {
@@ -91,18 +105,20 @@ export default class ResponseMentorSingleReply extends Component {
 
   @action
   handleAction(actionName) {
-    if (actionName === 'handleTrash') {
-      this.args.confirmTrash(this.args.mentorReply);
-    } else if (actionName === 'handleResumeDraft' && !this.otherBeingEdited) {
-      // buttons should be disabled if another reply is being edited. Above condition JIC
-      this.args.setReplyBeingEdited(this);
-    } else if (actionName === 'handleRevise' && !this.otherBeingEdited) {
-      // buttons should be disabled if another reply is being edited. Above condition JIC
-      this.args.setReplyBeingEdited(this);
-    } else if (actionName === 'handleCancel') {
-      this.args.setReplyBeingEdited(null);
-    } else if (actionName === 'handleSaveAsDraft') {
-      this.args.saveDraft(true);
+    switch (actionName) {
+      case 'handleTrash':
+        this.args.confirmTrash(this.args.mentorReply);
+        break;
+      case 'handleResumeDraft':
+      case 'handleRevise':
+        this.args.setReplyBeingEdited(this.args.mentorReply);
+        break;
+      case 'handleCancel':
+        this.args.setReplyBeingEdited(null);
+        break;
+      case 'handleSaveAsDraft':
+        this.args.saveDraft(true);
+        break;
     }
   }
 }
