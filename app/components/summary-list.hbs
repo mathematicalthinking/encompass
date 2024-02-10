@@ -1,0 +1,83 @@
+<div class='summary-header-container'>
+  <header><h1>Workspace Responses</h1></header>
+  <h2>Workspace Owner: {{this.workspaceInfo.workspaceOwner}}</h2>
+  <h2>{{this.workspaceInfo.assignment}}</h2>
+  <h2>{{this.workspaceInfo.problem}}</h2>
+  <a>
+    <LinkTo
+      @route='workspace.submissions.submission'
+      @model={{this.workspaceInfo.submissionId}}
+    >Go back to workspace</LinkTo>
+
+  </a>
+</div>
+
+<div class='summary-container'>
+  <div class='summary-row summary-header'>
+    <div class='label'>Submitter</div>
+    <div class='label'>Date of Submission/Revision</div>
+    <div class='class label'>Mentor</div>
+    <div class='label'># Of Revisions</div>
+    <div class='label'># Of Mentor Replies</div>
+    <div class='label'>Date of Recent Reply</div>
+  </div>
+
+  {{#each this.sortedSubmissions as |submission|}}
+    <div class='summary-row'>
+      <div class='value submitter'>
+        {{! Submitter }}
+        {{#if submission.newestSubmission.createdBy.username}}
+          {{submission.newestSubmission.createdBy.username}}
+        {{else}}
+          {{submission.newestSubmission.creator.username}}
+        {{/if}}
+      </div>
+      {{! Date of revision }}
+      <div class='value date'>
+        <LinkTo
+          @route='workspace.submissions.submission'
+          @model={{submission.id}}
+        >{{dates
+            submission.newestSubmission.createDate
+            'MM-D-YYYY @h:mm A'
+          }}</LinkTo>
+
+      </div>
+      {{! Mentor }}
+      <div class='class value'>
+        {{submission.newestResponse.createdBy.username}}
+      </div>
+      {{! # of revisions }}
+      <div class='value revisions'>
+        {{submission.numOfRevisions}}
+      </div>
+      {{! # of mentor replies }}
+      <div class='value mentor-replies'>
+        {{submission.responsesCount}}
+      </div>
+      {{! Date of recent reply }}
+
+      <div class='value newest-reply-date'>
+        {{#if submission.newestResponse.createdBy.username}}
+          <LinkTo
+            @route='responses.submission'
+            @model={{submission.newestSubmission.id}}
+            class='response-link'
+          >
+            {{dates
+              submission.newestResponse.createDate
+              'MM-DD-YYYY @h:mm A'
+            }}</LinkTo>
+        {{else}}
+          <LinkTo
+            @route='responses.submission'
+            @model={{submission.newestSubmission.id}}
+            class='response-link'
+          >
+            Respond
+          </LinkTo>
+        {{/if}}
+      </div>
+    </div>
+  {{/each}}
+</div>

@@ -14,7 +14,7 @@
           {{#if showSubmitterTab}}
             <span
               {{action 'showSubmitterResponses'}}
-              class='submitter {{if isShowSubmitter 'active-filter'}}'
+              class='submitter {{if isShowSubmitter "active-filter"}}'
             >
               Solver
               {{submitterCounter}}
@@ -23,7 +23,7 @@
           {{#if showMentoringTab}}
             <span
               {{action 'showMentoringResponses'}}
-              class='mentoring {{if isShowMentoring 'active-filter'}}'
+              class='mentoring {{if isShowMentoring "active-filter"}}'
             >
               Mentoring
               {{mentoringCounter}}
@@ -32,7 +32,7 @@
           {{#if showApprovingTab}}
             <span
               {{action 'showApprovingResponses'}}
-              class='approving {{if isShowApproving 'active-filter'}}'
+              class='approving {{if isShowApproving "active-filter"}}'
             >
               Approving
               {{approvingCounter}}
@@ -41,7 +41,7 @@
           {{#if showAllFilter}}
             <span
               {{action 'showAllResponses'}}
-              class='all {{if isShowAll 'active-filter'}}'
+              class='all {{if isShowAll "active-filter"}}'
             >
               All
             </span>
