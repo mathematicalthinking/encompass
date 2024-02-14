@@ -6,30 +6,17 @@
         {{this.currentWorkspace.owner.displayName}}</h1>
 
       <div class='ws-links'>
-
-        <LinkTo
-          @route='workspace.info'
-          @model={{this.currentWorkspace.id}}
-          class='workspace-link'
-        >
-          <button>Workspace Stats &amp; Settings</button>
+        <LinkTo @route='workspace.info' @model={{this.currentWorkspace.id}}>
+          <a>Workspace Stats &amp; Settings</a>
         </LinkTo>
 
-        <LinkTo
-          @route='workspace.summary'
-          @model={{this.model.workspace.id}}
-          class='response-link'
-        >
-          <button>View All Responses</button>
+        <LinkTo @route='workspace.summary' @model={{this.model.workspace.id}}>
+          <a>View All Responses</a>
         </LinkTo>
 
         {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
-          <LinkTo
-            @route='workspace.work'
-            @model={{ws.id}}
-            class='parent-link info'
-          >
-            <button> {{ws.name}}</button>
+          <LinkTo @route='workspace.work' @model={{ws.id}}>
+            <a>{{ws.name}}</a>
           </LinkTo>
         {{/each}}
       </div>
@@ -44,7 +31,7 @@
           <option value='group'>Group work only</option>
         </select>
       {{/if}}
-      <a id='takeTour' class='action_button' {{action 'startTour'}}>Take Tour</a>
+      <a id='takeTour' {{action 'startTour'}}>Take Tour</a>
       {{!-- <a id='doneTour' class='hidden' {{action 'doneTour'}}>Done Tour</a> --}}
     </aside>
   </header>
