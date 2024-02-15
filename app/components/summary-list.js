@@ -36,16 +36,13 @@ export default class SummaryList extends Component {
         studentData.newestSubmission = submission;
       }
       const responses = submission.get('responses');
+      console.log(responses.length);
       if (responses && responses.length > 0) {
-        studentData.responsesCount += responses.filter(
-          (response) => response.text
-        ).length;
-
         const mostRecentResponse = responses.sortBy('createDate').reverse()[0];
         studentData.newestResponse = mostRecentResponse;
       }
 
-      studentData.responsesCount += submission.responses.length;
+      studentData.responsesCount += responses.length;
       studentData.numOfRevisions++;
       studentData.id = submission.id;
       studentDataMap.set(username, studentData);
