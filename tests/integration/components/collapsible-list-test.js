@@ -3,10 +3,10 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
-module('Integration | Component | collapsible-list', function(hooks) {
+module('Integration | Component | collapsible-list', function (hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders', async function(assert) {
+  test('it renders', async function (assert) {
     // Set any properties with this.set('myProperty', 'value');
     // Handle any actions with this.set('myAction', function(val) { ... });
 
@@ -14,13 +14,15 @@ module('Integration | Component | collapsible-list', function(hooks) {
 
     assert.equal(this.element.textContent.trim(), '');
 
-    // Template block usage:
     await render(hbs`
-      <CollapsibleList>
-        template block text
-      </CollapsibleList>
-    `);
+    <CollapsibleList @noInfo="No users available">
+    </CollapsibleList>
+  `);
 
-    assert.equal(this.element.textContent.trim(), 'template block text');
+    assert.equal(
+      this.element.textContent.trim(),
+      'No users available',
+      'Renders noInfo text when no users are provided'
+    );
   });
 });
