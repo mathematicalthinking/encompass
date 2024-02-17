@@ -20,7 +20,7 @@
         <div class='response-text-container'>
           {{#if this.isEditing}}
             <QuillContainer
-              @onEditorChange={{@updateQuillText}}
+              @onEditorChange={{this.onTextChanged}}
               @attrSectionId={{@quillEditorId}}
               @startingText={{@mentorReply.text}}
             />
@@ -71,7 +71,9 @@
           {{/each}}
         </div>
       {{/if}}
-
+      {{#if this.isEditing}}
+        <QuillErrorBox @quillEditorId={{@quillEditorId}} />
+      {{/if}}
     </div>
   </div>
 

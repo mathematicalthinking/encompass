@@ -1,0 +1,9 @@
+{{#if this.hasErrors}}
+  {{#each this.errors as |error|}}
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      {{!-- @resetError={{}} --}}
+    />
+  {{/each}}
+{{/if}}

@@ -1,5 +1,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import { inject as service } from '@ember/service';
 
 const BUTTON_CONFIG = {
   approved: [],
@@ -36,6 +38,17 @@ const STATUS_TEXT = {
 };
 
 export default class ResponseMentorSingleReply extends Component {
+  @service instanceTracker;
+  @service('loading-display') loading;
+  @service('sweet-alert') alert;
+  @service currentUser;
+  @service quillManager;
+  @service store;
+
+  @tracked text = this.args.mentorReply.text;
+  @tracked isEmpty = false;
+  @tracked isOverflow = false;
+
   get status() {
     if (this.args.mentorReply.isTrashed) return 'trashed';
     if (this.isEditing) {
@@ -49,7 +62,10 @@ export default class ResponseMentorSingleReply extends Component {
   }
 
   get isEditing() {
-    return this.args.replyBeingEdited === this.args.mentorReply;
+    return (
+      this.instanceTracker.getCurrentInstance(this.args.quillEditorId) ===
+      this.args.mentorReply
+    );
   }
 
   get otherBeingEdited() {
@@ -103,6 +119,24 @@ export default class ResponseMentorSingleReply extends Component {
     );
   }
 
+  saveDraft(isDraft) {
+    // handle quill errors; exit if errors
+    // get the text and notes
+    // adjust the status
+    // generate the promises (saving to DB)
+    // execute the promises -- loading, errors, and other actions
+  }
+
+  @action
+  onTextChanged(html, isEmpty, isOverflow) {
+    this.quillManager.onEditorChange(
+      this.args.quillEditorId,
+      html,
+      isEmpty,
+      isOverflow
+    );
+  }
+
   @action
   handleAction(actionName) {
     switch (actionName) {
@@ -111,13 +145,25 @@ export default class ResponseMentorSingleReply extends Component {
         break;
       case 'handleResumeDraft':
       case 'handleRevise':
-        this.args.setReplyBeingEdited(this.args.mentorReply);
+        this.instanceTracker.setCurrentInstance(
+          this.args.mentorReply,
+          this.quillEditorId
+        );
         break;
       case 'handleCancel':
-        this.args.setReplyBeingEdited(null);
+        this.instanceTracker.clearCurrentInstance(this.quillEditorId);
         break;
       case 'handleSaveAsDraft':
+        this.args.updateQuillText(
+          this.quillManager.getHtml(this.args.quillEditorId),
+          this.quillManager.getIsEmpty(this.args.quillEditorId),
+          this.quillManager.getIsOverflow(this.args.quillEditorId)
+        );
         this.args.saveDraft(true);
+        break;
+      case 'handleSend':
+        this.args.updateQuillText(this.text, this.isEmpty, this.isOverflow);
+        //something here
         break;
     }
   }

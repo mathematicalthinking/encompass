@@ -2,14 +2,14 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   elementId: 'response-mentor-reply',
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
   loading: service('loading-display'),
   currentUser: service('current-user'),
+  errorHandling: service('error-handling'),
   store: service(),
   isRevising: false,
   isFinishingDraft: false,
@@ -244,7 +244,7 @@ export default Component.extend(ErrorHandlingMixin, {
   ),
 
   clearErrorProps() {
-    this.removeMessages(this.errorPropsToRemove);
+    this.errorHanding.removeMessages(this.errorPropsToRemove);
   },
 
   isOldFormatDisplayResponse: computed('displayResponse.text', function () {
@@ -391,7 +391,11 @@ export default Component.extend(ErrorHandlingMixin, {
             'doShowLoadingMessage'
           );
 
-          this.handleErrors(err, 'saveRecordErrors', this.displayResponse);
+          this.errorHandling.handleErrors(
+            err,
+            'saveRecordErrors',
+            this.displayResponse
+          );
         });
     },
 
@@ -457,7 +461,7 @@ export default Component.extend(ErrorHandlingMixin, {
             'doShowLoadingMessage'
           );
 
-          this.handleErrors(err, 'saveRecordErrors');
+          this.errorHandling.handleErrors(err, 'saveRecordErrors');
         });
     },
 
@@ -578,7 +582,7 @@ export default Component.extend(ErrorHandlingMixin, {
             'doShowLoadingMessage'
           );
 
-          this.handleErrors(err, 'saveRecordErrors', null, [
+          this.errorHandling.handleErrors(err, 'saveRecordErrors', null, [
             revision,
             this.displayResponse,
           ]);
@@ -627,7 +631,7 @@ export default Component.extend(ErrorHandlingMixin, {
           }
         })
         .catch((err) => {
-          this.handleErrors(err, 'recordSaveErrors', response);
+          this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
         });
     },
     toNewResponse: function () {
