@@ -24,6 +24,6 @@ export default class InstanceTrackerService extends Service {
 
   clearCurrentInstance(id = this.defaultID) {
     const { [id]: remove, ...rest } = this.currentInstances;
-    this.currentInstances[id] = rest;
+    this.currentInstances = rest;
   }
 }

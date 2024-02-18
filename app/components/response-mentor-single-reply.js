@@ -43,6 +43,7 @@ export default class ResponseMentorSingleReply extends Component {
   @service('sweet-alert') alert;
   @service currentUser;
   @service quillManager;
+  @service errorHandling;
   @service store;
 
   @tracked text = this.args.mentorReply.text;
@@ -119,12 +120,90 @@ export default class ResponseMentorSingleReply extends Component {
     );
   }
 
+  get newReplyStatus() {
+    return this.args.canDirectSend ? 'approved' : 'pendingApproval';
+  }
+
+  @action
   saveDraft(isDraft) {
-    // handle quill errors; exit if errors
+    // handle quill errors; exit if errors --- DONE
     // get the text and notes
-    // adjust the status
-    // generate the promises (saving to DB)
+
+    const reply = this.args.mentorReply;
+
+    reply.text = this.quillManager.getHtml(this.args.quillEditorId);
+
+    // adjust the prior response status and save
+    const priorMentorRevision = this.args.priorMentorRevision;
+    const priorRevisionStatus = priorMentorRevision?.status;
+
+    const promises = [];
+    if (
+      priorRevisionStatus === 'pendingApproval' ||
+      priorRevisionStatus === 'needsRevisions'
+    ) {
+      priorMentorRevision.status = 'superceded';
+      promises.push(priorMentorRevision.save());
+    }
+
+    // adjust the mentorResponse status and save
+
+    let newStatus, toastMessage;
+    if (isDraft) {
+      newStatus = 'draft';
+      toastMessage = 'Draft Saved';
+    } else {
+      newStatus = this.newReplyStatus;
+      toastMessage =
+        newStatus === 'pendingApproval'
+          ? 'Response Sent for Approval'
+          : 'Response Sent';
+    }
+
+    reply.status = newStatus;
+    promises.push(reply.save());
+
     // execute the promises -- loading, errors, and other actions
+
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+
+    Promise.all(promises)
+      .then(() => {
+        this.loading.handleLoadingMessage(
+          this,
+          'end',
+          'isReplySending',
+          'doShowLoadingMessage'
+        );
+
+        this.alert.showToast(
+          'success',
+          toastMessage,
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
+        this.loading.handleLoadingMessage(
+          this,
+          'end',
+          'isReplySending',
+          'doShowLoadingMessage'
+        );
+
+        this.errorHandling.handleErrors(
+          err,
+          'saveRecordErrors',
+          this.displayResponse
+        );
+      });
   }
 
   @action
@@ -147,19 +226,15 @@ export default class ResponseMentorSingleReply extends Component {
       case 'handleRevise':
         this.instanceTracker.setCurrentInstance(
           this.args.mentorReply,
-          this.quillEditorId
+          this.args.quillEditorId
         );
         break;
       case 'handleCancel':
-        this.instanceTracker.clearCurrentInstance(this.quillEditorId);
+        this.instanceTracker.clearCurrentInstance(this.args.quillEditorId);
         break;
       case 'handleSaveAsDraft':
-        this.args.updateQuillText(
-          this.quillManager.getHtml(this.args.quillEditorId),
-          this.quillManager.getIsEmpty(this.args.quillEditorId),
-          this.quillManager.getIsOverflow(this.args.quillEditorId)
-        );
-        this.args.saveDraft(true);
+        this.saveDraft(true);
+        this.instanceTracker.clearCurrentInstance(this.args.quillEditorId);
         break;
       case 'handleSend':
         this.args.updateQuillText(this.text, this.isEmpty, this.isOverflow);

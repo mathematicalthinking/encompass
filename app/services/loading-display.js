@@ -1,50 +1,70 @@
 import { later } from '@ember/runloop';
 import Service from '@ember/service';
 
-
-
-
-
-
 export default Service.extend({
+  handleLoadingMessage(
+    context,
+    eventType,
+    triggerProperty,
+    propToSet,
+    timeout = 500
+  ) {
+    // Helper function to abstract get operation so context can be classic or Glimmer component
+    function getContextProperty(context, propName) {
+      if (typeof context.get === 'function') {
+        return context.get(propName);
+      } else {
+        return context[propName];
+      }
+    }
 
-  handleLoadingMessage(context, eventType, triggerProperty, propToSet, timeout = 500) {
-    if (context.get('isDestroyed') || context.get('isDestroying')) {
+    // Helper function to abstract set operation
+    function setContextProperty(context, propName, value) {
+      if (typeof context.set === 'function') {
+        context.set(propName, value);
+      } else {
+        context[propName] = value;
+      }
+    }
+
+    if (
+      getContextProperty(context, 'isDestroyed') ||
+      getContextProperty(context, 'isDestroying')
+    ) {
       return;
     }
 
-    let isDisplayingLoadingMessage = context.get(propToSet);
+    let isDisplayingLoadingMessage = getContextProperty(context, propToSet);
 
     if (eventType === 'start') {
-      context.set(triggerProperty, true);
+      setContextProperty(context, triggerProperty, true);
     } else if (eventType === 'end') {
-      context.set(triggerProperty, false);
+      setContextProperty(context, triggerProperty, false);
       if (isDisplayingLoadingMessage) {
-        context.set(propToSet, false);
+        setContextProperty(context, propToSet, false);
       }
-      return;
-    } else {
-      // invalid eventType
       return;
     }
 
     later(function () {
-      if (context.isDestroyed || context.isDestroying) {
+      if (
+        getContextProperty(context, 'isDestroyed') ||
+        getContextProperty(context, 'isDestroying')
+      ) {
         return;
       }
-      let isInProgress = context.get(triggerProperty);
-      let isDisplayingLoadingMessage = context.get(propToSet);
+      let isInProgress = getContextProperty(context, triggerProperty);
+      let isDisplayingLoadingMessage = getContextProperty(context, propToSet);
 
       if (isInProgress) {
         if (!isDisplayingLoadingMessage) {
-          context.set(propToSet, true);
-          return;
+          setContextProperty(context, propToSet, true);
         }
       } else {
         if (isDisplayingLoadingMessage) {
-          context.set(propToSet, false);
+          setContextProperty(context, propToSet, false);
         }
       }
     }, timeout);
-  }
+  },
 });
