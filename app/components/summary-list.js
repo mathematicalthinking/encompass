@@ -36,7 +36,7 @@ export default class SummaryList extends Component {
         studentData.newestSubmission = submission;
       }
       const responses = submission.get('responses');
-      console.log(responses.length);
+
       if (responses && responses.length > 0) {
         const mostRecentResponse = responses.sortBy('createDate').reverse()[0];
         studentData.newestResponse = mostRecentResponse;
