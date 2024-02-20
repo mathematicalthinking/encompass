@@ -42,7 +42,9 @@ export default class SummaryList extends Component {
         studentData.newestResponse = mostRecentResponse;
       }
 
-      studentData.responsesCount += responses.length;
+      studentData.responsesCount += responses.filter(
+        (response) => !response.get('isTrashed')
+      ).length;
       studentData.numOfRevisions++;
       studentData.id = submission.id;
       studentDataMap.set(username, studentData);
