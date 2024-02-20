@@ -296,12 +296,12 @@ export default class ResponseMentorSingleReply extends Component {
         this.instanceTracker.clearCurrentInstance(this.args.quillEditorId);
         break;
       case 'handleSaveAsDraft':
-        if (this.quillManager.hasErrors) return;
+        if (this.quillManager.hasErrors(this.args.quillEditorId)) return;
         this.saveDraft(true);
         this.instanceTracker.clearCurrentInstance(this.args.quillEditorId);
         break;
       case 'handleSend':
-        if (this.quillManager.hasErrors) return;
+        if (this.quillManager.hasErrors(this.args.quillEditorId)) return;
         this.args.updateQuillText(this.text, this.isEmpty, this.isOverflow);
         //something here
         break;
