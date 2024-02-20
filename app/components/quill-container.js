@@ -88,6 +88,7 @@ export default Component.extend({
       quill.off('text-change');
     }
     this._super(...arguments);
+    this.quillManager.clearEditor(this.attrSectionId);
   },
 
   handleStartingText() {
