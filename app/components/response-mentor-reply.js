@@ -3,8 +3,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default Component.extend({
-  elementId: 'response-mentor-reply',
+export default Component.extend(ErrorHandlingMixin, {
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
   loading: service('loading-display'),

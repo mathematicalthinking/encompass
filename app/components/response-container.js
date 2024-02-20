@@ -11,7 +11,6 @@ import CurrentUserMixin from '../mixins/current_user_mixin';
 export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   tagName: '',
   currentUser: service('current-user'),
-  // elementId: 'response-container',
   wsPermissions: service('workspace-permissions'),
   store: service(),
   submission: null,

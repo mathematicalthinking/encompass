@@ -35,38 +35,19 @@
   {{/if}}
 
   <div class='response-flex-container'>
-    {{!-- <div class="response-flex-item submission{{if showApproverReply ' third'}}"> --}}
-    <div class='response-flex-item submission'>
-      <p class='studentSubmission'>Student Submissions</p>
-      {{#each this.sortedSubmissions as |submission|}}
-
-        <div class='submissionChild'>
-          <ResponseSubmissionView
-            @response={{this.response}}
-            @submission={{submission}}
-            @workspace={{this.workspace}}
-            @wsResponses={{this.cleanWorkspaceResponses}}
-            @studentSubmissions={{this.submissions}}
-            @onSubChange={{action 'onSubmissionChange'}}
-            @sendRevisionNotices={{action 'sendSubmissionRevisionNotices'}}
-            @isParentWorkspace={{this.isParentWorkspace}}
-          />
-        </div>
-      {{/each}}
-    </div>
-
-    {{! TODO: update permissions to see approver panel }}
-    {{!-- <div class="response-flex-item mentor {{if showApproverReply 'third'}}"> --}}
-
-    <div class='response-flex-item mentor'>
-      <div class='response-mentor-reply'>
-        <p class='studentSubmission'>Mentor Responses</p>
-        <ResponseMentorReply
-          @isCreating={{this.isCreatingNewMentorReply}}
+    {{#each this.sortedSubmissions as |submission|}}
+      <div class='submissionChild'>
+        <ResponseMentorThread
           @response={{this.response}}
-          @submission={{this.submission}}
+          @submission={{submission}}
           @workspace={{this.workspace}}
-          @mentorReplies={{this.mentorReplies}}
+          @wsResponses={{this.cleanWorkspaceResponses}}
+          @studentSubmissions={{this.submissions}}
+          @onSubChange={{action 'onSubmissionChange'}}
+          @sendRevisionNotices={{action 'sendSubmissionRevisionNotices'}}
+          @isParentWorkspace={{this.isParentWorkspace}}
+          @isCreating={{this.isCreatingNewMentorReply}}
+          @mentorReplies={{submission.responses}}
           @responseToApprove={{this.responseToApprove}}
           @displayResponse={{this.mentorReplyDisplayResponse}}
           @canDirectSend={{this.canDirectSend}}
@@ -84,15 +65,9 @@
           @iconFillOptions={{this.iconFillOptions}}
           @toSubmission={{action 'onSubmissionChange'}}
           @handleResponseThread={{action 'handleResponseThread'}}
-          @isParentWorkspace={{this.isParentWorkspace}}
         />
       </div>
-    </div>
+    {{/each}}
 
-    {{!-- {{#if showApproverReply}}
-    <div class="response-flex-item approver third">
-      <ResponseApproverReply @store={{this.store}} @approverReplies={{approverReplies}} @responseToApprove={{responseToApprove}} @menteeResponse={{menteeResponse}} @workspace={{workspace}} @submission={{submission}} @canApprove={{canApprove}} @isOwnMentorReply={{isOwnMentorReply}} @primaryReply={{primaryApproverReply}} @isOwnApproverReply={{isOwnApproverReply}} @reviewedResponse={{reviewedResponse}} @toResponses={{action "toResponses"}} @iconFillOptions={{iconFillOptions}} @subResponses={{subResponses}} @handleResponseThread={{action "handleResponseThread"}} />
-    </div>
-  {{/if}} --}}
   </div>
 </div>
