@@ -5,7 +5,19 @@
 #workspace-container {
   background-color: $filter-list-background-color;
   height: calc(100vh - 75px);
-
+  a {
+    color: $accent-color;
+    font-size: 0.9em;
+    &:hover {
+      text-decoration: underline;
+      color: darken($color: $accent-color, $amount: 10%);
+      font-weight: 400;
+    }
+  }
+  #takeTour {
+    padding: 0.5em;
+    cursor: pointer;
+  }
   .toggle-display {
     position: absolute;
     left: 0px;
@@ -15,20 +27,7 @@
     .hidden {
       display: none;
     }
-    button {
-      height: 50px;
-      width: 25px;
-      background-color: $filter-list-background-color;
-      position: fixed;
-      border: none;
-      border-radius: 0 5px 5px 0;
-      color: lighten($primary-font-color, 20%);
-      &:focus {
-        outline: none;
-      }
-      padding-left: 3px;
-      cursor: pointer;
-    }
+
     &.comments {
       left: calc(100% - 23px);
     }
@@ -41,7 +40,7 @@
 
   .ws-header {
     background-color: $filter-list-background-color;
-    padding: 15px 20px;
+    padding: 1em;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -59,24 +58,8 @@
 
       .ws-links {
         display: flex;
-        flex-direction: column;
         justify-content: space-around;
-        button {
-          cursor: pointer;
-          font-size: 0.8em;
-          margin-bottom: 1em;
-          padding: 0.5em;
-          text-align: center;
-          background-color: rgb(231, 228, 228);
-          border-radius: 3px;
-          text-decoration: none;
-          color: $accent-color;
-          border: none;
-          transition: background-color 0.3s ease;
-          &:hover {
-            background-color: darken(rgb(241, 240, 240), 10%);
-          }
-        }
+        gap: 1em;
       }
     }
   }
@@ -736,13 +719,13 @@
   }
 }
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 682px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 800px) {
   #workspace-container {
     .ws-header {
-      aside {
-        margin-left: 0;
-        display: inline-block;
-      }
+      display: flex;
+
+      flex-direction: column;
+      text-align: center;
     }
   }
 }

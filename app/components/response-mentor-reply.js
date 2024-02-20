@@ -131,11 +131,10 @@ export default Component.extend(ErrorHandlingMixin, {
     if (!this.mentorReplies) {
       return [];
     }
-
-    // Grabs the current student from the current submission.
     let currentStudent = this.submission.student;
+
     // Filters the mentor repleis to that student only.
-    let filteredReplies = this.mentorReplies
+    let filteredReplies = this.submissionResponses
       .filter((reply) => currentStudent === reply.get('submission.student'))
       .sortBy('createDate')
       .reverse();
