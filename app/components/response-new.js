@@ -221,7 +221,7 @@ export default Component.extend(ErrorHandlingMixin, {
     let doWrapStringInBlockQuote = true;
 
     if (opts && opts.hasOwnProperty('type')) {
-      doWrapStringInBlockQuote = false;
+      doWrapStringIn = false;
       if (opts.usePrefix) {
         switch (opts.type) {
           case 'notice':

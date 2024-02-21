@@ -4,6 +4,7 @@
     {{! have ul, li each one, should have the description & show hide }}
     <div class='submission-container'>
       <div class='submission-student problem-info'>
+
         <span>{{this.displaySubmission.student}}</span>
         <span><p class='submission-date'>{{format-date
               this.displaySubmission.createDate
@@ -33,7 +34,6 @@
       </div>
       {{#if this.isRevising}}
         <AnswerNew
-          @store={{this.store}}
           @assignment={{displaySubmission.answer.assignment.content}}
           @isRevision={{true}}
           @priorAnswer={{displaySubmission.answer.content}}

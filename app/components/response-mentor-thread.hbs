@@ -1,0 +1,48 @@
+<div class='response-thread-container'>
+  <div class='response-student-container'>
+    <h2 class='studentSubmission'>Latest Submission</h2>
+    {{! modern ember syntax requires the @ symbol, @variable.. not used }}
+    <div class='submissionChild'>
+      <ResponseSubmissionView
+        @response={{@response}}
+        @submission={{@submission}}
+        @workspace={{@workspace}}
+        @wsResponses={{@cleanWorkspaceResponses}}
+        @studentSubmissions={{@submissions}}
+        @onSubChange={{@onSubChange}}
+        @sendRevisionNotices={{@sendRevisionNotices}}
+        @isParentWorkspace={{@isParentWorkspace}}
+      />
+    </div>
+  </div>
+  <div class='response-flex-item mentor'>
+    <div class='response-mentor-reply'>
+      <p class='studentSubmission'>Mentor Responses</p>
+      <ResponseMentorReply
+        @isCreating={{@isCreating}}
+        @response={{@response}}
+        @submission={{@submission}}
+        @workspace={{@workspace}}
+        @mentorReplies={{@mentorReplies}}
+        @responseToApprove={{@responseToApprove}}
+        @displayResponse={{@displayResponse}}
+        @canDirectSend={{@canDirectSend}}
+        @canApprove={{@canApprove}}
+        @isOwnMentorReply={{@isOwnMentorReply}}
+        @onSaveSuccess={{@onSaveSuccess}}
+        @onMentorReplySwitch={{@onMentorReplySwitch}}
+        @toResponses={{@toResponses}}
+        @submissionResponses={{@submissionResponses}}
+        @canSend={{@canSend}}
+        @isMentorRecipient={{@isMentorRecipient}}
+        @isOwnSubmission={{@isOwnSubmission}}
+        @toNewResponse={{@toNewResponse}}
+        @priorMentorRevision={{@priorMentorRevision}}
+        @iconFillOptions={{@iconFillOptions}}
+        @toSubmission={{@toSubmission}}
+        @handleResponseThread={{@handleResponseThread}}
+        @isParentWorkspace={{@isParentWorkspace}}
+      />
+    </div>
+  </div>
+</div>
