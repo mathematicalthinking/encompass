@@ -1,0 +1,95 @@
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
+/**
+ * #
+ * @description Response container is the sass file containing all styling for response-container.hbs, 
+ * repsonse-mentor-thread.hbs, and response-submission-view.hbs.
+ 
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */
+
+.response-container {
+  margin-top: 1.5em;
+  padding: 0.8em;
+  a:hover {
+    text-decoration: underline;
+  }
+  .response-header-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    font-size: 0.9em;
+    background-color: $background-accent-color;
+    max-width: 40%;
+    padding: 1em;
+    border: 0.5px #ccc solid;
+    border-radius: 0.8em;
+  }
+}
+// for response-mentor-thread and response-submission-view
+.response-thread-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  .response-submission-container {
+    border: 1px solid #c0c0c0;
+    border-left: none;
+    border-right: none;
+    background-color: $background-color;
+    margin-top: 1em;
+    width: 98%;
+    padding: 1em;
+    border-radius: 5px;
+    transition: box-shadow 0.3s ease; /* Add a subtle box-shadow transition */
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow on hover */
+    }
+
+    .subimission-header-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1em;
+
+      p {
+        font-weight: 400;
+      }
+    }
+
+    .problem-link-container {
+      margin-bottom: 0.2em;
+    }
+  }
+  // left off here
+  // need to fix padding for mentor threads
+  .response-mentor-container {
+    .response-users {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+
+    .testUsers {
+      border: 1px solid #ccc; /* Adjust border color */
+      border-radius: 8px;
+      padding: 10px; /* Adjust padding */
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      background-color: #f8f8f8; /* Set background color */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
+    }
+
+    /* Optional: Add a hover effect for interactivity */
+    .testUsers:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .thread-child {
+    padding: 1em;
+  }
+}

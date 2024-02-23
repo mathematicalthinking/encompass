@@ -1,11 +1,18 @@
 // FONT VARIABLES
+// Import the Quicksand font
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
+// Set the font family
+* {
+  font-family: 'Quicksand', sans-serif;
+}
 $primary-font: 'Quicksand', sans-serif;
-$secondary-font: 'Helvetica Neue', Helvetica, sans-serif;
+$secondary-font: 'Quicksand', sans-serif;
 // COLOR VARIABLES
 $primary-font-color: #5e5e5e;
 $dark-font-color: black;
 $background-color: #dfdfdf;
+$background-accent-color: #e0f4fd;
 $filter-list-background-color: #f7f7f7;
 $filter-list-border-color: #979797;
 $background-body: #fefefe;

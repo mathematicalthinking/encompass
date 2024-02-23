@@ -15,9 +15,8 @@
 {{else}}
   {{#if this.sortedMentorReplies}}
     {{#each this.sortedMentorReplies as |listOfMentorReplies|}}
-
-      <div class='submissionChild'>
-        <div class='response-info'>
+      <div class='response-mentor-container'>
+        <div class='response-mentor-info'>
           {{#if this.displayResponse}}
             <p class='response-date'>
               {{#if this.isParentWorkspace}}
@@ -36,7 +35,7 @@
                     {{/if}}
                   </p>
                   <p>
-                    <span class='response-label'>From:</span>
+                    <span class='response-label'>Mentor:</span>
                     <span class='response-value'>
                       {{#if this.isParentWorkspace}}
                         {{this.listOfMentorReplies.originalResponse.createdBy.username}}
@@ -57,84 +56,68 @@
                 {{! if not in parent workspace }}
               {{else}}
                 <div class='response-users'>
-                  <p>
-                    <span class='response-label'>To:</span>
-                    <span
-                      class='response-value recipient'
-                    >{{listOfMentorReplies.recipient.username}}
-                    </span>
-                    {{#if this.showRecipientReadUnread}}
-                      <span class='response-read-unread'><i
+                  <div class='testUsers'>
+                    <p>Mentor: {{listOfMentorReplies.createdBy.username}}</p>
+                    <p>
+                      To:
+                      {{listOfMentorReplies.recipient.username}}
+                      {{#if this.showRecipientReadUnread}}
+                        <i
                           title={{this.recipientReadUnreadIcon.title}}
                           class={{this.recipientReadUnreadIcon.className}}
-                        ></i></span>
-                    {{/if}}
-                  </p>
-                  <p>
-                    <span class='response-label'>From:</span>
-                    <span class='response-value'>
-                      {{#if this.isParentWorkspace}}
-                        {{listOfMentorReplies.createdBy.username}}
-
-                      {{else}}
-                        {{listOfMentorReplies.createdBy.username}}
-
+                        ></i>
                       {{/if}}
-                    </span>
-                  </p>
-                  <span class='response-time'>{{format-date
-                      listOfMentorReplies.createDate
-                      'MMMM Do, YYYY'
-                    }},
-                    {{format-date
-                      listOfMentorReplies.createDate
-                      'h:mm a'
-                    }}</span>
-                </div>
-
-              {{/if}}
-            </p>
-            <div class='response-content'>
-              <p class='response-header'>
-                Message
-                {{!-- {{#if this.showEdit}}
+                    </p>
+                    <span class='response-time'>{{format-date
+                        listOfMentorReplies.createDate
+                        'MMMM Do, YYYY'
+                      }},
+                      {{format-date
+                        listOfMentorReplies.createDate
+                        'h:mm a'
+                      }}</span>
+                    <div class='response-text-container'>
+                      {{#if this.isComposing}}
+                        <QuillContainer
+                          @onEditorChange={{action 'updateQuillText'}}
+                          @attrSectionId={{quillEditorId}}
+                          @startingText={{editRevisionText}}
+                        />
+                      {{else}}
+                        <div
+                          class='response-text
+                            {{if this.isOldFormatDisplayResponse "old-format"}}'
+                        >
+                          {{{listOfMentorReplies.text}}}
+                        </div>
+                      {{/if}}
+                    </div>
+                  </div>
+                  <div class='response-content'>
+                    {{!-- {{#if this.showEdit}}
               <i {{action "handleComposeAction" "isEditing" true false}} class="far fa-edit"></i>
             {{/if}} --}}
-              </p>
-              <div class='response-text-container'>
-                {{#if this.isComposing}}
-                  <QuillContainer
-                    @onEditorChange={{action 'updateQuillText'}}
-                    @attrSectionId={{quillEditorId}}
-                    @startingText={{editRevisionText}}
-                  />
-                {{else}}
-                  <div
-                    class='response-text
-                      {{if this.isOldFormatDisplayResponse "old-format"}}'
-                  >
-                    {{{listOfMentorReplies.text}}}
+                    {{#if this.showNoteHeader}}
+                      <div class='response-note-container'>
+                        <p class='response-header'>Note for Approver</p>
+                        {{#if this.showApproverNoteInput}}
+                          <Textarea
+                            class='edit-note'
+                            @name='mentor-approver-note'
+                            @value={{editRevisionNote}}
+                          />
+                        {{/if}}
+                        {{#if this.showDisplayNote}}
+                          <div class='response-note'>
+                            {{listOfMentorReplies.note}}
+                          </div>
+                        {{/if}}
+                      </div>
+                    {{/if}}
                   </div>
-                {{/if}}
-              </div>
-              {{#if this.showNoteHeader}}
-                <div class='response-note-container'>
-                  <p class='response-header'>Note for Approver</p>
-                  {{#if this.showApproverNoteInput}}
-                    <Textarea
-                      class='edit-note'
-                      @name='mentor-approver-note'
-                      @value={{editRevisionNote}}
-                    />
-                  {{/if}}
-                  {{#if this.showDisplayNote}}
-                    <div class='response-note'>
-                      {{listOfMentorReplies.note}}
-                    </div>
-                  {{/if}}
                 </div>
               {{/if}}
-            </div>
+            </p>
           {{else}}
             <p>No response to display</p>
           {{/if}}

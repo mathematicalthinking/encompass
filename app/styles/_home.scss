@@ -1,13 +1,10 @@
 @import 'variables';
 @import 'mixins';
 @import 'responsive-font-size';
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 h1 {
   color: $accent-color;
 }
-* {
-  font-family: 'Quicksand', sans-serif;
-}
+
 .index {
   display: flex;
   flex-direction: column;

@@ -1,3 +1,17 @@
+{{! /**
+ * #
+ * @description 
+ Parent component under /responses/submission/:submissionId. 
+ Subchild components are response-mentor-thread.hbs
+ Structure is as follows:
+  - response-container.hbs
+    - response-mentor-thread.hbs
+      - response-submission-view.hbs
+      - response-mentor-reply.hbs
+  Purpose of this component is render a students submission and every mentors response to that submission.
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */ }}
 <div class='response-container'>
   <div class='response-header-container'>
     {{#if this.isCreatingNewMentorReply}}
@@ -11,27 +25,16 @@
         {{this.workspace.name}}
       </p>
     {{else}}
+      <p> {{this.workspace.name}}</p>
       <p class='feedback-mode'>
-        {{#if this.isOwnSubmission}}
-          Viewing feedback for
-        {{else if this.isOwnMentorReply}}
-          Viewing your own mentoring feedback
-        {{else}}
-          Viewing feedback
-          {{#if this.mentorReplyDisplayResponse}}
-            authored by
-            {{this.mentorReplyDisplayResponse.createdBy.username}}
-          {{/if}}
-        {{/if}}
-        for
-        {{this.studentDescriptor}}
-        <a
-          {{action 'openSubmission' this.workspace.id this.submission.id}}
-          class='link'
-        >submission</a>
-        in
-        {{this.workspace.name}}
+        Submission by:
+        {{this.studentName}}
       </p>
+      <a
+        {{action 'openSubmission' this.workspace.id this.submission.id}}
+        class='link'
+      >Go back to workspace</a>
+
     {{/if}}
   </div>
   {{#each this.sortedSubmissions as |submission|}}
