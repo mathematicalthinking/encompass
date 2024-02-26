@@ -19,13 +19,11 @@
   .response-header-container {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: right;
     gap: 0.3em;
     font-size: 0.9em;
-    background-color: $background-accent-color;
-    max-width: 40%;
-    padding: 1em;
-    border: 0.5px #ccc solid;
-    border-radius: 0.8em;
   }
 }
 // for response-mentor-thread and response-submission-view
@@ -72,15 +70,23 @@
       gap: 1em;
     }
 
-    .testUsers {
-      border: 1px solid #ccc; /* Adjust border color */
+    .mentor-thread-container {
+      border: 1px solid #ccc;
       border-radius: 8px;
       padding: 10px; /* Adjust padding */
       display: flex;
       flex-direction: column;
       gap: 0.5em;
       background-color: #f8f8f8; /* Set background color */
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      .mentor-header-thread {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+    .response-text {
+      padding: 0.8em;
+      font-weight: 500;
     }
 
     /* Optional: Add a hover effect for interactivity */

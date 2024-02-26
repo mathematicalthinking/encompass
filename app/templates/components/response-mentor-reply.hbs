@@ -47,7 +47,7 @@
                   <span class='response-time'>{{format-date
                       listOfMentorReplies.originalResponse.createDate
                       'MMMM Do YYYY'
-                    }},
+                    }}
                     {{format-date
                       listOfMentorReplies.originalResponse.createDate
                       'h:mm a'
@@ -56,8 +56,18 @@
                 {{! if not in parent workspace }}
               {{else}}
                 <div class='response-users'>
-                  <div class='testUsers'>
-                    <p>Mentor: {{listOfMentorReplies.createdBy.username}}</p>
+                  <div class='mentor-thread-container'>
+                    <div class='mentor-header-thread'>
+                      <p>Mentor: {{listOfMentorReplies.createdBy.username}}</p>
+                      <p class='response-time'>{{format-date
+                          listOfMentorReplies.createDate
+                          'MMMM Do, YYYY'
+                        }}
+                        {{format-date
+                          listOfMentorReplies.createDate
+                          'h:mm a'
+                        }}</p></div>
+
                     <p>
                       To:
                       {{listOfMentorReplies.recipient.username}}
@@ -68,14 +78,7 @@
                         ></i>
                       {{/if}}
                     </p>
-                    <span class='response-time'>{{format-date
-                        listOfMentorReplies.createDate
-                        'MMMM Do, YYYY'
-                      }},
-                      {{format-date
-                        listOfMentorReplies.createDate
-                        'h:mm a'
-                      }}</span>
+
                     <div class='response-text-container'>
                       {{#if this.isComposing}}
                         <QuillContainer

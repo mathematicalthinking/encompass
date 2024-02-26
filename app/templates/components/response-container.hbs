@@ -25,11 +25,7 @@
         {{this.workspace.name}}
       </p>
     {{else}}
-      <p> {{this.workspace.name}}</p>
-      <p class='feedback-mode'>
-        Submission by:
-        {{this.studentName}}
-      </p>
+      <p>{{this.workspace.name}}</p>
       <a
         {{action 'openSubmission' this.workspace.id this.submission.id}}
         class='link'
