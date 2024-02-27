@@ -23,30 +23,39 @@
     />
   </div>
   <div class='response-mentor-container thread-child'>
-    <ResponseMentorReply
-      @isCreating={{@isCreating}}
-      @response={{@response}}
-      @submission={{@submission}}
-      @workspace={{@workspace}}
-      @mentorReplies={{@mentorReplies}}
-      @responseToApprove={{@responseToApprove}}
-      @displayResponse={{@displayResponse}}
-      @canDirectSend={{@canDirectSend}}
-      @canApprove={{@canApprove}}
-      @isOwnMentorReply={{@isOwnMentorReply}}
-      @onSaveSuccess={{@onSaveSuccess}}
-      @onMentorReplySwitch={{@onMentorReplySwitch}}
-      @toResponses={{@toResponses}}
-      @submissionResponses={{@submissionResponses}}
-      @canSend={{@canSend}}
-      @isMentorRecipient={{@isMentorRecipient}}
-      @isOwnSubmission={{@isOwnSubmission}}
-      @toNewResponse={{@toNewResponse}}
-      @priorMentorRevision={{@priorMentorRevision}}
-      @iconFillOptions={{@iconFillOptions}}
-      @toSubmission={{@toSubmission}}
-      @handleResponseThread={{@handleResponseThread}}
-      @isParentWorkspace={{@isParentWorkspace}}
-    />
+    <div>
+      {{#if this.showButton}}
+        <button {{on 'click' this.toggleShowResponses}}>
+          {{this.showResponsesText}}
+        </button>
+      {{/if}}
+    </div>
+
+    {{#if this.showResponses}}
+      <ResponseMentorReply
+        @isCreating={{@isCreating}}
+        @response={{@response}}
+        @submission={{@submission}}
+        @workspace={{@workspace}}
+        @mentorReplies={{@mentorReplies}}
+        @responseToApprove={{@responseToApprove}}
+        @displayResponse={{@displayResponse}}
+        @canDirectSend={{@canDirectSend}}
+        @canApprove={{@canApprove}}
+        @isOwnMentorReply={{@isOwnMentorReply}}
+        @onSaveSuccess={{@onSaveSuccess}}
+        @onMentorReplySwitch={{@onMentorReplySwitch}}
+        @toResponses={{@toResponses}}
+        @submissionResponses={{@submissionResponses}}
+        @canSend={{@canSend}}
+        @isMentorRecipient={{@isMentorRecipient}}
+        @isOwnSubmission={{@isOwnSubmission}}
+        @toNewResponse={{@toNewResponse}}
+        @priorMentorRevision={{@priorMentorRevision}}
+        @iconFillOptions={{@iconFillOptions}}
+        @toSubmission={{@toSubmission}}
+        @handleResponseThread={{@handleResponseThread}}
+        @isParentWorkspace={{@isParentWorkspace}}
+      />{{/if}}
   </div>
 </div>

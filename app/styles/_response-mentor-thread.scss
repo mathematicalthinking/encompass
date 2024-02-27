@@ -60,17 +60,24 @@
     .problem-link-container {
       margin-bottom: 0.2em;
     }
+    .submission-content-container {
+      padding: 1em;
+    }
   }
-  // left off here
-  // need to fix padding for mentor threads
+  // for response-mentor-reply
   .response-mentor-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space;
     .response-users {
       display: flex;
       flex-direction: column;
       gap: 1em;
     }
 
-    .mentor-thread-container {
+    .mentor-thread-container,
+    .new-response-container {
+      margin-left: 5em;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 10px; /* Adjust padding */
@@ -90,12 +97,30 @@
     }
 
     /* Optional: Add a hover effect for interactivity */
-    .testUsers:hover {
+    .new-response-container:hover,
+    .mentor-thread-container:hover {
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
   }
-
-  .thread-child {
-    padding: 1em;
+  // When user crafts new response in a thread
+  .new-response-container {
+    display: flex;
+    flex-direction: column;
+    p {
+      font-weight: 400;
+    }
+  }
+  .new-response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+  }
+  .new-response-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  .response-existing {
   }
 }
