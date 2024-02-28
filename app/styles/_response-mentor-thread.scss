@@ -1,0 +1,177 @@
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
+/**
+ * #
+ * @description Response container is the sass file containing all styling for response-container.hbs, 
+ * repsonse-mentor-thread.hbs, and response-submission-view.hbs.
+ 
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */
+
+.response-container {
+  margin-top: 1.5em;
+  padding: 0.8em;
+  a:hover {
+    text-decoration: underline;
+  }
+  .response-header-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: right;
+    gap: 0.3em;
+    font-size: 0.9em;
+  }
+}
+// for response-mentor-thread and response-submission-view
+.response-thread-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  .response-submission-container {
+    border: 1px solid #c0c0c0;
+    border-left: none;
+    border-right: none;
+    background-color: $background-color;
+    margin-top: 1em;
+    width: 98%;
+    padding: 1em;
+    border-radius: 5px;
+    transition: box-shadow 0.3s ease; /* Add a subtle box-shadow transition */
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow on hover */
+    }
+
+    .subimission-header-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1em;
+
+      p {
+        font-weight: 500;
+      }
+    }
+
+    .problem-link-container {
+      margin-bottom: 0.2em;
+    }
+    .submission-content-container {
+      padding: 1em;
+      .submission-content-short,
+      .submission-content-long {
+        padding: 1em;
+        margin-top: 1em;
+        background-color: rgb(243, 243, 243);
+        border-radius: 0.5em;
+      }
+    }
+  }
+  // for response-mentor-reply
+  .response-mentor-container {
+    margin-top: 1em;
+    padding: 0.5em;
+    .response-users {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+
+    /* Add transition property to the container */
+    .mentor-thread-container {
+      margin-left: 5em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      background-color: #f8f8f8;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      overflow: hidden; /* Hide overflow to enable the sliding effect */
+      max-height: 500px; /* Set a maximum height for the container */
+      opacity: 1; /* Initial opacity */
+    }
+
+    /* Define animation for opening and closing */
+    @keyframes slideIn {
+      from {
+        max-height: 0;
+      }
+      to {
+        max-height: 500px;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        max-height: 500px;
+      }
+      to {
+        max-height: 0;
+      }
+    }
+
+    /* Apply animation to the container */
+    .mentor-thread-container.closed {
+      animation: slideOut 0.3s ease-in-out;
+    }
+
+    .mentor-thread-container:not(.closed) {
+      animation: slideIn 0.3s ease-in-out;
+    }
+
+    /* Apply transition to the header */
+    .mentor-header-thread {
+      display: flex;
+      justify-content: space-between;
+      transition: margin 0.3s ease;
+    }
+
+    //  STOP HERE
+    .response-text {
+      padding: 0.8em;
+      font-weight: 500;
+    }
+
+    /* Optional: Add a hover effect for interactivity */
+    .new-response-container:hover,
+    .mentor-thread-container:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+  // When user crafts new response in a thread
+  .new-response-container {
+    margin-left: 5em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 200%;
+
+    p {
+      font-weight: 400;
+    }
+  }
+  .new-response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+  }
+  .new-response-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  .response-existing {
+  }
+}

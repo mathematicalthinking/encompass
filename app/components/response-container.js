@@ -11,8 +11,8 @@ import CurrentUserMixin from '../mixins/current_user_mixin';
 export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   tagName: '',
   currentUser: service('current-user'),
-  // elementId: 'response-container',
   wsPermissions: service('workspace-permissions'),
+  store: service(),
   submission: null,
   subResponses: [],
   primaryResponseType: alias('response.responseType'),
@@ -133,16 +133,9 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       .sortBy('createDate')
       .reverse();
   }),
-  studentDescriptor: computed(
-    'isOwnSubmission',
-    'submission.student',
-    function () {
-      if (this.isOwnSubmission) {
-        return 'your';
-      }
-      return `${this.get('submission.student')}'s`;
-    }
-  ),
+  studentName: computed('isOwnSubmission', 'submission.student', function () {
+    return `${this.get('submission.student')}`;
+  }),
 
   isOwnSubmission: computed(
     'submission.creator.studentId',

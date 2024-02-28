@@ -1,11 +1,18 @@
 // FONT VARIABLES
+// Import the Quicksand font
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
+// Set the font family
+* {
+  font-family: 'Quicksand', sans-serif;
+}
 $primary-font: 'Quicksand', sans-serif;
-$secondary-font: 'Helvetica Neue', Helvetica, sans-serif;
+$secondary-font: 'Quicksand', sans-serif;
 // COLOR VARIABLES
 $primary-font-color: #5e5e5e;
 $dark-font-color: black;
 $background-color: #dfdfdf;
+$background-accent-color: #e0f4fd;
 $filter-list-background-color: #f7f7f7;
 $filter-list-border-color: #979797;
 $background-body: #fefefe;
@@ -41,8 +48,19 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 $card-hover: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 
 // LINKS
-$primary-link: #3997ee;
-
+$primary-link-color: #3997ee;
+$hover-link-color: #1c64a8;
+* {
+  a {
+    color: $primary-link-color;
+    text-decoration: none;
+    transition: color 0.2s ease; /* Add a smooth transition for better user experience */
+    cursor: pointer;
+  }
+  a:hover {
+    color: $hover-link-color;
+  }
+}
 // SIZES
 $max-width: 1180px;
 $default-padding: 10px;

@@ -9,8 +9,6 @@ import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
   currentUser: service('current-user'),
-  elementId: 'response-new',
-
   utils: service('utility-methods'),
   loading: service('loading-display'),
 
@@ -221,7 +219,7 @@ export default Component.extend(ErrorHandlingMixin, {
     let doWrapStringInBlockQuote = true;
 
     if (opts && opts.hasOwnProperty('type')) {
-      doWrapStringInBlockQuote = false;
+      doWrapStringIn = false;
       if (opts.usePrefix) {
         switch (opts.type) {
           case 'notice':

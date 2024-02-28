@@ -5,15 +5,7 @@
 #workspace-container {
   background-color: $filter-list-background-color;
   height: calc(100vh - 75px);
-  a {
-    color: $accent-color;
-    font-size: 0.9em;
-    &:hover {
-      text-decoration: underline;
-      color: darken($color: $accent-color, $amount: 10%);
-      font-weight: 400;
-    }
-  }
+
   #takeTour {
     padding: 0.5em;
     cursor: pointer;
@@ -58,12 +50,20 @@
 
       .ws-links {
         display: flex;
+        font-size: 0.8em;
         justify-content: space-around;
-        gap: 1em;
+        gap: 5em;
       }
     }
   }
-
+  // Container in submission.hbs that displays options to display work, take tour button.
+  .submission-display-options {
+    display: flex;
+    gap: 1em;
+    select {
+      max-height: 2em;
+    }
+  }
   .workspace-flex-container {
     @include flex-container(
       null,

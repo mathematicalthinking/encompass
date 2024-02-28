@@ -3,8 +3,4 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 
-export default class WorkspaceSummaryComponent extends Component {
-  isLogged() {
-    return 'I am logged';
-  }
-}
+export default class WorkspaceSummaryComponent extends Component {}
