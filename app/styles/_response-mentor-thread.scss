@@ -53,7 +53,7 @@
       margin-bottom: 1em;
 
       p {
-        font-weight: 400;
+        font-weight: 500;
       }
     }
 
@@ -62,35 +62,77 @@
     }
     .submission-content-container {
       padding: 1em;
+      .submission-content-short,
+      .submission-content-long {
+        padding: 1em;
+        margin-top: 1em;
+        background-color: rgb(243, 243, 243);
+        border-radius: 0.5em;
+      }
     }
   }
   // for response-mentor-reply
   .response-mentor-container {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space;
+    margin-top: 1em;
+    padding: 0.5em;
     .response-users {
       display: flex;
       flex-direction: column;
       gap: 1em;
     }
 
-    .mentor-thread-container,
-    .new-response-container {
+    /* Add transition property to the container */
+    .mentor-thread-container {
       margin-left: 5em;
       border: 1px solid #ccc;
       border-radius: 8px;
-      padding: 10px; /* Adjust padding */
+      padding: 10px;
       display: flex;
       flex-direction: column;
       gap: 0.5em;
-      background-color: #f8f8f8; /* Set background color */
+      background-color: #f8f8f8;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      .mentor-header-thread {
-        display: flex;
-        justify-content: space-between;
+      overflow: hidden; /* Hide overflow to enable the sliding effect */
+      max-height: 500px; /* Set a maximum height for the container */
+      opacity: 1; /* Initial opacity */
+    }
+
+    /* Define animation for opening and closing */
+    @keyframes slideIn {
+      from {
+        max-height: 0;
+      }
+      to {
+        max-height: 500px;
       }
     }
+
+    @keyframes slideOut {
+      from {
+        max-height: 500px;
+      }
+      to {
+        max-height: 0;
+      }
+    }
+
+    /* Apply animation to the container */
+    .mentor-thread-container.closed {
+      animation: slideOut 0.3s ease-in-out;
+    }
+
+    .mentor-thread-container:not(.closed) {
+      animation: slideIn 0.3s ease-in-out;
+    }
+
+    /* Apply transition to the header */
+    .mentor-header-thread {
+      display: flex;
+      justify-content: space-between;
+      transition: margin 0.3s ease;
+    }
+
+    //  STOP HERE
     .response-text {
       padding: 0.8em;
       font-weight: 500;
@@ -104,8 +146,17 @@
   }
   // When user crafts new response in a thread
   .new-response-container {
+    margin-left: 5em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
+    gap: 0.5em;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 200%;
+
     p {
       font-weight: 400;
     }

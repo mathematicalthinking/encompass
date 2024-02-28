@@ -22,15 +22,20 @@
       @isParentWorkspace={{@isParentWorkspace}}
     />
   </div>
-  <div class='response-mentor-container thread-child'>
-    <div>
+  <div
+    class={{if
+      this.show
+      'mentor-thread-container'
+      'mentor-thread-container closed'
+    }}
+  >
+    <div class='mentor-header-thread'>
       {{#if this.showButton}}
-        <button {{on 'click' this.toggleShowResponses}}>
+        <button {{on 'click' this.toggleShowResponses}} class='primary-button'>
           {{this.showResponsesText}}
         </button>
       {{/if}}
     </div>
-
     {{#if this.showResponses}}
       <ResponseMentorReply
         @isCreating={{@isCreating}}
@@ -56,6 +61,8 @@
         @toSubmission={{@toSubmission}}
         @handleResponseThread={{@handleResponseThread}}
         @isParentWorkspace={{@isParentWorkspace}}
-      />{{/if}}
+      />
+    {{/if}}
   </div>
+
 </div>

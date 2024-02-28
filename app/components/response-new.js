@@ -9,8 +9,6 @@ import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
   currentUser: service('current-user'),
-  elementId: 'response-new',
-
   utils: service('utility-methods'),
   loading: service('loading-display'),
 

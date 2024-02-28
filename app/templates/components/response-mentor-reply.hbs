@@ -13,6 +13,7 @@
     @handleResponseThread={{action 'handleNewMentorReply'}}
   />
 {{else}}
+
   {{#if this.sortedMentorReplies}}
     {{#each this.sortedMentorReplies as |listOfMentorReplies|}}
       <div class='response-mentor-container'>

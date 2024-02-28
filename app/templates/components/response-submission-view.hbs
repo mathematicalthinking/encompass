@@ -74,7 +74,7 @@
           <Textarea @name='brief-summary' @value={{revisedBriefSummary}} />
         {{else}}
           {{#if this.isShortExpanded}}
-            <div class='submission-content short'>
+            <div class='submission-content-short'>
               {{#if this.displaySubmission.answer.answer}}
                 {{{this.displaySubmission.answer.answer}}}
               {{else}}
@@ -84,7 +84,7 @@
           {{/if}}
         {{/if}}
       </div>
-      <div class='submission-content-container long'>
+      <div class='submission-content-container'>
         {{#if this.isRevising}}
           <div class='submission-header'>
             <span>Explanation</span>
@@ -106,7 +106,7 @@
           <QuillContainer @setup='insertQuillContent' />
         {{else}}
           {{#if this.isLongExpanded}}
-            <div class='submission-content-container long'>
+            <div class='submission-content-container submission-content-long'>
               {{#if this.displaySubmission.answer.explanation}}
                 {{{this.displaySubmission.answer.explanation}}}
               {{/if}}
