@@ -193,7 +193,6 @@ export default Component.extend(ErrorHandlingMixin, {
 
             return selId === this.get('currentSelection.id');
           });
-
         let searchResults = this.searchResults || [];
 
         return searchResults.concat(currentSelectionComments);
