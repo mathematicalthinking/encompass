@@ -2941,6 +2941,7 @@ const batchCloneWorkspace = async (req, res = {}) => {
           ...req,
           body: { copyWorkspaceRequest: reqCopy },
         });
+
         return workspace;
       })
     );
