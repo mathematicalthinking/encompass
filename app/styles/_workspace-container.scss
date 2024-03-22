@@ -50,9 +50,23 @@
 
       .ws-links {
         display: flex;
-        font-size: 0.8em;
-        justify-content: space-around;
-        gap: 5em;
+        flex-direction: column;
+        font-size: 0.7em;
+      }
+
+      /* Medium devices (tablets, 768px and up) */
+      @media (min-width: 500) {
+        .ws-links {
+          flex-direction: row;
+        }
+      }
+
+      /* Extra large devices (large desktops, 1200px and up) */
+      @media (min-width: 1200px) {
+        .ws-links {
+          flex-direction: row;
+          gap: 1em;
+        }
       }
     }
   }

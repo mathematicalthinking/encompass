@@ -70,10 +70,13 @@ export default Component.extend({
     // Checks below if workspace type is parent to avoid issues with css
     // If its a group workspace, will make the selection/comment display together.
 
+    // Another problem - certain workspaces that are "group" workspaces do not order the comment to the top of the list.
+
     function () {
       if (this.currentWorkspace.workspaceType !== 'parent') {
         if (this.currentSelection) {
           const groupSelection = this.currentSelection.originalSelection;
+
           if (groupSelection.get('id')) {
             return (
               this.utils.getBelongsToId(this.comment, 'selection') ===
