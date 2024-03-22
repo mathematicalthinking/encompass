@@ -2,6 +2,7 @@
   <div class='home-options'>
     {{! My Workspaces, My problem solving (formerly as assignments), My Feedback buttons. }}
     <div class='home-options__tabs'>
+
       <button
         class='home-options__tab
           {{if (is-equal this.dataToShow "workspace") "home-options--active"}}'
@@ -107,6 +108,7 @@
         {{this.version}}
         last updated on
         {{this.buildDate}}.
+        {{log this.buildDate}}
       </p>
 
       <p><a href='https://encompassmath.org/' target='_blank'>EnCoMPASS</a>

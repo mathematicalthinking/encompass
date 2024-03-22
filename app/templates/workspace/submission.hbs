@@ -22,16 +22,17 @@
       </div>
     </div>
 
-    <aside>
+    <aside class='submission-display-options'>
       {{#if this.showOptions}}
-        <label for='display-options'>Work to display: </label>
+        <label for='display-options'>Work to display:</label>
         <select id='display-options' onchange={{action 'updateDisplayInput'}}>
           <option value='all'>All work</option>
           <option value='individual'>Individual work only</option>
           <option value='group'>Group work only</option>
         </select>
       {{/if}}
-      <a id='takeTour' {{action 'startTour'}}>Take Tour</a>
+      <button id='takeTour' {{action 'startTour'}} class='primary-button'>Take
+        Tour</button>
       {{!-- <a id='doneTour' class='hidden' {{action 'doneTour'}}>Done Tour</a> --}}
     </aside>
   </header>

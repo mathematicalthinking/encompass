@@ -1,181 +1,167 @@
+{{! /**
+ * #
+ * @description 
+  Response-new is a subcompoennt of response-mentor-reply.hbs. Users are able to craft new responses here
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */ }}
+
 <div class='new-response-container'>
-  <div class='top-row'>
+  {{! Header for container }}
+  <div class='new-response-header'>
+    <p>Craft Response</p>
     <p class='response-date'>{{format-date todaysDate 'MMMM Do YYYY'}}</p>
-    <p class='response-link'>
-      <LinkTo
-        @route='workspace.submissions.submission'
-        @models={{array model.workspace model.submission}}
-        @classNames='submission'
-      >
-        <span
-          class='simptip-position-left simptip-smooth'
-          data-tooltip='View Submission in Workspace'
-        >
-          <i class='fas fa-external-link-alt'></i>
-        </span>
-      </LinkTo>
+  </div>
+  {{! Info in header }}
+  <div class='new-response-header-info'>
+    <p>To: {{model.student}}</p>
+    <p>From:
+      {{currentUser.user.username}}
     </p>
   </div>
-  <div class='response-title'>
-    Craft Response
-  </div>
-  <div class='response-users'>
-    <p>
-      <span class='response-label'>To:</span>
-      <span class='response-value recipient'>{{model.student}}</span>
-    </p>
-    <p>
-      <span class='response-label'>From:</span>
-      <span class='response-value'>{{currentUser.user.username}}</span>
-    </p>
-  </div>
-  <section class='response-content'>
-    <section class='response-more-details'>
-      {{#if existingResponses.length}}
-        <div class='response-existing-container'>
-          <p class='response-existing'>
-            There
-            {{pluralize existingResponses.length 'is' 'are'}}
-            {{#unless model.persisted}}already{{/unless}}
-            {{existingResponses.length}}
-            other
-            {{pluralize existingResponses.length 'response' 'responses'}}
-            for this
-            {{model.source}}.
-            <span
-              class='response-link'
-              {{action toggleProperty 'showExisting'}}
-            >
-              {{#if showExisting}}
-                Hide
-              {{else}}
-                Show
-              {{/if}}
-            </span>
-          </p>
-          {{#if showExisting}}
-            <ul class='response-listing'>
-              {{#each existingResponses as |response|}}
-                <li>
-                  <span class='create-date'>{{format-date
-                      response.createDate
-                      'l h:mm a'
-                    }}</span>
-                  {{{response.shortText}}}...
-                  <LinkTo
-                    @route='responses.submission'
-                    @model={{submission.id}}
-                    @query={{hash responseId=response.id}}
-                  > View</LinkTo>
-                </li>
-              {{/each}}
-            </ul>
-          {{/if}}
-        </div>
-      {{/if}}
-      <div class='markup-filter'>
-        <span class='filter-label'>Comments Filter</span><i
-          class='fas fa-filter'
-        ></i>
-        <span class='hover-menu checkbox'>
-          <ul>
-            <li>
-              <label>
-                <Input
-                  @type='checkbox'
-                  class='my-work'
-                  name='ownMarkUpOnly'
-                  @checked={{this.doUseOnlyOwnMarkup}}
-                />
-                My Comments and Selections Only
-              </label>
-            </li>
-            {{#each this.commentFilter as |item|}}
+  {{! Main content }}
+  <section class='new-response-content'>
+    {{! will show existing responses - but may not be needed as entire page will have all mentor responses now. }}
+    {{!-- {{#if existingResponses.length}}
+      <div class='response-existing-container'>
+        <p class='response-existing'>
+          There
+          {{pluralize existingResponses.length 'is' 'are'}}
+          {{#unless model.persisted}}already{{/unless}}
+          {{existingResponses.length}}
+          other
+          {{pluralize existingResponses.length 'response' 'responses'}}
+          for this
+          {{model.source}}.
+          <span class='response-link' {{action toggleProperty 'showExisting'}}>
+            {{#if showExisting}}
+              Hide
+            {{else}}
+              Show
+            {{/if}}
+          </span>
+        </p>
+        {{#if showExisting}}
+          <ul class='response-listing'>
+            {{#each existingResponses as |response|}}
               <li>
-                <label>
-                  <Input @type='checkbox' @checked={{item.isChecked}} />
-                  {{item.label}}
-                </label>
+                <span class='create-date'>{{format-date
+                    response.createDate
+                    'l h:mm a'
+                  }}</span>
+                {{{response.shortText}}}...
+                <LinkTo
+                  @route='responses.submission'
+                  @model={{submission.id}}
+                  @query={{hash responseId=response.id}}
+                > View</LinkTo>
               </li>
             {{/each}}
           </ul>
-        </span>
+        {{/if}}
       </div>
-      {{#if filteredSelections.length}}
+    {{/if}} --}}
+    {{! A comments filter - is it necessary? }}
+    {{!-- <div class='markup-filter'>
+      <span class='filter-label'>Comments Filter</span><i
+        class='fas fa-filter'
+      ></i>
+      <span class='hover-menu checkbox'>
+        <ul>
+          <li>
+            <label>
+              <Input
+                @type='checkbox'
+                class='my-work'
+                name='ownMarkUpOnly'
+                @checked={{this.doUseOnlyOwnMarkup}}
+              />
+              My Comments and Selections Only
+            </label>
+          </li>
+          {{#each this.commentFilter as |item|}}
+            <li>
+              <label>
+                <Input @type='checkbox' @checked={{item.isChecked}} />
+                {{item.label}}
+              </label>
+            </li>
+          {{/each}}
+        </ul>
+      </span>
+    </div> --}}
+    {{#if filteredSelections.length}}
 
-        <section class='selections'>
-          <p
-            class='response-header'
-            {{action 'toggleProperty' 'showSelections'}}
-          >
-            Selections
-            <i
-              class='fas
-                {{if showSelections 'fa-chevron-down'}}
-                {{unless showSelections 'fa-chevron-left'}}'
-            ></i>
-          </p>
-          {{#if showSelections}}
-            <ul class='selections-list'>
-              {{#each filteredSelections as |selection|}}
-                <li class='selections-list-item'>
-                  <LinkTo
-                    @route='workspace.submissions.submission.selections.selection'
-                    @models={{array
-                      selection.workspace.id
-                      selection.submission.id
-                      selection.id
-                    }}
-                  >
-                    {{#if selection.imageTagLink}}
-                      <img
-                        src={{selection.imageTagLink}}
-                        alt={{selection.text}}
-                      />
-                    {{else}}
-                      {{selection.text}}
-                    {{/if}}
-                  </LinkTo>
-                </li>
-              {{/each}}
-            </ul>
-          {{/if}}
-        </section>
-        <section class='comments'>
-          <p class='response-header' {{action 'toggleProperty' 'showComments'}}>
-            Comments
-            <i
-              class='fas
-                {{if showComments 'fa-chevron-down'}}
-                {{unless showComments 'fa-chevron-left'}}'
-            ></i>
-          </p>
-          {{#if showComments}}
-            <ul class='comments-list'>
-              {{#each filteredComments as |comment|}}
-                <li class='comments-list-item'>
-                  <LinkTo
-                    @route='workspace.submissions.submission.selections.selection'
-                    @models={{array
-                      comment.workspace.id
-                      comment.submission.id
-                      comment.selection.id
-                    }}
-                  >
-                    "{{comment.text}}"</LinkTo>
-                </li>
-              {{/each}}
-            </ul>
-          {{/if}}
-        </section>
-      {{/if}}
-      {{!-- <div class="comment-filter">
+      <section class='selections'>
+        <p class='response-header' {{action 'toggleProperty' 'showSelections'}}>
+          Selections
+          <i
+            class='fas
+              {{if showSelections "fa-chevron-down"}}
+              {{unless showSelections "fa fa-expand"}}'
+          ></i>
+        </p>
+        {{#if showSelections}}
+          <ul class='selections-list'>
+            {{#each filteredSelections as |selection|}}
+              <li class='selections-list-item'>
+                <LinkTo
+                  @route='workspace.submissions.submission.selections.selection'
+                  @models={{array
+                    selection.workspace.id
+                    selection.submission.id
+                    selection.id
+                  }}
+                >
+                  {{#if selection.imageTagLink}}
+                    <img
+                      src={{selection.imageTagLink}}
+                      alt={{selection.text}}
+                    />
+                  {{else}}
+                    {{selection.text}}
+                  {{/if}}
+                </LinkTo>
+              </li>
+            {{/each}}
+          </ul>
+        {{/if}}
+      </section>
+      <section class='comments'>
+        <p class='response-header' {{action 'toggleProperty' 'showComments'}}>
+          Comments
+          <i
+            class='fas
+              {{if showComments "fa-chevron-down"}}
+              {{unless showComments "fa-chevron-left"}}'
+          ></i>
+        </p>
+        {{#if showComments}}
+          <ul class='comments-list'>
+            {{#each filteredComments as |comment|}}
+              <li class='comments-list-item'>
+                <LinkTo
+                  @route='workspace.submissions.submission.selections.selection'
+                  @models={{array
+                    comment.workspace.id
+                    comment.submission.id
+                    comment.selection.id
+                  }}
+                >
+                  "{{comment.text}}"</LinkTo>
+              </li>
+            {{/each}}
+          </ul>
+        {{/if}}
+      </section>
+    {{/if}}
+    {{!-- <div class="comment-filter">
         <p>Comments to include:</p>
         {{#each this.commentFilter as |item|}}
           <label><Input @type="checkbox" @checked={{item.isChecked}} />{{item.label}}</label>
         {{/each}}
       </div> --}}
-    </section>
+
     <div class='response-info'>
       {{#if explainEmptiness}}
         <p class='response-prefill'>

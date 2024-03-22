@@ -1,0 +1,68 @@
+{{! /**
+ * #
+ * @description 
+  Response mentor thread is a subcomponent of the response-container.hbs.
+  Purpose is to display the student submission and the mentor's response to the submission.
+  It's corresponding sass file is response-thread.scss
+ 
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */ }}
+
+<div class='response-thread-container'>
+  <div class='response-submission-container thread-child'>
+    <ResponseSubmissionView
+      @response={{@response}}
+      @submission={{@submission}}
+      @workspace={{@workspace}}
+      @wsResponses={{@cleanWorkspaceResponses}}
+      @studentSubmissions={{@submissions}}
+      @onSubChange={{@onSubChange}}
+      @sendRevisionNotices={{@sendRevisionNotices}}
+      @isParentWorkspace={{@isParentWorkspace}}
+    />
+  </div>
+  <div
+    class={{if
+      this.show
+      'mentor-thread-container'
+      'mentor-thread-container closed'
+    }}
+  >
+    <div class='mentor-header-thread'>
+      {{#if this.showButton}}
+        <button {{on 'click' this.toggleShowResponses}} class='primary-button'>
+          {{this.showResponsesText}}
+        </button>
+      {{/if}}
+    </div>
+    {{#if this.showResponses}}
+      <ResponseMentorReply
+        @isCreating={{@isCreating}}
+        @response={{@response}}
+        @submission={{@submission}}
+        @workspace={{@workspace}}
+        @mentorReplies={{@mentorReplies}}
+        @responseToApprove={{@responseToApprove}}
+        @displayResponse={{@displayResponse}}
+        @canDirectSend={{@canDirectSend}}
+        @canApprove={{@canApprove}}
+        @isOwnMentorReply={{@isOwnMentorReply}}
+        @onSaveSuccess={{@onSaveSuccess}}
+        @onMentorReplySwitch={{@onMentorReplySwitch}}
+        @toResponses={{@toResponses}}
+        @submissionResponses={{@submissionResponses}}
+        @canSend={{@canSend}}
+        @isMentorRecipient={{@isMentorRecipient}}
+        @isOwnSubmission={{@isOwnSubmission}}
+        @toNewResponse={{@toNewResponse}}
+        @priorMentorRevision={{@priorMentorRevision}}
+        @iconFillOptions={{@iconFillOptions}}
+        @toSubmission={{@toSubmission}}
+        @handleResponseThread={{@handleResponseThread}}
+        @isParentWorkspace={{@isParentWorkspace}}
+      />
+    {{/if}}
+  </div>
+
+</div>

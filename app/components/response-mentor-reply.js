@@ -5,7 +5,6 @@ import { inject as service } from '@ember/service';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'response-mentor-reply',
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
   loading: service('loading-display'),
