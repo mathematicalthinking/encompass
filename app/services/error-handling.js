@@ -11,14 +11,14 @@ export default class ErrorHandlingService extends Service {
     if (!err) {
       return;
     }
-    return err.isAdapterError === true;
+    return err.isAdapterError;
   }
 
   isRecordInvalid(record) {
     if (!record) {
       return;
     }
-    return record.get('isValid') === false;
+    return !record.get('isValid');
   }
 
   setErrorMessages(err, propName) {
@@ -45,8 +45,8 @@ export default class ErrorHandlingService extends Service {
       }
     }
     if (records) {
-      records.forEach((record) => {
-        if (this.isRecordInvalid(record)) {
+      records.forEach((rec) => {
+        if (this.isRecordInvalid(rec)) {
           record.rollbackAttributes();
         }
       });

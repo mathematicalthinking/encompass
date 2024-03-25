@@ -1,0 +1,101 @@
+{{#if this.isCreating}}
+  <ResponseNew
+    @isCreating={{isCreating}}
+    @submission={{submission}}
+    @model={{responseNewModel}}
+    @recipient={{recipient}}
+    @newReplyStatus={{newReplyStatus}}
+    @newReplyType='mentor'
+    @onSaveSuccess={{action 'onSaveSuccess'}}
+    @canDirectSend={{canDirectSend}}
+    @submissionResponses={{mentorReplies}}
+    @handleResponseThread={{action 'handleNewMentorReply'}}
+  />
+{{/if}}
+
+{{#if this.sortedMentorReplies}}
+  {{#each this.sortedMentorReplies as |mentorReply|}}
+    <ResponseMentorSingleReply
+      @mentorReply={{mentorReply}}
+      @isParentWorkspace={{this.isParentWorkspace}}
+      @isMentorRecipient={{this.isMentorRecipient}}
+      @canDirectSend={{this.canDirectSend}}
+      @isComposing={{this.isComposing}}
+      @quillEditorId={{this.quillEditorId}}
+      @editRevisionText={{this.editRevisionText}}
+      @showNoteHeader={{this.showNoteHeader}}
+      @showApproverNoteInput={{this.showApproverNoteInput}}
+      @editRevisionNote={{this.editRevisionNote}}
+      @showDisplayNote={{this.showDisplayNote}}
+      @updateQuillText={{action 'updateQuillText'}}
+      @handleComposeAction={{action 'handleComposeAction'}}
+      @confirmTrash={{action 'confirmTrash'}}
+      @replyBeingEdited={{this.replyBeingEdited}}
+      @setReplyBeingEdited={{action 'setReplyBeingEdited'}}
+      @handleResponseThread={{action 'handleNewMentorReply'}}
+      @saveDraft={{action 'saveDraft'}}
+    />
+  {{/each}}
+  {{#if this.emptyReplyError}}
+    <ErrorBox
+      @error='Message body cannot be empty.'
+      @showDismiss={{true}}
+      @resetError={{action (mut this.emptyReplyError) null}}
+    />
+  {{/if}}
+  {{#if this.quillTooLongError}}
+    <ErrorBox
+      @error={{this.quillTooLongErrorMsg}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.quillTooLongError) null}}
+    />
+  {{/if}}
+
+  {{#if this.doShowLoadingMessage}}
+    <LoadingElem />
+  {{/if}}
+  {{#if this.isComposing}}
+    <div class='submit-buttons button-row'>
+      {{#if isEditing}}
+        <button
+          {{action 'handleComposeAction' 'isEditing' false true}}
+          class='primary-button cancel-button'
+        >Cancel</button>
+        <button {{action 'saveEdit'}} class='primary-button'>Save</button>
+      {{/if}}
+      {{#if isRevising}}
+        <button
+          {{action 'handleComposeAction' 'isRevising' false true}}
+          class='primary-button cancel-button'
+        >Cancel</button>
+        <button {{action 'saveRevision' true}} class='primary-button'>Save as
+          Draft</button>
+        <button
+          {{action 'saveRevision'}}
+          class='primary-button'
+        >{{sendButtonText}}</button>
+      {{/if}}
+      {{#if isFinishingDraft}}
+        <button
+          {{action 'handleComposeAction' 'isFinishingDraft' false true}}
+          class='primary-button cancel-button'
+        >Cancel</button>
+        <button {{action 'saveDraft' true}} class='primary-button'>Save as Draft</button>
+        <button
+          {{action 'saveDraft'}}
+          class='primary-button'
+        >{{sendButtonText}}</button>
+      {{/if}}
+    </div>
+  {{/if}}
+{{else}}
+  <p class='info'>No Mentor Feedback for this revision yet.</p>
+  <img src='../assets/images/no-message.svg' alt='No Replies' />
+  {{#if this.canSendNew}}
+    Click 'New Response' to begin composing a new Mentor Reply.
+    <div class='submit-buttons button-row'>
+      <button {{action 'toNewResponse'}} class='primary-button'>New Response</button>
+    </div>
+
+  {{/if}}
+{{/if}}

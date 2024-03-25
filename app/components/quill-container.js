@@ -2,9 +2,23 @@ import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import $ from 'jquery';
 
+/**
+ * A QuillContainer is a component wrapper for a Quill text editor. See https://quilljs.com/docs/quickstart/
+ * Arguments:
+ *  @param {string} startingText - initial contents of the Quill editor
+ *  @param {string} [attrSectionId = 'editor'] -the id of the <section> tag that contains the Quill editor
+ *  @param {function} onEditorChange - an action that gets called when the user changes the text in the editor.
+ *                   This action should take three arguments: the html representing the new contents of the editor
+ *                                                            a boolean that's true if the editor is empty
+ *                                                            a boolean that's true if the editor contents are too long
+ *  @param {number} maxLength - the maximum allowed number of characters of the editor contents. Defaults to 14MB.
+ *  @param {object} options - configuration options for the Quill editor. See https://quilljs.com/docs/quickstart/ and defaultOptions in class definition.
+ */
+
 export default Component.extend({
   classNames: ['quill-container'],
   utils: service('utility-methods'),
+  quillManager: service('quill-manager'),
 
   isEmpty: true,
   isOverLengthLimit: false,
@@ -74,31 +88,32 @@ export default Component.extend({
       quill.off('text-change');
     }
     this._super(...arguments);
+    this.quillManager.clearEditor(this.attrSectionId);
   },
 
   handleStartingText() {
     let attrStartingText = this.startingText;
     let startingText =
       typeof attrStartingText === 'string' ? attrStartingText : '';
-    this.$('.ql-editor').html(startingText);
+    this.element.querySelector('.ql-editor').innerHTML = startingText;
   },
   // Empty quill editor .html() property returns <p><br></p>
   // For quill to not be empty, there must either be some text or a student
   // must have uploaded an img so there must be an img tag
   isQuillNonEmpty() {
-    let editor = this.$('.ql-editor');
+    let editor = this.element.querySelector('.ql-editor');
 
     if (!editor) {
       return false;
     }
-    let editorText = editor.text();
+    let editorText = editor.textContent || '';
     let trimmed = typeof editorText === 'string' ? editorText.trim() : '';
 
     if (trimmed.length > 0) {
       return true;
     }
 
-    let content = editor.html();
+    let content = editor.innerHTML;
     if (content.includes('<img')) {
       return true;
     }
@@ -106,12 +121,12 @@ export default Component.extend({
   },
 
   handleQuillChange() {
-    let editor = this.$('.ql-editor');
+    let editor = this.element.querySelector('.ql-editor');
     if (!editor) {
       return;
     }
 
-    let htmlContents = editor.html();
+    let htmlContents = editor.innerHTML;
 
     let replaced = htmlContents.replace(/["]/g, "'");
     let isEmpty = !this.isQuillNonEmpty();
@@ -127,5 +142,11 @@ export default Component.extend({
     if (this.onEditorChange) {
       this.onEditorChange(html, isEmpty, isOverLengthLimit);
     }
+    this.quillManager.onEditorChange(
+      this.attrSectionId,
+      html,
+      isEmpty,
+      isOverLengthLimit
+    );
   },
 });

@@ -1,0 +1,81 @@
+{{#if this.showReply}}
+  <div class='submissionChild'>
+    <div class='response-info'>
+      <ResponseMentorDate
+        @reply={{if
+          @isParentWorkspace
+          @mentorReply.originalResponse
+          @mentorReply
+        }}
+        @showRecipientReadUnread={{this.showRecipientReadUnread}}
+        @recipientReadUnreadIcon={{this.recipientReadUnreadIcon}}
+      />
+      <div
+        class='response-content
+          {{if this.showContentHighlight "response-content-highlight"}}'
+      >
+        <p class='response-header'>
+          Message ({{this.statusText}})
+        </p>
+        <div class='response-text-container'>
+          {{#if this.isEditing}}
+            <QuillContainer
+              @onEditorChange={{this.onTextChanged}}
+              @attrSectionId={{@quillEditorId}}
+              @startingText={{@mentorReply.text}}
+            />
+          {{else}}
+            <div
+              class='response-text
+                {{if this.isOldFormatDisplayResponse "old-format"}}'
+            >
+              {{{@mentorReply.text}}}
+            </div>
+          {{/if}}
+        </div>
+        {{#if @showNoteHeader}}
+          <div class='response-note-container'>
+            <p class='response-header'>Note for Approver</p>
+            {{#if @showApproverNoteInput}}
+              <Textarea
+                class='edit-note'
+                @name='mentor-approver-note'
+                @value={{@editRevisionNote}}
+              />
+            {{/if}}
+            {{#if @showDisplayNote}}
+              <div class='response-note'>
+                {{@mentorReply.note}}
+              </div>
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+      {{#if this.showButtons}}
+        <div class='mentor-reply-actions button-row'>
+          {{#each this.actionButtons as |actionButton|}}
+            {{#if actionButton.isTrash}}
+              <i
+                {{on 'click' (fn this.handleAction actionButton.action)}}
+                class='fas fa-trash'
+              ></i>
+            {{else}}
+              <button
+                {{on 'click' (fn this.handleAction actionButton.action)}}
+                class='primary-button
+                  {{if actionButton.isCancel "cancel-button"}}'
+              >
+                {{actionButton.text}}
+              </button>
+            {{/if}}
+          {{/each}}
+        </div>
+      {{/if}}
+      {{#if this.isEditing}}
+        <QuillErrorBox @quillEditorId={{@quillEditorId}} />
+      {{/if}}
+    </div>
+  </div>
+{{else}}
+  No Mentor Responses to show.
+{{/if}}

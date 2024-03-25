@@ -1,0 +1,683 @@
+@import 'variables';
+@import 'mixins';
+@import 'responsive-font-size';
+
+.response-container {
+  margin-top:1em;
+  padding:1em;
+  background-color: rgb(233, 237, 245);
+  .feedback-mode {
+    margin: auto;
+    font-family: 'Quicksand', sans-serif;
+    text-align: center;
+    position: relative;
+    border:.5px solid rgb(150, 179, 209);
+    border-radius: .5em;
+    width: 80%;
+    background-color: rgb(215, 229, 245);
+    padding: 1em;
+    font-size: .9em;
+  }
+  a.link {
+    color: blue;
+    cursor: pointer;
+    &:hover {
+      font-weight: $main-font-weight;
+    }
+  }
+
+  .pf-response-text {
+    margin-left: 25px;
+  }
+  i.far.fa-envelope,
+  i.far.fa-envelope-open,
+  i.fas.fa-user {
+    cursor: default;
+  }
+}
+// container for both the submission and response
+.response-flex-item {
+  height: calc(100vh - 150px);
+  background-color: white;
+  border: 1px solid rgb(194, 197, 209);
+  box-shadow: $box-shadow;
+  border-radius: 3px;
+  margin: 40px;
+  padding: 1em;
+  overflow-y: auto;
+}
+.response-flex-container {
+  display: flex;
+  flex-direction: row;
+  .studentSubmission {
+    font-family: 'Quicksand', sans-serif;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 500;
+    color: black;
+  }
+  // @include flex-container(
+  //   null,
+  //   null,
+  //   row,
+  //   wrap,
+  //   center,
+  //   flex-start,
+  //   flex-start
+  // );
+
+  .response-flex-item.submission {
+    width: 50%;
+    height: 100vh;
+  }
+  .submissionChild {
+    background-color: aliceblue;
+    box-shadow: 10px 5px 10px rgb(189, 181, 181);
+    padding: 1em;
+    border-radius: 1em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+  }
+  .response-flex-item.mentor {
+    width: 50%;
+    height: 100vh;
+  }
+  .response-flex-item.approver.third {
+    @include flex-item(3, flex-start, 1 1 auto);
+    width: 20%;
+    .simptip-position-bottom:after {
+      max-width: 150px;
+    }
+  }
+
+  .response-content-highlight {
+    background-color: pink;
+  }
+  .cancel-button {
+    padding: 10px 22px;
+  }
+  pre {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+  // includes the username, timestamp, and problem link.
+  .problem-info {
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    a {
+      text-align: right;
+      font-weight: 400;
+      color: rgb(4, 97, 245);
+    }
+    a:hover {
+      color: rgb(195, 0, 255);
+      text-decoration: underline;
+    }
+  }
+  .response-submission-view {
+    .submission-student {
+      color: black;
+      margin-top: 0.5em;
+      font-size: 1em;
+      text-align: right;
+      font-weight: lighter;
+    }
+    .submission-date {
+      font-family: 'Quicksand', sans-serif;
+      text-align: right;
+      font-weight: lighter;
+    }
+    // for the submission summary and explanation
+    .submission-content-container {
+      margin-bottom: 2em;
+      .submission-header {
+        border: 1px solid $input-border;
+        border-radius: 0.3em;
+        padding: 5px 0;
+        font-size: 1.1em;
+        color: black;
+        font-weight: $light-font-weight;
+        padding: 1em;
+        background-color: rgb(212, 221, 233);
+        span {
+          font-weight: 500;
+        }
+        i {
+          float: right;
+          color: $filter-list-border-color;
+        }
+      }
+      .submission-content {
+        p{
+           font-family: 'Quicksand', sans-serif;
+        }
+        background-color: rgb(237, 244, 246);
+        padding: 3em;
+        font-size: 0.9em;
+        word-break: break-word;
+
+        ul {
+          list-style-type: disc;
+          list-style-position: inside;
+        }
+        ol {
+          list-style-type: decimal;
+          list-style-position: inside;
+        }
+        ul ul,
+        ol ul {
+          list-style-type: circle;
+          list-style-position: inside;
+          margin-left: 15px;
+        }
+        ol ol,
+        ul ol {
+          list-style-type: lower-latin;
+          list-style-position: inside;
+          margin-left: 15px;
+        }
+      }
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin-bottom: 15px;
+        resize: none;
+      }
+    }
+    #answer-new {
+      .quill-container {
+        width: 100%;
+      }
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin-bottom: 15px;
+        resize: none;
+      }
+    }
+    img {
+      max-width: 100%;
+    }
+  }
+
+  .response-mentor-reply {
+    .markup-filter {
+      padding-bottom: 10px;
+      width: 150px;
+      cursor: pointer;
+    }
+    .markup-filter:hover,
+    .hover-menu:hover {
+      .hover-menu {
+        display: inline-block;
+      }
+    }
+    .quill-container {
+      width: 100%;
+      min-width: 150px;
+      section#mentor-editor,
+      section#response-new-editor {
+        width: 100%;
+        display: inline-block;
+        min-height: 150px;
+        .ql-editor {
+          width: 100%;
+          display: inline-block;
+        }
+      }
+    }
+    .bread-crumbs-comp {
+      float: right;
+    }
+    section.response {
+      pre.message {
+        white-space: pre-wrap;
+      }
+    }
+    img {
+      display: block;
+      max-width: 250px;
+      width: 100%;
+      height: auto;
+      margin-top: 40px;
+    }
+    div.compose-mentor-reply {
+      margin-left: 15px;
+      h5 {
+        margin-left: 0;
+      }
+      h3.compose-heading {
+        text-align: center;
+      }
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin-bottom: 15px;
+        resize: none;
+      }
+    }
+    .mentor-reply-actions {
+      margin-top: 15px;
+      .fa-trash {
+        font-size: 1.3em;
+        color: $filter-list-border-color;
+        float: right;
+        margin-top: 6px;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
+    }
+    .top-row {
+      @include flex-container(null, null, row, wrap, center, center, center);
+    }
+    .response-read-unread {
+      color: blue;
+      opacity: 75%;
+    }
+    .response-date {
+      @include flex-item(1, flex-start, 1 1 auto);
+      font-weight: $light-font-weight;
+      font-size: 1.1em;
+      color: $filter-list-border-color;
+      text-align: left;
+      margin-bottom: 15px;
+    }
+    .response-time {
+      font-size: 0.9em;
+      color: black;
+      margin-left: 5px;
+    }
+    .response-link {
+      @include flex-item(2, flex-end, 1 1 auto);
+      text-align: right;
+      font-weight: $light-font-weight;
+      i {
+        color: $accent-color;
+      }
+    }
+    .response-title {
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: 400;
+      color: black;
+    }
+    .response-users {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+      color: black;
+      margin-top: 0.5em;
+      font-size: 1em;
+      text-align: right;
+      font-weight: 200;
+    }
+    // To/From:
+    .response-label {
+      font-weight: 300;
+    }
+    // Student/Teacher username
+    .response-value {
+      font-weight:400;
+      color: rgb(15, 139, 6);
+    }
+    .response-status {
+      color: black;
+      margin: 10px 0;
+    }
+    .response-text {
+      p{
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 800;
+      }
+      font-family: 'Quicksand', sans-serif;
+      background-color: rgb(237, 244, 246);
+      padding: 3em;
+      font-size: 0.9em;
+      word-break: break-word;
+    }
+    .response-note {
+      background-color: rgb(237, 244, 246);
+      padding: 2em;
+      height: 30em;
+      font-size: 1em;
+      margin-bottom: 1em;
+      pre {
+        word-wrap: break-word;
+        overflow-x: auto;
+      }
+      a {
+        color: $accent-color;
+      }
+      ul {
+        list-style-type: disc;
+        list-style-position: inside;
+      }
+      ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+      }
+      ul ul,
+      ol ul {
+        list-style-type: circle;
+        list-style-position: inside;
+        margin-left: 15px;
+      }
+      ol ol,
+      ul ol {
+        list-style-type: lower-latin;
+        list-style-position: inside;
+        margin-left: 15px;
+      }
+      &.old-format {
+        white-space: pre-line;
+      }
+    }
+    .edit-response {
+      border: 1px solid $input-border;
+      resize: none;
+      width: 100%;
+      height: 300px;
+      border-radius: 3px;
+    }
+    .edit-note {
+      border: 1px solid $input-border;
+      resize: none;
+      width: 100%;
+      height: 60px;
+      border-radius: 3px;
+    }
+    .response-content {
+      .response-existing-container {
+        margin-bottom: 30px;
+        .response-existing {
+          .response-link {
+            color: $accent-color;
+            cursor: pointer;
+            &:hover {
+              font-weight: $main-font-weight;
+            }
+          }
+        }
+        .response-listing {
+          margin: 15px 0 0 20px;
+          font-size: 0.9em;
+          font-weight: $light-font-weight;
+          .create-date {
+            font-weight: $main-font-weight;
+            margin-right: 10px;
+          }
+          li {
+            margin: 15px 0;
+            a {
+              color: $accent-color;
+              margin-left: 10px;
+            }
+            img {
+              width: 75px;
+              height: 75px;
+            }
+          }
+        }
+      }
+      .response-info {
+        font-weight: $main-font-weight;
+        line-height: 25px;
+        margin-bottom: 30px;
+        font-size: 0.9em;
+        a {
+          color: $accent-color;
+          &:hover {
+            font-weight: $main-font-weight;
+          }
+        }
+        .response-prefill {
+          font-weight: $light-font-weight;
+          margin-bottom: 30px;
+        }
+      }
+      .response-header {
+        font-family: 'Quicksand', sans-serif;
+        border: 1px solid $input-border;
+        border-radius: 0.3em;
+        padding: 5px 0;
+        font-size: 1.1em;
+        color: black;
+        font-weight: 500;
+        padding: 1em;
+        background-color: rgb(212, 221, 233);
+        i {
+          float: right;
+          color: $filter-list-border-color;
+          &:hover {
+            color: $primary-font-color;
+          }
+        }
+      }
+      .response-header-alt {
+        margin: 15px 0;
+        color: black;
+        font-size: 1.1em;
+        font-weight: $main-font-weight;
+      }
+      .selections,
+      .comments {
+        margin-bottom: 40px;
+      }
+      .selections-list {
+        .selections-list-item {
+          margin: 10px 15px;
+          a {
+            background-color: $pale-accent;
+            font-size: 0.8em;
+          }
+        }
+      }
+      .comments-list {
+        .comments-list-item {
+          margin: 10px 15px;
+          a {
+            font-size: 0.9em;
+            font-weight: $light-font-weight;
+          }
+        }
+      }
+      .response-compose {
+        textarea {
+          width: 100%;
+          border: 1px solid $input-border;
+          border-radius: 3px;
+          margin-bottom: 15px;
+          resize: vertical;
+        }
+        .approve-note {
+          margin-top: 30px;
+          textarea {
+            height: 80px;
+          }
+        }
+      }
+    }
+  }
+  #response-approver-reply {
+    .heading {
+      font-size: 1.5em;
+      color: black;
+      font-weight: $light-font-weight;
+      margin-bottom: 30px;
+    }
+    .sub-heading {
+      font-size: 1.1em;
+      font-weight: $main-font-weight;
+      margin-bottom: 15px;
+    }
+    .info {
+      position: static;
+    }
+    .action-container {
+      margin-bottom: 40px;
+    }
+    .display-approver-reply {
+      .top-row {
+        @include flex-container(null, null, row, wrap, center, center, center);
+      }
+      .reply-date {
+        @include flex-item(1, flex-start, 1 1 auto);
+        font-weight: $light-font-weight;
+        font-size: 1.1em;
+        color: $filter-list-border-color;
+        text-align: left;
+        .reply-time {
+          font-size: 0.8em;
+          color: black;
+          margin-left: 5px;
+        }
+      }
+      .bread-crumbs-comp {
+        @include flex-item(2, flex-end, 1 1 auto);
+      }
+      .reply-users {
+        margin-bottom: 30px;
+        p {
+          font-size: 0.9em;
+        }
+        .reply-label {
+          width: 50px;
+          display: inline-block;
+        }
+        .reply-value {
+          color: $accent-color;
+          font-weight: $light-font-weight;
+        }
+      }
+    }
+    .reply-header {
+      margin: 15px 0;
+      color: black;
+      font-size: 1.1em;
+      font-weight: $light-font-weight;
+      i {
+        float: right;
+        color: $filter-list-border-color;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
+    }
+    .reply-content {
+      margin: 20px 0;
+      background-color: $filter-list-background-color;
+      border: 0.5px solid $input-border;
+      border-radius: 3px;
+      padding: 20px;
+
+      a {
+        color: $accent-color;
+      }
+      ul {
+        list-style-type: disc;
+        list-style-position: inside;
+      }
+      ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+      }
+      ul ul,
+      ol ul {
+        list-style-type: circle;
+        list-style-position: inside;
+        margin-left: 15px;
+      }
+      ol ol,
+      ul ol {
+        list-style-type: lower-latin;
+        list-style-position: inside;
+        margin-left: 15px;
+      }
+      &.old-format {
+        white-space: pre-line;
+      }
+    }
+    .reply-revise {
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin: 15px 0;
+        resize: none;
+        height: 60px;
+      }
+    }
+    .approver-replies {
+      img {
+        display: block;
+        max-width: 250px;
+        width: 100%;
+        height: auto;
+        margin-top: 40px;
+      }
+    }
+    .compose-reply-container {
+      margin-bottom: 50px;
+    }
+    .approver-actions {
+      margin-bottom: 15px;
+      button:nth-child(1) {
+        margin-right: 5px;
+      }
+      :nth-child(2) {
+        margin-left: 5px;
+      }
+    }
+    .approver-replies {
+      h5 {
+        margin-left: 0;
+        margin-bottom: 15px;
+      }
+      .display-approver-reply {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        p {
+          padding: 5px;
+        }
+      }
+    }
+    .display-reply-actions {
+      button {
+        margin: 5px;
+      }
+      .fa-trash {
+        font-size: 1.3em;
+        color: $filter-list-border-color;
+        float: right;
+        margin-top: 10px;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
+    }
+    .submit-buttons {
+      button {
+        margin: 5px;
+      }
+    }
+    .quill-container {
+      width: 100%;
+      min-width: 150px;
+      margin: 15px 0;
+      section#approver-editor {
+        width: 100%;
+        display: inline-block;
+        min-height: 150px;
+        .ql-editor {
+          width: 100%;
+          display: inline-block;
+        }
+      }
+    }
+  }
+}

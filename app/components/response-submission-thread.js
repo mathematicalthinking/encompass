@@ -6,6 +6,7 @@ import CurrentUserMixin from '../mixins/current_user_mixin';
 export default Component.extend(CurrentUserMixin, {
   classNames: ['response-submission-thread'],
   utils: service('utility-methods'),
+  store: service(),
 
   statusMap: {
     upToDate: {

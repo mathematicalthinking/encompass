@@ -9,6 +9,7 @@ export default Component.extend({
   elementId: 'responses-list',
   currentUser: service('current-user'),
   utils: service('utility-methods'),
+  store: service(),
   isShowAll: equal('currentFilter', 'all'),
 
   showAllFilter: false,
