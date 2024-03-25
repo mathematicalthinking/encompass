@@ -1,22 +1,17 @@
-<p class='response-date'>
-    <div class='response-users'>
-        <p>
-            <span class='response-label'>To:</span>
-            <span class='response-value recipient'>{{@reply.recipient.username}}</span>
-            {{#if @showRecipientReadUnread}}
-                <span class='response-read-unread'><i
-                    title={{@recipientReadUnreadIcon.title}}
-                    class={{@recipientReadUnreadIcon.className}}
-                ></i></span>
-            {{/if}}
-        </p>
-        <p>
-            <span class='response-label'>From:</span>
-            <span class='response-value'>{{@reply.createdBy.username}}</span>
-        </p>
-        <span class='response-time'>
-            {{format-date @reply.createDate 'MMMM Do YYYY'}},
-            {{format-date @reply.createDate 'h:mm a'}}
-        </span>
-    </div>
-</p>
+<div class='mentor-header-thread'>
+  <p>Mentor: {{@reply.createdBy.username}}</p>
+  <p class='response-time'>
+    {{format-date @reply.createDate 'MMMM Do YYYY'}},
+    {{format-date @reply.createDate 'h:mm a'}}
+  </p>
+  <p>
+    To:
+    {{@reply.recipient.username}}
+    {{#if @showRecipientReadUnread}}
+      <i
+        title={{@recipientReadUnreadIcon.title}}
+        class={{@recipientReadUnreadIcon.className}}
+      ></i>
+    {{/if}}
+  </p>
+</div>

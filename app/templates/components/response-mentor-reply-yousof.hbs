@@ -1,4 +1,4 @@
-{{#if this.isCreating}}
+{{!-- {{#if this.isCreating}}
   <ResponseNew
     @store={{this.store}}
     @isCreating={{isCreating}}
@@ -12,7 +12,7 @@
     @submissionResponses={{mentorReplies}}
     @handleResponseThread={{action 'handleNewMentorReply'}}
   />
-{{else}}
+{{/if}}
 
   {{#if this.sortedMentorReplies}}
     {{#each this.sortedMentorReplies as |listOfMentorReplies|}}
@@ -29,10 +29,13 @@
                     >{{this.listOfMentorReplies.recipient.username}}
                     </span>
                     {{#if this.showRecipientReadUnread}}
-                      <span class='response-read-unread'><i
+                      <span class='response-read-unread'>
+                        <i
                           title={{this.recipientReadUnreadIcon.title}}
                           class={{this.recipientReadUnreadIcon.className}}
-                        ></i></span>
+                        >
+                        </i>
+                      </span>
                     {{/if}}
                   </p>
                   <p>
@@ -52,35 +55,38 @@
                     {{format-date
                       listOfMentorReplies.originalResponse.createDate
                       'h:mm a'
-                    }}</span>
+                    }}
+                  </span>
                 </div>
                 {{! if not in parent workspace }}
-              {{else}}
-                <div class='response-users'>
-                  <div class='mentor-thread-container'>
-                    <div class='mentor-header-thread'>
-                      <p>Mentor: {{listOfMentorReplies.createdBy.username}}</p>
-                      <p class='response-time'>{{format-date
-                          listOfMentorReplies.createDate
-                          'MMMM Do, YYYY'
-                        }}
-                        {{format-date
-                          listOfMentorReplies.createDate
-                          'h:mm a'
-                        }}</p></div>
-
-                    <p>
-                      To:
-                      {{listOfMentorReplies.recipient.username}}
-                      {{#if this.showRecipientReadUnread}}
-                        <i
-                          title={{this.recipientReadUnreadIcon.title}}
-                          class={{this.recipientReadUnreadIcon.className}}
-                        ></i>
-                      {{/if}}
-                    </p>
-
-                    <div class='response-text-container'>
+                {{else}}
+                  <div class='response-users'>
+                    <div class='mentor-thread-container'>
+                      <div class='mentor-header-thread'>
+                        <p>Mentor: {{listOfMentorReplies.createdBy.username}}</p>
+                        <p class='response-time'>{{format-date
+                            listOfMentorReplies.createDate
+                            'MMMM Do, YYYY'
+                          }}
+                          {{format-date
+                            listOfMentorReplies.createDate
+                            'h:mm a'
+                          }}
+                        </p>
+                        <p>
+                          To:
+                          {{listOfMentorReplies.recipient.username}}
+                          {{#if this.showRecipientReadUnread}}
+                            <i
+                              title={{this.recipientReadUnreadIcon.title}}
+                              class={{this.recipientReadUnreadIcon.className}}
+                            >
+                            </i>
+                          {{/if}}
+                        </p>
+                      </div>
+                {{/if}}
+                    <div class='responPse-text-container'>
                       {{#if this.isComposing}}
                         <QuillContainer
                           @onEditorChange={{action 'updateQuillText'}}
@@ -98,9 +104,6 @@
                     </div>
                   </div>
                   <div class='response-content'>
-                    {{!-- {{#if this.showEdit}}
-              <i {{action "handleComposeAction" "isEditing" true false}} class="far fa-edit"></i>
-            {{/if}} --}}
                     {{#if this.showNoteHeader}}
                       <div class='response-note-container'>
                         <p class='response-header'>Note for Approver</p>
@@ -120,8 +123,8 @@
                     {{/if}}
                   </div>
                 </div>
-              {{/if}}
-            </p>
+                {{/if}}
+                </p>
           {{else}}
             <p>No response to display</p>
           {{/if}}
@@ -143,17 +146,6 @@
       />
     {{/if}}
     {{! for draft option when mentor saves draft. tech debt }}
-    {{!-- <div class="mentor-reply-actions button-row">
-    {{#if showRevise}}
-      <button {{action "handleComposeAction" "isRevising" true false}} class="primary-button">Revise</button>
-    {{/if}}
-    {{#if showResumeDraft}}
-      <button {{action "handleComposeAction" "isFinishingDraft" true false}} class="primary-button">Resume Draft</button>
-    {{/if}}
-    {{#if showTrash}}
-      <i {{action 'confirmTrash' displayResponse}} class="fas fa-trash"></i>
-    {{/if}}
-  </div> --}}
 
     {{#if this.doShowLoadingMessage}}
       <LoadingElem />
@@ -205,7 +197,4 @@
     {{/if}}
   {{/if}}
   {{! page pagination for mentor replies }}
-  {{!-- <div class="mentor-replies">
-      <BreadCrumbs @items={{sortedMentorReplies}} @onSelect={{action "setDisplayMentorReply"}} @titleTextPath="shortText" @selectedItem={{displayResponse}} @infoToolTipText={{revisionsToolTip}} />
-    </div> --}}
-{{/if}}
+ --}}
