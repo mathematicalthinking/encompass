@@ -103,7 +103,7 @@ Router.map(function () {
     this.route('submission', { path: 'submission/:submission_id' });
     this.route('folders');
   });
-  this.route('landing-page');
+  this.route('welcome');
   this.route('terms');
   this.route('faq');
 });

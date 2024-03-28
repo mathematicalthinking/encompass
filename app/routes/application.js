@@ -62,7 +62,7 @@ export default class Application extends Route {
     // should be extending AuthenticatedRoute.
     if (!user.get('isAuthenticated')) {
       this.store.unloadAll();
-      this.transitionTo('landing-page');
+      this.transitionTo('welcome');
     } else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');
     } else if (!user.get('isAuthz')) {

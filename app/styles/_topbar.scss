@@ -81,7 +81,7 @@ $breakpoint-xlarge: 1200px;
   background-color: $accent-yellow;
   color: #333;
   text-align: center;
-  padding: 10px 0;
+  padding: 10px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   position: fixed;
   top: 0;
@@ -94,14 +94,8 @@ $breakpoint-xlarge: 1200px;
     padding: 0;
     font-size: 1em;
   }
-
   a {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: bold;
-    &:hover {
-      text-decoration: underline;
-    }
+    font-weight: 600;
   }
 }
 .menuButton {

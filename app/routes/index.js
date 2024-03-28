@@ -19,7 +19,7 @@ export default class IndexRoute extends Route {
     var user = this.modelFor('application');
     if (!user.get('isAuthenticated')) {
       this.store.unloadAll();
-      this.transitionTo('landing-page');
+      this.transitionTo('welcome');
     } else if (
       user.get('email') &&
       !user.get('isEmailConfirmed') &&
