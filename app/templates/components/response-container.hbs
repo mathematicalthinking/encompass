@@ -25,6 +25,23 @@
         {{this.workspace.name}}
       </p>
     {{else}}
+      <div class='problem-link-container'>
+        {{#if this.displaySubmission.answer}}
+          <a {{action 'openProblem'}} class='problem-link'>
+            {{this.displaySubmission.puzzle.title}}
+            <i class='fas fa-external-link-alt'></i>
+          </a>
+        {{else}}
+          <a
+            class='puzzle'
+            target='_blank'
+            href='{{this.displaySubmission.puzzleUrl}}'
+          >
+            {{this.displaySubmission.puzzle.title}}
+            <i class='fas fa-external-link-alt'></i>
+          </a>
+        {{/if}}
+      </div>
       <p>{{this.workspace.name}}</p>
       <a
         {{action 'openSubmission' this.workspace.id this.submission.id}}

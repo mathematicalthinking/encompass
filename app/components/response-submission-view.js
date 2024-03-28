@@ -11,7 +11,7 @@ export default Component.extend({
   store: service(),
   // elementId: 'response-submission-view',
   isShortExpanded: true,
-  isLongExpanded: false,
+  isLongExpanded: true,
   isImageExpanded: false,
   isUploadExpanded: false,
   isRevising: false,
