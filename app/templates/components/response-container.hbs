@@ -14,39 +14,32 @@
  */ }}
 <div class='response-container'>
   <div class='response-header-container'>
+    {{! showing mentor thread for problems...... for workspace "x" and "y" }}
     {{#if this.isCreatingNewMentorReply}}
-      <p class='feedback-mode'>
-        Crafting feedback for
-        <a
-          {{action 'openSubmission' this.workspace.id this.submission.id}}
-          class='link'
-        >submission</a>
-        in
-        {{this.workspace.name}}
-      </p>
+      <div class='problem-link-container'>
+        <p>
+          Crafting a new response for
+          <a
+            {{action 'openSubmission' this.workspace.id this.submission.id}}
+            class='link'
+          >{{this.workspace.name}}</a>, problem:
+          <a {{action 'openProblem'}} class='problem-link'>
+            {{this.submission.puzzle.title}}
+
+          </a></p>
+      </div>
     {{else}}
       <div class='problem-link-container'>
-        {{#if this.displaySubmission.answer}}
-          <a {{action 'openProblem'}} class='problem-link'>
-            {{this.displaySubmission.puzzle.title}}
-            <i class='fas fa-external-link-alt'></i>
-          </a>
-        {{else}}
+        <p>Displaying feedback for
           <a
-            class='puzzle'
-            target='_blank'
-            href='{{this.displaySubmission.puzzleUrl}}'
-          >
-            {{this.displaySubmission.puzzle.title}}
-            <i class='fas fa-external-link-alt'></i>
-          </a>
-        {{/if}}
+            {{action 'openSubmission' this.workspace.id this.submission.id}}
+            class='link'
+          >{{this.workspace.name}}</a>, problem:
+          <a {{action 'openProblem'}} class='problem-link'>
+            {{this.submission.puzzle.title}}
+
+          </a></p>
       </div>
-      <p>{{this.workspace.name}}</p>
-      <a
-        {{action 'openSubmission' this.workspace.id this.submission.id}}
-        class='link'
-      >Go back to workspace</a>
 
     {{/if}}
   </div>

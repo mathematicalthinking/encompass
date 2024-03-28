@@ -83,27 +83,6 @@ export default Component.extend({
     'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
 
   actions: {
-    openProblem() {
-      let problemId = this.get('submission.answer.problem.id');
-
-      if (!problemId) {
-        return;
-      }
-
-      var getUrl = window.location;
-      var baseUrl =
-        getUrl.protocol +
-        '//' +
-        getUrl.host +
-        '/' +
-        getUrl.pathname.split('/')[1];
-
-      window.open(
-        `${baseUrl}#/problems/${problemId}`,
-        'newwindow',
-        'width=1200, height=700'
-      );
-    },
     toggleProperty: function (p) {
       this.toggleProperty(p);
     },
