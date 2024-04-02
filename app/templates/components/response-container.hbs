@@ -29,16 +29,20 @@
           </a></p>
       </div>
     {{else}}
+      {{! I would like it to be: Displaying feedback re: “problem_name” from “”workspace_name” }}
       <div class='problem-link-container'>
-        <p>Displaying feedback for
-          <a
-            {{action 'openSubmission' this.workspace.id this.submission.id}}
-            class='link'
-          >{{this.workspace.name}}</a>, problem:
+
+        <p>Displaying feedback re:
           <a {{action 'openProblem'}} class='problem-link'>
             {{this.submission.puzzle.title}}
 
           </a></p>
+        from:
+        <a
+          {{action 'openSubmission' this.workspace.id this.submission.id}}
+          class='link'
+        >{{this.workspace.name}}</a>
+
       </div>
 
     {{/if}}
