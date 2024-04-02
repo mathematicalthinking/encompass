@@ -375,6 +375,27 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     });
   }),
   actions: {
+    openProblem() {
+      let problemId = this.get('submission.answer.problem.id');
+
+      if (!problemId) {
+        return;
+      }
+
+      var getUrl = window.location;
+      var baseUrl =
+        getUrl.protocol +
+        '//' +
+        getUrl.host +
+        '/' +
+        getUrl.pathname.split('/')[1];
+
+      window.open(
+        `${baseUrl}#/problems/${problemId}`,
+        'newwindow',
+        'width=1200, height=700'
+      );
+    },
     onSaveSuccess(submission, response) {
       let responseId = !response ? null : response.get('id');
       this.sendAction('toResponse', submission.get('id'), responseId);

@@ -60,7 +60,44 @@ $breakpoint-xlarge: 1200px;
     }
   }
 }
+#al_header_unauth {
+  position: fixed;
+  align-items: center;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  font-size: 0.9em;
+  background-color: white;
+  justify-content: space-between;
+  #topbar-unauth {
+    display: flex;
+    justify-content: space-around;
+  }
+}
+#announcement-header {
+  background-color: $accent-yellow;
+  color: #333;
+  text-align: center;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9;
 
+  p {
+    margin: 0;
+    padding: 0;
+    font-size: 1em;
+  }
+  a {
+    font-weight: 600;
+  }
+}
 .menuButton {
   font-weight: 400;
   padding: 8px 15px;

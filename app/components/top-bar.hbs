@@ -1,148 +1,160 @@
 {{#if this.user.isAuthenticated}}
-  <div class='hamburger' {{action 'toggleDrawer'}}>
-    <i class='fa fa-bars hamburger-icon'></i>
+  <nav id='al_header'>
+    <div class='hamburger' {{action 'toggleDrawer'}}>
+      <i class='fa fa-bars hamburger-icon'></i>
 
-  </div>
-  <LinkTo @route='index'>
-    <img
-      src='../assets/images/logo-encompass.gif'
-      alt='Encompass logo'
-      class='encompass-logo'
-    />
-  </LinkTo>
-  <div class='overlay {{if this.open "show"}}' {{action 'toggleDrawer'}}></div>
-  {{! main nav bar  }}
-  <ul class='al_nav menu-toggle' id='main-nav'>
-    {{#unless this.isStudentAccount}}
-      {{! role: admin, teacher, student etc. }}
-      <li id='role-toggle'>
-        <span class='toggle-role' {{action 'showToggleModal'}}>
-          <span class='menuButton'>Switch Role:
-            <span class='acting-role'>{{this.user.actingRoleName}}
-              <i class='fas fa-sync-alt'></i></span>
+    </div>
+    <LinkTo @route='index'>
+      <img
+        src='../assets/images/logo-encompass.gif'
+        alt='Encompass logo'
+        class='encompass-logo'
+      />
+    </LinkTo>
+    <div
+      class='overlay {{if this.open "show"}}'
+      {{action 'toggleDrawer'}}
+    ></div>
+    {{! main nav bar  }}
+    <ul class='al_nav menu-toggle' id='main-nav'>
+      {{#unless this.isStudentAccount}}
+        {{! role: admin, teacher, student etc. }}
+        <li id='role-toggle'>
+          <span class='toggle-role' {{action 'showToggleModal'}}>
+            <span class='menuButton'>Switch Role:
+              <span class='acting-role'>{{this.user.actingRoleName}}
+                <i class='fas fa-sync-alt'></i></span>
+            </span>
           </span>
-        </span>
+        </li>
+      {{/unless}}
+      {{! logout button }}
+      <li class='menu-items' id='logout-btn'>
+        <LinkTo @route='logout' class='menu'>
+          <span class='menuButton'>Log out</span>
+        </LinkTo>
       </li>
-    {{/unless}}
-    {{! logout button }}
-    <li class='menu-items' id='logout-btn'>
-      <LinkTo @route='logout' class='menu'>
-        <span class='menuButton'>Log out</span>
-      </LinkTo>
-    </li>
-  </ul>
-  {{! side bar content when logged in }}
-  <div class='hamburger-menu {{if this.open "open"}}'>
-    <div class='drawer'>
-      <ul>
-        <li {{action 'toggleDrawer'}}>
-          <LinkTo @route='index'>
-            <div class='testHome'><i class='fa fa-home'></i>
-              Home</div>
-          </LinkTo>
-        </li>
-        <li {{action 'toggleDrawer'}}>
-          <LinkTo @route='assignments'>
-            <div class='testHome'>
-              <i class='fa fa-clipboard'></i>
-              Assignments</div>
-          </LinkTo>
-        </li>
-        <li {{action 'toggleDrawer'}}>
-          <LinkTo @route='sections'>
-            <div class='testHome'>
-              <i class='fa fa-graduation-cap'></i>
-              Classes</div>
-
-          </LinkTo>
-        </li>
-        <li {{action 'toggleDrawer'}}>
-          <LinkTo @route='workspaces'>
-            <div class='testHome'>
-              <i class='fa fa-building'></i>
-              Workspaces</div>
-
-          </LinkTo>
-        </li>
-        <li {{action 'toggleDrawer'}}>
-          <LinkTo @route='problems'>
-            <div class='testHome'>
-              <i class='fa fa-puzzle-piece'></i>
-              Problems</div>
-
-          </LinkTo>
-        </li>
-        <li {{action 'toggleDrawer'}}>
-          <LinkTo @route='responses'>
-            <div class='testHome'>
-              <i class='fa fa-comments'></i>
-              Feedback</div>
-
-          </LinkTo>
-        </li>
-        {{#unless this.isStudentAccount}}
+    </ul>
+    {{! side bar content when logged in }}
+    <div class='hamburger-menu {{if this.open "open"}}'>
+      <div class='drawer'>
+        <ul>
           <li {{action 'toggleDrawer'}}>
-            <LinkTo @route='users.user' @model={{this.currentUser.id}}>
-              <div class='testHome'><i class='fas fa-user-circle'></i>
-                Users</div>
+            <LinkTo @route='index'>
+              <div class='testHome'><i class='fa fa-home'></i>
+                Home</div>
             </LinkTo>
           </li>
-        {{/unless}}
-        {{! link to faq }}
-        <li class='menu-items' id='logout-btn'>
+          <li {{action 'toggleDrawer'}}>
+            <LinkTo @route='assignments'>
+              <div class='testHome'>
+                <i class='fa fa-clipboard'></i>
+                Assignments</div>
+            </LinkTo>
+          </li>
+          <li {{action 'toggleDrawer'}}>
+            <LinkTo @route='sections'>
+              <div class='testHome'>
+                <i class='fa fa-graduation-cap'></i>
+                Classes</div>
 
-          <LinkTo @route='faq'>
-            <div class='testHome'>
-              <i class='fa fa-question-circle'></i>
-              FAQ
-            </div>
-          </LinkTo>
-        </li>
-        {{! link to terms }}
-        <li class='menu-items'>
-          <LinkTo @route='terms' class='menu'>
-            <div class='testHome'><i class='fa fa-book'></i>
-              Privacy Policy</div>
-          </LinkTo>
-        </li>
-        <li {{action 'toggleDrawer'}}>
-          <LinkTo @route='logout'>
-            <div class='testHome'><i class='fa fa-power-off'></i>
-              Log out</div>
+            </LinkTo>
+          </li>
+          <li {{action 'toggleDrawer'}}>
+            <LinkTo @route='workspaces'>
+              <div class='testHome'>
+                <i class='fa fa-building'></i>
+                Workspaces</div>
 
-          </LinkTo>
-        </li>
-      </ul>
-    </div>
-  </div>
+            </LinkTo>
+          </li>
+          <li {{action 'toggleDrawer'}}>
+            <LinkTo @route='problems'>
+              <div class='testHome'>
+                <i class='fa fa-puzzle-piece'></i>
+                Problems</div>
+
+            </LinkTo>
+          </li>
+          <li {{action 'toggleDrawer'}}>
+            <LinkTo @route='responses'>
+              <div class='testHome'>
+                <i class='fa fa-comments'></i>
+                Feedback</div>
+
+            </LinkTo>
+          </li>
+          {{#unless this.isStudentAccount}}
+            <li {{action 'toggleDrawer'}}>
+              <LinkTo @route='users.user' @model={{this.currentUser.id}}>
+                <div class='testHome'><i class='fas fa-user-circle'></i>
+                  Users</div>
+              </LinkTo>
+            </li>
+          {{/unless}}
+          {{! link to faq }}
+          <li class='menu-items' id='logout-btn'>
+
+            <LinkTo @route='faq'>
+              <div class='testHome'>
+                <i class='fa fa-question-circle'></i>
+                FAQ
+              </div>
+            </LinkTo>
+          </li>
+          {{! link to terms }}
+          <li class='menu-items'>
+            <LinkTo @route='terms' class='menu'>
+              <div class='testHome'><i class='fa fa-book'></i>
+                Privacy Policy</div>
+            </LinkTo>
+          </li>
+          <li {{action 'toggleDrawer'}}>
+            <LinkTo @route='logout'>
+              <div class='testHome'><i class='fa fa-power-off'></i>
+                Log out</div>
+
+            </LinkTo>
+          </li>
+        </ul>
+      </div>
+    </div></nav>
 {{else}}
-  <LinkTo @route='index'>
-    <img
-      src='../assets/images/logo-encompass.gif'
-      alt='Encompass logo'
-      class='encompass-logo'
-    />
-  </LinkTo>
   {{! navbar when user logout }}
-  <ul id='topbar-unauth'>
-    <li data-test='login'>
-      <LinkTo @route='auth.login' class='menu login hidden'>
-        <span class='menuButton'>Log in</span>
-      </LinkTo>
-    </li>
-    <li data-test='signup'>
-      <LinkTo @route='auth.signup' classNames='menu signup'>
-        <span class='menuButton'>Sign Up</span>
-      </LinkTo>
-    </li>
-    <li>
-      <LinkTo @route='faq' classNames='menu signup'>
-        <span class='menuButton'>FAQ</span>
-      </LinkTo>
-      <LinkTo @route='terms' classNames='menu signup'>
-        <span class='menuButton'> Terms &amp; Privacy Policy</span>
-      </LinkTo>
-    </li>
-  </ul>
+
+  <div id='announcement-header'>
+    <p>Join the ORCIDS Project - PD beginning January 2024! </p>
+    <a href='https://encompassmath.org/orcids-professional-development/'>Sign Up
+      Now</a>
+  </div>
+  <nav id='al_header_unauth'>
+    <LinkTo @route='index'>
+      <img
+        src='../assets/images/logo-encompass.gif'
+        alt='Encompass logo'
+        class='encompass-logo'
+      />
+    </LinkTo>
+
+    <ul id='topbar-unauth'>
+      <li data-test='login'>
+        <LinkTo @route='auth.login' class='menu login hidden'>
+          <span class='menuButton'>Log in</span>
+        </LinkTo>
+      </li>
+      <li data-test='signup'>
+        <LinkTo @route='auth.signup' classNames='menu signup'>
+          <span class='menuButton'>Sign Up</span>
+        </LinkTo>
+      </li>
+      <li>
+        <LinkTo @route='faq' classNames='menu signup'>
+          <span class='menuButton'>FAQ</span>
+        </LinkTo>
+        <LinkTo @route='terms' classNames='menu signup'>
+          <span class='menuButton'> Terms &amp; Privacy Policy</span>
+        </LinkTo>
+      </li>
+    </ul></nav>
 
 {{/if}}

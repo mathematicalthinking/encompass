@@ -5,7 +5,7 @@ import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
   tagName: 'header',
-  elementId: 'al_header',
+
   toggleRoleErrors: [],
   alert: service('sweet-alert'),
 

@@ -14,22 +14,36 @@
  */ }}
 <div class='response-container'>
   <div class='response-header-container'>
+    {{! showing mentor thread for problems...... for workspace "x" and "y" }}
     {{#if this.isCreatingNewMentorReply}}
-      <p class='feedback-mode'>
-        Crafting feedback for
+      <div class='problem-link-container'>
+        <p>
+          Crafting a new response for
+          <a
+            {{action 'openSubmission' this.workspace.id this.submission.id}}
+            class='link'
+          >{{this.workspace.name}}</a>, problem:
+          <a {{action 'openProblem'}} class='problem-link'>
+            {{this.submission.puzzle.title}}
+
+          </a></p>
+      </div>
+    {{else}}
+      {{! I would like it to be: Displaying feedback re: “problem_name” from “”workspace_name” }}
+      <div class='problem-link-container'>
+
+        <p>Displaying feedback re:
+          <a {{action 'openProblem'}} class='problem-link'>
+            {{this.submission.puzzle.title}}
+
+          </a></p>
+        from:
         <a
           {{action 'openSubmission' this.workspace.id this.submission.id}}
           class='link'
-        >submission</a>
-        in
-        {{this.workspace.name}}
-      </p>
-    {{else}}
-      <p>{{this.workspace.name}}</p>
-      <a
-        {{action 'openSubmission' this.workspace.id this.submission.id}}
-        class='link'
-      >Go back to workspace</a>
+        >{{this.workspace.name}}</a>
+
+      </div>
 
     {{/if}}
   </div>

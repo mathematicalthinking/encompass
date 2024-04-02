@@ -6,7 +6,9 @@ export default class ResponseMentorThreadComponent extends Component {
   @tracked show = false;
 
   get showResponsesText() {
-    return this.showResponses ? 'Hide responses' : 'Show responses';
+    return this.showResponses
+      ? 'Hide responses for this thread'
+      : 'Show responses for this thread';
   }
 
   get showResponses() {
