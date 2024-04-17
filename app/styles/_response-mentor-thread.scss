@@ -92,9 +92,10 @@
       gap: 0.5em;
       background-color: #f8f8f8;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      overflow: hidden; /* Hide overflow to enable the sliding effect */
-      max-height: 500px; /* Set a maximum height for the container */
-      opacity: 1; /* Initial opacity */
+
+      overflow: auto;
+      max-height: 500px;
+      opacity: 1;
     }
 
     /* Define animation for opening and closing */
