@@ -84,10 +84,11 @@ export default class IndexController extends Controller {
               : 'mentorDisplay'
           }`,
         },
-        { name: 'Workspace', valuePath: 'workspaceName' },
+
         { name: 'Latest Feedback', valuePath: 'latestReply.createDate' },
         { name: 'Latest Revision', valuePath: 'latestRevision.createDate' },
         { name: 'Status', valuePath: 'statusMessage' },
+        { name: 'Workspace', valuePath: 'workspaceName' },
       ];
     }
 
