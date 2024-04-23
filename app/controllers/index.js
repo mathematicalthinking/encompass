@@ -74,22 +74,24 @@ export default class IndexController extends Controller {
     }
     if (this.dataToShow === 'feedback') {
       return [
-        { name: 'Workspace', valuePath: 'workspaceName' },
-        { name: 'Latest Feedback', valuePath: 'latestReply.createDate' },
-        { name: 'Latest Revision', valuePath: 'latestRevision.createDate' },
         {
-          name: `${this.activeDetailTab === 'Given' ? 'Student' : 'Mentor'}`,
+          name: `${
+            this.activeDetailTab === 'Given' ? 'Student Submission' : 'Mentor'
+          }`,
           valuePath: `${
             this.activeDetailTab === 'Given'
               ? 'studentDisplay'
               : 'mentorDisplay'
           }`,
         },
+
+        { name: 'Latest Feedback', valuePath: 'latestReply.createDate' },
+        { name: 'Latest Revision', valuePath: 'latestRevision.createDate' },
         { name: 'Status', valuePath: 'statusMessage' },
+        { name: 'Workspace', valuePath: 'workspaceName' },
       ];
     }
 
-    //getter must return a value
     return [];
   }
   // updates when user changes tabs and gets sent to table
@@ -178,10 +180,12 @@ export default class IndexController extends Controller {
       const received = responses.filter(
         (response) => response.threadType === 'submitter'
       );
+      // Under "given" tab
       const sent = responses.filter(
         (response) =>
           response.threadType === 'mentor' || response.threadType === 'approver'
       );
+
       const threads = [
         { label: 'Given', details: sent, type: 'response' },
         { label: 'Received', details: received, type: 'response' },

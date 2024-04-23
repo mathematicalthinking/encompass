@@ -1,4 +1,4 @@
-<div class='home--container{{unless this.isExpanded ' closed'}}'>
+<div class='home--container{{unless this.isExpanded " closed"}}'>
   <EmberTable as |t|>
     <t.head
       @columns={{@tableColumns}}
@@ -25,7 +25,9 @@
               @model={{rowValue.id}}
             >{{format-date cellValue 'MM/DD/YYYY'}}</LinkTo>
           {{else if (is-equal @type 'feedback')}}
-            {{#if (is-equal columnValue.name 'Workspace')}}
+            {{#if (is-equal columnValue.name 'Student Submission')}}
+              <a {{on 'click' (fn this.toResponse rowValue)}}>{{cellValue}}</a>
+            {{else if (is-equal columnValue.name 'Mentor')}}
               <a {{on 'click' (fn this.toResponse rowValue)}}>{{cellValue}}</a>
             {{else if (is-equal columnValue.name 'Status')}}
               <svg height='20' width='20'>
