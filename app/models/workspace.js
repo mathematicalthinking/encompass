@@ -127,7 +127,6 @@ export default class WorkspaceModel extends Auditable {
     }
     return null;
   }
-
   @attr() permissions;
   get collaborators() {
     const permissions = this.permissions;

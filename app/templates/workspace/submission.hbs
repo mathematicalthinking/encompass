@@ -9,10 +9,12 @@
         <LinkTo @route='workspace.info' @model={{this.currentWorkspace.id}}>
           <a>Workspace Stats &amp; Settings</a>
         </LinkTo>
-
-        <LinkTo @route='workspace.summary' @model={{this.model.workspace.id}}>
-          <a>View All Responses</a>
-        </LinkTo>
+        {{#if canSeeResponses}}<LinkTo
+            @route='workspace.summary'
+            @model={{this.model.workspace.id}}
+          >
+            <a>View All Responses</a>
+          </LinkTo>{{/if}}
 
         {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
           <LinkTo @route='workspace.work' @model={{ws.id}}>
