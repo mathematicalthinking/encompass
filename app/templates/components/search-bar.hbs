@@ -13,11 +13,12 @@
     class='search-field'
     @type='text'
     @key-press={{action 'clearErrors'}}
-    @insert-newline='searchAction'
+    @insert-newline={{action 'searchAction'}}
     @value={{this.inputValue}}
     placeholder={{this.placeholder}}
     @key-up={{action 'onInputChange'}}
   />
+
   {{#if this.showClear}}
     <svg
       xmlns='http://www.w3.org/2000/svg'
