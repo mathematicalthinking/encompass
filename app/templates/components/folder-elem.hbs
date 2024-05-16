@@ -1,53 +1,104 @@
 {{! TODO: restore drag an drop, see original ../folder.hbs}}
-<div draggable="true" class="folder draggable">
-		{{#if this.editFolderMode}}
-		  {{#if this.canEditFolders}}
-				<div class="move-folder">
-						{{#if this.model.parent}}
-							<span {{action 'moveOut' this.model target=this.folderList}} class="al_wtf move_left"></span>
-						{{/if}}
-					<span {{action 'moveUp' this.model target=this.folderList}} class="al_wtf move_up"></span>
-					<span {{action 'moveDown' this.model target=this.folderList}} class="al_wtf move_down"></span>
-				</div>
-			{{/if}}
-			{{#if this.canDeleteFolder}}
-				<div class="delete-folder">
-					<span {{action 'confirmDelete'}} data-test="trash-{{this.model.name}}"><i class="fas fa-trash"></i></span>
-				</div>
-			{{/if}}
-			{{#if this.canEditFolder}}
-				<div class="edit-folder-name">
-					<Input @value={{this.model.name}} @focus-out="editFolderName" />
-				</div>
-			{{/if}}
-			{{#each this.updateRecordErrors as |error|}}
-    		<p class="error-message">{{error}}</p>
-  		{{/each}}
-		{{else}}
-      <span class="toggle-icon {{if this.model.sortedChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
-        {{#if this.model.isExpanded}}
-					<span class="folder-expanded"><i class="far fa-folder-open"></i></span>
-        {{else}}
-					<span class="folder-closed"><i class="far fa-folder"></i></span>
+<div draggable='true' class='folder draggable'>
+  {{#if this.editFolderMode}}
+    {{#if this.canEditFolders}}
+      <div class='move-folder'>
+        {{#if this.model.parent}}
+          <span
+            {{action 'moveOut' this.model target=this.folderList}}
+            class='al_wtf move_left'
+          ></span>
         {{/if}}
-				<span  title={{this.model.name}} class="folder-name {{if this.containsCurrentSubmission 'bolder'}}">{{this.model.name}}</span>
-			</span>
-		  <aside>
-				<button style="display:none" id="updateTaggings{{this.model.id}}" {{action 'updateTaggings'}}></button>
-				{{#each this.queryErrors as |error|}}
-					<p class="error-message">{{error}}</p>
-				{{/each}}
+        <span
+          {{action 'moveUp' this.model target=this.folderList}}
+          class='al_wtf move_up'
+        ></span>
+        <span
+          {{action 'moveDown' this.model target=this.folderList}}
+          class='al_wtf move_down'
+        ></span>
+      </div>
+    {{/if}}
+    {{#if this.canDeleteFolder}}
+      <div class='delete-folder'>
+        <span
+          {{action 'confirmDelete'}}
+          data-test='trash-{{this.model.name}}'
+        ><i class='fas fa-trash'></i></span>
+      </div>
+    {{/if}}
+    {{#if this.canEditFolder}}
+      <div class='edit-folder-name'>
 
-				<div class="show-folder"{{action 'openLink'}} class="{{if this.containsCurrentSubmission 'contains-current-submission'}} {{if this.hasManyTaggings "many-taggings"}} {{if this.containsCurrentSelection "contains-current-selection"}}" title={{this.selectionsTitle}}>
-					{{this.model.childSelections.length}}
-				</div>
-		  </aside>
-		{{/if}}
+        <Input
+          @value={{this.model.name}}
+          @focus-out={{action 'editFolderName'}}
+        />
+
+      </div>
+    {{/if}}
+    {{#each this.updateRecordErrors as |error|}}
+      <p class='error-message'>{{error}}</p>
+    {{/each}}
+  {{else}}
+    <span
+      class='toggle-icon
+        {{if this.model.sortedChildren.length "branch" "leaf"}}'
+      {{action 'toggle'}}
+    >
+      {{#if this.model.isExpanded}}
+        <span class='folder-expanded'><i class='far fa-folder-open'></i></span>
+      {{else}}
+        <span class='folder-closed'><i class='far fa-folder'></i></span>
+      {{/if}}
+      <span
+        title={{this.model.name}}
+        class='folder-name {{if this.containsCurrentSubmission "bolder"}}'
+      >{{this.model.name}}</span>
+    </span>
+    <aside>
+      <button
+        style='display:none'
+        id='updateTaggings{{this.model.id}}'
+        {{action 'updateTaggings'}}
+      ></button>
+      {{#each this.queryErrors as |error|}}
+        <p class='error-message'>{{error}}</p>
+      {{/each}}
+
+      <div
+        class='show-folder'
+        {{action 'openLink'}}
+        class='{{if
+            this.containsCurrentSubmission
+            "contains-current-submission"
+          }}
+          {{if this.hasManyTaggings "many-taggings"}}
+          {{if this.containsCurrentSelection "contains-current-selection"}}'
+        title={{this.selectionsTitle}}
+      >
+        {{this.model.childSelections.length}}
+      </div>
+    </aside>
+  {{/if}}
 </div>
 {{#if this.model.isExpanded}}
-    <ul class="subfolders">
-      {{#each this.model.sortedChildren as |folder|}}
-        <FolderElem @store={{this.store}} @model={{folder}} @currentWorkspace={{this.currentWorkspace}} @folderList={{this.folderList}} @editFolderMode={{this.editFolderMode}} @putInFolder={{this.putInFolder}} @dropped={{this.dropped}} @canEditFolders={{this.canEditFolders}} @canDeleteFolders={{this.canDeleteFolders}} @wsTaggings={{this.wsTaggings}} @currentSubmission={{this.currentSubmission}} @currentSelection={{this.currentSelection}} />
-      {{/each}}
-    </ul>
+  <ul class='subfolders'>
+    {{#each this.model.sortedChildren as |folder|}}
+      <FolderElem
+        @store={{this.store}}
+        @model={{folder}}
+        @currentWorkspace={{this.currentWorkspace}}
+        @folderList={{this.folderList}}
+        @editFolderMode={{this.editFolderMode}}
+        @putInFolder={{this.putInFolder}}
+        @dropped={{this.dropped}}
+        @canEditFolders={{this.canEditFolders}}
+        @canDeleteFolders={{this.canDeleteFolders}}
+        @wsTaggings={{this.wsTaggings}}
+        @currentSubmission={{this.currentSubmission}}
+        @currentSelection={{this.currentSelection}}
+      />
+    {{/each}}
+  </ul>
 {{/if}}
