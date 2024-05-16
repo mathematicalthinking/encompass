@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
-import { alias, equal } from '@ember/object/computed';
+import { alias, equal, reads } from '@ember/object/computed';
 /*global _:false */
 import { isEqual } from '@ember/utils';
 
@@ -14,7 +14,7 @@ export default Component.extend({
   showAdminFilters: equal('primaryFilter.value', 'all'),
   adminFilter: alias('filter.primaryFilters.inputs.all'),
   closedMenu: true,
-  currentValues: computed.reads('secondaryFilter.selectedValues'),
+  currentValues: reads('secondaryFilter.selectedValues'),
 
   // used for populating the selectize instance
   // orgs passed in from parent are all orgs from db
