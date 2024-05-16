@@ -1,5 +1,8 @@
 {{#if sortedProblems.length}}
-  <h2 class='header-home'>{{#link-to 'assignments'}}Problems to Solve{{/link-to}}</h2>
+  <LinkTo @route='assignments'>
+    <h2 class='header-home'>Problems to Solve</h2>
+  </LinkTo>
+
   <table class='max-width'>
     <tr>
       <td>
@@ -72,13 +75,19 @@
           <table class='max-width'>
             {{#each sortedProblems as |assignment|}}
               <tr>
-                <td>{{#link-to
-                    'assignments.assignment' assignment.id classNames='link'
-                  }}{{assignment.name}}{{/link-to}}</td>
+
+                <LinkTo @route='assignments.assignment'>
+                  <td class='header-home'>{{assignment.name}}</td>
+                </LinkTo>
                 {{#unless user.isStudent}}
-                  <td>{{#link-to
-                      'sections.section' assignment.section.id classNames='link'
-                    }}{{assignment.section.name}}{{/link-to}}</td>
+                  <LinkTo
+                    @route='sections.section'
+                    @model={{assignment.section.id}}
+                    class='link'
+                  >
+                    {{assignment.section.name}}
+                  </LinkTo>
+
                 {{/unless}}
 
                 <td>{{format-date assignment.assignedDate 'MMM Do YYYY'}}</td>

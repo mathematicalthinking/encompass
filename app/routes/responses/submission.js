@@ -1,8 +1,7 @@
-import { resolve, hash } from 'rsvp';
 import { inject as service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
-import Ember from 'ember';
 import { action } from '@ember/object';
+
 export default class ResponsesRoute extends AuthenticatedRoute {
   @service('utility-methods') utils;
   @service store;
@@ -27,10 +26,11 @@ export default class ResponsesRoute extends AuthenticatedRoute {
       this.response = null;
     }
   }
+
   resolveSubmission(submissionId) {
     let peeked = this.store.peekRecord('submission', submissionId);
     if (peeked) {
-      return resolve(peeked);
+      return Promise.resolve(peeked);
     }
     return this.store.findRecord('submission', submissionId);
   }
@@ -38,7 +38,7 @@ export default class ResponsesRoute extends AuthenticatedRoute {
   resolveWorkspace(workspaceId) {
     let peeked = this.store.peekRecord('workspace', workspaceId);
     if (peeked) {
-      return resolve(peeked);
+      return Promise.resolve(peeked);
     }
     return this.store.findRecord('workspace', workspaceId);
   }
@@ -50,49 +50,38 @@ export default class ResponsesRoute extends AuthenticatedRoute {
 
     let allResponses = await this.store.peekAll('response');
 
-    return this.resolveSubmission(params.submission_id)
-      .then((submission) => {
-        let wsIds = submission.hasMany('workspaces').ids();
-        let wsId = wsIds.get('firstObject');
-        return hash({
-          submission,
-          workspace: this.resolveWorkspace(wsId),
-        });
-      })
-      .then((hash) => {
-        return Ember.RSVP.hash({
-          submission: hash.submission,
-          workspace: hash.workspace,
-          submissions: hash.workspace.get('submissions'),
-          responses: hash.workspace.get('responses'),
-        });
-      })
-      .then((hash) => {
-        let studentSubmissions = hash.submissions.filterBy(
-          'student',
-          hash.submission.get('student')
-        );
-        let associatedResponses = hash.responses.filterBy('id').sort();
-        let response = this.response;
-        if (!this.response) {
-          response = associatedResponses
-            .filterBy('responseType', 'mentor')
-            .sortBy('createDate')
-            .get('lastObject');
-        }
-        if (params.responseId) {
-          response = this.store.findRecord('response', params.responseId);
-        }
+    let submission = await this.resolveSubmission(params.submission_id);
+    let wsIds = submission.hasMany('workspaces').ids();
+    let wsId = wsIds.get('firstObject');
+    let workspace = await this.resolveWorkspace(wsId);
 
-        return {
-          submission: hash.submission,
-          workspace: hash.workspace,
-          submissions: studentSubmissions,
-          responses: associatedResponses,
-          response: response,
-          allResponses,
-        };
-      });
+    let [studentSubmissions, associatedResponses] = await Promise.all([
+      workspace.get('submissions'),
+      workspace.get('responses'),
+    ]);
+
+    let response = this.response;
+    if (!this.response) {
+      response = associatedResponses
+        .filterBy('responseType', 'mentor')
+        .sortBy('createDate')
+        .get('lastObject');
+    }
+    if (params.responseId) {
+      response = this.store.findRecord('response', params.responseId);
+    }
+
+    return {
+      submission,
+      workspace,
+      submissions: studentSubmissions.filterBy(
+        'student',
+        submission.get('student')
+      ),
+      responses: associatedResponses,
+      response,
+      allResponses,
+    };
   }
 
   redirect(model, transition) {
@@ -104,14 +93,17 @@ export default class ResponsesRoute extends AuthenticatedRoute {
   @action toResponseSubmission(subId) {
     this.transitionTo('responses.submission', subId);
   }
+
   @action toResponse(submissionId, responseId) {
     this.transitionTo('responses.submission', submissionId, {
       queryParams: { responseId: responseId },
     });
   }
+
   @action toResponses() {
     this.transitionTo('responses');
   }
+
   @action toNewResponse(submissionId, workspaceId) {
     this.transitionTo('responses.new.submission', submissionId, {
       queryParams: { workspaceId: workspaceId },
