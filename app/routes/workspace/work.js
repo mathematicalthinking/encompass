@@ -10,8 +10,7 @@ export default class WorkspaceWorkRoute extends Route {
   @service('sweet-alert') alert;
 
   async afterModel(model) {
-    let hasSubmissions = (await model.submissions.length) > 0;
-
+    let hasSubmissions = (await model.submissions.length) >= 0;
     if (hasSubmissions) {
       this.transitionTo('workspace.submissions.first');
     } else {
