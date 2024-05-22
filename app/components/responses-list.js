@@ -1,6 +1,5 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/* eslint-disable complexity */
 import { equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import moment from 'moment';

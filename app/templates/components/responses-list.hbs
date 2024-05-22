@@ -11,37 +11,38 @@
     <div class='results-list'>
       <div class='results-info'>
         <div class='results-icons' id='response-list-tabs'>
-          {{#if showSubmitterTab}}
+
+          {{#if this.showSubmitterTab}}
             <span
               {{action 'showSubmitterResponses'}}
-              class='submitter {{if isShowSubmitter "active-filter"}}'
+              class='submitter {{if this.isShowSubmitter "active-filter"}}'
             >
               Solver
               {{submitterCounter}}
             </span>
           {{/if}}
-          {{#if showMentoringTab}}
+          {{#if this.showMentoringTab}}
             <span
               {{action 'showMentoringResponses'}}
-              class='mentoring {{if isShowMentoring "active-filter"}}'
+              class='mentoring {{if this.isShowMentoring "active-filter"}}'
             >
               Mentoring
-              {{mentoringCounter}}
+              {{this.mentoringCounter}}
             </span>
           {{/if}}
-          {{#if showApprovingTab}}
+          {{#if this.showApprovingTab}}
             <span
               {{action 'showApprovingResponses'}}
-              class='approving {{if isShowApproving "active-filter"}}'
+              class='approving {{if this.isShowApproving "active-filter"}}'
             >
               Approving
-              {{approvingCounter}}
+              {{this.approvingCounter}}
             </span>
           {{/if}}
-          {{#if showAllFilter}}
+          {{#if this.showAllFilter}}
             <span
               {{action 'showAllResponses'}}
-              class='all {{if isShowAll "active-filter"}}'
+              class='all {{if this.isShowAll "active-filter"}}'
             >
               All
             </span>
@@ -57,7 +58,7 @@
       </div>
       <div class='results-items' id='layout-view'>
         <div class='sort-bar'>
-          {{#if showStudentHeader}}
+          {{#if this.showStudentHeader}}
             <div class='sort-bar-item student'>
               <span>Student</span>
             </div>
@@ -74,7 +75,7 @@
           {{! <div class="sort-bar-item brief-summary">
               <span>Brief Summary</span>
             </div> }}
-          {{#if showMentorHeader}}
+          {{#if this.showMentorHeader}}
             <div class='sort-bar-item mentor'>
               <span>Mentor</span>
             </div>
@@ -88,23 +89,23 @@
         </div>
 
         <div class='main-list'>
-          {{#each displayThreads as |thread|}}
+          {{#each this.displayThreads as |thread|}}
             <ResponseSubmissionThread
               @toSubmissionResponse={{action 'toSubmissionResponse'}}
-              @showStudent={{showStudentHeader}}
-              @showMentor={{showMentorHeader}}
+              @showStudent={{this.showStudentHeader}}
+              @showMentor={{this.showMentorHeader}}
               @thread={{thread}}
               @store={{this.store}}
               @toResponse={{action 'toResponse'}}
             />
           {{else}}
             <div class='no-results-container'>
-              <p class='notice'>{{noResponsesMessage}}</p>
+              <p class='notice'>{{this.noResponsesMessage}}</p>
             </div>
           {{/each}}
-          {{#if displayThreads}}
+          {{#if this.displayThreads}}
             <PaginationControl
-              @details={{currentMetadata}}
+              @details={{this.currentMetadata}}
               @initiatePageChange={{action 'initiatePageChange'}}
             />
           {{/if}}
