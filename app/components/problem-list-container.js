@@ -9,11 +9,21 @@ import { isEqual } from '@ember/utils';
 import $ from 'jquery';
 // import CategoriesListMixin from '../mixins/categories_list_mixin';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
-
+/* eslint-disable */
 export default Component.extend(
   // CategoriesListMixin,
   ErrorHandlingMixin,
   {
+    selectedCategories: [],
+    statusFilter: ['approved', 'pending', 'flagged'],
+    showCategoryList: false,
+    primaryFilterValue: alias('primaryFilter.value'),
+    doUseSearchQuery: or('isSearchingProblems', 'isDisplayingSearchResults'),
+    selectedPrivacySetting: ['M', 'O', 'E'],
+    doIncludeSubCategories: true,
+    adminFilter: alias('filter.primaryFilters.inputs.all'),
+    alert: service('sweet-alert'),
+    store: service(),
     elementId: 'problem-list-container',
     showList: true,
     menuClosed: true,
@@ -153,15 +163,6 @@ export default Component.extend(
         icon: 'fas fa-trash',
       },
     ],
-    selectedCategories: [],
-    statusFilter: ['approved', 'pending', 'flagged'],
-    showCategoryList: false,
-    primaryFilterValue: alias('primaryFilter.value'),
-    doUseSearchQuery: or('isSearchingProblems', 'isDisplayingSearchResults'),
-    selectedPrivacySetting: ['M', 'O', 'E'],
-    doIncludeSubCategories: true,
-    adminFilter: alias('filter.primaryFilters.inputs.all'),
-    alert: service('sweet-alert'),
 
     listResultsMessage: computed(
       'criteriaTooExclusive',
@@ -225,7 +226,16 @@ export default Component.extend(
         return msg;
       }
     ),
+    init: function () {
+      this.getUserOrg().then((name) => {
+        this.set('userOrgName', name);
+        this.configureFilter();
+        this.configurePrimaryFilter();
+        this.set('categoriesFilter', this.selectedCategories);
+      });
 
+      this._super(...arguments);
+    },
     privacySettingFilter: computed('selectedPrivacySetting', function () {
       return {
         $in: this.selectedPrivacySetting,
@@ -236,16 +246,6 @@ export default Component.extend(
       this.set('categoriesFilter', this.selectedCategories);
       this.send('triggerFetch');
     }),
-
-    init: function () {
-      this.getUserOrg().then((name) => {
-        this.set('userOrgName', name);
-        this.configureFilter();
-        this.configurePrimaryFilter();
-        this.set('categoriesFilter', this.selectedCategories);
-      });
-      this._super(...arguments);
-    },
 
     getUserOrg() {
       return this.get('model.currentUser.organization').then((org) => {
@@ -277,7 +277,9 @@ export default Component.extend(
     }),
 
     didInsertElement() {
-      let width = this.$().css('width');
+      let width = window
+        .getComputedStyle(this.element)
+        .getPropertyValue('width');
       let widthNum = parseInt(width, 10);
       if (widthNum <= 430) {
         this.send('setGrid');
@@ -766,6 +768,7 @@ export default Component.extend(
         }
         return;
       }
+      console.log(this.store);
       this.store
         .query('problem', queryParams)
         .then((results) => {

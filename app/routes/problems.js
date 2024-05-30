@@ -9,6 +9,7 @@ export default class ProblemsRoute extends AuthenticatedRoute {
 
   async model() {
     const user = this.modelFor('application');
+    // checking to see if organization is being fetched. quick fix to load all problems.
     // const userOrg = await user.get('organization');
     const recommendedProblems = await user.get('recommendedProblems');
     let problemCriteria = {};

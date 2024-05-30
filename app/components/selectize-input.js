@@ -1,10 +1,7 @@
 /*global _:false */
 import Component from '@ember/component';
 
-
-
-
-
+import $ from 'jquery';
 
 export default Component.extend({
   showInput: true,
@@ -29,7 +26,11 @@ export default Component.extend({
     }
     const newOptions = this.initialOptions;
     const currentOptions = this.options;
-    if ((newOptions && currentOptions) && !_.isEqual(newOptions, currentOptions)) {
+    if (
+      newOptions &&
+      currentOptions &&
+      !_.isEqual(newOptions, currentOptions)
+    ) {
       selectizeControl.clearOptions();
       selectizeControl.addOption(newOptions);
       selectizeControl.refreshOptions(false);
@@ -50,8 +51,7 @@ export default Component.extend({
             let labelField = this.labelField;
             return {
               [valueField]: record.get(valueField),
-              [labelField]: record.get(labelField)
-
+              [labelField]: record.get(labelField),
             };
           });
         }
@@ -101,7 +101,9 @@ export default Component.extend({
   didInsertElement() {
     let options = this.optionsHash;
     let id = this.inputId;
-    this.$(`#${id}`).selectize(options);
+    // this.$(`#${id}`).selectize(options);
+    this.element.querySelector('.selectize-input input');
+
     if (this.isDisabled) {
       this.$('select')[0].selectize.disable();
     }
@@ -147,7 +149,6 @@ export default Component.extend({
     }
 
     return hash;
-
   },
 
   addItemsSelectize: function (query, callback) {
@@ -179,13 +180,13 @@ export default Component.extend({
     if (customQueryParams) {
       // use custom params object passed in
       let base = {
-        [key]: query
+        [key]: query,
       };
 
       queryParams = Object.assign(base, customQueryParams);
     } else if (topLevelQueryParams) {
       queryParams[topLevelQueryParams] = {
-        [key]: query
+        [key]: query,
       };
       if (secondaryFilters) {
         _.each(secondaryFilters, (val, key) => {
@@ -201,13 +202,14 @@ export default Component.extend({
       }
     } else {
       queryParams = {
-        [key]: query
+        [key]: query,
       };
     }
 
     let model = this.model;
 
-    this.store.query(model, queryParams)
+    this.store
+      .query(model, queryParams)
       .then((results) => {
         // results is Ember AdapterPopulatedRecordArray
         let meta = results.get('meta');
@@ -241,8 +243,9 @@ export default Component.extend({
         });
 
         return callback(mapped);
-      }).catch((err) => {
+      })
+      .catch((err) => {
         this.set('dataFetchError', err);
       });
-  }
+  },
 });
