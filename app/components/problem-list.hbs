@@ -1,20 +1,25 @@
-<div id="problem-list" class="problem-list left-list">
-  <div class="main-list">
+<div id='problem-list' class='problem-list left-list'>
+  <div class='main-list'>
     {{#if @isSearching}}
-      <p class="loading-message">Searching problems...</p>
+      <p class='loading-message'>Searching problems...</p>
     {{else}}
-    <ul id="problem-list-ul">
-      {{#each @problems as |problem|}}
-      <li>
-        <div class="problem-list-item">
-          <ProblemListItem @recommendedProblems={{@recommendedProblems}} @currentUser={{@currentUser}} @problem={{problem}} @isList={{@isList}} @isGrid={{@isGrid}} @moreMenuOptions={{@moreMenuOptions}} @refreshList={{action "refreshList"}} />
-        </div>
-      </li>
-      {{/each}}
+      <ul id='problem-list-ul'>
+        {{#each @problems as |problem|}}
+          <li>
+            <div class='problem-list-item'>
+              <ProblemListItem
+                @recommendedProblems={{@recommendedProblems}}
+                @currentUser={{@currentUser}}
+                @problem={{problem}}
+                @isList={{@isList}}
+                @isGrid={{@isGrid}}
+                @moreMenuOptions={{@moreMenuOptions}}
+                @refreshList={{action 'refreshList'}}
+              />
+            </div>
+          </li>
+        {{/each}}
       </ul>
     {{/if}}
   </div>
 </div>
-
-
-

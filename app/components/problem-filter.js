@@ -32,17 +32,19 @@ export default Component.extend({
 
   // used for populating the selectize instance
   // orgs passed in from parent are all orgs from db
-  orgOptions: computed('orgs.[]', function () {
-    let orgs = this.orgs;
-    let toArray = orgs.toArray();
-    let mapped = _.map(toArray, (org) => {
-      return {
-        id: org.id,
-        name: org.get('name'),
-      };
-    });
-    return mapped;
-  }),
+  // ORGS IS RETURNING A
+  // orgOptions: computed('orgs.[]', function () {
+  //   let orgs = this.orgs;
+  //   console.log(this.orgs);
+  //   let toArray = orgs.toArray();
+  //   let mapped = _.map(toArray, (org) => {
+  //     return {
+  //       id: org.id,
+  //       name: org.get('name'),
+  //     };
+  //   });
+  //   return mapped;
+  // }),
 
   primaryFilterOptions: computed('filter', 'primaryFilterInputs', function () {
     let mapped = _.map(this.primaryFilterInputs, (val, key) => {
@@ -126,7 +128,7 @@ export default Component.extend({
       this.store.query('category', {}).then((queryCats) => {
         let categories = queryCats.get('meta');
         this.set('categoryTree', categories.categories);
-        this.set('showCategoryList', true)
+        this.set('showCategoryList', true);
       });
     },
 

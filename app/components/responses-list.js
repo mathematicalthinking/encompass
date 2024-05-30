@@ -8,6 +8,7 @@ export default Component.extend({
   elementId: 'responses-list',
   currentUser: service('current-user'),
   utils: service('utility-methods'),
+  router: service(),
   isShowAll: equal('currentFilter', 'all'),
 
   showAllFilter: false,
@@ -408,7 +409,13 @@ export default Component.extend({
       this.sendAction('toSubmissionResponse', sub.get('id'));
     },
     toResponse(submissionId, responseId) {
-      this.sendAction('toResponse', submissionId, responseId);
+      // Transition to the 'responses.submission' route with parameters
+      this.router.transitionTo('responses.submission', submissionId, {
+        queryParams: {
+          responseId: responseId,
+          submissionId: submissionId,
+        },
+      });
     },
     refreshList() {
       this.fetchThreads('all', 1);

@@ -1,8 +1,9 @@
 import { hash } from 'rsvp';
 import { action } from '@ember/object';
 import AuthenticatedRoute from '../_authenticated_route';
-
+import { inject as service } from '@ember/service';
 export default class AssignmentsNewRoute extends AuthenticatedRoute {
+  @service store;
   beforeModel() {
     const user = this.modelFor('application');
     const isStudent = user.get('isStudent');
