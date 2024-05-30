@@ -1,5 +1,4 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import { alias } from '@ember/object/computed';
 import Auditable from './auditable';
 export default class ProblemModel extends Auditable {
   get problemId() {
