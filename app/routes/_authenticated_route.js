@@ -1,11 +1,15 @@
 import Route from '@ember/routing/route';
-import MtAuthMixin from '../mixins/mt_auth_mixin';
+import { inject as service } from '@ember/service';
 
-export default Route.extend(MtAuthMixin, {
+export default Route.extend({
+  mtAuth: service(),
+
   beforeModel: function () {
     this._super.apply(this, arguments);
+
     this.authenticate();
   },
+
   authenticate: function () {
     //not crazy that this is duplicated here and in ApplicationRoute
     var user = this.modelFor('application');
@@ -22,6 +26,7 @@ export default Route.extend(MtAuthMixin, {
       this.transitionTo('unauthorized');
     }
   },
+
   actions: {
     error(error, transition) {
       let errorStatus;

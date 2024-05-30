@@ -1,6 +1,5 @@
 import Controller, { inject as controller } from '@ember/controller';
 import { computed } from '@ember/object';
-/* eslint-disable */
 /**
  * # Workspace Submission Controller
  * @description The controller for interacting with a submission in the context of a workspace
