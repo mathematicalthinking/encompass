@@ -20,13 +20,12 @@ import { aliasMethod, computed } from '@ember/object';
 import { gt } from '@ember/object/computed';
 import { next } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   currentUser: service('current-user'),
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
-
+  errorHandling: service('error-handling'),
   tagName: 'li',
   classNames: ['folderItem'],
   classNameBindings: [
@@ -97,7 +96,8 @@ export default Component.extend(ErrorHandlingMixin, {
 
   /* Drag and drop stuff */
   supportedTypes: {
-    selection: /^http:\/\/.*\/#\/workspaces\/[0-9a-f]*\/submissions\/[0-9a-f]*\/selections/,
+    selection:
+      /^http:\/\/.*\/#\/workspaces\/[0-9a-f]*\/submissions\/[0-9a-f]*\/selections/,
     folder: /^ember/, // We assume all other droppable ember objects are folders
   },
   dragEnter: aliasMethod('onDrag'),
@@ -272,7 +272,7 @@ export default Component.extend(ErrorHandlingMixin, {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateRecordErrors', droppedFolder);
+        this.errorHandling.Errors(err, 'updateRecordErrors', droppedFolder);
       });
   },
 
@@ -319,7 +319,11 @@ export default Component.extend(ErrorHandlingMixin, {
               );
             })
             .catch((err) => {
-              this.handleErrors(err, 'updateRecordErrors', folder);
+              this.errorHandling.handleErrors(
+                err,
+                'updateRecordErrors',
+                folder
+              );
             }); //we need the workspace to be populated
         });
       }

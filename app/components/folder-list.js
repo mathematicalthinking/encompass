@@ -15,9 +15,8 @@ import { computed } from '@ember/object';
  */
 import { equal, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   currentUser: service('current-user'),
   elementId: 'folder-list',
   classNames: ['workspace-flex-item', 'folders'],
@@ -28,6 +27,7 @@ export default Component.extend(ErrorHandlingMixin, {
     'editFolderMode:is-editing',
   ],
   alert: service('sweet-alert'),
+  errorHandling: service('error-handling'),
   utils: service('utility-methods'),
   weighting: 1,
   editFolderMode: false,
@@ -138,7 +138,7 @@ export default Component.extend(ErrorHandlingMixin, {
           })
           .catch((err) => {
             let message = err.errors[0].detail;
-            this.handleErrors(err, 'createRecordErrors', folder);
+            this.errorHandling.handleErrors(err, 'createRecordErrors', folder);
             this.alert.showToast(
               'error',
               `${message}`,
@@ -193,7 +193,7 @@ export default Component.extend(ErrorHandlingMixin, {
             false,
             null
           );
-          this.handleErrors(err, 'updateRecordErrors', folder);
+          this.errorHandling.handleErrors(err, 'updateRecordErrors', folder);
         });
     },
 
@@ -239,7 +239,7 @@ export default Component.extend(ErrorHandlingMixin, {
             // handle success
           })
           .catch((err) => {
-            this.handleErrors(err, 'updateRecordErrors', folder);
+            this.errorHandling.handleErrors(err, 'updateRecordErrors', folder);
           });
       }
     },
