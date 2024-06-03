@@ -1,6 +1,6 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import Auditable from './auditable';
-export default class VmtImportRequest extends Auditable {
+import AuditableModel from './auditable';
+export default class VmtImportRequest extends AuditableModel {
   @attr('string') workspaceName;
   @attr('string') workspaceMode;
   @belongsTo('user', { inverse: null }) workspaceOwner;

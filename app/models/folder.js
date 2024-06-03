@@ -1,9 +1,9 @@
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { sort } from '@ember/object/computed';
-import Auditable from '../models/_auditable_mixin';
+import AuditableModel from './auditable';
 
-export default Model.extend(Auditable, {
+export default Model.extend(AuditableModel, {
   name: attr('string'),
   weight: attr('number'),
   taggings: hasMany('tagging', { async: true }),
