@@ -2,14 +2,13 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   classNames: ['reset-page'],
   getTokenErrors: [],
   resetPasswordErrors: [],
   alert: service('sweet-alert'),
-
+  errorHandling: service('error-handling'),
   didReceiveAttrs: function () {
     const token = this.token;
     const that = this;
@@ -25,7 +24,7 @@ export default Component.extend(ErrorHandlingMixin, {
           }
         })
         .catch((err) => {
-          that.handleErrors(err, 'getTokenErrors');
+          that.errorHandling.handleErrors(err, 'getTokenErrors');
         });
     }
   },
@@ -67,7 +66,7 @@ export default Component.extend(ErrorHandlingMixin, {
           that.sendAction('toHome');
         })
         .catch((err) => {
-          this.handleErrors(err, 'resetPasswordErrors');
+          this.errorHandling.handleErrors(err, 'resetPasswordErrors');
         });
     },
     resetErrors: function (e) {

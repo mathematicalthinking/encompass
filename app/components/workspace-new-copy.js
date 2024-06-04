@@ -7,11 +7,11 @@ import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(CurrentUserMixin, {
   elementId: 'workspace-new-copy',
   newWsConfig: null,
+  errorHandling: service('error-handling'),
   workspaceToCopy: null,
   isUsingCustomConfig: false,
   customConfig: null,
@@ -564,7 +564,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         })
         .catch((err) => {
           this.set('loadingSubmissions', false);
-          this.handleErrors(err, 'loadSubmissionsError');
+          this.errorHandling.handleErrors(err, 'loadSubmissionsError');
         });
     },
 
@@ -700,7 +700,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         })
         .catch((err) => {
           this.set('isRequestInProgress', false);
-          this.handleErrors(err, 'serverErrors');
+          this.errorHandling.handleErrors(err, 'serverErrors');
         });
     },
     toggleMenu: function () {

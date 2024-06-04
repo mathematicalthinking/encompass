@@ -2,9 +2,9 @@ import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import moment from 'moment';
-import Auditable from '../models/_auditable_mixin';
+import AuditableModel from './auditable';
 
-export default Model.extend(Auditable, {
+export default Model.extend(AuditableModel, {
   submissionId: alias('id'),
   shortAnswer: attr('string'),
   longAnswer: attr('string'),

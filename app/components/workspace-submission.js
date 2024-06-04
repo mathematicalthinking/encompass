@@ -10,12 +10,12 @@ import { inject as service } from '@ember/service';
  */
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import VmtHostMixin from '../mixins/vmt-host';
 
-export default Component.extend(ErrorHandlingMixin, VmtHostMixin, {
+export default Component.extend(VmtHostMixin, {
   currentUser: service('current-user'),
   elementId: 'workspace-submission-comp',
+  errorHandling: service('error-handling'),
   classNameBindings: [
     'areNoSelections:no-selections',
     'isSelectionsBoxExpanded:expanded-selections',

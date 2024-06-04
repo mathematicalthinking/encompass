@@ -4,13 +4,12 @@ import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(CurrentUserMixin, {
   elementId: 'vmt-import-container',
 
   alert: service('sweet-alert'),
-
+  errorHandling: service('error-handling'),
   vmtUsername: null,
   vmtUserId: null,
   selectedMode: 'private',
@@ -138,7 +137,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         })
         .catch((err) => {
           this.set('isUploadingAnswer', false);
-          this.handleErrors(err, 'postErrors');
+          this.errorHandling.handleErrors(err, 'postErrors');
         });
     },
 

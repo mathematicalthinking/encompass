@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import Component from '@ember/component';
 import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import VmtHostMixin from '../mixins/vmt-host';
 
 export default Component.extend(
@@ -53,7 +52,7 @@ export default Component.extend(
             }
           })
           .catch((err) => {
-            this.handleErrors(err, 'searchErrors');
+            this.errorHandling.handleErrors(err, 'searchErrors');
           });
       },
       clearSearchResults() {

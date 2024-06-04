@@ -1,8 +1,6 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
-
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   elementId: 'pagination-control',
   showPageNavigation: computed('details.pageCount', function () {
     let count = this.get('details.pageCount');

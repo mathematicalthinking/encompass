@@ -1,32 +1,17 @@
-/* eslint-disable */
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/**
- * Passed in by template:
- * - comments
- * - currentWorkspace
- * - currentUser
- * - currentSubmission
- * - currentSelection
- * - store
- *
- *   TODO:
- *   - Test the hashtag stuff to see if that is still working.
- */
-/*global _:false */
 import { and, equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import moment from 'moment';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   currentUser: service('current-user'),
   elementId: 'comment-list',
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
   loading: service('loading-display'),
-
+  errorHandling: service('error-handling'),
   classNames: ['workspace-flex-item', 'comments'],
   classNameBindings: [
     'canComment:can-comment',
@@ -479,7 +464,7 @@ export default Component.extend(ErrorHandlingMixin, {
           comp.get('comments').pushObject(record);
         })
         .catch((err) => {
-          this.handleErrors(err, 'createRecordErrors');
+          this.errorHandling.handleErrors(err, 'createRecordErrors');
         });
     },
 
@@ -525,7 +510,7 @@ export default Component.extend(ErrorHandlingMixin, {
                   // this.set('commentDeleteSuccess', true);
                 })
                 .catch((err) => {
-                  this.handleErrors(err, 'updateRecordErrors');
+                  this.errorHandling.handleErrors(err, 'updateRecordErrors');
                 });
             });
           }
@@ -623,7 +608,7 @@ export default Component.extend(ErrorHandlingMixin, {
             'isLoadingSearchResults',
             'doShowLoadingMessage'
           );
-          this.handleErrors(err, 'queryErrors');
+          this.errorHandling.handleErrors(err, 'queryErrors');
         });
     },
     initiatePageChange(page) {

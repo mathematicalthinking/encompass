@@ -8,11 +8,10 @@ import { inject as service } from '@ember/service';
 import { isEqual } from '@ember/utils';
 import $ from 'jquery';
 // import CategoriesListMixin from '../mixins/categories_list_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+
 /* eslint-disable */
 export default Component.extend(
   // CategoriesListMixin,
-  ErrorHandlingMixin,
   {
     selectedCategories: [],
     statusFilter: ['approved', 'pending', 'flagged'],
@@ -24,6 +23,7 @@ export default Component.extend(
     adminFilter: alias('filter.primaryFilters.inputs.all'),
     alert: service('sweet-alert'),
     store: service(),
+    errorHandling: service('error-handling'),
     elementId: 'problem-list-container',
     showList: true,
     menuClosed: true,
@@ -793,7 +793,7 @@ export default Component.extend(
           }
         })
         .catch((err) => {
-          this.handleErrors(err, 'problemLoadErrors');
+          this.errorHandling.handleErrors(err, 'problemLoadErrors');
           this.set('isFetchingProblems', false);
         });
     },
