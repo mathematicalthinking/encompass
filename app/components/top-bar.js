@@ -1,11 +1,10 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
+export default Component.extend(CurrentUserMixin, {
   tagName: 'header',
-
+  errorHandling: service('error-handling'),
   toggleRoleErrors: [],
   alert: service('sweet-alert'),
 
@@ -87,7 +86,7 @@ export default Component.extend(ErrorHandlingMixin, CurrentUserMixin, {
           );
         })
         .catch((err) => {
-          this.handleErrors(err, 'toggleRoleErrors', currentUser);
+          this.errorHandling.handleErrors(err, 'toggleRoleErrors', currentUser);
           this.set('isToggleError', true);
         });
     },

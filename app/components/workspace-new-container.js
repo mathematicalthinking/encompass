@@ -6,12 +6,12 @@ import $ from 'jquery';
 import moment from 'moment';
 /*global _:false */
 import { all } from 'rsvp';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   elementId: 'workspace-new-container',
   showList: true,
   showGrid: false,
+  errorHandling: service('error-handling'),
   toggleTrashed: false,
   toggleHidden: false,
   utils: service('utility-methods'),
@@ -453,7 +453,7 @@ export default Component.extend(ErrorHandlingMixin, {
         // check if ned to confirm large request
       })
       .catch((err) => {
-        this.handleErrors(err, 'answerLoadErrors');
+        this.errorHandling.handleErrors(err, 'answerLoadErrors');
         this.set('isFetchingAnswers', false);
       });
   },
@@ -791,7 +791,11 @@ export default Component.extend(ErrorHandlingMixin, {
         .catch((err) => {
           this.set('isRequestInProgress', false);
 
-          this.handleErrors(err, 'wsRequestErrors', encWorkspaceRequest);
+          this.errorHandling.handleErrors(
+            err,
+            'wsRequestErrors',
+            encWorkspaceRequest
+          );
           return;
         });
     },

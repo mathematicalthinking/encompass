@@ -9,10 +9,9 @@ import { computed } from '@ember/object';
 import { next } from '@ember/runloop';
 import Encompass from '../app';
 import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 import './Droppable';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(CurrentUserMixin, {
   classNames: ['dropTarget'],
   classNameBindings: ['dragAction'],
   folderSaveErrors: [],
@@ -75,7 +74,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
         // handle success
       })
       .catch((err) => {
-        this.handleErrors(err, 'folderSaveErrors', folderModel);
+        this.errorHandling.handleErrors(err, 'folderSaveErrors', folderModel);
       });
   },
 });

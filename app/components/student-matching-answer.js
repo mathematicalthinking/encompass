@@ -1,13 +1,11 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   classNames: ['student-matching-answer'],
   utils: service('utility-methods'),
-
+  errorHandling: service('error-handling'),
   section: null,
   submission: null,
   isExpanded: false,

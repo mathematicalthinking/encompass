@@ -1,23 +1,20 @@
 import Component from '@ember/component';
 import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-
-
-
-
-
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(CurrentUserMixin, {
   elementId: 'signup-google',
   missingCredentials: false,
   noTermsAndConditions: false,
   agreedToTerms: false,
   org: null,
   updateUserErrors: [],
-
+  errorHandling: service('error-handling'),
   init: function () {
     this._super(...arguments);
-    this.set('typeaheadHeader', '<label class="tt-header">Popular Organizations:</label>');
+    this.set(
+      'typeaheadHeader',
+      '<label class="tt-header">Popular Organizations:</label>'
+    );
   },
 
   actions: {
@@ -60,11 +57,14 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       user.set('requestReason', requestReason);
       user.set('createdBy', user);
 
-      user.save().then((res) => {
-        // handle success
-      }).catch((err) => {
-        this.handleErrors(err, 'updateUserErrors', user);
-      });
+      user
+        .save()
+        .then((res) => {
+          // handle success
+        })
+        .catch((err) => {
+          this.errorHandling.handleErrors(err, 'updateUserErrors', user);
+        });
     },
     resetErrors(e) {
       const errors = ['missingCredentials', 'noTermsAndConditions'];
@@ -76,6 +76,4 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       }
     },
   },
-
-
 });

@@ -5,13 +5,13 @@ import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import moment from 'moment';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   elementId: 'submissions-filter',
   alert: service('sweet-alert'),
   findRecordErrors: [],
   wsRequestErrors: [],
+  errorHandling: service('error-handling'),
   utils: service('utility-methods'),
   isVmtOnly: false,
   showVmtFilters: false,

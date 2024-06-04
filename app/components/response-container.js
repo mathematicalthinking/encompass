@@ -4,15 +4,15 @@ import { computed } from '@ember/object';
 /*global _:false */
 import { alias, equal, gt } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 //needed for notification functions
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(CurrentUserMixin, {
   tagName: '',
   currentUser: service('current-user'),
   wsPermissions: service('workspace-permissions'),
   store: service(),
+  errorHandling: service('error-handling'),
   submission: null,
   subResponses: [],
   primaryResponseType: alias('response.responseType'),

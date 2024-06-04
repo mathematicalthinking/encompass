@@ -1,17 +1,11 @@
 import $ from 'jquery';
 import Component from '@ember/component';
 import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-
-
-
-
-
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
+export default Component.extend(CurrentUserMixin, {
   elementId: ['unconfirmed-page'],
   emailErrors: [],
-
+  errorHandling: service('error-handling'),
   actions: {
     sendEmail: function () {
       $.get('/auth/resend/confirm')
@@ -21,8 +15,8 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
           }
         })
         .catch((err) => {
-          this.handleErrors(err, 'emailErrors');
+          this.errorHandling.handleErrors(err, 'emailErrors');
         });
-    }
-  }
+    },
+  },
 });

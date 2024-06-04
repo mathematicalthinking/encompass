@@ -8,11 +8,11 @@ import { inject as service } from '@ember/service';
 import { isEqual } from '@ember/utils';
 import $ from 'jquery';
 import moment from 'moment';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   elementId: 'workspace-list-container',
   showList: true,
+  errorHandling: service('error-handling'),
   showGrid: false,
   toggleTrashed: false,
   toggleHidden: false,
@@ -853,7 +853,7 @@ export default Component.extend(ErrorHandlingMixin, {
       })
       .catch((err) => {
         if (!this.isDestroyed && !this.isDestroying) {
-          this.handleErrors(err, 'workspaceLoadErrors');
+          this.errorHandling.handleErrors(err, 'workspaceLoadErrors');
           this.set('isFetchingWorkspaces', false);
         }
       });

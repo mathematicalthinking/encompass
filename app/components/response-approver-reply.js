@@ -3,12 +3,12 @@ import { hash } from 'rsvp';
 import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   elementId: 'response-approver-reply',
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
+  errorHandling: service('error-handling'),
   loading: service('loading-display'),
   currentUser: service('current-user'),
   showNoPreviousRepliesMsg: equal('approverReplies.length', 0),
@@ -397,7 +397,11 @@ export default Component.extend(ErrorHandlingMixin, {
           }
         })
         .catch((err) => {
-          this.handleErrors(err, 'approvalErrors', this.responseToApprove);
+          this.errorHandling.handleErrors(
+            err,
+            'approvalErrors',
+            this.responseToApprove
+          );
         });
     },
 
@@ -486,7 +490,7 @@ export default Component.extend(ErrorHandlingMixin, {
             'isReplySending',
             'doShowLoadingMessage'
           );
-          this.handleErrors(err, 'saveRecordErrors', null, [
+          this.errorHandling.handleErrors(err, 'saveRecordErrors', null, [
             record,
             this.responseToApprove,
           ]);
@@ -661,7 +665,11 @@ export default Component.extend(ErrorHandlingMixin, {
             'doShowLoadingMessage'
           );
 
-          this.handleErrors(err, 'saveRecordErrors', this.displayReply);
+          this.errorHandling.handleErrors(
+            err,
+            'saveRecordErrors',
+            this.displayReply
+          );
         });
     },
 
@@ -733,7 +741,11 @@ export default Component.extend(ErrorHandlingMixin, {
             'isReplySending',
             'doShowLoadingMessage'
           );
-          this.handleErrors(err, 'saveRecordErrors', this.displayReply);
+          this.errorHandling.handleErrors(
+            err,
+            'saveRecordErrors',
+            this.displayReply
+          );
         });
     },
 
@@ -827,7 +839,7 @@ export default Component.extend(ErrorHandlingMixin, {
             'isReplySending',
             'doShowLoadingMessage'
           );
-          this.handleErrors(err, 'saveRecordErrors', revision);
+          this.errorHandling.handleErrors(err, 'saveRecordErrors', revision);
         });
     },
     confirmTrash(response) {
@@ -862,7 +874,7 @@ export default Component.extend(ErrorHandlingMixin, {
           }
         })
         .catch((err) => {
-          this.handleErrors(err, 'recordSaveErrors', response);
+          this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
         });
     },
     updateQuillText(content, isEmpty, isOverLengthLimit) {

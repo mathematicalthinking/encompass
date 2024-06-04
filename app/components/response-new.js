@@ -5,13 +5,12 @@ import { computed } from '@ember/object';
 import { and, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { hash } from 'rsvp';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend({
   currentUser: service('current-user'),
   utils: service('utility-methods'),
   loading: service('loading-display'),
-
+  errorHandling: service('error-handling'),
   isEditing: false,
   isCreating: false,
   anonymous: false,
@@ -462,7 +461,7 @@ export default Component.extend(ErrorHandlingMixin, {
             'doShowLoadingMessage'
           );
 
-          this.handleErrors(err, 'recordSaveErrors', response);
+          this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
         });
     },
 
