@@ -9,7 +9,7 @@ export default class ResponseThread extends Model {
   @service utils;
   @service store;
   @service currentUser;
-
+  @service notificationService;
   @attr('string') workspaceName;
   @attr('string') problemTitle;
   @attr() uniqueIdentifier;
@@ -38,7 +38,7 @@ export default class ResponseThread extends Model {
 
   @computed('newNotifications.[]', 'cleanResponses.[]', 'sortedRevisions.[]')
   get relatedNewNtfs() {
-    return this.newNotifications.filter((ntf) => {
+    return this.notificationService.newNotifications.filter((ntf) => {
       if (ntf.primaryRecordType !== 'response') {
         return false;
       }
@@ -201,7 +201,7 @@ export default class ResponseThread extends Model {
 
   @computed('newNotifications.[]', 'sortedRevisions.[]')
   get newRevisions() {
-    const newWorkNtfs = this.newNotifications.filterBy(
+    const newWorkNtfs = this.notificationService.newNotifications.filterBy(
       'notificationType',
       'newWorkToMentor'
     );
@@ -227,10 +227,11 @@ export default class ResponseThread extends Model {
 
   @computed('newNotifications.@each.notificationType', 'cleanResponses.[]')
   get newlyApprovedReplies() {
-    const newlyApprovedNtfs = this.newNotifications.filterBy(
-      'notificationType',
-      'newlyApprovedReply'
-    );
+    const newlyApprovedNtfs =
+      this.notificationService.newNotifications.filterBy(
+        'notificationType',
+        'newlyApprovedReply'
+      );
     const newResponseIds = newlyApprovedNtfs
       .map((ntf) => {
         return this.utils.getBelongsToId(ntf, 'response');
