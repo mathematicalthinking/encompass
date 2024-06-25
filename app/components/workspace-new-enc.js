@@ -5,13 +5,9 @@ import { isEmpty } from '@ember/utils';
 import { tracked } from '@glimmer/tracking';
 import $ from 'jquery';
 import moment from 'moment';
-import AddableProblemsMixin from '../mixins/addable_problems_mixin';
-import CurrentUserMixin from '../mixins/current_user_mixin';
+import { later } from '@ember/runloop';
 
-export default class WorkspaceNewEncComponent extends Component.extend(
-  CurrentUserMixin,
-  AddableProblemsMixin
-) {
+export default class WorkspaceNewEncComponent extends Component {
   @service('sweet-alert') alert;
   @service('error-handling') errorHandling;
   @tracked selectedPdSetId = null;
@@ -47,41 +43,41 @@ export default class WorkspaceNewEncComponent extends Component.extend(
       privacy:
         'Private workspaces are only visible by the owner and collaborators. Public workspaces are visible to all users',
     };
-
-    $(function () {
-      $('input[name="daterange"]').daterangepicker({
-        autoUpdateInput: false,
-        showDropdowns: true,
-        locale: {
-          cancelLabel: 'Clear',
-        },
-      });
-
-      $('input[name="daterange"]').on(
-        'apply.daterangepicker',
-        function (ev, picker) {
-          $(this).val(
-            picker.startDate.format('MM/DD/YYYY') +
-              ' - ' +
-              picker.endDate.format('MM/DD/YYYY')
-          );
-        }
-      );
-
-      $('input[name="daterange"]').on(
-        'cancel.daterangepicker',
-        function (ev, picker) {
-          $(this).val('');
-        }
-      );
-
-      $('input[name="daterange"]').attr(
-        'placeholder',
-        'mm/dd/yyyy - mm/dd/yyyy'
-      );
-    });
   }
+  didInsertElement() {
+    super.didInsertElement(...arguments);
 
+    const dateRangeInput = this.element.querySelector(
+      'input[name="daterange"]'
+    );
+
+    if (!dateRangeInput) {
+      return;
+    }
+
+    const pickerOptions = {
+      autoUpdateInput: false,
+      showDropdowns: true,
+      locale: {
+        cancelLabel: 'Clear',
+      },
+    };
+
+    const datePicker = new DateRangePicker(dateRangeInput, pickerOptions);
+
+    dateRangeInput.addEventListener('apply.daterangepicker', (ev) => {
+      const { startDate, endDate } = ev.detail;
+      dateRangeInput.value = `${startDate.format(
+        'MM/DD/YYYY'
+      )} - ${endDate.format('MM/DD/YYYY')}`;
+    });
+
+    dateRangeInput.addEventListener('cancel.daterangepicker', () => {
+      dateRangeInput.value = '';
+    });
+
+    dateRangeInput.setAttribute('placeholder', 'mm/dd/yyyy - mm/dd/yyyy');
+  }
   willDestroy() {
     super.willDestroy(...arguments);
     $('.daterangepicker').remove();
@@ -285,13 +281,18 @@ export default class WorkspaceNewEncComponent extends Component.extend(
   }
 
   @action
-  closeError(error) {
-    $('.error-box').addClass('fadeOutRight');
-    later(() => {
-      $('.error-box').removeClass('fadeOutRight');
-      $('.error-box').removeClass('pulse');
-      $('.error-box').hide();
-    }, 500);
+  closeError() {
+    const errorBox = this.element.querySelector('.error-box');
+
+    if (errorBox) {
+      errorBox.classList.add('fadeOutRight');
+
+      later(() => {
+        errorBox.classList.remove('fadeOutRight');
+        errorBox.classList.remove('pulse');
+        errorBox.style.display = 'none'; // Hide the error box
+      }, 500);
+    }
   }
 
   @action
