@@ -1,14 +1,14 @@
 import { later } from '@ember/runloop';
 import Service from '@ember/service';
 
-
-
-
-
-
 export default Service.extend({
-
-  handleLoadingMessage(context, eventType, triggerProperty, propToSet, timeout = 500) {
+  handleLoadingMessage(
+    context,
+    eventType,
+    triggerProperty,
+    propToSet,
+    timeout = 500
+  ) {
     if (context.get('isDestroyed') || context.get('isDestroying')) {
       return;
     }
@@ -46,5 +46,5 @@ export default Service.extend({
         }
       }
     }, timeout);
-  }
+  },
 });
