@@ -5,7 +5,7 @@ import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import { gt } from '@ember/object/computed';
 
-export default class ThreadModel extends Model {
+export default class ResponseThread extends Model {
   @service utils;
   @service store;
   @service currentUser;
