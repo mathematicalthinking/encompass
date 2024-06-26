@@ -1,11 +1,10 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import MtAuthMixin from '../mixins/mt_auth_mixin';
-
-export default Component.extend(MtAuthMixin, {
+import { inject as service } from '@ember/service';
+export default Component.extend({
   elementId: 'un-authorized',
-
+  mtAuth: service(),
   contactEmail: computed(function () {
-    return this.getContactEmail();
+    return this.mtAuth.getContactEmail();
   }),
 });
