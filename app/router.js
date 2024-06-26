@@ -8,8 +8,8 @@ export default class Router extends EmberRouter {
 
 Router.map(function () {
   // INDEX HOME-PAGE
-
   this.route('index', { path: '/' });
+
   // AUTH PARENT ROUTE
   this.route('auth', function () {
     this.route('login');
@@ -18,11 +18,13 @@ Router.map(function () {
     this.route('reset', { path: '/reset/:token' });
     this.route('confirm', { path: '/confirm/:token' });
   });
+
   // PROBLEMS PARENT ROUTE
   this.route('problems', function () {
     this.route('problem', { path: '/:problem_id' });
     this.route('new');
   });
+
   // SECTIONS ROUTE
   this.route('sections', function () {
     this.route('section', { path: '/:section_id' });
@@ -56,6 +58,7 @@ Router.map(function () {
       }
     );
   });
+
   // RESPONSES PARENT ROUTE
   this.route('responses', function () {
     this.route('new', function () {
@@ -75,11 +78,13 @@ Router.map(function () {
       path: '/workspace-history/:workspace_id',
     });
   });
+
   // USERS PARENT ROUTE
   this.route('users', function () {
     this.route('user', { path: '/:user_id' });
     this.route('new');
   });
+
   // IMPORT ROUTE
   this.route('import', function () {});
 
