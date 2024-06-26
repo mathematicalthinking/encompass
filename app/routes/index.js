@@ -8,13 +8,11 @@ export default class IndexRoute extends Route {
   beforeModel(transition) {
     super.beforeModel(...arguments); // Ensure superclass hooks are called
     this.authenticate();
-    // this is returning undefined
-    console.log(this.authenticate(), 'here');
   }
 
   authenticate() {
     const user = this.currentUser.user;
-    console.log('User authentication check:', user);
+
     if (!user.get('isAuthenticated')) {
       this.store.unloadAll();
       this.router.transitionTo('welcome'); // Use router service for transitions
@@ -31,30 +29,39 @@ export default class IndexRoute extends Route {
 
   async model() {
     try {
-      const user = this.currentUser;
+      const user = this.currentUser.user;
       const sections = await this.store.findAll('section');
+
       const teacherSections = sections.filter((section) =>
         section.teachers.includes(user)
       );
+
       const studentSections = sections.filter((section) =>
         section.students.includes(user)
       );
+
       const teacherAssignments = teacherSections.flatMap((section) =>
         section.assignments.toArray()
       );
+
       const studentAssignments = studentSections.flatMap((section) =>
         section.assignments.toArray()
       );
+
       const teacherClasses = user.sections.map((section) => section.sectionId);
+
       const filteredClasses = sections.filter((section) =>
         teacherClasses.includes(section.id)
       );
+
       const responses = await this.store.query('response', {
         filterBy: { createdBy: user.id },
       });
+      console.log(responses, 'here');
       const responsesReceived = await this.store.query('response', {
         filterBy: { recipient: user.id },
       });
+
       const collabWorkspaces = user.collabWorkspaces.length
         ? await this.store.query('workspace', {
             filterBy: { _id: { $in: user.collabWorkspaces } },
