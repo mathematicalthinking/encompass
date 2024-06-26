@@ -76,9 +76,8 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
     if (organization) {
       createUserData.organization = organization.id;
     } else {
-      createUserData.organization = this.args.currentUser.get(
-        'organization.id'
-      );
+      createUserData.organization =
+        this.args.currentUser.get('organization.id');
     }
 
     return $.post({

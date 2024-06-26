@@ -1,127 +1,112 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
-import { alias, equal } from '@ember/object/computed';
-import CurrentUserMixin from '../mixins/current_user_mixin';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 
-export default Component.extend(CurrentUserMixin, {
-  elementId: 'admin-workspace-filter',
-  mainFilter: alias('secondaryFilter.selectedValue'),
-  showOrgFilter: equal('mainFilter', 'org'),
-  orgFilter: alias('secondaryFilter.inputs.org'),
-  selectedOrgSubFilters: alias(
-    'secondaryFilter.inputs.org.subFilters.selectedValues'
-  ),
+export default class AdminWorkspaceFilterComponent extends Component {
+  @service('current-user') currentUser;
+  @tracked secondaryFilter;
 
-  orgFilterSubOptions: computed('orgFilter', function () {
-    return _.map(this.get('orgFilter.subFilters.inputs'), (val, key) => {
-      return val;
-    });
-  }),
+  @tracked('secondaryFilter.selectedValue') mainFilter;
+  @tracked('mainFilter', 'org') showOrgFilter;
+  @tracked('secondaryFilter.inputs.org') orgFilter;
+  @tracked('secondaryFilter.inputs.org.subFilters.selectedValues')
+  selectedOrgSubFilters;
 
-  areCurrentSelections: computed('selectedValues', function () {
+  get orgFilterSubOptions() {
+    return _.map(this.orgFilter.subFilters.inputs, (val, key) => val);
+  }
+
+  get areCurrentSelections() {
     return !_.isEmpty(this.selectedValues);
-  }),
+  }
 
-  currentSecondaryFilter: computed('mainFilter', function () {
-    let inputs = this.get('secondaryFilter.inputs');
+  get currentSecondaryFilter() {
+    let inputs = this.secondaryFilter.inputs;
     let mainFilter = this.mainFilter;
     return inputs[mainFilter];
-  }),
+  }
 
-  showUserFilter: computed('mainFilter', function () {
+  get showUserFilter() {
     let val = this.mainFilter;
     return val === 'owner' || val === 'creator';
-  }),
+  }
 
-  selectedValues: computed(
-    'currentSecondaryFilter.selectedValues.[]',
-    function () {
-      return this.get('currentSecondaryFilter.selectedValues');
-    }
-  ),
+  get selectedValues() {
+    return this.currentSecondaryFilter.selectedValues;
+  }
 
-  clearSelectedValues: function () {
-    this.set('currentSecondaryFilter.selectedValues', []);
-    // this.get('onUpdate')();
-  },
-  initialMainFilterItems: computed('mainFilter', function () {
+  get initialMainFilterItems() {
     let val = this.mainFilter;
     return [val];
-  }),
+  }
 
-  actions: {
-    setMainFilter(val, $item) {
-      if (!val) {
-        return;
-      }
-      // clear state unless current filter is pows
-      if (this.mainFilter !== 'pows') {
-        this.clearSelectedValues();
-      }
-      this.set('mainFilter', val);
+  clearSelectedValues() {
+    this.currentSecondaryFilter.selectedValues = [];
+  }
+
+  @action
+  setMainFilter(val, $item) {
+    if (!val) {
+      return;
+    }
+    if (this.mainFilter !== 'pows') {
+      this.clearSelectedValues();
+    }
+    this.mainFilter = val;
+    this.onUpdate();
+  }
+
+  @action
+  updateOrgSubFilters(e) {
+    let { id } = e.target;
+    let subFilters = this.orgFilter.subFilters;
+
+    let targetInput = subFilters.inputs[id];
+    if (!targetInput) {
+      return;
+    }
+    targetInput.isApplied = !targetInput.isApplied;
+
+    let appliedInputs = _.filter(subFilters.inputs, (input) => input.isApplied);
+    let appliedValues = _.map(appliedInputs, (input) => input.value);
+
+    this.orgFilter.subFilters.selectedValues = appliedValues;
+
+    if (this.onUpdate) {
       this.onUpdate();
-    },
-    updateOrgSubFilters(e) {
-      let { id } = e.target;
-      let subFilters = this.get('orgFilter.subFilters');
+    }
+  }
 
-      let targetInput = subFilters.inputs[id];
-      if (!targetInput) {
-        // not a valid option
-        return;
-      }
-      // valid option, toggle the inputs isApplied value
-      targetInput.isApplied = !targetInput.isApplied;
+  @action
+  updateMultiSelect(val, $item, propToUpdate) {
+    if (!val || !propToUpdate) {
+      return;
+    }
+    let isRemoval = _.isNull($item);
+    let prop = this[propToUpdate];
+    let isPropArray = Array.isArray(prop);
 
-      // filter for inputs who are currently applied
-      let appliedInputs = _.filter(subFilters.inputs, (input) => {
-        return input.isApplied;
-      });
-
-      let appliedValues = _.map(appliedInputs, (input) => input.value);
-
-      // update selectedValues on subFilters
-      //
-      // subFilters.selectedValues = appliedValues;
-      this.set('orgFilter.subFilters.selectedValues', appliedValues);
-
-      if (this.onUpdate) {
-        this.onUpdate();
-      }
-    },
-
-    // $item is null if removal
-    // propToUpdate should be sring prop
-    updateMultiSelect(val, $item, propToUpdate) {
-      if (!val || !propToUpdate) {
-        return;
-      }
-      let isRemoval = _.isNull($item);
-      let prop = this.get(propToUpdate);
-      let isPropArray = _.isArray(prop);
-
-      if (isRemoval) {
-        if (!isPropArray) {
-          this.set(prop, null);
-        } else {
-          prop.removeObject(val);
-        }
-
-        if (this.onUpdate) {
-          this.onUpdate();
-        }
-        return;
-      }
+    if (isRemoval) {
       if (!isPropArray) {
-        this.set(prop, val);
+        this[propToUpdate] = null;
       } else {
-        prop.addObject(val);
+        prop.removeObject(val);
       }
-
       if (this.onUpdate) {
         this.onUpdate();
       }
-    },
-  },
-});
+      return;
+    }
+
+    if (!isPropArray) {
+      this[propToUpdate] = val;
+    } else {
+      prop.addObject(val);
+    }
+
+    if (this.onUpdate) {
+      this.onUpdate();
+    }
+  }
+}
