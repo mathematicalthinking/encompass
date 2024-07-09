@@ -1,8 +1,8 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
 import _ from 'underscore';
-import Auditable from './auditable';
+import AuditableModel from './auditable';
 
-export default class AnswerModel extends Auditable {
+export default class AnswerModel extends AuditableModel {
   get answerId() {
     return this.id;
   }

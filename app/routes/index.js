@@ -57,7 +57,7 @@ export default class IndexRoute extends Route {
       const responses = await this.store.query('response', {
         filterBy: { createdBy: user.id },
       });
-      console.log(responses, 'here');
+
       const responsesReceived = await this.store.query('response', {
         filterBy: { recipient: user.id },
       });
