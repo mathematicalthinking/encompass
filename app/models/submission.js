@@ -1,157 +1,119 @@
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
 import moment from 'moment';
 import AuditableModel from './auditable';
 
-export default Model.extend(AuditableModel, {
-  submissionId: alias('id'),
-  shortAnswer: attr('string'),
-  longAnswer: attr('string'),
-  /*
-   * the powId is the ID for this submission in the PoW environment
-   */
-  powId: attr('number'),
-  creator: attr(),
-  creatorId: attr('number'),
-  publication: attr(),
-  uploadedFile: attr(),
-  //teacher, class, puzzle TODO
-  //teacher: DS.belongsTo(App.User, {embedded:'always'}),
-  teacher: attr(),
-  section: belongsTo('section'),
-  problem: belongsTo('problem'),
-  answer: belongsTo('answer'),
-  selections: hasMany('selection', { async: true }),
-  comments: hasMany('comment', { async: true }),
-  workspaces: hasMany('workspace', { async: true }),
-  responses: hasMany('response', { async: true }),
-  vmtRoomInfo: attr(''),
+export default class ResponseModel extends AuditableModel {
+  // Alias
+  get submissionId() {
+    return this.id;
+  }
 
-  folders: computed('selections.[].folders', function () {
-    var folders = [];
-    this.selections.forEach(function (selection) {
-      folders.pushObjects(selection.get('folders'));
+  @attr('string') shortAnswer;
+  @attr('string') longAnswer;
+  @attr('number') powId; // the ID for this submission in the PoW environment
+  @attr() creator;
+  @attr('number') creatorId;
+  @attr() publication;
+  @attr() uploadedFile;
+  @attr() teacher;
+  @belongsTo('section') section;
+  @belongsTo('problem') problem;
+  @belongsTo('answer') answer;
+  @hasMany('selection', { async: true }) selections;
+  @hasMany('comment', { async: true }) comments;
+  @hasMany('workspace', { async: true }) workspaces;
+  @hasMany('response', { async: true }) responses;
+  @attr() vmtRoomInfo;
+
+  get folders() {
+    let folders = [];
+    this.selections.forEach((selection) => {
+      folders.push(...selection.folders);
     });
-    return folders.uniq();
-  }),
+    return [...new Set(folders)];
+  }
 
-  // selectedComments: function () {
-  //   return this.get('comments').filterBy('useForResponse', true);
-  // }.property('comments.[].useForResponse'),
+  get puzzle() {
+    return this.publication?.puzzle;
+  }
 
-  puzzle: computed(function () {
-    return this.get('publication.puzzle');
-  }),
+  get puzzleUrl() {
+    return `/library/go.html?destination=${this.puzzle?.puzzleId}`;
+  }
 
-  puzzleUrl: computed(function () {
-    return '/library/go.html?destination=' + this.get('puzzle.puzzleId');
-  }),
+  get imageUrl() {
+    return `http://mathforum.org/encpows/uploaded-images/${this.uploadedFile?.savedFileName}`;
+  }
 
-  /*
-  attachment: function(){
-    return this.get('data.uploadedFile');
-  }.property(),
-  */
-
-  imageUrl: computed(function () {
-    return (
-      'http://mathforum.org/encpows/uploaded-images/' +
-      this.get('uploadedFile.savedFileName')
-    );
-  }),
-
-  student: computed(
-    'creator.safeName',
-    'creator.username',
-    'creator.fullName',
-    'vmtDisplayName',
-    function () {
-      let safeName = this.get('creator.safeName');
-      let fullName = this.get('creator.fullName');
-      let username = this.get('creator.username');
-      if (safeName) {
-        return safeName;
-      }
-      if (this.get('vmtRoomInfo.roomId')) {
-        return this.vmtDisplayName;
-      }
-      if (fullName) {
-        return fullName;
-      }
-      return username;
+  get student() {
+    let safeName = this.creator?.safeName;
+    let fullName = this.creator?.fullName;
+    let username = this.creator?.username;
+    if (safeName) {
+      return safeName;
     }
-  ),
-
-  studentDisplayName: computed(
-    'creator.safeName',
-    'creator.username',
-    'vmtDisplayName',
-    function () {
-      if (this.get('vmtRoomInfo.roomId')) {
-        return this.vmtDisplayName;
-      }
-
-      let safeName = this.get('creator.safeName');
-      let username = this.get('creator.username');
-
-      let name = safeName ? safeName : username;
-
-      return name;
+    if (this.vmtRoomInfo?.roomId) {
+      return this.vmtDisplayName;
     }
-  ),
+    if (fullName) {
+      return fullName;
+    }
+    return username;
+  }
 
-  label: computed('student', 'createDate', 'data.thread.threadId', function () {
-    var label = this.student;
-    var createDate = this.createDate;
+  get studentDisplayName() {
+    if (this.vmtRoomInfo?.roomId) {
+      return this.vmtDisplayName;
+    }
+
+    let safeName = this.creator?.safeName;
+    let username = this.creator?.username;
+
+    return safeName ? safeName : username;
+  }
+
+  get label() {
+    let label = this.student;
+    let createDate = this.createDate;
     if (createDate) {
-      label += ' on ' + moment(createDate).format('l');
+      label += ` on ${moment(createDate).format('l')}`;
     }
-    label += ' (' + this.get('data.thread.threadId') + ')';
+    label += ` (${this.data?.thread?.threadId})`;
     return label;
-  }),
+  }
 
-  isStatic: computed('powId', function () {
+  get isStatic() {
     return !this.powId;
-  }),
-  uniqueIdentifier: computed(
-    'creator.username',
-    'creator.studentId',
-    function () {
-      // vmt room
-      if (this.isVmt) {
-        return this.get('vmtRoomInfo.roomId');
-      }
-      // encompass user
-      if (this.get('creator.studentId')) {
-        return this.get('creator.studentId');
-      }
+  }
 
-      // pows username
-      if (this.get('creator.username')) {
-        return this.get('creator.username');
-      }
-      return this.get('creator.safeName');
+  get uniqueIdentifier() {
+    if (this.isVmt) {
+      return this.vmtRoomInfo?.roomId;
     }
-  ),
+    if (this.creator?.studentId) {
+      return this.creator.studentId;
+    }
+    if (this.creator?.username) {
+      return this.creator.username;
+    }
+    return this.creator?.safeName;
+  }
 
-  isVmt: computed('vmtRoomInfo.roomId', function () {
-    let id = this.get('vmtRoomInfo.roomId');
+  get isVmt() {
+    let id = this.vmtRoomInfo?.roomId;
     let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
-
     return checkForHexRegExp.test(id);
-  }),
+  }
 
-  firstVmtParticipant: computed('vmtRoomInfo.participants.[]', function () {
-    return this.get('vmtRoomInfo.participants.firstObject');
-  }),
-  firstVmtFacilitator: computed(
-    'vmtRoomInfo.facilitators.firstObject',
-    function () {
-      return this.get('vmtRoomInfo.facilitators.firstObject');
-    }
-  ),
-  vmtDisplayName: computed('vmtRoomInfo.roomName', function () {
-    return `VMT Room: ${this.get('vmtRoomInfo.roomName')}`;
-  }),
-});
+  get firstVmtParticipant() {
+    return this.vmtRoomInfo?.participants?.[0];
+  }
+
+  get firstVmtFacilitator() {
+    return this.vmtRoomInfo?.facilitators?.[0];
+  }
+
+  get vmtDisplayName() {
+    return `VMT Room: ${this.vmtRoomInfo?.roomName}`;
+  }
+}

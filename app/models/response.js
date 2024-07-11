@@ -1,10 +1,11 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import Auditable from './auditable';
-export default class ResponseModel extends Auditable {
+import AuditableModel from './auditable';
+export default class ResponseModel extends AuditableModel {
   get persisted() {
     return !!this.id;
   }
   @attr('string') text;
+
   // the original response the user was given (should be based on the selections and comments below)
   @attr('string') original;
   // who the response is for
@@ -23,7 +24,7 @@ export default class ResponseModel extends Auditable {
     return this.submission.powId;
   }
   get isStatic() {
-    return this.submiission.isStatic;
+    return this.submission.isStatic;
   }
   @attr('string') responseType;
   @attr('string') note;
@@ -34,7 +35,7 @@ export default class ResponseModel extends Auditable {
   @attr('boolean', { defaultValue: false }) wasReadByRecipient;
   @attr('boolean', { defaultValue: false }) wasReadByApprover;
   @attr('boolean', { defaultValue: false }) isApproverNoteOnly;
-  @belongsTo('user', { invers: null }) unapprovedBy;
+  @belongsTo('user', { inverse: null }) unapprovedBy;
   @belongsTo('response', { inverse: null }) originalResponse;
   get shortText() {
     if (typeof this.text !== 'string') {
