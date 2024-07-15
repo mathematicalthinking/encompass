@@ -6,7 +6,7 @@ import { computed } from '@ember/object';
 import { gt } from '@ember/object/computed';
 
 export default class ResponseThread extends Model {
-  @service utils;
+  @service('utility-methods') utils;
   @service store;
   @service currentUser;
   @service notificationService;

@@ -3,7 +3,6 @@ import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { alias, equal, gte, or, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-/* eslint-disable */
 /**
  * Passed in by template:
  * - submissions

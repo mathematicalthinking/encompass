@@ -1,20 +1,22 @@
-/*global _:false */
-
 import Service from '@ember/service';
+import { inject as service } from '@ember/service';
+import _ from 'lodash';
 
-export default Service.extend({
+export default class UtilityService extends Service {
+  @service currentUser;
+
   isNullOrUndefined(val) {
     return _.isNull(val) || _.isUndefined(val);
-  },
+  }
 
   isNonEmptyArray(val) {
     return _.isArray(val) && !_.isEmpty(val);
-  },
+  }
 
   isNonEmptyString(val) {
     return _.isString(val) && val.length > 0;
-  },
-  // not array or function
+  }
+
   isNonEmptyObject(val) {
     return (
       _.isObject(val) &&
@@ -22,11 +24,13 @@ export default Service.extend({
       !_.isFunction(val) &&
       !_.isEmpty(val)
     );
-  },
+  }
+
   isValidMongoId(val) {
     let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
     return checkForHexRegExp.test(val);
-  },
+  }
+
   getBelongsToId(record, relationshipName) {
     if (
       !this.isNonEmptyObject(record) ||
@@ -47,6 +51,7 @@ export default Service.extend({
         hasRequestedRelationship = true;
       }
     });
+
     if (!hasRequestedRelationship) {
       return null;
     }
@@ -58,7 +63,8 @@ export default Service.extend({
     }
 
     return null;
-  },
+  }
+
   getHasManyIds(record, relationshipName) {
     if (
       !this.isNonEmptyObject(record) ||
@@ -66,6 +72,7 @@ export default Service.extend({
     ) {
       return [];
     }
+
     let hasEachRelationship = 'eachRelationship' in record;
     if (!hasEachRelationship) {
       return [];
@@ -78,6 +85,7 @@ export default Service.extend({
         hasRequestedRelationship = true;
       }
     });
+
     if (!hasRequestedRelationship) {
       return [];
     }
@@ -86,8 +94,10 @@ export default Service.extend({
     if (ref) {
       return ref.ids();
     }
+
     return [];
-  },
+  }
+
   filterByBelongsToId(records, relationshipName, targetId) {
     if (!records || !relationshipName || !targetId) {
       return [];
@@ -101,7 +111,7 @@ export default Service.extend({
 
       return id === targetId;
     });
-  },
+  }
 
   findByBelongsToId(records, relationshipName, targetId) {
     if (!records || !relationshipName || !targetId) {
@@ -116,21 +126,19 @@ export default Service.extend({
 
       return id === targetId;
     });
-  },
+  }
 
   extractHoursMinsSecondsFromMs(ms) {
-    // takes ms as Number and returns [hours, mins, seconds]
-    // seconds are rounded down
-    if (!ms > 0) {
+    if (!(ms > 0)) {
       return [0, 0, 0];
     }
+
     let fullHours = ms * 0.001 * (1 / 60) * (1 / 60);
 
     let hourStr = fullHours.toString();
     let decimalIx = hourStr.indexOf('.');
 
     if (decimalIx === -1) {
-      // integer
       return [fullHours, 0, 0];
     }
 
@@ -141,7 +149,6 @@ export default Service.extend({
     decimalIx = fullMinStr.indexOf('.');
 
     if (decimalIx === -1) {
-      // integer minutes
       return [Math.floor(fullHours), fullMinutes, 0];
     }
 
@@ -152,9 +159,9 @@ export default Service.extend({
       Math.floor(fullMinutes),
       Math.floor(fullSeconds * 60),
     ];
-  },
+  }
+
   extractMsFromTimeString(timeString) {
-    // expect format of hh:mm:ss
     if (typeof timeString !== 'string') {
       return null;
     }
@@ -174,7 +181,8 @@ export default Service.extend({
     }
 
     return null;
-  },
+  }
+
   getTimeStringFromMs(ms) {
     let [hours, minutes, seconds] = this.extractHoursMinsSecondsFromMs(ms);
     let displayHours = hours < 10 ? `0${hours}` : `${hours}`;
@@ -182,5 +190,5 @@ export default Service.extend({
     let displaySeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 
     return `${displayHours}:${displayMinutes}:${displaySeconds}`;
-  },
-});
+  }
+}

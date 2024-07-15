@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 
 export default class NotificationService extends Service {
-  @service utils;
+  @service('utility-methods') utils;
   @service userNtfs;
   @service currentUser;
 

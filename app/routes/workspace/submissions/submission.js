@@ -14,8 +14,8 @@ import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import { action } from '@ember/object';
 export default class WorkspaceSubmissionRoute extends Route {
-  @service alert;
-  @service utils;
+  @service sweetAlert;
+  @service('utility-methods') utils;
   @service currentUser;
 
   queryParams = {
