@@ -9,17 +9,20 @@
 
 import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
-import { hash } from 'rsvp';
+import { hash, resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
-import { resolve } from 'rsvp';
-import VmtHostMixin from '../../../mixins/vmt-host';
+import { action } from '@ember/object';
+export default class WorkspaceSubmissionRoute extends Route {
+  @service alert;
+  @service utils;
+  @service currentUser;
 
-export default Route.extend(VmtHostMixin, {
-  alert: service('sweet-alert'),
-  utils: service('utility-methods'),
-  currentUser: service('current-user'),
-  queryParams: 'vmtRoomId',
+  queryParams = {
+    vmtRoomId: {
+      refreshModel: true,
+    },
+  };
 
   async model({ submission_id }) {
     let submissions = await this.modelFor('workspace.submissions');
@@ -30,7 +33,7 @@ export default Route.extend(VmtHostMixin, {
       assignment,
       submission: submissions.findBy('id', submission_id),
     });
-  },
+  }
 
   afterModel(submission, transition) {
     return this.resolveVmtRoom(submission).then((room) => {
@@ -46,36 +49,31 @@ export default Route.extend(VmtHostMixin, {
         });
       }
     });
-  },
+  }
 
-  setupController: function (controller, model) {
-    this._super(controller, model);
-  },
+  setupController(controller, model) {
+    super.setupController(controller, model);
+    controller('application').set('isSmallHeader', true);
+  }
+
   resetController(controller, isExiting, transition) {
     if (isExiting && transition.targetName !== 'error') {
       controller.set('itemsToDisplay', 'all');
+      controller('application').set('isSmallHeader', false);
     }
-  },
+  }
 
-  activate: function () {
-    this.controllerFor('application').set('isSmallHeader', true);
-  },
-
-  deactivate: function () {
-    this.controllerFor('application').set('isSmallHeader', false);
-  },
-
-  renderTemplate: function (controller, model) {
+  renderTemplate(controller, model) {
     this.render('workspace/submission');
 
     let user = this.modelFor('application');
 
     schedule('afterRender', () => {
       if (!user.get('seenTour')) {
-        this.controller.send('startTour', 'workspace');
+        controller.send('startTour', 'workspace');
       }
     });
-  },
+  }
 
   resolveVmtRoom(submission) {
     let roomId;
@@ -96,9 +94,7 @@ export default Route.extend(VmtHostMixin, {
       return resolve(cachedRoom);
     }
     let url = `api/vmt/rooms/${roomId}`;
-    return $.get({
-      url,
-    }).then((data) => {
+    return fetch(url).then((data) => {
       if (!data || !data.room) {
         return null;
       }
@@ -108,7 +104,7 @@ export default Route.extend(VmtHostMixin, {
 
       return data.room;
     });
-  },
+  }
 
   handleRoomForVmt(room) {
     let utils = this.utils;
@@ -120,7 +116,7 @@ export default Route.extend(VmtHostMixin, {
       return;
     }
     window.vmtRooms[room._id] = room;
-  },
+  }
 
   extractVmtRoom(roomId) {
     if (!this.utils.isNonEmptyObject(window.vmtRooms)) {
@@ -128,74 +124,78 @@ export default Route.extend(VmtHostMixin, {
     }
 
     return window.vmtRooms[roomId];
-  },
+  }
 
-  actions: {
-    reload: function () {
-      this.refresh();
-    },
+  @action
+  reload() {
+    this.refresh();
+  }
 
-    addSelection: function (selection) {},
+  @action
+  addSelection(selection) {}
 
-    tagSelection: function (selection, tags) {
-      var route = this;
-      var workspace = this.modelFor('workspace');
-      workspace.get('folders').then(function (folders) {
-        var lcFolders = {};
-        folders.forEach(function (f) {
-          lcFolders[f.get('name').toLowerCase().replace(/\s+/g, '')] = f;
-        });
-        tags.forEach(function (tag) {
-          if (_.keys(lcFolders).includes(tag)) {
-            route.send(
-              'fileSelectionInFolder',
-              selection.get('id'),
-              lcFolders[tag]
-            );
-          }
-        });
+  @action
+  tagSelection(selection, tags) {
+    let workspace = this.modelFor('workspace');
+    workspace.get('folders').then((folders) => {
+      let lcFolders = {};
+      folders.forEach((f) => {
+        lcFolders[f.get('name').toLowerCase().replace(/\s+/g, '')] = f;
       });
-    },
-    fileSelectionInFolder: function (selectionId, folder) {
-      let selection = this.store.peekRecord('selection', selectionId);
-      let workspace = this.modelFor('workspace');
-
-      if (!selection) {
-        return;
-      }
-      let tagging = this.store.createRecord('tagging', {
-        workspace,
-        selection,
-        folder,
-        createdBy: this.currentUser.user,
-      });
-      tagging
-        .save()
-        .then((savedTagging) => {
-          this.alert.showToast(
-            'success',
-            'Selection Filed',
-            'bottom-end',
-            3000,
-            false,
-            null
+      tags.forEach((tag) => {
+        if (Object.keys(lcFolders).includes(tag)) {
+          this.send(
+            'fileSelectionInFolder',
+            selection.get('id'),
+            lcFolders[tag]
           );
-        })
-        .catch((err) => {
-          console.log('err save tagging', err);
-        });
-    },
-    willTransition(transition) {
-      let currentUrl = window.location.hash;
-      let wasVmt = currentUrl.indexOf('?vmtRoomId=') !== -1;
-      let willBeVmt = this.utils.isValidMongoId(
-        transition.to.queryParams.vmtRoomId
-      );
-      if (wasVmt && !willBeVmt) {
-        window.postMessage({
-          messageType: 'DESTROY_REPLAYER',
-        });
-      }
-    },
-  },
-});
+        }
+      });
+    });
+  }
+
+  @action
+  fileSelectionInFolder(selectionId, folder) {
+    let selection = this.store.peekRecord('selection', selectionId);
+    let workspace = this.modelFor('workspace');
+
+    if (!selection) {
+      return;
+    }
+    let tagging = this.store.createRecord('tagging', {
+      workspace,
+      selection,
+      folder,
+      createdBy: this.currentUser.user,
+    });
+    tagging
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          'Selection Filed',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
+        console.log('err save tagging', err);
+      });
+  }
+
+  @action
+  willTransition(transition) {
+    let currentUrl = window.location.hash;
+    let wasVmt = currentUrl.indexOf('?vmtRoomId=') !== -1;
+    let willBeVmt = this.utils.isValidMongoId(
+      transition.to.queryParams.vmtRoomId
+    );
+    if (wasVmt && !willBeVmt) {
+      window.postMessage({
+        messageType: 'DESTROY_REPLAYER',
+      });
+    }
+  }
+}
