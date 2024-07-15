@@ -5,15 +5,21 @@
  */
 import Route from '@ember/routing/route';
 import { action } from '@ember/object';
-
+import { inject as service } from '@ember/service';
 export default class WorkspaceRoute extends Route {
+  @service store;
   /*
   using regular ajax request because sideloaded  data was not being pushed in to store soon enough
   when using ember data, which was causing unnecessary api requests being made
   */
 
   async model(params) {
-    return await this.store.findRecord('workspace', params.workspace_id);
+    const workspace = await this.store.findRecord(
+      'workspace',
+      params.workspace_id
+    );
+
+    return workspace;
     // let url = `/api/workspaces/${params.workspace_id}`;
 
     // return $.get({ url }).then((results) => {

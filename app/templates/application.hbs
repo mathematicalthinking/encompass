@@ -1,12 +1,17 @@
-{{page-title "EnCoMPASS" prepend=false}}
-<div class="ember-view">
-  {{!--outlet header--}}
+{{page-title 'EnCoMPASS' prepend=false}}
+<div class='ember-view'>
+  {{!outlet header}}
 
-  <TopBar @store={{this.store}} @user={{this.currentUser}} @currentUser={{this.currentUser}} @isHidden={{this.isHidden}} @toHome="toHome" />
+  <TopBar
+    @store={{this.store}}
+    @user={{this.currentUser}}
+    @currentUser={{this.currentUser}}
+    @isHidden={{this.isHidden}}
+    @toHome='toHome'
+  />
   <SocketLoader @store={{this.store}} />
-  <section id="al_body">
+  <section id='al_body'>
     {{outlet}}
-
-  </section> 
-  {{!--end al_body--}}
+  </section>
+  {{!end al_body}}
 </div>

@@ -1,27 +1,22 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
-
-
-
-
-
-export default Component.extend({
-  elementId: 'categories',
-
+export default class CategoriesMenu extends Component {
   // didReceiveAttrs: function () {
   //   this._super(...arguments);
   //   let categories = this.get('categories.meta');
   //   this.set('categories', categories.categories);
-  // },
-
-  actions: {
-    addCategory: function (category) {
-      let identifier = category.identifier;
-      this.store.queryRecord('category', { identifier: identifier }).then((cat) => {
-        this.sendAction('addCategories', cat);
-      });
-    },
+  // }
+  addCategoryAction(cat) {
+    this.addCategories(cat);
   }
-
-});
-
+  @action
+  addCategory(category) {
+    let identifier = category.identifier;
+    this.store
+      .queryRecord('category', { identifier: identifier })
+      .then((cat) => {
+        this.addCategoryAction('addCategories', cat);
+      });
+  }
+}

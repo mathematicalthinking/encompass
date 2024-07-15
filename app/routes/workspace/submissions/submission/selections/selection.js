@@ -1,42 +1,46 @@
-import { computed, observer } from '@ember/object';
 import Route from '@ember/routing/route';
-import { schedule } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import { tracked } from '@ember/object';
+import { scheduleOnce } from '@ember/runloop';
 import $ from 'jquery';
 
-export default Route.extend({
-  afterModel: function (model, transition) {
-    this.controllerFor('workspace').set('currentSelection', model);
-  },
+export default class YourRouteName extends Route {
+  @service('workspace') workspaceController;
+  @service('application') applicationController;
 
-  deactivate: function () {
-    this.controllerFor('workspace').set('currentSelection', null);
-  },
+  afterModel(model) {
+    this.workspaceController.set('currentSelection', model);
+  }
 
-  doTour: observer('shouldDoTour', function () {
-    var user = this.modelFor('application');
+  deactivate() {
+    this.workspaceController.set('currentSelection', null);
+  }
 
-    schedule('afterRender', function () {
-      if (!user.get('seenTour')) {
-        //customize for this part of the tour
-        window.guiders.hideAll();
-        //guiders.show('comments');
-      }
-    });
-  }),
-
-  shouldDoTour: computed('Encompass.redoTour', function () {
-    var user = this.modelFor('application');
-    var userSeenTour = user.get('seenTour');
-    var redoTour = this.get('Encompass.redoTour');
+  @tracked('applicationController.model.seenTour', 'Encompass.redoTour')
+  get shouldDoTour() {
+    let user = this.applicationController.model;
+    let userSeenTour = user.get('seenTour');
+    let redoTour = this.Encompass.redoTour;
     return userSeenTour || redoTour;
-  }),
+  }
 
-  renderTemplate: function () {
-    this.render();
-    $('#commentTextarea').focus();
-    // var user = this.modelFor('application');
-    //    if (!user.get('seenTour')) {
-    //      this.doTour();
-    //    }
-  },
-});
+  // doTour = observer('shouldDoTour', function () {
+  //   let user = this.applicationController.model;
+
+  //   scheduleOnce('afterRender', this, function () {
+  //     if (!user.get('seenTour')) {
+  //       window.guiders.hideAll();
+  //       // guiders.show('comments');
+  //     }
+  //   });
+  // });
+
+  // renderTemplate() {
+  //   super.renderTemplate();
+  //   $('#commentTextarea').focus();
+  //   // Uncomment to trigger tour based on conditions
+  //   // if (!this.applicationController.model.get('seenTour')) {
+  //   //   this.doTour();
+  //   // }
+  // }
+}

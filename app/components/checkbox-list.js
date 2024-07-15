@@ -1,44 +1,47 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+// Import necessary dependencies
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
-export default Component.extend({
-  classNames: ['checkbox-list'],
+// Define the component as a native JavaScript class
+export default class CheckboxListComponent extends Component {
+  classNames = ['checkbox-list'];
 
-  selectedItems: [],
-  isToggledAll: false,
+  selectedItems = [];
+  isToggledAll = false;
 
-  selectAllLabel: computed('isToggledAll', function () {
-    let isOn = this.isToggledAll;
-    return isOn ? 'Deselect All' : 'Select All';
-  }),
+  @tracked('isToggledAll')
+  get selectAllLabel() {
+    return this.isToggledAll ? 'Deselect All' : 'Select All';
+  }
+  constructor() {
+    super(...arguments);
 
-  didReceiveAttrs() {
     let initialSelectedItems = this.initialSelectedItems;
     if (initialSelectedItems) {
-      this.selectedItems.addObjects(initialSelectedItems);
+      this.selectedItems = [...initialSelectedItems];
     }
-  },
+  }
+  @action
+  onToggleAll() {
+    let wasSelected = this.isToggledAll;
+    if (wasSelected) {
+      this.selectedItems = [];
+    } else {
+      this.selectedItems = this.items;
+    }
+  }
 
-  actions: {
-    onItemSelect(item, wasSelected) {
-      if (!item) {
-        return;
-      }
-      let selectedItems = this.selectedItems;
-      if (wasSelected) {
-        selectedItems.removeObject(item);
-      } else {
-        selectedItems.addObject(item);
-      }
-    },
-    onToggleAll() {
-      let wasSelected = this.isToggledAll;
-      if (wasSelected) {
-        this.set('selectedItems', []);
-      } else {
-        this.set('selectedItems', this.items);
-      }
-      this.toggleProperty('isToggledAll');
-    },
-  },
-});
+  @action
+  onItemSelect(item, wasSelected) {
+    if (!item) {
+      return;
+    }
+    let selectedItems = this.selectedItems;
+    if (wasSelected) {
+      selectedItems.removeObject(item);
+    } else {
+      selectedItems.addObject(item);
+    }
+  }
+}
