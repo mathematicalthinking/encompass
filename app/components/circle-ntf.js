@@ -1,11 +1,13 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { equal } from '@ember/object/computed';
+// Import necessary dependencies
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 
-export default Component.extend({
-  classNames: ['circle-ntf'],
+// Define the component as a native JavaScript class
+export default class CircleNotificationComponent extends Component {
+  classNames = ['circle-ntf'];
 
-  count: computed('displayCount', function () {
+  @tracked('displayCount')
+  get count() {
     let count = this.displayCount;
 
     if (typeof count !== 'number') {
@@ -15,7 +17,7 @@ export default Component.extend({
       return '99+';
     }
     return count;
-  }),
+  }
 
-  areNoNtfs: equal('count', 0),
-});
+  @tracked('count', 0) areNoNtfs;
+}
