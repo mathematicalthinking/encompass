@@ -6,27 +6,28 @@
  */
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
 export default class SubmissionFirstRoute extends Route {
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
 
-  model() {
+  async model() {
     return this.modelFor('workspace.submissions');
   }
 
-  afterModel() {
+  @action
+  async afterModel(submissions) {
     let workspace = this.modelFor('workspace');
+
     if (workspace.submissions.length > 0) {
-      let sorted = workspace.submissions.sortBy('student', 'createDate');
-      let firstStudent = sorted.get('firstObject.student');
-      let lastRevision = sorted.getEach('student').lastIndexOf(firstStudent);
-      this.transitionTo(
-        'workspace.submissions.submission',
-        sorted.objectAt(lastRevision).get('id')
-      );
+      let sorted = submissions.sortBy('student', 'createDate');
+      let firstSubmission = sorted[0];
+      let queryParams = { id: firstSubmission.id };
+
+      await this.transitionTo({ queryParams });
     } else {
-      // no work in workspace yet; transition to info page
+      // No work in workspace yet; transition to info page
       this.alert.showToast(
         'info',
         'Workspace does not have any submissions yet',
