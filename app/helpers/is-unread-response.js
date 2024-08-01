@@ -1,11 +1,6 @@
 // use to indicate unread responses or responses that need approval or revisions for now
 import { helper as buildHelper } from '@ember/component/helper';
 
-
-
-
-
-
 export default buildHelper(function (args) {
   let [response, currentUser] = args;
 
@@ -29,7 +24,10 @@ export default buildHelper(function (args) {
     creatorId = creatorRef.id();
   }
 
-  if (!response.get('wasReadByRecipient') && currentUser.get('id') === recipientId) {
+  if (
+    !response.get('wasReadByRecipient') &&
+    currentUser.get('id') === recipientId
+  ) {
     return true;
   }
 
@@ -42,5 +40,4 @@ export default buildHelper(function (args) {
   if (status === 'needsRevisions') {
     return creatorId === currentUser.get('id');
   }
-
 });

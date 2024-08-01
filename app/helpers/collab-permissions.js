@@ -1,10 +1,5 @@
 import { helper as buildHelper } from '@ember/component/helper';
 
-
-
-
-
-
 export default buildHelper(function (val) {
   let text;
   val = val[0];
@@ -46,13 +41,13 @@ export default buildHelper(function (val) {
       text = 'Editor';
       return text;
     case 'viewOnly':
-      text = "View Only";
+      text = 'View Only';
       return text;
     case 'custom':
-      text = "Custom";
+      text = 'Custom';
       return text;
     default:
-      text = "N/A";
+      text = 'N/A';
       return text;
   }
 });

@@ -1,10 +1,5 @@
 import { helper as buildHelper } from '@ember/component/helper';
 
-
-
-
-
-
 export default buildHelper(function (params) {
   var number = params[0];
   var singular = params[1];
@@ -13,7 +8,7 @@ export default buildHelper(function (params) {
   if (number === 1) {
     return singular;
   } else {
-    return (typeof plural === 'string' ? plural : singular + 's');
+    return typeof plural === 'string' ? plural : singular + 's';
   }
 });
 
