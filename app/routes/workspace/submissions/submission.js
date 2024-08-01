@@ -53,7 +53,8 @@ export default class WorkspaceSubmissionRoute extends Route {
 
   setupController(controller, model) {
     super.setupController(controller, model);
-    controller('application').set('isSmallHeader', true);
+
+    this.controllerFor('application').set('isSmallHeader', true);
   }
 
   resetController(controller, isExiting, transition) {

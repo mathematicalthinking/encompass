@@ -4,7 +4,7 @@ import { tracked } from '@ember/object';
 import { scheduleOnce } from '@ember/runloop';
 import $ from 'jquery';
 
-export default class YourRouteName extends Route {
+export default class SelectionRoute extends Route {
   @service('workspace') workspaceController;
   @service('application') applicationController;
 
