@@ -9,7 +9,6 @@ import { isEqual } from '@ember/utils';
 import $ from 'jquery';
 // import CategoriesListMixin from '../mixins/categories_list_mixin';
 
-/* eslint-disable */
 export default Component.extend(
   // CategoriesListMixin,
   {
@@ -506,7 +505,7 @@ export default Component.extend(
 
       return filter;
     },
-    // eslint-disable-next-line complexity
+
     buildAllFilter() {
       let filter = {};
       let adminFilter = this.adminFilter;

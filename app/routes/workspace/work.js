@@ -8,11 +8,11 @@ import { inject as service } from '@ember/service';
 
 export default class WorkspaceWorkRoute extends Route {
   @service('sweet-alert') alert;
-
+  @service router;
   async afterModel(model) {
     let hasSubmissions = (await model.submissions.length) >= 0;
     if (hasSubmissions) {
-      this.transitionTo('workspace.submissions.first');
+      this.router.transitionTo('workspace.submissions.first');
     } else {
       // no work in workspace yet, redirect to info page
       this.alert.showToast(
@@ -24,7 +24,7 @@ export default class WorkspaceWorkRoute extends Route {
         null
       );
 
-      this.transitionTo('workspace.info');
+      this.router.transitionTo('workspace.info');
     }
   }
 }

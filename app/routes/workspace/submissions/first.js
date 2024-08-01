@@ -11,7 +11,7 @@ import { action } from '@ember/object';
 export default class SubmissionFirstRoute extends Route {
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
-
+  @service router;
   async model() {
     return this.modelFor('workspace.submissions');
   }
@@ -23,9 +23,11 @@ export default class SubmissionFirstRoute extends Route {
     if (workspace.submissions.length > 0) {
       let sorted = submissions.sortBy('student', 'createDate');
       let firstSubmission = sorted[0];
-      let queryParams = { id: firstSubmission.id };
-
-      await this.transitionTo({ queryParams });
+      await this.router.transitionTo(
+        'workspace.submissions.submission',
+        workspace.id,
+        firstSubmission.id
+      );
     } else {
       // No work in workspace yet; transition to info page
       this.alert.showToast(
@@ -36,8 +38,7 @@ export default class SubmissionFirstRoute extends Route {
         false,
         null
       );
-
-      this.transitionTo('workspace.info');
+      this.router.transitionTo('workspace.info');
     }
   }
 }
