@@ -1,18 +1,21 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { observer } from '@ember/object';
+import { action, computed } from '@ember/object';
 
-export default Component.extend({
-  currentUser: service(),
-  store: service(),
-  utils: service('utility-methods'),
-  sortCriterion: {
+export default class DashBoardAssignmentsListComponent extends Component {
+  @service currentUser;
+  @service store;
+  @service('utility-methods') utils;
+
+  sortCriterion = {
     name: 'A-Z',
     sortParam: { param: 'name', direction: 'asc' },
     icon: 'fas fa-sort-alpha-down sort-icon',
     type: 'name',
-  },
-  sortOptions: {
+  };
+
+  sortOptions = {
     name: [
       { sortParam: null, icon: '' },
       {
@@ -32,10 +35,7 @@ export default Component.extend({
       { sortParam: null, icon: '' },
       {
         name: 'A-Z',
-        sortParam: {
-          param: 'linkedAssignment.section.name',
-          direction: 'asc',
-        },
+        sortParam: { param: 'linkedAssignment.section.name', direction: 'asc' },
         icon: 'fas fa-sort-alpha-down sort-icon',
         type: 'class',
       },
@@ -53,19 +53,13 @@ export default Component.extend({
       { sortParam: null, icon: '' },
       {
         name: 'Newest',
-        sortParam: {
-          param: 'assignedDate',
-          direction: 'asc',
-        },
+        sortParam: { param: 'assignedDate', direction: 'asc' },
         icon: 'fas fa-arrow-down sort-icon',
         type: 'assignedDate',
       },
       {
         name: 'Oldest',
-        sortParam: {
-          param: 'assignedDate',
-          direction: 'desc',
-        },
+        sortParam: { param: 'assignedDate', direction: 'desc' },
         icon: 'fas fa-arrow-up sort-icon',
         type: 'assignedDate',
       },
@@ -74,19 +68,13 @@ export default Component.extend({
       { sortParam: null, icon: '' },
       {
         name: 'Newest',
-        sortParam: {
-          param: 'dueDate',
-          direction: 'asc',
-        },
+        sortParam: { param: 'dueDate', direction: 'asc' },
         icon: 'fas fa-arrow-down sort-icon',
         type: 'dueDate',
       },
       {
         name: 'Oldest',
-        sortParam: {
-          param: 'dueDate',
-          direction: 'desc',
-        },
+        sortParam: { param: 'dueDate', direction: 'desc' },
         icon: 'fas fa-arrow-up sort-icon',
         type: 'dueDate',
       },
@@ -95,84 +83,72 @@ export default Component.extend({
       { sortParam: null, icon: '' },
       {
         name: 'Newest',
-        sortParam: {
-          param: 'answers.length',
-          direction: 'asc',
-        },
+        sortParam: { param: 'answers.length', direction: 'asc' },
         icon: 'fas fa-arrow-down sort-icon',
         type: 'status',
       },
       {
         name: 'Oldest',
-        sortParam: {
-          param: 'answers.length',
-          direction: 'desc',
-        },
+        sortParam: { param: 'answers.length', direction: 'desc' },
         icon: 'fas fa-arrow-up sort-icon',
         type: 'status',
       },
     ],
-  },
-  didReceiveAttrs: function () {
+  };
+
+  constructor() {
+    super(...arguments);
     this.filterAssignments();
-  },
+  }
 
-  filterAssignments: observer(
-    'assignments.@each.isTrashed',
-    'currentUser.isStudent',
-    function () {
-      let currentUser = this.get('currentUser.user');
-      let filtered = this.assignments.filter((assignment) => {
-        return assignment.id && !assignment.get('isTrashed');
-      });
-      filtered = filtered.sortBy('createDate').reverse();
-      if (currentUser.get('accountType') === 'S') {
-        // what is this if block for?
-        // console.log('current user is a student');
-      }
-      // let currentDate = new Date();
-      this.set('assignmentList', filtered);
-    }
-  ),
+  @observer('assignments.@each.isTrashed', 'currentUser.isStudent')
+  filterAssignments() {
+    let currentUser = this.currentUser.user;
+    let filtered = this.assignments.filter((assignment) => {
+      return assignment.id && !assignment.isTrashed;
+    });
+    filtered = filtered.sortBy('createDate').reverse();
+    this.set('assignmentList', filtered);
+  }
 
-  yourList: function () {
+  get yourList() {
     const date = new Date();
+    let currentUser = this.currentUser.user;
 
-    let currentUser = this.get('currentUser.user');
-    let yourList = this.assignments.filter((assignment) => {
-      let userId = currentUser.get('id');
-      const assignedStudents = assignment
-        .get('students')
-        .content.currentState.map((student) => student.id);
-      if (!assignment.get('assignedDate')) {
-        return true;
-      }
+    return this.assignments.filter((assignment) => {
+      let userId = currentUser.id;
+      const assignedStudents = assignment.students.content.currentState.map(
+        (student) => student.id
+      );
+
       return (
-        assignedStudents.includes(userId) &&
-        !assignment.get('isTrashed') &&
-        assignment.get('assignedDate').getTime() < date.getTime()
+        !assignment.assignedDate ||
+        (assignedStudents.includes(userId) &&
+          !assignment.isTrashed &&
+          assignment.assignedDate.getTime() < date.getTime())
       );
     });
+  }
 
-    return yourList;
-  },
-
-  sortedProblems: function () {
-    let sortValue = this.get('sortCriterion.sortParam.param') || 'name';
-    let sortDirection = this.get('sortCriterion.sortParam.direction') || 'asc';
+  @computed('sortCriterion')
+  get sortedProblems() {
+    let sortValue = this.sortCriterion.sortParam.param || 'name';
+    let sortDirection = this.sortCriterion.sortParam.direction || 'asc';
     let sorted;
-    if (this.yourList()) {
-      sorted = this.yourList().sortBy(sortValue);
+
+    if (this.yourList) {
+      sorted = this.yourList.sortBy(sortValue);
     }
+
     if (sortDirection === 'desc') {
       return sorted.reverse();
     }
 
     return sorted;
-  }.property('sortCriterion'),
-  actions: {
-    updateSortCriterion(criterion) {
-      this.set('sortCriterion', criterion);
-    },
-  },
-});
+  }
+
+  @action
+  updateSortCriterion(criterion) {
+    this.sortCriterion = criterion;
+  }
+}
