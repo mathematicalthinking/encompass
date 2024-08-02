@@ -19,12 +19,12 @@ export default {
 
     var valueNames = _.keys(properties);
     var number = valueNames.length;
-    var text = valueNames.join(", ");
+    var text = valueNames.join(', ');
 
     return {
       text: text,
       number: number,
-      multiple: number > 1 ? true : false
+      multiple: number > 1 ? true : false,
     };
-  }
+  },
 };

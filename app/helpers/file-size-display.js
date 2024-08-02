@@ -1,10 +1,5 @@
 import { helper as buildHelper } from '@ember/component/helper';
 
-
-
-
-
-
 export default buildHelper(function (args) {
   // args is array of arguments passed in from template
   let [bytes] = args;
@@ -20,5 +15,4 @@ export default buildHelper(function (args) {
   } else if (bytes >= 1048576) {
     return (bytes / 1048576).toFixed(1) + 'MB';
   }
-
 });

@@ -1,13 +1,13 @@
 import Controller from '@ember/controller';
-import CurrentUserMixin from "../mixins/current_user_mixin";
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
-export default Controller.extend(CurrentUserMixin, {
-  isCompDirty: false,
-  confirmLeaving: false,
+export default class ImportController extends Controller {
+  @tracked isCompDirty = false;
+  @tracked confirmLeaving = false;
 
-  actions: {
-    doConfirmLeaving: function (value) {
-      this.set("confirmLeaving", value);
-    },
-  },
-});
+  @action
+  doConfirmLeaving(value) {
+    this.confirmLeaving = value;
+  }
+}
