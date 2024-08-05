@@ -1,23 +1,15 @@
 import { A } from '@ember/array';
 import Controller, { inject as controller } from '@ember/controller';
 import EmberObject, { action } from '@ember/object';
-import { alias, equal, or } from '@ember/object/computed';
 import { run } from '@ember/runloop';
-import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
-import { or, equal } from '@ember/object/computed';
 
 export default class FolderController extends Controller {
   @controller workspace;
-  @alias('workspace.model') currentWorkspace;
   @service('workspace-permissions') permissions;
 
   @tracked browseOption = 1;
-  @equal('browseOption', 1) bySelection;
-  @equal('browseOption', 0) bySubmission;
   @tracked includeSubfolders = true;
   @tracked submissionsCol = true;
   @tracked selectionsCol = true;
@@ -32,21 +24,30 @@ export default class FolderController extends Controller {
   @tracked showSelectionComments = true;
   @tracked showSelectionFolders = true;
 
-  @or('showSubmissionSelectionsComments', 'showSubmissionSelectionsFolders')
-  showSubmissionSelectionsStuff;
+  get currentWorkspace() {
+    return this.workspace.model;
+  }
 
-  @computed('currentUser', 'currentWorkspace')
+  get bySelection() {
+    return this.browseOption === 1;
+  }
+
+  get bySubmission() {
+    return this.browseOption === 0;
+  }
+
+  get showSubmissionSelectionsStuff() {
+    return (
+      this.showSubmissionSelectionsComments ||
+      this.showSubmissionSelectionsFolders
+    );
+  }
+
   get canEdit() {
     const workspace = this.currentWorkspace;
     return this.permissions.canEdit(workspace, 'selections', 3);
   }
 
-  @computed(
-    'model.id',
-    'model.cleanSelections.[]',
-    'model._selections.[]',
-    'includeSubfolders'
-  )
   get evidence() {
     if (this.includeSubfolders) {
       return this.model.get('_selections');
@@ -54,12 +55,6 @@ export default class FolderController extends Controller {
     return this.model.get('cleanSelections');
   }
 
-  @computed(
-    'model',
-    'model.submissions.[]',
-    'model._submissions.[]',
-    'includeSubfolders'
-  )
   get selectedSubmissions() {
     if (this.includeSubfolders) {
       return this.model.get('_submissions');
@@ -67,11 +62,10 @@ export default class FolderController extends Controller {
     return this.model.get('submissions');
   }
 
-  @computed('model._selections.@each.submission')
   get selectionGroups() {
     const submissions = this.model
       .get('_selections')
-      .getEach('submission')
+      .mapBy('submission')
       .uniq();
     const result = A();
 
@@ -111,7 +105,7 @@ export default class FolderController extends Controller {
   changeSelection(selection) {
     const selector = `.selectionLink.${selection.get('id')}`;
     run(() => {
-      this.send('changeSubmission', selection.get('submission'));
+      this.changeSubmission(selection.get('submission'));
       if (window.opener) {
         window.opener.$(selector).click();
       } else {
