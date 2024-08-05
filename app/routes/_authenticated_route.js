@@ -1,49 +1,48 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default Route.extend({
-  mtAuth: service(),
+export default class MyRoute extends Route {
+  @service mtAuth;
+  @service store;
+  @service router;
 
-  beforeModel: function () {
-    this._super.apply(this, arguments);
+  beforeModel(transition) {
+    super.beforeModel(transition);
 
     this.authenticate();
-  },
+  }
 
-  authenticate: function () {
+  authenticate() {
     //not crazy that this is duplicated here and in ApplicationRoute
-    var user = this.modelFor('application');
-    if (!user.get('isAuthenticated')) {
+    let user = this.modelFor('application');
+    if (!user.isAuthenticated) {
       this.store.unloadAll();
-      this.transitionTo('auth.login');
-    } else if (
-      user.get('email') &&
-      !user.get('isEmailConfirmed') &&
-      !user.get('isStudent')
-    ) {
-      this.transitionTo('unconfirmed');
-    } else if (!user.get('isAuthz')) {
-      this.transitionTo('unauthorized');
+      this.router.transitionTo('auth.login');
+    } else if (user.email && !user.isEmailConfirmed && !user.isStudent) {
+      this.router.transitionTo('unconfirmed');
+    } else if (!user.isAuthz) {
+      this.router.transitionTo('unauthorized');
     }
-  },
+  }
 
-  actions: {
-    error(error, transition) {
-      let errorStatus;
+  @action
+  error(error, transition) {
+    let errorStatus;
 
-      if (error && error.errors) {
-        let errorObj = error.errors[0];
+    if (error && error.errors) {
+      let errorObj = error.errors[0];
 
-        if (errorObj) {
-          errorStatus = errorObj.status;
-        }
+      if (errorObj) {
+        errorStatus = errorObj.status;
       }
+    }
 
-      if (errorStatus === '401') {
-        this.replaceWith('auth.login');
-      } else {
-        return true;
-      }
-    },
-  },
-});
+    if (errorStatus === '401') {
+      this.router.replaceWith('auth.login');
+    } else {
+      // Allow the route to handle the error
+      return true;
+    }
+  }
+}
