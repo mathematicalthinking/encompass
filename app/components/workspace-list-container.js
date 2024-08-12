@@ -326,22 +326,32 @@ export default Component.extend({
   },
 
   didInsertElement() {
-    let width = this.$().css('width');
+    this._super(...arguments);
+
+    // Get the element's width using native DOM methods
+    let width =
+      this.element.style.width || window.getComputedStyle(this.element).width;
     let widthNum = parseInt(width, 10);
+
+    // Conditional logic based on the width of the element
     if (widthNum <= 430) {
       this.send('setGrid');
     }
 
+    // Handle the doHideOutlet property
     let doHideOutlet = this.doHideOutlet;
-    if (_.isUndefined(doHideOutlet)) {
+    if (typeof doHideOutlet === 'undefined') {
       this.set('doHideOutlet', this.get('model.hideOutlet'));
     }
-    if (this.doHideOutlet === false) {
-      this.$('#outlet').removeClass('hidden');
-    }
-    this._super(...arguments);
-  },
 
+    // Show the outlet element if doHideOutlet is false
+    if (this.doHideOutlet === false) {
+      let outletElement = this.element.querySelector('#outlet');
+      if (outletElement) {
+        outletElement.classList.remove('hidden');
+      }
+    }
+  },
   configureFilter: function () {
     let currentUserOrgName = this.userOrgName;
 
