@@ -9,58 +9,13 @@
         <div class='table-m'>
           <table class='max-width'>
             <tr id='blue'>
-              <th>{{toggle-control
-                  classToAdd='sort-bar-item name'
-                  onUpdate=(action 'updateSortCriterion')
-                  initialState=0
-                  options=sortOptions.name
-                  label='Problem'
-                  parentProp=sortCriterion
-                  type='name'
-                  activeType=sortCriterion.type
-                }}</th>
+              <th><ToggleControl @classToAdd="sort-bar-item name" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{sortOptions.name}} @label="Problem" @parentProp={{sortCriterion}} @type="name" @activeType={{sortCriterion.type}} /></th>
               {{#unless user.isStudent}}
-                <th>{{toggle-control
-                    classToAdd='sort-bar-item name'
-                    onUpdate=(action 'updateSortCriterion')
-                    initialState=0
-                    options=sortOptions.class
-                    label='Class'
-                    parentProp=sortCriterion
-                    type='class'
-                    activeType=sortCriterion.type
-                  }}</th>
+                <th><ToggleControl @classToAdd="sort-bar-item name" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{sortOptions.class}} @label="Class" @parentProp={{sortCriterion}} @type="class" @activeType={{sortCriterion.type}} /></th>
               {{/unless}}
-              <th>{{toggle-control
-                  classToAdd='sort-bar-item name'
-                  onUpdate=(action 'updateSortCriterion')
-                  initialState=0
-                  options=sortOptions.assignedDate
-                  label='Date Assigned'
-                  parentProp=sortCriterion
-                  type='assignedDate'
-                  activeType=sortCriterion.type
-                }}</th>
-              <th>{{toggle-control
-                  classToAdd='sort-bar-item name'
-                  onUpdate=(action 'updateSortCriterion')
-                  initialState=0
-                  options=sortOptions.dueDate
-                  label='Date Due'
-                  parentProp=sortCriterion
-                  type='dueDate'
-                  activeType=sortCriterion.type
-                }}</th>
-              <th>{{toggle-control
-                  classToAdd='sort-bar-item name'
-                  onUpdate=(action 'updateSortCriterion')
-                  initialState=1
-                  options=sortOptions.status
-                  label='Status'
-                  parentProp=sortCriterion
-                  type='status'
-                  activeType=sortCriterion.type
-                }}</th>
+              <th><ToggleControl @classToAdd="sort-bar-item name" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{sortOptions.assignedDate}} @label="Date Assigned" @parentProp={{sortCriterion}} @type="assignedDate" @activeType={{sortCriterion.type}} /></th>
+              <th><ToggleControl @classToAdd="sort-bar-item name" @onUpdate={{action "updateSortCriterion"}} @initialState={{0}} @options={{sortOptions.dueDate}} @label="Date Due" @parentProp={{sortCriterion}} @type="dueDate" @activeType={{sortCriterion.type}} /></th>
+              <th><ToggleControl @classToAdd="sort-bar-item name" @onUpdate={{action "updateSortCriterion"}} @initialState={{1}} @options={{sortOptions.status}} @label="Status" @parentProp={{sortCriterion}} @type="status" @activeType={{sortCriterion.type}} /></th>
             </tr>
           </table>
         </div>
