@@ -255,7 +255,8 @@ export default Component.extend(
             'warning',
             'You currently do not belong to any organization',
             'Please add or request an organization in order to get the best user experience',
-            'Ok'
+            'Ok',
+            null
           );
           return 'undefined';
         }

@@ -1,16 +1,7 @@
 import Service from '@ember/service';
-import { inject as service } from '@ember/service';
+import Swal from 'sweetalert2';
 
 export default class SweetAlertService extends Service {
-  @service currentUser;
-
-  title = null;
-  type = null;
-  toast = true;
-  position = null;
-  timer = null;
-  showConfirmButton = null;
-  backgroundColor = null;
   successColor = '#CBFDCB';
   errorColor = '#ffe0e0';
   warningColor = '#ffcd94';
@@ -19,20 +10,15 @@ export default class SweetAlertService extends Service {
   setBackgroundColor(type) {
     switch (type) {
       case 'success':
-        this.backgroundColor = this.successColor;
-        break;
+        return this.successColor;
       case 'error':
-        this.backgroundColor = this.errorColor;
-        break;
+        return this.errorColor;
       case 'warning':
-        this.backgroundColor = this.warningColor;
-        break;
+        return this.warningColor;
       case 'info':
-        this.backgroundColor = this.infoColor;
-        break;
+        return this.infoColor;
       default:
-        this.backgroundColor = '#fff';
-        break;
+        return '#fff';
     }
   }
 
@@ -44,25 +30,25 @@ export default class SweetAlertService extends Service {
     showConfirmButton = false,
     confirmButtonText = null
   ) {
-    this.setBackgroundColor(type);
-    return window.swal({
-      type: type,
+    const backgroundColor = this.setBackgroundColor(type);
+    return Swal.fire({
+      icon: type,
       title: title,
       position: position,
       timer: timer,
       toast: true,
       showConfirmButton: showConfirmButton,
       confirmButtonText: confirmButtonText,
-      background: this.backgroundColor,
+      background: backgroundColor,
     });
   }
 
   showModal(type, title, text, confirmText, cancelText = 'Cancel') {
-    return window.swal({
-      type: type,
+    return Swal.fire({
+      icon: type,
       title: title,
       text: text,
-      showCancelButton: true,
+      showCancelButton: cancelText !== null,
       showConfirmButton: true,
       confirmButtonText: confirmText,
       cancelButtonText: cancelText,
@@ -70,7 +56,7 @@ export default class SweetAlertService extends Service {
   }
 
   showPrompt(input, title, text, confirmButtonText) {
-    return window.swal({
+    return Swal.fire({
       input: input,
       title: title,
       text: text,
@@ -86,7 +72,7 @@ export default class SweetAlertService extends Service {
     text = null,
     confirmButtonText = 'OK'
   ) {
-    return window.swal({
+    return Swal.fire({
       input: 'select',
       title,
       inputPlaceholder,

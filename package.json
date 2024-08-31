@@ -91,6 +91,7 @@
     "selenium-webdriver": "^4.21.0",
     "sharp": "^0.29.2",
     "socket.io": "^2.5.0",
+    "sweetalert2": "^11.12.4",
     "underscore": "^1.13.6",
     "uuid": "^8.3.2",
     "wordcloud": "^1.2.2"

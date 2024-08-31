@@ -1,1 +1,4 @@
-<span {{action "onToggle"}}>{{this.label}} <i class={{this.iconClass}}></i></span>
+<span {{on 'click' this.onToggle}}>
+  {{@label}}
+  <i class={{this.iconClass}} />
+</span>
