@@ -1,4 +1,4 @@
-import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
+import { attr, belongsTo, hasMany } from '@ember-data/model';
 import moment from 'moment';
 import AuditableModel from './auditable';
 
@@ -16,9 +16,9 @@ export default class ResponseModel extends AuditableModel {
   @attr() publication;
   @attr() uploadedFile;
   @attr() teacher;
-  @belongsTo('section') section;
-  @belongsTo('problem') problem;
-  @belongsTo('answer') answer;
+  @belongsTo('section', { async: true }) section;
+  @belongsTo('problem', { async: true }) problem;
+  @belongsTo('answer', { async: true }) answer;
   @hasMany('selection', { async: true }) selections;
   @hasMany('comment', { async: true }) comments;
   @hasMany('workspace', { async: true }) workspaces;

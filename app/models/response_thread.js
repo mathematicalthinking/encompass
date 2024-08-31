@@ -16,9 +16,9 @@ export default class ResponseThread extends Model {
   @attr('string') threadType; // submitter, mentor, approver
   @attr('string') studentDisplay;
 
-  @hasMany('submission') submissions;
-  @hasMany('response') responses;
-  @hasMany('user') mentors;
+  @hasMany('submission', { async: true }) submissions;
+  @hasMany('response', { async: true }) responses;
+  @hasMany('user', { async: true }) mentors;
 
   @attr('boolean', { defaultValue: false }) isNewThread;
 

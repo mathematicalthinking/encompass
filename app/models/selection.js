@@ -32,5 +32,5 @@ export default class SelectionModel extends Auditable {
   @attr('string') imageSrc;
   @attr('string') imageTagLink;
   @attr vmtInfo;
-  @belongsTo('selection', { inverse: null }) originalSelection;
+  @belongsTo('selection', { inverse: null, async: true }) originalSelection;
 }

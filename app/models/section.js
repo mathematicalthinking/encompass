@@ -5,10 +5,10 @@ export default class SectionModel extends Auditable {
     return this.id;
   }
   @attr('string') name;
-  @belongsTo('organization', { inverse: null }) organization;
-  @hasMany('user', { inverse: null }) teachers;
+  @belongsTo('organization', { inverse: null, async: true }) organization;
+  @hasMany('user', { inverse: null, async: true }) teachers;
   @attr('string') sectionPassword;
-  @hasMany('user', { inverse: null }) students;
-  @hasMany('problem') problems;
-  @hasMany('assignment') assignments;
+  @hasMany('user', { inverse: null, async: true }) students;
+  @hasMany('problem', { async: true }) problems;
+  @hasMany('assignment', { async: true }) assignments;
 }
