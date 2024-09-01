@@ -5,7 +5,6 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
-  @service('current-user') currentUser;
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
   @service store;

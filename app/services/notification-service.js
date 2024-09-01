@@ -73,7 +73,7 @@ export default class NotificationService extends Service {
       let isNewReply =
         ntfType === 'newMentorReply' || ntfType === 'newApproverReply';
 
-      return isNewReply && recipientId === this.currentUser.id;
+      return isNewReply && recipientId === this.currentUser.user.id;
     });
   }
 

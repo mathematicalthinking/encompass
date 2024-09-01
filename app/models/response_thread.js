@@ -220,7 +220,8 @@ export default class ResponseThread extends Model {
     return this.cleanResponses.filter((response) => {
       const creatorId = this.utils.getBelongsToId(response, 'createdBy');
       return (
-        response.responseType === 'mentor' && creatorId === this.currentUser.id
+        response.responseType === 'mentor' &&
+        creatorId === this.currentUser.user.id
       );
     });
   }
