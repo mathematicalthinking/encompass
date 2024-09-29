@@ -1,109 +1,123 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
-import { alias, equal, reads } from '@ember/object/computed';
-/*global _:false */
-import { isEqual } from '@ember/utils';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
 
-export default Component.extend({
-  currentUser: service('current-user'),
-  elementId: 'workspace-filter',
-  primaryFilterValue: alias('primaryFilter.value'),
-  primaryFilterInputs: alias('filter.primaryFilters.inputs'),
-  secondaryFilter: alias('primaryFilter.secondaryFilters'),
-  showAdminFilters: equal('primaryFilter.value', 'all'),
-  adminFilter: alias('filter.primaryFilters.inputs.all'),
-  closedMenu: true,
-  currentValues: reads('secondaryFilter.selectedValues'),
+export default class WorkspaceFilterComponent extends Component {
+  @service currentUser;
 
-  // used for populating the selectize instance
-  // orgs passed in from parent are all orgs from db
-  orgOptions: computed('orgs.[]', function () {
-    let orgs = this.orgs;
-    let toArray = orgs.toArray();
-    let mapped = _.map(toArray, (org) => {
-      return {
+  @tracked closedMenu = true;
+  @tracked showMoreFilters = false;
+  @tracked toggleTrashed = false;
+  @tracked toggleHidden = false;
+
+  get primaryFilterValue() {
+    return this.args.primaryFilter?.value;
+  }
+
+  get userIsAdmin() {
+    return this.currentUser.user.isAdmin;
+  }
+
+  get primaryFilterInputs() {
+    return this.args.filter?.primaryFilters?.inputs ?? {};
+  }
+
+  get secondaryFilter() {
+    return this.args.primaryFilter?.secondaryFilters ?? {};
+  }
+
+  get showAdminFilters() {
+    return this.primaryFilterValue === 'all';
+  }
+
+  get adminFilter() {
+    return this.args.filter?.primaryFilters?.inputs?.all ?? {};
+  }
+
+  get currentValues() {
+    return this.secondaryFilter?.selectedValues ?? [];
+  }
+
+  get orgOptions() {
+    return (
+      this.args.orgs?.map((org) => ({
         id: org.id,
-        name: org.get('name'),
-      };
-    });
-    return mapped;
-  }),
+        name: org.name,
+      })) ?? []
+    );
+  }
 
-  primaryFilterOptions: computed('filter', 'primaryFilterInputs', function () {
-    let mapped = _.map(this.primaryFilterInputs, (val, key) => {
-      return val;
-    });
-    return _.sortBy(mapped, 'order');
-  }),
+  get primaryFilterOptions() {
+    return Object.values(this.primaryFilterInputs).sort(
+      (a, b) => a.order - b.order
+    );
+  }
 
-  secondaryFilterOptions: computed(
-    'primaryFilter.secondaryFilters.inputs',
-    function () {
-      return _.map(this.get('primaryFilter.secondaryFilters.inputs'), (val, key) => {
-        return val;
-      });
+  get secondaryFilterOptions() {
+    return Object.values(this.secondaryFilter.inputs ?? {});
+  }
+
+  @action
+  updateTopLevel(val) {
+    // need to set filter[val] : true
+    // but also need to make sure the current selected item is now false
+    if (this.primaryFilterValue !== val) {
+      let newPrimaryFilter = this.primaryFilterInputs?.[val] ?? {};
+
+      // Call the onUpdate action passed down from the parent (workspace-list-container)
+      if (this.args.onUpdate) {
+        this.args.onUpdate(newPrimaryFilter);
+      }
     }
-  ),
+  }
 
-  actions: {
-    updateTopLevel(val) {
-      // need to set filter[val] : true
-      // but also need to make sure the current selected item is now false
-      let currentValue = this.primaryFilterValue;
-      if (!isEqual(currentValue, val)) {
-        let newPrimaryFilter = this.primaryFilterInputs[val];
-        this.set('primaryFilter', newPrimaryFilter);
-        if (this.onUpdate) {
-          this.onUpdate();
-        }
-      }
-    },
-    updateSecondLevel(e) {
-      let { id } = e.target;
-      let secondaryFilter = this.secondaryFilter;
+  @action
+  updateSecondLevel(event) {
+    let id = event.target.id;
+    let targetInput = this.secondaryFilter?.inputs?.[id];
+    if (!targetInput) {
+      return;
+    }
+    targetInput.isApplied = !targetInput.isApplied;
 
-      let targetInput = secondaryFilter.inputs[id];
-      if (!targetInput) {
-        // not a valid option
-        return;
-      }
-      // valid option, toggle the inputs isApplied value
-      targetInput.isApplied = !targetInput.isApplied;
+    let appliedInputs = Object.values(this.secondaryFilter.inputs ?? {}).filter(
+      (input) => input.isApplied
+    );
 
-      // filter for inputs who are currently applied
-      let appliedInputs = _.filter(secondaryFilter.inputs, (input) => {
-        return input.isApplied;
-      });
+    const appliedValues = appliedInputs.map((input) => input.value);
 
-      let appliedValues = _.map(appliedInputs, (input) => input.value);
+    if (this.args.onUpdate) {
+      this.args.onUpdateSecondary(appliedValues);
+    }
+  }
 
-      // update selectedValues on secondaryFilter
+  @action
+  onUpdate() {
+    if (this.args.onUpdate) {
+      this.args.onUpdate();
+    }
+  }
 
-      this.set('secondaryFilter.selectedValues', appliedValues);
+  @action
+  toggleMoreFilters() {
+    this.showMoreFilters = !this.showMoreFilters;
+    this.closedMenu = !this.closedMenu;
+  }
 
-      if (this.onUpdate) {
-        this.onUpdate();
-      }
-    },
+  @action
+  toggleTrashedWorkspaces() {
+    this.toggleTrashed = !this.toggleTrashed;
+    if (this.args.triggerShowTrashed) {
+      this.args.triggerShowTrashed();
+    }
+  }
 
-    onUpdate() {
-      this.onUpdate();
-    },
-
-    toggleMoreFilters() {
-      this.set('showMoreFilters', !this.showMoreFilters);
-      this.set('closedMenu', !this.closedMenu);
-    },
-
-    toggleTrashedWorkspaces() {
-      this.set('toggleTrashed', !this.toggleTrashed);
-      this.triggerShowTrashed();
-    },
-
-    toggleHiddenWorkspaces() {
-      this.set('toggleHidden', !this.toggleHidden);
-      this.triggerShowHidden();
-    },
-  },
-});
+  @action
+  toggleHiddenWorkspaces() {
+    this.toggleHidden = !this.toggleHidden;
+    if (this.args.triggerShowHidden) {
+      this.args.triggerShowHidden();
+    }
+  }
+}

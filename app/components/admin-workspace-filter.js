@@ -1,110 +1,116 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
-export default class AdminWorkspaceFilterComponent extends Component {
-  @tracked secondaryFilter;
 
-  @tracked('secondaryFilter.selectedValue') mainFilter;
-  @tracked('mainFilter', 'org') showOrgFilter;
-  @tracked('secondaryFilter.inputs.org') orgFilter;
-  @tracked('secondaryFilter.inputs.org.subFilters.selectedValues')
-  selectedOrgSubFilters;
+export default class AdminWorkspaceFilterComponent extends Component {
+  @tracked mainFilter = this.args.secondaryFilter?.selectedValue ?? '';
+  @tracked selectedOrgSubFilters =
+    this.args.secondaryFilter?.inputs?.org?.subFilters?.selectedValues ?? [];
+  @tracked orgFilter = this.args.secondaryFilter?.inputs?.org;
+
+  get showOrgFilter() {
+    return this.mainFilter === 'org';
+  }
 
   get orgFilterSubOptions() {
-    return _.map(this.orgFilter.subFilters.inputs, (val, key) => val);
+    return Object.values(this.orgFilter?.subFilters?.inputs ?? {});
   }
 
   get areCurrentSelections() {
-    return !_.isEmpty(this.selectedValues);
+    return this.selectedValues.length > 0;
   }
 
   get currentSecondaryFilter() {
-    let inputs = this.secondaryFilter.inputs;
-    let mainFilter = this.mainFilter;
-    return inputs[mainFilter];
+    const inputs = this.args.secondaryFilter?.inputs ?? {};
+    return inputs[this.mainFilter];
   }
 
   get showUserFilter() {
-    let val = this.mainFilter;
-    return val === 'owner' || val === 'creator';
+    return this.mainFilter === 'owner' || this.mainFilter === 'creator';
   }
 
   get selectedValues() {
-    return this.currentSecondaryFilter.selectedValues;
+    return this.currentSecondaryFilter?.selectedValues ?? [];
   }
 
   get initialMainFilterItems() {
-    let val = this.mainFilter;
-    return [val];
-  }
-
-  clearSelectedValues() {
-    this.currentSecondaryFilter.selectedValues = [];
+    return [this.mainFilter];
   }
 
   @action
   setMainFilter(val) {
-    if (!val) {
-      return;
-    }
+    if (!val) return;
+
     if (this.mainFilter !== 'pows') {
       this.clearSelectedValues();
     }
+
     this.mainFilter = val;
-    this.onUpdate();
+
+    if (this.args.onUpdate) {
+      this.args.onUpdate();
+    }
   }
 
   @action
-  updateOrgSubFilters(e) {
-    let { id } = e.target;
-    let subFilters = this.orgFilter.subFilters;
+  updateOrgSubFilters(event) {
+    const id = event.target.id;
+    const targetInput = this.orgFilter?.subFilters?.inputs?.[id];
 
-    let targetInput = subFilters.inputs[id];
-    if (!targetInput) {
-      return;
-    }
+    // not a valid option
+    if (!targetInput) return;
+
+    // valid option, toggle the inputs isApplied value
     targetInput.isApplied = !targetInput.isApplied;
 
-    let appliedInputs = _.filter(subFilters.inputs, (input) => input.isApplied);
-    let appliedValues = _.map(appliedInputs, (input) => input.value);
+    // filter for inputs who are currently applied
+    const appliedInputs = Object.values(
+      this.orgFilter.subFilters.inputs
+    ).filter((input) => input.isApplied);
+    const appliedValues = appliedInputs.map((input) => input.value);
 
+    // update selectedValues on subFilters
     this.orgFilter.subFilters.selectedValues = appliedValues;
 
-    if (this.onUpdate) {
-      this.onUpdate();
+    if (this.args.onUpdate) {
+      this.args.onUpdate();
     }
   }
 
   @action
   updateMultiSelect(val, $item, propToUpdate) {
-    if (!val || !propToUpdate) {
-      return;
-    }
-    let isRemoval = _.isNull($item);
-    let prop = this[propToUpdate];
-    let isPropArray = Array.isArray(prop);
+    if (!val || !propToUpdate) return;
+
+    const isRemoval = !$item;
+    const prop = this[propToUpdate];
 
     if (isRemoval) {
-      if (!isPropArray) {
-        this[propToUpdate] = null;
+      if (Array.isArray(prop)) {
+        this[propToUpdate] = prop.filter((item) => item !== val);
       } else {
-        prop.removeObject(val);
+        this[propToUpdate] = null;
       }
-      if (this.onUpdate) {
-        this.onUpdate();
-      }
-      return;
-    }
-
-    if (!isPropArray) {
-      this[propToUpdate] = val;
     } else {
-      prop.addObject(val);
+      if (Array.isArray(prop)) {
+        this[propToUpdate] = [...prop, val];
+      } else {
+        this[propToUpdate] = val;
+      }
     }
 
-    if (this.onUpdate) {
-      this.onUpdate();
+    if (this.args.onUpdate) {
+      this.args.onUpdate();
     }
+  }
+
+  clearSelectedValues() {
+    const currentSecondaryFilter = this.currentSecondaryFilter;
+    if (currentSecondaryFilter) {
+      currentSecondaryFilter.selectedValues = [];
+    }
+  }
+
+  isIncludedInSubFilters(val) {
+    return this.selectedOrgSubFilters.includes(val);
   }
 }

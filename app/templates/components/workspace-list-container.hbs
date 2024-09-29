@@ -1,12 +1,12 @@
-<div class='flex-container-full' id={{this.elementId}}>
+<div class='flex-container-full' id='workspace-list-container'>
   <div
     class='flex-item-full filter-options
       {{if this.isFilterListCollapsed "collapse"}}'
     id='filter-list-side'
   >
     <WorkspaceFilter
-      @store={{this.store}}
-      @onUpdate={{this.triggerFetch}}
+      @onUpdate={{this.onUpdate}}
+      @onUpdateSecondary={{this.onUpdateSecondary}}
       @triggerShowTrashed={{this.triggerShowTrashed}}
       @triggerShowHidden={{this.triggerShowHidden}}
       @toggleTrashed={{this.toggleTrashed}}

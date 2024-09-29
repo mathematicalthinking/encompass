@@ -6,8 +6,6 @@ import { later } from '@ember/runloop';
 import moment from 'moment';
 
 export default class WorkspaceListContainerComponent extends Component {
-  elementId = 'workspace-list-container';
-
   @service errorHandling;
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
@@ -482,6 +480,18 @@ export default class WorkspaceListContainerComponent extends Component {
   @action
   updateSortCriterion(criterion) {
     this.sortCriterion = criterion;
+    this.triggerFetch();
+  }
+
+  @action
+  onUpdate(newPrimaryFilter) {
+    this.primaryFilter = newPrimaryFilter;
+    this.triggerFetch();
+  }
+
+  @action
+  onUpdateSecondary(newSecondaryFilter) {
+    this.primaryFilter.secondaryFilters.selectedValues = newSecondaryFilter;
     this.triggerFetch();
   }
 

@@ -1,47 +1,91 @@
-<div class="filter-items">
+<div id='workspace-filter' class='filter-items'>
   <h2>Filter Options</h2>
   <h3>Primary Filters</h3>
-  <ul class="primary-filter-list">
+  <ul class='primary-filter-list'>
     {{#each this.primaryFilterOptions as |input|}}
-      <li class="filter-{{input.value}}">
-        <RadioFilter @groupValue={{this.primaryFilterValue}} @secondaryInputs={{input.secondaryFilters}} @isChecked={{input.isChecked}} @groupName="top-level" @inputValue={{input.value}} @onClick={{action "updateTopLevel"}} @labelName={{input.label}} @labelIcon={{input.icon}} />
+      <li class='filter-{{input.value}}'>
+        <RadioFilter
+          @groupValue={{this.primaryFilterValue}}
+          @secondaryInputs={{input.secondaryFilters}}
+          @isChecked={{input.isChecked}}
+          @groupName='top-level'
+          @inputValue={{input.value}}
+          @onClick={{this.updateTopLevel}}
+          @labelName={{input.label}}
+          @labelIcon={{input.icon}}
+        />
         {{#if (is-equal this.primaryFilterValue input.value)}}
           {{#if this.showAdminFilters}}
-            <AdminWorkspaceFilter @filter={{this.adminFilter}} @mainOptions={{this.secondaryFilterOptions}} @secondaryFilter={{this.secondaryFilter}} @onUpdate={{action "onUpdate"}} @orgOptions={{this.orgOptions}} @store={{this.store}} @updateSecondLevel={{action "updateSecondLevel"}} />
+            <AdminWorkspaceFilter
+              @filter={{this.adminFilter}}
+              @mainOptions={{this.secondaryFilterOptions}}
+              @secondaryFilter={{this.secondaryFilter}}
+              @onUpdate={{this.onUpdate}}
+              @orgOptions={{this.orgOptions}}
+              @updateSecondLevel={{this.updateSecondLevel}}
+            />
           {{else}}
-          <ul class="secondary-filter-options">
-            {{#each this.secondaryFilterOptions as |option|}}
-              <li class="checkbox-content {{if (is-in this.currentValues option.value) 'is-selected'}}">
-                <label for={{option.value}} class="checkbox-label">
-                  <i class="checkbox-icon {{option.icon}}"></i>
-                  <span class="checkbox-text">{{option.label}}</span>
-                  <Input @id={{option.value}} @type="checkbox" @checked={{option.isApplied}} @change={{action "updateSecondLevel"}} />
-                </label>
-              </li>
-            {{/each}}
-          </ul>
+            <ul class='secondary-filter-options'>
+              {{#each this.secondaryFilterOptions as |option|}}
+                <li
+                  class='checkbox-content
+                    {{if
+                      (includes this.currentValues option.value)
+                      "is-selected"
+                    }}'
+                >
+                  <label for={{option.value}} class='checkbox-label'>
+                    <i class='checkbox-icon {{option.icon}}'></i>
+                    <span class='checkbox-text'>{{option.label}}</span>
+                    <Input
+                      @id={{option.value}}
+                      @type='checkbox'
+                      @checked={{option.isApplied}}
+                      @onChange={{this.updateSecondLevel}}
+                    />
+                  </label>
+                </li>
+              {{/each}}
+            </ul>
           {{/if}}
-
         {{/if}}
       </li>
     {{/each}}
   </ul>
-    <h3 {{action 'toggleMoreFilters'}} class="more-header {{if this.closedMenu 'closed'}}">
-      <i class="fas {{if this.showMoreFilters 'fa-chevron-down'}}{{unless this.showMoreFilters 'fa-chevron-right'}}"></i> More
-    </h3>
-    {{#if this.showMoreFilters}}
-      <ul class="more-filter-list">
-        <h5>Hidden Workspaces</h5>
-        <label class="subfilter">
-          <Input @id="toggle-hidden" @type="checkbox" @checked={{this.showHiddenWorkspaces}} @change={{action "toggleHiddenWorkspaces"}} /> <span>Show All Hidden Workspaces</span>
-        </label>
-      {{#if this.currentUser.user.isAdmin}}
+  <h3
+    class='more-header {{if this.closedMenu "closed"}}'
+    {{on 'click' this.toggleMoreFilters}}
+  >
+    <i
+      class='fas
+        {{if this.showMoreFilters "fa-chevron-down" "fa-chevron-right"}}'
+    ></i>
+    More
+  </h3>
+  {{#if this.showMoreFilters}}
+    <ul class='more-filter-list'>
+      <h5>Hidden Workspaces</h5>
+      <label class='subfilter'>
+        <Input
+          @id='toggle-hidden'
+          @type='checkbox'
+          @checked={{this.showHiddenWorkspaces}}
+          @onChange={{this.toggleHiddenWorkspaces}}
+        />
+        <span>Show All Hidden Workspaces</span>
+      </label>
+      {{#if this.userIsAdmin}}
         <h5>Trashed Workspaces</h5>
-        <label class="subfilter">
-          <Input @id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedWorkspaces}} @change={{action "toggleTrashedWorkspaces"}} /> <span>Show All Trashed Workspaces</span>
+        <label class='subfilter'>
+          <Input
+            @id='toggle-trashed'
+            @type='checkbox'
+            @checked={{this.showTrashedWorkspaces}}
+            @onChange={{this.toggleTrashedWorkspaces}}
+          />
+          <span>Show All Trashed Workspaces</span>
         </label>
       {{/if}}
-      </ul>
-    {{/if}}
-  </div>
-
+    </ul>
+  {{/if}}
+</div>
