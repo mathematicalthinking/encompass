@@ -20,12 +20,12 @@
   <div class='compose-comment'>
     {{#if this.canComment}}
       <Textarea
-        @tabindex={{1}}
-        @id='commentTextarea'
+        tabindex={{1}}
+        id='commentTextarea'
         @classBinding='onSelection'
         placeholder={{this.newCommentPlaceholder}}
         @value={{this.newComment}}
-        @autofocus='autofocus'
+        autofocus='autofocus'
       />
     {{else}}
       {{#if this.isParentWorkspace}}
@@ -41,12 +41,10 @@
     {{#if this.showComposeButtons}}
       <div class='submit-buttons'>
         <button
-          class='primary-button cancel-button'
-          {{action 'cancelComment'}}
+          class='primary-button cancel-button' type="button" {{action 'cancelComment'}}
         >Cancel</button>
         <button
-          class='primary-button save'
-          {{action 'madeSelection'}}
+          class='primary-button save' type="button" {{action 'madeSelection'}}
         >Save</button>
       </div>
     {{/if}}
@@ -89,7 +87,7 @@
                   @value={{this.sinceDate}}
                 />
                 {{#if this.showApplyDate}}
-                  <button {{action 'applySinceDate'}}>Apply</button>
+                  <button type="button" {{action 'applySinceDate'}}>Apply</button>
                 {{/if}}
               </span>
             </label>

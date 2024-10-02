@@ -1,41 +1,40 @@
 const models = require('../../datasource/schemas');
 const _ = require('underscore');
 
-const wsAuth =require('./workspaces');
+const wsAuth = require('./workspaces');
 const assignmentAuth = require('./assignments');
 const wsApi = require('../../datasource/api/workspaceApi');
 const responsesAuth = require('./responses');
 const mongooseUtils = require('../../utils/mongoose');
 
 const objectUtils = require('../../utils/objects');
-const { isNil, isNonEmptyObject, isNonEmptyArray, isNonEmptyString, } = objectUtils;
+const { isNil, isNonEmptyObject, isNonEmptyArray, isNonEmptyString } =
+  objectUtils;
 const { isValidMongoId, areObjectIdsEqual } = mongooseUtils;
 //Returns an array of oIds
-const getModelIds = async function(model, filter={}) {
+const getModelIds = async function (model, filter = {}) {
   try {
-    const records = await models[model].find(filter, {_id: 1}).lean().exec();
-    return records.map(rec => rec._id);
-  }catch(err) {
+    const records = await models[model].find(filter, { _id: 1 }).lean().exec();
+    return records.map((rec) => rec._id);
+  } catch (err) {
     console.error(`Error getModelIds: ${err}`);
     console.trace();
   }
-
 };
 
 async function getOrgSections(user) {
   try {
     const org = user.organization;
     const filter = {
-      organization: org
+      organization: org,
     };
     const sectionIds = await getModelIds('Section', filter);
     return sectionIds;
-  } catch(err) {
+  } catch (err) {
     console.error(`Error getOrgSections: ${err}`);
     console.trace();
   }
 }
-
 
 async function getAssignmentProblems(user) {
   try {
@@ -48,14 +47,15 @@ async function getAssignmentProblems(user) {
       return [];
     }
 
-    let assignments = await models.Assignment.find(criteria, { problem: 1 }).lean().exec();
+    let assignments = await models.Assignment.find(criteria, { problem: 1 })
+      .lean()
+      .exec();
 
     return _.chain(assignments)
-      .filter(assn => isValidMongoId(assn.problem))
+      .filter((assn) => isValidMongoId(assn.problem))
       .pluck('problem')
       .value();
-
-  } catch(err) {
+  } catch (err) {
     console.error(`Error getAssignmentProblems: ${err}`);
     console.trace();
   }
@@ -71,14 +71,18 @@ async function getWorkspaceProblemIds(user) {
       return [];
     }
 
-    let workspaces = await models.Workspace.find(criteria, { 'submissionSet': 1 }).lean().exec();
+    let workspaces = await models.Workspace.find(criteria, { submissionSet: 1 })
+      .lean()
+      .exec();
     return _.chain(workspaces)
       .filter((ws) => {
-        return isValidMongoId(_.propertyOf(ws)(['submissionSet', 'criteria', 'puzzle', 'puzzleId']));
+        return isValidMongoId(
+          _.propertyOf(ws)(['submissionSet', 'criteria', 'puzzle', 'puzzleId'])
+        );
       })
-      .map(ws => ws.submissionSet.criteria.puzzle.puzzleId)
+      .map((ws) => ws.submissionSet.criteria.puzzle.puzzleId)
       .value();
-  } catch(err) {
+  } catch (err) {
     console.error(`Error getWorkspaceProblemsIds: ${err}`);
     console.trace();
   }
@@ -86,9 +90,14 @@ async function getWorkspaceProblemIds(user) {
 
 async function getTeacherAssignments(userId) {
   try {
-    const ownAssignmentIds = await models.Assignment.find({createdBy: userId}, {_id: 1}).lean().exec();
-    return ownAssignmentIds.map(obj => obj._id);
-  } catch(err) {
+    const ownAssignmentIds = await models.Assignment.find(
+      { createdBy: userId },
+      { _id: 1 }
+    )
+      .lean()
+      .exec();
+    return ownAssignmentIds.map((obj) => obj._id);
+  } catch (err) {
     console.error(`Error getTeacherAssignments: ${err}`);
     console.trace();
   }
@@ -107,11 +116,11 @@ function getTeacherSectionsById(userId) {
   if (!userId) {
     return;
   }
-  return getModelIds('Section', {teachers: userId});
+  return getModelIds('Section', { teachers: userId });
 }
 
 // returns sections a user belongs to in role 'student'
-const getStudentSections = function(user) {
+const getStudentSections = function (user) {
   if (!user || !Array.isArray(user.sections)) {
     return [];
   }
@@ -120,7 +129,7 @@ const getStudentSections = function(user) {
   });
 };
 /**
-* Returns array of User ObjectIds (as strings) associated with responses a user has access to
+ * Returns array of User ObjectIds (as strings) associated with responses a user has access to
  *
  * @param {object} user - user object
  * @returns {array}
@@ -133,7 +142,13 @@ const getResponseUsers = async function (user) {
 
     let criteria = await responsesAuth.get.responses(user);
 
-    let responses = await models.Response.find(criteria, {recipient: 1, approvedBy: 1, createdBy: 1 }).lean().exec();
+    let responses = await models.Response.find(criteria, {
+      recipient: 1,
+      approvedBy: 1,
+      createdBy: 1,
+    })
+      .lean()
+      .exec();
 
     let idMap = {};
 
@@ -145,12 +160,11 @@ const getResponseUsers = async function (user) {
       });
     });
     return _.keys(idMap);
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getStudentResponses: ${err}`);
     console.trace();
   }
 };
-
 
 async function getStudentUsers(user) {
   if (!user) {
@@ -162,7 +176,12 @@ async function getStudentUsers(user) {
     let userMap = {};
 
     if (isNonEmptyArray(sectionIds)) {
-      const sections = await models.Section.find({_id: {$in: sectionIds}}, {students: 1, teachers: 1}).lean().exec();
+      const sections = await models.Section.find(
+        { _id: { $in: sectionIds } },
+        { students: 1, teachers: 1 }
+      )
+        .lean()
+        .exec();
 
       sections.forEach((section) => {
         if (Array.isArray(section.students)) {
@@ -182,9 +201,8 @@ async function getStudentUsers(user) {
       });
     }
 
-  return _.keys(userMap);
-
-  }catch(err) {
+    return _.keys(userMap);
+  } catch (err) {
     console.error(`Error getStudentUsers: ${err}`);
     console.trace();
   }
@@ -197,7 +215,12 @@ async function getUsersFromTeacherSections(user) {
     let userMap = {};
 
     if (isNonEmptyArray(sectionIds)) {
-      const sections = await models.Section.find({_id: {$in: sectionIds}}, {students: 1, teachers: 1, createdBy: 1}).lean().exec();
+      const sections = await models.Section.find(
+        { _id: { $in: sectionIds } },
+        { students: 1, teachers: 1, createdBy: 1 }
+      )
+        .lean()
+        .exec();
 
       sections.forEach((section) => {
         if (section.createdBy && !userMap[section.createdBy]) {
@@ -222,10 +245,9 @@ async function getUsersFromTeacherSections(user) {
     }
 
     return _.keys(userMap);
-  } catch(err) {
+  } catch (err) {
     console.error(`Error getUsersFromTeacherSections: ${err}`);
   }
-
 }
 
 function getPdAdminUsers(user) {
@@ -237,12 +259,11 @@ function getPdAdminUsers(user) {
 
     const filter = {
       isTrashed: false,
-      organization: userOrg
+      organization: userOrg,
     };
 
     return getModelIds('User', filter);
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getPdAdminUsers: ${err}`);
     console.trace();
   }
@@ -257,12 +278,11 @@ function getTeacherUsers(user) {
 
     const filter = {
       isTrashed: false,
-      organization: userOrg
+      organization: userOrg,
     };
 
     return getModelIds('User', filter);
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getPdAdminUsers: ${err}`);
     console.trace();
   }
@@ -276,8 +296,7 @@ async function getAccessibleWorkspaceIds(user, filterBy) {
     const criteria = await wsAuth.get.workspaces(user, null, filterBy);
     const ids = await getModelIds('Workspace', criteria);
     return ids;
-
-  } catch(err) {
+  } catch (err) {
     console.error(`Error accessibleWorkspaceIds: ${err}`);
     console.trace();
   }
@@ -295,8 +314,14 @@ async function getUsersFromWorkspaces(user) {
       return [];
     }
 
-    let accessibleWorkspaces = await models.Workspace.find(wsCriteria, {owner: 1, createdBy: 1, 'permissions.user': 1, })
-      .populate('submissions', 'creator').lean().exec();
+    let accessibleWorkspaces = await models.Workspace.find(wsCriteria, {
+      owner: 1,
+      createdBy: 1,
+      'permissions.user': 1,
+    })
+      .populate('submissions', 'creator')
+      .lean()
+      .exec();
 
     if (!isNonEmptyArray(accessibleWorkspaces)) {
       return [];
@@ -329,20 +354,18 @@ async function getUsersFromWorkspaces(user) {
     });
 
     return _.keys(userMap);
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getUsersFromWorkspaces: ${err}`);
     console.trace();
   }
-
 }
 
-const getCreatorIds = async function(model, crit={}) {
+const getCreatorIds = async function (model, crit = {}) {
   try {
     if (!model) {
       return [];
     }
-    let users = await models[model].find(crit, {createdBy: 1}).lean().exec();
+    let users = await models[model].find(crit, { createdBy: 1 }).lean().exec();
 
     let idMap = {};
 
@@ -352,38 +375,42 @@ const getCreatorIds = async function(model, crit={}) {
       }
     });
     return _.keys(idMap);
-
-  }catch(err) {
+  } catch (err) {
     console.error('error getCreatorIds', err);
     console.trace();
   }
 };
 
-const getProblemsByCategory = async function(query) {
+const getProblemsByCategory = async function (query) {
   try {
     let queryLower = query.toLowerCase();
-    let problems = await models.Problem.find({categories: {$ne: []}}, {categories: 1}).populate('categories').lean().exec();
+    let problems = await models.Problem.find(
+      { categories: { $ne: [] } },
+      { categories: 1 }
+    )
+      .populate('categories')
+      .lean()
+      .exec();
     let results;
 
     results = problems.filter((p) => {
-      let identifiers = p.categories.map(c => c.identifier);
+      let identifiers = p.categories.map((c) => c.identifier);
       for (let identifier of identifiers) {
-
         let identifierLower = identifier.toLowerCase();
         if (identifierLower.includes(queryLower)) {
           return true;
         }
       }
     });
-    return results.map(p => p._id);
-  }catch(err) {
+    return results.map((p) => p._id);
+  } catch (err) {
     console.error('error getProblemsByCategory', err);
     console.trace();
   }
 };
 
 // takes a category and returns all child categories
-const getAllChildCategories = async function(categoryId, isIdOnly, asStrings) {
+const getAllChildCategories = async function (categoryId, isIdOnly, asStrings) {
   try {
     let category = await models.Category.findById(categoryId);
     if (!category) {
@@ -392,17 +419,18 @@ const getAllChildCategories = async function(categoryId, isIdOnly, asStrings) {
     let identifier = category.identifier;
     let regex = new RegExp(`^${identifier}`, 'i');
 
-    let children = await models.Category.find({identifier: regex}).lean().exec();
+    let children = await models.Category.find({ identifier: regex })
+      .lean()
+      .exec();
 
     if (isIdOnly) {
       if (asStrings) {
-        return _.map(children, child => child._id.toString());
-
+        return _.map(children, (child) => child._id.toString());
       }
-      return _.map(children, child => child._id);
+      return _.map(children, (child) => child._id);
     }
     return children;
-  } catch(err) {
+  } catch (err) {
     console.error('Error getAllChildCategories', err);
   }
 };
@@ -429,71 +457,78 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   return Promise.all(
     _.map(collabWorkspaces, (wsId) => {
       return models.Workspace.findById(wsId)
-      .populate('selections')
-      .populate('submissions')
-      .populate('folders')
-      .populate('taggings')
-      .populate('owner')
-      .populate('createdBy')
-      .populate('responses')
-      .populate('comments')
-      .lean().exec()
-      .then((populatedWs) => {
-        // eslint-disable-next-line no-unused-vars
-        const [canLoad, specialPermissions] = wsAuth.get.workspace(user, populatedWs);
+        .populate('selections')
+        .populate('submissions')
+        .populate('folders')
+        .populate('taggings')
+        .populate('owner')
+        .populate('createdBy')
+        .populate('responses')
+        .populate('comments')
+        .lean()
+        .exec()
+        .then((populatedWs) => {
+          // eslint-disable-next-line no-unused-vars
+          const [canLoad, specialPermissions] = wsAuth.get.workspace(
+            user,
+            populatedWs
+          );
 
-        const restrictedDataMap = wsApi.getRestrictedDataMap(user, specialPermissions, populatedWs);
-        // no restrictions
-        if (!isNonEmptyObject(restrictedDataMap)) {
-          return [];
-        }
-
-        // if the workspace does not have records of requested type, there is nothing to restrict
-        const allRecords = populatedWs[requestedModel];
-        if (!isNonEmptyArray(allRecords)) {
-          return [];
-        }
-
-        // if this is undefined, means no restrictions
-        // if empty array, means everything is restricted
-        const allowedValues = _.propertyOf(restrictedDataMap)(requestedModel);
-        if (_.isUndefined(allowedValues)) {
-          return [];
-        }
-        let allowedIds;
-
-        if (!isNil(allowedValues)) {
-          if (Array.isArray(allowedValues)) {
-            allowedIds = _.map(allowedValues, (val) => {
-             if (val._id) {
-               return val._id.toString();
-             }
-             return val.toString();
-             });
-           } else {
-             allowedIds = allowedValues.toString();
-           }
-        } else {
-          allowedIds = [];
-        }
-
-        const restrictedValues = _.filter(allRecords, (record) => {
-          let idAsString;
-          if (record._id) {
-            idAsString = record._id.toString();
-          } else {
-            idAsString = record.toString();
+          const restrictedDataMap = wsApi.getRestrictedDataMap(
+            user,
+            specialPermissions,
+            populatedWs
+          );
+          // no restrictions
+          if (!isNonEmptyObject(restrictedDataMap)) {
+            return [];
           }
-          return !_.contains(allowedIds, idAsString);
-        });
 
-        return _.map(restrictedValues, (val) => {
-          return val._id || val;
+          // if the workspace does not have records of requested type, there is nothing to restrict
+          const allRecords = populatedWs[requestedModel];
+          if (!isNonEmptyArray(allRecords)) {
+            return [];
+          }
+
+          // if this is undefined, means no restrictions
+          // if empty array, means everything is restricted
+          const allowedValues = _.propertyOf(restrictedDataMap)(requestedModel);
+          if (_.isUndefined(allowedValues)) {
+            return [];
+          }
+          let allowedIds;
+
+          if (!isNil(allowedValues)) {
+            if (Array.isArray(allowedValues)) {
+              allowedIds = _.map(allowedValues, (val) => {
+                if (val._id) {
+                  return val._id.toString();
+                }
+                return val.toString();
+              });
+            } else {
+              allowedIds = allowedValues.toString();
+            }
+          } else {
+            allowedIds = [];
+          }
+
+          const restrictedValues = _.filter(allRecords, (record) => {
+            let idAsString;
+            if (record._id) {
+              idAsString = record._id.toString();
+            } else {
+              idAsString = record.toString();
+            }
+            return !_.contains(allowedIds, idAsString);
+          });
+
+          return _.map(restrictedValues, (val) => {
+            return val._id || val;
+          });
         });
-       });
-      })
-  )
-  .then(_.flatten);
+    })
+  ).then(_.flatten);
 }
 
 function getCollabFeedbackWorkspaceIds(user, wsFilter) {
@@ -504,15 +539,26 @@ function getCollabFeedbackWorkspaceIds(user, wsFilter) {
   let mentorWorkspaceIds = [];
   let approverWorkspaceIds = [];
 
-  return wsAuth.get.workspaces(user, null, wsFilter)
+  return wsAuth.get
+    .workspaces(user, null, wsFilter)
     .then((criteria) => {
-      return models.Workspace.find(criteria, {permissions: 1, createdBy: 1, owner: 1, organization: 1}).lean().exec();
+      return models.Workspace.find(criteria, {
+        permissions: 1,
+        createdBy: 1,
+        owner: 1,
+        organization: 1,
+      })
+        .lean()
+        .exec();
     })
     .then((workspaces) => {
       workspaces.forEach((ws) => {
         let isCreator = areObjectIdsEqual(ws.createdBy, user._id);
         let isOwner = areObjectIdsEqual(ws.owner, user._id);
-        let isPdWs = user.accountType === 'P' && user.actingRole !== 'student' && areObjectIdsEqual(ws.organization, user.organization);
+        let isPdWs =
+          user.accountType === 'P' &&
+          user.actingRole !== 'student' &&
+          areObjectIdsEqual(ws.organization, user.organization);
 
         if (isCreator || isOwner || isPdWs) {
           approverWorkspaceIds.push(ws._id);
@@ -526,7 +572,10 @@ function getCollabFeedbackWorkspaceIds(user, wsFilter) {
 
           if (feedbackLevel === 'approver') {
             approverWorkspaceIds.push(ws._id);
-          } else if (feedbackLevel === 'authReq' || feedbackLevel === 'preAuth') {
+          } else if (
+            feedbackLevel === 'authReq' ||
+            feedbackLevel === 'preAuth'
+          ) {
             mentorWorkspaceIds.push(ws._id);
           }
         }
@@ -547,15 +596,15 @@ function getApproverWorkspaceIds(user) {
 
   if (!isAdmin) {
     criteria.$or = [];
-    criteria.$or.push({createdBy: user._id});
-    criteria.$or.push({owner: user._id});
+    criteria.$or.push({ createdBy: user._id });
+    criteria.$or.push({ owner: user._id });
 
     if (accountType === 'P' && actingRole !== 'student') {
       if (isValidMongoId(user.organization)) {
-        criteria.$or.push({organization: user.organization});
+        criteria.$or.push({ organization: user.organization });
       }
     }
-      return getModelIds('Workspace', criteria);
+    return getModelIds('Workspace', criteria);
   }
 }
 
@@ -563,7 +612,10 @@ function doesRecordExist(model, criteria) {
   if (!isNonEmptyString(model) || !isNonEmptyObject(criteria)) {
     return false;
   }
-  return models[model].findOne(criteria).lean().exec()
+  return models[model]
+    .findOne(criteria)
+    .lean()
+    .exec()
     .then((record) => {
       return !isNil(record);
     });
@@ -575,10 +627,14 @@ async function getOrgRecommendedProblems(user) {
       return [];
     }
 
-    let org = await models.Organization.findById(user.organization, {recommendedProblems: 1}).lean().exec();
+    let org = await models.Organization.findById(user.organization, {
+      recommendedProblems: 1,
+    })
+      .lean()
+      .exec();
 
     return org.recommendedProblems;
-  } catch(err) {
+  } catch (err) {
     console.error(`Error getOrgRecommendedProblems: `, err);
   }
 }
@@ -588,10 +644,14 @@ async function getAccessibleResponseIds(user, ids, workspace, filterBy) {
     return;
   }
   try {
-    const criteria = await responsesAuth.get.responses(user, ids, workspace, filterBy);
+    const criteria = await responsesAuth.get.responses(
+      user,
+      ids,
+      workspace,
+      filterBy
+    );
     return getModelIds('Response', criteria);
-
-  } catch(err) {
+  } catch (err) {
     console.error(`Error accessibleResponseIds: ${err}`);
     console.trace();
   }
@@ -607,7 +667,14 @@ async function getAssignmentUsers(user) {
 
     let assnCriteria = await assignmentAuth.get.assignments(user);
 
-    let assignments = await models.Assignment.find(assnCriteria, {createdBy: 1, section: 1, students: 1}).populate('section').lean().exec();
+    let assignments = await models.Assignment.find(assnCriteria, {
+      createdBy: 1,
+      section: 1,
+      students: 1,
+    })
+      .populate('section')
+      .lean()
+      .exec();
 
     if (isNonEmptyArray(assignments)) {
       assignments.forEach((assignment) => {
@@ -652,8 +719,7 @@ async function getAssignmentUsers(user) {
     }
 
     return _.keys(userMap);
-
-  } catch(err) {
+  } catch (err) {
     console.error(`Error getAssignmentUsers: ${err}`);
     console.trace();
   }
@@ -663,7 +729,7 @@ async function getPublicOldPowsWorkIds() {
   try {
     let publicProblems = await getModelIds('Problem', {
       isTrashed: false,
-      privacySetting: 'E'
+      privacySetting: 'E',
     });
 
     if (!isNonEmptyArray(publicProblems)) {
@@ -672,10 +738,9 @@ async function getPublicOldPowsWorkIds() {
 
     return getModelIds('Answer', {
       isTrashed: false,
-      createdBy: "5bb4c600379d310929989c7e"
+      createdBy: '5bb4c600379d310929989c7e',
     });
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getPublicOldPowsWork: ${err}`);
   }
 }
@@ -687,15 +752,14 @@ function getWorkspacesWithOwnSubmissions(user) {
   let userId = user._id.toString();
   return getModelIds('Submission', {
     isTrashed: false,
-    'creator.studentId': userId
-  })
-  .then((subIds) => {
+    'creator.studentId': userId,
+  }).then((subIds) => {
     if (!isNonEmptyArray(subIds)) {
       return [];
     }
     return getModelIds('Workspace', {
       isTrashed: false,
-      submissions: {$elemMatch: {$in: subIds}}
+      submissions: { $elemMatch: { $in: subIds } },
     });
   });
 }
@@ -726,4 +790,5 @@ module.exports.getOrgRecommendedProblems = getOrgRecommendedProblems;
 module.exports.getAccessibleResponseIds = getAccessibleResponseIds;
 module.exports.getAssignmentUsers = getAssignmentUsers;
 module.exports.getPublicOldPowsWorkIds = getPublicOldPowsWorkIds;
-module.exports.getWorkspacesWithOwnSubmissions = getWorkspacesWithOwnSubmissions;
+module.exports.getWorkspacesWithOwnSubmissions =
+  getWorkspacesWithOwnSubmissions;

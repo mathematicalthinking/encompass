@@ -11,23 +11,28 @@ const { isValidMongoId } = require('../utils/mongoose');
 // Assignment - convert linkedWorkspace (objectId) to linkedWorkspaces (array)
 
 function addWorkspacesToUpdate() {
-  return models.Answer.updateMany({}, {$set: {workspacesToUpdate: []}});
+  return models.Answer.updateMany({}, { $set: { workspacesToUpdate: [] } });
 }
-async function updateAnswers(){
+async function updateAnswers() {
   let updatedCount = 0;
 
   try {
-    let answers = await models.Answer.find({workspaceToUpdate: {$exists: true}}, {workspaceToUpdate: 1}).lean();
+    let answers = await models.Answer.find(
+      { workspaceToUpdate: { $exists: true } },
+      { workspaceToUpdate: 1 }
+    ).lean();
     let updatedAnswers = answers.map(async (ans) => {
       let { workspaceToUpdate } = ans;
 
-      let docUpdate = {$unset: {'workspaceToUpdate': ''} };
+      let docUpdate = { $unset: { workspaceToUpdate: '' } };
       if (isValidMongoId(workspaceToUpdate)) {
-        docUpdate.$set = { workspacesToUpdate: [workspaceToUpdate]};
+        docUpdate.$set = { workspacesToUpdate: [workspaceToUpdate] };
       } else {
-        docUpdate.$set = { workspacesToUpdate: []};
+        docUpdate.$set = { workspacesToUpdate: [] };
       }
-      await models.Answer.findByIdAndUpdate(ans._id, docUpdate, {strict: false});
+      await models.Answer.findByIdAndUpdate(ans._id, docUpdate, {
+        strict: false,
+      });
       updatedCount++;
       if (updatedCount % 10 === 0) {
         console.log('Answers updated: ', updatedCount);
@@ -35,37 +40,44 @@ async function updateAnswers(){
       return true;
     });
     return Promise.all(updatedAnswers);
-  }catch(err) {
+  } catch (err) {
     console.log('error updating answers', err);
-    throw(err);
+    throw err;
   }
 }
 
 async function updateAssignments() {
   try {
-    let assignments = await models.Assignment.find({}, {linkedWorkspace: 1}).lean();
+    let assignments = await models.Assignment.find(
+      {},
+      { linkedWorkspace: 1 }
+    ).lean();
 
     let updatedAssignments = assignments.map((assn) => {
       let { linkedWorkspace, linkedWorkspaces } = assn;
 
-      let docUpdate = {$unset: {'linkedWorkspace': ''} };
+      let docUpdate = { $unset: { linkedWorkspace: '' } };
 
       if (isValidMongoId(linkedWorkspace)) {
         if (Array.isArray(linkedWorkspaces)) {
-          docUpdate.$set = { linkedWorkspaces: {$addToSet: {linkedWorkspace}}};
+          docUpdate.$set = {
+            linkedWorkspaces: { $addToSet: { linkedWorkspace } },
+          };
         } else {
-          docUpdate.$set = { linkedWorkspaces: [linkedWorkspace]};
+          docUpdate.$set = { linkedWorkspaces: [linkedWorkspace] };
         }
       } else {
-        docUpdate.$set = { linkedWorkspaces: []};
+        docUpdate.$set = { linkedWorkspaces: [] };
       }
-      return models.Assignment.findByIdAndUpdate(assn._id, docUpdate, {strict: false});
+      return models.Assignment.findByIdAndUpdate(assn._id, docUpdate, {
+        strict: false,
+      });
     });
 
     return Promise.all(updatedAssignments);
-  }catch(err) {
+  } catch (err) {
     console.log('error updating assignments', err);
-    throw(err);
+    throw err;
   }
 }
 
@@ -74,20 +86,24 @@ async function addMissingLinkedWorkspaces() {
     // find workspaces with a linkedAssignment
     // check if that assignment has the workspace in
     // its linkedWorkspaces array. if not add it
-    let workspaces = await models.Workspace.find({linkedAssignment: {$type: 'objectId'}}).lean();
+    let workspaces = await models.Workspace.find({
+      linkedAssignment: { $type: 'objectId' },
+    }).lean();
 
-    console.log(`There are ${workspaces.length} workspaces linked to an assignment`);
+    console.log(
+      `There are ${workspaces.length} workspaces linked to an assignment`
+    );
 
     let updateResults = workspaces.map((ws) => {
       let assignmentId = ws.linkedAssignment;
-      let filter = { _id: assignmentId, linkedWorkspaces: {$ne: ws._id}};
-      let update = { $addToSet: {linkedWorkspaces: ws._id}};
+      let filter = { _id: assignmentId, linkedWorkspaces: { $ne: ws._id } };
+      let update = { $addToSet: { linkedWorkspaces: ws._id } };
 
       return models.Assignment.update(filter, update);
     });
     await Promise.all(updateResults);
-  }catch(err) {
-    console.log({addMissingLinkedWorkspacesErr: err});
+  } catch (err) {
+    console.log({ addMissingLinkedWorkspacesErr: err });
   }
 }
 async function migrate() {
@@ -102,11 +118,11 @@ async function migrate() {
     await addMissingLinkedWorkspaces();
     console.log('done!');
     mongoose.connection.close();
-  }catch(err) {
+  } catch (err) {
     console.log('migrate err: ', err);
     mongoose.connection.close();
-    throw(err);
+    throw err;
   }
 }
 
- migrate();
+migrate();

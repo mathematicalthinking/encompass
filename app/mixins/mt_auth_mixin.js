@@ -14,7 +14,7 @@ export default Mixin.create({
     if (host === 'enc-test.mathematicalthinking.org') {
       return 'https://sso-test.mathematicalthinking.org';
     }
-    
+
     if (host === 'enc-test1.mathematicalthinking.org') {
       return 'https://sso-test1.mathematicalthinking.org';
     }
@@ -22,7 +22,7 @@ export default Mixin.create({
     if (host === 'enc-staging.mathematicalthinking.org') {
       return 'https://sso-staging.mathematicalthinking.org';
     }
-    
+
     if (host === 'localhost:8082') {
       return 'http://localhost:3003';
     }

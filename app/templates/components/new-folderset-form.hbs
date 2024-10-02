@@ -6,7 +6,7 @@
     </span>
   </p>
   <div class="single-text-input-container">
-    <Input @id="folderset-name" class="single-text-input" @type="text" @value={{name}} placeholder="Provide a name for the new folder set" />
+    <Input id="folderset-name" class="single-text-input" @type="text" @value={{name}} placeholder="Provide a name for the new folder set" />
   </div>
   {{#each nameErrors as |error|}}
     <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut nameErrors) null}} />

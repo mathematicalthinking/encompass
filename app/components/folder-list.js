@@ -39,9 +39,7 @@ export default Component.extend({
   isBipaneled: equal('containerLayoutClass', 'fsh'),
   isTripaneled: equal('containerLayoutClass', 'fsc'),
 
-  canManageFolders: computed('canCreate', 'canDelete', 'canEdit', function () {
-    return this.canCreate || this.canEdit || this.canDelete;
-  }),
+  canManageFolders: computed.or('canCreate', 'canEdit', 'canDelete'),
 
   canCreate: computed('workspace.id', 'currentUser.user.id', function () {
     let ws = this.workspace;

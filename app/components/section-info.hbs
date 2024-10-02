@@ -30,8 +30,8 @@
 
         {{#if this.isEditingName}}
           <Input
-            @name='name'
-            @id='name'
+            name='name'
+            id='name'
             @type='text'
             @value={{this.currentSection.name}}
           />
@@ -76,8 +76,11 @@
       </div>
       {{#if this.isEditingAssignments}}
         <div class='btn-container'>
-          <button class='action_button' {{action 'updateShowAssignment'}}>New
-            Assignment</button>
+          <button
+            class='action_button'
+            type='submit'
+            {{action 'updateShowAssignment'}}
+          >New Assignment</button>
         </div>
       {{/if}}
       <div class='section-info-detail teachers'>
@@ -113,6 +116,7 @@
                 {{#if this.isEditingTeachers}}
                   <button
                     class='trash-button'
+                    type='submit'
                     {{action 'removeTeacher' teacher}}
                   >
                     <i
@@ -193,6 +197,7 @@
                 {{#if this.isEditingStudents}}
                   <button
                     class='trash-button'
+                    type='submit'
                     {{action 'removeStudent' student}}
                   >
                     <i class='far fa-times-circle' aria-hidden='true'></i>
@@ -242,7 +247,7 @@
           <div class='update-students'>
             <Input
               @value={{this.newGroupName}}
-              @placeholder='New Group Name'
+              placeholder='New Group Name'
               class='new-group-name'
             />
             <ul class='listing group-options'>
@@ -264,15 +269,17 @@
             </ul>
             <button
               class='primary-button save-group'
+              type='submit'
               {{on 'click' this.saveGroup}}
             >Save New Group</button>
             <button
               class='primary-button cancel-button'
+              type='button'
               {{on 'click' this.toggleAddGroup}}
             >Done</button>
           </div>
         {{/if}}
-        <ul class='listing {{if this.addGroup 'groups'}}'>
+        <ul class='listing {{if this.addGroup "groups"}}'>
           {{#each @groups as |group|}}
             {{#unless group.isTrashed}}
               <GroupInfo
@@ -299,10 +306,12 @@
     {{/each}}
   </form>
   {{#unless this.cantEdit}}
-    <button id='deleteSection' class='right' {{action 'confirmDelete'}}><i
-        class='fa fa-trash'
-        aria-hidden='true'
-      ></i></button>
+    <button
+      id='deleteSection'
+      class='right'
+      type='button'
+      {{action 'confirmDelete'}}
+    ><i class='fa fa-trash' aria-hidden='true'></i></button>
 
   {{/unless}}
 

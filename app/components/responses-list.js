@@ -84,9 +84,7 @@ export default Component.extend({
     }
   ),
 
-  newThreads: computed('threads', function () {
-    return this.threads.filterBy('isNewThread');
-  }),
+  newThreads: computed.filterBy('threads', 'isNewThread'),
 
   allThreads: computed(
     'threads.@each.isTrashed',
@@ -101,37 +99,25 @@ export default Component.extend({
     }
   ),
 
-  mentoringThreads: computed('allThreads.[]', function () {
-    return this.allThreads.filterBy('threadType', 'mentor');
-  }),
+  mentoringThreads: computed.filterBy('allThreads', 'threadType', 'mentor'),
 
-  approvingThreads: computed('allThreads.[]', function () {
-    return this.allThreads.filterBy('threadType', 'approver');
-  }),
+  approvingThreads: computed.filterBy('allThreads', 'threadType', 'approver'),
 
-  submitterThreads: computed('allThreads.[]', function () {
-    return this.allThreads.filterBy('threadType', 'submitter');
-  }),
+  submitterThreads: computed.filterBy('allThreads', 'threadType', 'submitter'),
 
-  actionSubmitterThreads: computed(
-    'submitterThreads.@each.isActionNeeded',
-    function () {
-      return this.submitterThreads.filterBy('isActionNeeded');
-    }
+  actionSubmitterThreads: computed.filterBy(
+    'submitterThreads',
+    'isActionNeeded'
   ),
 
-  actionMentoringThreads: computed(
-    'mentoringThreads.@each.isActionNeeded',
-    function () {
-      return this.mentoringThreads.filterBy('isActionNeeded');
-    }
+  actionMentoringThreads: computed.filterBy(
+    'mentoringThreads',
+    'isActionNeeded'
   ),
 
-  actionApprovingThreads: computed(
-    'approvingThreads.@each.isActionNeeded',
-    function () {
-      return this.approvingThreads.filterBy('isActionNeeded');
-    }
+  actionApprovingThreads: computed.filterBy(
+    'approvingThreads',
+    'isActionNeeded'
   ),
 
   sortedApprovingThreads: computed(
@@ -231,24 +217,22 @@ export default Component.extend({
       });
   },
 
-  submitterThreadsCount: computed('submitterThreads.[]', function () {
-    return this.get('submitterThreads.length');
-  }),
+  submitterThreadsCount: computed.reads('submitterThreads.length'),
 
-  mentoringThreadsCount: computed('mentoringThreads.[]', function () {
-    return this.get('mentoringThreads.length');
-  }),
+  mentoringThreadsCount: computed.reads('mentoringThreads.length'),
 
-  approvingThreadsCount: computed('approvingThreads.[]', function () {
-    return this.get('approvingThreads.length');
-  }),
+  approvingThreadsCount: computed.reads('approvingThreads.length'),
 
   displayThreads: computed(
-    'currentFilter',
     'allThreads.[]',
-    'sortedSubmitterThreads.[]',
-    'sortedMentoringThreads.[],',
+    'approvingThreadsCount',
+    'areThreads',
+    'currentFilter',
+    'mentoringThreadsCount',
     'sortedApprovingThreads.[]',
+    'sortedMentoringThreads.[],',
+    'sortedSubmitterThreads.[]',
+    'submitterThreadsCount',
     function () {
       let val = this.currentFilter;
 

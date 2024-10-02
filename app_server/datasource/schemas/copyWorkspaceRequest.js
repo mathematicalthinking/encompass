@@ -2,69 +2,73 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
-const WorkspacePermissionObject = require('./workspace').WorkspacePermissionObject;
+const WorkspacePermissionObject =
+  require('./workspace').WorkspacePermissionObject;
 
 /**
-  * @public
-  * @class CopyWorkspaceRequest
-  * @description CopyWorkspaceRequests are a student's response to a problem
-  */
-var CopyWorkspaceRequestSchema = new Schema({
-  //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
-  createDate: { type: Date, 'default': Date.now() },
-  isTrashed: { type: Boolean, 'default': false },
-  lastModifiedBy: { type: ObjectId, ref: 'User' },
-  lastModifiedDate: { type: Date, 'default': Date.now() },
-  //====
-  originalWsId: { type: ObjectId, ref: 'Workspace' },
-  owner: { type: ObjectId, ref: 'User' },
-  name: { type: String },
-  mode: { type: String, enum: ['private', 'org', 'public', 'internet']},
-  submissionOptions: {
-    all: { type: Boolean },
-    none: { type: Boolean },
-    submissionIds: [{ type: ObjectId, ref: 'Answer' }]
-  },
-  folderOptions: {
-    includeStructureOnly: { type: Boolean },
-    folderSetOptions: {
-      doCreateFolderSet: { type: Boolean },
-      existingFolderSetToUse: {type: ObjectId, ref: 'FolderSet'},
-      name: { type: String, trim: true },
-      privacySetting: { type: String, enum: ['M', 'O', 'E'] }
+ * @public
+ * @class CopyWorkspaceRequest
+ * @description CopyWorkspaceRequests are a student's response to a problem
+ */
+var CopyWorkspaceRequestSchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
+    lastModifiedBy: { type: ObjectId, ref: 'User' },
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
+    originalWsId: { type: ObjectId, ref: 'Workspace' },
+    owner: { type: ObjectId, ref: 'User' },
+    name: { type: String },
+    mode: { type: String, enum: ['private', 'org', 'public', 'internet'] },
+    submissionOptions: {
+      all: { type: Boolean },
+      none: { type: Boolean },
+      submissionIds: [{ type: ObjectId, ref: 'Answer' }],
     },
-    all: { type: Boolean },
-    none: { type: Boolean },
+    folderOptions: {
+      includeStructureOnly: { type: Boolean },
+      folderSetOptions: {
+        doCreateFolderSet: { type: Boolean },
+        existingFolderSetToUse: { type: ObjectId, ref: 'FolderSet' },
+        name: { type: String, trim: true },
+        privacySetting: { type: String, enum: ['M', 'O', 'E'] },
+      },
+      all: { type: Boolean },
+      none: { type: Boolean },
+    },
+    selectionOptions: {
+      all: { type: Boolean },
+      none: { type: Boolean },
+      selectionIds: [{ type: ObjectId, ref: 'Selection' }],
+    },
+    commentOptions: {
+      all: { type: Boolean },
+      none: { type: Boolean },
+      commentIds: [{ type: ObjectId, ref: 'Comment' }],
+    },
+    responseOptions: {
+      all: Boolean,
+      none: Boolean,
+      responseIds: [{ type: ObjectId, ref: 'Response' }],
+    },
+    permissionOptions: {
+      // doUseOriginal: { type: Boolean },
+      permissionObjects: [WorkspacePermissionObject],
+    },
+    createdWorkspace: { type: ObjectId, ref: 'Workspace' },
+    createdFolderSet: { type: ObjectId, ref: 'FolderSet' },
+    copyWorkspaceError: { type: String },
   },
-  selectionOptions: {
-    all: { type: Boolean },
-    none: { type: Boolean },
-    selectionIds: [{ type: ObjectId, ref: 'Selection' }]
-  },
-  commentOptions: {
-    all: { type: Boolean },
-    none: { type: Boolean },
-    commentIds: [{ type: ObjectId, ref: 'Comment' }]
-  },
-  responseOptions: {
-    all: Boolean,
-    none: Boolean,
-    responseIds: [{ type: ObjectId, ref: 'Response' }]
-  },
-  permissionOptions: {
-    // doUseOriginal: { type: Boolean },
-    permissionObjects: [ WorkspacePermissionObject ]
-  },
-  createdWorkspace: { type: ObjectId, ref: 'Workspace' },
-  createdFolderSet: { type: ObjectId, ref: 'FolderSet' },
-  copyWorkspaceError: { type: String },
-}, { versionKey: false });
+  { versionKey: false }
+);
 
 /**
-  * ## Pre-Validation
-  * Before saving we must verify (synchonously) that:
-  */
+ * ## Pre-Validation
+ * Before saving we must verify (synchonously) that:
+ */
 // CopyWorkspaceRequestSchema.pre('save', function (next) {
 //   var toObjectId = function (elem, ind, arr) {
 //     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
@@ -87,9 +91,9 @@ var CopyWorkspaceRequestSchema = new Schema({
 // });
 
 /**
-  * ## Post-Validation
-  * After saving we must ensure (synchonously) that:
-  */
+ * ## Post-Validation
+ * After saving we must ensure (synchonously) that:
+ */
 // CopyWorkspaceRequestSchema.post('save', function (CopyWorkspaceRequest) {
 //   var update = { $addToSet: { 'answers': CopyWorkspaceRequest } };
 //   if (CopyWorkspaceRequest.isTrashed) {
@@ -137,4 +141,7 @@ var CopyWorkspaceRequestSchema = new Schema({
 
 // });
 
-module.exports.CopyWorkspaceRequest = mongoose.model('CopyWorkspaceRequest', CopyWorkspaceRequestSchema);
+module.exports.CopyWorkspaceRequest = mongoose.model(
+  'CopyWorkspaceRequest',
+  CopyWorkspaceRequestSchema
+);

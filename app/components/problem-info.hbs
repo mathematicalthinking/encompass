@@ -38,8 +38,8 @@
       <div class='heading'>
         {{#if this.isEditing}}
           <Input
-            @name='title'
-            @id='title'
+            name='title'
+            id='title'
             @type='text'
             @value={{this.problemName}}
           />
@@ -55,20 +55,16 @@
     </div>
     <div class='info-menu'>
       <button
-        class='tab-link general {{if this.showGeneral 'active-btn'}}'
-        {{on 'click' this.toggleGeneral}}
+        class='tab-link general {{if this.showGeneral 'active-btn'}}' type="button" {{on 'click' this.toggleGeneral}}
       >General</button>
       <button
-        class='tab-link categories {{if this.showCats 'active-btn'}}'
-        {{on 'click' this.toggleCats}}
+        class='tab-link categories {{if this.showCats 'active-btn'}}' type="button" {{on 'click' this.toggleCats}}
       >Categories</button>
       <button
-        class='tab-link additional {{if this.showAdditional 'active-btn'}}'
-        {{on 'click' this.toggleAdditional}}
+        class='tab-link additional {{if this.showAdditional 'active-btn'}}' type="button" {{on 'click' this.toggleAdditional}}
       >Additional</button>
       <button
-        class='tab-link legal {{if this.showLegal 'active-btn'}}'
-        {{on 'click' this.toggleLegal}}
+        class='tab-link legal {{if this.showLegal 'active-btn'}}' type="button" {{on 'click' this.toggleLegal}}
       >Legal</button>
     </div>
     <div class='info-content'>
@@ -90,8 +86,8 @@
             {{#if @problem.author}}
               <div class='input-container'>
                 <Input
-                  @name='author'
-                  @id='author'
+                  name='author'
+                  id='author'
                   @type='text'
                   @value={{this.author}}
                 />
@@ -99,8 +95,8 @@
             {{else}}
               <div class='input-container'>
                 <Input
-                  @name='author'
-                  @id='author'
+                  name='author'
+                  id='author'
                   @type='text'
                   placeholder='Add author'
                   @value={{this.author}}
@@ -208,11 +204,10 @@
                   <li class='category-item'>
                     <a
                       href='{{category.url}}'
-                      target='_blank'
+                      target='_blank' rel="noopener noreferrer"
                     >{{category.identifier}}</a>
                     <button
-                      class='remove-cat'
-                      {{action 'removeCategory' category}}
+                      class='remove-cat' type="button" {{action 'removeCategory' category}}
                     ><i class='far fa-times-circle'></i></button>
                     <p class='category-description'>{{category.description}}</p>
                   </li>
@@ -221,16 +216,14 @@
               {{#unless this.showCategories}}
                 <div class='button-row-list'>
                   <button
-                    class='cancel-button'
-                    {{action 'toggleCategories'}}
+                    class='cancel-button' type="button" {{action 'toggleCategories'}}
                   >Add Categories</button>
                 </div>
               {{/unless}}
               {{#if this.showCategories}}
                 <div class='button-row-list'>
                   <button
-                    class='cancel-button'
-                    {{action 'toggleCategories'}}
+                    class='cancel-button' type="button" {{action 'toggleCategories'}}
                   >Hide Categories</button>
                 </div>
                 <CategoriesMenu
@@ -243,16 +236,14 @@
               {{#unless this.showCategories}}
                 <div class='button-row'>
                   <button
-                    class='cancel-button'
-                    {{action 'toggleCategories'}}
+                    class='cancel-button' type="button" {{action 'toggleCategories'}}
                   >Add Categories</button>
                 </div>
               {{/unless}}
               {{#if this.showCategories}}
                 <div class='button-row'>
                   <button
-                    class='cancel-button'
-                    {{action 'toggleCategories'}}
+                    class='cancel-button' type="button" {{action 'toggleCategories'}}
                   >Hide Categories</button>
                 </div>
                 {{#if this.categoryTree}}
@@ -271,7 +262,7 @@
                   <li class='category-item'>
                     <a
                       href='{{category.url}}'
-                      target='_blank'
+                      target='_blank' rel="noopener noreferrer"
                     >{{category.identifier}}</a>
                     <p class='category-description'>{{category.description}}</p>
                   </li>
@@ -323,11 +314,11 @@
               <Textarea
                 class='additional-info-area'
                 @value={{this.additionalInfo}}
-                @rows='4'
+                rows='4'
                 placeholder='Additional info...'
               />
               <Input
-                @id='additionalInfo'
+                id='additionalInfo'
                 @type='hidden'
                 @value={{this.additionalInfo}}
               />
@@ -360,8 +351,7 @@
           {{#if this.isEditing}}
             {{#if @problem.image}}
               <button
-                class='edit-image-btn'
-                {{action 'deleteImage'}}
+                class='edit-image-btn' type="button" {{action 'deleteImage'}}
               >Delete</button>
             {{else}}
               <div class='input-container' id='image-upload'>
@@ -400,8 +390,8 @@
             <div class='input-container' id='copyright-container'>
               <span id='icon'>&copy;</span>
               <Input
-                @name='copyright'
-                @id='copyright'
+                name='copyright'
+                id='copyright'
                 @type='text'
                 @value={{this.copyrightNotice}}
                 placeholder='Add Copyright Notice'
@@ -420,8 +410,8 @@
           {{#if this.isEditing}}
             <div class='input-container'>
               <Input
-                @name='sharing'
-                @id='sharing'
+                name='sharing'
+                id='sharing'
                 @type='text'
                 @value={{this.sharingAuth}}
                 placeholder='Add Sharing Authorization'
@@ -444,7 +434,7 @@
       <span class='left-buttons'>
         {{#if this.isEditing}}
           {{#unless @problem.isTrashed}}
-            <button class='button-icon' {{on 'click' this.deleteProblem}}><i
+            <button class='button-icon' type="button" {{on 'click' this.deleteProblem}}><i
                 class='fas fa-trash'
               ></i></button>
           {{/unless}}
@@ -453,21 +443,20 @@
             class='info-text-tip simptip-position-right simptip-smooth'
             data-tooltip='Make a Copy of this Problem'
           >
-            <button class='button-icon' {{action 'addToMyProblems'}}><i
+            <button class='button-icon' type="button" {{action 'addToMyProblems'}}><i
                 class='far fa-copy'
               ></i></button>
           </span>
           {{#unless @currentUser.isTeacher}}
             {{#unless @problem.isTrashed}}
-              {{#unless (is-equal @problem.status 'flagged')}}
+              {{#if (not (is-equal @problem.status 'flagged'))}}
                 {{#if this.isRecommended}}
                   <span
                     class='info-text-tip simptip-position-right simptip-smooth'
                     data-tooltip='Remove this Problem from Recommended'
                   >
                     <button
-                      class='button-icon star-icon'
-                      {{action 'removeRecommend'}}
+                      class='button-icon star-icon' type="button" {{action 'removeRecommend'}}
                     >
                       <i class='fas fa-star star-filled'></i>
                     </button>
@@ -478,19 +467,18 @@
                     data-tooltip='Add this Problem to Recommended'
                   >
                     <button
-                      class='button-icon star-icon'
-                      {{action 'checkRecommend'}}
+                      class='button-icon star-icon' type="button" {{action 'checkRecommend'}}
                     >
                       <i class='far fa-star star-line'></i>
                     </button>
                   </span>
                 {{/if}}
-              {{/unless}}
+              {{/if}}
             {{/unless}}
           {{/unless}}
           {{#if @currentUser.isTeacher}}
             {{#if this.isRecommended}}
-              <button class='button-icon star-icon no-cursor'>
+              <button class='button-icon star-icon no-cursor' type="button">
                 <i class='fas fa-star star-filled'></i>
               </button>
             {{/if}}
@@ -500,44 +488,38 @@
       <span class='right-buttons'>
         {{#if this.isEditing}}
           <button
-            class='action_button cancel-button'
-            {{action 'cancelEdit'}}
+            class='action_button cancel-button' type="button" {{action 'cancelEdit'}}
           >Cancel</button>
           <button
-            class='primary-button save'
-            {{action 'checkPrivacy'}}
+            class='primary-button save' type="button" {{action 'checkPrivacy'}}
           >Save</button>
         {{else}}
           {{#if this.writePermissions.canEdit}}
             {{#if @problem.isUsed}}
               {{#if @currentUser.isAdmin}}
                 <button
-                  class='primary-button edit'
-                  {{action 'editProblem'}}
+                  class='primary-button edit' type="button" {{action 'editProblem'}}
                 >Edit</button>
               {{/if}}
             {{else}}
               <button
-                class='primary-button edit'
-                {{action 'editProblem'}}
+                class='primary-button edit' type="button" {{action 'editProblem'}}
               >Edit</button>
             {{/if}}
           {{/if}}
           {{#unless @problem.isTrashed}}
-            {{#unless (is-equal @problem.status 'flagged')}}
+            {{#if (not (is-equal @problem.status 'flagged'))}}
               <button
-                class='primary-button assign'
-                {{action 'toggleAssignment'}}
+                class='primary-button assign' type="button" {{action 'toggleAssignment'}}
               >Assign</button>
-            {{/unless}}
+            {{/if}}
           {{/unless}}
         {{/if}}
         {{#if @problem.isTrashed}}
           {{#if @currentUser.isAdmin}}
             {{#unless this.isEditing}}
               <button
-                class='primary-button restore'
-                {{action 'restoreProblem'}}
+                class='primary-button restore' type="button" {{action 'restoreProblem'}}
               >Restore</button>
             {{/unless}}
           {{/if}}

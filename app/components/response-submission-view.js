@@ -40,28 +40,28 @@ export default Component.extend({
     }
   },
 
-  isOwnSubmission: computed('submission.creator.studentId', function () {
-    return (
-      this.get('submission.creator.studentId') ===
-      this.get('currentUser.user.id')
-    );
-  }),
+  isOwnSubmission: computed(
+    'currentUser.user.id',
+    'submission.creator.studentId',
+    function () {
+      return (
+        this.get('submission.creator.studentId') ===
+        this.get('currentUser.user.id')
+      );
+    }
+  ),
 
   canRevise: computed('isOwnSubmission', 'isParentWorkspace', function () {
     return !this.isParentWorkspace && this.isOwnSubmission;
   }),
 
-  showButtonRow: computed('canRevise', function () {
-    return this.canRevise;
-  }),
+  showButtonRow: computed.reads('canRevise'),
 
-  displaySubmission: computed('submission', 'submissionToView', function () {
-    return this.submission;
-  }),
+  displaySubmission: computed.reads('submission'),
   sortedStudentSubmissions: computed('submissionList.[]', function () {
     return this.submissionList.sortBy('createDate');
   }),
-  workspacesToUpdateIds: computed('workspaces', function () {
+  workspacesToUpdateIds: computed('workspace.id', 'workspaces', function () {
     return [this.workspace.id];
   }),
 

@@ -25,8 +25,9 @@ export default Component.extend({
   ),
 
   workspaceLink: computed(
+    'createdWorkspace.id',
+    'createdWorkspace.submissions.firstObject',
     'isCreatingWorkspace',
-    'createdWorkspace',
     function () {
       let submission = this.get('createdWorkspace.submissions.firstObject');
       let wsId = this.get('createdWorkspace.id');

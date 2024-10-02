@@ -12,8 +12,8 @@
   <section class="third submissions">
     <h2>Submissions</h2>
     <div>
-      <Input @type="radio" @name="importMode" class="pdImport" @value="0" @click={{action "radioSelect" 0}} /> <label>PD</label>
-      <Input @type="radio" @name="importMode" class="powImport" @value="1" @click={{action "radioSelect" 1}} /> <label>PoW</label>
+      <Input @type="radio" name="importMode" class="pdImport" @value="0" {{on "click" (action "radioSelect" 0)}} /> <label>PD</label>
+      <Input @type="radio" name="importMode" class="powImport" @value="1" {{on "click" (action "radioSelect" 1)}} /> <label>PoW</label>
     {{#if isPdImport}}
       <p>
         One or more workspaces will be created with the submissions from the
@@ -22,7 +22,7 @@
       </p>
     {{else}}
       <p>
-        <label>As PD set <Input @id="powPd" @type="checkbox" @checked={{pd}} /></label>
+        <label>As PD set <Input id="powPd" @type="checkbox" @checked={{pd}} /></label>
         {{#if pd}}
           <Input @type="text" @value={{newPdSet}} />
         {{/if}}
@@ -30,7 +30,7 @@
       {{#if pd}}
         <p>
          Your submissions will be imported to the PD set you name above.  No workspaces will be created but you (and others) will be able to import this set of submissions by returning to this page and choosing "PD".
-         <!-- see ENC-432 -->
+         {{!-- see ENC-432 --}}
         </p>
       {{else}}
         <p>
@@ -59,24 +59,24 @@
        <ol>
          <li>
            <label for="teacher">Teacher <em>*</em></label>
-           <Input @id="teacher" @type="text" @value={{teacher}} @disabled={{canEdit}} placeholder="enter username" />
+           <Input id="teacher" @type="text" @value={{teacher}} disabled={{canEdit}} placeholder="enter username" />
          </li>
          <li>
            <label for="submitter">Submitter</label>
-           <Input @id="submitter" @type="text" @value={{submitter}} placeholder="enter username" />
+           <Input id="submitter" @type="text" @value={{submitter}} placeholder="enter username" />
          </li>
          <li>
            <label for="puzzle">Problem</label>
-           <Input @id="puzzle" @type="number" @value={{puzzId}} placeholder="enter number" />
+           <Input id="puzzle" @type="number" @value={{puzzId}} placeholder="enter number" />
          </li>
          <li>
            <label for="course">Class</label>
-           <Input @id="course" @type="number" @value={{course}} placeholder="enter ID" />
+           <Input id="course" @type="number" @value={{course}} placeholder="enter ID" />
          </li>
          <li style="border-bottom:2px dashed; padding:0.2em; text-align:center;">OR</li>
          <li>
            <label for="subs">Submissions</label>
-           <Input @id="subs" @type="text" @value={{subs}} @size="33" placeholder="one or more IDs" @pattern="([0-9]+(,?))*" />
+           <Input id="subs" @type="text" @value={{subs}} size="33" placeholder="one or more IDs" pattern="([0-9]+(,?))*" />
           </li>
          </ol>
      </fieldset><br />
@@ -85,11 +85,11 @@
        <ol>
          <li>
            <label for="start">From</label>
-           <Input @id="start" @type="date" @value={{startDate}} placeholder="mm/dd/yyyy" />
+           <Input id="start" @type="date" @value={{startDate}} placeholder="mm/dd/yyyy" />
          </li>
          <li>
          <label for="end">To</label>
-         <Input @id="end" @type="date" @value={{endDate}} placeholder="mm/dd/yyyy" />
+         <Input id="end" @type="date" @value={{endDate}} placeholder="mm/dd/yyyy" />
          </li>
        </ol>
      </fieldset>
@@ -111,7 +111,7 @@
 
   <div style="clear: left"></div>
   <section class="submit">
-  <button class="action_button" id="create-workspace-btn" {{action 'createWorkspace'}}>
+  <button class="action_button" id="create-workspace-btn" type="button" {{action 'createWorkspace'}}>
     Create
   </button>
   </section>

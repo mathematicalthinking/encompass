@@ -24,7 +24,7 @@
             <Input
               @type='text'
               class='text-input'
-              @id='edit-name-input'
+              id='edit-name-input'
               @value={{@workspace.name}}
             />
           {{else}}
@@ -155,8 +155,7 @@
         {{#unless this.isEditing}}
           <div class='update-submissions'>
             <button
-              {{action 'updateWithExistingWork'}}
-              class='primary-button'
+              class='primary-button' type="button" {{action 'updateWithExistingWork'}}
             >Update Workspace</button>
             <div class='update-results'>
               {{#if this.missingLinkedAssignment}}
@@ -234,9 +233,8 @@
         {{#unless this.isEditing}}
           <div class='update-submissions'>
             <button
-              {{action 'updateWithExistingWork'}}
               class='primary-button'
-              data-test='parent-ws-update'
+              data-test='parent-ws-update' type="button" {{action 'updateWithExistingWork'}}
             >Update Parent Workspace</button>
             <div class='update-results'>
               {{#if this.missingChildWorkspaces}}
@@ -292,12 +290,10 @@
       {{#if this.isEditing}}
         <div class='card-row button-row'>
           <button
-            class='primary-button cancel-button'
-            {{action 'stopEditing'}}
+            class='primary-button cancel-button' type="button" {{action 'stopEditing'}}
           >Cancel</button>
           <button
-            class='primary-button'
-            {{action 'checkWorkspace'}}
+            class='primary-button' type="button" {{action 'checkWorkspace'}}
           >Save</button>
         </div>
       {{/if}}

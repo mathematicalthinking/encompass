@@ -30,7 +30,7 @@ export default Component.extend(CurrentUserMixin, {
   selectedRooms: null,
   mostRecentSearchResults: null,
 
-  maxSteps: computed('steps', function () {
+  maxSteps: computed('steps.length', function () {
     return this.get('steps.length') - 1;
   }),
 

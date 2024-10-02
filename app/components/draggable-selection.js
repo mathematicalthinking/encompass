@@ -47,9 +47,7 @@ export default Component.extend(
       }
     ),
 
-    isImage: computed('selection.imageTagLink', function () {
-      return this.get('selection.imageTagLink.length') > 0;
-    }),
+    isImage: computed.gt('selection.imageTagLink.length', 0),
 
     linkToClassName: computed('isImage', function () {
       if (this.isImage) {
@@ -58,7 +56,7 @@ export default Component.extend(
       return 'selection_text';
     }),
 
-    isSelected: computed('selection', 'currentSelection', function () {
+    isSelected: computed('currentSelection.id', 'selection.id', function () {
       return this.get('selection.id') === this.get('currentSelection.id');
     }),
     isVmtClip: computed('selection.vmtInfo.{startTime,endTime}', function () {
@@ -68,21 +66,27 @@ export default Component.extend(
       );
     }),
 
-    titleText: computed('isVmtClip', 'createDate', function () {
-      if (!this.isVmtClip) {
-        let createDate = this.get('selection.createDate');
+    titleText: computed(
+      'createDate',
+      'isVmtClip',
+      'selection.createDate',
+      'selection.vmtInfo.{endTime,startTime}',
+      function () {
+        if (!this.isVmtClip) {
+          let createDate = this.get('selection.createDate');
 
-        let displayDate = moment(createDate).format('l h:mm');
-        return `Created ${displayDate}`;
-      }
-      let startTime = this.get('selection.vmtInfo.startTime');
-      let endTime = this.get('selection.vmtInfo.endTime');
+          let displayDate = moment(createDate).format('l h:mm');
+          return `Created ${displayDate}`;
+        }
+        let startTime = this.get('selection.vmtInfo.startTime');
+        let endTime = this.get('selection.vmtInfo.endTime');
 
-      return `${this.utils.getTimeStringFromMs(startTime)} -
+        return `${this.utils.getTimeStringFromMs(startTime)} -
             ${this.utils.getTimeStringFromMs(endTime)}`;
-    }),
+      }
+    ),
 
-    overlayIcon: computed('isVmtClip}', 'isImage', function () {
+    overlayIcon: computed('isImage', 'isVmtClip', 'isVmtClip}', function () {
       if (!this.isImage) {
         return '';
       }

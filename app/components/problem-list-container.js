@@ -164,12 +164,17 @@ export default Component.extend(
     ],
 
     listResultsMessage: computed(
-      'criteriaTooExclusive',
       'areNoRecommendedProblems',
+      'criteriaTooExclusive',
       'isDisplayingSearchResults',
-      'problems.@each.isTrashed',
       'isFetchingProblems',
+      'problems.@each.isTrashed',
+      'problemsMetadata.total',
+      'searchCriterion',
+      'searchQuery',
       'showLoadingMessage',
+      'toggleTrashed',
+      'userOrgName',
       function () {
         let msg;
         let userOrgName = this.userOrgName;
@@ -263,18 +268,23 @@ export default Component.extend(
       });
     },
 
-    statusOptionsList: computed('problem.status', function () {
-      let statusOptions = this.statusOptions;
-      let isTeacher = this.get('model.currentUser.isTeacher');
+    statusOptionsList: computed(
+      'model.currentUser.isTeacher',
+      'problem.status',
+      'statusOptions',
+      function () {
+        let statusOptions = this.statusOptions;
+        let isTeacher = this.get('model.currentUser.isTeacher');
 
-      if (isTeacher) {
-        statusOptions = _.filter(statusOptions, (option) => {
-          return !option.teacherHide;
-        });
+        if (isTeacher) {
+          statusOptions = _.filter(statusOptions, (option) => {
+            return !option.teacherHide;
+          });
+        }
+
+        return statusOptions;
       }
-
-      return statusOptions;
-    }),
+    ),
 
     didInsertElement() {
       let width = window
@@ -296,6 +306,7 @@ export default Component.extend(
     },
 
     didReceiveAttrs: function () {
+      this._super();
       let attributes = ['problems', 'sections', 'organizations'];
 
       for (let attr of attributes) {

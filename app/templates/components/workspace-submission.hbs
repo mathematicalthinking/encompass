@@ -11,10 +11,9 @@
       <div class='submission-row-item toggle-selecting'>
         <label class='makingSelection'>
           <Input
-            @name='is-selecting'
+            name='is-selecting'
             @type='checkbox'
-            @checked={{this.shouldCheck}}
-            @click={{action 'toggleSelecting'}}
+            @checked={{this.shouldCheck}} {{on "click" (action 'toggleSelecting')}}
           />
           Selecting
         </label>
@@ -38,7 +37,7 @@
       <a
         class='puzzle'
         target='_blank'
-        href='{{this.currentSubmission.puzzleUrl}}'
+        href='{{this.currentSubmission.puzzleUrl}}' rel="noopener noreferrer"
       >
         <span
           class='problem-link-text'
@@ -51,8 +50,7 @@
     <div class='submission-row-item new-response'>
       <button
         disabled={{this.areNoSelections}}
-        class='action_button new-response'
-        {{action
+        class='action_button new-response' type="button" {{action
           'toNewResponse'
           this.currentSubmission.id
           this.currentWorkspace.id
@@ -72,8 +70,7 @@
       {{#if this.submissionResponses.length}}
         <div class='submission-row-item new-response'>
           <button
-            class='action_button new-response'
-            {{action 'viewResponses'}}
+            class='action_button new-response' type="button" {{action 'viewResponses'}}
           >View Responses</button>
           <span
             class='meta response-count existing'
@@ -203,7 +200,7 @@
 
   {{#if this.currentSubmission.uploadedFile.savedFileName}}
     <div id='submission_images'>
-      <a target='_blank' href='{{unbound this.currentSubmission.imageUrl}}'>
+      <a target='_blank' href='{{unbound this.currentSubmission.imageUrl}}' rel="noopener noreferrer">
         <img
           src='{{this.currentSubmission.imageUrl}}'
           alt='Login to the PoWs to see image'
@@ -211,7 +208,7 @@
       </a>
     </div>
   {{/if}}
-</div><!--/al_submission-->
+</div>{{!--/al_submission--}}
 <h5 id='selections-header' class='submission-header selections'>
   Selections
   {{#if this.showExpandSelections}}

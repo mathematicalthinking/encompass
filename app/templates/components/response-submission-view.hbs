@@ -54,7 +54,7 @@
         {{/if}}
 
         {{#if this.isRevising}}
-          <Textarea @name='brief-summary' @value={{revisedBriefSummary}} />
+          <Textarea name='brief-summary' @value={{revisedBriefSummary}} />
         {{else}}
           {{#if this.isShortExpanded}}
             <div class='submission-content-short'>
@@ -145,7 +145,7 @@
               <div id='submission_images'>
                 <a
                   target='_blank'
-                  href='{{unbound this.displaySubmission.imageUrl}}'
+                  href='{{unbound this.displaySubmission.imageUrl}}' rel="noopener noreferrer"
                 >
                   <img
                     src='{{this.displaySubmission.imageUrl}}'
@@ -162,16 +162,13 @@
         <div class='mentor-reply-actions button-row'>
           {{#if this.isRevising}}
             <button
-              {{action 'cancelRevising'}}
-              class='primary-button cancel-button'
+              class='primary-button cancel-button' type="button" {{action 'cancelRevising'}}
             >Cancel</button>
-            <button {{action 'submitRevision'}} class='primary-button'>Submit
+            <button class='primary-button' type="button" {{action 'submitRevision'}}>Submit
               Revision</button>
           {{else}}
             <button
-              data-test='submitter-revise'
-              {{action 'startRevising'}}
-              class='edit-assignment-button'
+              data-test='submitter-revise' class='edit-assignment-button' type="button" {{action 'startRevising'}}
             >Revise <i class='fas fa-edit'></i></button>
           {{/if}}
         </div>

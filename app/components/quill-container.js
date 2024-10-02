@@ -29,6 +29,7 @@ export default Component.extend({
   defaultMaxLength: 14680064, // 14MB
 
   didReceiveAttrs() {
+    this._super();
     let attrSectionId = this.attrSectionId;
     if (!attrSectionId) {
       this.set('sectionId', 'editor');
@@ -65,6 +66,7 @@ export default Component.extend({
   },
 
   didUpdateAttrs() {
+    this._super();
     this.handleStartingText();
   },
 

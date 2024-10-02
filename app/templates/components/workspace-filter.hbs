@@ -38,7 +38,7 @@
                     <i class='checkbox-icon {{option.icon}}'></i>
                     <span class='checkbox-text'>{{option.label}}</span>
                     <Input
-                      @id={{option.value}}
+                      id={{option.value}}
                       @type='checkbox'
                       @checked={{option.isApplied}}
                       @onChange={{this.updateSecondLevel}}
@@ -67,7 +67,7 @@
       <h5>Hidden Workspaces</h5>
       <label class='subfilter'>
         <Input
-          @id='toggle-hidden'
+          id='toggle-hidden'
           @type='checkbox'
           @checked={{this.showHiddenWorkspaces}}
           @onChange={{this.toggleHiddenWorkspaces}}
@@ -78,7 +78,7 @@
         <h5>Trashed Workspaces</h5>
         <label class='subfilter'>
           <Input
-            @id='toggle-trashed'
+            id='toggle-trashed'
             @type='checkbox'
             @checked={{this.showTrashedWorkspaces}}
             @onChange={{this.toggleTrashedWorkspaces}}

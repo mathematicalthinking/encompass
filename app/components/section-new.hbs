@@ -25,7 +25,7 @@
             </span> 
             <span class="required-star">*</span>
           </label>
-            <Input @id="newSectionName" required="true" @type="text" @value={{this.newSectionName}}
+            <Input id="newSectionName" required="true" @type="text" @value={{this.newSectionName}}
             placeholder="Enter class name" {{on "input" this.checkError}} />
           {{#each this.nameFormErrors as |error|}}
             <p class="error-message">{{error}}</p>
@@ -84,8 +84,8 @@
   {{!-- submit button to add a new section --}}
 
   <section class="submit">
-    <button class="action_button" id="create-class" {{action 'createSection'}}>Create Class</button>
-    <button class="action_button cancel-button" {{action 'cancel'}}>
+    <button class="action_button" id="create-class" type="button" {{action 'createSection'}}>Create Class</button>
+    <button class="action_button cancel-button" type="button" {{action 'cancel'}}>
       Cancel
     </button>
 
@@ -94,7 +94,7 @@
   {{#each this.createRecordErrors as |error|}}
     <p class="error-box animated fadeInLeft">
       {{error}} 
-      <button class="dismiss" {{action 'closeError'}}>x</button>
+      <button class="dismiss" type="button" {{action 'closeError'}}>x</button>
     </p>
   {{/each}}
 </div>

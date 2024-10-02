@@ -55,7 +55,7 @@ export default class ResponseContainer extends Component {
     if (this.primaryResponseType === 'approver') {
       this.response.reviewedResponse.then((response) => {
         if (!this.isDestroying && !this.isDestroyed) {
-          this.reviewedResponse = response;
+          set(this, 'reviewedResponse', response);
         }
       });
     }
@@ -75,7 +75,7 @@ export default class ResponseContainer extends Component {
     return responses.rejectBy('isTrashed');
   }
 
-  @computed('cleanStoreResponses.[]', 'nonTrashedResponses.[]', 'submission')
+  @computed('cleanStoreResponses.[]', 'nonTrashedResponses.[]', 'submission.id')
   get newResponses() {
     return this.cleanStoreResponses.filter((response) => {
       let subId = this.utils.getBelongsToId(response, 'submission');
@@ -116,9 +116,9 @@ export default class ResponseContainer extends Component {
   }
 
   @computed(
-    'primaryApproverReply',
-    'mentorReplyDisplayResponse',
-    'combinedResponses.[]'
+    'combinedResponses.[]',
+    'mentorReplyDisplayResponse.id',
+    'primaryApproverReply'
   )
   get approverReplies() {
     let reviewedResponseId;
@@ -149,9 +149,10 @@ export default class ResponseContainer extends Component {
 
   @computed(
     'canApprove',
-    'primaryResponseType',
+    'isCreatingNewMentorReply',
     'isPrimaryRecipient',
-    'isCreatingNewMentorReply'
+    'primaryResponseType',
+    'response'
   )
   get responseToApprove() {
     if (
@@ -179,7 +180,7 @@ export default class ResponseContainer extends Component {
     return this.response.createdBy.id === this.currentUser.user.id;
   }
 
-  @computed('mentorReplyDisplayResponse')
+  @computed('currentUser.user.id', 'mentorReplyDisplayResponse')
   get isDisplayMentorReplyYours() {
     let reply = this.mentorReplyDisplayResponse;
     if (!reply) {
@@ -199,7 +200,7 @@ export default class ResponseContainer extends Component {
     return this.isOwnResponse && this.primaryResponseType === 'approver';
   }
 
-  @computed('primaryResponseType')
+  @computed('primaryResponseType', 'response')
   get primaryApproverReply() {
     if (this.primaryResponseType === 'approver') {
       return this.response;
@@ -217,9 +218,10 @@ export default class ResponseContainer extends Component {
 
   @computed(
     'menteeResponse',
+    'primaryResponseType',
+    'response',
     'responseToApprove',
-    'reviewedResponse',
-    'response'
+    'reviewedResponse'
   )
   get mentorReplyDisplayResponse() {
     if (this.responseToApprove) {
@@ -244,11 +246,13 @@ export default class ResponseContainer extends Component {
   }
 
   @computed(
-    'primaryResponseType',
+    'areMentorReplies',
     'canApprove',
+    'canDirectSend',
     'isCreatingNewMentorReply',
     'isOwnMentorReply',
-    'canDirectSend'
+    'isParentWorkspace',
+    'primaryResponseType'
   )
   get showApproverReply() {
     if (this.isCreatingNewMentorReply) {
@@ -305,7 +309,7 @@ export default class ResponseContainer extends Component {
     });
   }
 
-  @computed('cleanStoreResponses.[]')
+  @computed('cleanStoreResponses.[]', 'workspace.id')
   get cleanWorkspaceResponses() {
     return this.cleanStoreResponses.filter((response) => {
       return (

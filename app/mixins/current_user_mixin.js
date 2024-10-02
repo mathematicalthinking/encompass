@@ -20,44 +20,62 @@ export default Mixin.create({
     }
   ),
 
-  responseNotifications: computed('newNotifications.[]', function () {
-    return this.newNotifications.filterBy('primaryRecordType', 'response');
-  }),
+  responseNotifications: computed.filterBy(
+    'newNotifications',
+    'primaryRecordType',
+    'response'
+  ),
 
-  workspaceNotifications: computed('newNotifications.[]', function () {
-    return this.newNotifications.filterBy('primaryRecordType', 'workspace');
-  }),
+  workspaceNotifications: computed.filterBy(
+    'newNotifications',
+    'primaryRecordType',
+    'workspace'
+  ),
 
-  assignmentNotifications: computed('newNotifications.[]', function () {
-    return this.newNotifications.filterBy('primaryRecordType', 'workspace');
-  }),
+  assignmentNotifications: computed.filterBy(
+    'newNotifications',
+    'primaryRecordType',
+    'workspace'
+  ),
 
-  sectionNotifications: computed('newNotifications.[]', function () {
-    return this.newNotifications.filterBy('primaryRecordType', 'section');
-  }),
+  sectionNotifications: computed.filterBy(
+    'newNotifications',
+    'primaryRecordType',
+    'section'
+  ),
 
-  problemNotifications: computed('newNotifications.[]', function () {
-    return this.newNotifications.filterBy('primaryRecordType', 'problem');
-  }),
+  problemNotifications: computed.filterBy(
+    'newNotifications',
+    'primaryRecordType',
+    'problem'
+  ),
 
-  organizationNotifications: computed('newNotifications.[]', function () {
-    return this.newNotifications.filterBy('primaryRecordType', 'organization');
-  }),
+  organizationNotifications: computed.filterBy(
+    'newNotifications',
+    'primaryRecordType',
+    'organization'
+  ),
 
-  userNotifications: computed('newNotifications.[]', function () {
-    return this.newNotifications.filterBy('primaryRecordType', 'user');
-  }),
+  userNotifications: computed.filterBy(
+    'newNotifications',
+    'primaryRecordType',
+    'user'
+  ),
 
-  newReplyNotifications: computed('responseNotifications.[]', function () {
-    return this.responseNotifications.filter((ntf) => {
-      let recipientId = this.utils.getBelongsToId(ntf, 'recipient');
-      let ntfType = ntf.get('notificationType');
-      let isNewReply =
-        ntfType === 'newMentorReply' || ntfType === 'newApproverReply';
+  newReplyNotifications: computed(
+    'currentUser.id',
+    'responseNotifications.[]',
+    function () {
+      return this.responseNotifications.filter((ntf) => {
+        let recipientId = this.utils.getBelongsToId(ntf, 'recipient');
+        let ntfType = ntf.get('notificationType');
+        let isNewReply =
+          ntfType === 'newMentorReply' || ntfType === 'newApproverReply';
 
-      return isNewReply && recipientId === this.get('currentUser.id');
-    });
-  }),
+        return isNewReply && recipientId === this.get('currentUser.id');
+      });
+    }
+  ),
 
   findRelatedNtfs(primaryRecordType, relatedRecord, ntfType, belongsToType) {
     if (!primaryRecordType || !relatedRecord) {

@@ -13,7 +13,7 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
-const {  requireUser } = require('./userAuth');
+const { requireUser } = require('./userAuth');
 
 const buildDestination = function (req, fileInfo, next) {
   console.log('build destination is running');
@@ -21,42 +21,42 @@ const buildDestination = function (req, fileInfo, next) {
   if (!user) {
     return next(new Error('No user logged in'));
   }
-    // Generate error if the destination folder does not exist.
-    let buildDir = 'build';
-    if (process.env.BUILD_DIR) {
-      buildDir = process.env.BUILD_DIR;
+  // Generate error if the destination folder does not exist.
+  let buildDir = 'build';
+  if (process.env.BUILD_DIR) {
+    buildDir = process.env.BUILD_DIR;
+  }
+  let dest = path.resolve(process.cwd(), `${buildDir}/image_uploads/tmp_pdfs`);
+  fs.access(dest, fs.constants.F_OK, (err) => {
+    if (err) {
+      let errResp = `ERROR - PDF Images directory ${dest} does not exist - ${err}`;
+      console.error(errResp);
+      next(err);
     }
-    let dest = path.resolve(process.cwd(), `${buildDir}/image_uploads/tmp_pdfs`);
-    fs.access(dest, fs.constants.F_OK, (err) => {
-      if (err) {
-        let errResp = `ERROR - PDF Images directory ${dest} does not exist - ${err}`;
-        console.error(errResp);
-        next(err);
-      }
-    });
+  });
 
-    next(null, dest);
-  };
+  next(null, dest);
+};
 
-  const filename = (req, file, next) => {
-    const ext = file.mimetype.split('/')[1];
-    next(null, file.fieldname + '-' + Date.now() + '.'+ext);
-  };
+const filename = (req, file, next) => {
+  const ext = file.mimetype.split('/')[1];
+  next(null, file.fieldname + '-' + Date.now() + '.' + ext);
+};
 
-    const fileFilter = (req, file, next) => {
-      if (!file) {
-        next();
-      }
-      const image = file.mimetype.startsWith('image/');
-      const pdf = file.mimetype.startsWith('application/pdf');
-      if (image) {
-        console.log('photo uploaded');
-        next(null, true);
-      } else if (pdf) {
-        console.log('pdf uploaded');
-        next(null, true);
-      } else {
-        console.log("file not supported");
+const fileFilter = (req, file, next) => {
+  if (!file) {
+    next();
+  }
+  const image = file.mimetype.startsWith('image/');
+  const pdf = file.mimetype.startsWith('application/pdf');
+  if (image) {
+    console.log('photo uploaded');
+    next(null, true);
+  } else if (pdf) {
+    console.log('pdf uploaded');
+    next(null, true);
+  } else {
+    console.log('file not supported');
 
     //TODO:  A better message response to user on failure.
     return next();

@@ -5,12 +5,20 @@ emq.globalize();
 emq.setResolver(Ember.DefaultResolver.create({ namespace: Encompass }));
 
 moduleForModel('selection', 'Selection Model', {
-  needs: ['model:user', 'model:tagging', 'model:comment', 'model:submission', 'model:workspace', 'model:folder', 'model:response']
+  needs: [
+    'model:user',
+    'model:tagging',
+    'model:comment',
+    'model:submission',
+    'model:workspace',
+    'model:folder',
+    'model:response',
+  ],
 });
 
-test('link', function() {
+test('link', function () {
   var selection = this.subject({
-    id: 3
+    id: 3,
   });
 
   var expected = '#/workspaces/null/submissions/null/selections/3';

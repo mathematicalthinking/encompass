@@ -103,25 +103,30 @@ export default Component.extend({
     }
   ),
 
-  isTeacher: computed('currentUser', function () {
+  isTeacher: computed('currentUser.{accountType,actingRole}', function () {
     return (
       this.get('currentUser.accountType') === 'T' &&
       this.get('currentUser.actingRole') !== 'student'
     );
   }),
 
-  initialTeacherItem: computed('selectedTeacher', 'isTeacher', function () {
-    if (this.isTeacher) {
-      return [this.get('currentUser.id')];
+  initialTeacherItem: computed(
+    'currentUser.id',
+    'isTeacher',
+    'selectedTeacher.id',
+    function () {
+      if (this.isTeacher) {
+        return [this.get('currentUser.id')];
+      }
+      if (this.selectedTeacher) {
+        return [this.get('selectedTeacher.id')];
+      }
+      return [];
     }
-    if (this.selectedTeacher) {
-      return [this.get('selectedTeacher.id')];
-    }
-    return [];
-  }),
+  ),
 
   initialStudentItem: computed(
-    'currentUser',
+    'currentUser.{id,isStudent}',
     'selectedStudents.[]',
     function () {
       if (this.get('currentUser.isStudent')) {
@@ -134,21 +139,21 @@ export default Component.extend({
     }
   ),
 
-  initialAssignmentItem: computed('selectedAssignment', function () {
+  initialAssignmentItem: computed('selectedAssignment.id', function () {
     if (this.selectedAssignment) {
       return [this.get('selectedAssignment.id')];
     }
     return [];
   }),
 
-  initialProblemItem: computed('selectedProblem', function () {
+  initialProblemItem: computed('selectedProblem.id', function () {
     if (this.selectedProblem) {
       return [this.get('selectedProblem.id')];
     }
     return [];
   }),
 
-  initialSectionItem: computed('selectedSection', function () {
+  initialSectionItem: computed('selectedSection.id', function () {
     if (this.selectedSection) {
       return [this.get('selectedSection.id')];
     }
@@ -177,9 +182,10 @@ export default Component.extend({
 
   teacherPool: computed(
     'baseUsers.[]',
-    'selectedSection',
     'selectedAssignment',
+    'selectedSection',
     'selectedStudents.[]',
+    'selectedStudentsSections',
     function () {
       const assignment = this.selectedAssignment;
       const section = this.selectedSection;
@@ -227,11 +233,13 @@ export default Component.extend({
   }),
 
   studentPool: computed(
-    'baseUsers.[]',
     'baseSections.[]',
-    'selectedSection',
+    'baseUsers.[]',
+    'currentUser.isStudent',
     'selectedAssignment',
+    'selectedSection',
     'selectedTeacher',
+    'selectedTeacherSections',
     function () {
       const assignment = this.selectedAssignment;
       const section = this.selectedSection;
@@ -301,7 +309,7 @@ export default Component.extend({
   //   return !this.get('selectedAssignment');
   // }.property('selectedAssignment'),
 
-  selectedTeacherSectionIds: computed('selectedTeacher', function () {
+  selectedTeacherSectionIds: computed('selectedTeacher.sections', function () {
     const sectionsFromTeacher = this.get('selectedTeacher.sections');
     if (sectionsFromTeacher) {
       return sectionsFromTeacher
@@ -313,8 +321,9 @@ export default Component.extend({
     return [];
   }),
   selectedTeacherAssignments: computed(
-    'selectedTeacher',
     'baseAssignments.[]',
+    'selectedTeacher.id',
+    'selectedTeacherSectionIds',
     function () {
       if (!this.selectedTeacher) {
         return [];
@@ -329,8 +338,8 @@ export default Component.extend({
   ),
 
   selectedProblemAssignments: computed(
-    'selectedProblem',
     'baseAssignments.[]',
+    'selectedProblem.id',
     function () {
       if (!this.selectedProblem) {
         return [];
@@ -343,8 +352,8 @@ export default Component.extend({
   ),
 
   selectedSectionAssignments: computed(
-    'selectedSection',
     'baseAssignments.[]',
+    'selectedSection.assignments',
     function () {
       if (!this.selectedSection) {
         return [];
@@ -375,10 +384,14 @@ export default Component.extend({
 
   assignmentOptions: computed(
     'baseAssignments.[]',
-    'selectedTeacher',
     'selectedProblem',
+    'selectedProblemAssignments',
     'selectedSection',
+    'selectedSectionAssignments',
     'selectedStudents.[]',
+    'selectedStudentsAssignments',
+    'selectedTeacher',
+    'selectedTeacherAssignments',
     function () {
       let assignments = [];
       let teacher = this.selectedTeacher;
@@ -435,10 +448,12 @@ export default Component.extend({
   ),
 
   sectionPool: computed(
-    'selectedTeacher',
+    'baseSections',
     'selectedAssignment',
-    'selectedStudentsSections.[]',
     'selectedStudents.[]',
+    'selectedStudentsSections.[]',
+    'selectedTeacher',
+    'selectedTeacherSections',
     function () {
       const assignment = this.selectedAssignment;
       const teacher = this.selectedTeacher;
@@ -496,8 +511,9 @@ export default Component.extend({
   }),
 
   selectedStudentsSections: computed(
-    'selectedStudentSectionIds.[]',
     'baseSections.[]',
+    'selectedStudentSectionIds.[]',
+    'selectedStudents',
     function () {
       const students = this.selectedStudents;
       const sections = this.baseSections;
@@ -514,8 +530,9 @@ export default Component.extend({
   ),
 
   selectedTeacherSections: computed(
-    'selectedTeacher',
     'baseSections.[]',
+    'selectedTeacher',
+    'selectedTeacherSectionIds',
     function () {
       if (!this.selectedTeacher) {
         return [];
@@ -549,8 +566,10 @@ export default Component.extend({
 
   sectionOptions: computed(
     'baseSections.[]',
-    'selectedTeacher',
     'selectedAssignment',
+    'selectedAssignmentSections',
+    'selectedTeacher',
+    'selectedTeacherSections',
     function () {
       let sections = [];
       let teacher = this.selectedTeacher;

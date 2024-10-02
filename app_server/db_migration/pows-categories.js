@@ -6,7 +6,7 @@ const _ = require('underscore');
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
- mongoose.connect('mongodb://localhost:27017/encompass');
+mongoose.connect('mongodb://localhost:27017/encompass');
 
 // puzzleId, title, //[category identifier]
 
@@ -31,47 +31,53 @@ let missingPuzzles = [];
 let categoryPrefix = 'CCSS.Math.Content.';
 
 function mapIdentifiersToCategoryIds(identifiers) {
-  let cats = identifiers.map((i => {
-    return models.Category.find({identifier: i}, {_id: 1}).lean().exec()
-    .then((categories) => {
-      if (categories.length > 1) {
-        duplicateCategories.push(categories[0]);
-      }
-      let cat = categories[0];
+  let cats = identifiers.map((i) => {
+    return models.Category.find({ identifier: i }, { _id: 1 })
+      .lean()
+      .exec()
+      .then((categories) => {
+        if (categories.length > 1) {
+          duplicateCategories.push(categories[0]);
+        }
+        let cat = categories[0];
 
-      if (cat) {
-        return cat._id;
-      } else {
-        console.log('missing identifier', i);
-        missingIdentifiers.push(i);
-      }
-    });
-  }));
+        if (cat) {
+          return cat._id;
+        } else {
+          console.log('missing identifier', i);
+          missingIdentifiers.push(i);
+        }
+      });
+  });
   return Promise.all(cats);
 }
 
 function getEncompassProblemIdFromPuzzleId(puzzleId) {
-  return models.Problem.find({puzzleId: puzzleId}, {_id: 1}).lean().exec()
-  .then((problems) => {
-    let prob = problems[0];
-    if (!prob) {
-      console.log(`No problem found for puzzleId: ${puzzleId}`);
-      missingPuzzles.push(puzzleId);
-    } else {
-      return prob._id;
-    }
-  });
+  return models.Problem.find({ puzzleId: puzzleId }, { _id: 1 })
+    .lean()
+    .exec()
+    .then((problems) => {
+      let prob = problems[0];
+      if (!prob) {
+        console.log(`No problem found for puzzleId: ${puzzleId}`);
+        missingPuzzles.push(puzzleId);
+      } else {
+        return prob._id;
+      }
+    });
 }
 
 async function convertToJson() {
   try {
-    let results = await Promise.all(files.map((f) => {
-      return csv().fromFile(`${pathToFiles}/${f}`);
-    }));
+    let results = await Promise.all(
+      files.map((f) => {
+        return csv().fromFile(`${pathToFiles}/${f}`);
+      })
+    );
 
     results = _.flatten(results);
 
-    let puzzleIds = _.map(results, obj => obj.puzzleId);
+    let puzzleIds = _.map(results, (obj) => obj.puzzleId);
     console.log(`There are ${puzzleIds.length} problems`);
 
     let uniqPuzzles = _.uniq(puzzleIds);
@@ -107,7 +113,7 @@ async function convertToJson() {
 
         if (trimmed.includes('-')) {
           // replace dash with period to match format in encompass db
-            trimmed = trimmed.replace('-', '.');
+          trimmed = trimmed.replace('-', '.');
         }
 
         let name = `${categoryPrefix}${trimmed}`;
@@ -141,8 +147,8 @@ async function convertToJson() {
     }
 
     return dict;
-  } catch(err) {
-  console.log(err);
+  } catch (err) {
+    console.log(err);
   }
 }
 
@@ -161,13 +167,16 @@ async function migrate() {
       let problemId = await getEncompassProblemIdFromPuzzleId(puzzleId);
 
       // findAndUpdate problem - add categories to problems category array
-      let test = await models.Problem.update({_id: problemId}, {$addToSet: { categories: {$each: json[key].categoryIds }  } });
+      let test = await models.Problem.update(
+        { _id: problemId },
+        { $addToSet: { categories: { $each: json[key].categoryIds } } }
+      );
     }
     console.log(`Number of missing identifiers: ${missingIdentifiers.length}`);
     console.log(`Number of missing puzzles: ${missingPuzzles.length}`);
     console.log(`Number of duplicate categorys: ${duplicateCategories.length}`);
     console.log('done!');
-  }catch(err) {
+  } catch (err) {
     console.log('err migrate', err);
   }
 }

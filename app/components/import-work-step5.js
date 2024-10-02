@@ -114,6 +114,7 @@ export default Component.extend({
   }),
 
   willDestroyElement: function () {
+    this._super(...arguments);
     this.set('doCreateWs', this.doCreateWs);
     this.set('createAssignmentValue', this.createAssignmentValue);
     this.set('selectedMode', this.selectedMode);

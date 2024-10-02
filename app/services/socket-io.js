@@ -23,14 +23,11 @@ export default Service.extend({
     socket.on('NEW_NOTIFICATION', (data) => {
       _.each(data, (val, key) => {
         if (val) {
-          this.store.pushPayload(
-            {
-              [key]: val
-            }
-          );
+          this.store.pushPayload({
+            [key]: val,
+          });
         }
       });
-
 
       let ntf = data.notifications[0];
       if (!ntf) {
@@ -49,9 +46,11 @@ export default Service.extend({
               let newRevision = this.store.peekRecord('submission', subId);
 
               if (newRevision) {
-
                 let uniqueId = ntf.workspace + ntf.createdBy;
-                let existingThread = this.findExistingResponseThread('mentor', uniqueId);
+                let existingThread = this.findExistingResponseThread(
+                  'mentor',
+                  uniqueId
+                );
 
                 // should always be existing thread
                 if (existingThread) {
@@ -62,7 +61,6 @@ export default Service.extend({
           }
         } else if (data.responses && data.responses[0]) {
           this.handleResponseNtf(ntf, data.responses[0], data.workspaceName);
-
         }
       }
       // check if we need to clear any now outdated notifications
@@ -106,7 +104,10 @@ export default Service.extend({
       }
       let { recordIdToClear, recordType } = data;
 
-      if (!utils.isValidMongoId(recordIdToClear) || !utils.isNonEmptyString(recordType)) {
+      if (
+        !utils.isValidMongoId(recordIdToClear) ||
+        !utils.isNonEmptyString(recordType)
+      ) {
         return;
       }
 
@@ -129,15 +130,13 @@ export default Service.extend({
       }
 
       this.store.unloadRecord(peeked);
-
-
     });
     socket.on('UPDATED_RECORD', (data) => {
       if (data) {
         let recordType = data.recordType;
 
         this.store.pushPayload({
-          [recordType]: data.updatedRecord
+          [recordType]: data.updatedRecord,
         });
       }
     });
@@ -152,10 +151,9 @@ export default Service.extend({
     this.set('socket', socket);
 
     user.set('socketId', socket.id);
-    user.save()
-      .then(() => {
-        this.setupListeners();
-      });
+    user.save().then(() => {
+      this.setupListeners();
+    });
   },
 
   triggerToast(ntf) {
@@ -175,11 +173,13 @@ export default Service.extend({
   },
 
   handleResponseNtf(ntf, newResponseObj, workspaceName) {
-
     let { notificationType } = ntf;
     let workspaceId = newResponseObj.workspace;
     let newResponse = this.store.peekRecord('response', newResponseObj._id);
-    let submission = this.store.peekRecord('submission', newResponseObj.submission);
+    let submission = this.store.peekRecord(
+      'submission',
+      newResponseObj.submission
+    );
 
     let responseCreatorId = this.utils.getBelongsToId(newResponse, 'createdBy');
     let problemTitle;
@@ -199,11 +199,13 @@ export default Service.extend({
 
     if (notificationType === 'newMentorReply') {
       let uniqueId = `srt${workspaceId}`;
-      let existingThread = this.findExistingResponseThread('submitter', uniqueId);
+      let existingThread = this.findExistingResponseThread(
+        'submitter',
+        uniqueId
+      );
       if (existingThread) {
         existingThread.get('responses').addObject(newResponse);
       } else {
-
         // create new thread
         let newThread = this.store.createRecord('response-thread', {
           threadType: 'submitter',
@@ -235,7 +237,10 @@ export default Service.extend({
     if (notificationType === 'mentorReplyRequiresApproval') {
       let uniqueId = workspaceId + studentIdentifier + responseCreatorId;
 
-      let existingThread = this.findExistingResponseThread('approver', uniqueId);
+      let existingThread = this.findExistingResponseThread(
+        'approver',
+        uniqueId
+      );
       if (existingThread) {
         existingThread.get('responses').addObject(newResponse);
       } else {
@@ -247,12 +252,11 @@ export default Service.extend({
           mentors: [responseCreatorId],
           problemTitle,
           isNewThread: true,
-          studentDisplay
+          studentDisplay,
         });
         newThread.get('submissions').addObject(submission);
         newThread.get('responses').addObject(newResponse);
       }
-
     }
   },
 
@@ -263,8 +267,10 @@ export default Service.extend({
     }
 
     return peekedResponseThreads.find((thread) => {
-      return thread.get('threadType') === threadType && _.isEqual(thread.get('id'), uniqueIdentifier);
+      return (
+        thread.get('threadType') === threadType &&
+        _.isEqual(thread.get('id'), uniqueIdentifier)
+      );
     });
-
-  }
+  },
 });

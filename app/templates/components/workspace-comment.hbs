@@ -4,7 +4,7 @@
       <LinkTo
         @route='workspace.submissions.submission.selections.selection'
         @models={{array comment.selection.submission comment.selection}}
-        @classNames='comment comment-text'
+        class='comment comment-text'
       >
         {{comment.text}}
       </LinkTo>
@@ -12,7 +12,7 @@
       <a
         class='newWindow comment-text'
         target='_blank'
-        href='{{comment.selection.link}}'
+        href='{{comment.selection.link}}' rel="noopener noreferrer"
       >{{comment.text}}</a>
     {{/if}}
   </p>

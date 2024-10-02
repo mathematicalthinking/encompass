@@ -1,7 +1,7 @@
 <section class="list-side">
   <header class="list-header">
     <h1>Users</h1>
-    <LinkTo @route="users.new" @id="new-user-link" class="new-link-btn"><span class="create-text">Create New User</span><i class="fas fa-plus"></i></LinkTo>
+    <LinkTo @route="users.new" id="new-user-link" class="new-link-btn"><span class="create-text">Create New User</span><i class="fas fa-plus"></i></LinkTo>
   </header>
   <section>
     <nav class="list-box">
@@ -19,7 +19,7 @@
         <CollapsibleList @tag="teacher-users" @title="Teacher" @users={{this.teacherUsers}} @noInfo="There are no teachers yet" />
         <CollapsibleList @tag="student-users" @title="Students" @users={{this.studentUsers}} @noInfo="There are no students yet" />
       {{#if @currentUser.isAdmin}}
-        <button class="toggle-button" {{action 'toggleDeletedUsers'}}>
+        <button class="toggle-button" type="button" {{action 'toggleDeletedUsers'}}>
           {{if this.showDeletedUsers 'Hide' 'Show'}} Deleted Users
         </button>
 

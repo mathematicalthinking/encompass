@@ -106,6 +106,7 @@ export default Ember.Component.extend({
   },
 
   willDestroyElement: function () {
+    this._super(...arguments);
     this.$('.typeahead').typeahead('destroy');
   },
 

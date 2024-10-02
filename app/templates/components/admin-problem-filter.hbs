@@ -14,7 +14,7 @@
           <label for={{option.value}} class="checkbox-label">
             <i class="checkbox-icon {{option.icon}}"></i>
             <span class="checkbox-text">{{option.label}}</span>
-            <Input @id={{option.value}} @type="checkbox" @checked={{option.isApplied}} @change={{action "updateOrgSubFilters"}} />
+            <Input id={{option.value}} @type="checkbox" @checked={{option.isApplied}} {{on "change" (action "updateOrgSubFilters")}} />
           </label>
         </li>
       {{/each}}
@@ -35,7 +35,7 @@
       <label for={{option.value}} class="checkbox-label">
         <i class="checkbox-icon {{option.icon}}"></i>
         <span class="checkbox-text">{{option.label}}</span>
-        <Input @id={{option.value}} @type="checkbox" @checked={{option.isApplied}} @change={{action "updateSecondLevel"}} />
+        <Input id={{option.value}} @type="checkbox" @checked={{option.isApplied}} {{on "change" (action "updateSecondLevel")}} />
       </label>
     </li>
     {{/each}}

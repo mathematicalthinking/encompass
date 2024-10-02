@@ -39,6 +39,7 @@ export default Component.extend({
   // This works but by default if you create it you are in the teacher's array
   collabSections: computed(
     'cleanSections.[]',
+    'yourSections',
     'yourTeacherSectionIds.[]',
     function () {
       let collabSections = this.cleanSections.filter((section) => {
@@ -55,8 +56,9 @@ export default Component.extend({
 
   orgSections: computed(
     'cleanSections.@each.organization',
-    'yourSections.[]',
     'collabSections.[]',
+    'currentUser',
+    'yourSections.[]',
     function () {
       let sections = this.cleanSections.filter((section) => {
         let orgId = this.utils.getBelongsToId(section, 'organization');
@@ -76,6 +78,7 @@ export default Component.extend({
   ),
 
   studentSections: computed(
+    'cleanSections',
     'sections.@each.isTrashed',
     'yourStudentSectionIds.[]',
     function () {

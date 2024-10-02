@@ -1,10 +1,5 @@
 import Component from '@ember/component';
 
-
-
-
-
-
 export default Component.extend({
   classNames: ['vmt-activity-list'],
 
@@ -17,5 +12,5 @@ export default Component.extend({
     onRoomSelect(room) {
       this.onSubItemSelect(room);
     },
-  }
+  },
 });

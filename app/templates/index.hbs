@@ -6,18 +6,15 @@
 
       <button
         class='home-options__tab
-          {{if (is-equal this.dataToShow "workspace") "home-options--active"}}'
-        {{on 'click' (fn this.updateDataToShow 'workspace')}}
+          {{if (is-equal this.dataToShow "workspace") "home-options--active"}}' type="button" {{on 'click' (fn this.updateDataToShow 'workspace')}}
       ><span>My Workspaces</span></button>
       <button
         class='home-options__tab
-          {{if (is-equal this.dataToShow "assignment") "home-options--active"}}'
-        {{on 'click' (fn this.updateDataToShow 'assignment')}}
+          {{if (is-equal this.dataToShow "assignment") "home-options--active"}}' type="button" {{on 'click' (fn this.updateDataToShow 'assignment')}}
       ><span>My Problem Solving</span></button>
       <button
         class='home-options__tab
-          {{if (is-equal this.dataToShow "feedback") "home-options--active"}}'
-        {{on 'click' (fn this.updateDataToShow 'feedback')}}
+          {{if (is-equal this.dataToShow "feedback") "home-options--active"}}' type="button" {{on 'click' (fn this.updateDataToShow 'feedback')}}
       ><span>My Feedback</span></button>
     </div>
     {{! Mine, shared, createdbyme  and filters}}
@@ -31,7 +28,7 @@
                 " details-tabs--active"
               }}'
           ><button
-              {{on 'click' (fn this.updateSelectedData item)}}
+              type="button" {{on 'click' (fn this.updateSelectedData item)}}
             >{{item.label}}</button>
           </li>
         {{/each}}
@@ -113,7 +110,7 @@
 
       </p>
 
-      <p><a href='https://encompassmath.org/' target='_blank'>EnCoMPASS</a>
+      <p><a href='https://encompassmath.org/' target='_blank' rel="noopener noreferrer">EnCoMPASS</a>
         is part of the Online Reflection and Community-based Instructional
         Development System for Mathematics Education (ORCIDS), an NSF-funded
         collaboration between Drexel University, California State University San
@@ -121,7 +118,7 @@
         Maintained by
         <a
           href='https://www.21pstem.org/encompass'
-          target='_blank'
+          target='_blank' rel="noopener noreferrer"
         >21PSTEM.org</a>
       </p>
     </div>

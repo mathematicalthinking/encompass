@@ -54,8 +54,9 @@ export default Component.extend({
   },
 
   filteredSelections: computed(
-    'model.selections.@each.isTrashed',
+    'currentUser.user.id',
     'doUseOnlyOwnMarkup',
+    'model.selections.@each.isTrashed',
     function () {
       // filter out trashed selections
       // if a user deletes a selection and then immediately after
@@ -76,9 +77,10 @@ export default Component.extend({
   ),
 
   filteredComments: computed(
-    'model.comments.@each.isTrashed',
     'commentFilter.@each.isChecked',
+    'currentUser.user.id',
     'doUseOnlyOwnMarkup',
+    'model.comments.@each.isTrashed',
     function () {
       // get array of strings of comment types to include
       const chosenFilter = this.commentFilter
@@ -140,9 +142,9 @@ export default Component.extend({
   }),
 
   canRevise: computed(
-    'creator',
+    'creator.id',
+    'currentUser.user.id',
     'model.persisted',
-    'currentUser.user',
     function () {
       return (
         this.get('creator.id') === this.get('currentUser.user.id') &&
@@ -154,21 +156,23 @@ export default Component.extend({
     return this.canRevise && !this.isRevising;
   }),
 
-  existingResponses: computed('submissionResponses.[]', function () {
-    let modelId = this.get('model.id');
-    return this.submissionResponses.rejectBy('id', modelId);
-  }),
+  existingResponses: computed(
+    'model.id',
+    'submissionResponses.[]',
+    function () {
+      let modelId = this.get('model.id');
+      return this.submissionResponses.rejectBy('id', modelId);
+    }
+  ),
 
-  dirty: computed('model.text', 'data.text', 'response', function () {
+  dirty: computed('data.text', 'model.text', 'response', 'text', function () {
     if (this.get('data.text')) {
       return this.text !== this.get('data.text');
     }
     return this.get('model.text') !== this.response;
   }),
 
-  canRespond: computed('isStatic', function () {
-    return !this.isStatic;
-  }),
+  canRespond: computed.not('isStatic'),
 
   explainEmptiness: computed(
     'isEditing',
@@ -189,16 +193,23 @@ export default Component.extend({
     return this.to === this.student;
   }),
 
-  who: computed('student', 'to', 'anonymous', function () {
-    if (this.anonymous) {
-      return 'Someone';
-    }
-    if (this.isToStudent) {
-      return 'You';
-    }
+  who: computed(
+    'anonymous',
+    'isToStudent',
+    'model.student',
+    'student',
+    'to',
+    function () {
+      if (this.anonymous) {
+        return 'Someone';
+      }
+      if (this.isToStudent) {
+        return 'You';
+      }
 
-    return this.get('model.student');
-  }),
+      return this.get('model.student');
+    }
+  ),
 
   greeting: computed('model.student', function () {
     let brk = this.get('model.student').indexOf(' ');

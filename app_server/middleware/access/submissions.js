@@ -3,12 +3,12 @@ const utils = require('./utils');
 const mongooseUtils = require('../../utils/mongoose');
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+const { isNonEmptyObject, isNonEmptyArray } = objectUtils;
 const { isValidMongoId } = mongooseUtils;
 
 module.exports.get = {};
 
-const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
+const accessibleSubmissionsQuery = async function (user, ids, filterBy) {
   try {
     if (!isNonEmptyObject(user)) {
       return {};
@@ -19,76 +19,79 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
     const isStudent = accountType === 'S' || actingRole === 'student';
 
     let filter = {
-      $and: [
-        { isTrashed: { $ne: true } }
-      ]
+      $and: [{ isTrashed: { $ne: true } }],
     };
 
     let workspaceFilter = {};
 
-      if (isNonEmptyArray(ids)) {
-        filter.$and.push({ _id: { $in : ids } });
-        workspaceFilter.submissions = { $elemMatch: {$in: ids } };
-      } else if(isValidMongoId(ids)) {
-        filter.$and.push({ _id: ids });
-        workspaceFilter.submissions = ids;
+    if (isNonEmptyArray(ids)) {
+      filter.$and.push({ _id: { $in: ids } });
+      workspaceFilter.submissions = { $elemMatch: { $in: ids } };
+    } else if (isValidMongoId(ids)) {
+      filter.$and.push({ _id: ids });
+      workspaceFilter.submissions = ids;
+    }
+
+    if (isNonEmptyObject(filterBy)) {
+      let { answer, answers, student, startDate, workspace } = filterBy;
+      if (isValidMongoId(filterBy.answer)) {
+        filter.$and.push({ answer: answer });
       }
 
-      if (isNonEmptyObject(filterBy)) {
-        let { answer, answers, student, startDate, workspace } = filterBy;
-        if (isValidMongoId(filterBy.answer)) {
-          filter.$and.push({answer: answer });
-        }
-
-        if (isNonEmptyArray(answers)) {
-          filter.$and.push({answer: {$in: answers}});
-        }
-
-        if (isValidMongoId(student)) {
-          filter.$and.push({'creator.studentId': student});
-        }
-
-        if (startDate) {
-          let date = new Date(startDate);
-          filter.$and.push({createDate: {$gt: date}});
-        }
-
-        if (isValidMongoId(workspace)) {
-          filter.$and.push({workspaces: workspace});
-          workspaceFilter._id = workspace;
-        }
+      if (isNonEmptyArray(answers)) {
+        filter.$and.push({ answer: { $in: answers } });
       }
 
-      if (accountType === 'A' && !isStudent) {
-        return filter;
+      if (isValidMongoId(student)) {
+        filter.$and.push({ 'creator.studentId': student });
       }
 
-      let responseCriteria = {
-        isTrashed: false,
-        responseType: 'mentor',
-        status: 'approved',
-        recipient: user._id
-      };
-
-      if (isNonEmptyArray(ids)) {
-        responseCriteria.submission = { $in: ids };
+      if (startDate) {
+        let date = new Date(startDate);
+        filter.$and.push({ createDate: { $gt: date } });
       }
 
-      if (isValidMongoId(ids)) {
-        responseCriteria.submission = ids;
+      if (isValidMongoId(workspace)) {
+        filter.$and.push({ workspaces: workspace });
+        workspaceFilter._id = workspace;
       }
+    }
 
-      let promises = [
-        utils.getAccessibleWorkspaceIds(user, workspaceFilter),
-        utils.getModelIds('Response', responseCriteria),
-        utils.getRestrictedWorkspaceData(user, 'submissions'),
-      ];
+    if (accountType === 'A' && !isStudent) {
+      return filter;
+    }
 
-      if (accountType === 'P' && isValidMongoId(organization)) {
-        promises.push(utils.getModelIds('User', { organization }));
-      }
+    let responseCriteria = {
+      isTrashed: false,
+      responseType: 'mentor',
+      status: 'approved',
+      recipient: user._id,
+    };
 
-      let [ accessibleWorkspaceIds, approvedMentorReplies, restrictedRecords, orgUserIds ] = await Promise.all(promises);
+    if (isNonEmptyArray(ids)) {
+      responseCriteria.submission = { $in: ids };
+    }
+
+    if (isValidMongoId(ids)) {
+      responseCriteria.submission = ids;
+    }
+
+    let promises = [
+      utils.getAccessibleWorkspaceIds(user, workspaceFilter),
+      utils.getModelIds('Response', responseCriteria),
+      utils.getRestrictedWorkspaceData(user, 'submissions'),
+    ];
+
+    if (accountType === 'P' && isValidMongoId(organization)) {
+      promises.push(utils.getModelIds('User', { organization }));
+    }
+
+    let [
+      accessibleWorkspaceIds,
+      approvedMentorReplies,
+      restrictedRecords,
+      orgUserIds,
+    ] = await Promise.all(promises);
 
     // everyone should have access to all submissions that belong to a workspace that they have access to
     const orFilter = { $or: [] };
@@ -96,13 +99,17 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
     orFilter.$or.push({ createdBy: user._id });
 
     if (isNonEmptyArray(accessibleWorkspaceIds)) {
-      orFilter.$or.push({ workspaces : { $elemMatch: { $in: accessibleWorkspaceIds } } });
+      orFilter.$or.push({
+        workspaces: { $elemMatch: { $in: accessibleWorkspaceIds } },
+      });
     }
 
     // everyone should have access to submissions related to approved mentor replies addressed to them
 
     if (isNonEmptyArray(approvedMentorReplies)) {
-      orFilter.$or.push({ responses: { $elemMatch: { $in: approvedMentorReplies } } } );
+      orFilter.$or.push({
+        responses: { $elemMatch: { $in: approvedMentorReplies } },
+      });
     }
 
     if (isNonEmptyArray(restrictedRecords)) {
@@ -110,19 +117,17 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
     }
 
     if (isNonEmptyArray(orgUserIds)) {
-      orFilter.$or.push({createdBy : { $in : orgUserIds } });
+      orFilter.$or.push({ createdBy: { $in: orgUserIds } });
     }
 
     filter.$and.push(orFilter);
     return filter;
-
-
-  }catch(err) {
+  } catch (err) {
     console.log('err asq', err);
   }
 };
 
-const canLoadSubmission = async function(user, id) {
+const canLoadSubmission = async function (user, id) {
   if (!user) {
     return;
   }
@@ -139,7 +144,7 @@ const canLoadSubmission = async function(user, id) {
   let criteria = await accessibleSubmissionsQuery(user, id);
 
   return utils.doesRecordExist('Submission', criteria);
-  };
+};
 
 module.exports.get.submissions = accessibleSubmissionsQuery;
 module.exports.get.submission = canLoadSubmission;

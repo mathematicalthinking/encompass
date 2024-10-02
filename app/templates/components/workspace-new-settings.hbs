@@ -1,5 +1,5 @@
 <h1>Create New Workspace</h1>
-<button class='back-button' {{action 'back'}}>
+<button class='back-button' type="button" {{action 'back'}}>
   <i class='fas fa-arrow-left'></i>
   Submission Viewer</button>
 <div class='create-ws-content'>
@@ -15,7 +15,7 @@
     </p>
     <div class='single-text-input-container'>
       <Input
-        @id='ws-new-name'
+        id='ws-new-name'
         class='single-text-input'
         @type='text'
         @value={{workspaceName}}
@@ -159,6 +159,6 @@
     {{/if}}
   </div>
 
-  <button class='primary-button create-ws' {{action 'handleSettings'}}>Create
+  <button class='primary-button create-ws' type="button" {{action 'handleSettings'}}>Create
     Workspace</button>
 </div>

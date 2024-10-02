@@ -3,10 +3,10 @@ const exec = require('child_process').exec;
 let commands = {
   enc: 'npm run seed',
   vmt: 'npm run restore-vmt',
-  mt: 'npm run restore-mt'
+  mt: 'npm run restore-mt',
 };
 
-const dropAndRestoreDb = function(app) {
+const dropAndRestoreDb = function (app) {
   return new Promise((resolve, reject) => {
     let command = commands[app];
     if (command === undefined) {
@@ -23,15 +23,15 @@ const dropAndRestoreDb = function(app) {
   });
 };
 
-const prepTestDb = function() {
+const prepTestDb = function () {
   try {
     return Promise.all([
       dropAndRestoreDb('enc'),
       dropAndRestoreDb('mt'),
-      dropAndRestoreDb('vmt')
+      dropAndRestoreDb('vmt'),
     ]);
   } catch (err) {
-    throw(err);
+    throw err;
   }
 };
 

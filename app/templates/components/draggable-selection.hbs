@@ -14,7 +14,7 @@
       selection.submission.id
       selection.id
     }}
-    @classNames={{linkToClassName}}
+    class={{linkToClassName}}
   >
     {{#if isImage}}
       <img
@@ -23,7 +23,7 @@
         alt={{selection.text}}
       />
       <div class='overlay'>
-        <button {{action 'expandImage'}}><i class={{overlayIcon}}></i></button>
+        <button type="button" {{action 'expandImage'}}><i class={{overlayIcon}}></i></button>
       </div>
     {{else}}
       {{selection.text}}

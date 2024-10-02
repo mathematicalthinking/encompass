@@ -48,7 +48,7 @@
         <label for="startDate">
           <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.dateRange}}>Date Range</span>
         </label>
-        <Input @id="dateRange" @name="daterange" @type="text" @value={{dateRange}} />
+        <Input id="dateRange" name="daterange" @type="text" @value={{dateRange}} />
       </li>
     </ol>
   </div>
@@ -74,7 +74,7 @@
         <label for="name">
           <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.name}}>Workspace Name </span>
         </label>
-        <Input @id="requestedName" @type="text" @value={{requestedName}} placeholder="Give your workspace a name (optional)" />
+        <Input id="requestedName" @type="text" @value={{requestedName}} placeholder="Give your workspace a name (optional)" />
       </li>
 
       <li class="ws-settings folders">
@@ -100,13 +100,11 @@
 
   <div class="error-messages">
     {{#if missingRequiredFields}}
-    <p class="error-box animated fadeIn">Please fill in all required fields <button class="dismiss"
-        {{action 'closeError'}}>x</button></p>
+    <p class="error-box animated fadeIn">Please fill in all required fields <button class="dismiss" type="button" {{action 'closeError'}}>x</button></p>
     {{/if}}
 
     {{#if isEmptyAnswerSet}}
-    <p class="error-box animated fadeIn">Sorry, no answers were found matching your criteria <button class="dismiss"
-        {{action 'closeError'}}>x</button></p>
+    <p class="error-box animated fadeIn">Sorry, no answers were found matching your criteria <button class="dismiss" type="button" {{action 'closeError'}}>x</button></p>
     {{/if}}
   </div>
 
@@ -122,7 +120,7 @@
   <p class="error-message">{{error}}</p>
 {{/each}}
 
-<button class="action_button create-ws" {{action "buildCriteria"}}>Create</button>
+<button class="action_button create-ws" type="button" {{action "buildCriteria"}}>Create</button>
 {{#if isRequestInProgress}}
   <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
 {{/if}}

@@ -33,6 +33,7 @@ export default Component.extend(CurrentUserMixin, {
   },
 
   didReceiveAttrs: function () {
+    this._super();
     let currentUser = this.currentUser;
     if (currentUser) {
       this.set('isStudentAccount', currentUser.get('accountType') === 'S');

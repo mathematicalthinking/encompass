@@ -229,9 +229,8 @@ WorkspaceSchema.post('save', function (workspace) {
       console.log('Error updating parent workspace child workspaces: ', err);
     });
   } else {
-    let didChildWorkspacesChange = workspace.updatedFields.includes(
-      'childWorkspaces'
-    );
+    let didChildWorkspacesChange =
+      workspace.updatedFields.includes('childWorkspaces');
     // this means that one or more child workspaces were removed
     // and now there are no child workspaces
     // remove this workspace from any workspace that has it in its parent workspace array

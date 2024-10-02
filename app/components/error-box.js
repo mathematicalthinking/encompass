@@ -2,11 +2,6 @@ import { later } from '@ember/runloop';
 import Component from '@ember/component';
 import $ from 'jquery';
 
-
-
-
-
-
 export default Component.extend({
   classNames: ['error-box', 'required', 'animated', 'fadeIn'],
 
@@ -23,7 +18,6 @@ export default Component.extend({
       later(() => {
         $(`#${id}`).remove();
       }, 500);
-    }
+    },
   },
-
 });

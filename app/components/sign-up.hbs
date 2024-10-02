@@ -11,8 +11,8 @@
       <Input
         class='form-control'
         @type='text'
-        @name='first-name'
-        @id='first-name'
+        name='first-name'
+        id='first-name'
         @value={{this.firstName}}
         {{on 'input' this.resetErrors}}
       />
@@ -22,8 +22,8 @@
       <Input
         class='form-control'
         @type='text'
-        @name='last-name'
-        @id='last-name'
+        name='last-name'
+        id='last-name'
         @value={{this.lastName}}
         {{on 'input' this.resetErrors}}
       />
@@ -33,8 +33,8 @@
       <Input
         class='form-control'
         @type='text'
-        @name='email'
-        @id='email'
+        name='email'
+        id='email'
         @value={{this.email}}
         {{on 'input' this.resetErrors}}
       />
@@ -51,8 +51,8 @@
         <Input
           class='form-control'
           @type='text'
-          @name='confirmEmail'
-          @id='confirmEmail'
+          name='confirmEmail'
+          id='confirmEmail'
           @value={{this.confirmEmail}}
         />
 
@@ -83,8 +83,8 @@
       <Input
         class='form-control'
         @type='text'
-        @name='location'
-        @id='location'
+        name='location'
+        id='location'
         @value={{this.location}}
         {{on 'input' this.resetErrors}}
       />
@@ -94,8 +94,8 @@
       <Input
         class='form-control'
         @type='text'
-        @name='username'
-        @id='username'
+        name='username'
+        id='username'
         @value={{this.username}}
         {{on 'input' this.usernameValidate}}
       />
@@ -108,8 +108,8 @@
       <Input
         class='form-control'
         @type='password'
-        @name='password'
-        @id='password'
+        name='password'
+        id='password'
         @value={{this.password}}
         {{on 'input' this.resetErrors}}
       />
@@ -124,8 +124,8 @@
         <Input
           class='form-control'
           @type='password'
-          @name='confirmPassword'
-          @id='confirmPassword'
+          name='confirmPassword'
+          id='confirmPassword'
           @value={{this.confirmPassword}}
           {{on 'input' this.resetErrors}}
         />
@@ -140,10 +140,9 @@
       <Input
         class='form-control'
         @type='text'
-        @name='requestReason'
-        @id='requestReason'
-        @value={{this.requestReason}}
-        @key-down={{action 'resetErrors'}}
+        name='requestReason'
+        id='requestReason'
+        @value={{this.requestReason}} {{on "keydown" (action 'resetErrors')}}
       />
       {{#if this.missingCredentials}}
         <p class='error-message'>You must complete all of the fields in order to
@@ -157,8 +156,8 @@
         </LinkTo></label>
       <Input
         @type='checkbox'
-        @id='terms'
-        @name='terms'
+        id='terms'
+        name='terms'
         @checked={{this.agreedToTerms}}
         {{on 'input' this.resetErrors}}
       />
@@ -182,7 +181,7 @@
     <SocialSignin />
     <p class='login-link'>
       Already have an account?
-      <LinkTo @route='auth.login' @classNames='login-link'>Log in here
+      <LinkTo @route='auth.login' class='login-link'>Log in here
       </LinkTo>
     </p>
   </div>

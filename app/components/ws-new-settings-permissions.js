@@ -10,8 +10,7 @@ export default Component.extend({
   globalItems: {
     groupName: 'globalPermissionValue',
     groupLabel: 'Workspace Permissions',
-    info:
-      'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       {

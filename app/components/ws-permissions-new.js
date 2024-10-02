@@ -28,8 +28,7 @@ export default Component.extend({
   submissionItems: {
     groupName: 'submissions',
     groupLabel: 'Accessible Submissions',
-    info:
-      'Accessible submissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
+    info: 'Accessible submissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
     required: true,
     inputs: [
       {
@@ -54,8 +53,7 @@ export default Component.extend({
   folderItems: {
     groupName: 'folders',
     groupLabel: 'Folder Permissions',
-    info:
-      'Folder permissions decide what users can do with folders in this workspace. Delete is the highest setting which means this user can do anything related to folders',
+    info: 'Folder permissions decide what users can do with folders in this workspace. Delete is the highest setting which means this user can do anything related to folders',
     required: true,
     inputs: [
       {
@@ -84,8 +82,7 @@ export default Component.extend({
   selectionItems: {
     groupName: 'selections',
     groupLabel: 'Selection Permissions',
-    info:
-      'Selection permissions decide what users can do with selections in this workspace. Delete is the highest setting which means this user can do anything related to selections. If you can create selections, you can file them in any available folders.',
+    info: 'Selection permissions decide what users can do with selections in this workspace. Delete is the highest setting which means this user can do anything related to selections. If you can create selections, you can file them in any available folders.',
     required: true,
     inputs: [
       {
@@ -118,8 +115,7 @@ export default Component.extend({
   commentItems: {
     groupName: 'comments',
     groupLabel: 'Comment Permissions',
-    info:
-      'Comment permissions decide what users can do with comments in this workspace. Delete is the highest setting which means this user can do anything related to comments',
+    info: 'Comment permissions decide what users can do with comments in this workspace. Delete is the highest setting which means this user can do anything related to comments',
     required: true,
     inputs: [
       {
@@ -153,8 +149,7 @@ export default Component.extend({
   feedbackItems: {
     groupName: 'feedback',
     groupLabel: 'Feedback Permissions',
-    info:
-      'Feedback permissions dictate whether this user can send feedback to the creator of the submissions. Hover over the question marks for more info.',
+    info: 'Feedback permissions dictate whether this user can send feedback to the creator of the submissions. Hover over the question marks for more info.',
     required: true,
     inputs: [
       {
@@ -186,8 +181,7 @@ export default Component.extend({
   globalItems: {
     groupName: 'global',
     groupLabel: 'Workspace Permissions',
-    info:
-      'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       {
@@ -237,6 +231,7 @@ export default Component.extend({
   customSubmissionIds: [],
 
   didReceiveAttrs() {
+    this._super();
     const selectedUserId = this.get('selectedUser.id');
     const permissions = this.permissions;
     const utils = this.utils;
@@ -316,9 +311,8 @@ export default Component.extend({
     };
 
     if (!includeAllSubs && !isUserOnly) {
-      submissionOptions.submissionIds = this.buildCustomSubmissionIds(
-        submissions
-      );
+      submissionOptions.submissionIds =
+        this.buildCustomSubmissionIds(submissions);
     }
 
     const results = {

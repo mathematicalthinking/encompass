@@ -42,7 +42,7 @@
         <li><label id='showEvidence'>
             <Input
               @type='checkbox'
-              @name={{showSubmissionSelections}}
+              name={{showSubmissionSelections}}
               @checked={{showSubmissionSelections}}
             />
             Evidence
@@ -53,7 +53,7 @@
               <li><label id='showSubmComments'>
                   <Input
                     @type='checkbox'
-                    @name={{showSubmissionSelectionsComments}}
+                    name={{showSubmissionSelectionsComments}}
                     @checked={{showSubmissionSelectionsComments}}
                   />
                   Comments
@@ -62,7 +62,7 @@
               <li><label id='showSubmFolders'>
                   <Input
                     @type='checkbox'
-                    @name={{showSubmissionSelectionsFolders}}
+                    name={{showSubmissionSelectionsFolders}}
                     @checked={{showSubmissionSelectionsFolders}}
                   />
                   Folders
@@ -93,7 +93,7 @@
 <div class='al_wtf'>
   {{#if bySubmission}}
     <table align='right' id='folder_contents'>
-      <!-- <caption>Submissions</caption> -->
+      {{!-- <caption>Submissions</caption> --}}
       <thead>
         <tr class='header'>
           <th>Student</th>
@@ -225,7 +225,7 @@
 
   {{#if bySelection}}
     <table id='folder_contents' align='right'>
-      <!-- <caption>Evidence</caption> -->
+      {{!-- <caption>Evidence</caption> --}}
       <thead>
         <tr class='header'>
           <th style='width: 30%'>Selection</th>

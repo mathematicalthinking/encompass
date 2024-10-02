@@ -21,11 +21,10 @@
   <div class='assigned-date'>
     {{#if this.showAssignedDateInput}}
       <Input
-        @name='daterange'
-        @id='assignedDate'
+        name='daterange'
+        id='assignedDate'
         @type='date'
-        @value={{(format-date @assignment.assignedDate 'YYYY-MM-DD')}}
-        @change={{action 'updateAssignedDate'}}
+        @value={{(format-date @assignment.assignedDate 'YYYY-MM-DD')}} {{on "change" (action 'updateAssignedDate')}}
       />
     {{else}}
       <p class='label'>
@@ -39,11 +38,10 @@
   <div class='due-date'>
     {{#if this.showDueDateInput}}
       <Input
-        @id='dueDate'
-        @name='daterange'
+        id='dueDate'
+        name='daterange'
         @type='date'
-        @value={{(format-date @assignment.dueDate 'YYYY-MM-DD')}}
-        @change={{action 'updateDueDate'}}
+        @value={{(format-date @assignment.dueDate 'YYYY-MM-DD')}} {{on "change" (action 'updateDueDate')}}
       />
     {{else}}
       <p class='label'>
@@ -118,8 +116,7 @@
     {{#if this.showAddLinkedWsBtn}}
       <button
         data-test='add-linked-ws'
-        class='add-linkedworkspaces-btn'
-        {{action (mut showLinkedWsForm) true}}
+        class='add-linkedworkspaces-btn' type="button" {{action (mut showLinkedWsForm) true}}
       >
         Add Linked Workspaces
         <i class='fas fa-plus-circle'></i>
@@ -162,8 +159,7 @@
     {{#if this.showAddParentWsBtn}}
       <button
         data-test='add-parent-ws'
-        class='add-parent-workspace-btn'
-        {{action (mut showParentWsForm) true}}
+        class='add-parent-workspace-btn' type="button" {{action (mut showParentWsForm) true}}
       >Add Parent Workspace <i class='fas fa-plus-circle'></i></button>
     {{/if}}
     {{#if this.showNoParentWsMsg}}
@@ -192,8 +188,7 @@
     {{#if this.showEditButton}}
       <button
         data-test='edit-assignment'
-        class='edit-assignment-button'
-        {{action 'editAssignment'}}
+        class='edit-assignment-button' type="button" {{action 'editAssignment'}}
       >
         Edit Assignment
         <i class='fas fa-edit'></i>
@@ -202,21 +197,19 @@
     {{#if this.isEditing}}
       <button
         class='save-assign-btn'
-        data-test='assn-save'
-        {{action 'updateAssignment'}}
+        data-test='assn-save' type="button" {{action 'updateAssignment'}}
       >
         Save Assignment
         <i class='fas fa-save'></i>
       </button>
       <button
         class='cancelEditBtn'
-        data-test='assn-cancel'
-        {{action 'stopEditing'}}
+        data-test='assn-cancel' type="button" {{action 'stopEditing'}}
       >
         Cancel
         <i class='fas fa-times'></i>
       </button>
-      <button data-test='trash-assn' class='right' {{action 'showDeleteModal'}}>
+      <button data-test='trash-assn' class='right' type="button" {{action 'showDeleteModal'}}>
         <i class='fa fa-trash' aria-hidden='true'></i>
       </button>
     {{/if}}

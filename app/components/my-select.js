@@ -33,6 +33,6 @@ export default Component.extend({
       var selectedValue = content.objectAt(selectedIndex);
       this.set('selectedValue', selectedValue);
       changeAction(selectedValue);
-    }
-  }
+    },
+  },
 });

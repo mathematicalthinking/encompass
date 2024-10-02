@@ -42,8 +42,7 @@
           <li>{{student.username}}
             {{#if @addGroup}}
               <button
-                class='trash-button'
-                {{on 'click' (fn @updateGroup @group student)}}
+                class='trash-button' type="button" {{on 'click' (fn @updateGroup @group student)}}
               >
                 <i class='far fa-times-circle' aria-hidden='true'></i>
               </button>

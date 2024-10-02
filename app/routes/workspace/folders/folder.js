@@ -10,7 +10,7 @@
 import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 
-export default class FoldersFolderRoute extends Route{
+export default class FoldersFolderRoute extends Route {
   renderTemplate(controller, model) {
     var appController = this.controllerFor('application');
     appController.set('isHidden', true);

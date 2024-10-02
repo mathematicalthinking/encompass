@@ -44,25 +44,24 @@ function prep(options) {
 }
 
 /*
-*/
+ */
 function processPath(options) {
   function _processPath(req, res, next) {
-    if(!apiRequest(req)) {
+    if (!apiRequest(req)) {
       return next();
     }
 
     let pathRegExp = /\/api\/([a-z]*)\/?/;
     let match = pathRegExp.exec(req.path);
-    if(match) {
+    if (match) {
       req.mt.path.model = match[1];
     }
 
-    return (next());
+    return next();
   }
 
-  return (_processPath);
+  return _processPath;
 }
-
 
 /*
   ENC-486 bad ObjectIDs crash the server
@@ -71,18 +70,17 @@ function processPath(options) {
 function validateId(options) {
   function _validateId(req, res, next) {
     let match = idRequest(req);
-    if(!match) {
+    if (!match) {
       return next();
     }
 
     let id = req.params.id;
     //http://stackoverflow.com/questions/11985228/mongodb-node-check-if-objectid-is-valid
-    let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
-    if(!checkForHexRegExp.test(id)) {
+    let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
+    if (!checkForHexRegExp.test(id)) {
       return utils.sendError.InvalidArgumentError('bad object id', res);
     }
     return next();
-
   }
 
   return _validateId;
@@ -91,7 +89,9 @@ function validateId(options) {
 // when the path is /api/workspaces return 'workspace'
 function getModel(req) {
   let model = req.mt.path.model;
-  if(!model){ return; }
+  if (!model) {
+    return;
+  }
   let singularModel = model.slice(0, -1);
   return singularModel;
 }
@@ -99,14 +99,16 @@ function getModel(req) {
 // when the path is /api/workspaces return 'Workspace'
 function getSchema(req) {
   let model = getModel(req);
-  if(!model){ return; }
+  if (!model) {
+    return;
+  }
   let schema = model.charAt(0).toUpperCase() + model.slice(1);
   return schema;
 }
 
 function schemaHasWorkspace(schema) {
   let mSchema = models[schema];
-  if(!mSchema) {
+  if (!mSchema) {
     return false;
   }
   let hasWorkspace = !!mSchema.schema.paths.workspace;
@@ -121,19 +123,28 @@ function validateContent(options) {
   function _validateContent(req, res, next) {
     let checkForModRequest = /POST|PUT/;
     // Ignore api requests that don't attempt to modify a value
-    if(!apiRequest(req) || !(checkForModRequest.test(req.method) && req.body)) { // Ignore api requests that don't attempt to modify a value
+    if (
+      !apiRequest(req) ||
+      !(checkForModRequest.test(req.method) && req.body)
+    ) {
+      // Ignore api requests that don't attempt to modify a value
       return next();
     }
 
     let model = getModel(req),
-        schema = getSchema(req),
-        data = req.body[model];
-    if(models[schema]) {
+      schema = getSchema(req),
+      data = req.body[model];
+    if (models[schema]) {
       let required = models[schema].schema.requiredPaths();
-      let hasRequiredData = _.every(required, function(x) { return data[x]; });
-      if(!hasRequiredData) {
+      let hasRequiredData = _.every(required, function (x) {
+        return data[x];
+      });
+      if (!hasRequiredData) {
         let error = 'Model %s is missing post/put data';
-        return utils.sendError.InvalidContentError(util.format(error, schema), res);
+        return utils.sendError.InvalidContentError(
+          util.format(error, schema),
+          res
+        );
       }
     }
     return next();
@@ -142,11 +153,11 @@ function validateContent(options) {
   return _validateContent;
 }
 
-module.exports.prep             = prep;
-module.exports.processPath      = processPath;
-module.exports.validateId       = validateId;
-module.exports.validateContent  = validateContent;
-module.exports.apiRequest       = apiRequest;
-module.exports.getModel         = getModel;
-module.exports.getSchema        = getSchema;
+module.exports.prep = prep;
+module.exports.processPath = processPath;
+module.exports.validateId = validateId;
+module.exports.validateContent = validateContent;
+module.exports.apiRequest = apiRequest;
+module.exports.getModel = getModel;
+module.exports.getSchema = getSchema;
 module.exports.schemaHasWorkspace = schemaHasWorkspace;

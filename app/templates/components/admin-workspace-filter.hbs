@@ -38,7 +38,7 @@
             <i class='checkbox-icon {{option.icon}}'></i>
             <span class='checkbox-text'>{{option.label}}</span>
             <Input
-              @id={{option.value}}
+              id={{option.value}}
               @type='checkbox'
               @checked={{option.isApplied}}
               {{on 'change' this.updateOrgSubFilters}}

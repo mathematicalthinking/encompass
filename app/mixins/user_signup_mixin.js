@@ -56,10 +56,11 @@ export default Mixin.create({
   }),
 
   isPasswordValid: computed(
-    'password',
+    'isPasswordDirty',
     'isPasswordValid',
-    'passwordMinLength',
+    'password.length',
     'passwordMaxLength',
+    'passwordMinLength',
     function () {
       if (!this.isPasswordDirty && !isEmpty(this.password)) {
         this.set('isPasswordDirty', true);

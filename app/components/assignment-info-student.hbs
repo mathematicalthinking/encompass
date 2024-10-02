@@ -80,12 +80,11 @@
   {{/if}}
   {{#if this.showReviseButton}}
     <button
-      class='edit-assignment-button'
-      {{action 'reviseAssignmentResponse'}}
+      class='edit-assignment-button' type="button" {{action 'reviseAssignmentResponse'}}
     >Revise <i class='fas fa-edit'></i></button>
   {{/if}}
   {{#if this.showRespondButton}}
-    <button class='save-assign-btn' {{action 'beginAssignmentResponse'}}>Share
+    <button class='save-assign-btn' type="button" {{action 'beginAssignmentResponse'}}>Share
       Your Ideas
       <i class='fas fa-lightbulb'></i></button>
   {{/if}}

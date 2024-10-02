@@ -42,13 +42,8 @@ async function getAnswers(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
 
-    let {
-      ids,
-      problem,
-      filterBy,
-      searchBy,
-      didConfirmLargeRequest,
-    } = req.query;
+    let { ids, problem, filterBy, searchBy, didConfirmLargeRequest } =
+      req.query;
 
     if (problem) {
       let criteria = req.query;

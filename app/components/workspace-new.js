@@ -1,10 +1,5 @@
 import Component from '@ember/component';
 
-
-
-
-
-
 export default Component.extend({
   elementId: 'workspace-new',
   isPows: false,
@@ -24,6 +19,6 @@ export default Component.extend({
 
     toWorkspace: function (id) {
       this.sendAction('toWorkspace', id);
-    }
-  }
+    },
+  },
 });

@@ -79,9 +79,7 @@ export default Component.extend({
     }
   ),
 
-  isDraft: computed('displayReply.status', function () {
-    return this.get('displayReply.status') === 'draft';
-  }),
+  isDraft: computed.equal('displayReply.status', 'draft'),
 
   sortedApproverReplies: computed('approverReplies.[]', function () {
     if (!this.approverReplies) {
@@ -147,7 +145,8 @@ export default Component.extend({
   ),
 
   canEditApproverReply: computed(
-    'currentUser.user',
+    'currentUser.user.isAdmin',
+    'displayReply',
     'isOwnDisplayReply',
     function () {
       if (!this.displayReply) {
@@ -156,9 +155,7 @@ export default Component.extend({
       return this.get('currentUser.user.isAdmin') || this.isOwnDisplayReply;
     }
   ),
-  canReviseApproverReply: computed('isOwnDisplayReply', function () {
-    return this.isOwnDisplayReply;
-  }),
+  canReviseApproverReply: computed.reads('isOwnDisplayReply'),
 
   showApproverEdit: computed(
     'canEditApproverReply',
@@ -199,14 +196,19 @@ export default Component.extend({
     }
   ),
 
-  isOwnDisplayReply: computed('currentUser.user', 'displayReply', function () {
-    return (
-      this.get('currentUser.user.id') === this.get('displayReply.createdBy.id')
-    );
-  }),
+  isOwnDisplayReply: computed(
+    'currentUser.user.id',
+    'displayReply.createdBy.id',
+    function () {
+      return (
+        this.get('currentUser.user.id') ===
+        this.get('displayReply.createdBy.id')
+      );
+    }
+  ),
 
   isDisplayReplyToYou: computed(
-    'currentUser.user',
+    'currentUser.user.id',
     'displayReply.recipient',
     function () {
       let recipientId = this.utils.getBelongsToId(
@@ -217,24 +219,14 @@ export default Component.extend({
     }
   ),
 
-  showReplyInput: computed(
+  showReplyInput: computed.or(
     'isEditingApproverReply',
     'isRevisingApproverReply',
     'isComposingReply',
-    'isFinishingDraft',
-    function () {
-      return (
-        this.isEditingApproverReply ||
-        this.isRevisingApproverReply ||
-        this.isComposingReply ||
-        this.isFinishingDraft
-      );
-    }
+    'isFinishingDraft'
   ),
 
-  showDisplayReplyActions: computed('showReplyInput', function () {
-    return !this.showReplyInput;
-  }),
+  showDisplayReplyActions: computed.not('showReplyInput'),
 
   replyHeadingText: computed(
     'isEditingApproverReply',
@@ -253,9 +245,7 @@ export default Component.extend({
     }
   ),
 
-  canTrash: computed('canApprove', function () {
-    return this.canApprove;
-  }),
+  canTrash: computed.reads('canApprove'),
   showTrash: computed('showReplyInput', 'canApprove', function () {
     return this.canApprove && !this.showReplyInput;
   }),

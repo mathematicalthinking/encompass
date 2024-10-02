@@ -9,7 +9,7 @@ export default Component.extend({
   labelText: computed(
     'customLabel',
     'isSubList',
-    'parentActivity',
+    'parentActivity.name',
     function () {
       if (this.customLabel) {
         return this.customLabel;

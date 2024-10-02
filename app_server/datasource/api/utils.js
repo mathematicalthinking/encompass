@@ -12,71 +12,98 @@ const { isNonEmptyArray, isNonEmptyString } = objectUtils;
 
 const { isValidMongoId, cleanObjectIdArray } = mongooseUtils;
 
-const { getFirstCharOfStr, removeExtraSpacesFromStr, getNthWordOfStr, capitalizeString } = stringUtils;
+const {
+  getFirstCharOfStr,
+  removeExtraSpacesFromStr,
+  getNthWordOfStr,
+  capitalizeString,
+} = stringUtils;
 
-async function filterByForeignRef(model, searchQuery, pathToPopulate, foreignField, filterCriteria,) {
+async function filterByForeignRef(
+  model,
+  searchQuery,
+  pathToPopulate,
+  foreignField,
+  filterCriteria
+) {
   try {
-    let query = searchQuery.replace(/\s+/g, "");
+    let query = searchQuery.replace(/\s+/g, '');
     let regex = new RegExp(query.split('').join('\\s*'), 'i');
 
     if (!filterCriteria) {
-      filterCriteria = {isTrashed: false};
+      filterCriteria = { isTrashed: false };
     }
 
     let matchHash = { [foreignField]: regex };
 
+    let records = await models[model]
+      .find({ isTrashed: false }, { pathToPopulate: 1 })
+      .populate({
+        path: pathToPopulate,
+        match: matchHash,
+        select: foreignField,
+      })
+      .lean()
+      .exec();
 
-  let records = await models[model].find({isTrashed: false}, {pathToPopulate: 1}).populate({path: pathToPopulate, match: matchHash, select: foreignField }).lean().exec();
-
-  let matches = _.filter(records, (record => {
-    let val = record[pathToPopulate];
-    return val !== null;
-  }));
-  return _.map(matches, match => match._id.toString());
-
-  }catch(err) {
+    let matches = _.filter(records, (record) => {
+      let val = record[pathToPopulate];
+      return val !== null;
+    });
+    return _.map(matches, (match) => match._id.toString());
+  } catch (err) {
     console.error(`Error filterByForeignRef: ${err}`);
   }
-
 }
 
-async function filterByForeignRefArray(model, searchQuery, pathToPopulate, foreignField, filterCriteria,) {
+async function filterByForeignRefArray(
+  model,
+  searchQuery,
+  pathToPopulate,
+  foreignField,
+  filterCriteria
+) {
   try {
-    let query = searchQuery.replace(/\s+/g, "");
+    let query = searchQuery.replace(/\s+/g, '');
     let regex = new RegExp(query.split('').join('\\s*'), 'i');
 
     if (!filterCriteria) {
-      filterCriteria = {isTrashed: false};
+      filterCriteria = { isTrashed: false };
     }
 
-    let matchHash = { match: {[foreignField]: { $ne: [] } }};
+    let matchHash = { match: { [foreignField]: { $ne: [] } } };
 
+    let records = await models[model]
+      .find({ isTrashed: false }, { pathToPopulate: 1 })
+      .populate({ path: pathToPopulate, matchHash, select: foreignField })
+      .lean()
+      .exec();
 
-  let records = await models[model].find({isTrashed: false}, {pathToPopulate: 1}).populate({path: pathToPopulate, matchHash, select: foreignField }).lean().exec();
-
-  let matches = _.filter(records, (record => {
-    let arr = record[pathToPopulate];
-    return !_.isUndefined(_.find(arr, (obj) => {
-      return obj[foreignField].match(regex) !== null;
-    }));
-  }));
-  return _.map(matches, match => match._id.toString());
-  }catch(err) {
+    let matches = _.filter(records, (record) => {
+      let arr = record[pathToPopulate];
+      return !_.isUndefined(
+        _.find(arr, (obj) => {
+          return obj[foreignField].match(regex) !== null;
+        })
+      );
+    });
+    return _.map(matches, (match) => match._id.toString());
+  } catch (err) {
     console.error(`Error filterByForeignRef: ${err}`);
   }
 }
 // model should be schema name (e.g. 'Workspace' or  'Comment')
 // criteria should be filter object , e.g. { isTrashed: false }
 // returns array of objectIds (as Sstrings if asStrings=true)
-async function findAndReturnIds(model, criteria, asStrings=true) {
+async function findAndReturnIds(model, criteria, asStrings = true) {
   try {
-    let records = await models[model].find(criteria, {_id: 1}).lean().exec();
+    let records = await models[model].find(criteria, { _id: 1 }).lean().exec();
 
     if (asStrings) {
-      return _.map(records, record => record._id.toString());
+      return _.map(records, (record) => record._id.toString());
     }
-    return _.map(records, record => record._id);
-  }catch(err) {
+    return _.map(records, (record) => record._id);
+  } catch (err) {
     console.error(`Error findAndReturnIds: ${err}`);
   }
 }
@@ -88,14 +115,16 @@ async function getUniqueIdsFromQueries(model, criteria) {
     if (!model) {
       return;
     }
-    let lists = await Promise.all(_.map(criteria, criterion => {
-      return findAndReturnIds(model, criterion);
-    }));
+    let lists = await Promise.all(
+      _.map(criteria, (criterion) => {
+        return findAndReturnIds(model, criterion);
+      })
+    );
 
     let flattened = _.flatten(lists);
 
     return _.uniq(flattened);
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getUniqueIdsFromQueries: ${err}`);
   }
 }
@@ -135,7 +164,7 @@ function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
   return firstName;
 }
 
-const sortWorkspaces = function(model, sortParam, req, criteria) {
+const sortWorkspaces = function (model, sortParam, req, criteria) {
   // Limit and skip are passed in with the req
   let limit = req.query.limit;
   let skip = req.skip;
@@ -146,9 +175,9 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   let aggregateArray = [];
 
   // Creating objects to add to the aggregate pipeline
-  let sortObj = { "$sort" : { "length": value } };
-  let limitObj = { "$limit": limit };
-  let skipObj = { "$skip": skip };
+  let sortObj = { $sort: { length: value } };
+  let limitObj = { $limit: limit };
+  let skipObj = { $skip: skip };
 
   // Match Obj takes the passed in criteria, as well as checking sortable field exists
   criteria.$and.forEach((criterion) => {
@@ -232,12 +261,12 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
       });
     }
   });
-  let matchObj = { "$match" : criteria };
+  let matchObj = { $match: criteria };
   let matchNest = matchObj.$match;
   matchNest[sortField] = { $exists: true, $ne: null };
 
   // Project object iterates of keys of schema and then adds a length field to selected sortField
-  let projectObj = { "$project" : { } };
+  let projectObj = { $project: {} };
   let projNest = projectObj.$project;
   let schema = require('mongoose').model(model).schema;
   let schemaObj = schema.obj;
@@ -245,7 +274,7 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   ObjKeys.forEach((key) => {
     projNest[key] = 1;
   });
-  projNest.length = { "$size": '$' + sortField };
+  projNest.length = { $size: '$' + sortField };
 
   // All objects are pushed into the aggregate array
   aggregateArray.push(matchObj, projectObj, sortObj, skipObj, limitObj);
@@ -254,22 +283,22 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   return models[model].aggregate(aggregateArray).exec();
 };
 
-const sortAnswersByLength = function(model, sortParam, req, criteria) {
-   // Limit and skip are passed in with the req
-   let limit = req.query.limit;
-   let skip = req.skip;
+const sortAnswersByLength = function (model, sortParam, req, criteria) {
+  // Limit and skip are passed in with the req
+  let limit = req.query.limit;
+  let skip = req.skip;
 
-   // Determine which field should be sorted and what value
-   let sortField = Object.keys(sortParam)[0];
-   let value = parseInt(sortParam[sortField], 0);
-   let aggregateArray = [];
+  // Determine which field should be sorted and what value
+  let sortField = Object.keys(sortParam)[0];
+  let value = parseInt(sortParam[sortField], 0);
+  let aggregateArray = [];
 
-   // Creating objects to add to the aggregate pipeline
-   let sortObj = { "$sort" : { "length": value } };
-   let limitObj = { "$limit": limit };
-   let skipObj = { "$skip": skip };
+  // Creating objects to add to the aggregate pipeline
+  let sortObj = { $sort: { length: value } };
+  let limitObj = { $limit: limit };
+  let skipObj = { $skip: skip };
 
-   criteria.$and.forEach((criterion) => {
+  criteria.$and.forEach((criterion) => {
     if (criterion.hasOwnProperty('createdBy')) {
       let value = criterion.createdBy;
       if (value.hasOwnProperty('$in')) {
@@ -369,12 +398,12 @@ const sortAnswersByLength = function(model, sortParam, req, criteria) {
       });
     }
   });
-  let matchObj = { "$match" : criteria };
+  let matchObj = { $match: criteria };
   let matchNest = matchObj.$match;
   matchNest[sortField] = { $exists: true, $ne: null };
 
   // Project object iterates of keys of schema and then adds a length field to selected sortField
-  let projectObj = { "$project" : { } };
+  let projectObj = { $project: {} };
   let projNest = projectObj.$project;
   let schema = require('mongoose').model(model).schema;
   let schemaObj = schema.obj;
@@ -382,7 +411,7 @@ const sortAnswersByLength = function(model, sortParam, req, criteria) {
   ObjKeys.forEach((key) => {
     projNest[key] = 1;
   });
-  projNest.length = { "$strLenCP": '$' + sortField };
+  projNest.length = { $strLenCP: '$' + sortField };
 
   // All objects are pushed into the aggregate array
   aggregateArray.push(matchObj, projectObj, sortObj, skipObj, limitObj);
@@ -391,44 +420,47 @@ const sortAnswersByLength = function(model, sortParam, req, criteria) {
 };
 
 function cloneDocuments(model, documents) {
-
-    if (!model) {
-      return;
-    }
-    let input;
-    // documents should be either a single document or an array of documents
-    if (!_.isArray(documents)) {
-      input = [document];
-    } else {
-      input = [ ...documents];
-    }
-    // returns array of new cloned docs
-    return Promise.all(input.map((doc) => {
-      return models[model].findById(doc._id).lean().exec()
-      .then((json) => {
-        delete json._id;
-        let newDoc = new models[model](json);
-        return newDoc.save();
-      })
-      .then((doc => {
-        return doc;
-      }))
-      .catch((err) => {
-        console.error(`Error cloneDocuments: ${err}`);
-      });
-    }));
+  if (!model) {
+    return;
+  }
+  let input;
+  // documents should be either a single document or an array of documents
+  if (!_.isArray(documents)) {
+    input = [document];
+  } else {
+    input = [...documents];
+  }
+  // returns array of new cloned docs
+  return Promise.all(
+    input.map((doc) => {
+      return models[model]
+        .findById(doc._id)
+        .lean()
+        .exec()
+        .then((json) => {
+          delete json._id;
+          let newDoc = new models[model](json);
+          return newDoc.save();
+        })
+        .then((doc) => {
+          return doc;
+        })
+        .catch((err) => {
+          console.error(`Error cloneDocuments: ${err}`);
+        });
+    })
+  );
 }
 
-function mapObjectsToIds(objects, asStrings=false) {
+function mapObjectsToIds(objects, asStrings = false) {
   if (!isNonEmptyArray(objects)) {
     return;
   }
 
   if (asStrings) {
-    return _.map(objects, obj => obj._id.toString());
+    return _.map(objects, (obj) => obj._id.toString());
   }
-  return _.map(objects, obj => obj._id);
-
+  return _.map(objects, (obj) => obj._id);
 }
 
 // used to ensure there is not already an existing record with
@@ -438,19 +470,24 @@ function getUniqueStrRegex(str) {
     return;
   }
   let copy = str.slice();
-  copy = copy.replace(/\s+/g, "");
+  copy = copy.replace(/\s+/g, '');
   let split = copy.split('').join('\\s*');
   let full = `^${split}\\Z`;
   return new RegExp(full, 'i');
 }
-function isRecordUniqueByStringProp(model, requestedValue, uniqueProp, optionsHash) {
+function isRecordUniqueByStringProp(
+  model,
+  requestedValue,
+  uniqueProp,
+  optionsHash
+) {
   let regex = getUniqueStrRegex(requestedValue);
   if (!regex || !_.isString(model)) {
     return;
   }
   let baseOptions = {
     [uniqueProp]: { $regex: regex },
-    isTrashed: false
+    isTrashed: false,
   };
   let options;
 
@@ -461,119 +498,126 @@ function isRecordUniqueByStringProp(model, requestedValue, uniqueProp, optionsHa
   }
   // if no record found, means no record exists with property
   // equal to requested value
-  return models[model].findOne(options).lean().exec()
-  .then((record) => {
-    return record === null || record === undefined;
-  });
+  return models[model]
+    .findOne(options)
+    .lean()
+    .exec()
+    .then((record) => {
+      return record === null || record === undefined;
+    });
 }
 
 function parseHtmlString(htmlString) {
   let result = [];
 
-  let parser = new htmlParser.Parser({
-    onopentag: function(name, attr) {
-      result.push(['openTag', '<' + name]);
+  let parser = new htmlParser.Parser(
+    {
+      onopentag: function (name, attr) {
+        result.push(['openTag', '<' + name]);
 
-      _.each(attr, (val, key) => {
-        result.push([`attr_${key}`, ` ${key}='${val}'`]);
-      });
-      result.push(['endOpenTag', '>']);
-    },
+        _.each(attr, (val, key) => {
+          result.push([`attr_${key}`, ` ${key}='${val}'`]);
+        });
+        result.push(['endOpenTag', '>']);
+      },
 
-    ontext: function(text) {
-      result.push(['textContent', text]);
+      ontext: function (text) {
+        result.push(['textContent', text]);
+      },
+      onclosetag: function (tagname) {
+        let nonClosingTags = ['img', 'br'];
+        if (!nonClosingTags.includes(tagname)) {
+          result.push(['closeTag', '</' + tagname + '>']);
+        }
+      },
     },
-    onclosetag: function(tagname) {
-      let nonClosingTags = ['img', 'br'];
-      if (!nonClosingTags.includes(tagname)) {
-        result.push(['closeTag', '</' + tagname + '>']);
-      }
-    },
-  }, {decodeEntities: true});
+    { decodeEntities: true }
+  );
 
   parser.write(htmlString);
   parser.end();
   return result;
 }
 
- function handleBase64Images(parsedHtmlEls, user) {
-  return Promise.all(parsedHtmlEls.map(async (tuple) => {
-    let [elType, el] = tuple;
-    // for image src, elType will be attr_src
-    let isImageSrc = elType === 'attr_src';
+function handleBase64Images(parsedHtmlEls, user) {
+  return Promise.all(
+    parsedHtmlEls.map(async (tuple) => {
+      let [elType, el] = tuple;
+      // for image src, elType will be attr_src
+      let isImageSrc = elType === 'attr_src';
 
-    if (!isImageSrc) {
-      return el;
-    }
+      if (!isImageSrc) {
+        return el;
+      }
 
-    let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
+      let first30Chars = typeof el === 'string' ? el.slice(0, 29) : '';
 
-    let target = 'base64,';
-    let targetIndex = first30Chars.indexOf(target);
+      let target = 'base64,';
+      let targetIndex = first30Chars.indexOf(target);
 
-    let isImageData = targetIndex !== -1;
+      let isImageData = targetIndex !== -1;
 
-    if (!isImageData) {
-      return el;
-    }
-    let dataStartIndex = targetIndex + target.length;
-    // does not include last char which is closing quote
-    let imageDataStr = el.slice(dataStartIndex);
+      if (!isImageData) {
+        return el;
+      }
+      let dataStartIndex = targetIndex + target.length;
+      // does not include last char which is closing quote
+      let imageDataStr = el.slice(dataStartIndex);
 
-    let dataFormatStartIndex = first30Chars.indexOf('data:');
-    let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
+      let dataFormatStartIndex = first30Chars.indexOf('data:');
+      let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
 
-    let origBuffer = Buffer.from(imageDataStr, 'base64');
+      let origBuffer = Buffer.from(imageDataStr, 'base64');
 
-    let originalSharp = sharp(origBuffer);
+      let originalSharp = sharp(origBuffer);
 
-    let originalMetadata = await originalSharp.metadata();
-    let sizeThreshold = 614400; // 600kb
-    let widthThreshold = 1000; // 1000 pixels wide max
+      let originalMetadata = await originalSharp.metadata();
+      let sizeThreshold = 614400; // 600kb
+      let widthThreshold = 1000; // 1000 pixels wide max
 
-    let { size, width, format, height } = originalMetadata;
+      let { size, width, format, height } = originalMetadata;
 
-    let newImage = new models.Image({
-      originalSize: size,
-      originalWidth: width,
-      originalHeight: height,
-      originalMimetype: `image/${format}`,
-      createdBy: user,
+      let newImage = new models.Image({
+        originalSize: size,
+        originalWidth: width,
+        originalHeight: height,
+        originalMimetype: `image/${format}`,
+        createdBy: user,
+      });
+
+      let isOverSizeLimit = size > sizeThreshold;
+      let isOverWidthLimit = width > widthThreshold;
+
+      if (!isOverSizeLimit && !isOverWidthLimit) {
+        newImage.imageData = imageDataStrWithFormat;
+        newImage.size = size;
+        newImage.width = width;
+        newImage.height = height;
+      } else {
+        let resizedBuffer = await sharp(origBuffer).resize(500).toBuffer();
+        let newMetadata = await sharp(resizedBuffer).metadata();
+
+        newImage.size = newMetadata.size;
+        newImage.width = newMetadata.width;
+        newImage.height = newMetadata.height;
+        newImage.mimetype = `image/${newMetadata.format}`;
+
+        let newImageDataStr = resizedBuffer.toString('base64');
+
+        newImage.imageData = `data:image/${format};base64,${newImageDataStr}`;
+      }
+      await newImage.save();
+
+      let url = `/api/images/file/${newImage._id}`;
+      return ` src='${url}'`;
+    })
+  )
+    .then((arr) => {
+      return arr.join('');
+    })
+    .catch((err) => {
+      console.log('err handleBase64Images', err);
     });
-
-    let isOverSizeLimit = size > sizeThreshold;
-    let isOverWidthLimit = width > widthThreshold;
-
-    if (!isOverSizeLimit && !isOverWidthLimit) {
-      newImage.imageData = imageDataStrWithFormat;
-      newImage.size = size;
-      newImage.width = width;
-      newImage.height = height;
-    } else {
-      let resizedBuffer = await sharp(origBuffer).resize(500).toBuffer();
-      let newMetadata = await sharp(resizedBuffer).metadata();
-
-      newImage.size = newMetadata.size;
-      newImage.width = newMetadata.width;
-      newImage.height = newMetadata.height;
-      newImage.mimetype = `image/${newMetadata.format}`;
-
-      let newImageDataStr = resizedBuffer.toString('base64');
-
-      newImage.imageData = `data:image/${format};base64,${newImageDataStr}`;
-
-    }
-    await newImage.save();
-
-    let url = `/api/images/file/${newImage._id}`;
-    return ` src='${url}'`;
-  }))
-  .then((arr) => {
-    return arr.join('');
-  })
-  .catch((err) => {
-    console.log('err handleBase64Images', err);
-  });
 }
 
 module.exports.filterByForeignRef = filterByForeignRef;

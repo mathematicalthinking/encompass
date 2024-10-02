@@ -3,7 +3,7 @@
     <h1>Classes</h1>
     {{#if this.currentUser.isStudent}}
     {{else}}
-      <LinkTo @route="sections.new" @id="new-section-link" class="new-link-btn"><span>Create New Class</span><i class="fas fa-plus"></i></LinkTo>
+      <LinkTo @route="sections.new" id="new-section-link" class="new-link-btn"><span>Create New Class</span><i class="fas fa-plus"></i></LinkTo>
     {{/if}}
     <div class="clear"></div>
   </header>
@@ -15,7 +15,7 @@
       <ul class="your-sections">
         {{#if this.yourSections}}
           {{#each this.yourSections as |section|}}
-            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
+            <li><LinkTo @route="sections.section" @model={{section.id}} class="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
           <li>You have no classes</li>
@@ -26,7 +26,7 @@
       <ul class="collab-sections">
         {{#if this.collabSections}}
           {{#each this.collabSections as |section|}}
-            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
+            <li><LinkTo @route="sections.section" @model={{section.id}} class="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
             <li>You don't belong to any classes yet</li>
@@ -39,7 +39,7 @@
       <ul class="your-sections">
         {{#if this.studentSections}}
           {{#each this.studentSections as |section|}}
-            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
+            <li><LinkTo @route="sections.section" @model={{section.id}} class="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
             <li>You don't belong to any classes yet</li>
@@ -52,7 +52,7 @@
       <ul class="org-sections">
         {{#if orgSections}}
           {{#each orgSections as |section|}}
-          <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
+          <li><LinkTo @route="sections.section" @model={{section.id}} class="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{else}}
           <li>{{currentUser.organization.name}} does not have any classes yet</li>
@@ -66,7 +66,7 @@
       <ul class="all-sections">
         {{#if this.allSections}}
           {{#each this.allSections as |section|}}
-          <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
+          <li><LinkTo @route="sections.section" @model={{section.id}} class="section">{{section.name}}</LinkTo></li>
           {{/each}}
         {{/if}}
       </ul>

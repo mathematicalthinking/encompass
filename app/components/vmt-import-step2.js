@@ -14,6 +14,7 @@ export default Component.extend(CurrentUserMixin, {
   searchResults: null,
 
   didReceiveAttrs() {
+    this._super();
     if (this.existingSelectedRooms) {
       this.set('selectedRooms', this.existingSelectedRooms);
     } else if (this.selectedRooms === null) {
@@ -52,9 +53,7 @@ export default Component.extend(CurrentUserMixin, {
     return this.utils.isNonEmptyObject(this.displayResults);
   }),
 
-  displayResults: computed('searchResults', 'previousResults', function () {
-    return this.searchResults || this.previousResults;
-  }),
+  displayResults: computed.or('searchResults', 'previousResults'),
 
   actions: {
     handleSearchResults(results) {

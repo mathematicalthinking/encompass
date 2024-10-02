@@ -17,7 +17,7 @@ export default Component.extend({
     this._super(...arguments);
     this.set('selectedOwner', this.currentUser);
   },
-  validModeValues: computed('modeInputs', function () {
+  validModeValues: computed('modeInputs.inputs', function () {
     const modeInputs = this.get('modeInputs.inputs');
 
     if (this.utils.isNonEmptyArray(modeInputs)) {
@@ -106,7 +106,7 @@ export default Component.extend({
       return res;
     }
   ),
-  initialOwner: computed('currentUser', function () {
+  initialOwner: computed('currentUser.id', function () {
     return [this.currentUser.id];
   }),
   ownerOptions: computed('users.[]', function () {
@@ -132,7 +132,7 @@ export default Component.extend({
     return [];
   }),
 
-  initialCollabOptions: computed('selectedCollaborators', function () {
+  initialCollabOptions: computed('selectedCollaborators', 'store', function () {
     let peeked = this.store.peekAll('user');
     let collabs = this.selectedCollaborators;
 

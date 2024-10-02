@@ -10,13 +10,13 @@
       </p>
     {{else}}
       {{#if showApprove}}
-        <button class="approve-button" {{action "confirmApproval"}}>Approve <i class="fas fa-check"></i></button>
+        <button class="approve-button" type="button" {{action "confirmApproval"}}>Approve <i class="fas fa-check"></i></button>
       {{/if}}
       {{#if showUndoApproval}}
-        <button class="primary-button undo-approval" {{action "undoApproval"}}>Undo Approval</button>
+        <button class="primary-button undo-approval" type="button" {{action "undoApproval"}}>Undo Approval</button>
       {{/if}}
       {{#if showCompose}}
-        <button class="primary-button" {{action "composeReply"}}>Reply <i class="fas fa-reply"></i></button>
+        <button class="primary-button" type="button" {{action "composeReply"}}>Reply <i class="fas fa-reply"></i></button>
       {{/if}}
     {{/if}}
   </div>
@@ -40,22 +40,21 @@
       {{/each}}
       <div class="submit-buttons button-row">
         {{#if isRevisingApproverReply}}
-          <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
-          <button {{action "saveReply" null true}} class="primary-button">Save as Draft</button>
-          <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
+          <button class="primary-button cancel-button" type="button" {{action "stopRevising"}}>Cancel</button>
+          <button class="primary-button" type="button" {{action "saveReply" null true}}>Save as Draft</button>
+          <button class="primary-button" type="button" {{action "saveRevision"}}>Send Revision</button>
         {{/if}}
         {{#if isComposingReply}}
-          <button class="primary-button cancel-button" {{action "stopComposing"}}>Cancel</button>
-          <button {{action "saveReply" null true}} class="primary-button">Save as Draft</button>
-          <button {{action "saveReply" 'needsRevisions'}}
-          class="primary-button">Needs Revisions</button>
-          <button {{action "saveReply" 'approved'}} class="primary-button">Approve</button>
+          <button class="primary-button cancel-button" type="button" {{action "stopComposing"}}>Cancel</button>
+          <button class="primary-button" type="button" {{action "saveReply" null true}}>Save as Draft</button>
+          <button class="primary-button" type="button" {{action "saveReply" 'needsRevisions'}}>Needs Revisions</button>
+          <button class="primary-button" type="button" {{action "saveReply" 'approved'}}>Approve</button>
         {{/if}}
         {{#if isFinishingDraft}}
-          <button {{action "stopDraft"}} class="primary-button cancel-button">Cancel</button>
-          <button {{action "saveDraft" 'draft'}} class="primary-button">Save as Draft</button>
-          <button {{action "saveDraft" 'needsRevisions'}} class="primary-button">Needs Revisions</button>
-          <button {{action "saveDraft" 'approved'}} class="primary-button">Approve</button>
+          <button class="primary-button cancel-button" type="button" {{action "stopDraft"}}>Cancel</button>
+          <button class="primary-button" type="button" {{action "saveDraft" 'draft'}}>Save as Draft</button>
+          <button class="primary-button" type="button" {{action "saveDraft" 'needsRevisions'}}>Needs Revisions</button>
+          <button class="primary-button" type="button" {{action "saveDraft" 'approved'}}>Approve</button>
         {{/if}}
       </div>
     </div>
@@ -135,10 +134,10 @@
   {{#if showDisplayReplyActions}}
     <div class="display-reply-actions">
       {{#if showApproverRevise}}
-        <button class="primary-button" {{action "startRevising"}}>Revise</button>
+        <button class="primary-button" type="button" {{action "startRevising"}}>Revise</button>
       {{/if}}
       {{#if showResumeDraft}}
-        <button {{action 'resumeDraft'}} class="primary-button">Resume Draft</button>
+        <button class="primary-button" type="button" {{action 'resumeDraft'}}>Resume Draft</button>
       {{/if}}
       {{#if showTrash}}
         <i {{action 'confirmTrash' displayReply}} class="fas fa-trash"></i>
@@ -147,8 +146,8 @@
   {{/if}}
   {{#if isEditingApproverReply}}
     <div class="submit-buttons button-row">
-      <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
-      <button {{action "saveEdit"}} class="primary-button">Save</button>
+      <button class="primary-button cancel-button" type="button" {{action "stopEditing"}}>Cancel</button>
+      <button class="primary-button" type="button" {{action "saveEdit"}}>Save</button>
     </div>
   {{/if}}
 {{/if}}

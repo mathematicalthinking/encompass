@@ -15,7 +15,7 @@
                 <label for={{option.value}} class="checkbox-label">
                   <i class="checkbox-icon {{option.icon}}"></i>
                   <span class="checkbox-text">{{option.label}}</span>
-                  <Input @id={{option.value}} @type="checkbox" @checked={{option.isApplied}} @change={{action "updateSecondLevel"}} />
+                  <Input id={{option.value}} @type="checkbox" @checked={{option.isApplied}} {{on "change" (action "updateSecondLevel")}} />
                 </label>
               </li>
             {{/each}}
@@ -34,11 +34,11 @@
     <ul class="category-filter-list">
       <SelectizeInput @store={{this.store}} @inputId="categories-filter" @onItemAdd={{action "addCategorySelectize"}} @maxItems={{1}} @labelField="identifier" @valueField="id" @searchField="identifier" @model="category" @queryParamsKey="identifier" @topLevelQueryParams="searchBy" @isAsync={{true}} @placeholder="Search categories to add" />
       <li>
-        <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
+        <button class="show-category-btn" type="button" {{action 'showCategoryMenu'}}>Show Category Menu</button>
       </li>
       <h5>Selected Category Filters</h5>
       <label class="subfilter">
-        <Input @id="toggle-sub-cats" @type="checkbox" @checked={{this.doIncludeSubCategories}} @change={{action "toggleIncludeSubCats"}} />
+        <Input id="toggle-sub-cats" @type="checkbox" @checked={{this.doIncludeSubCategories}} {{on "change" (action "toggleIncludeSubCats")}} />
         <span>Include Subcategories</span>
       </label>
         {{#if this.categoriesFilter}}
@@ -61,7 +61,7 @@
       <ul class="more-filter-list">
         <h5>Trashed Problems</h5>
         <label class="subfilter">
-          <Input @id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedProblems}} @change={{action "toggleTrashedProblems"}} /> <span>Show All Trashed Problems</span>
+          <Input id="toggle-trashed" @type="checkbox" @checked={{this.showTrashedProblems}} {{on "change" (action "toggleTrashedProblems")}} /> <span>Show All Trashed Problems</span>
         </label>
       </ul>
     {{/if}}

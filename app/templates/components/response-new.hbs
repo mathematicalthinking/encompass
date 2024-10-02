@@ -194,7 +194,7 @@
           <p class='response-header'>Note to Approver</p>
           <Textarea
             class='approver-note'
-            @id='response-note'
+            id='response-note'
             @value={{replyNote}}
           />
         </div>
@@ -219,12 +219,10 @@
     {{/if}}
     <div class='submit-buttons button-row'>
       <button
-        class='primary-button save-response'
-        {{action 'saveResponse'}}
+        class='primary-button save-response' type="button" {{action 'saveResponse'}}
       >{{submitButtonText}}</button>
       <button
-        class='primary-button save-draft'
-        {{action 'saveResponse' true}}
+        class='primary-button save-draft' type="button" {{action 'saveResponse' true}}
       >Save as Draft</button>
     </div>
   </section>

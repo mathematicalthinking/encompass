@@ -11,12 +11,17 @@ export default Component.extend({
   isExpanded: false,
   selectedIds: [],
 
-  selectizeInputId: computed('answer.id', function () {
-    let id = this.get('answer.explanationImage.id') || '';
-    return `select-add-student${id}`;
-  }),
+  selectizeInputId: computed(
+    'answer.explanationImage.id',
+    'answer.id',
+    function () {
+      let id = this.get('answer.explanationImage.id') || '';
+      return `select-add-student${id}`;
+    }
+  ),
 
   didReceiveAttrs: function () {
+    this._super();
     const section = this.selectedSection;
     const answer = this.answer;
     const image = answer.explanationImage;

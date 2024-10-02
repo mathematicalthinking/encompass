@@ -15,7 +15,7 @@
   <div class="nav-goto">
     <label for="gotoPage">Go to Page</label>
     <Input class="goto-page" @type="number" @value={{this.publicGoToPage}} />
-    <button {{action "getPage" null this.publicGoToPage}}>Go</button>
+    <button type="button" {{action "getPage" null this.publicGoToPage}}>Go</button>
   </div>
   </div>
 

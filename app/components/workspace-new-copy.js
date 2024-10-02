@@ -56,32 +56,37 @@ export default Component.extend(CurrentUserMixin, {
     ],
   },
 
-  submissionsPool: computed('workspaceToCopy', 'newWsConfig', function () {
-    let allSubmissions = this.get('workspaceToCopy.submissions.content');
-    if (!allSubmissions) {
+  submissionsPool: computed(
+    'customConfig.submissionOptions.{all,submissionIds}',
+    'newWsConfig',
+    'workspaceToCopy.submissions.content',
+    function () {
+      let allSubmissions = this.get('workspaceToCopy.submissions.content');
+      if (!allSubmissions) {
+        return [];
+      }
+      const newWsConfig = this.newWsConfig;
+      if (
+        newWsConfig !== 'D' ||
+        this.get('customConfig.submissionOptions.all') === true
+      ) {
+        return allSubmissions;
+      }
+
+      let customIds = this.get('customConfig.submissionOptions.submissionIds');
+      if (this.utils.isNonEmptyArray(customIds)) {
+        return allSubmissions.filter((sub) => {
+          return customIds.includes(sub.get('id'));
+        });
+      }
       return [];
     }
-    const newWsConfig = this.newWsConfig;
-    if (
-      newWsConfig !== 'D' ||
-      this.get('customConfig.submissionOptions.all') === true
-    ) {
-      return allSubmissions;
-    }
+  ),
 
-    let customIds = this.get('customConfig.submissionOptions.submissionIds');
-    if (this.utils.isNonEmptyArray(customIds)) {
-      return allSubmissions.filter((sub) => {
-        return customIds.includes(sub.get('id'));
-      });
-    }
-    return [];
-  }),
-
-  submissionsLength: computed('submissionsPool', function () {
+  submissionsLength: computed('submissionsPool.length', function () {
     return this.get('submissionsPool.length') || 0;
   }),
-  collaboratorsCount: computed('newWsPermissions', function () {
+  collaboratorsCount: computed('newWsPermissions.length', function () {
     return this.get('newWsPermissions.length') || 0;
   }),
 
@@ -142,10 +147,12 @@ export default Component.extend(CurrentUserMixin, {
   },
 
   recordCounts: computed(
-    'workspaceToCopy',
-    'newWsConfig',
+    'collaboratorsCount',
     'customConfig',
+    'newWsConfig',
     'newWsPermissions',
+    'submissionsLength',
+    'workspaceToCopy',
     function () {
       return {
         submissions: this.submissionsLength,
@@ -212,6 +219,7 @@ export default Component.extend(CurrentUserMixin, {
   showReview: equal('currentStep.value', 5),
 
   didReceiveAttrs: function () {
+    this._super();
     let hasWorkspaceToCopy = this.get('model.workspaceToCopy');
     if (hasWorkspaceToCopy) {
       return this.store
@@ -224,14 +232,15 @@ export default Component.extend(CurrentUserMixin, {
     }
   },
 
-  maxSteps: computed('steps', function () {
+  maxSteps: computed('steps.length', function () {
     return this.get('steps.length') - 1;
   }),
 
   isCopyingFolders: computed(
+    'customConfig.folderOptions.@eac.{all,includeStructureOnly,none}',
+    'customConfig.folderOptions.none',
     'newWsConfig',
     'workspaceToCopy.foldersLength',
-    'customConfig.folderOptions.@each{all,includeStructureOnly,none}',
     function () {
       const newWsConfig = this.newWsConfig;
       const utils = this.utils;
@@ -284,7 +293,7 @@ export default Component.extend(CurrentUserMixin, {
     return this.submissions.filterBy('student', student).sortBy('createDate');
   },
 
-  collabList: computed('newWsPermissions.[]', function () {
+  collabList: computed('newWsPermissions.[]', 'store', function () {
     //need to get the permissions object
     //get username from each permissions object and list them in the sumamry
     const formattedPermissionObjects = this.formatPermissionsObjects(
@@ -304,14 +313,17 @@ export default Component.extend(CurrentUserMixin, {
   }),
 
   detailsItems: computed(
-    'workspaceToCopy',
-    'newWsConfig',
-    'newWsName',
-    'newWsOwner',
-    'newWsMode',
     'collabList',
     'existingFolderSet',
+    'modeDisplay',
     'newFolderSetOptions.name',
+    'newWsConfig',
+    'newWsMode',
+    'newWsName',
+    'newWsOwner.{name,username}',
+    'selectedConfigDisplay',
+    'selectedFolderSet',
+    'workspaceToCopy.name',
     function () {
       return [
         {
@@ -385,6 +397,7 @@ export default Component.extend(CurrentUserMixin, {
 
   existingFolderSet: computed(
     'newFolderSetOptions.existingFolderSetToUse',
+    'store',
     function () {
       let id = this.get('newFolderSetOptions.existingFolderSetToUse');
       if (!_.isString(id)) {
@@ -396,8 +409,8 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   selectedFolderSet: computed(
-    'newFolderSetOptions',
-    'newFolderSetOptions.existingFolderSetToUse',
+    'existingFolderSet',
+    'newFolderSetOptions.{existingFolderSetToUse,name}',
     function () {
       let existingFolderSet = this.existingFolderSet;
       let newFolderSet = this.get('newFolderSetOptions.name');

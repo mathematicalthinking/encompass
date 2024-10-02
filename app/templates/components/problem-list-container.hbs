@@ -34,7 +34,7 @@
 
         <LinkTo
           @route='problems.new'
-          @id='problem-new-link'
+          id='problem-new-link'
           class='new-link-btn'
         >
           <i class='fas fa-plus' title='Create new problem'></i>
@@ -192,7 +192,7 @@
 </div>
 
 <div class='toggle-filter-menu'>
-  <button {{action 'toggleMenu'}}><i
+  <button type="button" {{action 'toggleMenu'}}><i
       id='arrow-icon'
       class='fas fa-chevron-right'
     ></i></button>
@@ -202,7 +202,7 @@
   <div id='category-list-modal'>
     <div class='modal-content'>
       <h4>Select a Category</h4>
-      <button class='close' {{action 'closeModal'}}><i
+      <button class='close' type="button" {{action 'closeModal'}}><i
           class='fas fa-times'
         ></i></button>
       <CategoriesMenu

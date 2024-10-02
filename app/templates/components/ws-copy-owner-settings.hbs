@@ -6,7 +6,7 @@
     </span>
   </p>
   <div class="single-text-input-container">
-    <Input class="single-text-input" @id="ws-copy-name" @type="text" @value={{selectedName}} placeholder="Provide a name for your workspace" />
+    <Input class="single-text-input" id="ws-copy-name" @type="text" @value={{selectedName}} placeholder="Provide a name for your workspace" />
   </div>
 </div>
 
@@ -82,6 +82,6 @@
 </div>
 
 <div class="nav-btn-container">
-  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" {{action "next"}}>Next</button>
+  <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
+  <button class="primary-button" type="button" {{action "next"}}>Next</button>
 </div>

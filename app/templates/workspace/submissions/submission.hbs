@@ -34,7 +34,7 @@
           <option value='group'>Group work only</option>
         </select>
       {{/if}}
-      <button id='takeTour' {{action 'startTour'}} class='primary-button'>Take
+      <button id='takeTour' class='primary-button' type="button" {{action 'startTour'}}>Take
         Tour</button>
       {{!-- <a id='doneTour' class='hidden' {{action 'doneTour'}}>Done Tour</a> --}}
     </aside>
@@ -50,7 +50,7 @@
     {{! <div id="al_left" class="workspace-flex-item folders"> }}
     {{#if this.showFoldersToggle}}
       <div title='Show Folders' class='toggle-display'>
-        <button {{action 'toggleFolderDisplay'}}><img
+        <button type="button" {{action 'toggleFolderDisplay'}}><img
             src='../assets/images/chevrons-right.svg'
           /></button>
       </div>
@@ -73,7 +73,7 @@
     />
     {{! </div> }}
 
-    <!--section class="submissions"-->
+    {{!--section class="submissions"--}}
     {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
     <SubmissionGroup
       @store={{this.store}}
@@ -93,13 +93,13 @@
       @isParentWorkspace={{this.isParentWorkspace}}
     />
     {{! </div> }}
-    <!--/section-->
+    {{!--/section--}}
 
-    <!--section class="right"-->
+    {{!--section class="right"--}}
     {{! <div id="al_right"> }}
     {{#if this.showCommentsToggle}}
       <div title='Show Comments' class='toggle-display comments'>
-        <button {{action 'toggleCommentDisplay'}}><img
+        <button type="button" {{action 'toggleCommentDisplay'}}><img
             src='../assets/images/chevrons-left.svg'
           /></button>
       </div>
@@ -120,7 +120,7 @@
     {{! </div> }}
   </div>
 
-  <!--/section-->
+  {{!--/section--}}
 </div>
 {{#if this.showOverlay}}
   <div class='clear'></div>
