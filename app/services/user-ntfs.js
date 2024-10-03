@@ -51,35 +51,31 @@ export default Service.extend({
     return this.responses.rejectBy('isTrashed');
   }),
 
-  mentorResponses: computed.filterBy(
-    'nonTrashedResponses',
-    'responseType',
-    'mentor'
-  ),
-
-  supercededReponses: computed(
-    'nonTrashedResponses',
-    'responses.@each.status',
+  mentorResponses: computed(
+    'nonTrashedResponses.@each.responseType',
     function () {
-      let responses = this.nonTrashedResponses.filterBy('status', 'superceded');
-      let relatedNtfs = this.findRelatedNtfs('response', 'response');
-
-      relatedNtfs.forEach((ntf) => {
-        let responseId = this.utils.getBelongsToId(ntf, 'response');
-
-        if (this.doesArrayContainObjectById(responses, responseId)) {
-          // clear ntf
-          ntf.set('isTrashed', true);
-          ntf.set('wasSeen', true);
-          ntf.save();
-        }
-      });
-      return responses;
+      return this.nonTrashedResponses.filterBy('responseType', 'mentor');
     }
   ),
 
+  supercededReponses: computed('responses.@each.status', function () {
+    let responses = this.nonTrashedResponses.filterBy('status', 'superceded');
+    let relatedNtfs = this.findRelatedNtfs('response', 'response');
+
+    relatedNtfs.forEach((ntf) => {
+      let responseId = this.utils.getBelongsToId(ntf, 'response');
+
+      if (this.doesArrayContainObjectById(responses, responseId)) {
+        // clear ntf
+        ntf.set('isTrashed', true);
+        ntf.set('wasSeen', true);
+        ntf.save();
+      }
+    });
+    return responses;
+  }),
+
   readByRecipientResponses: computed(
-    'nonTrashedResponses',
     'responses.@each.wasReadByRecipient',
     function () {
       let responses = this.nonTrashedResponses.filterBy('wasReadByRecipient');
@@ -108,40 +104,34 @@ export default Service.extend({
     }
   ),
 
-  approvedMentorReponses: computed(
-    'mentorResponses',
-    'responses.@each.status',
-    function () {
-      let responses = this.mentorResponses.filterBy('status', 'approved');
+  approvedMentorReponses: computed('responses.@each.status', function () {
+    let responses = this.mentorResponses.filterBy('status', 'approved');
 
-      let relatedNtfs = this.findRelatedNtfs(
-        'response',
-        'response',
-        'mentorReplyRequiresApproval',
-        'response',
-        'requiresApprovalNotifications'
-      );
+    let relatedNtfs = this.findRelatedNtfs(
+      'response',
+      'response',
+      'mentorReplyRequiresApproval',
+      'response',
+      'requiresApprovalNotifications'
+    );
 
-      // if a response is approved now, clear any old ntfs relating to the response being pending
-      relatedNtfs.forEach((ntf) => {
-        let responseId = this.utils.getBelongsToId(ntf, 'response');
+    // if a response is approved now, clear any old ntfs relating to the response being pending
+    relatedNtfs.forEach((ntf) => {
+      let responseId = this.utils.getBelongsToId(ntf, 'response');
 
-        if (this.doesArrayContainObjectById(responses, responseId)) {
-          // clear ntf
-          ntf.set('isTrashed', true);
-          ntf.set('wasSeen', true);
-          ntf.save();
-        }
-      });
-      return responses;
-    }
-  ),
+      if (this.doesArrayContainObjectById(responses, responseId)) {
+        // clear ntf
+        ntf.set('isTrashed', true);
+        ntf.set('wasSeen', true);
+        ntf.save();
+      }
+    });
+    return responses;
+  }),
 
-  responseNotifications: computed.filterBy(
-    'notifications',
-    'primaryRecordType',
-    'response'
-  ),
+  responseNotifications: computed('newNotifications.[]', function () {
+    return this.notifications.filterBy('primaryRecordType', 'response');
+  }),
 
   findRelatedNtfs(
     primaryRecordType,
@@ -198,16 +188,24 @@ export default Service.extend({
     }
   ),
 
-  requiresApprovalNotifications: computed.filterBy(
-    'responseNotifications',
-    'notificationType',
-    'mentorReplyRequiresApproval'
+  requiresApprovalNotifications: computed(
+    'responseNotifications.@each.notificationType',
+    function () {
+      return this.responseNotifications.filterBy(
+        'notificationType',
+        'mentorReplyRequiresApproval'
+      );
+    }
   ),
 
-  needsRevisionNotifications: computed.filterBy(
-    'responseNotifications',
-    'notificationType',
-    'mentorReplyNeedsRevisions'
+  needsRevisionNotifications: computed(
+    'responseNotifications.@each.notificationType',
+    function () {
+      return this.responseNotifications.filterBy(
+        'notificationType',
+        'mentorReplyNeedsRevisions'
+      );
+    }
   ),
 
   updatedResponseNotifications: computed(
