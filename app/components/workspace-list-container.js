@@ -2,9 +2,17 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import { later } from '@ember/runloop';
+import { later, cancel } from '@ember/runloop';
 import moment from 'moment';
+import { htmlSafe } from '@ember/template';
 
+/**
+ * <WorkspaceListContainer
+  @workspaces={{this.model.workspaces}}
+  @organizations={{this.model.organizations}}
+  @toCopyWorkspace={{this.toCopyWorkspace}}
+/>
+ */
 export default class WorkspaceListContainerComponent extends Component {
   @service errorHandling;
   @service('utility-methods') utils;
@@ -22,11 +30,11 @@ export default class WorkspaceListContainerComponent extends Component {
   @tracked toggleTrashed = false;
   @tracked toggleHidden = false;
   @tracked workspaceToDelete = null;
-  @tracked searchCriterion = 'all';
   @tracked primaryFilterValue = 'mine';
+  @tracked primaryFilter = {};
   @tracked selectedMode = ['public', 'private', 'org'];
   @tracked listFilter = 'all';
-  @tracked isFetchingWorkspaces = false;
+  @tracked _isFetchingWorkspaces = false;
   @tracked showLoadingMessage = false;
   @tracked searchByRelevance = false;
   @tracked searchQuery = null;
@@ -37,15 +45,16 @@ export default class WorkspaceListContainerComponent extends Component {
   @tracked criteriaTooExclusive = null;
   @tracked filter = {};
   @tracked isFilterListCollapsed = false;
+
+  @tracked searchCriterion = 'all';
+  searchOptions = ['all', 'name', 'owner', 'collaborators'];
+
   @tracked sortCriterion = {
     name: 'Newest',
     sortParam: { lastModifiedDate: -1 },
     doCollate: true,
     type: 'lastModifiedDate',
   };
-
-  searchOptions = ['all', 'name', 'owner', 'collaborators'];
-
   sortOptions = {
     name: [
       { sortParam: null, icon: '' },
@@ -237,6 +246,9 @@ export default class WorkspaceListContainerComponent extends Component {
     },
   ];
 
+  // Variable to hold the timer reference (handleLoadingMessages)
+  loadingMessageTimer = null;
+
   get user() {
     return this.currentUser.user;
   }
@@ -292,6 +304,7 @@ export default class WorkspaceListContainerComponent extends Component {
 
     if (this.toggleTrashed) {
       message += ' - <strong>Displaying Trashed Workspaces</strong>';
+      return htmlSafe(message);
     }
 
     return message;
@@ -335,6 +348,15 @@ export default class WorkspaceListContainerComponent extends Component {
     );
   }
 
+  get isFetchingWorkspaces() {
+    return this._isFetchingWorkspaces;
+  }
+
+  set isFetchingWorkspaces(value) {
+    this._isFetchingWorkspaces = value;
+    this.handleLoadingMessage();
+  }
+
   constructor() {
     super(...arguments);
     this.initComponent();
@@ -361,20 +383,28 @@ export default class WorkspaceListContainerComponent extends Component {
 
   @action
   handleLoadingMessage() {
+    // Cancel any existing timer
+    if (this.loadingMessageTimer) {
+      cancel(this.loadingMessageTimer);
+      this.loadingMessageTimer = null;
+    }
     if (!this.isFetchingWorkspaces) {
       this.showLoadingMessage = false;
       return;
     }
-    later(
+    // Schedule the loading message to appear after 300ms
+    this.loadingMessageTimer = later(
       this,
       () => {
+        // Check if the component is still alive and fetching is still in progress
         if (
-          !this.isDestroyed &&
-          !this.isDestroying &&
-          this.isFetchingWorkspaces
+          this.isDestroyed ||
+          this.isDestroying ||
+          !this.isFetchingWorkspaces
         ) {
-          this.showLoadingMessage = true;
+          return;
         }
+        this.showLoadingMessage = true;
       },
       300
     );
@@ -623,7 +653,7 @@ export default class WorkspaceListContainerComponent extends Component {
 
     if (this.user.isAdmin) {
       filter.primaryFilters.inputs.mine.isChecked = false;
-      delete filter.primaryFilters.inputs.myOrg;
+      delete filter.primaryFilters.inputs.myOrg; // OK???
       filter.primaryFilters.inputs.all = {
         label: 'All',
         value: 'all',
@@ -672,16 +702,16 @@ export default class WorkspaceListContainerComponent extends Component {
         },
       };
     }
-    this.filter = filter;
+    this.filter = filter; // OK??
   }
 
   configurePrimaryFilter() {
     const primaryFilters = this.filter.primaryFilters;
     if (this.user.isAdmin) {
       primaryFilters.selectedValue = 'all';
-      this.primaryFilter = primaryFilters.inputs.all;
+      this.primaryFilter = primaryFilters.inputs.all; // ok??
     } else {
-      this.primaryFilter = primaryFilters.inputs.mine;
+      this.primaryFilter = primaryFilters.inputs.mine; // ok??
     }
   }
 
@@ -700,6 +730,8 @@ export default class WorkspaceListContainerComponent extends Component {
     let filterBy = this.buildFilterBy();
 
     if (this.criteriaTooExclusive) {
+      // display message or just 0 results
+      // OK???
       this.workspaces = [];
       this.workspacesMetadata = null;
       this.isFetchingWorkspaces = false;
@@ -773,7 +805,8 @@ export default class WorkspaceListContainerComponent extends Component {
       }
 
       if (includeFromOrg) {
-        this.selectedMode = ['org', 'private', 'public'];
+        this.selectedMode = ['org', 'private', 'public']; //OK??
+        //find all workspaces who's owner's org is same as yours
         filter.includeFromOrg = true;
       }
     } else {
@@ -812,12 +845,14 @@ export default class WorkspaceListContainerComponent extends Component {
 
       filter.all.org.organizations = selectedValues;
 
+      // mode "org" and organization prop
       if (includeOrgWorkspaces) {
-        this.selectedMode = ['org'];
+        this.selectedMode = ['org']; //ok??
       }
 
       if (includeFromOrg) {
-        this.selectedMode = ['org', 'private', 'public'];
+        //find all workspaces who's owner's org is same as yours
+        this.selectedMode = ['org', 'private', 'public']; // ok??
         filter.all.org.includeFromOrg = true;
       }
       return filter;
@@ -849,6 +884,7 @@ export default class WorkspaceListContainerComponent extends Component {
       ids = collabWorkspaces;
     }
 
+    // user is not a collaborator for any workspaces
     if (!this.utils.isNonEmptyArray(ids)) {
       this.criteriaTooExclusive = true;
       return filter;
@@ -858,6 +894,7 @@ export default class WorkspaceListContainerComponent extends Component {
     return filter;
   }
 
+  //privacy setting determined from privacy drop down on main display
   buildModeFilter() {
     return { $in: this.modeFilter };
   }

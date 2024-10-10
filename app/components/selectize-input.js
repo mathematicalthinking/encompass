@@ -1,19 +1,14 @@
 /*global _:false */
 import Component from '@ember/component';
-import { inject as service } from '@ember/service';
-
-import $ from 'jquery';
-
+import 'selectize';
 export default Component.extend({
-  store: service(),
-
   showInput: true,
   classNames: ['selectize-comp'],
   didUpdateAttrs() {
     let newPropName = this.propName;
     let oldPropName = this.currentPropName;
 
-    let selectizeControl = this.$('select')[0].selectize;
+    let selectizeControl = $('select')[0].selectize;
     if (!selectizeControl) {
       return;
     }
@@ -104,11 +99,9 @@ export default Component.extend({
   didInsertElement() {
     let options = this.optionsHash;
     let id = this.inputId;
-    // this.$(`#${id}`).selectize(options);
-    this.element.querySelector('.selectize-input input');
-
+    $(`#${id}`).selectize(options);
     if (this.isDisabled) {
-      this.$('select')[0].selectize.disable();
+      $('select')[0].selectize.disable();
     }
     this._super(...arguments);
   },

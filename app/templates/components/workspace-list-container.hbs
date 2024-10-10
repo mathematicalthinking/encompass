@@ -35,7 +35,7 @@
 
         <LinkTo
           @route='workspaces.new'
-          @id='workspace-new-link'
+          id='workspace-new-link'
           class='new-link-btn'
         >
           <i class='fas fa-plus'></i>
@@ -45,7 +45,7 @@
     <div class='results-list'>
       <div class='results-info'>
         <div class='results-message'>
-          {{{this.listResultsMessage}}}
+          {{this.listResultsMessage}}
         </div>
         <div class='side-icons'>
           <i
@@ -210,7 +210,7 @@
 </div>
 
 <div class='toggle-filter-menu'>
-  <button {{on 'click' this.toggleMenu}}><i
+  <button {{on 'click' this.toggleMenu}} type='button'><i
       id='arrow-icon'
       class='fas fa-chevron-right
         {{if this.isFilterListCollapsed "fa-rotate-180"}}'

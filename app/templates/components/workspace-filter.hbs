@@ -30,18 +30,18 @@
                 <li
                   class='checkbox-content
                     {{if
-                      (includes this.currentValues option.value)
+                      (is-in this.currentValues option.value)
                       "is-selected"
                     }}'
                 >
                   <label for={{option.value}} class='checkbox-label'>
                     <i class='checkbox-icon {{option.icon}}'></i>
                     <span class='checkbox-text'>{{option.label}}</span>
-                    <Input
+                    <input
                       id={{option.value}}
-                      @type='checkbox'
-                      @checked={{option.isApplied}}
-                      @onChange={{this.updateSecondLevel}}
+                      type='checkbox'
+                      checked={{option.isApplied}}
+                      {{on 'change' this.updateSecondLevel}}
                     />
                   </label>
                 </li>
@@ -77,11 +77,11 @@
       {{#if this.userIsAdmin}}
         <h5>Trashed Workspaces</h5>
         <label class='subfilter'>
-          <Input
+          <input
             id='toggle-trashed'
-            @type='checkbox'
-            @checked={{this.showTrashedWorkspaces}}
-            @onChange={{this.toggleTrashedWorkspaces}}
+            type='checkbox'
+            checked={{this.showTrashedWorkspaces}}
+            {{on 'change' this.toggleTrashedWorkspaces}}
           />
           <span>Show All Trashed Workspaces</span>
         </label>

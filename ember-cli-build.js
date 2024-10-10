@@ -24,7 +24,6 @@ module.exports = function (defaults) {
   app.import('vendor/jq.keys.js');
   app.import('vendor/typeahead.bundle.js');
   app.import('vendor/validate.min.js');
-  app.import('vendor/selectize.js');
   app.import('vendor/dropzone.js');
   app.import('vendor/socket.io.js');
 

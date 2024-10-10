@@ -3,6 +3,21 @@ import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
+/**
+ * WorkspaceFilter
+ * Arguments:
+ * - @onUpdate {Function} - Callback to handle updates to the primary filter value
+ * - @onUpdateSecondary {Function} - Callback to handle updates to the secondary filter value
+ * - @triggerShowTrashed {Function} - Action to trigger showing trashed workspaces
+ * - @triggerShowHidden {Function} - Action to trigger showing hidden workspaces
+ * - @toggleTrashed {Boolean} - Whether to show trashed workspaces
+ * - @toggleHidden {Boolean} - Whether to show hidden workspaces
+ * - @filter {Object} - The filter object containing criteria for filtering workspaces
+ * - @primaryFilter {String} - The currently selected primary filter for the workspaces
+ * - @adminFilterSelect {Function} - Callback for handling admin-specific filter selection
+ * - @orgs {Array} - List of organizations available for filtering workspaces
+ */
+
 export default class WorkspaceFilterComponent extends Component {
   @service currentUser;
 
@@ -60,6 +75,8 @@ export default class WorkspaceFilterComponent extends Component {
 
   @action
   updateTopLevel(val) {
+    console.log('updatetoplevel', val, this.primaryFilterValue);
+    console.log('this.primaryFilterInputs', this.primaryFilterInputs);
     // need to set filter[val] : true
     // but also need to make sure the current selected item is now false
     if (this.primaryFilterValue !== val) {
@@ -67,6 +84,7 @@ export default class WorkspaceFilterComponent extends Component {
 
       // Call the onUpdate action passed down from the parent (workspace-list-container)
       if (this.args.onUpdate) {
+        console.log('about to call with newPrimaryFilter', newPrimaryFilter);
         this.args.onUpdate(newPrimaryFilter);
       }
     }

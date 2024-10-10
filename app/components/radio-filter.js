@@ -1,14 +1,31 @@
+/**
+ * RadioFilter
+ * Arguments:
+ * - @groupValue {String} - The current value of the group
+ * - @isChecked {Boolean} - Whether this input is checked
+ * - @groupName {String} - The name of the radio group
+ * - @inputValue {String} - The value of this radio button
+ * - @onClick {Function} - Action to handle click event
+ * - @labelName {String} - Label text for the radio button
+ * - @labelIcon {String} - Icon class for the label
+ */
+
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import _ from 'underscore';
+import { tracked } from '@glimmer/tracking';
 
 export default class RadioFilterComponent extends Component {
+  @tracked isChecked = this.args.isChecked;
+
   get isSelected() {
-    let groupValue = this.args.groupValue;
-    let ownValue = this.args.inputValue;
-    return _.isEqual(groupValue, ownValue);
+    return this.args.groupValue === this.args.inputValue;
   }
-  @action onClick(val) {
-    this.args.onClick(val);
+
+  @action
+  onClick(val) {
+    console.log('onclick', val, this.args.inputValue);
+    if (typeof this.args.onClick === 'function') {
+      this.args.onClick(val ?? this.args.inputValue);
+    }
   }
 }
