@@ -16,7 +16,6 @@ module.exports = function (defaults) {
    * These are the dependencies for an Ember application
    * and they have to be loaded before any application code.
    */
-  app.import('vendor/jquery-3.2.1.min.js');
   app.import('vendor/jquery.cookie.js');
   app.import('vendor/tree.jquery.js');
 
@@ -25,7 +24,6 @@ module.exports = function (defaults) {
   app.import('vendor/typeahead.bundle.js');
   app.import('vendor/validate.min.js');
   app.import('vendor/dropzone.js');
-  app.import('vendor/socket.io.js');
 
   // Use `app.import` to add additional libraries to the generated
   // output files.
