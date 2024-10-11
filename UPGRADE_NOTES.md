@@ -20,8 +20,7 @@ Instead, modern Ember uses the Data down, actions up pattern. Parent components 
 
 ## Placement of files
 
-1. **Template and Component files** should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only.
-2.
+1. **Template and Component files** should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
 
 ## Imports
 
@@ -35,11 +34,15 @@ As possible, I will be replacing <Input> with <input>, and so forth. Although th
 
 ## Removal or reduction of lodash & underscore
 
-Both lodash and underscore are used extensively throughout the app. These cases may be found by searching for where 'underscore' is imported or by searching for an underscore followed by a period. The latter is important because app.js sets the underscore to be a global ("window.\_").
+Both lodash and underscore are used extensively throughout the app. These cases may be found by searching for where 'underscore' is imported or by searching for an underscore followed by a period. The latter is important because app.js sets the underscore character to be a global ("window.\_").
+
+Underscore is not as well maintained as is lodash, so lodash should be used as needed. Note that underscore is used extensively in the app_server. It is used in about 15 files in the client code.
+
+There are certainly cases where lodash is helpful, but uses of underscore could be replaced by lodash. Also, rather than globally making the underscore character a reference to the entire lodash library, it would be better to import just the lodash functions needed. Also, rather than lodash, using native JS functions such as map, filter, etc. would be good.
 
 ## Removal of jQuery
 
-Modern Ember recommends removing jQuery, using standard DOM access routines instead. Our file app.js sets $ globally to jQuery, so finding all instances will involve both searching for imports of jQuery and for $ (whether "$." or "$(").
+Modern Ember recommends removing jQuery, using standard DOM access routines instead. Our file app.js sets $ globally to jQuery, so finding all instances will involve both searching for imports of jQuery and for $ (whether "$." or "$("). Note that we cannot completely eliminate jQuery because the selectize package depends on it.
 
 ## Removal of moment
 
@@ -48,3 +51,7 @@ Moment as a package has a fairly large footprint and is considered a legacy proj
 ## Avoid runtime errors through use of optional chaining and nullish coalescing
 
 Through the use of ?. and ??, we can avoid runtime errors if an attempt is made to get a property from undefined.
+
+## Creation of an api service
+
+Right now, http methods are implemented using $.get(), $.post(), etc. or, on the server side, via axios.get(), axios.post(), etc. Modern Ember encourages the use of the ember-fetch package. With that package, we could make an api service so that client components could do api.get(), api.post(), etc. (A similar centralization could be done on the server side as well.) By centralizing all http requests into a service, it becomes easier to change how http requests are done if ember-fetch ever gets upgraded or a new approach is introduced.
