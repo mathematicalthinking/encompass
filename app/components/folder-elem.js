@@ -41,13 +41,17 @@ export default Component.extend({
     return this.utils.getBelongsToId(this.model, 'createdBy');
   }),
 
-  isOwnFolder: computed('creatorId', 'currentUser.user.id', function () {
+  isOwnFolder: computed('creatorId', function () {
     return this.get('currentUser.user.id') === this.creatorId;
   }),
 
-  canDeleteFolder: computed.or('isOwnFolder', 'canDeleteFolders'),
+  canDeleteFolder: computed('isOwnFolder', 'canDeleteFolders', function () {
+    return this.isOwnFolder || this.canDeleteFolders;
+  }),
 
-  canEditFolder: computed.or('isOwnFolder', 'canEditFolders'),
+  canEditFolder: computed('isOwnFolder', 'canEditFolders', function () {
+    return this.isOwnFolder || this.canEditFolders;
+  }),
 
   containsCurrentSubmission: computed(
     'model.submissions',

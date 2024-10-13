@@ -291,13 +291,13 @@ export default class SignUpComponent extends UserSignupComponent {
               return callback(ret);
             }
             // user selected an existing org
-            this.$('select')[0].selectize.setValue(result.value, true);
-            this.$('select')[0].selectize.removeOption(input);
+            $('select')[0].selectize.setValue(result.value, true);
+            $('select')[0].selectize.removeOption(input);
             return callback(null);
           } else {
             // user hit cancel
             // remove option from dropdown
-            this.$('select')[0].selectize.removeOption(input);
+            $('select')[0].selectize.removeOption(input);
             return callback(null);
           }
         });

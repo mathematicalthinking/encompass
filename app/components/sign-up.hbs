@@ -142,7 +142,8 @@
         @type='text'
         name='requestReason'
         id='requestReason'
-        @value={{this.requestReason}} {{on "keydown" (action 'resetErrors')}}
+        @value={{this.requestReason}}
+        {{on 'keydown' (action 'resetErrors')}}
       />
       {{#if this.missingCredentials}}
         <p class='error-message'>You must complete all of the fields in order to
@@ -181,7 +182,7 @@
     <SocialSignin />
     <p class='login-link'>
       Already have an account?
-      <LinkTo @route='auth.login' class='login-link'>Log in here
+      <LinkTo @route='auth.login' @classNames='login-link'>Log in here
       </LinkTo>
     </p>
   </div>

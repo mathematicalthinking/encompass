@@ -53,7 +53,9 @@ export default Component.extend(CurrentUserMixin, {
     return this.utils.isNonEmptyObject(this.displayResults);
   }),
 
-  displayResults: computed.or('searchResults', 'previousResults'),
+  displayResults: computed('searchResults', 'previousResults', function () {
+    return this.searchResults || this.previousResults;
+  }),
 
   actions: {
     handleSearchResults(results) {

@@ -300,7 +300,7 @@ export default Component.extend(
         this.set('doHideOutlet', this.get('model.hideOutlet'));
       }
       if (this.doHideOutlet === false) {
-        this.$('#outlet').removeClass('hidden');
+        $('#outlet').removeClass('hidden');
       }
       this._super(...arguments);
     },
@@ -915,7 +915,7 @@ export default Component.extend(
       },
       toProblemInfo(problem) {
         this.sendAction('toProblemInfo', problem);
-        this.$('#outlet').removeClass('hidden');
+        $('#outlet').removeClass('hidden');
       },
       closeModal() {
         this.set('showCategoryList', false);

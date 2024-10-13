@@ -175,7 +175,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   resetFileInput() {
-    let input = this.$('input.image-upload');
+    let input = $('input.image-upload');
     if (input) {
       this.set('filesToBeUploaded', null);
       input.val('');

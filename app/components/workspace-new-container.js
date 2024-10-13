@@ -293,7 +293,7 @@ export default Component.extend({
   },
 
   didInsertElement() {
-    let width = this.$().css('width');
+    let width = $().css('width');
     let widthNum = parseInt(width, 10);
     if (widthNum <= 430) {
       this.send('setGrid');
@@ -304,7 +304,7 @@ export default Component.extend({
       this.set('doHideOutlet', this.get('model.hideOutlet'));
     }
     if (this.doHideOutlet === false) {
-      this.$('#outlet').removeClass('hidden');
+      $('#outlet').removeClass('hidden');
     }
     this._super(...arguments);
   },

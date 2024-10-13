@@ -103,7 +103,7 @@ export default Component.extend(ErrorHandlingMixin, {
 
   didInsertElement() {
     $(window).on('resize.commentScroll', function () {
-      this.$('.scroll-icon:visible').hide();
+      $('.scroll-icon:visible').hide();
     });
 
     this._super(...arguments);
@@ -635,7 +635,7 @@ export default Component.extend(ErrorHandlingMixin, {
     },
     superScroll: function (direction) {
       //should only show scroll option after the user scrolls a little
-      let maxScroll = this.$('.display-list')[0].scrollHeight;
+      let maxScroll = $('.display-list')[0].scrollHeight;
 
       if (!this.scrollBottom) {
         $('.display-list').animate({

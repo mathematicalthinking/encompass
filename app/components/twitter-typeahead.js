@@ -45,7 +45,7 @@ export default Ember.Component.extend({
 
     const that = this;
 
-    this.$('.typeahead').typeahead(options, dataSetOptions);
+    $('.typeahead').typeahead(options, dataSetOptions);
 
     let startingValue;
 
@@ -62,9 +62,9 @@ export default Ember.Component.extend({
       }
     }
 
-    this.$('.typeahead').typeahead('val', startingValue);
+    $('.typeahead').typeahead('val', startingValue);
 
-    this.$('.typeahead').on('typeahead:select', function (ev, suggestion) {
+    $('.typeahead').on('typeahead:select', function (ev, suggestion) {
       that.set('selectedValue', suggestion);
       if (that.get('onSelect')) {
         that.sendAction('onSelect', suggestion);
@@ -75,7 +75,7 @@ export default Ember.Component.extend({
     });
 
     if (this.setSelectedValueOnChange) {
-      this.$('.typeahead').on('typeahead:change', function (ev, val) {
+      $('.typeahead').on('typeahead:change', function (ev, val) {
         if (that.get('isDestroyed') || that.get('isDestroying')) {
           return;
         }
@@ -107,7 +107,7 @@ export default Ember.Component.extend({
 
   willDestroyElement: function () {
     this._super(...arguments);
-    this.$('.typeahead').typeahead('destroy');
+    $('.typeahead').typeahead('destroy');
   },
 
   getOptions: function () {

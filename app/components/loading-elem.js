@@ -6,5 +6,7 @@ export default Component.extend({
 
   defaultMessage: 'Request in progress. Thank you for your patience!',
 
-  loadingText: computed.or('loadingMessage', 'defaultMessage'),
+  loadingText: computed('loadingMessage', 'defaultMessage', function () {
+    return this.loadingMessage || this.defaultMessage;
+  }),
 });

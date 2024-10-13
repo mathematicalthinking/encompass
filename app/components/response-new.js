@@ -172,7 +172,9 @@ export default Component.extend({
     return this.get('model.text') !== this.response;
   }),
 
-  canRespond: computed.not('isStatic'),
+  canRespond: computed('isStatic', function () {
+    return !this.isStatic;
+  }),
 
   explainEmptiness: computed(
     'isEditing',

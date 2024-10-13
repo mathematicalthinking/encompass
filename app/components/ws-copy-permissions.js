@@ -128,11 +128,11 @@ export default Component.extend({
       // clear selectize input
 
       this.set('selectedCollaborator', null);
-      this.$('select#collab-select')[0].selectize.clear();
+      $('select#collab-select')[0].selectize.clear();
     },
     stopEditing() {
       this.set('selectedCollaborator', null);
-      this.$('select#collab-select')[0].selectize.clear();
+      $('select#collab-select')[0].selectize.clear();
     },
     next() {
       // check if user is in middle of editing a collab
@@ -152,7 +152,7 @@ export default Component.extend({
           if (result.value) {
             // clear values and then proceed
             this.set('selectedCollaborator', null);
-            this.$('select#collab-select')[0].selectize.clear();
+            $('select#collab-select')[0].selectize.clear();
             this.onProceed(this.permissions);
             return;
           }

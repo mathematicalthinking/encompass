@@ -142,7 +142,7 @@ export default Component.extend({
       this.categoriesFilter.addObject(cat);
 
       // clear input
-      this.$('select#categories-filter')[0].selectize.clear();
+      $('select#categories-filter')[0].selectize.clear();
     },
 
     removeCategory(category) {

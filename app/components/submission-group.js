@@ -51,7 +51,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    let revisionsNavHeight = this.$('#submission-nav').height();
+    let revisionsNavHeight = $('#submission-nav').height();
     this.set('isNavMultiLine', revisionsNavHeight > 52);
 
     $(window).on('resize', this.onNavResize);
@@ -59,7 +59,7 @@ export default Component.extend({
 
   didUpdateAttrs() {
     this._super();
-    let studentSelectize = this.$('#student-select')[0];
+    let studentSelectize = $('#student-select')[0];
     if (studentSelectize) {
       let currentValue = studentSelectize.selectize.getValue();
 
@@ -273,9 +273,9 @@ export default Component.extend({
   isTripaneled: equal('containerLayoutClass', 'fsc'),
 
   handleNavHeight() {
-    let height = this.$('#submission-nav').height();
+    let height = $('#submission-nav').height();
 
-    let ownHeight = this.$().height();
+    let ownHeight = $().height();
     this.set('ownHeight', ownHeight);
 
     let isNowMultiLine = height > 52;
@@ -344,7 +344,7 @@ export default Component.extend({
     },
 
     onStudentBlur() {
-      let studentSelectize = this.$('#student-select')[0];
+      let studentSelectize = $('#student-select')[0];
 
       if (studentSelectize) {
         let currentValue = studentSelectize.selectize.getValue();

@@ -159,7 +159,7 @@ export default Component.extend({
       // clear selectize input
 
       this.set('selectedCollaborator', null);
-      this.$('select#collab-select')[0].selectize.clear();
+      $('select#collab-select')[0].selectize.clear();
       this.set('isEditing', false);
     },
   },

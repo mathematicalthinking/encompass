@@ -19,8 +19,8 @@ export default Component.extend({
   actions: {
     selectChange: function () {
       var changeAction = this.action;
-      var selectedEl = this.$('select')[0];
-      var prompt = this.$('#select-prompt');
+      var selectedEl = $('select')[0];
+      var prompt = $('#select-prompt');
       var selectedIndex;
 
       if (prompt.length > 0) {

@@ -15,7 +15,9 @@ export default Component.extend(CurrentUserMixin, {
 
   isParentWorkspace: equal('workspaceType', 'parent'),
 
-  isImage: computed.gt('selection.imageTagLink.length', 0),
+  isImage: computed('selection.imageTagLink', function () {
+    return this.get('selection.imageTagLink.length') > 0;
+  }),
 
   isText: not('isImage'),
 
