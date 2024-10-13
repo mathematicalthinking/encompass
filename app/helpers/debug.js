@@ -1,3 +1,4 @@
+// not currently used, but seems very useful for debugging.
 import { helper as buildHelper } from '@ember/component/helper';
 
 export default buildHelper(function (optionalValue) {

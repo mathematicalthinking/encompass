@@ -26,13 +26,21 @@ Instead, modern Ember uses the Data down, actions up pattern. Parent components 
 
 Currently, ember-cli-build.js and the vendor/ folder reflects an older-style of imports. Wouldn't it be better to include the necessary packages and import them as needed in the various components?
 
+This has been done for randomcolor, jQuery, and selectize.
+
 ## Move from built-in Ember components (Input, TextArea, Select, etc.) to the plain HTML versions
 
 As possible, I will be replacing <Input> with <input>, and so forth. Although the Ember built-ins provide some convenience for assessibility options, they also encourage older-style approachs such as two-way data binding.
 
+## Helpers
+
+There were several unused helpers, which have been deleted (10/13/2024 commit). I left in two of them: debug (expect it to be used only for debugging and seems useful) and is-unread-response (not used, but might contain useful logic to help people understand how responses work).
+
+Some of the helpers could be replaced in a future upgrade with built-in helpers: is-in and is-equal.
+
 # Possible future upgrades
 
-## Removal or reduction of lodash & underscore
+## Removal of underscore and reduction of lodash
 
 Both lodash and underscore are used extensively throughout the app. These cases may be found by searching for where 'underscore' is imported or by searching for an underscore followed by a period. The latter is important because app.js sets the underscore character to be a global ("window.\_").
 
@@ -40,9 +48,13 @@ Underscore is not as well maintained as is lodash, so lodash should be used as n
 
 There are certainly cases where lodash is helpful, but uses of underscore could be replaced by lodash. Also, rather than globally making the underscore character a reference to the entire lodash library, it would be better to import just the lodash functions needed. Also, rather than lodash, using native JS functions such as map, filter, etc. would be good.
 
+Also, of course, as possible we should replace the use of lodash functions with native JS equivalents.
+
 ## Removal of jQuery
 
 Modern Ember recommends removing jQuery, using standard DOM access routines instead. Our file app.js sets $ globally to jQuery, so finding all instances will involve both searching for imports of jQuery and for $ (whether "$." or "$("). Note that we cannot completely eliminate jQuery because the selectize package depends on it.
+
+Note that we cannot completely remove jQuery because it's a dependency of selectize. But we can eliminate its use in our own code to be conistent with modern Ember best practices.
 
 ## Removal of moment
 
@@ -55,3 +67,11 @@ Through the use of ?. and ??, we can avoid runtime errors if an attempt is made 
 ## Creation of an api service
 
 Right now, http methods are implemented using $.get(), $.post(), etc. or, on the server side, via axios.get(), axios.post(), etc. Modern Ember encourages the use of the ember-fetch package. With that package, we could make an api service so that client components could do api.get(), api.post(), etc. (A similar centralization could be done on the server side as well.) By centralizing all http requests into a service, it becomes easier to change how http requests are done if ember-fetch ever gets upgraded or a new approach is introduced.
+
+## Cleaning up packages and unused elements
+
+I've used ember-unused-components to determine that we do not have any unused components as of late 2024.
+
+npm-check reveals quite a lot of packages that are either unused, in need of upgrade (minor or major). There are several packages listed as missing, but I believe that almost all of these are Ember packages that are automatically loaded elsewhere.
+
+ember-cli-dependency-checker is already installed and it never mentions anything out of the ordinary. Nevertheless, I've manually found a few packages that aren't used (g, gm, gm-reload, express-session) and removed them.
