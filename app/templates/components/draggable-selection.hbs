@@ -1,53 +1,55 @@
 <div
   class='selectionLink
-    {{if isImage "image-tag"}}
-    {{if isSelected "is-selected"}}'
-  title='{{titleText}} {{if isParentWorkspace " by "}} {{if
-    isParentWorkspace
-    selection.createdBy.username
+    {{if this.isImage "image-tag"}}
+    {{if this.isSelected "is-selected"}}'
+  title='{{this.titleText}} {{if this.isParentWorkspace " by "}} {{if
+    this.isParentWorkspace
+    this.selection.createdBy.username
   }}'
 >
+
   <LinkTo
     @route='workspace.submissions.submission.selections.selection'
     @models={{array
-      selection.workspace.id
-      selection.submission.id
-      selection.id
+      this.selection.workspace.id
+      this.selection.submission.id
+      this.selection.id
     }}
-    class={{linkToClassName}}
+    @class={{this.linkToClassName}}
   >
-    {{#if isImage}}
+    {{#if this.isImage}}
       <img
         class='img-tag-thmb'
-        src={{selection.imageTagLink}}
-        alt={{selection.text}}
+        src={{this.selection.imageTagLink}}
+        alt={{this.selection.text}}
       />
       <div class='overlay'>
-        <button type="button" {{action 'expandImage'}}><i class={{overlayIcon}}></i></button>
+        <button type='button' {{on 'click' this.expandImage}}><i
+            class={{this.overlayIcon}}
+          ></i></button>
       </div>
     {{else}}
-      {{selection.text}}
+      {{this.selection.text}}
     {{/if}}
   </LinkTo>
-  {{#unless isImage}}
-    <span {{action 'deleteSelection' selection}}><i
+  {{#unless this.isImage}}
+    <span {{on 'click' (fn this.deleteSelection this.selection)}}><i
         class='fas fa-minus-circle'
       ></i></span>
   {{/unless}}
 </div>
-{{#if isImage}}
+{{#if this.isImage}}
   <div class='selection-actions'>
-    {{!-- <span {{action 'expandImage'}}><i class="fas fa-expand"></i></span> --}}
-    {{#if canDelete}}
-      <span {{action 'deleteSelection' selection}}><i
+    {{#if this.canDelete}}
+      <span {{on 'click' (fn this.deleteSelection this.selection)}}><i
           class='fas fa-minus-circle'
         ></i></span>
     {{/if}}
   </div>
 {{/if}}
-{{#if isExpanded}}
+{{#if this.isExpanded}}
   <div class='full-image'>
-    <i class='fas fa-times' {{action 'expandImage'}}></i>
-    <img src={{selection.imageTagLink}} alt={{selection.text}} />
+    <i class='fas fa-times' {{on 'click' this.expandImage}}></i>
+    <img src={{this.selection.imageTagLink}} alt={{this.selection.text}} />
   </div>
 {{/if}}

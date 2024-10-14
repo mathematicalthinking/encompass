@@ -9,7 +9,7 @@ export default class WorkspaceSubmissionController extends Controller {
   @service('sweet-alert') alert;
   @service store;
   @tracked queryParams = ['vmtRoomId'];
-  @service('assignment-permissions') permissionsService;
+  @service('assignment-permissions') permissions;
   // Tracked properties
   @tracked currentWorkspace = this.workspace.model;
   @tracked currentSelection = this.workspace.currentSelection;
@@ -169,7 +169,6 @@ export default class WorkspaceSubmissionController extends Controller {
 
   get canSeeResponses() {
     let cws = this.currentWorkspace;
-    console.log(this), 'here';
     return this.permissions.canEdit(cws, 'feedback', 1);
   }
 

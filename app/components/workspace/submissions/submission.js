@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action, computed } from '@ember/object';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
@@ -28,42 +28,31 @@ export default class WorkspaceSubmissionComponent extends Component {
     return this.canSeeSelections && !this.workspaceSelections.length > 0;
   }
 
-  @computed('currentSubmission.id', 'selections.[]')
   get workspaceSelections() {
-    let subId = this.currentSubmission.id;
-    return this.selections.filter((sel) => {
+    let subId = this.args.currentSubmission.id;
+    return this.args.selections.filter((sel) => {
       return subId === this.utils.getBelongsToId(sel, 'submission');
     });
   }
 
-  @computed('workspaceSelections.@each.isTrashed')
   get trashedSelections() {
     return this.workspaceSelections.filterBy('isTrashed');
   }
 
-  @computed(
-    'currentWorkspace.permissions.@each.{global,selections}',
-    'currentUser.user.id'
-  )
   get canSelect() {
-    let cws = this.currentWorkspace;
+    let cws = this.args.currentWorkspace;
     return this.permissions.canEdit(cws, 'selections', 2);
   }
 
-  @computed(
-    'currentWorkspace.permissions.@each.{global,selections}',
-    'currentUser.user.id'
-  )
   get canDeleteSelection() {
-    const workspace = this.currentWorkspace;
+    const workspace = this.args.currentWorkspace;
     return this.permissions.canEdit(workspace, 'selections', 4);
   }
 
-  @computed('currentSubmission.id', 'responses.[]')
   get submissionResponses() {
-    return this.responses.filter((response) => {
+    return this.args.responses.filter((response) => {
       let subId = this.utils.getBelongsToId(response, 'submission');
-      return subId === this.currentSubmission.id;
+      return subId === this.args.currentSubmission.id;
     });
   }
 

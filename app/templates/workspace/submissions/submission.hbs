@@ -9,7 +9,6 @@
         <LinkTo @route='workspace.info' @model={{this.currentWorkspace.id}}>
           <a>Workspace Stats &amp; Settings</a>
         </LinkTo>
-        {{log this}}
         {{#if this.canSeeResponses}}<LinkTo
             @route='workspace.summary'
             @model={{this.model.workspace.id}}
@@ -34,8 +33,12 @@
           <option value='group'>Group work only</option>
         </select>
       {{/if}}
-      <button id='takeTour' class='primary-button' type="button" {{action 'startTour'}}>Take
-        Tour</button>
+      <button
+        id='takeTour'
+        class='primary-button'
+        type='button'
+        {{action 'startTour'}}
+      >Take Tour</button>
       {{!-- <a id='doneTour' class='hidden' {{action 'doneTour'}}>Done Tour</a> --}}
     </aside>
   </header>
@@ -50,8 +53,8 @@
     {{! <div id="al_left" class="workspace-flex-item folders"> }}
     {{#if this.showFoldersToggle}}
       <div title='Show Folders' class='toggle-display'>
-        <button type="button" {{action 'toggleFolderDisplay'}}><img
-            src='../assets/images/chevrons-right.svg'
+        <button type='button' {{action 'toggleFolderDisplay'}}><img
+            src='/assets/images/chevrons-right.svg'
           /></button>
       </div>
     {{/if}}
@@ -73,7 +76,7 @@
     />
     {{! </div> }}
 
-    {{!--section class="submissions"--}}
+    {{!section class="submissions"}}
     {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
     <SubmissionGroup
       @store={{this.store}}
@@ -92,15 +95,10 @@
       @currentSelection={{this.currentSelection}}
       @isParentWorkspace={{this.isParentWorkspace}}
     />
-    {{! </div> }}
-    {{!--/section--}}
-
-    {{!--section class="right"--}}
-    {{! <div id="al_right"> }}
     {{#if this.showCommentsToggle}}
       <div title='Show Comments' class='toggle-display comments'>
-        <button type="button" {{action 'toggleCommentDisplay'}}><img
-            src='../assets/images/chevrons-left.svg'
+        <button type='button' {{action 'toggleCommentDisplay'}}><img
+            src='/assets/images/chevrons-left.svg'
           /></button>
       </div>
     {{/if}}
@@ -120,7 +118,7 @@
     {{! </div> }}
   </div>
 
-  {{!--/section--}}
+  {{!/section}}
 </div>
 {{#if this.showOverlay}}
   <div class='clear'></div>
