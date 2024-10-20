@@ -3,7 +3,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { later, cancel } from '@ember/runloop';
-import moment from 'moment';
 import { htmlSafe } from '@ember/template';
 
 /**
@@ -328,7 +327,12 @@ export default class WorkspaceListContainerComponent extends Component {
   }
 
   get currentAsOf() {
-    return moment(this.since).format('H:mm');
+    const date = new Date(this.since);
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
   }
 
   get ownWorkspaces() {

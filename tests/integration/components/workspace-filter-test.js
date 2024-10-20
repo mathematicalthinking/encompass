@@ -1,23 +1,31 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click } from '@ember/test-helpers';
-import { hbs } from 'ember-cli-htmlbars';
+import { render, click, find } from '@ember/test-helpers';
+import hbs from 'htmlbars-inline-precompile';
 import Service from '@ember/service';
-import { tracked } from '@glimmer/tracking';
+
+/** In this test suite, I came across a strange error:
+ *  Error: Expected a dynamic component definition, but received an object or function that 
+ * did not have a component manager associated with it. The dynamic invocation was 
+ * <(result of a unknown helper)> or {{(result of a unknown helper)}}, and the incorrect definition 
+ * is the value at the path (result of a unknown helper), which was: Object
+ * 
+ * Although it talks about an unknown helper, the error is actually caused by the <input> tag in the
+ * template file. Replacing the native HTML tag with <Input> from @ember/component resolved the issue.
+
+ */
+
+// Mock the current-user service
+const currentUserStub = Service.extend({
+  user: { isAdmin: true },
+});
 
 module('Integration | Component | workspace-filter', function (hooks) {
   setupRenderingTest(hooks);
 
-  // Mock services
-  class CurrentUserService extends Service {
-    @tracked user = { isAdmin: true };
-  }
-
   hooks.beforeEach(function () {
-    // Injecting the mocked currentUser service
-    this.owner.register('service:current-user', CurrentUserService);
-
-    // Providing the necessary arguments to the component
+    // Register the mock service
+    this.owner.register('service:current-user', currentUserStub);
     this.set('triggerFetch', () => {});
     this.set('triggerShowTrashed', () => {});
     this.set('triggerShowHidden', () => {});
@@ -25,25 +33,141 @@ module('Integration | Component | workspace-filter', function (hooks) {
     this.set('onUpdateSecondaryFilter', () => {});
     this.set('toggleTrashed', false);
     this.set('toggleHidden', false);
-    this.set('filter', {
-      primaryFilters: {
-        inputs: [
-          { value: 'all', label: 'All', order: 1, isChecked: false },
-          { value: 'active', label: 'Active', order: 2, isChecked: false },
-        ],
-      },
-    });
-    this.set('primaryFilter', {
-      value: 'all',
-      secondaryFilters: { inputs: {} },
-    });
     this.set('adminFilterSelect', {});
-    this.set('organizations', [
-      { id: 1, name: 'Org 1' },
-      { id: 2, name: 'Org 2' },
-    ]);
+
+    this.setProperties({
+      filter: {
+        primaryFilters: {
+          inputs: {
+            mine: {
+              label: 'Mine',
+              value: 'mine',
+              isChecked: true,
+              secondaryFilters: {
+                inputs: {
+                  createdBy: { value: 'createdBy', isApplied: true },
+                  owner: { value: 'owner', isApplied: true },
+                },
+                selectedValues: ['createdBy'],
+              },
+            },
+            collab: {
+              label: 'Collaborator',
+              value: 'collab',
+              isChecked: false,
+            },
+          },
+        },
+      },
+      primaryFilter: {
+        value: 'mine',
+        secondaryFilters: {
+          inputs: {
+            createdBy: { value: 'createdBy', isApplied: true },
+            owner: { value: 'owner', isApplied: false },
+          },
+          selectedValues: ['createdBy'],
+        },
+      },
+      orgs: [
+        { id: 1, name: 'Org 1' },
+        { id: 2, name: 'Org 2' },
+      ],
+    });
   });
 
+  test('it renders primary filter options and selects one', async function (assert) {
+    await render(hbs`<WorkspaceFilter 
+      @filter={{this.filter}} 
+      @primaryFilter={{this.primaryFilter}} 
+      @onUpdate={{this.onUpdate}}
+    />`);
+
+    assert.dom('.filter-mine').exists('Mine filter option is rendered');
+    assert
+      .dom('.filter-collab')
+      .exists('Collaborator filter option is rendered');
+
+    assert
+      .dom('.filter-mine input')
+      .isChecked('Mine filter is checked by default');
+
+    // Click to update the primary filter
+    await click('.filter-collab input');
+    assert
+      .dom('.filter-collab input')
+      .isChecked('Collaborator filter becomes checked');
+  });
+
+  test('it updates secondary filters', async function (assert) {
+    await render(hbs`<WorkspaceFilter 
+      @filter={{this.filter}} 
+      @primaryFilter={{this.primaryFilter}} 
+      @onUpdate={{this.onUpdate}}
+    />`);
+
+    assert
+      .dom('.secondary-filter-options')
+      .exists('Secondary filters are rendered');
+    // log the dom
+    console.log(this.element.innerHTML);
+
+    assert
+      .dom('.secondary-filter-options .checkbox-content')
+      .exists({ count: 2 }, 'Renders two secondary filters');
+
+    // Click to toggle a secondary filter
+    await click(find('.checkbox-content:not(.is-selected) input'));
+    assert.equal(
+      this.primaryFilter.secondaryFilters.selectedValues.length,
+      2,
+      'Both secondary filters applied'
+    );
+  });
+
+  test('it toggles more filters', async function (assert) {
+    await render(hbs`<WorkspaceFilter 
+      @filter={{this.filter}} 
+      @primaryFilter={{this.primaryFilter}} 
+      @onUpdate={{this.onUpdate}}
+    />`);
+
+    assert
+      .dom('.more-filter-list')
+      .doesNotExist('More filters are hidden by default');
+
+    // Click to toggle more filters
+    await click(find('.more-header'));
+    assert.dom('.more-filter-list').exists('More filters are shown');
+  });
+
+  test('it handles missing secondary filters gracefully', async function (assert) {
+    this.set('primaryFilter.secondaryFilters', null); // Simulate no secondary filters
+
+    await render(hbs`<WorkspaceFilter 
+      @filter={{this.filter}} 
+      @primaryFilter={{this.primaryFilter}} 
+      @onUpdate={{this.onUpdate}}
+    />`);
+
+    assert
+      .dom('.secondary-filter-options')
+      .hasNoText('Secondary filter options have no content');
+  });
+
+  test('it handles empty organization options', async function (assert) {
+    this.set('orgs', []); // Simulate no orgs
+
+    await render(hbs`<WorkspaceFilter 
+      @filter={{this.filter}} 
+      @primaryFilter={{this.primaryFilter}} 
+      @onUpdate={{this.onUpdate}}
+    />`);
+
+    assert
+      .dom('.org-options')
+      .doesNotExist('No organization options are shown');
+  });
   test('it renders the filter options correctly', async function (assert) {
     await render(hbs`
       <WorkspaceFilter
@@ -98,6 +222,7 @@ module('Integration | Component | workspace-filter', function (hooks) {
     `);
 
     // Click on the second primary filter option
+    console.log(this.element.innerHTML);
     await click('.primary-filter-list li:nth-child(2) input');
   });
 

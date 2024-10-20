@@ -38,10 +38,10 @@
                     <label for={{option.value}} class='checkbox-label'>
                       <i class='checkbox-icon {{option.icon}}'></i>
                       <span class='checkbox-text'>{{option.label}}</span>
-                      <input
-                        id={{option.value}}
-                        type='checkbox'
-                        checked={{option.isApplied}}
+                      <Input
+                        @type='checkbox'
+                        @checked={{option.isApplied}}
+                        @id={{option.value}}
                         {{on 'change' this.updateSecondLevel}}
                       />
                     </label>

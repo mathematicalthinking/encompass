@@ -39,7 +39,7 @@
     "lint:hbs:fix": "ember-template-lint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
-    "test:ember": "ember test",
+    "test:ember": "ember test --server",
     "seed": "node test/seedDb",
     "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test",
     "seed-vmt": "cd ../vmt/server && npm run test",
