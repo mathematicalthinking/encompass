@@ -6,8 +6,6 @@
  */
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import { next } from '@ember/runloop';
-import Encompass from '../app';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 import './Droppable';
 
@@ -22,7 +20,7 @@ export default Component.extend(CurrentUserMixin, {
     get: function () {
       return null;
     },
-    set: function (key, value) {
+    set: function () {
       return null;
     },
   }),
