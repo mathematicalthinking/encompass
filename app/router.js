@@ -74,9 +74,6 @@ Router.map(function () {
         //this.route("print");
       }
     );
-    this.route('workspace-history', {
-      path: '/workspace-history/:workspace_id',
-    });
   });
 
   // USERS PARENT ROUTE
