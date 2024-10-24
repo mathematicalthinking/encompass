@@ -24,7 +24,7 @@ export default class ProblemsRoute extends Route {
     }
 
     return hash({
-      // organizations: this.store.findAll('organization'),
+      organizations: this.store.findAll('organization'),
       sections: this.store.findAll('section'),
       problems: this.store.query('problem', problemCriteria),
       hideOutlet: this.hideOutlet,

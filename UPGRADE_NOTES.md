@@ -75,3 +75,9 @@ I've used ember-unused-components to determine that we do not have any unused co
 npm-check reveals quite a lot of packages that are either unused, in need of upgrade (minor or major). There are several packages listed as missing, but I believe that almost all of these are Ember packages that are automatically loaded elsewhere.
 
 ember-cli-dependency-checker is already installed and it never mentions anything out of the ordinary. Nevertheless, I've manually found a few packages that aren't used (g, gm, gm-reload, express-session) and removed them.
+
+# Gotchas
+
+- For the built-in component <Input>, the id argument should be id= rather than @id=. If you do "@id", the component will not respond to clicks.
+- If a classic component receives @store={{this.store}} but this.store is undefined, then that component will see this.store as undefined even if you added in store as a service.
+- "Error: Expected a dynamic component definition, but received an object or function that did not have a component manager associated with it. The dynamic invocation was <(result of a unknown helper)> or {{(result of a unknown helper)}}, and the incorrect definition is the value at the path (result of a unknown helper), which was: Object". This error has nothing to do with helpers. For some reason, a template file didn't like that I used the standard <input> tag. When I switched to the Ember <Input> tag, the problem went away.

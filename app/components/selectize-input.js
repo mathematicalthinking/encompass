@@ -1,9 +1,11 @@
 /*global _:false */
 import Component from '@ember/component';
 import 'selectize';
+import { inject as service } from '@ember/service';
 export default Component.extend({
   showInput: true,
   classNames: ['selectize-comp'],
+  store: service(), // in case not given as an argument
   didUpdateAttrs() {
     let newPropName = this.propName;
     let oldPropName = this.currentPropName;

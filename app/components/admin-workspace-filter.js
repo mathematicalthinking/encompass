@@ -1,80 +1,126 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
+/**
+ * <AdminWorkspaceFilter
+ *  @mainOptions={{object}}
+ *  @subFilterConfig={{object}} - subfilters that are available for the main selection
+ *  @subFilterWhenSelections={{object}} - subfilters that show when a selection is made from the dropdown
+ *  @onUpdateMain={{function(object key)}}
+ *  @onUpdateSubFilter={{function(array of object keys)}}
+ * />
+ */
 
 export default class AdminWorkspaceFilterComponent extends Component {
-  @tracked mainFilter = this.args.secondaryFilter?.selectedValue ?? '';
-  @tracked selectedOrgSubFilters =
-    this.args.secondaryFilter?.inputs?.org?.subFilters?.selectedValues ?? [];
-  @tracked orgFilter = this.args.secondaryFilter?.inputs?.org;
+  @service('utility-methods') utils;
+  @tracked mainSelectionConfig = this.args.mainOptions[0];
+  @tracked dropdownSelections = [];
+  @tracked subFilterSelections = [];
+
+  constructor() {
+    super(...arguments);
+
+    const subFilterConfig = this.args.subFilterConfig ?? {};
+    const subFilterWhenSelections = this.args.subFilterWhenSelections ?? {};
+
+    this.subFilterSelections = [
+      ...this.extractSubFilterKeys(subFilterConfig),
+      ...this.extractSubFilterKeys(subFilterWhenSelections),
+    ];
+  }
+
+  get showSelectionBasedSubFilter() {
+    return (
+      this.hasCurrentSelections &&
+      !this.utils.isNullOrUndefined(
+        this.subFilterWhenSelections?.[this.mainSelection]
+      )
+    );
+  }
 
   get showOrgFilter() {
-    return this.mainFilter === 'org';
+    return this.mainSelection === 'org';
   }
 
-  get orgFilterSubOptions() {
-    return Object.values(this.orgFilter?.subFilters?.inputs ?? {});
+  get showPowsFilter() {
+    return this.mainSelection === 'pows';
   }
 
-  get areCurrentSelections() {
-    return this.selectedValues.length > 0;
-  }
-
-  get currentSecondaryFilter() {
-    const inputs = this.args.secondaryFilter?.inputs ?? {};
-    return inputs[this.mainFilter];
+  get showSubFilter() {
+    return !this.utils.isNullOrUndefined(
+      this.args.subFilterConfig?.[this.mainSelection]
+    );
   }
 
   get showUserFilter() {
-    return this.mainFilter === 'owner' || this.mainFilter === 'creator';
+    return this.mainSelection === 'owner' || this.mainSelection === 'creator';
   }
 
-  get selectedValues() {
-    return this.currentSecondaryFilter?.selectedValues ?? [];
+  get initialMainFilterItem() {
+    return [this.mainSelectionConfig.value];
   }
 
-  get initialMainFilterItems() {
-    return [this.mainFilter];
+  get hasCurrentSelections() {
+    return this.dropdownSelections.length > 0;
+  }
+
+  get mainSelection() {
+    return this.mainSelectionConfig.value;
+  }
+
+  get selectionBasedSubOptions() {
+    return Object.values(
+      this.args.subFilterWhenSelections?.[this.mainSelection] ?? {}
+    );
+  }
+
+  get generalSubOptions() {
+    return Object.values(this.args.subFilterConfig?.[this.mainSelection] ?? {});
   }
 
   @action
-  setMainFilter(val) {
-    if (!val) return;
+  setMainSelection(val) {
+    const newOption = this.args.mainOptions.find((opt) => opt.value === val);
 
-    if (this.mainFilter !== 'pows') {
-      this.clearSelectedValues();
+    if (!newOption) return;
+
+    this.mainSelectionConfig = newOption;
+    if (this.args.onUpdateMain) {
+      // this.args.onUpdateMain(newOption);
     }
 
-    this.mainFilter = val;
+    this.clearSelectionBasedSelectedValues();
+  }
 
-    if (this.args.onUpdate) {
-      this.args.onUpdate();
+  updateSubFilters(id, filterConfig) {
+    if (!Object.keys(filterConfig?.[this.mainSelection] ?? []).includes(id)) {
+      return;
+    }
+
+    const index = this.subFilterSelections.indexOf(id);
+    if (index === -1) {
+      this.subFilterSelections = [...this.subFilterSelections, id];
+    } else {
+      this.subFilterSelections = this.subFilterSelections.filter(
+        (item) => item !== id
+      );
+    }
+    if (this.args.onUpdateSubFilter) {
+      this.args.onUpdateSubFilter(this.subFilterSelections);
     }
   }
 
   @action
-  updateOrgSubFilters(event) {
+  updateSelectionBasedSubFilters(event) {
     const id = event.target.id;
-    const targetInput = this.orgFilter?.subFilters?.inputs?.[id];
+    this.updateSubFilters(id, this.args.subFilterWhenSelections);
+  }
 
-    // not a valid option
-    if (!targetInput) return;
-
-    // valid option, toggle the inputs isApplied value
-    targetInput.isApplied = !targetInput.isApplied;
-
-    // filter for inputs who are currently applied
-    const appliedInputs = Object.values(
-      this.orgFilter.subFilters.inputs
-    ).filter((input) => input.isApplied);
-    const appliedValues = appliedInputs.map((input) => input.value);
-
-    // update selectedValues on subFilters
-    this.orgFilter.subFilters.selectedValues = appliedValues;
-
-    if (this.args.onUpdate) {
-      this.args.onUpdate();
-    }
+  @action
+  updateGeneralSubFilters(event) {
+    const id = event.target.id;
+    this.updateSubFilters(id, this.args.subFilterConfig);
   }
 
   @action
@@ -97,20 +143,25 @@ export default class AdminWorkspaceFilterComponent extends Component {
         this[propToUpdate] = val;
       }
     }
-
-    if (this.args.onUpdate) {
-      this.args.onUpdate();
-    }
+    // need to figure out updating
+    console.log('dropdown selections', this.dropdownSelections);
   }
 
-  clearSelectedValues() {
-    const currentSecondaryFilter = this.currentSecondaryFilter;
-    if (currentSecondaryFilter) {
-      currentSecondaryFilter.selectedValues = [];
-    }
+  clearSelectionBasedSelectedValues() {
+    // remove from subfilter selections only those values that are selection based. Leave the selections for general subfilters as the user selected
+    const selectionBasedOptions = this.extractSubFilterKeys(
+      this.args.subFilterWhenSelections ?? {}
+    );
+    this.subFilterSelections = this.subFilterSelections.filter(
+      (item) => !selectionBasedOptions.includes(item)
+    );
+    this.dropdownSelections = [];
   }
 
-  isIncludedInSubFilters(val) {
-    return this.selectedOrgSubFilters.includes(val);
+  extractSubFilterKeys(filterObj) {
+    return Object.values(filterObj).reduce(
+      (keys, subObj) => keys.concat(Object.keys(subObj)),
+      []
+    );
   }
 }

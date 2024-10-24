@@ -20,10 +20,10 @@
               <AdminWorkspaceFilter
                 @filter={{this.adminFilter}}
                 @mainOptions={{this.secondaryFilterOptions}}
-                @secondaryFilter={{this.secondaryFilter}}
-                @onUpdate={{this.onUpdate}}
+                @subFilterWhenSelections={{this.subFilterWhenSelections}}
+                @onUpdateMain={{this.onUpdate}}
                 @orgOptions={{this.orgOptions}}
-                @updateSecondLevel={{this.updateSecondLevel}}
+                @updateSubFilter={{this.updateSecondLevel}}
               />
             {{else}}
               <ul class='secondary-filter-options'>
@@ -41,7 +41,7 @@
                       <Input
                         @type='checkbox'
                         @checked={{option.isApplied}}
-                        @id={{option.value}}
+                        id={{option.value}}
                         {{on 'change' this.updateSecondLevel}}
                       />
                     </label>

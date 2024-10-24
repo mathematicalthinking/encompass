@@ -1,6 +1,5 @@
 <div class='flex-container-full'>
   <div class='flex-item-full filter-options collapse' id='filter-list-side'>
-
     <ProblemFilter
       @showCategoryList={{this.showCategoryList}}
       @categoryTree={{this.categoryTree}}
@@ -10,7 +9,7 @@
       @filter={{this.filter}}
       @primaryFilter={{this.primaryFilter}}
       @adminFilterSelect={{this.adminFilterSelect}}
-      @orgs={{this.model.currentUser.organization}}
+      @orgs={{this.organizations}}
       @categoriesFilter={{this.categoriesFilter}}
       @doIncludeSubCategories={{this.doIncludeSubCategories}}
       @toggleTrashed={{this.toggleTrashed}}
@@ -192,7 +191,7 @@
 </div>
 
 <div class='toggle-filter-menu'>
-  <button type="button" {{action 'toggleMenu'}}><i
+  <button type='button' {{action 'toggleMenu'}}><i
       id='arrow-icon'
       class='fas fa-chevron-right'
     ></i></button>
@@ -202,7 +201,7 @@
   <div id='category-list-modal'>
     <div class='modal-content'>
       <h4>Select a Category</h4>
-      <button class='close' type="button" {{action 'closeModal'}}><i
+      <button class='close' type='button' {{action 'closeModal'}}><i
           class='fas fa-times'
         ></i></button>
       <CategoriesMenu

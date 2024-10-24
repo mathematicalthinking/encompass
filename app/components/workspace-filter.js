@@ -69,14 +69,16 @@ export default class WorkspaceFilterComponent extends Component {
     );
   }
 
+  get subFilterWhenSelections() {
+    return { org: this.secondaryFilter.inputs.org.subFilters.inputs };
+  }
+
   get secondaryFilterOptions() {
     return Object.values(this.secondaryFilter.inputs ?? {});
   }
 
   @action
   updateTopLevel(val) {
-    console.log('updatetoplevel', val, this.primaryFilterValue);
-    console.log('this.primaryFilterInputs', this.primaryFilterInputs);
     // need to set filter[val] : true
     // but also need to make sure the current selected item is now false
     if (this.primaryFilterValue !== val) {
@@ -84,7 +86,6 @@ export default class WorkspaceFilterComponent extends Component {
 
       // Call the onUpdate action passed down from the parent (workspace-list-container)
       if (this.args.onUpdate) {
-        console.log('about to call with newPrimaryFilter', newPrimaryFilter);
         this.args.onUpdate(newPrimaryFilter);
       }
     }

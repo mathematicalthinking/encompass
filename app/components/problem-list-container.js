@@ -779,7 +779,6 @@ export default Component.extend(
         }
         return;
       }
-      console.log(this.store);
       this.store
         .query('problem', queryParams)
         .then((results) => {

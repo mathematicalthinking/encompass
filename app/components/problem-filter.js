@@ -22,6 +22,12 @@ export default Component.extend({
   showCategoryFilters: false,
   showMoreFilters: false,
   closedMenu: true,
+  subFilters: computed('secondaryFilter', function () {
+    return { pows: this.secondaryFilter.inputs.pows.secondaryFilters.inputs };
+  }),
+  subFilterWhenSelections: computed('secondaryFilter', function () {
+    return { org: this.secondaryFilter.inputs.org.subFilters.inputs };
+  }),
 
   init: function () {
     this._super(...arguments);
@@ -32,19 +38,17 @@ export default Component.extend({
 
   // used for populating the selectize instance
   // orgs passed in from parent are all orgs from db
-  // ORGS IS RETURNING A
-  // orgOptions: computed('orgs.[]', function () {
-  //   let orgs = this.orgs;
-  //   console.log(this.orgs);
-  //   let toArray = orgs.toArray();
-  //   let mapped = _.map(toArray, (org) => {
-  //     return {
-  //       id: org.id,
-  //       name: org.get('name'),
-  //     };
-  //   });
-  //   return mapped;
-  // }),
+  orgOptions: computed('orgs.[]', function () {
+    let orgs = this.orgs;
+    let toArray = orgs.toArray();
+    let mapped = _.map(toArray, (org) => {
+      return {
+        id: org.id,
+        name: org.get('name'),
+      };
+    });
+    return mapped;
+  }),
 
   primaryFilterOptions: computed('filter', 'primaryFilterInputs', function () {
     let mapped = _.map(this.primaryFilterInputs, (val, key) => {
