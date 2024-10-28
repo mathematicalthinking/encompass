@@ -302,10 +302,101 @@ export default class WorkspaceListContainerComponent extends Component {
       ],
       { listBased: true, multiSelect: true }
     );
+    this.inputState.createStates('mainFilter', [
+      ...(this.user.isAdmin
+        ? [{ value: 'all', label: 'All', icon: 'fas fa-infinity' }]
+        : []),
+      {
+        value: 'mine',
+        label: 'Mine',
+        icon: 'fas fa-user',
+      },
+      {
+        value: 'collab',
+        label: 'Collaborator',
+        icon: 'fas fa-users',
+      },
+      {
+        value: 'myOrg',
+        label: 'My Org',
+        icon: 'fas fa-university',
+      },
+      {
+        value: 'everyone',
+        label: 'Public',
+        icon: 'fas fa-globe-americas',
+      },
+    ]);
+    this.inputState.createSubStates(
+      'mainFilter',
+      'mine',
+      [
+        {
+          label: 'Created By Me',
+          value: 'createdBy',
+          icon: 'fas fa-wrench',
+          default: true,
+        },
+        {
+          label: 'Owner',
+          value: 'owner',
+          icon: 'fas fa-building',
+          default: true,
+        },
+      ],
+      { listBased: false, multiSelect: true, persist: true }
+    );
+    if (this.user.accountType === 'P') {
+      this.inputState.createSubStates(
+        'mainFilter',
+        'myOrg',
+        [
+          {
+            value: 'orgProblems',
+            label: `Visible to ${this.userOrgName}`,
+            icon: 'fas fa-dot-circle',
+            default: true,
+          },
+          {
+            value: 'fromOrg',
+            label: `${this.userOrgName} Workspaces`,
+            icon: 'fas fa-users',
+            default: true,
+          },
+        ],
+        { listBased: false, multiSelect: true, persist: true }
+      );
+    }
   }
 
   // Variable to hold the timer reference (handleLoadingMessages)
   loadingMessageTimer = null;
+
+  get mainOptions() {
+    return this.inputState.getOptions('mainFilter');
+  }
+
+  get mainSelection() {
+    return this.inputState.getSelection('mainFilter');
+  }
+
+  @action
+  handleUpdateMain(selection) {
+    this.inputState.setSelection('mainFilter', selection);
+  }
+
+  get subOptions() {
+    return this.inputState.getSubOptions('mainFilter');
+  }
+
+  get subSelections() {
+    return this.inputState.getSubSelections('mainFilter');
+  }
+
+  @action
+  handleUpdateSub(value, option) {
+    this.inputState.setSubSelection('mainFilter', option, value);
+  }
 
   get adminMainOptions() {
     return this.inputState.getOptions('adminFilter');
@@ -316,7 +407,7 @@ export default class WorkspaceListContainerComponent extends Component {
   }
 
   @action
-  handleUpdateMain(selection) {
+  handleUpdateAdminMain(selection) {
     this.inputState.setSelection('adminFilter', selection);
   }
 
@@ -329,7 +420,7 @@ export default class WorkspaceListContainerComponent extends Component {
   }
 
   @action
-  handleUpdateSub(value, option) {
+  handleUpdateAdminSub(value, option) {
     if (Array.isArray(value)) {
       this.inputState.setListState('adminFilter', value);
     } else {

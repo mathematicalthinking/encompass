@@ -4,16 +4,18 @@ import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
 /**
- * WorkspaceFilter
- * Arguments:
- * - @onUpdate {Function} - Callback to handle updates to the primary filter value
- * - @onUpdateSecondary {Function} - Callback to handle updates to the secondary filter value
- * - @triggerShowTrashed {Function} - Action to trigger showing trashed workspaces
- * - @triggerShowHidden {Function} - Action to trigger showing hidden workspaces
- * - @toggleTrashed {Boolean} - Whether to show trashed workspaces
- * - @toggleHidden {Boolean} - Whether to show hidden workspaces
- * - @primaryFilter {String} - The currently selected primary filter for the workspaces
- * - @primaryFilterInputs {Array} - The available primary filter options
+ * <WorkspaceFilter
+        @mainOptions={{this.mainOptions}}
+        @mainSelection={{this.mainSelection}}
+        @onUpdateMain={{this.handleUpdateMain}}
+        @subOptions={{this.subOptions}}
+        @subSelections={{this.subSelections}}
+        @onUpdateSub={{this.handleUpdateSub}}
+        @showTrashed={{this.toggleTrashed}}
+        @showHidden={{this.toggleHidden}}
+        @toggleTrashed={{this.triggerShowTrashed}}
+        @toggleHidden={{this.triggerShowHidden}}
+      >
  */
 
 export default class WorkspaceFilterComponent extends Component {
@@ -21,70 +23,29 @@ export default class WorkspaceFilterComponent extends Component {
 
   @tracked closedMenu = true;
   @tracked showMoreFilters = false;
-  @tracked toggleTrashed = false;
-  @tracked toggleHidden = false;
-
-  get primaryFilterValue() {
-    return this.args.primaryFilter?.value;
-  }
 
   get userIsAdmin() {
     return this.currentUser.user.isAdmin;
   }
 
-  get secondaryFilter() {
-    return this.args.primaryFilter?.secondaryFilters ?? {};
-  }
-
   get showAdminFilters() {
-    return this.primaryFilterValue === 'all';
-  }
-
-  get currentValues() {
-    return this.secondaryFilter?.selectedValues ?? [];
-  }
-
-  get primaryFilterOptions() {
-    return Object.values(this.args.primaryFilterInputs).sort(
-      (a, b) => a.order - b.order
-    );
-  }
-
-  get secondaryFilterOptions() {
-    return Object.values(this.secondaryFilter.inputs ?? {});
+    return this.args.mainSelection.value === 'all';
   }
 
   @action
   updateTopLevel(val) {
-    // need to set filter[val] : true
-    // but also need to make sure the current selected item is now false
-    if (this.primaryFilterValue !== val) {
-      let newPrimaryFilter = this.args.primaryFilterInputs?.[val] ?? {};
-
-      // Call the onUpdate action passed down from the parent (workspace-list-container)
-      if (this.args.onUpdate) {
-        this.args.onUpdate(newPrimaryFilter);
-      }
+    if (this.args.onUpdateMain) {
+      this.args.onUpdateMain(val.value);
     }
   }
 
   @action
-  updateSecondLevel(event) {
-    let id = event.target.id;
-    let targetInput = this.secondaryFilter?.inputs?.[id];
-    if (!targetInput) {
-      return;
-    }
-    targetInput.isApplied = !targetInput.isApplied;
-
-    let appliedInputs = Object.values(this.secondaryFilter.inputs ?? {}).filter(
-      (input) => input.isApplied
-    );
-
-    const appliedValues = appliedInputs.map((input) => input.value);
-
-    if (this.args.onUpdate) {
-      this.args.onUpdateSecondary(appliedValues);
+  toggleSubOption(option) {
+    if (this.args.onUpdateSub && this.args.subSelections) {
+      this.args.onUpdateSub(
+        !this.args.subSelections.includes(option.value),
+        option.value
+      );
     }
   }
 
@@ -96,7 +57,6 @@ export default class WorkspaceFilterComponent extends Component {
 
   @action
   toggleTrashedWorkspaces() {
-    this.toggleTrashed = !this.toggleTrashed;
     if (this.args.triggerShowTrashed) {
       this.args.triggerShowTrashed();
     }
@@ -104,7 +64,6 @@ export default class WorkspaceFilterComponent extends Component {
 
   @action
   toggleHiddenWorkspaces() {
-    this.toggleHidden = !this.toggleHidden;
     if (this.args.triggerShowHidden) {
       this.args.triggerShowHidden();
     }

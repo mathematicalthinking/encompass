@@ -23,7 +23,6 @@ export default class RadioFilterComponent extends Component {
 
   @action
   onClick(val) {
-    console.log('onclick', val, this.args.inputValue);
     if (typeof this.args.onClick === 'function') {
       this.args.onClick(val ?? this.args.inputValue);
     }

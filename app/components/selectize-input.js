@@ -10,27 +10,12 @@ export default class SelectizeInputComponent extends Component {
 
   @tracked options = this.args.initialOptions || [];
   @tracked items = this.args.initialItems || [];
-  @tracked currentPropName = this.args.propName;
 
   @tracked selectizeInstance;
 
-  constructor() {
-    super(...arguments);
-
-    // If options aren't provided, try to fetch them from the store based on the model
-    if (
-      !this.args.initialOptions &&
-      this.args.model &&
-      this.args.valueField &&
-      this.args.labelField
-    ) {
-      this.fetchInitialOptions();
-    }
-  }
-
   // Fetch initial options if they are not provided
-  fetchInitialOptions() {
-    let peeked = this.store.peekAll(this.args.model);
+  async fetchInitialOptions() {
+    let peeked = await this.store.peekAll(this.args.model);
     if (peeked) {
       this.options = peeked.map((record) => ({
         [this.args.valueField]: record.get(this.args.valueField),
@@ -40,7 +25,21 @@ export default class SelectizeInputComponent extends Component {
   }
 
   @action
-  initializeSelectize(element) {
+  async initializeSelectize(element) {
+    // If no initialOptions are provided, fetch options asynchronously
+    if (
+      !this.args.initialOptions &&
+      this.args.model &&
+      this.args.valueField &&
+      this.args.labelField
+    ) {
+      await this.fetchInitialOptions(); // Ensure fetching is complete before initializing
+    }
+
+    if (this.args.initialOptions) {
+      this.options = this.args.initialOptions;
+    }
+
     const optionsHash = this.configureOptionsHash();
     const selectizeInstance = $(element).selectize(optionsHash);
     this.selectizeInstance = selectizeInstance[0].selectize;
@@ -51,11 +50,11 @@ export default class SelectizeInputComponent extends Component {
   }
 
   @action
-  updateSelectizeOptions(element) {
+  async updateSelectizeOptions(element) {
     if (this.selectizeInstance) {
-      this.selectizeInstance.destroy(); // Destroy the old Selectize instance
+      this.selectizeInstance.destroy();
     }
-    this.initializeSelectize(element); // Reinitialize with new arguments
+    this.initializeSelectize(element);
   }
 
   configureOptionsHash() {
@@ -75,26 +74,22 @@ export default class SelectizeInputComponent extends Component {
 
     const propToUpdate = this.args.propToUpdate;
 
-    // Handle the onItemAdd event
     if (this.args.onItemAdd) {
       hash.onItemAdd = (value, $item) => {
         this.args.onItemAdd(value, $item, propToUpdate, this.args.model);
       };
     }
 
-    // Handle the onItemRemove event
     if (this.args.onItemRemove) {
       hash.onItemRemove = (value) => {
         this.args.onItemRemove(value, null, propToUpdate);
       };
     }
 
-    // Handle the onBlur event
     if (this.args.onBlur) {
       hash.onBlur = this.args.onBlur;
     }
 
-    // If the component is async, set up the load function
     if (this.args.isAsync) {
       hash.load = this.addItemsSelectize.bind(this);
     }

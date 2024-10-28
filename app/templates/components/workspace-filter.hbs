@@ -3,39 +3,35 @@
     <h2>Filter Options</h2>
     <h3>Primary Filters</h3>
     <ul class='primary-filter-list'>
-      {{#each this.primaryFilterOptions as |input|}}
+      {{#each @mainOptions as |input|}}
         <li class='filter-{{input.value}}'>
           <RadioFilter
-            @groupValue={{this.primaryFilterValue}}
-            @secondaryInputs={{input.secondaryFilters}}
-            @isChecked={{input.isChecked}}
+            @groupValue={{@mainSelection}}
+            @isChecked={{(is-equal @mainSelection.value input.value)}}
             @groupName='top-level'
-            @inputValue={{input.value}}
+            @inputValue={{input}}
             @onClick={{this.updateTopLevel}}
             @labelName={{input.label}}
             @labelIcon={{input.icon}}
           />
-          {{#if (is-equal this.primaryFilterValue input.value)}}
+          {{#if (is-equal @mainSelection.value input.value)}}
             {{#if this.showAdminFilters}}
               {{yield to='adminFilter'}}
             {{else}}
               <ul class='secondary-filter-options'>
-                {{#each this.secondaryFilterOptions as |option|}}
+                {{#each @subOptions as |option|}}
                   <li
                     class='checkbox-content
-                      {{if
-                        (is-in this.currentValues option.value)
-                        "is-selected"
-                      }}'
+                      {{if (is-in @subSelections option.value) "is-selected"}}'
                   >
                     <label for={{option.value}} class='checkbox-label'>
                       <i class='checkbox-icon {{option.icon}}'></i>
                       <span class='checkbox-text'>{{option.label}}</span>
                       <Input
                         @type='checkbox'
-                        @checked={{option.isApplied}}
+                        @checked={{(is-in @subSelections option.value)}}
                         id={{option.value}}
-                        {{on 'change' this.updateSecondLevel}}
+                        {{on 'change' (fn this.toggleSubOption option)}}
                       />
                     </label>
                   </li>
@@ -63,7 +59,7 @@
           <Input
             id='toggle-hidden'
             @type='checkbox'
-            @checked={{this.showHiddenWorkspaces}}
+            @checked={{@showHidden}}
             @onChange={{this.toggleHiddenWorkspaces}}
           />
           <span>Show All Hidden Workspaces</span>
@@ -74,7 +70,7 @@
             <input
               id='toggle-trashed'
               type='checkbox'
-              checked={{this.showTrashedWorkspaces}}
+              checked={{@showTrashed}}
               {{on 'change' this.toggleTrashedWorkspaces}}
             />
             <span>Show All Trashed Workspaces</span>
