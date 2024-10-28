@@ -12,10 +12,8 @@ import { tracked } from '@glimmer/tracking';
  * - @triggerShowHidden {Function} - Action to trigger showing hidden workspaces
  * - @toggleTrashed {Boolean} - Whether to show trashed workspaces
  * - @toggleHidden {Boolean} - Whether to show hidden workspaces
- * - @filter {Object} - The filter object containing criteria for filtering workspaces
  * - @primaryFilter {String} - The currently selected primary filter for the workspaces
- * - @adminFilterSelect {Function} - Callback for handling admin-specific filter selection
- * - @orgs {Array} - List of organizations available for filtering workspaces
+ * - @primaryFilterInputs {Array} - The available primary filter options
  */
 
 export default class WorkspaceFilterComponent extends Component {
@@ -34,10 +32,6 @@ export default class WorkspaceFilterComponent extends Component {
     return this.currentUser.user.isAdmin;
   }
 
-  get primaryFilterInputs() {
-    return this.args.filter?.primaryFilters?.inputs ?? {};
-  }
-
   get secondaryFilter() {
     return this.args.primaryFilter?.secondaryFilters ?? {};
   }
@@ -46,31 +40,14 @@ export default class WorkspaceFilterComponent extends Component {
     return this.primaryFilterValue === 'all';
   }
 
-  get adminFilter() {
-    return this.args.filter?.primaryFilters?.inputs?.all ?? {};
-  }
-
   get currentValues() {
     return this.secondaryFilter?.selectedValues ?? [];
   }
 
-  get orgOptions() {
-    return (
-      this.args.orgs?.map((org) => ({
-        id: org.id,
-        name: org.name,
-      })) ?? []
-    );
-  }
-
   get primaryFilterOptions() {
-    return Object.values(this.primaryFilterInputs).sort(
+    return Object.values(this.args.primaryFilterInputs).sort(
       (a, b) => a.order - b.order
     );
-  }
-
-  get subFilterWhenSelections() {
-    return { org: this.secondaryFilter.inputs.org.subFilters.inputs };
   }
 
   get secondaryFilterOptions() {
@@ -82,7 +59,7 @@ export default class WorkspaceFilterComponent extends Component {
     // need to set filter[val] : true
     // but also need to make sure the current selected item is now false
     if (this.primaryFilterValue !== val) {
-      let newPrimaryFilter = this.primaryFilterInputs?.[val] ?? {};
+      let newPrimaryFilter = this.args.primaryFilterInputs?.[val] ?? {};
 
       // Call the onUpdate action passed down from the parent (workspace-list-container)
       if (this.args.onUpdate) {
@@ -108,13 +85,6 @@ export default class WorkspaceFilterComponent extends Component {
 
     if (this.args.onUpdate) {
       this.args.onUpdateSecondary(appliedValues);
-    }
-  }
-
-  @action
-  onUpdate() {
-    if (this.args.onUpdate) {
-      this.args.onUpdate();
     }
   }
 

@@ -1,249 +1,132 @@
-/*global _:false */
-import Component from '@ember/component';
-import 'selectize';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-export default Component.extend({
-  showInput: true,
-  classNames: ['selectize-comp'],
-  store: service(), // in case not given as an argument
-  didUpdateAttrs() {
-    let newPropName = this.propName;
-    let oldPropName = this.currentPropName;
+import 'selectize';
+import $ from 'jquery';
 
-    let selectizeControl = $('select')[0].selectize;
-    if (!selectizeControl) {
-      return;
-    }
+export default class SelectizeInputComponent extends Component {
+  @service store;
 
-    if (_.isUndefined(oldPropName)) {
-      this.set('currentPropName', newPropName);
-    } else {
-      if (!_.isEqual(newPropName, oldPropName)) {
-        // new id, need to clear inputs
-        selectizeControl.clear(true);
-        this.set('currentPropName', newPropName);
-      }
-    }
-    const newOptions = this.initialOptions;
-    const currentOptions = this.options;
+  @tracked options = this.args.initialOptions || [];
+  @tracked items = this.args.initialItems || [];
+  @tracked currentPropName = this.args.propName;
+
+  @tracked selectizeInstance;
+
+  constructor() {
+    super(...arguments);
+
+    // If options aren't provided, try to fetch them from the store based on the model
     if (
-      newOptions &&
-      currentOptions &&
-      !_.isEqual(newOptions, currentOptions)
+      !this.args.initialOptions &&
+      this.args.model &&
+      this.args.valueField &&
+      this.args.labelField
     ) {
-      selectizeControl.clearOptions();
-      selectizeControl.addOption(newOptions);
-      selectizeControl.refreshOptions(false);
+      this.fetchInitialOptions();
     }
-    this._super(...arguments);
-  },
+  }
 
-  didReceiveAttrs() {
-    let options = this.initialOptions;
-    let items = this.initialItems;
-
-    if (!options) {
-      if (this.model && this.valueField && this.labelField) {
-        let peeked = this.store.peekAll(this.model);
-        if (peeked) {
-          options = peeked.map((record) => {
-            let valueField = this.valueField;
-            let labelField = this.labelField;
-            return {
-              [valueField]: record.get(valueField),
-              [labelField]: record.get(labelField),
-            };
-          });
-        }
-      }
+  // Fetch initial options if they are not provided
+  fetchInitialOptions() {
+    let peeked = this.store.peekAll(this.args.model);
+    if (peeked) {
+      this.options = peeked.map((record) => ({
+        [this.args.valueField]: record.get(this.args.valueField),
+        [this.args.labelField]: record.get(this.args.labelField),
+      }));
     }
+  }
 
-    this.set('options', options);
-    this.set('items', items);
+  @action
+  initializeSelectize(element) {
+    const optionsHash = this.configureOptionsHash();
+    const selectizeInstance = $(element).selectize(optionsHash);
+    this.selectizeInstance = selectizeInstance[0].selectize;
 
-    if (_.isUndefined(this.currentPropName)) {
-      this.set('currentPropName', this.propName);
+    if (this.args.isDisabled) {
+      this.selectizeInstance.disable();
     }
+  }
 
-    let hash = this.configureOptionsHash();
-    this.set('optionsHash', hash);
-
-    // if (this.placeholder) {
-    //   this.set('placeholder', this.placeholder);
-    // }
-    if (!this.propsToMap) {
-      let propsToMap = [];
-      propsToMap.addObject(this.labelField);
-      propsToMap.addObject(this.valueField);
-      this.set('propsToMap', propsToMap);
+  @action
+  updateSelectizeOptions(element) {
+    if (this.selectizeInstance) {
+      this.selectizeInstance.destroy(); // Destroy the old Selectize instance
     }
-
-    this._super(...arguments);
-  },
-
-  // attrs passed in
-  //
-  // inputId
-  // valueField
-  // labelField
-  // searchField
-  // initialOptions
-  // onItemAdd
-  // onItemRemove
-  // loadAsync
-  // maxItems
-  // maxOptions
-  // placeholder
-  // initialItems
-  //propsToMap
-  // useEmberObjectsAsync
-
-  didInsertElement() {
-    let options = this.optionsHash;
-    let id = this.inputId;
-    $(`#${id}`).selectize(options);
-    if (this.isDisabled) {
-      $('select')[0].selectize.disable();
-    }
-    this._super(...arguments);
-  },
+    this.initializeSelectize(element); // Reinitialize with new arguments
+  }
 
   configureOptionsHash() {
     let hash = {
-      valueField: this.valueField || 'id',
-      labelField: this.labelField || 'id',
-      searchField: this.searchField || 'id',
+      valueField: this.args.valueField || 'id',
+      labelField: this.args.labelField || 'id',
+      searchField: this.args.searchField || 'id',
       options: this.options || [],
-      maxItems: this.maxItems || null,
-      maxOptions: this.maxOptions || 1000,
+      maxItems: this.args.maxItems || null,
+      maxOptions: this.args.maxOptions || 1000,
       items: this.items || [],
-      create: this.create || false,
-      persist: this.persist || false,
-      createFilter: this.createFilter || null,
-      preload: this.preload || false,
+      create: this.args.create || false,
+      persist: this.args.persist || false,
+      createFilter: this.args.createFilter || null,
+      preload: this.args.preload || false,
     };
 
-    let that = this;
-    let propToUpdate = this.propToUpdate;
+    const propToUpdate = this.args.propToUpdate;
 
-    if (this.onItemAdd) {
-      hash.onItemAdd = function (value, $item) {
-        that.get('onItemAdd')(value, $item, propToUpdate, that.get('model'));
+    // Handle the onItemAdd event
+    if (this.args.onItemAdd) {
+      hash.onItemAdd = (value, $item) => {
+        this.args.onItemAdd(value, $item, propToUpdate, this.args.model);
       };
     }
 
-    if (this.onItemRemove) {
-      hash.onItemRemove = function (value) {
-        that.get('onItemRemove')(value, null, propToUpdate);
+    // Handle the onItemRemove event
+    if (this.args.onItemRemove) {
+      hash.onItemRemove = (value) => {
+        this.args.onItemRemove(value, null, propToUpdate);
       };
     }
 
-    if (this.onBlur) {
-      hash.onBlur = this.onBlur;
+    // Handle the onBlur event
+    if (this.args.onBlur) {
+      hash.onBlur = this.args.onBlur;
     }
 
-    if (this.isAsync) {
+    // If the component is async, set up the load function
+    if (this.args.isAsync) {
       hash.load = this.addItemsSelectize.bind(this);
     }
 
     return hash;
-  },
+  }
 
-  addItemsSelectize: function (query, callback) {
-    if (this.doFetch === false) {
+  // Method to handle loading async items
+  addItemsSelectize(query, callback) {
+    if (!query.length && !this.args.preload) {
       return callback();
     }
-    if (!query.length) {
-      if (!this.preload) {
-        return callback();
-      }
-      // to preload results
-      query = ' ';
-    }
 
-    let key = this.queryParamsKey;
-    /*
-      for api that is expecting searchBy to be in shape:
-      searchBy: {
-        query: string,
-        criterion: string
-      }
-    */
-    let searchCriterion = this.searchCriterion;
-    let queryParams = {};
-    let topLevelQueryParams = this.topLevelQueryParams;
-    let secondaryFilters = this.secondaryFilters;
-    let customQueryParams = this.customQueryParams;
-
-    if (customQueryParams) {
-      // use custom params object passed in
-      let base = {
-        [key]: query,
-      };
-
-      queryParams = Object.assign(base, customQueryParams);
-    } else if (topLevelQueryParams) {
-      queryParams[topLevelQueryParams] = {
-        [key]: query,
-      };
-      if (secondaryFilters) {
-        _.each(secondaryFilters, (val, key) => {
-          if (key === 'ids') {
-            queryParams.ids = val;
-          } else {
-            queryParams[topLevelQueryParams][key] = val;
-          }
-        });
-      }
-      if (searchCriterion) {
-        queryParams[topLevelQueryParams].criterion = searchCriterion;
-      }
-    } else {
-      queryParams = {
-        [key]: query,
-      };
-    }
-
-    let model = this.model;
+    let queryParams = {
+      [this.args.queryParamsKey]: query,
+    };
 
     this.store
-      .query(model, queryParams)
+      .query(this.args.model, queryParams)
       .then((results) => {
-        // results is Ember AdapterPopulatedRecordArray
-        let meta = results.get('meta');
-        this.set('metaData', meta);
-
-        let resultsArray = results.toArray();
-        let selectedItemsHash = this.selectedItemsHash;
-        let valueField = this.valueField;
-        // filter out already selected items
-        if (_.isObject(selectedItemsHash) && _.isString(valueField)) {
-          resultsArray = resultsArray.reject((record) => {
-            return selectedItemsHash[record.get(valueField)];
-          });
-        }
-
-        // if we want the ember objects
-        // was having issues with this though
-        if (this.useEmberObjectsAsync) {
-          return callback(resultsArray);
-        }
-
-        let mapped = _.map(resultsArray, (item) => {
+        let mappedResults = results.map((record) => {
           let obj = {};
-
-          let propsToMap = this.propsToMap;
-          _.each(propsToMap, (prop) => {
-            obj[prop] = item.get(prop);
-          });
-
+          obj[this.args.valueField] = record.get(this.args.valueField);
+          obj[this.args.labelField] = record.get(this.args.labelField);
           return obj;
         });
 
-        return callback(mapped);
+        callback(mappedResults);
       })
-      .catch((err) => {
-        this.set('dataFetchError', err);
+      .catch((error) => {
+        console.error('Error fetching items:', error);
+        callback();
       });
-  },
-});
+  }
+}

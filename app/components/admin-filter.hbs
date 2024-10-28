@@ -1,0 +1,75 @@
+<div id='admin-workspace-filter'>
+  <!-- Main Dropdown -->
+  <div class='choose-filter-admin'>
+    <span class='filter-text'>Find by</span>
+    <!-- onItemAdd sends the value to the parent component -->
+    <SelectizeInput
+      @inputId='admin-filter-select'
+      @initialOptions={{@mainOptions}}
+      @initialItems={{this.initialMainSelection}}
+      @onItemAdd={{@onUpdateMain}}
+      @maxItems={{1}}
+      @labelField='label'
+      @valueField='value'
+    />
+  </div>
+
+  <!-- Conditional Rendering of Options -->
+  {{#if (is-equal @mainSelection.type 'list')}}
+    <div class='filter-admin'>
+      <SelectizeInput
+        @inputId={{@mainSelection.inputId}}
+        @initialOptions={{@mainSelection.options}}
+        @onItemAdd={{this.updateMultiSelect}}
+        @onItemRemove={{this.updateMultiSelect}}
+        @maxItems={{@mainSelection.maxItems}}
+        @labelField={{@mainSelection.labelField}}
+        @valueField={{@mainSelection.valueField}}
+        @searchField={{@mainSelection.searchField}}
+        @placeholder={{@mainSelection.placeholder}}
+        @model={{@mainSelection.model}}
+        @queryParamsKey={{@mainSelection.queryParamsKey}}
+        @propName={{@mainSelection.propName}}
+        @isAsync={{@mainSelection.isAsync}}
+        key={{@mainSelection.inputId}}
+      />
+    </div>
+    <ul class='secondary-filter-options'>
+      {{#each @subOptions as |option|}}
+        <li
+          class='checkbox-content
+            {{if (is-in @subSelections option.value) "is-selected"}}'
+        >
+          <label for={{option.value}} class='checkbox-label'>
+            <i class='checkbox-icon {{option.icon}}'></i>
+            <span class='checkbox-text'>{{option.label}}</span>
+            <Input
+              id={{option.value}}
+              @type='checkbox'
+              @checked={{is-in @subSelections option.value}}
+              {{on 'change' (fn this.toggleSubOption option)}}
+            />
+          </label>
+        </li>
+      {{/each}}
+    </ul>
+  {{else if (is-equal @mainSelection.type 'checkboxes')}}
+    <!-- Sub-option is a group of checkboxes -->
+    <ul class='secondary-filter-options'>
+      {{#each @subOptions as |option|}}
+        <li class='checkbox-content {{if option.isChecked "is-selected"}}'>
+          <label for={{option.value}} class='checkbox-label'>
+            <i class='checkbox-icon {{option.icon}}'></i>
+            <span class='checkbox-text'>{{option.label}}</span>
+            <Input
+              id={{option.value}}
+              @type='checkbox'
+              @checked={{option.isChecked}}
+              {{on 'change' (fn this.toggleSubOption option)}}
+            />
+          </label>
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
+</div>

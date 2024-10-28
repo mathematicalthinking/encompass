@@ -1,4 +1,5 @@
-<div id='workspace-list-container'><div class='flex-container-full'>
+<div id='workspace-list-container'>
+  <div class='flex-container-full'>
     <div
       class='flex-item-full filter-options
         {{if this.isFilterListCollapsed "collapse"}}'
@@ -11,11 +12,20 @@
         @triggerShowHidden={{this.triggerShowHidden}}
         @toggleTrashed={{this.toggleTrashed}}
         @toggleHidden={{this.toggleHidden}}
-        @filter={{this.filter}}
         @primaryFilter={{this.primaryFilter}}
-        @adminFilterSelect={{this.adminFilterSelect}}
-        @orgs={{this.organizations}}
-      />
+        @primaryFilterInputs={{this.primaryFilterInputs}}
+      >
+        <:adminFilter>
+          <AdminFilter
+            @mainOptions={{this.adminMainOptions}}
+            @mainSelection={{this.adminMainSelection}}
+            @onUpdateMain={{this.handleUpdateMain}}
+            @subOptions={{this.adminSubOptions}}
+            @subSelections={{this.adminSubSelections}}
+            @onUpdateSub={{this.handleUpdateSub}}
+          />
+        </:adminFilter>
+      </WorkspaceFilter>
     </div>
 
     <div

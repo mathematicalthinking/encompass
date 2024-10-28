@@ -18,6 +18,7 @@ export default class WorkspaceListContainerComponent extends Component {
   @service('sweet-alert') alert;
   @service currentUser;
   @service store;
+  @service inputState;
 
   @tracked workspaces = this.args.workspaces || [];
   @tracked workspacesMetadata = this.args.workspaces?.meta || null;
@@ -245,8 +246,96 @@ export default class WorkspaceListContainerComponent extends Component {
     },
   ];
 
+  constructor() {
+    super(...arguments);
+    this.initComponent();
+    const userProperties = {
+      inputId: 'all-user-filter',
+      maxItems: 3,
+      labelField: 'username',
+      valueField: 'id',
+      searchField: 'name',
+      model: 'user',
+      queryParamsKey: 'usernameSearch',
+      isAsync: true,
+      placeholder: 'Username...',
+      type: 'list',
+    };
+    this.inputState.createStates('adminFilter', [
+      {
+        value: 'org',
+        label: 'Organization',
+        inputId: 'all-org-filter',
+        options: this.orgOptions,
+        maxItems: 3,
+        labelField: 'name',
+        valueField: 'id',
+        searchField: 'name',
+        placeholder: 'Organization name...',
+        propName: 'org',
+        type: 'list',
+      },
+      {
+        value: 'creator',
+        label: 'Creator',
+        propName: 'creator',
+        ...userProperties,
+      },
+      { value: 'owner', label: 'Owner', propName: 'owner', ...userProperties },
+    ]);
+    this.inputState.createSubStates(
+      'adminFilter',
+      'org',
+      [
+        {
+          label: `Created or Owned by Members`,
+          value: 'fromOrg',
+          icon: 'fas fa-users',
+          default: true,
+        },
+        {
+          label: `Visibile to Members`,
+          value: 'orgWorkspaces',
+          default: true,
+          icon: 'fas fa-dot-circle',
+        },
+      ],
+      { listBased: true, multiSelect: true }
+    );
+  }
+
   // Variable to hold the timer reference (handleLoadingMessages)
   loadingMessageTimer = null;
+
+  get adminMainOptions() {
+    return this.inputState.getOptions('adminFilter');
+  }
+
+  get adminMainSelection() {
+    return this.inputState.getSelection('adminFilter');
+  }
+
+  @action
+  handleUpdateMain(selection) {
+    this.inputState.setSelection('adminFilter', selection);
+  }
+
+  get adminSubOptions() {
+    return this.inputState.getSubOptions('adminFilter');
+  }
+
+  get adminSubSelections() {
+    return this.inputState.getSubSelections('adminFilter');
+  }
+
+  @action
+  handleUpdateSub(value, option) {
+    if (Array.isArray(value)) {
+      this.inputState.setListState('adminFilter', value);
+    } else {
+      this.inputState.setSubSelection('adminFilter', option, value);
+    }
+  }
 
   get user() {
     return this.currentUser.user;
@@ -266,6 +355,29 @@ export default class WorkspaceListContainerComponent extends Component {
 
   get modeFilter() {
     return { $in: this.selectedMode };
+  }
+  get secondaryFilter() {
+    return this.primaryFilter?.secondaryFilters ?? {};
+  }
+  get subFilterWhenSelections() {
+    return { org: this.secondaryFilter.inputs.org.subFilters.inputs };
+  }
+
+  get secondaryFilterOptions() {
+    return Object.values(this.secondaryFilter.inputs ?? {});
+  }
+
+  get primaryFilterInputs() {
+    return this.filter?.primaryFilters?.inputs ?? {};
+  }
+
+  get orgOptions() {
+    return (
+      this.organizations?.map((org) => ({
+        id: org.id,
+        name: org.name,
+      })) ?? []
+    );
   }
 
   get listResultsMessage() {
@@ -359,11 +471,6 @@ export default class WorkspaceListContainerComponent extends Component {
   set isFetchingWorkspaces(value) {
     this._isFetchingWorkspaces = value;
     this.handleLoadingMessage();
-  }
-
-  constructor() {
-    super(...arguments);
-    this.initComponent();
   }
 
   @action

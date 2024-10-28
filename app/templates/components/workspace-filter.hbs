@@ -17,14 +17,7 @@
           />
           {{#if (is-equal this.primaryFilterValue input.value)}}
             {{#if this.showAdminFilters}}
-              <AdminWorkspaceFilter
-                @filter={{this.adminFilter}}
-                @mainOptions={{this.secondaryFilterOptions}}
-                @subFilterWhenSelections={{this.subFilterWhenSelections}}
-                @onUpdateMain={{this.onUpdate}}
-                @orgOptions={{this.orgOptions}}
-                @updateSubFilter={{this.updateSecondLevel}}
-              />
+              {{yield to='adminFilter'}}
             {{else}}
               <ul class='secondary-filter-options'>
                 {{#each this.secondaryFilterOptions as |option|}}
