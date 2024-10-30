@@ -1,9 +1,0 @@
-<ul>
-  {{#each activities as |activity|}}
-    <li>
-      <VmtActivityListItem @activity={{activity}} @onSelect={{action "onActivitySelect"}} @showCheckbox={{showCheckbox}} @onRoomSelect={{action "onRoomSelect"}} @selectedRoomIds={{selectedRoomIds}} @selectedActivityIds={{selectedActivityIds}} />
-    </li>
-  {{else}}
-    <li data-test="no-activities"> No activities</li>
-  {{/each}}
-</ul>

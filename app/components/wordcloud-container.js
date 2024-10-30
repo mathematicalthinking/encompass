@@ -3,7 +3,8 @@ import WordCloud from 'wordcloud';
 import { action } from '@ember/object';
 
 export default class WordcloudContainerComponent extends Component {
-  @action generate() {
+  @action
+  generate() {
     const options = {
       list: this.args.list,
       backgroundColor: '#ffe0e0',

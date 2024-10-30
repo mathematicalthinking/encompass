@@ -1,0 +1,73 @@
+<div class='workspace-info-summary'>
+  <p class='input-label'>Selected workspace details
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='This is the information about the workspace you chose to copy. Make sure everything looks correct'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
+    </span>
+  </p>
+  <div class='workspace-copy-card'>
+    <div class='item-card-container'>
+      <div class='item-card row-1'>
+        <div class='item-card privacy'>
+          <span class='privacy-icon'>{{{public-private @workspace.mode}}}</span>
+          <span class='date'>{{format-date
+              @workspace.lastModifiedDateComp
+              'L'
+            }}</span>
+        </div>
+      </div>
+      <div class='item-card row-2'>
+        <div class='item-card name'>
+          <LinkTo
+            @route='workspace.work'
+            @model={{@workspace}}
+            class='workspace-name'
+          >
+            <span
+              class={{if @workspace.isTrashed 'strikethrough'}}
+            >{{{@workspace.name}}}</span>
+            <LinkTo @route='workspace.info' @model={{@workspace.id}}>
+              <i
+                class='fa fa-info-circle workspace_info'
+                aria-hidden='true'
+              ></i>
+            </LinkTo>
+          </LinkTo>
+        </div>
+      </div>
+      <div class='item-card row-3'>
+        <div class='item-card description'>
+          {{{@workspace.owner.displayName}}}
+        </div>
+      </div>
+      <div class='item-card row-4'>
+        <div class='item-card status'>
+          <ul class='workspace-stats'>
+            <li>
+              <p class='stat-header'>Submissions</p>
+              <p class='stat-number'>{{@workspace.submissionsLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Selections</p>
+              <p class='stat-number'>{{@workspace.selectionsLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Comments</p>
+              <p class='stat-number'>{{@workspace.commentsLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Responses</p>
+              <p class='stat-number'>{{@workspace.responsesLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Folders</p>
+              <p class='stat-number'>{{@workspace.foldersLength}}</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
