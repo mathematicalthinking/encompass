@@ -19,7 +19,7 @@ export default class InputStateService extends Service {
   }
 
   // Create sub-options for a given id and option value, with the persist option
-  createSubStates(id, optionValue, subOptions, config) {
+  createSubStates(id, optionValue, subOptions, config, buildSubFilter) {
     if (!this.states[id]) {
       throw new Error(`No options found for id: ${id}`);
     }
@@ -36,6 +36,7 @@ export default class InputStateService extends Service {
       selections: subOptions
         .filter((subOpt) => subOpt.default)
         .map((subOpt) => subOpt.value),
+      buildSubFilter,
     };
 
     // Update the tracked `subStates` property once
@@ -170,5 +171,34 @@ export default class InputStateService extends Service {
     this.states = TrackedObject();
     this.subStates = TrackedObject();
     this.listState = TrackedObject();
+  }
+
+  getFilter(id) {
+    let filter = {};
+
+    // Get the main state for the given id
+    const state = this.states[id];
+    if (!state) {
+      throw new Error(`No main options found for id: ${id}`);
+    }
+
+    // Get the currently selected main option
+    const selectedMainOption = state.selectedOption;
+    if (selectedMainOption && selectedMainOption.buildFilter) {
+      // Call the buildFilter function for the selected main option
+      const mainFilter = selectedMainOption.buildFilter(selectedMainOption); // Use the selected option object
+      filter = { ...filter, ...mainFilter }; // Spread into filter
+    }
+
+    // Get substate and build sub-filter if applicable
+    const selectedValue = this.getSelectionValue(id);
+    const subState = this.subStates[`${id}_${selectedValue}`];
+    if (subState && subState.buildSubFilter) {
+      // Call the buildSubFilter function with the substate selections
+      const subFilter = subState.buildSubFilter(subState.selections); // Use selected values
+      filter = { ...filter, ...subFilter }; // Spread into filter
+    }
+
+    return filter;
   }
 }

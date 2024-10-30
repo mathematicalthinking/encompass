@@ -38,6 +38,15 @@ There were several unused helpers, which have been deleted (10/13/2024 commit). 
 
 Some of the helpers could be replaced in a future upgrade with built-in helpers: is-in and is-equal.
 
+## Independent Components
+
+Each component should have one clearly defined set of responsibilities. Components should be as independent of each other as is feasible. This promotes easing modifications, for example, as we don't need to worry as much about changes having consequences throughout the code or the need to implement new functionality across several components. This approach also limits prop drilling and makes each component easier to understand because it has one job.
+
+The current code includes several subsystems of components that are tightly coupled. Some examples:
+
+- workspace-list-container defined the menu options that were displayed in workspace-list-item. The latter contained all the actions for that menu. In the redesign, the menu options have been defined inside workspace-list-item.
+- the way that filtering worked in the workspace subsystem required the different filters to have deep understanding of how the filtering (options and their states) are structured. This has been changed so that each type of filter receives specific options, selections, and the actions to change the selections.
+
 # Possible future upgrades
 
 ## Removal of underscore and reduction of lodash
@@ -79,5 +88,16 @@ ember-cli-dependency-checker is already installed and it never mentions anything
 # Gotchas
 
 - For the built-in component <Input>, the id argument should be id= rather than @id=. If you do "@id", the component will not respond to clicks.
-- If a classic component receives @store={{this.store}} but this.store is undefined, then that component will see this.store as undefined even if you added in store as a service.
+- If a classic component receives @store={{this.store}} but this.store is undefined, then that component will see this.store as undefined even if you added store as a service.
 - "Error: Expected a dynamic component definition, but received an object or function that did not have a component manager associated with it. The dynamic invocation was <(result of a unknown helper)> or {{(result of a unknown helper)}}, and the incorrect definition is the value at the path (result of a unknown helper), which was: Object". This error has nothing to do with helpers. For some reason, a template file didn't like that I used the standard <input> tag. When I switched to the Ember <Input> tag, the problem went away.
+- Occasionally, Ember will fail quietly. For example,
+
+                    this.store
+                    .query('workspace', queryParams)
+                    .then((results) => {
+                        this.removeMessages('workspaceLoadErrors');
+                        this.workspaces = results;
+                        ... more lines
+                    })
+
+If this.removeMessages is undefined, Ember might **not** show an error in the console or indicate anywhere that it failed. Subsequent lines will simply not execute but the app will continue running as if everything is fine.

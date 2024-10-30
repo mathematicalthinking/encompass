@@ -1,4 +1,4 @@
-<div id='workspace-list-container'>
+<div id='workspace-list-container' {{did-insert this.detectWidth}}>
   <div class='flex-container-full'>
     <div
       class='flex-item-full filter-options
@@ -210,7 +210,6 @@
             @metadata={{this.workspacesMetadata}}
             @isList={{this.showList}}
             @isGrid={{this.showGrid}}
-            @moreMenuOptions={{this.moreMenuOptions}}
             @store={{this.store}}
             @toCopyWorkspace={{@toCopyWorkspace}}
           />

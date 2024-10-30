@@ -1,15 +1,38 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 /*global _:false */
-import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { initial } from 'underscore';
 
 export default Component.extend({
   classNames: ['workspace-list-item'],
   alert: service('sweet-alert'),
   permissions: service('workspace-permissions'),
-  menuOptions: alias('parentView.moreMenuOptions'),
+  menuOptions: [
+    {
+      label: 'Copy',
+      value: 'copy',
+      action: 'copyWorkspace',
+      icon: 'fas fa-copy',
+    },
+    {
+      label: 'Assign',
+      value: 'assign',
+      action: 'assignWorkspace',
+      icon: 'fas fa-list-ul',
+    },
+    {
+      label: 'Hide',
+      value: 'hide',
+      action: 'hideWorkspace',
+      icon: 'fas fa-archive',
+    },
+    {
+      label: 'Delete',
+      value: 'delete',
+      action: 'deleteWorkspace',
+      icon: 'fas fa-trash',
+    },
+  ],
   store: service(),
   ellipsisMenuOptions: computed(
     'currentUser.hiddenWorkspaces',
