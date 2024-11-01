@@ -1,5 +1,4 @@
 import Component from '@ember/component';
-import EmberMap from '@ember/map';
 import { computed, observer } from '@ember/object';
 import { equal } from '@ember/object/computed';
 /*global _:false */

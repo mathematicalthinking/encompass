@@ -1,5 +1,4 @@
 import Component from '@ember/component';
-// import EmberMap from '@ember/map';
 import { computed, observer } from '@ember/object';
 import { alias, equal, gte, or, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
