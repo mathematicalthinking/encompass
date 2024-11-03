@@ -1,23 +1,112 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
 import { inject as service } from '@ember/service';
 
+const ACTION_BUTTONS = {
+  Restore: (problem) => () => this.restoreProblem(problem),
+  Flag: (problem) => () =>
+    this.confirmStatusUpdate(problem, 'title', 'flagged'),
+  Approve: (problem) => () =>
+    this.confirmStatusUpdate(problem, 'title', 'approved'),
+  Assign: (problem) => () => this.assignProblem(problem),
+  Copy: (problem) => () => this.addToMyProblems(problem),
+};
+
 export default class ProblemListItemComponent extends Component {
+  @service('sweet-alert') alert;
+  @service('problem-permissions') permissions;
+  @service router;
+  @service store;
+
   @tracked showAdminStatusMenu = false;
   @tracked showMoreMenu = false;
   @tracked savedProblem = null;
+
+  moreMenuOptions = [
+    {
+      label: 'Edit',
+      value: 'edit',
+      action: 'editProblem',
+      icon: 'far fa-edit',
+    },
+    {
+      label: 'Assign',
+      value: 'assign',
+      action: 'assignProblem',
+      icon: 'fas fa-list-ul',
+    },
+    {
+      label: 'Pending',
+      value: 'pending',
+      action: 'makePending',
+      icon: 'far fa-clock',
+      adminOnly: true,
+    },
+    {
+      label: 'Report',
+      value: 'flag',
+      action: 'reportProblem',
+      icon: 'fas fa-exclamation-circle',
+    },
+    {
+      label: 'Delete',
+      value: 'delete',
+      action: 'deleteProblem',
+      icon: 'fas fa-trash',
+    },
+  ];
+
+  get isAdminUser() {
+    return this.args.currentUser.isAdmin;
+  }
+
+  get isPdAdminUser() {
+    return this.args.currentUser.isPdAdmin;
+  }
+
+  get actionButtonName() {
+    const problem = this.args.problem;
+
+    if (this.isAdminUser) {
+      if (problem.isTrashed) {
+        return 'Restore';
+      } else if (problem.status === 'approved') {
+        return 'Flag';
+      } else {
+        return 'Approve';
+      }
+    }
+
+    if (this.isPdAdminUser) {
+      if (problem.privacySetting !== 'E' && problem.status !== 'approved') {
+        return 'Approve';
+      } else if (problem.status !== 'flagged') {
+        return 'Assign';
+      } else {
+        return 'Copy';
+      }
+    }
+
+    return 'Assign';
+  }
+
+  @action
+  handleActionButton() {
+    const actionName = this.actionButtonName;
+    const problem = this.args.problem;
+    const actionFunction = ACTION_BUTTONS[actionName](problem);
+
+    actionFunction.call(this); // Use `call` to ensure `this` refers to the component
+  }
+
   get privacySetting() {
     return this.args.problem.privacySetting;
   }
   get puzzleId() {
     return this.args.problem.puzzleId;
   }
-  @service('sweet-alert') alert;
-  @service('problem-permissions') permissions;
-  @service router;
-  @service store;
+
   get writePermissions() {
     return this.permissions.writePermissions(this.args.problem);
   }
@@ -66,63 +155,54 @@ export default class ProblemListItemComponent extends Component {
   }
 
   get ellipsisMenuOptions() {
-    let canDelete = this.writePermissions.canDelete;
-    let canAssign = this.writePermissions.canAssign;
-    let moreMenuOptions = this.args.moreMenuOptions;
-    let isAdmin = this.args.currentUser.isAdmin;
+    let { canDelete, canAssign } = this.writePermissions;
+    let moreMenuOptions = this.moreMenuOptions.slice();
+    let isAdmin = this.isAdminUser;
+    let { status, isTrashed: deleted } = this.args.problem;
     let options = moreMenuOptions.slice();
-    let status = this.args.problem.status;
-    let deleted = this.args.problem.isTrashed;
 
     if (!canDelete) {
-      // dont show delete or edit option
-      options = _.filter(moreMenuOptions, (option) => {
-        return option.value !== 'edit' && option.value !== 'delete';
-      });
+      // Remove 'edit' and 'delete' options if the user cannot delete
+      options = options.filter(
+        (option) => option.value !== 'edit' && option.value !== 'delete'
+      );
     }
 
     if (isAdmin) {
-      // if problem is approved, admins will have exposed Flag button so no need in more menu
+      // If problem is approved, admins will have an exposed Flag button, so no need in more menu
       if (canAssign) {
-        options = _.filter(options, (option) => {
-          return !_.contains(['flag'], option.value);
-        });
+        options = options.filter((option) => option.value !== 'flag');
       } else {
-        options = _.filter(options, (option) => {
-          return !_.contains(['assign'], option.value);
-        });
+        options = options.filter((option) => option.value !== 'assign');
       }
     }
 
     if (!isAdmin) {
-      // remove any admin only options for non admins
-      options = _.filter(options, (option) => {
-        return !option.adminOnly;
-      });
+      // Remove admin-only options for non-admins
+      options = options.filter((option) => !option.adminOnly);
+
       if (status === 'approved') {
-        options = _.filter(options, (option) => {
-          return !_.contains(['assign'], option.value);
-        });
+        options = options.filter((option) => option.value !== 'assign');
       }
     }
+
     if (status === 'pending') {
-      // dont show pend or assign option if status is pending
-      options = _.filter(options, (option) => {
-        return !_.contains(['pending', 'assign'], option.value);
-      });
+      // Don't show 'pending' or 'assign' options if status is pending
+      options = options.filter(
+        (option) => option.value !== 'pending' && option.value !== 'assign'
+      );
     }
 
     if (status === 'flagged') {
-      // dont show flag or assign if status is flagged
-      options = _.filter(options, (option) => {
-        return !_.contains(['flag', 'assign'], option.value);
-      });
+      // Don't show 'flag' or 'assign' options if status is flagged
+      options = options.filter(
+        (option) => option.value !== 'flag' && option.value !== 'assign'
+      );
     }
 
     if (deleted) {
-      options = _.filter(options, (option) => {
-        return !_.contains(['delete'], option.value);
-      });
+      // Don't show 'delete' option if the problem is deleted
+      options = options.filter((option) => option.value !== 'delete');
     }
 
     return options;

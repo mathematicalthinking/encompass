@@ -3,39 +3,27 @@
     <h2>Filter Options</h2>
     <h3>Primary Filters</h3>
     <ul class='primary-filter-list'>
-      {{#each this.primaryFilterOptions as |input|}}
+      {{#each @mainOptions as |input|}}
         <li class='filter-{{input.value}}'>
           <RadioFilter
-            @groupValue={{this.primaryFilterValue}}
-            @secondaryInputs={{input.secondaryFilters}}
-            @isChecked={{input.isChecked}}
+            @groupValue={{@mainSelection}}
+            @isChecked={{(is-equal @mainSelection.value input.value)}}
             @groupName='top-level'
-            @inputValue={{input.value}}
-            @onClick={{action 'updateTopLevel'}}
+            @inputValue={{input}}
+            @onClick={{this.updateTopLevel}}
             @labelName={{input.label}}
             @labelIcon={{input.icon}}
             @id={{input.value}}
           />
-          {{#if (is-equal this.primaryFilterValue input.value)}}
+          {{#if (is-equal @mainSelection.value input.value)}}
             {{#if this.showAdminFilters}}
-              <AdminWorkspaceFilter
-                @filter={{this.adminFilter}}
-                @mainOptions={{this.secondaryFilterOptions}}
-                @subFilterConfig={{this.subFilters}}
-                @subFilterWhenSelections={{this.subFilterWhenSelections}}
-                @onUpdate={{action 'onUpdate'}}
-                @orgOptions={{this.orgOptions}}
-                @updateSubFilter={{action 'updateSecondLevel'}}
-              />
+              {{yield to='adminFilter'}}
             {{else}}
               <ul class='secondary-filter-options'>
-                {{#each this.secondaryFilterOptions as |option|}}
+                {{#each @subOptions as |option|}}
                   <li
                     class='checkbox-content
-                      {{if
-                        (is-in this.currentValues option.value)
-                        "is-selected"
-                      }}
+                      {{if (is-in @subSelections option.value) "is-selected"}}
                       {{option.value}}'
                   >
                     <label for={{option.value}} class='checkbox-label'>
@@ -44,8 +32,8 @@
                       <Input
                         id={{option.value}}
                         @type='checkbox'
-                        @checked={{option.isApplied}}
-                        {{on 'change' (action 'updateSecondLevel')}}
+                        @checked={{(is-in @subSelections option.value)}}
+                        {{on 'change' (fn this.toggleSubOption option)}}
                       />
                     </label>
                   </li>
@@ -58,7 +46,7 @@
       {{/each}}
     </ul>
 
-    <h3 {{on 'click' (action 'toggleCategoryFilters')}} class='category-header'>
+    <h3 class='category-header' {{on 'click' this.toggleCategoryFilters}}>
       <i
         class='fas
           {{if this.showCategoryFilters "fa-chevron-down" "fa-chevron-right"}}'
@@ -68,9 +56,8 @@
     {{#if this.showCategoryFilters}}
       <ul class='category-filter-list'>
         <SelectizeInput
-          @store={{this.store}}
           @inputId='categories-filter'
-          @onItemAdd={{action 'addCategorySelectize'}}
+          @onItemAdd={{this.addCategory}}
           @maxItems={{1}}
           @labelField='identifier'
           @valueField='id'
@@ -85,40 +72,42 @@
           <button
             class='show-category-btn'
             type='button'
-            {{on 'click' (action 'showCategoryMenu')}}
+            {{on 'click' this.showCategoryMenu}}
           >Show Category Menu</button>
         </li>
-        <h5>Selected Category Filters</h5>
+        <h5>Selected Categories</h5>
         <label class='subfilter'>
           <Input
             id='toggle-sub-cats'
             @type='checkbox'
-            @checked={{this.doIncludeSubCategories}}
-            {{on 'change' (action 'toggleIncludeSubCats')}}
+            @checked={{@doIncludeSubCategories}}
+            {{on 'change' this.toggleIncludeSubCats}}
           />
           <span>Include Subcategories</span>
         </label>
-        {{#if this.categoriesFilter}}
+        {{#if @categoriesFilter}}
           <ul class='selected-cat-list'>
-            {{#each this.categoriesFilter as |category|}}
-              <li>{{category.identifier}}<i
-                  {{on 'click' (fn (action 'removeCategory') category)}}
+            {{#each @categoriesFilter as |category|}}
+              <li>
+                {{category.identifier}}
+                <i
                   class='far fa-times-circle'
+                  {{on 'click' (fn this.removeCategory category)}}
                   aria-hidden='true'
                   title='Remove'
-                ></i></li>
+                ></i>
+              </li>
             {{/each}}
           </ul>
         {{else}}
-          <p>No categories Selected</p>
-          {{! <p>Click 'Show Category Menu' to view the Category Explorer</p> }}
+          <p>No categories selected.</p>
         {{/if}}
       </ul>
     {{/if}}
-    {{#if this.currentUser.user.isAdmin}}
+    {{#if this.isAdminUser}}
       <h3
-        {{on 'click' (action 'toggleMoreFilters')}}
         class='more-header {{if this.closedMenu "closed"}}'
+        {{on 'click' this.toggleMoreFilters}}
       >
         <i
           class='fas
@@ -133,8 +122,8 @@
             <Input
               id='toggle-trashed'
               @type='checkbox'
-              @checked={{this.showTrashedProblems}}
-              {{on 'change' (action 'toggleTrashedProblems')}}
+              @checked={{@showTrashed}}
+              {{on 'change' this.toggleTrashedProblems}}
             />
             <span>Show All Trashed Problems</span>
           </label>
