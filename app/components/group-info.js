@@ -43,13 +43,13 @@ export default class GroupInfoComponent extends Component {
     }
     this.toggleUpdateGroup();
   }
-  @action cancelButton(group) {
+  @action cancelButton() {
     if (this.updateGroup) {
       this.args.group.rollbackAttributes();
       this.studentsChanged = false;
       this.toggleUpdateGroup();
     } else {
-      this.args.deleteGroup(group);
+      this.args.deleteGroup(this.args.group);
     }
   }
 }

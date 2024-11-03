@@ -12,17 +12,17 @@
       <div class='icons'>
         <i
           title='Edit'
-          {{action this.editButton @group}}
-          class='edit-group{{if this.isUpdating ' fas fa-save' ' far fa-edit'}}'
+          {{on 'click' this.editButton}}
+          class='edit-group{{if this.isUpdating " fas fa-save" " far fa-edit"}}'
         ></i>
         <i
           class='delete-group{{if
               this.isUpdating
-              ' far fa-times-circle'
-              ' fas fa-trash-alt'
+              " far fa-times-circle"
+              " fas fa-trash-alt"
             }}'
           aria-hidden='true'
-          {{action this.cancelButton @group}}
+          {{on 'click' this.cancelButton}}
         ></i>
       </div>
     {{/if}}
@@ -42,7 +42,9 @@
           <li>{{student.username}}
             {{#if @addGroup}}
               <button
-                class='trash-button' type="button" {{on 'click' (fn @updateGroup @group student)}}
+                class='trash-button'
+                type='button'
+                {{on 'click' (fn this.handleTrash student)}}
               >
                 <i class='far fa-times-circle' aria-hidden='true'></i>
               </button>
