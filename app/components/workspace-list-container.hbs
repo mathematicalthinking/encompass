@@ -6,28 +6,15 @@
       id='filter-list-side'
     >
       <WorkspaceFilter
-        @mainOptions={{this.mainOptions}}
-        @mainSelection={{this.mainSelection}}
-        @onUpdateMain={{this.handleUpdateMain}}
-        @subOptions={{this.subOptions}}
-        @subSelections={{this.subSelections}}
-        @onUpdateSub={{this.handleUpdateSub}}
+        @filterName={{this.filterName}}
+        @adminFilterName={{this.adminFilterName}}
+        @showAdminFilters={{this.showAdminFilters}}
+        @onUpdate={{this.triggerFetch}}
         @showTrashed={{this.toggleTrashed}}
         @showHidden={{this.toggleHidden}}
         @toggleTrashed={{this.triggerShowTrashed}}
         @toggleHidden={{this.triggerShowHidden}}
-      >
-        <:adminFilter>
-          <AdminFilter
-            @mainOptions={{this.adminMainOptions}}
-            @mainSelection={{this.adminMainSelection}}
-            @onUpdateMain={{this.handleUpdateAdminMain}}
-            @subOptions={{this.adminSubOptions}}
-            @subSelections={{this.adminSubSelections}}
-            @onUpdateSub={{this.handleUpdateAdminSub}}
-          />
-        </:adminFilter>
-      </WorkspaceFilter>
+      />
     </div>
 
     <div

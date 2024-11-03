@@ -4,18 +4,15 @@ import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
 /**
- * <WorkspaceFilter
-        @mainOptions={{this.mainOptions}}
-        @mainSelection={{this.mainSelection}}
-        @onUpdateMain={{this.handleUpdateMain}}
-        @subOptions={{this.subOptions}}
-        @subSelections={{this.subSelections}}
-        @onUpdateSub={{this.handleUpdateSub}}
+      <WorkspaceFilter
+        @filterName={{this.filterName}}
+        @adminFilterName={{this.adminFilterName}}
+        @onUpdate={{this.triggerFetch}}
         @showTrashed={{this.toggleTrashed}}
         @showHidden={{this.toggleHidden}}
         @toggleTrashed={{this.triggerShowTrashed}}
         @toggleHidden={{this.triggerShowHidden}}
-      >
+      />
  */
 
 export default class WorkspaceFilterComponent extends Component {
@@ -26,27 +23,6 @@ export default class WorkspaceFilterComponent extends Component {
 
   get userIsAdmin() {
     return this.currentUser.user.isAdmin;
-  }
-
-  get showAdminFilters() {
-    return this.args.mainSelection.value === 'all';
-  }
-
-  @action
-  updateTopLevel(val) {
-    if (this.args.onUpdateMain) {
-      this.args.onUpdateMain(val.value);
-    }
-  }
-
-  @action
-  toggleSubOption(option) {
-    if (this.args.onUpdateSub && this.args.subSelections) {
-      this.args.onUpdateSub(
-        !this.args.subSelections.includes(option.value),
-        option.value
-      );
-    }
   }
 
   @action

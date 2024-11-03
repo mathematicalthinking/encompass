@@ -5,9 +5,9 @@
     <!-- onItemAdd sends the value to the parent component -->
     <SelectizeInput
       @inputId='admin-filter-select'
-      @initialOptions={{@mainOptions}}
+      @initialOptions={{this.mainOptions}}
       @initialItems={{this.initialMainSelection}}
-      @onItemAdd={{@onUpdateMain}}
+      @onItemAdd={{this.handleUpdateMain}}
       @maxItems={{1}}
       @labelField='label'
       @valueField='value'
@@ -15,61 +15,43 @@
   </div>
 
   <!-- Conditional Rendering of Options -->
-  {{#if (is-equal @mainSelection.type 'list')}}
+  {{#if (is-equal this.mainSelection.type 'list')}}
     <div class='filter-admin'>
       <SelectizeInput
-        @inputId={{@mainSelection.inputId}}
-        @initialOptions={{@mainSelection.options}}
+        @inputId={{this.mainSelection.inputId}}
+        @initialOptions={{this.mainSelection.options}}
         @onItemAdd={{this.updateMultiSelect}}
         @onItemRemove={{this.updateMultiSelect}}
-        @maxItems={{@mainSelection.maxItems}}
-        @labelField={{@mainSelection.labelField}}
-        @valueField={{@mainSelection.valueField}}
-        @searchField={{@mainSelection.searchField}}
-        @placeholder={{@mainSelection.placeholder}}
-        @model={{@mainSelection.model}}
-        @queryParamsKey={{@mainSelection.queryParamsKey}}
-        @propName={{@mainSelection.propName}}
-        @isAsync={{@mainSelection.isAsync}}
-        key={{@mainSelection.inputId}}
+        @maxItems={{this.mainSelection.maxItems}}
+        @labelField={{this.mainSelection.labelField}}
+        @valueField={{this.mainSelection.valueField}}
+        @searchField={{this.mainSelection.searchField}}
+        @placeholder={{this.mainSelection.placeholder}}
+        @model={{this.mainSelection.model}}
+        @queryParamsKey={{this.mainSelection.queryParamsKey}}
+        @propName={{this.mainSelection.propName}}
+        @isAsync={{this.mainSelection.isAsync}}
+        key={{this.mainSelection.inputId}}
       />
     </div>
-    <ul class='secondary-filter-options'>
-      {{#each @subOptions as |option|}}
-        <li
-          class='checkbox-content
-            {{if (is-in @subSelections option.value) "is-selected"}}'
-        >
-          <label for={{option.value}} class='checkbox-label'>
-            <i class='checkbox-icon {{option.icon}}'></i>
-            <span class='checkbox-text'>{{option.label}}</span>
-            <Input
-              id={{option.value}}
-              @type='checkbox'
-              @checked={{is-in @subSelections option.value}}
-              {{on 'change' (fn this.toggleSubOption option)}}
-            />
-          </label>
-        </li>
-      {{/each}}
-    </ul>
-  {{else if (is-equal @mainSelection.type 'checkboxes')}}
-    <!-- Sub-option is a group of checkboxes -->
-    <ul class='secondary-filter-options'>
-      {{#each @subOptions as |option|}}
-        <li class='checkbox-content {{if option.isChecked "is-selected"}}'>
-          <label for={{option.value}} class='checkbox-label'>
-            <i class='checkbox-icon {{option.icon}}'></i>
-            <span class='checkbox-text'>{{option.label}}</span>
-            <Input
-              id={{option.value}}
-              @type='checkbox'
-              @checked={{option.isChecked}}
-              {{on 'change' (fn this.toggleSubOption option)}}
-            />
-          </label>
-        </li>
-      {{/each}}
-    </ul>
   {{/if}}
+  <ul class='secondary-filter-options'>
+    {{#each this.subOptions as |option|}}
+      <li
+        class='checkbox-content
+          {{if (is-in this.subSelections option.value) "is-selected"}}'
+      >
+        <label for={{option.value}} class='checkbox-label'>
+          <i class='checkbox-icon {{option.icon}}'></i>
+          <span class='checkbox-text'>{{option.label}}</span>
+          <Input
+            id={{option.value}}
+            @type='checkbox'
+            @checked={{is-in this.subSelections option.value}}
+            {{on 'change' (fn this.toggleSubOption option)}}
+          />
+        </label>
+      </li>
+    {{/each}}
+  </ul>
 </div>

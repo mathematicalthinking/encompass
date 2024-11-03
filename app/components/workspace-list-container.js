@@ -11,7 +11,7 @@ import { htmlSafe } from '@ember/template';
   @organizations={{this.model.organizations}}
   @toCopyWorkspace={{this.toCopyWorkspace}}
 />
- */
+*/
 export default class WorkspaceListContainerComponent extends Component {
   @service errorHandling;
   @service('utility-methods') utils;
@@ -227,68 +227,20 @@ export default class WorkspaceListContainerComponent extends Component {
     return this.workspaces?.meta || null;
   }
 
-  // --- Getters and Actions related to Filter State ---
-  get mainOptions() {
-    return this.inputState.getOptions('mainFilter');
+  get showAdminFilters() {
+    return (
+      this.user.isAdmin &&
+      this.inputState.getSelectionValue(this.filterName) === 'all'
+    );
   }
 
-  get mainSelection() {
-    return this.inputState.getSelection('mainFilter');
+  get adminFilterName() {
+    return 'workspace-admin-filter';
   }
 
-  @action
-  handleUpdateMain(selection) {
-    this.inputState.setSelection('mainFilter', selection);
-    this.triggerFetch();
+  get filterName() {
+    return 'workspace-filter';
   }
-
-  get subOptions() {
-    return this.inputState.getSubOptions('mainFilter');
-  }
-
-  get subSelections() {
-    return this.inputState.getSubSelections('mainFilter');
-  }
-
-  @action
-  handleUpdateSub(value, option) {
-    this.inputState.setSubSelection('mainFilter', option, value);
-    this.triggerFetch();
-  }
-
-  get adminMainOptions() {
-    return this.inputState.getOptions('adminFilter');
-  }
-
-  get adminMainSelection() {
-    return this.inputState.getSelection('adminFilter');
-  }
-
-  @action
-  handleUpdateAdminMain(selection) {
-    this.inputState.setSelection('adminFilter', selection);
-    this.triggerFetch();
-  }
-
-  get adminSubOptions() {
-    return this.inputState.getSubOptions('adminFilter');
-  }
-
-  get adminSubSelections() {
-    return this.inputState.getSubSelections('adminFilter');
-  }
-
-  @action
-  handleUpdateAdminSub(value, option) {
-    if (Array.isArray(value)) {
-      this.inputState.setListState('adminFilter', value);
-    } else {
-      this.inputState.setSubSelection('adminFilter', option, value);
-    }
-    this.triggerFetch();
-  }
-
-  // ------------------- End of Filter State -------------------
 
   get user() {
     return this.currentUser.user;
@@ -521,7 +473,7 @@ export default class WorkspaceListContainerComponent extends Component {
   }
 
   configureMainFilter() {
-    this.inputState.createStates('mainFilter', [
+    this.inputState.createStates(this.filterName, [
       ...(this.user.isAdmin
         ? [
             {
@@ -530,7 +482,7 @@ export default class WorkspaceListContainerComponent extends Component {
               icon: 'fas fa-infinity',
               buildFilter: () => {
                 // Admin can see everything, no restrictions
-                return this.inputState.getFilter('adminFilter');
+                return this.inputState.getFilter(this.adminFilterName);
               },
             },
           ]
@@ -572,7 +524,7 @@ export default class WorkspaceListContainerComponent extends Component {
 
     // Substates for 'mine'
     this.inputState.createSubStates(
-      'mainFilter',
+      this.filterName,
       'mine',
       [
         {
@@ -611,7 +563,7 @@ export default class WorkspaceListContainerComponent extends Component {
     // Substates for 'myOrg'
     if (this.user.accountType === 'P') {
       this.inputState.createSubStates(
-        'mainFilter',
+        this.filterName,
         'myOrg',
         [
           {
@@ -672,7 +624,7 @@ export default class WorkspaceListContainerComponent extends Component {
       type: 'list',
     };
 
-    this.inputState.createStates('adminFilter', [
+    this.inputState.createStates(this.adminFilterName, [
       {
         value: 'org',
         label: 'Organization',
@@ -693,7 +645,7 @@ export default class WorkspaceListContainerComponent extends Component {
         ...userProperties,
         buildFilter: () => {
           const selectedUsers =
-            this.inputState.getListState('adminFilter') || [];
+            this.inputState.getListState(this.adminFilterName) || [];
           return { createdBy: { $in: selectedUsers } };
         },
       },
@@ -704,7 +656,7 @@ export default class WorkspaceListContainerComponent extends Component {
         ...userProperties,
         buildFilter: () => {
           const selectedUsers =
-            this.inputState.getListState('adminFilter') || [];
+            this.inputState.getListState(this.adminFilterName) || [];
           return { owner: { $in: selectedUsers } };
         },
       },
@@ -712,7 +664,7 @@ export default class WorkspaceListContainerComponent extends Component {
 
     // Substates for 'org'
     this.inputState.createSubStates(
-      'adminFilter',
+      this.adminFilterName,
       'org',
       [
         {
@@ -738,7 +690,8 @@ export default class WorkspaceListContainerComponent extends Component {
           return {};
         }
 
-        const organizations = this.inputState.getListState('adminFilter') || [];
+        const organizations =
+          this.inputState.getListState(this.adminFilterName) || [];
         const filter = {
           all: { org: { organizations: { $in: organizations } } },
         };
@@ -828,7 +781,7 @@ export default class WorkspaceListContainerComponent extends Component {
 
   buildFilterBy() {
     const filter = { mode: { $in: this.selectedMode } };
-    const mainFilter = this.inputState.getFilter('mainFilter') ?? {};
+    const mainFilter = this.inputState.getFilter(this.filterName) ?? {};
 
     // Return the complete filter
     return { ...filter, ...mainFilter };

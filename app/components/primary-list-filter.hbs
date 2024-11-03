@@ -1,0 +1,47 @@
+<h3>Primary Filters</h3>
+<ul class='primary-filter-list'>
+  {{#each this.mainOptions as |input|}}
+    <li class='filter-{{input.value}}'>
+      <RadioFilter
+        @groupValue={{this.mainSelection}}
+        @isChecked={{(is-equal this.mainSelectionValue input.value)}}
+        @groupName='top-level'
+        @inputValue={{input}}
+        @onClick={{this.handleUpdateMain}}
+        @labelName={{input.label}}
+        @labelIcon={{input.icon}}
+        @id={{input.value}}
+      />
+      {{#if (is-equal this.mainSelectionValue input.value)}}
+        {{#if @showAdminFilters}}
+          <AdminFilter
+            @filterName={{@adminFilterName}}
+            @onUpdate={{@onUpdate}}
+          />
+        {{else}}
+          <ul class='secondary-filter-options'>
+            {{#each this.subOptions as |option|}}
+              <li
+                class='checkbox-content
+                  {{if (is-in this.subSelections option.value) "is-selected"}}
+                  {{option.value}}'
+              >
+                <label for={{option.value}} class='checkbox-label'>
+                  <i class='checkbox-icon {{option.icon}}'></i>
+                  <span class='checkbox-text'>{{option.label}}</span>
+                  <Input
+                    id={{option.value}}
+                    @type='checkbox'
+                    @checked={{(is-in this.subSelections option.value)}}
+                    {{on 'change' (fn this.toggleSubOption option)}}
+                  />
+                </label>
+              </li>
+            {{/each}}
+          </ul>
+        {{/if}}
+
+      {{/if}}
+    </li>
+  {{/each}}
+</ul>

@@ -129,20 +129,23 @@ export default class ProblemListContainerComponent extends Component {
     return this.problems?.meta || null;
   }
 
-  get mainOptions() {
-    return this.inputState.getOptions('mainFilter');
+  get showAdminFilters() {
+    return (
+      this.user.isAdmin &&
+      this.inputState.getSelectionValue(this.filterName) === 'all'
+    );
   }
 
-  get mainSelection() {
-    return this.inputState.getSelection('mainFilter');
+  get adminFilterName() {
+    return 'problem-admin-filter';
   }
 
-  get adminMainOptions() {
-    return this.inputState.getOptions('adminFilter');
+  get filterName() {
+    return 'problem-filter';
   }
 
-  get adminMainSelection() {
-    return this.inputState.getSelection('adminFilter');
+  get user() {
+    return this.currentUser.user;
   }
 
   get listResultsMessage() {
@@ -197,30 +200,6 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   @action
-  handleUpdateMain(selection) {
-    this.inputState.setSelection('mainFilter', selection);
-    this.triggerFetch();
-  }
-
-  @action
-  handleUpdateSub(value, option) {
-    this.inputState.setSubSelection('mainFilter', option, value);
-    this.triggerFetch();
-  }
-
-  @action
-  handleUpdateAdminMain(selection) {
-    this.inputState.setSelection('adminFilter', selection);
-    this.triggerFetch();
-  }
-
-  @action
-  handleUpdateAdminSub(value, option) {
-    this.inputState.setSubSelection('adminFilter', option, value);
-    this.triggerFetch();
-  }
-
-  @action
   refreshList() {
     this.getProblems();
   }
@@ -268,48 +247,63 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   configureFilters() {
-    this.inputState.createStates('mainFilter', [
-      {
-        value: 'mine',
-        label: 'Mine',
-        buildFilter: () => ({ createdBy: this.currentUser.user.id }),
-      },
-      {
-        value: 'everyone',
-        label: 'Public',
-        buildFilter: () => ({ privacySetting: { $in: ['E'] } }),
-      },
-      {
-        value: 'myOrg',
-        label: 'My Org',
-        buildFilter: () => ({
-          organization: this.currentUser.user.organization.id,
-        }),
-      },
+    this.inputState.createStates(this.filterName, [
       ...(this.currentUser.user.isAdmin
         ? [
             {
               value: 'all',
               label: 'All',
+              icon: 'fas fa-infinity',
               buildFilter: () => ({}),
             },
           ]
         : []),
+      {
+        value: 'mine',
+        label: 'Mine',
+        icon: 'fas fa-user',
+        buildFilter: () => ({ createdBy: this.currentUser.user.id }),
+      },
+      {
+        value: 'myOrg',
+        label: 'My Org',
+        icon: 'fas fa-university',
+        buildFilter: () => ({
+          organization: this.currentUser.user.organization.id,
+        }),
+      },
+      {
+        value: 'everyone',
+        label: 'Public',
+        icon: 'fas fa-globe-americas',
+        buildFilter: () => ({ privacySetting: { $in: ['E'] } }),
+      },
     ]);
 
     this.inputState.createSubStates(
-      'mainFilter',
-      'mine',
+      this.filterName,
+      'myOrg',
       [
-        { label: 'Created By Me', value: 'createdBy', default: true },
+        {
+          label: `Created by ${this.userOrgName} Members`,
+          value: 'fromOrg',
+          icon: 'fas fa-users',
+          default: true,
+        },
+        {
+          label: 'Recommended',
+          value: 'recommended',
+          icon: 'fas fa-star',
+          default: true,
+        },
         { label: 'Owner', value: 'owner', default: true },
       ],
-      { multiSelect: true }
+      { multiSelect: true, persist: true }
     );
   }
 
   configureAdminFilter() {
-    this.inputState.createStates('adminFilter', [
+    this.inputState.createStates(this.adminFilterName, [
       {
         value: 'org',
         label: 'Organization',
@@ -330,31 +324,58 @@ export default class ProblemListContainerComponent extends Component {
         maxItems: 3,
         labelField: 'username',
         valueField: 'id',
-        searchField: 'username',
+        searchField: 'name',
         placeholder: 'Username...',
         propName: 'creator',
+        model: 'user',
+        queryParamsKey: 'usernameSearch',
+        isAsync: true,
         type: 'list',
+      },
+      {
+        value: 'pows',
+        label: 'PoWs',
       },
     ]);
 
     this.inputState.createSubStates(
-      'adminFilter',
+      this.adminFilterName,
       'org',
       [
         {
-          label: `Created or Owned by Members`,
+          label: 'Recommended',
+          value: 'recommended',
+          icon: 'fas fa-star',
+          default: true,
+        },
+        {
+          label: `Created by Members`,
           value: 'fromOrg',
           icon: 'fas fa-users',
           default: true,
         },
+      ],
+      { listBased: true, multiSelect: true }
+    );
+
+    this.inputState.createSubStates(
+      this.adminFilterName,
+      'pows',
+      [
         {
-          label: `Visible to Members`,
-          value: 'orgWorkspaces',
-          icon: 'fas fa-dot-circle',
+          label: 'Private',
+          value: 'unshared',
+          icon: 'fas fa-unlock',
+          default: true,
+        },
+        {
+          label: 'Public',
+          value: 'shared',
+          icon: 'fas fa-globe-americas',
           default: true,
         },
       ],
-      { listBased: true, multiSelect: true }
+      { listBased: false, multiSelect: true, persist: true }
     );
   }
 
@@ -386,9 +407,7 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   buildFilterBy() {
-    let mainFilter = this.inputState.getFilter('mainFilter');
-    let adminFilter = this.inputState.getFilter('adminFilter');
-    return { ...mainFilter, ...adminFilter };
+    return this.inputState.getFilter(this.filterName);
   }
 
   buildSortBy() {
