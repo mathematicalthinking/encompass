@@ -10,6 +10,8 @@ export default class SelectizeInputComponent extends Component {
 
   @tracked options = this.args.initialOptions || [];
   @tracked items = this.args.initialItems || [];
+  @tracked dataFetchError;
+  @tracked metaData;
 
   @tracked selectizeInstance;
 
@@ -18,8 +20,8 @@ export default class SelectizeInputComponent extends Component {
     let peeked = await this.store.peekAll(this.args.model);
     if (peeked) {
       this.options = peeked.map((record) => ({
-        [this.args.valueField]: record.get(this.args.valueField),
-        [this.args.labelField]: record.get(this.args.labelField),
+        [this.args.valueField]: record[this.args.valueField],
+        [this.args.labelField]: record[this.args.labelField],
       }));
     }
   }
@@ -99,29 +101,96 @@ export default class SelectizeInputComponent extends Component {
 
   // Method to handle loading async items
   addItemsSelectize(query, callback) {
-    if (!query.length && !this.args.preload) {
+    // Check if fetching is disabled or if query is empty without preload
+    if (!query.length && !this.args.isAsync) {
       return callback();
     }
 
-    let queryParams = {
-      [this.args.queryParamsKey]: query,
-    };
+    // Handle preload scenario by using a space query
+    if (!query.length) {
+      if (!this.args.preload) {
+        return callback();
+      }
+      query = ' ';
+    }
 
+    const key = this.args.queryParamsKey;
+    /*
+    for api that is expecting searchBy to be in shape:
+    searchBy: {
+      query: string,
+      criterion: string
+      }
+      */
+
+    let queryParams = {};
+    const searchCriterion = this.args.searchCriterion;
+    const topLevelQueryParams = this.args.topLevelQueryParams;
+    const secondaryFilters = this.args.secondaryFilters;
+    const customQueryParams = this.args.customQueryParams;
+
+    // Build query parameters based on provided arguments
+    if (customQueryParams) {
+      queryParams = {
+        ...{ [key]: query },
+        ...customQueryParams,
+      };
+    } else if (topLevelQueryParams) {
+      queryParams[topLevelQueryParams] = { [key]: query };
+
+      if (secondaryFilters) {
+        Object.entries(secondaryFilters).forEach(([filterKey, val]) => {
+          if (filterKey === 'ids') {
+            queryParams.ids = val;
+          } else {
+            queryParams[topLevelQueryParams][filterKey] = val;
+          }
+        });
+      }
+
+      if (searchCriterion) {
+        queryParams[topLevelQueryParams].criterion = searchCriterion;
+      }
+    } else {
+      queryParams = { [key]: query };
+    }
+
+    const model = this.args.model;
+    // Fetch data from the store using the model specified in the arguments
     this.store
-      .query(this.args.model, queryParams)
+      .query(model, queryParams)
       .then((results) => {
-        let mappedResults = results.map((record) => {
-          let obj = {};
-          obj[this.args.valueField] = record.get(this.args.valueField);
-          obj[this.args.labelField] = record.get(this.args.labelField);
-          return obj;
+        // results is Ember AdapterPopulatedRecordArray
+        this.metaData = results.meta;
+        let resultsArray = results.toArray();
+        const selectedItemsHash = this.args.selectedItemsHash;
+        const valueField = this.args.valueField;
+
+        // Filter out already selected items if necessary
+        if (selectedItemsHash && valueField) {
+          resultsArray = resultsArray.filter(
+            (record) => !selectedItemsHash[record.valueField]
+          );
+        }
+
+        // If async useEmberObjectsAsync is set, return Ember objects directly
+        if (this.args.isAsync) {
+          return callback(resultsArray);
+        }
+
+        // Map results to the required format
+        const mappedResults = resultsArray.map((item) => {
+          return {
+            [this.args.valueField]: item[this.args.valueField],
+            [this.args.labelField]: item[this.args.labelField],
+          };
         });
 
         callback(mappedResults);
       })
       .catch((error) => {
         console.error('Error fetching items:', error);
-        callback();
+        this.dataFetchError = error;
       });
   }
 }
