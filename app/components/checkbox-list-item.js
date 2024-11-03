@@ -1,30 +1,24 @@
-// Import necessary dependencies
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
-// Define the component as a native JavaScript class
 export default class CheckboxListItem extends Component {
-  classNames = ['checkbox-list-item'];
-
-  @tracked('selectedItems.[]', 'item')
   get isSelected() {
-    let items = this.selectedItems || [];
-    return items.includes(this.item);
+    let items = this.args.selectedItems || [];
+    return items.includes(this.args.item);
   }
 
-  @tracked('item.id')
   get value() {
-    return this.item.id;
+    return this.args.item.id;
   }
 
-  @tracked('item', 'displayProp')
   get displayValue() {
-    let propName = `item.${this.displayProp}`;
-    return propName || this.item;
+    if (this.args.displayProp) {
+      return this.args.item[this.args.displayProp];
+    }
+    return this.args.item;
   }
 
   @action
   onSelect() {
-    this.onSelect(this.item, this.isSelected);
+    this.onSelect(this.args.item, this.isSelected);
   }
 }

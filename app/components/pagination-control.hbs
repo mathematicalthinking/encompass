@@ -1,0 +1,36 @@
+<div id='pagination-control'>
+  {{#if this.showPageNavigation}}
+    <div class='flex'>
+      <div class='nav-arrows'>
+        <div class='nav-left'>
+          <i {{on 'click' this.handleBackward}} class='fas fa-caret-left' />
+        </div>
+        <div class='page-status'>
+          <p>
+            Page
+            {{@details.currentPage}}
+            /
+            {{@details.pageCount}}
+          </p>
+        </div>
+
+        <div class='nav-right'>
+          <i {{on 'click' this.handleForward}} class='fas fa-caret-right' />
+        </div>
+      </div>
+
+      <div class='nav-goto'>
+        <label for='gotoPage'>Go to Page</label>
+        <Input
+          class='goto-page'
+          @type='number'
+          @value={{this.goToPage}}
+          {{on 'input' this.updateGoToPage}}
+        />
+        <button type='button' {{on 'click' this.handleGoToPage}}>
+          Go
+        </button>
+      </div>
+    </div>
+  {{/if}}
+</div>

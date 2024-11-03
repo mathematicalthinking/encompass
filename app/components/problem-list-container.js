@@ -126,7 +126,7 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   get problemsMetadata() {
-    return this.problems?.meta || null;
+    return this.problems?.meta || {};
   }
 
   get showAdminFilters() {

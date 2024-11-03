@@ -1,0 +1,10 @@
+<div class='checkbox-list-item'>
+  <input
+    type='checkbox'
+    checked={{this.isSelected}}
+    name={{@name}}
+    value={{this.value}}
+    {{on 'click' this.onSelect}}
+  />
+  <p>{{displayValue}}</p>
+</div>
