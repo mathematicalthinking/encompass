@@ -28,6 +28,12 @@ export default class GroupInfoComponent extends Component {
     }
     return this.args.group.students.pushObject(student);
   }
+
+  @action handleTrash(student) {
+    if (this.args.updateGroup) {
+      this.args.updateGroup(this.args.group, student);
+    }
+  }
   @action toggleDisplayStudents() {
     this.displayStudents = !this.displayStudents;
   }
