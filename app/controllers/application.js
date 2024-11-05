@@ -18,9 +18,6 @@ export default class ApplicationController extends Controller {
     return this.model;
   }
 
-  // resizeDisplay: function() {
-  //   Ember.run.next(this, Ember.verticalSizing);
-  // }.observes('isSmallHeader'),
   @action
   toHome() {
     window.location.href = '/';

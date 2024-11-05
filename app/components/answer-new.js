@@ -9,7 +9,7 @@ import { all, reject, resolve } from 'rsvp';
 export default class AnswerNew extends ErrorHandlingComponent {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
-  @service('current-user') currentUser;
+  @service currentUser;
   @service store;
   @tracked filesToBeUploaded = null;
   @tracked createAnswerError = null;

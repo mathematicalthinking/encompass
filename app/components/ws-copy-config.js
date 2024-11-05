@@ -9,7 +9,7 @@ export default Component.extend({
   showCustomConfig: equal('selectedConfig', 'D'),
   utils: service('utility-methods'),
 
-  validConfigValues: computed('copyConfig', function () {
+  validConfigValues: computed('copyConfig.inputs', function () {
     const configInputs = this.get('copyConfig.inputs');
 
     if (this.utils.isNonEmptyArray(configInputs)) {

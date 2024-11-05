@@ -1,0 +1,220 @@
+<div id='workspace-list-container' {{did-insert this.detectWidth}}>
+  <div class='flex-container-full'>
+    <div
+      class='flex-item-full filter-options
+        {{if this.isFilterListCollapsed "collapse"}}'
+      id='filter-list-side'
+    >
+      <WorkspaceFilter
+        @filterName={{this.filterName}}
+        @adminFilterName={{this.adminFilterName}}
+        @showAdminFilters={{this.showAdminFilters}}
+        @onUpdate={{this.triggerFetch}}
+        @showTrashed={{this.toggleTrashed}}
+        @showHidden={{this.toggleHidden}}
+        @toggleTrashed={{this.triggerShowTrashed}}
+        @toggleHidden={{this.triggerShowHidden}}
+      />
+    </div>
+
+    <div
+      class='flex-item-full list-view'
+      {{on 'click' this.handleListViewClick}}
+    >
+      <div class='list-container'>
+        <h1>Workspaces</h1>
+
+        <div class='searchbar'>
+          <SearchBar
+            @onSearch={{this.searchWorkspaces}}
+            @showFilter={{true}}
+            @searchOptions={{this.searchOptions}}
+            @basePlaceholder='Search workspaces'
+            @inputValue={{this.searchInputValue}}
+            @clearSearchResults={{this.clearSearchResults}}
+            @selectedCriterion={{this.searchCriterion}}
+          />
+
+          <LinkTo
+            @route='workspaces.new'
+            id='workspace-new-link'
+            class='new-link-btn'
+          >
+            <i class='fas fa-plus'></i>
+          </LinkTo>
+        </div>
+      </div>
+      <div class='results-list'>
+        <div class='results-info'>
+          <div class='results-message'>
+            {{this.listResultsMessage}}
+          </div>
+          <div class='side-icons'>
+            <i
+              class='fas fa-redo-alt refresh-icon'
+              {{on 'click' this.refreshList}}
+              title='Refresh Workspace list'
+            ></i>
+            <span class='layout-icons'>
+              {{#if this.showList}}
+                <img
+                  src='../assets/images/grid.svg'
+                  alt='grid'
+                  {{on 'click' this.setGrid}}
+                  title='Show in grid view'
+                />
+                <img
+                  src='../assets/images/list-active.svg'
+                  alt='list'
+                  {{on 'click' this.setList}}
+                  title='Currently in list view'
+                />
+              {{/if}}
+              {{#if this.showGrid}}
+                <img
+                  src='../assets/images/grid-active.svg'
+                  alt='grid'
+                  {{on 'click' this.setGrid}}
+                  title='Currently in grid view'
+                />
+                <img
+                  src='../assets/images/list.svg'
+                  alt='list'
+                  {{on 'click' this.setList}}
+                  title='Show in list view'
+                />
+              {{/if}}
+            </span>
+          </div>
+        </div>
+        <div
+          class='results-items {{if this.showGrid "grid-view"}}'
+          id='layout-view'
+        >
+          <div class='sort-bar'>
+            <div class='sort-bar-item mode'>
+              Mode
+              <i class='fas fa-filter sort-icon'></i>
+              <span class='hover-menu'>
+                <ul>
+                  {{#each this.modeOptions as |option|}}
+                    <li>
+                      <RadioFilter
+                        @labelName={{option.label}}
+                        @labelIcon={{option.icon}}
+                        @inputValue={{option.value}}
+                        @isChecked={{option.isChecked}}
+                        @groupName='mode'
+                        @onClick={{this.updateMode}}
+                        @groupValue={{this.selectedMode}}
+                      />
+                    </li>
+                  {{/each}}
+                </ul>
+              </span>
+            </div>
+            <ToggleControl
+              @classToAdd='sort-bar-item name'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.name}}
+              @label='Workspace Name'
+              @parentProp={{this.sortCriterion}}
+              @type='name'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item last-viewed'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{1}}
+              @options={{this.sortOptions.lastModifiedDate}}
+              @label='Modified'
+              @type='lastModifiedDate'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item submissions'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.submissions}}
+              @label='Submissions'
+              @type='submissions'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item selections'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.selections}}
+              @label='Selections'
+              @type='selections'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item comments'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.comments}}
+              @label='Comments'
+              @type='comments'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item responses'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.responses}}
+              @label='Responses'
+              @type='responses'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item owner'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.owner}}
+              @label='Owner'
+              @parentProp={{this.sortCriterion}}
+              @type='owner'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item editors'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.collabs}}
+              @label='Collab'
+              @type='collabs'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <div class='sort-bar-item info-item'></div>
+            <div class='sort-bar-item more'></div>
+          </div>
+          <WorkspaceList
+            @currentUser={{this.user}}
+            @isSearching={{this.isSearchingWorkspaces}}
+            @workspaces={{this.displayWorkspaces}}
+            @metadata={{this.workspacesMetadata}}
+            @isList={{this.showList}}
+            @isGrid={{this.showGrid}}
+            @store={{this.store}}
+            @toCopyWorkspace={{@toCopyWorkspace}}
+          />
+
+          <PaginationControl
+            @details={{this.workspacesMetadata}}
+            @initiatePageChange={{this.initiatePageChange}}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class='toggle-filter-menu'>
+  <button {{on 'click' this.toggleMenu}} type='button'><i
+      id='arrow-icon'
+      class='fas fa-chevron-right
+        {{if this.isFilterListCollapsed "fa-rotate-180"}}'
+    ></i></button>
+</div>

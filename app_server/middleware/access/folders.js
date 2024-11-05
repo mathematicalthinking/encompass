@@ -2,11 +2,11 @@ const utils = require('./utils');
 const mongooseUtils = require('../../utils/mongoose');
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+const { isNonEmptyObject, isNonEmptyArray } = objectUtils;
 
 module.exports.get = {};
 
-const accessibleFoldersQuery = async function(user, ids) {
+const accessibleFoldersQuery = async function (user, ids) {
   try {
     if (!isNonEmptyObject(user)) {
       return {};
@@ -17,14 +17,12 @@ const accessibleFoldersQuery = async function(user, ids) {
     const isStudent = accountType === 'S' || actingRole === 'student';
 
     let filter = {
-      $and: [
-        { isTrashed: false }
-      ]
+      $and: [{ isTrashed: false }],
     };
 
     if (isNonEmptyArray(ids)) {
-      filter.$and.push({ _id: { $in : ids } });
-    } else if(mongooseUtils.isValidMongoId(ids)) {
+      filter.$and.push({ _id: { $in: ids } });
+    } else if (mongooseUtils.isValidMongoId(ids)) {
       filter.$and.push({ _id: ids });
     }
 
@@ -32,18 +30,20 @@ const accessibleFoldersQuery = async function(user, ids) {
       return filter;
     }
 
-
     const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
     // everyone should have access to all folders that belong to a workspace that they have access to
     const orFilter = { $or: [] };
     orFilter.$or.push({ createdBy: user._id });
-    orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
+    orFilter.$or.push({ workspace: { $in: accessibleWorkspaceIds } });
 
     //should have access to all folders that you created
     // in case they are not in a workspace
 
-    const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'folders');
+    const restrictedRecords = await utils.getRestrictedWorkspaceData(
+      user,
+      'folders'
+    );
 
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
@@ -59,10 +59,12 @@ const accessibleFoldersQuery = async function(user, ids) {
       const userOrg = user.organization;
 
       //const userIds = await getOrgUsers(userOrg);
-      const userIds = await utils.getModelIds('User', {organization: userOrg});
+      const userIds = await utils.getModelIds('User', {
+        organization: userOrg,
+      });
       userIds.push(user._id);
 
-      orFilter.$or.push({createdBy : {$in : userIds}});
+      orFilter.$or.push({ createdBy: { $in: userIds } });
       filter.$and.push(orFilter);
 
       return filter;
@@ -75,14 +77,13 @@ const accessibleFoldersQuery = async function(user, ids) {
 
       return filter;
     }
-
-  }catch(err) {
+  } catch (err) {
     console.trace();
     console.error(`error building accessible folders critera: ${err}`);
   }
 };
 
-const canGetFolder = async function(user, folderId) {
+const canGetFolder = async function (user, folderId) {
   if (!user) {
     return;
   }
@@ -99,7 +100,7 @@ const canGetFolder = async function(user, folderId) {
   let criteria = await accessibleFoldersQuery(user, folderId);
   let accessibleIds = await utils.getModelIds('Folder', criteria);
 
-  accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
+  accessibleIds = accessibleIds.map((id) => id.toString()); // map objectIds to strings to check for existence
 
   return accessibleIds.includes(folderId);
 };

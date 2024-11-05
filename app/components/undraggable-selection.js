@@ -35,14 +35,15 @@ export default Component.extend(CurrentUserMixin, {
     return 'selection_text';
   }),
 
-  isSelected: computed('selection', 'currentSelection', function () {
+  isSelected: computed('currentSelection.id', 'selection.id', function () {
     return this.get('selection.id') === this.get('currentSelection.id');
   }),
   titleText: computed(
+    'isParentWorkspace',
     'isVmtClip',
     'selection.createDate',
-    'isParentWorkspace',
-    'selection.originalSelection',
+    'selection.originalSelection.createDate',
+    'selection.vmtInfo.{endTime,startTime}',
     function () {
       if (!this.isVmtClip) {
         let createDate;
@@ -63,7 +64,7 @@ export default Component.extend(CurrentUserMixin, {
     }
   ),
 
-  overlayIcon: computed('isVmtClip}', 'isImage', function () {
+  overlayIcon: computed('isImage', 'isVmtClip', 'isVmtClip}', function () {
     if (!this.isImage) {
       return '';
     }

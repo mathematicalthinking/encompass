@@ -46,6 +46,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   adminList: computed(
+    'assignmentList',
     'assignments.@each.isTrashed',
     'currentUser.isStudent',
     function () {
@@ -63,6 +64,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   pdList: computed(
+    'assignmentList',
     'assignments.@each.isTrashed',
     'currentUser.isStudent',
     function () {

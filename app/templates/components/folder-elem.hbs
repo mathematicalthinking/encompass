@@ -31,8 +31,7 @@
       <div class='edit-folder-name'>
 
         <Input
-          @value={{this.model.name}}
-          @focus-out={{action 'editFolderName'}}
+          @value={{this.model.name}} {{on "focusout" (action 'editFolderName')}}
         />
 
       </div>
@@ -59,8 +58,7 @@
     <aside>
       <button
         style='display:none'
-        id='updateTaggings{{this.model.id}}'
-        {{action 'updateTaggings'}}
+        id='updateTaggings{{this.model.id}}' type="button" {{action 'updateTaggings'}}
       ></button>
       {{#each this.queryErrors as |error|}}
         <p class='error-message'>{{error}}</p>

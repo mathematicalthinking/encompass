@@ -24,6 +24,7 @@ export default Component.extend(CurrentUserMixin, {
   totalImageSizeLimit: 52428800, // 50MB
 
   didReceiveAttrs() {
+    this._super();
     let acceptableFileTypes = 'image/png,image/jpeg,application/pdf';
     if (this.isPdfOnly) {
       acceptableFileTypes = 'application/pdf';
@@ -174,7 +175,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   resetFileInput() {
-    let input = this.$('input.image-upload');
+    let input = $('input.image-upload');
     if (input) {
       this.set('filesToBeUploaded', null);
       input.val('');

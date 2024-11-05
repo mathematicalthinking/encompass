@@ -17,7 +17,7 @@
       </span>
     </p>
     <div class="single-text-input-container">
-      <Input @id="ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
+      <Input id="ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
     </div>
     {{#if missingNameError}}
     <div class="create-ws-error">
@@ -92,7 +92,7 @@
         </span>
       </p>
       <div class="single-text-input-container">
-        <Input @id="assignment-name" class="single-text-input" @type="text" @value={{assignmentName}} placeholder="Provide a name for your assignment" />
+        <Input id="assignment-name" class="single-text-input" @type="text" @value={{assignmentName}} placeholder="Provide a name for your assignment" />
       </div>
       {{#if missingAssignmentError}}
       <div class="create-ws-error">
@@ -106,6 +106,6 @@
 
 
 <div class="nav-btn-container">
-  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" data-test="next" {{action "next"}}>Next</button>
+  <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
+  <button class="primary-button" data-test="next" type="button" {{action "next"}}>Next</button>
 </div>

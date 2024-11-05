@@ -1,17 +1,43 @@
-  <p class="input-label">
-    Select a problem
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Start typing or use the drop down to select the name of the problem you would like to use">
-      <i class="fas fa-info-circle info-icon"></i>
-    </span>
-  </p>
-  <p class="sub-input-label">Start typing the name of the problem of which you would like to add existing work. If your problem does not exist yet, create one <LinkTo @route="problems.new" @classNames="new-link">here</LinkTo>.</p>
-  <SelectizeInput @store={{this.store}} @inputId="select-problem" @isAsync={{true}} @maxItems={{1}} @initialItems={{initialProblemItem}} @onItemAdd={{action "setSelectedProblem"}} @onItemRemove={{action "setSelectedProblem"}} @labelField="title" @searchField="title" @valueField="id" @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @placeholder="Search for problems by title..." @preload="focus" />
-
+<p class='input-label'>
+  Select a problem
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='Start typing or use the drop down to select the name of the problem you would like to use'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
+  </span>
+</p>
+<p class='sub-input-label'>Start typing the name of the problem of which you
+  would like to add existing work. If your problem does not exist yet, create
+  one
+  <LinkTo @route='problems.new' @classNames='new-link'>here</LinkTo>.</p>
+<SelectizeInput
+  @store={{this.store}}
+  @inputId='select-problem'
+  @isAsync={{true}}
+  @maxItems={{1}}
+  @initialItems={{initialProblemItem}}
+  @onItemAdd={{action 'setSelectedProblem'}}
+  @onItemRemove={{action 'setSelectedProblem'}}
+  @labelField='title'
+  @searchField='title'
+  @valueField='id'
+  @model='problem'
+  @queryParamsKey='query'
+  @searchCriterion='title'
+  @topLevelQueryParams='searchBy'
+  @placeholder='Search for problems by title...'
+  @preload='focus'
+/>
 
 {{#if missingProblem}}
-  <ErrorBox @error="Please select a problem" @resetError={{action (mut missingProblem) null}} @showDismiss={{true}} />
+  <ErrorBox
+    @error='Please select a problem'
+    @resetError={{action (mut missingProblem) null}}
+    @showDismiss={{true}}
+  />
 {{/if}}
 
-<div class="nav-btn-container">
-  <button class="primary-button" {{action "next"}}>Next</button>
+<div class='nav-btn-container'>
+  <button class='primary-button' type='button' {{action 'next'}}>Next</button>
 </div>

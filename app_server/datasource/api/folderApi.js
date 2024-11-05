@@ -1,19 +1,19 @@
 /**
-  * # Folder API
-  * @description This is the API for folder based requests
-  * @author Damola Mabogunje, Daniel Kelly
-  * @since 1.0.0
-  */
+ * # Folder API
+ * @description This is the API for folder based requests
+ * @author Damola Mabogunje, Daniel Kelly
+ * @since 1.0.0
+ */
 
 //REQUIRE MODULES
-const logger   = require('log4js').getLogger('server');
+const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
 
 //REQUIRE FILES
-const utils    = require('../../middleware/requestHandler');
+const utils = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
-const models   = require('../schemas');
-const wsAccess   = require('../../middleware/access/workspaces');
+const models = require('../schemas');
+const wsAccess = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/folders');
 const fsAccess = require('../../middleware/access/foldersets');
 
@@ -26,18 +26,21 @@ module.exports.post = {};
 module.exports.put = {};
 
 /**
-  * @public
-  * @method getFolder
-  * @description __URL__: /api/folders/:id
-  * @returns {Object} A 'named' folder object
-  * @throws {InternalError} Data retrieval failed
-  */
+ * @public
+ * @method getFolder
+ * @description __URL__: /api/folders/:id
+ * @returns {Object} A 'named' folder object
+ * @throws {InternalError} Data retrieval failed
+ */
 async function getFolder(req, res, next) {
   try {
     const user = userAuth.requireUser(req);
 
     if (!user) {
-      return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+      return utils.sendError.InvalidCredentialsError(
+        'You must be logged in.',
+        res
+      );
     }
 
     let id = req.params.id;
@@ -53,16 +56,19 @@ async function getFolder(req, res, next) {
 
     // user does not have permission to access folder
     if (!canLoadFolder) {
-      return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+      return utils.sendError.NotAuthorizedError(
+        'You do not have permission.',
+        res
+      );
     }
 
     // user has permission; send back record
     const data = {
-      folder
+      folder,
     };
 
     return utils.sendResponse(res, data);
-  }catch(err) {
+  } catch (err) {
     console.error(`Error getFolder: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);
@@ -70,15 +76,18 @@ async function getFolder(req, res, next) {
 }
 
 /**
-  * @public
-  * @method getFolderSets
-  * @description __URL__: /api/folderSets
-  * @returns {Object} A 'named' hardcoded list *for now*
-  */
+ * @public
+ * @method getFolderSets
+ * @description __URL__: /api/folderSets
+ * @returns {Object} A 'named' hardcoded list *for now*
+ */
 function getFolderSets(req, res, next) {
   let user = userAuth.requireUser(req);
   if (!user) {
-    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+    return utils.sendError.InvalidCredentialsError(
+      'You must be logged in.',
+      res
+    );
   }
 
   let criteria = fsAccess.get.folderSets(user, req.query.ids);
@@ -86,11 +95,13 @@ function getFolderSets(req, res, next) {
     return utils.sendError.NotAuthorizedError(null, res);
   }
 
-  return models.FolderSet.find(criteria).lean().exec()
-    .then((folderSets => {
+  return models.FolderSet.find(criteria)
+    .lean()
+    .exec()
+    .then((folderSets) => {
       const data = { folderSets };
       return utils.sendResponse(res, data);
-    }))
+    })
     .catch((err) => {
       console.error(`Error getFolderSets: ${err}`);
       console.trace();
@@ -99,15 +110,15 @@ function getFolderSets(req, res, next) {
 }
 
 /**
-  * @public
-  * @method getFolders
-  * @description __URL__: /api/folders
-  * @see [buildCriteria](../../middleware/requestHandler.html)
-  * @returns {Object} A 'named' array of folder objects: according to specified criteria
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data retrieval failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method getFolders
+ * @description __URL__: /api/folders
+ * @see [buildCriteria](../../middleware/requestHandler.html)
+ * @returns {Object} A 'named' array of folder objects: according to specified criteria
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data retrieval failed
+ * @throws {RestError} Something? went wrong
+ */
 async function getFolders(req, res, next) {
   const user = userAuth.requireUser(req);
 
@@ -118,44 +129,50 @@ async function getFolders(req, res, next) {
   let criteria;
   try {
     criteria = await access.get.folders(user, ids);
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error building folders criteria: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);
   }
 
-  models.Folder.find(criteria)
-    .exec(function(err, folders) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-    const data = {'folders': folders};
+  models.Folder.find(criteria).exec(function (err, folders) {
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
+    const data = { folders: folders };
     return utils.sendResponse(res, data);
   });
 }
 
 /**
-  * @public
-  * @method postFolder
-  * @description __URL__: /api/folders
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data saving failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method postFolder
+ * @description __URL__: /api/folders
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data saving failed
+ * @throws {RestError} Something? went wrong
+ */
 async function postFolder(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
     let workspaceId = req.body.folder.workspace;
 
-    let workspace = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec();
+    let workspace = await models.Workspace.findById(workspaceId)
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
 
     let canCreateFolderInWs = wsAccess.canModify(user, workspace, 'folders', 2);
 
     if (!canCreateFolderInWs) {
-      logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
+      logger.info('permission denied');
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission for this workspace`,
+        res
+      );
     }
 
     let folder = new models.Folder(req.body.folder);
@@ -168,21 +185,20 @@ async function postFolder(req, res, next) {
 
     let data = { folder };
     utils.sendResponse(res, data);
-
-  }catch(err) {
+  } catch (err) {
     logger.error('error postFolder: ', err);
     return utils.sendError.InternalError(err, res);
   }
 }
 
 /**
-  * @public
-  * @method putFolder
-  * @description __URL__: /api/folders/:id
-  * @throws {NotAuthorizedError} User has inadequate permissions
-  * @throws {InternalError} Data update failed
-  * @throws {RestError} Something? went wrong
-  */
+ * @public
+ * @method putFolder
+ * @description __URL__: /api/folders/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
 async function putFolder(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
@@ -241,7 +257,6 @@ async function putFolder(req, res, next) {
 
     let data = { folder };
     utils.sendResponse(res, data);
-
   } catch (err) {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
@@ -259,7 +274,8 @@ function getFolderSet(req, res, next) {
   if (!id) {
     return utils.sendError.InvalidContentError(null, res);
   }
-  return fsAccess.get.folderSet(user, id)
+  return fsAccess.get
+    .folderSet(user, id)
     .then((canLoadFolderSet) => {
       if (!canLoadFolderSet) {
         return;
@@ -284,8 +300,6 @@ async function postFolderSet(req, res, next) {
   try {
     const user = userAuth.requireUser(req);
 
-
-
     if (!user) {
       return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
@@ -303,15 +317,13 @@ async function postFolderSet(req, res, next) {
       privacySetting,
       folders,
       createdBy: user._id,
-      lastModifiedBy: user._id
+      lastModifiedBy: user._id,
     });
 
     const saved = await record.save();
     const data = { folderSet: saved };
     return utils.sendResponse(res, data);
-
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error postFolderSet: ${err}`);
     console.trace();
     return utils.sendError.InternalError(err, res);

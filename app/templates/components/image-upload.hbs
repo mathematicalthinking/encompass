@@ -1,15 +1,25 @@
-<form enctype="multipart/form-data">
-  <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept={{acceptableFileTypes}} type="file" class="image-upload"/>
+<form enctype='multipart/form-data'>
+  <input
+    multiple={{acceptMultiple}}
+    onchange={{action 'updateFiles'}}
+    accept={{acceptableFileTypes}}
+    type='file'
+    class='image-upload'
+  />
 
   {{#unless hideSubmit}}
     {{#if filesToBeUploaded}}
-      <input type="submit" value="Upload Files" {{action "uploadImages"}}/>
+      <input type='button' value='Upload Files' {{action 'uploadImages'}} />
     {{/if}}
   {{/unless}}
 </form>
 
 {{#if missingFilesError}}
-  <ErrorBox @error="Please select files to upload" @resetError={{action (mut missingFilesError) null}} @showDismiss={{true}} />
+  <ErrorBox
+    @error='Please select files to upload'
+    @resetError={{action (mut missingFilesError) null}}
+    @showDismiss={{true}}
+  />
 {{/if}}
 
 {{#if isOverSizeLimit}}
@@ -22,27 +32,31 @@
 {{/if}}
 
 {{#if overSizedFileError}}
-  <ErrorBox @error={{overSizedFileError}} @showDismiss={{true}} @resetError={{action (mut overSizedFileError) null}} />
+  <ErrorBox
+    @error={{overSizedFileError}}
+    @showDismiss={{true}}
+    @resetError={{action (mut overSizedFileError) null}}
+  />
 {{/if}}
 
 {{#unless uploadResults}}
   {{#if showLoadingMessage}}
-    <p class="loading-message">Uploading images... Thank you for your patience.</p>
+    <p class='loading-message'>Uploading images... Thank you for your patience.</p>
   {{/if}}
 {{/unless}}
 
 {{#each uploadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+  <p class='error-message'>{{error}}</p>
 {{/each}}
 
 {{#if uploadResults}}
-<p class="upload-results">
-  {{uploadResults.length}}
-  {{#if (greater-equal uploadResults.length 2)}}
-    files
-  {{else}}
-    file
-  {{/if}}
+  <p class='upload-results'>
+    {{uploadResults.length}}
+    {{#if (greater-equal uploadResults.length 2)}}
+      files
+    {{else}}
+      file
+    {{/if}}
     uploaded successfully!
-</p>
+  </p>
 {{/if}}

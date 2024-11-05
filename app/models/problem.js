@@ -9,13 +9,13 @@ export default class ProblemModel extends Auditable {
   @attr('string') text;
   @attr('string') imageUrl;
   @attr('string') sourceUrl;
-  @belongsTo('image', { inverse: null }) image;
-  @belongsTo('problem', { inverse: null }) origin;
-  @belongsTo('user', { inverse: null }) modifiedBy;
-  @belongsTo('organization', { inverse: null }) organization;
+  @belongsTo('image', { inverse: null, async: true }) image;
+  @belongsTo('problem', { inverse: null, async: true }) origin;
+  @belongsTo('user', { inverse: null, async: true }) modifiedBy;
+  @belongsTo('organization', { inverse: null, async: true }) organization;
   @attr('string') additionalInfo;
   @attr('string') privacySetting;
-  @hasMany('category', { inverse: null }) categories;
+  @hasMany('category', { inverse: null, async: true }) categories;
   @attr keywords;
   @attr('string') copyrightNotice;
   @attr('string') sharingAuth;

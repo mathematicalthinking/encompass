@@ -6,13 +6,13 @@
   <ul class="listing {{@tag}}">
     {{#if @user}}
       <li class="{{if @user.name 'simptip-position-right simptip-smooth'}} {{if @user.isAuthorized 'is-authorized'}} {{if @user.isAdmin 'is-admin'}} {{unless @user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{@user.name}}>
-        <LinkTo @route="users.user" @model={{@user.id}} @classNames="user">{{@user.username}}</LinkTo>
+        <LinkTo @route="users.user" @model={{@user.id}} class="user">{{@user.username}}</LinkTo>
       </li>
     {{/if}}
     {{#if @users}}
       {{#each @users as |user|}}
       <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
-        <LinkTo @route="users.user" @model={{user.id}} @classNames="user">{{user.username}}</LinkTo>
+        <LinkTo @route="users.user" @model={{user.id}} class="user">{{user.username}}</LinkTo>
       </li>
       {{/each}}
     {{else}}

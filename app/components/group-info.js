@@ -28,6 +28,12 @@ export default class GroupInfoComponent extends Component {
     }
     return this.args.group.students.pushObject(student);
   }
+
+  @action handleTrash(student) {
+    if (this.args.updateGroup) {
+      this.args.updateGroup(this.args.group, student);
+    }
+  }
   @action toggleDisplayStudents() {
     this.displayStudents = !this.displayStudents;
   }
@@ -43,13 +49,13 @@ export default class GroupInfoComponent extends Component {
     }
     this.toggleUpdateGroup();
   }
-  @action cancelButton(group) {
+  @action cancelButton() {
     if (this.updateGroup) {
       this.args.group.rollbackAttributes();
       this.studentsChanged = false;
       this.toggleUpdateGroup();
     } else {
-      this.args.deleteGroup(group);
+      this.args.deleteGroup(this.args.group);
     }
   }
 }

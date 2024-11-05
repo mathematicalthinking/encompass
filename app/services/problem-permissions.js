@@ -1,10 +1,5 @@
 import Service, { inject as service } from '@ember/service';
 
-
-
-
-
-
 export default Service.extend({
   base: service('edit-permissions'),
   isPublic: function (problem) {
@@ -62,7 +57,6 @@ export default Service.extend({
 
     // privacy setting can now only be 'O' or 'M'
     return this.base.doesRecordBelongToOrg(problem);
-
   },
 
   canEdit(problem) {
@@ -102,8 +96,6 @@ export default Service.extend({
     // privacy setting can now only be 'O' or 'M'
 
     return this.base.doesRecordBelongToOrg(problem);
-
-
   },
 
   canAssign(problem) {
@@ -117,7 +109,6 @@ export default Service.extend({
     }
 
     return this.isApproved(problem);
-
   },
 
   canPend(problem) {
@@ -144,6 +135,4 @@ export default Service.extend({
 
     return ret;
   },
-
-
 });

@@ -114,7 +114,7 @@ export default Component.extend({
         students.map((s) => s)
       );
 
-      this.$('.ql-editor').html(explanation);
+      $('.ql-editor').html(explanation);
     },
     toSubmissionFromAnswer(answer) {
       this.store

@@ -1,11 +1,5 @@
 import Service from '@ember/service';
 
-
-
-
-
-
-
 export default Service.extend({
   /*
     attachTo: (optional) selector of the html element you want to attach the guider to
@@ -35,7 +29,19 @@ export default Service.extend({
     xButton: (optional) if true, a X will appear in the top right corner of the guider, as another way to close the guider
   */
 
-  createGuider: function (id, next, title, description, attachTo, highlight, position, buttons, overlay, width, onClose) {
+  createGuider: function (
+    id,
+    next,
+    title,
+    description,
+    attachTo,
+    highlight,
+    position,
+    buttons,
+    overlay,
+    width,
+    onClose
+  ) {
     return window.guiders.createGuider({
       id,
       next,
@@ -54,5 +60,4 @@ export default Service.extend({
       classString: 'guide-item',
     });
   },
-
 });

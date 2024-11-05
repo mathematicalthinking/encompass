@@ -147,8 +147,9 @@ export default Component.extend({
   maximumAnswers: 1000,
 
   tooLargeRequestErrorMessage: computed(
+    'answersMetadata.total',
     'isRequestTooLarge',
-    'answersMetadata',
+    'maximumAnswers',
     function () {
       if (!this.isRequestTooLarge) {
         return;
@@ -164,10 +165,13 @@ export default Component.extend({
   }),
 
   listResultsMessage: computed(
+    'answers.@each.isTrashed',
+    'answersMetadata.total',
     'criteriaTooExclusive',
     'isDisplayingSearchResults',
-    'answers.@each.isTrashed',
     'isFetchingAnswers',
+    'searchCriterion',
+    'searchQuery',
     'showLoadingMessage',
     'toggleTrashed',
     function () {
@@ -263,7 +267,8 @@ export default Component.extend({
           'warning',
           'You currently do not belong to any organization',
           'Please add or request an organization in order to get the best user experience',
-          'Ok'
+          'Ok',
+          null
         );
         return 'undefined';
       }
@@ -288,7 +293,7 @@ export default Component.extend({
   },
 
   didInsertElement() {
-    let width = this.$().css('width');
+    let width = $().css('width');
     let widthNum = parseInt(width, 10);
     if (widthNum <= 430) {
       this.send('setGrid');
@@ -299,7 +304,7 @@ export default Component.extend({
       this.set('doHideOutlet', this.get('model.hideOutlet'));
     }
     if (this.doHideOutlet === false) {
-      this.$('#outlet').removeClass('hidden');
+      $('#outlet').removeClass('hidden');
     }
     this._super(...arguments);
   },
@@ -458,7 +463,7 @@ export default Component.extend({
       });
   },
 
-  currentAsOf: computed(function () {
+  currentAsOf: computed('since', function () {
     return moment(this.since).format('H:mm');
   }),
 
@@ -494,52 +499,57 @@ export default Component.extend({
   studentWork: function (student) {
     return this.answers.filterBy('student', student).sortBy('createDate');
   },
-  sortedAnswers: computed('displayAnswers.[]', 'sortCriterion', function () {
-    let sortParam = this.get('sortCriterion.sortParam');
-    const defaultSorted = this.displayAnswers;
-    if (!sortParam) {
-      // default to alphabetical
+  sortedAnswers: computed(
+    'displayAnswers.[]',
+    'sortCriterion.sortParam',
+    'submissionThreads',
+    function () {
+      let sortParam = this.get('sortCriterion.sortParam');
+      const defaultSorted = this.displayAnswers;
+      if (!sortParam) {
+        // default to alphabetical
+        return defaultSorted;
+      }
+      let field = _.keys(sortParam)[0];
+      let direction = sortParam[field];
+
+      if (field === 'explanation') {
+        let ascending = defaultSorted.sortBy('explanation.length');
+        if (direction === 1) {
+          return ascending;
+        }
+        return ascending.reverse();
+      }
+
+      if (field === 'createDate') {
+        let ascending = defaultSorted.sortBy('createDate');
+        if (direction === 1) {
+          return ascending;
+        }
+        return ascending.reverse();
+      }
+
+      if (field === 'revisions') {
+        let ascending = _.sortBy(defaultSorted, (answer) => {
+          let student = answer.get('student');
+          let revisionCount = this.submissionThreads[student].get('length');
+          return revisionCount;
+        });
+        if (direction === 1) {
+          return ascending;
+        }
+        return ascending.reverse();
+      }
+      if (field === 'student') {
+        let ascending = defaultSorted.sortBy('student');
+        if (direction === 1) {
+          return ascending;
+        }
+        return ascending.reverse();
+      }
       return defaultSorted;
     }
-    let field = _.keys(sortParam)[0];
-    let direction = sortParam[field];
-
-    if (field === 'explanation') {
-      let ascending = defaultSorted.sortBy('explanation.length');
-      if (direction === 1) {
-        return ascending;
-      }
-      return ascending.reverse();
-    }
-
-    if (field === 'createDate') {
-      let ascending = defaultSorted.sortBy('createDate');
-      if (direction === 1) {
-        return ascending;
-      }
-      return ascending.reverse();
-    }
-
-    if (field === 'revisions') {
-      let ascending = _.sortBy(defaultSorted, (answer) => {
-        let student = answer.get('student');
-        let revisionCount = this.submissionThreads[student].get('length');
-        return revisionCount;
-      });
-      if (direction === 1) {
-        return ascending;
-      }
-      return ascending.reverse();
-    }
-    if (field === 'student') {
-      let ascending = defaultSorted.sortBy('student');
-      if (direction === 1) {
-        return ascending;
-      }
-      return ascending.reverse();
-    }
-    return defaultSorted;
-  }),
+  ),
 
   actions: {
     showModal: function (answer) {

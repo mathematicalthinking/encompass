@@ -5,21 +5,17 @@ import { tracked } from '@glimmer/tracking';
 
 // Define the component as a native JavaScript class
 export default class CheckboxListComponent extends Component {
-  classNames = ['checkbox-list'];
+  @tracked selectedItems = [];
+  @tracked isToggledAll = false;
 
-  selectedItems = [];
-  isToggledAll = false;
-
-  @tracked('isToggledAll')
   get selectAllLabel() {
     return this.isToggledAll ? 'Deselect All' : 'Select All';
   }
   constructor() {
     super(...arguments);
 
-    let initialSelectedItems = this.initialSelectedItems;
-    if (initialSelectedItems) {
-      this.selectedItems = [...initialSelectedItems];
+    if (this.args.initialSelectedItems) {
+      this.selectedItems = [...this.args.initialSelectedItems];
     }
   }
   @action
@@ -28,8 +24,9 @@ export default class CheckboxListComponent extends Component {
     if (wasSelected) {
       this.selectedItems = [];
     } else {
-      this.selectedItems = this.items;
+      this.selectedItems = this.args.items;
     }
+    this.isToggledAll = !wasSelected;
   }
 
   @action

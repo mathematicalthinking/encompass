@@ -21,7 +21,6 @@ import { Promise } from 'rsvp';
 import Mixin from '@ember/object/mixin';
 import DS from 'ember-data';
 
-
 export default Mixin.create({
   since: function (model) {
     //var meta = model.get('meta');
@@ -45,9 +44,11 @@ export default Mixin.create({
   cache: function (model, options) {
     var defaults = {
       expiration: 180,
-      bypass: false
+      bypass: false,
     };
-    if (!options) { options = {}; }
+    if (!options) {
+      options = {};
+    }
     _.defaults(options, defaults);
 
     var cached = this.peekAll('workspace');
@@ -62,7 +63,7 @@ export default Mixin.create({
     return DS.PromiseArray.create({
       promise: new Promise(function (resolve, reject) {
         resolve(cached);
-      })
+      }),
     });
-  }
+  },
 });

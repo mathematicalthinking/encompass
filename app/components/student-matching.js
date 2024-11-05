@@ -1,11 +1,6 @@
 import { isEmpty } from '@ember/utils';
 import Component from '@ember/component';
 
-
-
-
-
-
 export default Component.extend({
   matchingStudentsError: null,
   isReadyToReviewAnswers: null,
@@ -25,8 +20,6 @@ export default Component.extend({
         }
         this.set('isReadyToReviewAnswers', true);
       });
-    }
+    },
   },
-
-
 });

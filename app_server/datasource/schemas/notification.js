@@ -6,48 +6,72 @@ const _ = require('underscore');
 const sockets = require('../../socketInit');
 const ObjectId = Schema.ObjectId;
 
-const  { User } = require('../schemas');
+const { User } = require('../schemas');
 
 const { isNil } = require('../../utils/objects');
 const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 
 /**
-  * @public
-  * @class Notification
-  */
-var NotificationSchema = new Schema({
-//== Shared properties (Because Mongoose doesn't support schema inheritance)
-    createdBy: { type: ObjectId, ref: 'User'},
-    createDate: { type: Date, 'default': Date.now() },
-    isTrashed: { type: Boolean, 'default': false },
+ * @public
+ * @class Notification
+ */
+var NotificationSchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
+    createdBy: { type: ObjectId, ref: 'User' },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
-    lastModifiedDate: { type: Date, 'default': Date.now() },
-//====
-    text: { type: String, },
-    primaryRecordType: { type: String, enum: ['workspace', 'assignment', 'section', 'response', 'problem', 'organization']},
-    notificationType: {type: String, enum: ['newWorkToMentor', 'mentorReplyNeedsRevisions', 'newAssignmentAnswer', 'newMentorReply', 'mentorReplyRequiresApproval', 'newApproverReply', 'newlyApprovedReply']},
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
+    text: { type: String },
+    primaryRecordType: {
+      type: String,
+      enum: [
+        'workspace',
+        'assignment',
+        'section',
+        'response',
+        'problem',
+        'organization',
+      ],
+    },
+    notificationType: {
+      type: String,
+      enum: [
+        'newWorkToMentor',
+        'mentorReplyNeedsRevisions',
+        'newAssignmentAnswer',
+        'newMentorReply',
+        'mentorReplyRequiresApproval',
+        'newApproverReply',
+        'newlyApprovedReply',
+      ],
+    },
     submission: { type: ObjectId, ref: 'Submission' },
-    workspace: {type: ObjectId, ref: 'Workspace' },
-    response: {type: ObjectId , ref: 'Response' },
-    recipient: {type: ObjectId, ref: 'User'},
-    section: { type: ObjectId, ref: 'Section'},
+    workspace: { type: ObjectId, ref: 'Workspace' },
+    response: { type: ObjectId, ref: 'Response' },
+    recipient: { type: ObjectId, ref: 'User' },
+    section: { type: ObjectId, ref: 'Section' },
     assignment: { type: ObjectId, ref: 'Assignment' },
     user: { type: ObjectId, ref: 'User' },
     organization: { type: ObjectId, ref: 'Organization' },
     problem: { type: ObjectId, ref: 'Problem' },
-    wasSeen: {type: Boolean, default: false},
+    wasSeen: { type: Boolean, default: false },
 
     /*
     For post save hook use only
     */
     doAddToRecipient: { type: Boolean, select: false },
     doPullFromRecipient: { type: Boolean, select: false },
-  }, {versionKey: false});
+  },
+  { versionKey: false }
+);
 
 /**
-  * ## Pre-Validation
-  * Before saving we must verify (synchonously) that:
-  */
+ * ## Pre-Validation
+ * Before saving we must verify (synchonously) that:
+ */
 NotificationSchema.pre('save', function (next) {
   this.doAddToRecipient = false;
   this.doPullFromRecipient = false;
@@ -99,16 +123,19 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
   if (isRemovalOnly) {
     let socketId = user.socketId;
     if (socketId) {
-      let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+      let socket = _.propertyOf(sockets)([
+        'io',
+        'sockets',
+        'sockets',
+        socketId,
+      ]);
       if (socket) {
-
         let data = {
           notificationId: notification._id,
           doTrash: false,
           doSetAsSeen: false,
         };
         socket.emit('CLEAR_NOTIFICATION', data);
-
       }
     }
     return;
@@ -132,22 +159,36 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
 
     let socketId = user.socketId;
     if (socketId) {
-      let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+      let socket = _.propertyOf(sockets)([
+        'io',
+        'sockets',
+        'sockets',
+        socketId,
+      ]);
 
       if (socket) {
-       await notification
-        .populate('submission')
-        .populate('workspace')
-        .populate('response')
-        .populate('problem')
-        .populate('assignment')
-        .populate('section')
-        .populate('user')
-        .populate('organization')
-        .execPopulate();
+        await notification
+          .populate('submission')
+          .populate('workspace')
+          .populate('response')
+          .populate('problem')
+          .populate('assignment')
+          .populate('section')
+          .populate('user')
+          .populate('organization')
+          .execPopulate();
 
         let ntfData = {};
-        let props = ['submission', 'workspace', 'response', 'problem', 'assignment', 'section', 'user', 'organization'];
+        let props = [
+          'submission',
+          'workspace',
+          'response',
+          'problem',
+          'assignment',
+          'section',
+          'user',
+          'organization',
+        ];
 
         props.forEach((prop) => {
           if (notification[prop]) {
@@ -165,46 +206,47 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
             .populate('priorRevision')
             .execPopulate();
 
-          let isMentorRecipient = response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id);
+          let isMentorRecipient =
+            response.responseType === 'mentor' &&
+            areObjectIdsEqual(response.recipient, user._id);
 
-            if (response.submission) {
-              if (ntfData.submissions) {
-                ntfData.submissions.push(response.submission);
+          if (response.submission) {
+            if (ntfData.submissions) {
+              ntfData.submissions.push(response.submission);
+            } else {
+              ntfData.submissions = [response.submission];
+            }
+          }
+          if (response.createdBy) {
+            if (ntfData.users) {
+              ntfData.users.push(response.createdBy);
+            } else {
+              ntfData.users = [response.createdBy];
+            }
+          }
+          if (response.workspace) {
+            let name = response.workspace.name;
+            ntfData.workspaceName = name;
+          }
+
+          if (response.priorRevision) {
+            let status = _.propertyOf(response.priorRevision)('status');
+            let isNotApproved = status !== 'approved';
+
+            // recipients of mentor replies should not have access to nonapproved replies addressed to them
+            let doNotSendRevision = isNotApproved && isMentorRecipient;
+            if (!doNotSendRevision) {
+              if (ntfData.responses) {
+                ntfData.responses.push(response.priorRevision);
               } else {
-                ntfData.submissions = [response.submission];
+                ntfData.responses = [response.priorRevision];
               }
             }
-            if (response.createdBy) {
-              if (ntfData.users) {
-                ntfData.users.push(response.createdBy);
-              } else {
-                ntfData.users = [response.createdBy];
-              }
-            }
-            if (response.workspace) {
-              let name = response.workspace.name;
-              ntfData.workspaceName = name;
-            }
-
-            if (response.priorRevision) {
-              let status = _.propertyOf(response.priorRevision)('status');
-              let isNotApproved = status !== 'approved';
-
-              // recipients of mentor replies should not have access to nonapproved replies addressed to them
-              let doNotSendRevision = isNotApproved && isMentorRecipient;
-              if (!doNotSendRevision) {
-                if (ntfData.responses) {
-                  ntfData.responses.push(response.priorRevision);
-                } else {
-                  ntfData.responses = [response.priorRevision];
-                }
-              }
-            }
-            response.depopulate('submission');
-            response.depopulate('createdBy');
-            response.depopulate('workspace');
-            response.depopulate('priorRevision');
-
+          }
+          response.depopulate('submission');
+          response.depopulate('createdBy');
+          response.depopulate('workspace');
+          response.depopulate('priorRevision');
         }
 
         // depopulate ntf
@@ -218,12 +260,11 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
       }
     }
   }
-
 }
 
 /**
-  * ## Post-Validation
-  */
+ * ## Post-Validation
+ */
 NotificationSchema.post('save', function (notification) {
   if (notification.doAddToRecipient) {
     if (isValidMongoId(notification.recipient)) {
@@ -237,10 +278,13 @@ NotificationSchema.post('save', function (notification) {
       // emit event so ntf will be removed live
 
       User.findByIdAndUpdate(notification.recipient, {
-        $pull: { notifications: notification._id }
+        $pull: { notifications: notification._id },
       }).exec();
     }
   }
 });
 
-module.exports.Notification = mongoose.model('Notification', NotificationSchema);
+module.exports.Notification = mongoose.model(
+  'Notification',
+  NotificationSchema
+);

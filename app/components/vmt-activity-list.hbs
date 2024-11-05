@@ -1,0 +1,18 @@
+<div class='vmt-activity-list'>
+  <ul>
+    {{#each activities as |activity|}}
+      <li>
+        <VmtActivityListItem
+          @activity={{activity}}
+          @onSelect={{@onItemSelect}}
+          @showCheckbox={{@showCheckbox}}
+          @onRoomSelect={{@subItemSelect}}
+          @selectedRoomIds={{@selectedRoomIds}}
+          @selectedActivityIds={{@selectedActivityIds}}
+        />
+      </li>
+    {{else}}
+      <li data-test='no-activities'> No activities</li>
+    {{/each}}
+  </ul>
+</div>

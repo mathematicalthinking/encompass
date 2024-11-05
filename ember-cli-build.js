@@ -8,28 +8,22 @@ module.exports = function (defaults) {
       extension: 'scss',
     },
   });
-  app.import('vendor/jquery.cookie.js');
-  app.import('vendor/tree.jquery.js');
 
-  app.import('vendor/ie_hacks.js');
   app.import('vendor/image-tagging.js');
   app.import('vendor/selection-highlighting.js');
   app.import('vendor/bind.polyfill.js');
-  app.import('vendor/randomcolor.js');
   /*
    * These are the dependencies for an Ember application
    * and they have to be loaded before any application code.
    */
-  app.import('vendor/jquery-3.2.1.min.js');
   app.import('vendor/jquery.cookie.js');
+  app.import('vendor/tree.jquery.js');
 
   app.import('vendor/guiders.js');
   app.import('vendor/jq.keys.js');
   app.import('vendor/typeahead.bundle.js');
   app.import('vendor/validate.min.js');
-  app.import('vendor/selectize.js');
   app.import('vendor/dropzone.js');
-  app.import('vendor/socket.io.js');
 
   // Use `app.import` to add additional libraries to the generated
   // output files.

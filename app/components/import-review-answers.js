@@ -1,10 +1,5 @@
 import Component from '@ember/component';
 
-
-
-
-
-
 export default Component.extend({
   actions: {
     formatAnswers: function () {
@@ -14,5 +9,5 @@ export default Component.extend({
     radioSelect: function (value) {
       this.set('mode', value);
     },
-  }
+  },
 });

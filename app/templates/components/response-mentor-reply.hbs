@@ -107,7 +107,7 @@
                         {{#if this.showApproverNoteInput}}
                           <Textarea
                             class='edit-note'
-                            @name='mentor-approver-note'
+                            name='mentor-approver-note'
                             @value={{editRevisionNote}}
                           />
                         {{/if}}
@@ -162,33 +162,28 @@
       <div class='submit-buttons button-row'>
         {{#if isEditing}}
           <button
-            {{action 'handleComposeAction' 'isEditing' false true}}
-            class='primary-button cancel-button'
+            class='primary-button cancel-button' type="button" {{action 'handleComposeAction' 'isEditing' false true}}
           >Cancel</button>
-          <button {{action 'saveEdit'}} class='primary-button'>Save</button>
+          <button class='primary-button' type="button" {{action 'saveEdit'}}>Save</button>
         {{/if}}
         {{#if isRevising}}
           <button
-            {{action 'handleComposeAction' 'isRevising' false true}}
-            class='primary-button cancel-button'
+            class='primary-button cancel-button' type="button" {{action 'handleComposeAction' 'isRevising' false true}}
           >Cancel</button>
-          <button {{action 'saveRevision' true}} class='primary-button'>Save as
+          <button class='primary-button' type="button" {{action 'saveRevision' true}}>Save as
             Draft</button>
           <button
-            {{action 'saveRevision'}}
-            class='primary-button'
+            class='primary-button' type="button" {{action 'saveRevision'}}
           >{{sendButtonText}}</button>
         {{/if}}
         {{#if isFinishingDraft}}
           <button
-            {{action 'handleComposeAction' 'isFinishingDraft' false true}}
-            class='primary-button cancel-button'
+            class='primary-button cancel-button' type="button" {{action 'handleComposeAction' 'isFinishingDraft' false true}}
           >Cancel</button>
-          <button {{action 'saveDraft' true}} class='primary-button'>Save as
+          <button class='primary-button' type="button" {{action 'saveDraft' true}}>Save as
             Draft</button>
           <button
-            {{action 'saveDraft'}}
-            class='primary-button'
+            class='primary-button' type="button" {{action 'saveDraft'}}
           >{{sendButtonText}}</button>
         {{/if}}
       </div>
@@ -199,7 +194,7 @@
     {{#if this.canSendNew}}
       Click 'New Response' to begin composing a new Mentor Reply.
       <div class='submit-buttons button-row'>
-        <button {{action 'toNewResponse'}} class='primary-button'>New Response</button>
+        <button class='primary-button' type="button" {{action 'toNewResponse'}}>New Response</button>
       </div>
 
     {{/if}}

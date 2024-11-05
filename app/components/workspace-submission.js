@@ -1,13 +1,13 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action, computed } from '@ember/object';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
 
 export default class WorkspaceSubmissionCompComponent extends Component {
-  @service('current-user') currentUser;
-  @service('error-handling') errorHandling;
+  @service currentUser;
+  @service errorHandling;
   @service('utility-methods') utils;
   @service('workspace-permissions') permissions;
 
@@ -28,42 +28,31 @@ export default class WorkspaceSubmissionCompComponent extends Component {
     return this.canSeeSelections && !this.workspaceSelections.length > 0;
   }
 
-  @computed('currentSubmission.id', 'selections.[]')
   get workspaceSelections() {
-    let subId = this.currentSubmission.id;
-    return this.selections.filter((sel) => {
+    let subId = this.args.currentSubmission.id;
+    return this.args.selections.filter((sel) => {
       return subId === this.utils.getBelongsToId(sel, 'submission');
     });
   }
 
-  @computed('workspaceSelections.@each.isTrashed')
   get trashedSelections() {
     return this.workspaceSelections.filterBy('isTrashed');
   }
 
-  @computed(
-    'currentWorkspace.permissions.@each.{global,selections}',
-    'currentUser.user.id'
-  )
   get canSelect() {
-    let cws = this.currentWorkspace;
+    let cws = this.args.currentWorkspace;
     return this.permissions.canEdit(cws, 'selections', 2);
   }
 
-  @computed(
-    'currentWorkspace.permissions.@each.{global,selections}',
-    'currentUser.user.id'
-  )
   get canDeleteSelection() {
-    const workspace = this.currentWorkspace;
+    const workspace = this.args.currentWorkspace;
     return this.permissions.canEdit(workspace, 'selections', 4);
   }
 
-  @computed('currentSubmission.id', 'responses.[]')
   get submissionResponses() {
     return this.responses.filter((response) => {
       let subId = this.utils.getBelongsToId(response, 'submission');
-      return subId === this.currentSubmission.id;
+      return subId === this.args.currentSubmission.id;
     });
   }
 
@@ -199,7 +188,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
       getUrl.pathname.split('/')[1];
 
     window.open(
-      `${baseUrl}#/responses/submission/${this.currentSubmission.id}`,
+      `${baseUrl}#/responses/submission/${this.args.currentSubmission.id}`,
       'newwindow',
       'width=1200, height=700'
     );
@@ -320,7 +309,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
   @action
   async openProblem() {
-    let answer = this.currentSubmission.answer;
+    let answer = this.args.currentSubmission.answer;
     let problem = await answer.problem;
     let problemId = await problem.id;
 
@@ -338,7 +327,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
   constructor() {
     super(...arguments);
-    if (this.currentWorkspace.workspaceType === 'parent') {
+    if (this.args.currentWorkspace.workspaceType === 'parent') {
       this.makingSelection = false;
     }
   }
@@ -349,7 +338,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
       window.removeEventListener('message', this.vmtListener);
     }
 
-    let workspace = this.currentWorkspace;
+    let workspace = this.args.currentWorkspace;
     let doOnlyUpdateLastViewed = true;
 
     if (this.isDirty) {
@@ -365,7 +354,9 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   // Computed properties
 
   get isVmt() {
-    return this.utils.isValidMongoId(this.currentSubmission.vmtRoomInfo.roomId);
+    return this.utils.isValidMongoId(
+      this.args.currentSubmission.vmtRoomInfo.roomId
+    );
   }
 
   get currentReplayerTime() {

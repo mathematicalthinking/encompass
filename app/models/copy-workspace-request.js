@@ -4,9 +4,9 @@ import Auditable from './auditable';
 export default class CopyWorkspaceRequestModel extends Auditable {
   @attr batchClone;
   @attr('string') name;
-  @belongsTo('user', { inverse: null }) owner;
+  @belongsTo('user', { inverse: null, async: true }) owner;
   @attr('string') mode;
-  @belongsTo('workspace', { inverse: null }) originalWsId;
+  @belongsTo('workspace', { inverse: null, async: true }) originalWsId;
   @attr submissionOptions;
   @attr folderOptions;
   @attr selectionOptions;
@@ -14,6 +14,6 @@ export default class CopyWorkspaceRequestModel extends Auditable {
   @attr responseOptions;
   @attr permissionOptions;
   @attr('string') copyWorkspaceError;
-  @belongsTo('workspace') createdWorkspace;
-  @belongsTo('folder-set') createdFolderSet;
+  @belongsTo('workspace', { async: true }) createdWorkspace;
+  @belongsTo('folder-set', { async: true }) createdFolderSet;
 }

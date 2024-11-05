@@ -1,5 +1,4 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import { cached } from '@glimmer/tracking';
 import AuditableModel from './auditable';
 
 export default class FolderModel extends AuditableModel {

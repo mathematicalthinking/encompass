@@ -4,9 +4,9 @@ import AuditableModel from './auditable';
 
 export default class TaggingModel extends AuditableModel {
   @belongsTo('workspace', { async: false }) workspace;
-  @belongsTo('selection') selection;
-  @belongsTo('folder') folder;
-  @belongsTo('tagging', { inverse: null }) originalTagging;
+  @belongsTo('selection', { async: true }) selection;
+  @belongsTo('folder', { async: true }) folder;
+  @belongsTo('tagging', { inverse: null, async: true }) originalTagging;
 
   copy() {
     let clone = this.toJSON();

@@ -5,7 +5,13 @@ const { isNonEmptyArray, isNonEmptyObject } = objectUtils;
 
 module.exports.get = {};
 
-const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly=false) {
+const accessibleProblemsQuery = async function (
+  user,
+  ids,
+  filterBy,
+  searchBy,
+  isTrashedOnly = false
+) {
   try {
     if (!isNonEmptyObject(user)) {
       return;
@@ -14,83 +20,82 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy, is
       return { isTrashed: true };
     }
     let filter = {
-      $and: [
-        { isTrashed: false }
-      ]
+      $and: [{ isTrashed: false }],
     };
 
     let { accountType, actingRole } = user;
     let isStudent = accountType === 'S' || actingRole === 'student';
 
-  if (isNonEmptyArray(ids)) {
-    filter.$and.push({ _id: { $in : ids } });
-  } else if(mongooseUtils.isValidMongoId(ids)) {
-    filter.$and.push({ _id: ids });
-  }
-  if (isNonEmptyObject(filterBy)) {
-    filter.$and.push(filterBy);
-  }
-
-  if (searchBy) {
-    filter.$and.push(searchBy);
-  }
-  // Admins with acting role 'teacher' can get everything
-
-
-  if (accountType === 'A' && !isStudent) {
-    return filter;
-  }
-
-  let [ assignmentProblems, workspaceProblems, recommendedProblems ] = await Promise.all([
-    utils.getAssignmentProblems(user),
-    utils.getWorkspaceProblemIds(user),
-    utils.getOrgRecommendedProblems(user)
-  ]);
-
-  let accessCrit = {
-    $or: [
-      { privacySetting: "E" },
-      { createdBy: user._id }
-    ]
-  };
-
-  [ assignmentProblems, workspaceProblems, recommendedProblems ].forEach((list) => {
-    if (isNonEmptyArray(list)) {
-      accessCrit.$or.push({_id: {$in: list}});
+    if (isNonEmptyArray(ids)) {
+      filter.$and.push({ _id: { $in: ids } });
+    } else if (mongooseUtils.isValidMongoId(ids)) {
+      filter.$and.push({ _id: ids });
     }
-  });
+    if (isNonEmptyObject(filterBy)) {
+      filter.$and.push(filterBy);
+    }
 
-  if (accountType === 'P') {
-    accessCrit.$or.push({ organization: user.organization });
+    if (searchBy) {
+      filter.$and.push(searchBy);
+    }
+    // Admins with acting role 'teacher' can get everything
 
-    filter.$and.push(accessCrit);
-    return filter;
-  }
+    if (accountType === 'A' && !isStudent) {
+      return filter;
+    }
 
-  // block flagged problems for non admins / pdadmins?
-  filter.$and.push({ status: { $ne: 'flagged' } });
+    let [assignmentProblems, workspaceProblems, recommendedProblems] =
+      await Promise.all([
+        utils.getAssignmentProblems(user),
+        utils.getWorkspaceProblemIds(user),
+        utils.getOrgRecommendedProblems(user),
+      ]);
 
+    let accessCrit = {
+      $or: [{ privacySetting: 'E' }, { createdBy: user._id }],
+    };
 
-  if (actingRole === 'student' || accountType === 'S') {
-    accessCrit.$or.push({ $and: [{ organization: user.organization },{ privacySetting: "O" }]});
+    [assignmentProblems, workspaceProblems, recommendedProblems].forEach(
+      (list) => {
+        if (isNonEmptyArray(list)) {
+          accessCrit.$or.push({ _id: { $in: list } });
+        }
+      }
+    );
 
-    filter.$and.push(accessCrit);
+    if (accountType === 'P') {
+      accessCrit.$or.push({ organization: user.organization });
 
-    return filter;
-  }
+      filter.$and.push(accessCrit);
+      return filter;
+    }
 
-  if (accountType === 'T') {
-    accessCrit.$or.push({ $and: [{ organization: user.organization }, { privacySetting: "O" }]});
+    // block flagged problems for non admins / pdadmins?
+    filter.$and.push({ status: { $ne: 'flagged' } });
 
-    filter.$and.push(accessCrit);
-    return filter;
-  }
-  }catch(err) {
+    if (actingRole === 'student' || accountType === 'S') {
+      accessCrit.$or.push({
+        $and: [{ organization: user.organization }, { privacySetting: 'O' }],
+      });
+
+      filter.$and.push(accessCrit);
+
+      return filter;
+    }
+
+    if (accountType === 'T') {
+      accessCrit.$or.push({
+        $and: [{ organization: user.organization }, { privacySetting: 'O' }],
+      });
+
+      filter.$and.push(accessCrit);
+      return filter;
+    }
+  } catch (err) {
     console.log('err', err);
   }
-
 };
-const canGetProblem = async function(user, problemId) {
+const canGetProblem = async function (user, problemId) {
   if (!user) {
     return;
   }
@@ -107,7 +112,6 @@ const canGetProblem = async function(user, problemId) {
   let criteria = await accessibleProblemsQuery(user, problemId);
   return utils.doesRecordExist('Problem', criteria);
 };
-
 
 module.exports.get.problems = accessibleProblemsQuery;
 module.exports.get.problem = canGetProblem;

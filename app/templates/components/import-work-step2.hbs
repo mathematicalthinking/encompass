@@ -1,29 +1,65 @@
-<p class="input-label">
+<p class='input-label'>
   Would you like to use an existing class?
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Do you want to use a class of encompass users? If not you can match by just username or enter a plain text name">
-    <i class="fas fa-info-circle info-icon"></i>
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='Do you want to use a class of encompass users? If not you can match by just username or enter a plain text name'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
   </span>
 </p>
-<RadioGroup @options={{useClass}} @selectedValue={{this.selectedValue}} @updateValue={{action "updateSelectedValue"}} />
+<RadioGroup
+  @options={{useClass}}
+  @selectedValue={{this.selectedValue}}
+  @updateValue={{action 'updateSelectedValue'}}
+/>
 
-<p class="sub-input-label">If you want, you can create a new class <LinkTo @route="sections.new" @classNames="new-link">here</LinkTo></p>
+<p class='sub-input-label'>If you want, you can create a new class
+  <LinkTo @route='sections.new' @classNames='new-link'>here</LinkTo></p>
 
 {{#if selectingClass}}
-  <p class="input-label class">
+  <p class='input-label class'>
     Select a Class
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Start typing or use the drop down to select the name of the problem you would like to use">
-      <i class="fas fa-info-circle info-icon"></i>
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='Start typing or use the drop down to select the name of the problem you would like to use'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
   {{!-- <p class="sub-input-label">If this work was completed by members of a class, select the existing class you would like to use or you can create one {{#link-to 'sections.new' classNames='new-link'}}here{{/link-to}}.</p> --}}
-  <SelectizeInput @store={{this.store}} @inputId="select-class" @isAsync={{true}} @maxItems={{1}} @initialItems={{initialSectionItem}} @onItemAdd={{action "setSelectedSection"}} @onItemRemove={{action "setSelectedSection"}} @labelField="name" @searchField="name" @valueField="id" @model="section" @queryParamsKey="query" @searchCriterion="name" @topLevelQueryParams="searchBy" @placeholder="Search for classes by name..." @preload="focus" />
+  <SelectizeInput
+    @store={{this.store}}
+    @inputId='select-class'
+    @isAsync={{true}}
+    @maxItems={{1}}
+    @initialItems={{initialSectionItem}}
+    @onItemAdd={{action 'setSelectedSection'}}
+    @onItemRemove={{action 'setSelectedSection'}}
+    @labelField='name'
+    @searchField='name'
+    @valueField='id'
+    @model='section'
+    @queryParamsKey='query'
+    @searchCriterion='name'
+    @topLevelQueryParams='searchBy'
+    @placeholder='Search for classes by name...'
+    @preload='focus'
+  />
 {{/if}}
 
 {{#if missingSection}}
-  <ErrorBox @error="Please select a class or no class" @resetError={{action (mut missingSection) null}} @showDismiss={{true}} />
+  <ErrorBox
+    @error='Please select a class or no class'
+    @resetError={{action (mut missingSection) null}}
+    @showDismiss={{true}}
+  />
 {{/if}}
 
-<div class="nav-btn-container">
-  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" {{action "next"}}>Next</button>
+<div class='nav-btn-container'>
+  <button
+    class='primary-button cancel-button'
+    type='button'
+    {{action 'back'}}
+  >Back</button>
+  <button class='primary-button' type='button' {{action 'next'}}>Next</button>
 </div>

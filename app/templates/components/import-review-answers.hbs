@@ -8,14 +8,14 @@
       <ol>
         <li>
           <label for="createWorkspace">Do not create workspace</label>
-          <Input @type="checkbox" @name="createWorkspace" @checked={{doNotCreateWorkspace}} />
+          <Input @type="checkbox" name="createWorkspace" @checked={{doNotCreateWorkspace}} />
         </li>
 
 
         {{#unless doNotCreateWorkspace}}
         <li>
           <label for="name">Workspace Name</label>
-          <Input @id="requestedName" @type="text" @value={{requestedName}} />
+          <Input id="requestedName" @type="text" @value={{requestedName}} />
         </li>
         <li>
           <label for="folders">Folders</label>
@@ -43,7 +43,7 @@
     {{else}}
       <p>Click submit to create your {{mode}} workspace.</p>
     {{/if}}
-    <button {{action "formatAnswers"}}>Submit</button>
+    <button type="button" {{action "formatAnswers"}}>Submit</button>
   </div>
 </div>
 

@@ -25,6 +25,7 @@ export default Component.extend({
   },
 
   willDestroyElement: function () {
+    this._super(...arguments);
     this.set('selectedValue', this.selectedValue);
   },
 

@@ -6,7 +6,7 @@ const _ = require('underscore');
 const objectUtils = require('../../utils/objects');
 const { isNonEmptyArray, isNonEmptyObject, isNonEmptyString } = objectUtils;
 
-const { isValidMongoId, } = mongooseUtils;
+const { isValidMongoId } = mongooseUtils;
 
 module.exports.get = {};
 
@@ -17,7 +17,7 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
   const { accountType, actingRole } = user;
 
   let filter = {
-    isTrashed: false
+    isTrashed: false,
   };
 
   // ids will either be an array of ids or a single id or null
@@ -31,7 +31,7 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
 
   if (isNonEmptyObject(filterBy)) {
     if (isNonEmptyString(filterBy.name)) {
-      let replaced = filterBy.name.replace(/\s+/g, "");
+      let replaced = filterBy.name.replace(/\s+/g, '');
       let regex = new RegExp(replaced, 'i');
       filter.name = regex;
     }
@@ -44,11 +44,11 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
 
   let accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
-  filter.$or = [
-    { createdBy: user._id },
-  ];
+  filter.$or = [{ createdBy: user._id }];
   if (isNonEmptyArray(accessibleWorkspaceIds)) {
-    filter.$or.push({linkedWorkspaces: { $elemMatch: {$in: accessibleWorkspaceIds } } } );
+    filter.$or.push({
+      linkedWorkspaces: { $elemMatch: { $in: accessibleWorkspaceIds } },
+    });
   }
   // students can get any assignment that has been assigned to them
   if (accountType === 'S' || actingRole === 'student') {
@@ -61,7 +61,7 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
 
     if (isNonEmptyArray(sections)) {
       filter.$or.push({
-        section: { $in: sections }
+        section: { $in: sections },
       });
     }
     return filter;
@@ -71,16 +71,15 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
     const sections = await utils.getOrgSections(user);
     if (isNonEmptyArray(sections)) {
       filter.$or.push({
-        section: { $in: sections}
+        section: { $in: sections },
       });
     }
 
     return filter;
   }
-
 }
 
-const canGetAssignment = async function(user, assignmentId) {
+const canGetAssignment = async function (user, assignmentId) {
   if (!user) {
     return;
   }

@@ -1,3 +1,4 @@
+import { set } from '@ember/object';
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { observer } from '@ember/object';
@@ -130,7 +131,7 @@ export default class DashBoardAssignmentsListComponent extends Component {
     });
   }
 
-  @computed('sortCriterion')
+  @computed('sortCriterion.sortParam.{direction,param}', 'yourList')
   get sortedProblems() {
     let sortValue = this.sortCriterion.sortParam.param || 'name';
     let sortDirection = this.sortCriterion.sortParam.direction || 'asc';
@@ -149,6 +150,6 @@ export default class DashBoardAssignmentsListComponent extends Component {
 
   @action
   updateSortCriterion(criterion) {
-    this.sortCriterion = criterion;
+    set(this, 'sortCriterion', criterion);
   }
 }

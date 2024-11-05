@@ -114,7 +114,7 @@ export default Component.extend({
 
     createFolder: function (folderName) {
       var ws = this.workspace;
-      var currentUser = this.currentUser;
+      var currentUser = this.currentUser.user;
 
       if (folderName) {
         var folder = this.store.createRecord('folder', {

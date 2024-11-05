@@ -1,0 +1,9 @@
+{{#if @inputLabel}}
+  <label for={{@inputId}}>{{@inputLabel}}</label>
+{{/if}}
+<select
+  id={{@inputId}}
+  placeholder={{@placeholder}}
+  {{did-insert this.initializeSelectize}}
+  {{did-update this.updateSelectizeOptions @inputId}}
+></select>

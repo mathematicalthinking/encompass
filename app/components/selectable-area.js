@@ -16,6 +16,7 @@ export default Component.extend({
   },
 
   didInsertElement: function () {
+    this._super(...arguments);
     this.set('currSubId', this.get('model.id'));
     this.set('selecting', this.makingSelection);
     this.set('showing', this.showingSelections);
@@ -79,6 +80,7 @@ export default Component.extend({
   },
 
   didUpdateAttrs: function () {
+    this._super();
     let highlighting = this.selectionHighlighting;
     let tagging = this.imageTagging;
 

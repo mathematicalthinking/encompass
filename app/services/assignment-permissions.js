@@ -5,7 +5,6 @@ export default class AssignmentPermissionsService extends Service {
   @service('utility-methods') utils;
 
   getPermissionsLevel(assignment, section, user = this.base.user) {
-    console.log('here');
     if (!user) {
       return 0;
     }

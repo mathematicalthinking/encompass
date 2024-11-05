@@ -73,15 +73,21 @@ export default Service.extend({
     this.setupListeners(formId);
   },
 
-  isValid: computed('invalidInputs.[]', 'isPristine', function () {
-    if (this.isPristine) {
-      return false;
-    }
-    const id = this.formId;
-    const $invalids = this.getInvalidInputs(id);
+  isValid: computed(
+    'formId',
+    'invalidInputs.[]',
+    'isDirty',
+    'isPristine',
+    function () {
+      if (this.isPristine) {
+        return false;
+      }
+      const id = this.formId;
+      const $invalids = this.getInvalidInputs(id);
 
-    return this.isDirty && isEmpty($invalids);
-  }),
+      return this.isDirty && isEmpty($invalids);
+    }
+  ),
 
   isInvalid: computed('isDirty', 'isValid', function () {
     return this.isDirty && !this.isValid;

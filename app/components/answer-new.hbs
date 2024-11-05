@@ -15,18 +15,13 @@
           <label for='answer'>Brief Summary
             <span class='required-star'>*</span></label>
           <Textarea
-            @name='brief-summary'
-            @cols='80'
+            name='brief-summary'
+            cols='80'
             @value={{answer}}
-            @rows='3'
+            rows='3'
             placeholder='Brief Summary...'
           />
-          <Input
-            @id='answer'
-            required='true'
-            @type='hidden'
-            @value={{answer}}
-          />
+          <Input id='answer' required='true' @type='hidden' @value={{answer}} />
         </div>
         {{#each this.briefSummaryErrors as |error|}}
           <ErrorBox
@@ -70,9 +65,14 @@
             </a>
             <button
               class='edit-image-btn'
+              type='button'
               {{action 'deleteImage'}}
             >Delete</button>
-            <button class='edit-image-btn' {{action 'addImage'}}>Add</button>
+            <button
+              class='edit-image-btn'
+              type='submit'
+              {{action 'addImage'}}
+            >Add</button>
             {{!-- {{else}}
               {{image-upload
                 filesToBeUploaded=filesToBeUploaded
@@ -88,14 +88,14 @@
             <ul>
               {{#each this.contributors as |student|}}
                 <li>{{student.username}}
-                  {{#unless (is-equal student this.currentUser.user)}}
+                  {{#if (not (is-equal student this.currentUser.user))}}
                     <i
                       {{action 'removeStudent' student}}
                       class='far fa-times-circle'
                       aria-hidden='true'
                       title='Remove'
                     ></i>
-                  {{/unless}}
+                  {{/if}}
                 </li>
               {{/each}}
             </ul>
@@ -151,12 +151,14 @@
         <button
           class='add-parent-workspace-btn create'
           data-test='submit-answer'
+          type='button'
           {{action 'validate'}}
         >{{if @createButtonText @createButtonText 'Submit Answer'}} </button>
       </span>
       <span class='cancelResponse'>
         <button
           class='cancelEditBtn'
+          type='button'
           {{action 'cancelResponse'}}
         >Cancel</button>
       </span>

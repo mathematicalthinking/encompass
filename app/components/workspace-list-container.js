@@ -1,36 +1,53 @@
-import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
-import { alias, or } from '@ember/object/computed';
-import _ from 'underscore';
-/*global _:false */
-import { later } from '@ember/runloop';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import { isEqual } from '@ember/utils';
-import $ from 'jquery';
-import moment from 'moment';
+import { later, cancel } from '@ember/runloop';
+import { htmlSafe } from '@ember/template';
 
-export default Component.extend({
-  elementId: 'workspace-list-container',
-  showList: true,
-  errorHandling: service('error-handling'),
-  showGrid: false,
-  toggleTrashed: false,
-  toggleHidden: false,
-  utils: service('utility-methods'),
+/**
+ * <WorkspaceListContainer
+  @workspaces={{this.model.workspaces}}
+  @organizations={{this.model.organizations}}
+  @toCopyWorkspace={{this.toCopyWorkspace}}
+/>
+*/
+export default class WorkspaceListContainerComponent extends Component {
+  @service errorHandling;
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
+  @service currentUser;
+  @service store;
+  @service inputState;
 
-  sortProperties: ['name'],
-  workspaceToDelete: null,
-  alert: service('sweet-alert'),
+  @tracked workspaces = this.args.workspaces || [];
 
-  searchOptions: ['all', 'name', 'owner', 'collaborators'],
-  searchCriterion: 'all',
-  sortCriterion: {
+  @tracked showList = true;
+  @tracked showGrid = false;
+  @tracked toggleTrashed = false;
+  @tracked toggleHidden = false;
+  @tracked selectedMode = ['public', 'private', 'org'];
+  @tracked _isFetchingWorkspaces = false;
+  @tracked showLoadingMessage = false;
+  @tracked searchByRelevance = false;
+  @tracked searchQuery = null;
+  @tracked searchInputValue = null;
+  @tracked isDisplayingSearchResults = false;
+  @tracked isSearchingWorkspaces = false;
+  @tracked isChangingPage = false;
+  @tracked criteriaTooExclusive = null;
+  @tracked isFilterListCollapsed = false;
+
+  @tracked searchCriterion = 'all';
+  searchOptions = ['all', 'name', 'owner', 'collaborators'];
+
+  @tracked sortCriterion = {
     name: 'Newest',
     sortParam: { lastModifiedDate: -1 },
     doCollate: true,
     type: 'lastModifiedDate',
-  },
-  sortOptions: {
+  };
+  sortOptions = {
     name: [
       { sortParam: null, icon: '' },
       {
@@ -145,7 +162,7 @@ export default Component.extend({
         type: 'owner',
       },
       {
-        owner: 'Z-A',
+        name: 'Z-A',
         sortParam: { owner: -1 },
         doCollate: true,
         icon: 'fas fa-sort-alpha-up sort-icon',
@@ -169,8 +186,8 @@ export default Component.extend({
         type: 'collabs',
       },
     ],
-  },
-  modeOptions: [
+  };
+  modeOptions = [
     {
       id: 1,
       label: 'All',
@@ -192,573 +209,507 @@ export default Component.extend({
       isChecked: false,
       icon: 'fas fa-unlock',
     },
-  ],
-  selectedMode: ['public', 'private', 'org'],
+  ];
 
-  moreMenuOptions: [
-    {
-      label: 'Copy',
-      value: 'copy',
-      action: 'copyWorkspace',
-      icon: 'fas fa-copy',
-    },
-    {
-      label: 'Assign',
-      value: 'assign',
-      action: 'assignWorkspace',
-      icon: 'fas fa-list-ul',
-    },
-    {
-      label: 'Hide',
-      value: 'hide',
-      action: 'hideWorkspace',
-      icon: 'fas fa-archive',
-    },
-    {
-      label: 'Delete',
-      value: 'delete',
-      action: 'deleteWorkspace',
-      icon: 'fas fa-trash',
-    },
-  ],
+  // Variable to hold the timer reference (handleLoadingMessages)
+  loadingMessageTimer = null;
 
-  adminFilter: alias('filter.primaryFilters.inputs.all'),
+  constructor() {
+    super(...arguments);
+    this.getUserOrg().then((org) => {
+      this.userOrgName = org;
+      this.configureMainFilter();
+      this.configureAdminFilter();
+    });
+  }
 
-  primaryFilterValue: alias('primaryFilter.value'),
-  doUseSearchQuery: or('isSearchingWorkspaces', 'isDisplayingSearchResults'),
+  get workspacesMetadata() {
+    return this.workspaces?.meta || null;
+  }
 
-  listResultsMessage: computed(
-    'criteriaTooExclusive',
-    'isDisplayingSearchResults',
-    'workspaces.@each.isTrashed',
-    'isFetchingWorkspaces',
-    'showLoadingMessage',
-    function () {
-      let msg;
-      // let userOrgName = this.get('userOrgName');
-      if (this.isFetchingWorkspaces) {
-        if (this.showLoadingMessage) {
-          msg = 'Loading results... Thank you for your patience.';
-        } else {
-          msg = '';
-        }
-        return msg;
-      }
-      if (this.criteriaTooExclusive) {
-        msg = 'No results found. Please try expanding your filter criteria.';
-        return msg;
-      }
+  get showAdminFilters() {
+    return (
+      this.user.isAdmin &&
+      this.inputState.getSelectionValue(this.filterName) === 'all'
+    );
+  }
 
-      if (this.isDisplayingSearchResults) {
-        let countDescriptor = 'workspaces';
-        let verb;
-        let criterion = this.searchCriterion;
-        if (criterion === 'all') {
-          verb = 'contain';
-        } else {
+  get adminFilterName() {
+    return 'workspace-admin-filter';
+  }
+
+  get filterName() {
+    return 'workspace-filter';
+  }
+
+  get user() {
+    return this.currentUser.user;
+  }
+
+  get doUseSearchQuery() {
+    return this.isSearchingWorkspaces || this.isDisplayingSearchResults;
+  }
+
+  get modeFilter() {
+    return { $in: this.selectedMode };
+  }
+
+  get orgOptions() {
+    return (
+      this.args.organizations?.map((org) => ({
+        id: org.id,
+        name: org.name,
+      })) ?? []
+    );
+  }
+
+  get listResultsMessage() {
+    if (this.isFetchingWorkspaces) {
+      return this.showLoadingMessage
+        ? 'Loading results... Thank you for your patience.'
+        : '';
+    }
+
+    if (this.criteriaTooExclusive) {
+      return 'No results found. Please try expanding your filter criteria.';
+    }
+
+    if (this.isDisplayingSearchResults) {
+      let countDescriptor = 'workspaces';
+      let verb = this.searchCriterion === 'all' ? 'contain' : 'contains';
+      let total = this.workspacesMetadata?.total || 0;
+
+      if (total === 1) {
+        countDescriptor = 'workspace';
+        if (this.searchCriterion === 'all') {
           verb = 'contains';
         }
-        let total = this.get('workspacesMetadata.total');
-        if (total === 1) {
-          countDescriptor = 'workspace';
-          if (criterion === 'all') {
-            verb = 'contains';
-          }
-        }
-        let typeDescription = `whose ${criterion} ${verb}`;
-        if (this.searchCriterion === 'all') {
-          typeDescription = `that ${verb}`;
-        }
-        msg = `Based off your filter criteria, we found ${this.get(
-          'workspacesMetadata.total'
-        )} ${countDescriptor} ${typeDescription} "${this.searchQuery}"`;
-        return msg;
-      }
-      msg = `${this.get('workspacesMetadata.total')} workspaces found`;
-
-      if (this.toggleTrashed) {
-        msg = `${msg} - <strong>Displaying Trashed Workspaces</strong>`;
       }
 
-      return msg;
+      let typeDescription =
+        this.searchCriterion === 'all'
+          ? `that ${verb}`
+          : `whose ${this.searchCriterion} ${verb}`;
+
+      return `Based on your filter criteria, we found ${total} ${countDescriptor} ${typeDescription} "${this.searchQuery}"`;
     }
-  ),
 
-  init: function () {
-    this.getUserOrg().then((name) => {
-      this.set('userOrgName', name);
-      this.configureFilter();
-      this.configurePrimaryFilter();
-    });
-    this._super(...arguments);
-  },
+    let message = `${this.workspacesMetadata?.total || 0} workspaces found`;
+
+    if (this.toggleTrashed) {
+      message += ' - <strong>Displaying Trashed Workspaces</strong>';
+      return htmlSafe(message);
+    }
+
+    return message;
+  }
+
+  get displayWorkspaces() {
+    this.workspaces;
+    let hiddenWorkspaces = this.user?.hiddenWorkspaces || [];
+    let visibleWorkspaces = this.workspaces.filter(
+      (workspace) => !hiddenWorkspaces.includes(workspace.id)
+    );
+
+    if (this.toggleTrashed) {
+      return visibleWorkspaces;
+    }
+
+    if (!this.toggleHidden) {
+      return visibleWorkspaces.filter((workspace) => !workspace.isTrashed);
+    }
+
+    return [];
+  }
+
+  get isFetchingWorkspaces() {
+    return this._isFetchingWorkspaces;
+  }
+
+  set isFetchingWorkspaces(value) {
+    this._isFetchingWorkspaces = value;
+    this.handleLoadingMessage();
+  }
+
+  @action
+  handleListViewClick() {
+    this.isFilterListCollapsed = true;
+  }
+
+  handleLoadingMessage() {
+    // Cancel any existing timer
+    if (this.loadingMessageTimer) {
+      cancel(this.loadingMessageTimer);
+      this.loadingMessageTimer = null;
+    }
+    if (!this.isFetchingWorkspaces) {
+      this.showLoadingMessage = false;
+      return;
+    }
+    // Schedule the loading message to appear after 300ms
+    this.loadingMessageTimer = later(
+      this,
+      () => {
+        // Check if the component is still alive and fetching is still in progress
+        if (
+          this.isDestroyed ||
+          this.isDestroying ||
+          !this.isFetchingWorkspaces
+        ) {
+          return;
+        }
+        this.showLoadingMessage = true;
+      },
+      300
+    );
+  }
+
+  @action
+  refreshList() {
+    let isTrashedOnly = this.toggleTrashed;
+    let isHiddenOnly = this.toggleHidden;
+    this.getWorkspaces(null, isTrashedOnly, isHiddenOnly);
+  }
+
+  @action
+  setGrid() {
+    this.showGrid = true;
+    this.showList = false;
+  }
+
+  @action
+  setList() {
+    this.showList = true;
+    this.showGrid = false;
+  }
+
+  @action
+  triggerShowTrashed() {
+    this.triggerFetch(this.toggleTrashed);
+  }
+
+  @action
+  triggerShowHidden() {
+    this.triggerFetch(this.toggleHidden);
+  }
+
+  @action
+  clearSearchResults() {
+    this.searchQuery = null;
+    this.searchInputValue = null;
+    this.isDisplayingSearchResults = false;
+    this.triggerFetch();
+  }
+
+  @action
+  searchWorkspaces(val, criterion) {
+    if (criterion === 'all') {
+      this.searchByRelevance = true;
+    }
+    this.searchQuery = val;
+    this.searchCriterion = criterion;
+    this.isSearchingWorkspaces = true;
+    this.triggerFetch();
+  }
+
+  @action
+  initiatePageChange(page) {
+    this.isChangingPage = true;
+    let isTrashedOnly = this.toggleTrashed;
+    let isHiddenOnly = this.toggleHidden;
+    this.getWorkspaces(page, isTrashedOnly, isHiddenOnly);
+  }
+
+  @action
+  updateSortCriterion(criterion) {
+    this.sortCriterion = criterion;
+    this.triggerFetch();
+  }
+
+  @action
+  triggerFetch(isTrashedOnly = false, isHiddenOnly = false) {
+    if (this.criteriaTooExclusive) {
+      this.criteriaTooExclusive = null;
+    }
+    this.getWorkspaces(null, isTrashedOnly, isHiddenOnly);
+  }
+
+  @action
+  updateMode(val) {
+    if (!val) {
+      return;
+    }
+    this.selectedMode = val;
+    this.triggerFetch();
+  }
+
+  @action
+  toggleMenu() {
+    this.isFilterListCollapsed = !this.isFilterListCollapsed;
+  }
+
+  @action
+  detectWidth(element) {
+    if (element.offsetWidth <= 430) {
+      this.setGrid();
+    }
+  }
 
   getUserOrg() {
-    return this.model.currentUser.organization.then((org) => {
+    return this.user.organization.then((org) => {
       if (org) {
-        return org.get('name');
+        return org.name;
       } else {
         this.alert.showModal(
           'warning',
           'You currently do not belong to any organization',
           'Please add or request an organization in order to get the best user experience',
-          'Ok'
+          'Ok',
+          null
         );
         return 'undefined';
       }
     });
-  },
+  }
 
-  didReceiveAttrs() {
-    let attributes = ['workspaces', 'organizations'];
-    for (let attr of attributes) {
-      let prop = this.get(attr);
-      let modelAttr = this.model[attr];
-      if (!isEqual(prop, modelAttr)) {
-        this.set(attr, modelAttr);
-        let metaPropName = `${attr}Metadata`;
-        let meta = modelAttr.get('meta');
-        if (meta) {
-          this.set(metaPropName, meta);
-        }
-      }
-    }
-  },
-
-  didInsertElement() {
-    let width = this.$().css('width');
-    let widthNum = parseInt(width, 10);
-    if (widthNum <= 430) {
-      this.send('setGrid');
-    }
-
-    let doHideOutlet = this.doHideOutlet;
-    if (_.isUndefined(doHideOutlet)) {
-      this.set('doHideOutlet', this.get('model.hideOutlet'));
-    }
-    if (this.doHideOutlet === false) {
-      this.$('#outlet').removeClass('hidden');
-    }
-    this._super(...arguments);
-  },
-
-  configureFilter: function () {
-    let currentUserOrgName = this.userOrgName;
-
-    let filter = {
-      primaryFilters: {
-        selectedValue: 'mine',
-        inputs: {
-          mine: {
-            label: 'Mine',
-            value: 'mine',
-            isChecked: true,
-            icon: 'fas fa-user',
-            order: 1,
-            secondaryFilters: {
-              selectedValues: ['createdBy', 'owner'],
-              inputs: {
-                createdBy: {
-                  label: 'Created By Me',
-                  value: 'createdBy',
-                  isChecked: true,
-                  isApplied: true,
-                  icon: 'fas fa-wrench',
-                },
-                owner: {
-                  label: 'Owner',
-                  value: 'owner',
-                  isChecked: true,
-                  isApplied: true,
-                  icon: 'fas fa-building',
-                },
+  configureMainFilter() {
+    this.inputState.createStates(this.filterName, [
+      ...(this.user.isAdmin
+        ? [
+            {
+              value: 'all',
+              label: 'All',
+              icon: 'fas fa-infinity',
+              buildFilter: () => {
+                // Admin can see everything, no restrictions
+                return this.inputState.getFilter(this.adminFilterName);
               },
             },
-          },
-          collab: {
-            label: 'Collaborator',
-            value: 'collab',
-            isChecked: false,
-            icon: 'fas fa-users',
-            order: 2,
-          },
-          myOrg: {
-            label: 'My Org',
-            value: 'myOrg',
-            isChecked: false,
-            icon: 'fas fa-university',
-            order: 3,
-          },
-          everyone: {
-            label: 'Public',
-            value: 'everyone',
-            isChecked: false,
-            icon: 'fas fa-globe-americas',
-            order: 4,
-          },
+          ]
+        : []),
+      {
+        value: 'mine',
+        label: 'Mine',
+        icon: 'fas fa-user',
+      },
+      {
+        value: 'collab',
+        label: 'Collaborator',
+        icon: 'fas fa-users',
+        buildFilter: () => {
+          const collabWorkspaces = this.user.collabWorkspaces || [];
+          if (!collabWorkspaces.length) {
+            this.criteriaTooExclusive = true;
+            return {}; // No collaborative workspaces found
+          }
+          return { _id: { $in: collabWorkspaces } };
         },
       },
-    };
-    let isAdmin = this.get('model.currentUser.isAdmin');
-    let isPdadmin = this.get('model.currentUser.accountType') === 'P';
-    if (isPdadmin) {
-      filter.primaryFilters.inputs.myOrg.secondaryFilters = {
-        selectedValues: ['orgProblems', 'fromOrg'],
-        inputs: {
-          orgProblems: {
-            label: `Visbile to ${currentUserOrgName}`,
+      {
+        value: 'myOrg',
+        label: 'My Org',
+        icon: 'fas fa-university',
+        buildFilter: () => {
+          const userOrgId = this.user.organization.id;
+          return { organization: userOrgId };
+        },
+      },
+      {
+        value: 'everyone',
+        label: 'Public',
+        icon: 'fas fa-globe-americas',
+        buildFilter: () => ({ mode: 'public' }),
+      },
+    ]);
+
+    // Substates for 'mine'
+    this.inputState.createSubStates(
+      this.filterName,
+      'mine',
+      [
+        {
+          label: 'Created By Me',
+          value: 'createdBy',
+          icon: 'fas fa-wrench',
+          default: true,
+        },
+        {
+          label: 'Owner',
+          value: 'owner',
+          icon: 'fas fa-building',
+          default: true,
+        },
+      ],
+      { listBased: false, multiSelect: true, persist: true },
+      (selections = []) => {
+        const userId = this.user.id;
+        const filter = { $or: [] };
+        const includeCreated = selections.includes('createdBy');
+        const includeOwner = selections.includes('owner');
+        if (!includeCreated && !includeOwner) {
+          this.criteriaTooExclusive = true;
+          return {};
+        }
+        if (includeCreated) {
+          filter.$or.push({ createdBy: userId });
+        }
+        if (includeOwner) {
+          filter.$or.push({ owner: userId });
+        }
+        return filter;
+      }
+    );
+
+    // Substates for 'myOrg'
+    if (this.user.accountType === 'P') {
+      this.inputState.createSubStates(
+        this.filterName,
+        'myOrg',
+        [
+          {
             value: 'orgProblems',
-            isChecked: true,
-            isApplied: true,
+            label: `Visible to ${this.user.organization.name}`,
             icon: 'fas fa-dot-circle',
+            default: true,
           },
-          fromOrg: {
-            label: `${currentUserOrgName} Workspaces`,
+          {
             value: 'fromOrg',
-            isChecked: true,
-            isApplied: true,
+            label: `${this.user.organization.name} Workspaces`,
             icon: 'fas fa-users',
+            default: true,
           },
-        },
-      };
-    }
+        ],
+        { listBased: false, multiSelect: true, persist: true },
+        // @TODO check this versus main selection buildFilter
+        (selections = []) => {
+          const userOrgId = this.user.organization.id;
+          const filter = { $or: [] };
+          if (selections && selections.length === 0) {
+            filter.mode = 'org';
+            filter.$or.push({ organization: userOrgId });
+            return filter;
+          }
 
-    if (isAdmin) {
-      filter.primaryFilters.inputs.mine.isChecked = false;
-      delete filter.primaryFilters.inputs.myOrg;
-      filter.primaryFilters.inputs.all = {
-        label: 'All',
-        value: 'all',
-        icon: 'fas fa-infinity',
-        isChecked: true,
-        order: 0,
-        secondaryFilters: {
-          selectedValue: 'org',
-          initialItems: ['org'],
-          inputs: {
-            org: {
-              label: 'Organization',
-              value: 'org',
-              selectedValues: [],
-              subFilters: {
-                selectedValues: ['fromOrg', 'orgWorkspaces'],
-                inputs: {
-                  fromOrg: {
-                    label: `Created or Owned by Members`,
-                    value: 'fromOrg',
-                    isChecked: true,
-                    isApplied: true,
-                    icon: 'fas fa-users',
-                  },
-                  orgWorkspaces: {
-                    label: `Visibile to Members`,
-                    value: 'orgWorkspaces',
-                    isChecked: true,
-                    isApplied: true,
-                    icon: 'fas fa-dot-circle',
-                  },
-                },
-              },
-            },
-            creator: {
-              label: 'Creator',
-              value: 'creator',
-              selectedValues: [],
-            },
-            owner: {
-              label: 'Owner',
-              value: 'owner',
-              selectedValues: [],
-            },
-          },
-        },
-      };
-    }
-    this.set('filter', filter);
-  },
-
-  modeFilter: computed('selectedMode', function () {
-    return {
-      $in: this.selectedMode,
-    };
-  }),
-
-  configurePrimaryFilter() {
-    let primaryFilters = this.get('filter.primaryFilters');
-    if (this.get('model.currentUser.isAdmin')) {
-      primaryFilters.selectedValue = 'all';
-      this.set('primaryFilter', primaryFilters.inputs.all);
-      return;
-    }
-    this.set('primaryFilter', primaryFilters.inputs.mine);
-  },
-
-  buildMineFilter() {
-    let filter = {};
-    let userId = this.get('model.currentUser.id');
-    let secondaryValues = this.get(
-      'primaryFilter.secondaryFilters.selectedValues'
-    );
-
-    let includeCreated = _.indexOf(secondaryValues, 'createdBy') !== -1;
-    let includeOwner = _.indexOf(secondaryValues, 'owner') !== -1;
-
-    if (!includeCreated && !includeOwner) {
-      this.set('criteriaTooExclusive', true);
-      return;
-    }
-
-    filter.$or = [];
-
-    if (includeCreated) {
-      filter.$or.push({ createdBy: userId });
-    }
-
-    if (includeOwner) {
-      filter.$or.push({ owner: userId });
-    }
-
-    return filter;
-  },
-
-  buildPublicFilter() {
-    let filter = {};
-
-    filter.mode = 'public';
-
-    return filter;
-  },
-
-  buildMyOrgFilter() {
-    let filter = {};
-    let userOrgId = this.model.currentUser.get('organization.id');
-    let secondaryValues = this.get(
-      'primaryFilter.secondaryFilters.selectedValues'
-    );
-    filter.$or = [];
-
-    if (secondaryValues) {
-      let includeOrgWorkspaces =
-        _.indexOf(secondaryValues, 'orgProblems') !== -1;
-      let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
-
-      if (!includeOrgWorkspaces && !includeFromOrg) {
-        this.set('criteriaTooExclusive', true);
-        return;
-      }
-
-      if (includeOrgWorkspaces) {
-        this.set('selectedMode', ['org']);
-        filter.$or.push({ organization: userOrgId });
-      }
-
-      if (includeFromOrg) {
-        this.set('selectedMode', ['org', 'private', 'public']);
-        filter.includeFromOrg = true;
-        //find all workspaces who's owner's org is same as yours
-      }
-    } else {
-      filter.mode = 'org';
-      filter.$or.push({ organization: userOrgId });
-    }
-    return filter;
-  },
-
-  buildAllFilter() {
-    let filter = {};
-    let adminFilter = this.adminFilter;
-    let currentVal = adminFilter.secondaryFilters.selectedValue;
-    let selectedValues =
-      adminFilter.secondaryFilters.inputs[currentVal].selectedValues;
-
-    let isEmpty = _.isEmpty(selectedValues);
-
-    // if empty, do nothing - means include all orgs
-    if (currentVal === 'org') {
-      // no org selected yet, so no filter applied yet
-      if (isEmpty) {
-        return {};
-      }
-      // recommended, fromOrg
-      let secondaryValues = this.get(
-        'adminFilter.secondaryFilters.inputs.org.subFilters.selectedValues'
+          const includeOrgWorkspaces = selections.includes('orgProblems');
+          const includeFromOrg = selections.includes('fromOrg');
+          if (!includeOrgWorkspaces && !includeFromOrg) {
+            this.criteriaTooExclusive = true;
+            return {};
+          }
+          if (includeOrgWorkspaces) {
+            this.selectedMode = ['org'];
+            filter.$or.push({ organization: userOrgId });
+          }
+          if (includeFromOrg) {
+            this.selectedMode = ['org', 'private', 'public']; //OK??
+            filter.includeFromOrg = true;
+          }
+          return filter;
+        }
       );
-
-      let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
-      let includeOrgWorkspaces =
-        _.indexOf(secondaryValues, 'orgWorkspaces') !== -1;
-
-      // immediately return 0 results
-      if (!includeFromOrg && !includeOrgWorkspaces) {
-        this.set('criteriaTooExclusive', true);
-        return;
-      }
-      filter.all = {};
-      filter.all.org = {};
-
-      filter.all.org.organizations = selectedValues;
-      // mode "org" and organization prop
-      if (includeOrgWorkspaces) {
-        this.set('selectedMode', ['org']);
-      }
-      //
-      if (includeFromOrg) {
-        this.set('selectedMode', ['org', 'private', 'public']);
-        filter.all.org.includeFromOrg = true;
-        //find all workspaces who's owner's org is same as yours
-      }
-      return filter;
     }
+  }
 
-    if (currentVal === 'creator') {
-      if (!isEmpty) {
-        filter.createdBy = { $in: selectedValues };
-      }
-      return filter;
-    }
-
-    if (currentVal === 'owner') {
-      if (!isEmpty) {
-        filter.owner = { $in: selectedValues };
-      }
-      return filter;
-    }
-    return filter;
-  },
-
-  buildCollabFilter() {
-    const utils = this.utils;
-    const collabWorkspaces = this.get('model.currentUser.collabWorkspaces');
-
-    let ids;
-    let filter = {};
-
-    if (utils.isNonEmptyArray(collabWorkspaces)) {
-      ids = collabWorkspaces;
-    }
-    // user is not a collaborator for any workspaces
-    if (!this.utils.isNonEmptyArray(ids)) {
-      this.set('criteriaTooExclusive', true);
-      return filter;
-    }
-    filter._id = { $in: ids };
-
-    return filter;
-  },
-
-  buildModeFilter: function () {
-    //privacy setting determined from privacy drop down on main display
-    let mode = this.modeFilter;
-    return {
-      $in: mode,
+  configureAdminFilter() {
+    const userProperties = {
+      inputId: 'all-user-filter',
+      maxItems: 3,
+      labelField: 'username',
+      valueField: 'id',
+      searchField: 'name',
+      model: 'user',
+      queryParamsKey: 'usernameSearch',
+      isAsync: true,
+      placeholder: 'Username...',
+      type: 'list',
     };
-  },
 
-  buildSortBy: function () {
-    if (this.searchByRelevance) {
-      return {
-        // $meta: 'textScore' breaks search by text
-        sortParam: {
-          // score: { $meta: 'textScore' },
+    this.inputState.createStates(this.adminFilterName, [
+      {
+        value: 'org',
+        label: 'Organization',
+        inputId: 'all-org-filter',
+        options: this.orgOptions,
+        maxItems: 3,
+        labelField: 'name',
+        valueField: 'id',
+        searchField: 'name',
+        placeholder: 'Organization name...',
+        propName: 'org',
+        type: 'list',
+      },
+      {
+        value: 'creator',
+        label: 'Creator',
+        propName: 'creator',
+        ...userProperties,
+        buildFilter: () => {
+          const selectedUsers =
+            this.inputState.getListState(this.adminFilterName) || [];
+          return { createdBy: { $in: selectedUsers } };
         },
-        doCollate: false,
-        byRelevance: true,
-      };
-    }
+      },
+      {
+        value: 'owner',
+        label: 'Owner',
+        propName: 'owner',
+        ...userProperties,
+        buildFilter: () => {
+          const selectedUsers =
+            this.inputState.getListState(this.adminFilterName) || [];
+          return { owner: { $in: selectedUsers } };
+        },
+      },
+    ]);
 
-    let criterion = this.sortCriterion;
-    if (!criterion) {
-      return { title: 1, doCollate: true };
-    }
-    let { sortParam, doCollate } = criterion;
-    return {
-      sortParam,
-      doCollate,
-    };
-  },
+    // Substates for 'org'
+    this.inputState.createSubStates(
+      this.adminFilterName,
+      'org',
+      [
+        {
+          label: `Created or Owned by Members`,
+          value: 'fromOrg',
+          icon: 'fas fa-users',
+          default: true,
+        },
+        {
+          label: `Visible to Members`,
+          value: 'orgWorkspaces',
+          default: true,
+          icon: 'fas fa-dot-circle',
+        },
+      ],
+      { listBased: true, multiSelect: true },
+      (selections = []) => {
+        const includeFromOrg = selections.includes('fromOrg');
+        const includeOrgWorkspaces = selections.includes('orgWorkspaces');
 
-  buildSearchBy: function () {
-    let criterion = this.searchCriterion;
-    let query = this.searchQuery;
-    return {
-      criterion,
-      query,
-    };
-  },
-
-  buildFilterBy: function () {
-    let primaryFilterValue = this.primaryFilterValue;
-    let isPdadmin = this.get('model.currentUser.accountType') === 'P';
-    let filterBy;
-
-    if (primaryFilterValue === 'mine') {
-      filterBy = this.buildMineFilter();
-    }
-
-    if (primaryFilterValue === 'collab') {
-      filterBy = this.buildCollabFilter();
-    }
-
-    if (primaryFilterValue === 'everyone') {
-      filterBy = this.buildPublicFilter();
-    }
-
-    if (primaryFilterValue === 'myOrg') {
-      filterBy = this.buildMyOrgFilter();
-    }
-
-    if (primaryFilterValue === 'all') {
-      filterBy = this.buildAllFilter();
-    }
-    if (_.isUndefined(filterBy) || _.isNull(filterBy)) {
-      filterBy = {};
-    }
-    // primary public filter should disable privacy setting dropdown?
-    if (primaryFilterValue === 'everyone') {
-      filterBy.mode = { $in: ['public'] };
-    } else if (primaryFilterValue === 'myOrg') {
-      if (isPdadmin) {
-        let mode = this.modeFilter;
-        filterBy.mode = mode;
-      } else {
-        filterBy.mode = { $in: ['org'] };
-      }
-    } else {
-      let mode = this.modeFilter;
-      filterBy.mode = mode;
-    }
-
-    return filterBy;
-  },
-
-  displayWorkspaces: computed(
-    'workspaces.@each.isTrashed',
-    'toggleTrashed',
-    'currentUser.hiddenWorkspaces',
-    function () {
-      let hiddenWorkspaces = this.get('model.currentUser.hiddenWorkspaces');
-      let workspaces = this.workspaces;
-      let visibileWorkspaces = workspaces.filter((workspace) => {
-        if (!hiddenWorkspaces.includes(workspace.id)) {
-          return workspace;
+        if (!includeFromOrg && !includeOrgWorkspaces) {
+          this.criteriaTooExclusive = true;
+          return {};
         }
-      });
 
-      if (visibileWorkspaces) {
-        if (this.toggleTrashed) {
-          return visibileWorkspaces;
-        } else if (this.toggleHidden) {
-          // this.get('store').findRecord('workspace', hiddenWorkspaces[0]).then((workspaces) => {
-          //   console.log(workspaces.id);
-          // });
-        } else {
-          return visibileWorkspaces.rejectBy('isTrashed');
+        const organizations =
+          this.inputState.getListState(this.adminFilterName) || [];
+        const filter = {
+          all: { org: { organizations: { $in: organizations } } },
+        };
+
+        if (includeOrgWorkspaces) {
+          this.selectedMode = ['org'];
         }
-      }
-    }
-  ),
 
-  buildQueryParams: function (page, isTrashedOnly) {
+        if (includeFromOrg) {
+          this.selectedMode = ['org', 'private', 'public'];
+          filter.all.org.includeFromOrg = true;
+        }
+        return filter;
+      }
+    );
+  }
+
+  buildQueryParams(page, isTrashedOnly) {
     let params = {};
     if (page) {
       params.page = page;
@@ -773,10 +724,8 @@ export default Component.extend({
     let filterBy = this.buildFilterBy();
 
     if (this.criteriaTooExclusive) {
-      // display message or just 0 results
-      this.set('workspaces', []);
-      this.set('workspacesMetadata', null);
-      this.set('isFetchingWorkspaces', false);
+      this.workspaces = [];
+      this.isFetchingWorkspaces = false;
       return;
     }
     params = {
@@ -792,34 +741,59 @@ export default Component.extend({
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
     }
+    console.log('params are', params);
     return params;
-  },
+  }
 
-  handleLoadingMessage: observer('isFetchingWorkspaces', function () {
-    const that = this;
-    if (!this.isFetchingWorkspaces) {
-      this.set('showLoadingMessage', false);
-      return;
+  //privacy setting determined from privacy drop down on main display
+  buildModeFilter() {
+    return { $in: this.modeFilter };
+  }
+
+  buildSortBy() {
+    if (this.searchByRelevance) {
+      return {
+        sortParam: {},
+        doCollate: false,
+        byRelevance: true,
+      };
     }
-    later(function () {
-      if (
-        that.isDestroyed ||
-        that.isDestroying ||
-        !that.get('isFetchingWorkspaces')
-      ) {
-        return;
-      }
-      that.set('showLoadingMessage', true);
-    }, 300);
-  }),
 
-  getWorkspaces: function (page, isTrashedOnly = false, isHiddenOnly = false) {
-    this.set('isFetchingWorkspaces', true);
+    let criterion = this.sortCriterion;
+    if (!criterion) {
+      return { title: 1, doCollate: true };
+    }
+    let { sortParam, doCollate } = criterion;
+    return {
+      sortParam,
+      doCollate,
+    };
+  }
+
+  buildSearchBy() {
+    let criterion = this.searchCriterion;
+    let query = this.searchQuery;
+    return {
+      criterion,
+      query,
+    };
+  }
+
+  buildFilterBy() {
+    const filter = { mode: { $in: this.selectedMode } };
+    const mainFilter = this.inputState.getFilter(this.filterName) ?? {};
+
+    // Return the complete filter
+    return { ...filter, ...mainFilter };
+  }
+
+  getWorkspaces(page, isTrashedOnly = false, isHiddenOnly = false) {
+    this.isFetchingWorkspaces = true;
     let queryParams = this.buildQueryParams(page, isTrashedOnly);
 
     if (this.criteriaTooExclusive) {
       if (this.isFetchingWorkspaces) {
-        this.set('isFetchingWorkspaces', false);
+        this.isFetchingWorkspaces = false;
       }
       return;
     }
@@ -827,24 +801,21 @@ export default Component.extend({
     this.store
       .query('workspace', queryParams)
       .then((results) => {
-        this.removeMessages('workspaceLoadErrors');
-        this.set('workspaces', results);
-        this.set('workspacesMetadata', results.get('meta'));
-        this.set('isFetchingWorkspaces', false);
+        this.errorHandling.removeMessages('workspaceLoadErrors');
+        this.workspaces = results;
+        this.isFetchingWorkspaces = false;
 
-        let isSearching = this.isSearchingWorkspaces;
-
-        if (isSearching) {
-          this.set('isDisplayingSearchResults', true);
-          this.set('isSearchingWorkspaces', false);
+        if (this.isSearchingWorkspaces) {
+          this.isDisplayingSearchResults = true;
+          this.isSearchingWorkspaces = false;
         }
 
         if (this.searchByRelevance) {
-          this.set('searchByRelevance', false);
+          this.searchByRelevance = false;
         }
 
         if (this.isChangingPage) {
-          this.set('isChangingPage', false);
+          this.isChangingPage = false;
         }
 
         if (isHiddenOnly) {
@@ -854,180 +825,8 @@ export default Component.extend({
       .catch((err) => {
         if (!this.isDestroyed && !this.isDestroying) {
           this.errorHandling.handleErrors(err, 'workspaceLoadErrors');
-          this.set('isFetchingWorkspaces', false);
+          this.isFetchingWorkspaces = false;
         }
       });
-  },
-
-  currentAsOf: computed(function () {
-    return moment(this.since).format('H:mm');
-  }),
-
-  listFilter: 'all',
-
-  sortDisplayList: function (list) {
-    if (!list) {
-      return;
-    }
-    // TODO: robust sorting options
-
-    // for now just show most recently created at top
-    return list.sortBy('lastModifiedDate').reverse();
-  },
-
-  displayList: computed(
-    'listFilter',
-    'workspaces.@each.isTrashed',
-    function () {
-      const filterKey = {
-        all: 'allWorkspaces',
-        mine: 'ownWorkspaces',
-        public: 'publicWorkspaces',
-      };
-
-      const filter = this.listFilter;
-
-      if (_.isUndefined(filter) || _.isUndefined(filterKey[filter])) {
-        return this.workspaces.rejectBy('isTrashed');
-      }
-
-      const listName = filterKey[filter];
-      let displayList = this.get(listName);
-      let sorted = this.sortDisplayList(displayList);
-
-      // if (sorted) {
-      //   this.set('displayList', sorted);
-      //   return sorted;
-      // } else {
-      //   this.set('displayList', this.get(listName));
-      // }
-      return sorted;
-    }
-  ),
-
-  setOwnWorkspaces: observer('workspaces.@each.isTrashed', function () {
-    const currentUser = this.model.currentUser;
-    const workspaces = this.workspaces.rejectBy('isTrashed');
-
-    this.set(
-      'ownWorkspaces',
-      workspaces.filterBy('owner.id', this.model.currentUser.id)
-    );
-  }),
-
-  setAllWorkspaces: observer('workspaces.@each.isTrashed', function () {
-    this.set('allWorkspaces', this.workspaces.rejectBy('isTrashed'));
-  }),
-
-  setPublicWorkspaces: observer('workspaces.@each.isTrashed', function () {
-    const workspaces = this.workspaces.rejectBy('isTrashed');
-    this.set('publicWorkspaces', workspaces.filterBy('mode', 'public'));
-  }),
-
-  actions: {
-    showModal: function (ws) {
-      this.set('workspaceToDelete', ws);
-      this.alert
-        .showModal(
-          'warning',
-          'Are you sure you want to delete this workspace?',
-          null,
-          'Yes, delete it'
-        )
-        .then((result) => {
-          if (result.value) {
-            this.send('trashWorkspace', ws);
-          }
-        });
-    },
-    refreshList() {
-      let isTrashedOnly = this.toggleTrashed;
-      let isHiddenOnly = this.toggleHidden;
-      this.getWorkspaces(null, isTrashedOnly, isHiddenOnly);
-    },
-    toggleFilter: function (key) {
-      if (key === this.listFilter) {
-        return;
-      }
-      this.set('listFilter', key);
-    },
-    triggerShowTrashed() {
-      this.send('triggerFetch', this.toggleTrashed);
-    },
-    triggerShowHidden() {
-      this.send('triggerFetch', this.toggleHidden);
-    },
-    clearSearchResults: function () {
-      this.set('searchQuery', null);
-      this.set('searchInputValue', null);
-      this.set('isDisplayingSearchResults', false);
-      this.send('triggerFetch');
-    },
-    updatePageResults(results) {
-      this.set('workspaces', results);
-    },
-
-    searchWorkspaces(val, criterion) {
-      if (criterion === 'all') {
-        this.set('searchByRelevance', true);
-      }
-      this.set('searchQuery', val);
-      this.set('searchCriterion', criterion);
-      this.set('isSearchingWorkspaces', true);
-      this.send('triggerFetch');
-    },
-    initiatePageChange: function (page) {
-      this.set('isChangingPage', true);
-      let isTrashedOnly = this.toggleTrashed;
-      let isHiddenOnly = this.toggleHidden;
-      this.getWorkspaces(page, isTrashedOnly, isHiddenOnly);
-    },
-
-    updateFilter: function (id, checked) {
-      let filter = this.filter;
-      let keys = Object.keys(filter);
-      if (!keys.includes(id)) {
-        return;
-      }
-      filter[id] = checked;
-      this.send('triggerFetch');
-    },
-    updateSortCriterion(criterion) {
-      this.set('sortCriterion', criterion);
-      this.send('triggerFetch');
-    },
-    triggerFetch(isTrashedOnly = false, isHiddenOnly = false) {
-      for (let prop of ['criteriaTooExclusive']) {
-        if (this.get(prop)) {
-          this.set(prop, null);
-        }
-      }
-      this.getWorkspaces(null, isTrashedOnly, isHiddenOnly);
-    },
-    setGrid: function () {
-      $('#layout-view').addClass('grid-view');
-      this.set('showGrid', true);
-      this.set('showList', false);
-    },
-    setList: function () {
-      $('#layout-view').removeClass('grid-view');
-      this.set('showList', true);
-      this.set('showGrid', false);
-    },
-    updateMode(val) {
-      if (!val) {
-        return;
-      }
-      this.set('selectedMode', val);
-      this.send('triggerFetch');
-    },
-    toggleMenu: function () {
-      $('#filter-list-side').toggleClass('collapse');
-      $('#arrow-icon').toggleClass('fa-rotate-180');
-      $('#filter-list-side').addClass('animated slideInLeft');
-    },
-    toCopyWorkspace(workspace) {
-      this.sendAction('toCopyWorkspace', workspace);
-    },
-  },
-});
+  }
+}

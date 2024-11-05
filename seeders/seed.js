@@ -13,7 +13,7 @@ const clearDB = () => {
     .then(() => {
       mongoose.connection.db.dropDatabase();
     })
-    .catch(err => {
+    .catch((err) => {
       console.log('db drop err: ', err);
     });
 };
@@ -22,18 +22,18 @@ const seedCollection = (db, collectionName, data) => {
   return db.collection(collectionName).insertMany(data);
 };
 
-const createIndexes = db => {
+const createIndexes = (db) => {
   let collectionNames = Object.keys(indexes);
   return Promise.all(
-    collectionNames.map(name => {
+    collectionNames.map((name) => {
       let ixes = indexes[name];
       return Promise.all(
-        ixes.map(ix => {
+        ixes.map((ix) => {
           return db.collection(name).createIndex(ix.keys, ix.options);
         })
       );
     })
-  ).catch(err => {
+  ).catch((err) => {
     console.log({ ixCreationErr: err });
   });
 };
@@ -43,9 +43,9 @@ const seed = async (collections = Object.keys(data)) => {
 
     let db = mongoose.connection;
 
-    let seededCollections = collections.map(collectionName => {
+    let seededCollections = collections.map((collectionName) => {
       return seedCollection(db, collectionName, data[collectionName]).then(
-        writeResults => {
+        (writeResults) => {
           return `${collectionName}: ${writeResults.result.n}`;
         }
       );

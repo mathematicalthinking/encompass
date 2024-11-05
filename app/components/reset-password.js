@@ -10,6 +10,7 @@ export default Component.extend({
   alert: service('sweet-alert'),
   errorHandling: service('error-handling'),
   didReceiveAttrs: function () {
+    this._super();
     const token = this.token;
     const that = this;
     if (token) {

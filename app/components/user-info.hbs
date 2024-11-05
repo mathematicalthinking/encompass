@@ -14,7 +14,7 @@
         {{#if this.isEditing}}
           <Input
             @value={{@user.username}}
-            @classNames='user-username'
+            class='user-username'
             {{on 'input' (fn (mut user.username) value='target.value')}}
           />
         {{else}}
@@ -27,7 +27,7 @@
       <td>First Name</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@user.firstName}} @classNames='user-first-name' />
+          <Input @value={{@user.firstName}} class='user-first-name' />
         {{else}}
           {{@user.firstName}}
         {{/if}}
@@ -37,7 +37,7 @@
       <td>Last Name</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@user.lastName}} @classNames='user-last-name' />
+          <Input @value={{@user.lastName}} class='user-last-name' />
         {{else}}
           {{@user.lastName}}
         {{/if}}
@@ -53,7 +53,7 @@
       <td>Email</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@user.email}} @classNames='user-email' />
+          <Input @value={{@user.email}} class='user-email' />
         {{else}}
           {{@user.email}}
         {{/if}}
@@ -87,7 +87,7 @@
     {{#if this.isEditing}}
       <tr>
         <td>Password</td>
-        <td><button class='reset-password' {{action 'resetPassword'}}>Reset
+        <td><button class='reset-password' type="button" {{action 'resetPassword'}}>Reset
             Password</button></td>
       </tr>
     {{/if}}
@@ -121,8 +121,8 @@
             <td>
               Would you like to create
               {{@user.organizationRequest}}<br />
-              <button {{action 'confirmOrgModal'}}>Yes</button>
-              <button {{action 'removeOrg'}}>No</button>
+              <button type="button" {{action 'confirmOrgModal'}}>Yes</button>
+              <button type="button" {{action 'removeOrg'}}>No</button>
             </td>
           {{else}}
             {{@user.organizationRequest}}
@@ -151,7 +151,7 @@
       <td>Location</td>
       <td>
         {{#if this.isEditing}}
-          <Input @value={{@user.location}} @classNames='user-location' />
+          <Input @value={{@user.location}} class='user-location' />
         {{else}}
           {{@user.location}}
         {{/if}}
@@ -162,9 +162,9 @@
       <td>
         {{#if this.isEditing}}
           {{#if this.seenTour}}
-            <button class='clearTour' {{action 'clearTour'}}>re-take tour</button>
+            <button class='clearTour' type="button" {{action 'clearTour'}}>re-take tour</button>
           {{else}}
-            <button class='doneTour' {{action 'doneTour'}}>don't show the tour</button>
+            <button class='doneTour' type="button" {{action 'doneTour'}}>don't show the tour</button>
           {{/if}}
         {{/if}}
         <span class='tourDate'>{{this.tourDate}}</span>
@@ -220,7 +220,7 @@
               <Input
                 @type='checkbox'
                 @checked={{@user.isAuthorized}}
-                @classNames='user-isAuth'
+                class='user-isAuth'
               />
             {{else}}
               {{@user.isAuthorized}}
@@ -251,8 +251,8 @@
               <Input
                 @type='checkbox'
                 @checked={{@user.isAuthorized}}
-                @name='isAuthorized'
-                @classNames='user-isAuth'
+                name='isAuthorized'
+                class='user-isAuth'
               />
             {{else}}
               {{@user.isAuthorized}}
@@ -281,31 +281,26 @@
       {{#unless this.isResettingPassword}}
         <div class='button-row'>
           <button
-            class='action_button save-user'
-            {{action 'checkOrgExists'}}
+            class='action_button save-user' type="button" {{action 'checkOrgExists'}}
           >Save</button>
           <button
-            class='action_button cancel-button cancel-user'
-            {{action 'cancel'}}
+            class='action_button cancel-button cancel-user' type="button" {{action 'cancel'}}
           >Cancel</button>
         </div>
       {{/unless}}
     {{else}}
       <div class='button-row'>
         <button
-          class='action_button edit-user'
-          {{action 'editUser'}}
+          class='action_button edit-user' type="button" {{action 'editUser'}}
         >Edit</button>
         {{#if @currentUser.isAdmin}}
           {{#if @user.isTrashed}}
             <button
-              class='action_button restore-button'
-              {{action 'restoreUser'}}
+              class='action_button restore-button' type="button" {{action 'restoreUser'}}
             >Restore User</button>
           {{else}}
             <button
-              class='action_button delete-button'
-              {{action 'deleteUser'}}
+              class='action_button delete-button' type="button" {{action 'deleteUser'}}
             >Delete</button>
           {{/if}}
         {{/if}}

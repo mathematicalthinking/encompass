@@ -1,24 +1,22 @@
 /*global _:false */
 import Service from '@ember/service';
 
-
-
-
-
-
-
 export default Service.extend({
   compareTwoStrings(str1, str2) {
-    if (!str1.length && !str2.length) { // if both are empty strings
+    if (!str1.length && !str2.length) {
+      // if both are empty strings
       return 1;
     }
-    if (!str1.length || !str2.length) { // if only one is empty string
+    if (!str1.length || !str2.length) {
+      // if only one is empty string
       return 0;
     }
-    if (str1.toUpperCase() === str2.toUpperCase()) { // identical
+    if (str1.toUpperCase() === str2.toUpperCase()) {
+      // identical
       return 1;
     }
-    if (str1.length === 1 && str2.length === 1) { // both are 1-letter strings
+    if (str1.length === 1 && str2.length === 1) {
+      // both are 1-letter strings
       return 0;
     }
 
@@ -26,7 +24,7 @@ export default Service.extend({
     const pairs2 = this.wordLetterPairs(str2);
     const union = pairs1.length + pairs2.length;
     let intersection = 0;
-    pairs1.forEach(pair1 => {
+    pairs1.forEach((pair1) => {
       //eslint-disable-next-line
       for (let i = 0, pair2; pair2 = pairs2[i]; i++) {
         if (pair1 !== pair2) {
@@ -37,20 +35,29 @@ export default Service.extend({
         break;
       }
     });
-    return intersection * 2 / union;
+    return (intersection * 2) / union;
   },
 
   findBestMatch(mainString, targetStrings) {
     if (!this.areArgsValid(mainString, targetStrings)) {
-      throw new Error('Bad arguments: First argument should be a string, second should be an array of strings');
+      throw new Error(
+        'Bad arguments: First argument should be a string, second should be an array of strings'
+      );
     }
-    const ratings = targetStrings.map(target => ({ target, rating: this.compareTwoStrings(mainString, target) }));
-    const bestMatch = Array.from(ratings).sort((a, b) => b.rating - a.rating)[0];
+    const ratings = targetStrings.map((target) => ({
+      target,
+      rating: this.compareTwoStrings(mainString, target),
+    }));
+    const bestMatch = Array.from(ratings).sort(
+      (a, b) => b.rating - a.rating
+    )[0];
     return { ratings, bestMatch };
   },
 
   flattenDeep(arr) {
-    return Array.isArray(arr) ? arr.reduce((a, b) => a.concat(this.flattenDeep(b)), []) : [arr];
+    return Array.isArray(arr)
+      ? arr.reduce((a, b) => a.concat(this.flattenDeep(b)), [])
+      : [arr];
   },
 
   areArgsValid(mainString, targetStrings) {
@@ -63,7 +70,7 @@ export default Service.extend({
     if (!targetStrings.length) {
       return false;
     }
-    if (targetStrings.find(s => typeof s !== 'string')) {
+    if (targetStrings.find((s) => typeof s !== 'string')) {
       return false;
     }
     return true;
@@ -96,5 +103,5 @@ export default Service.extend({
     }
 
     return tokens.join('');
-  }
+  },
 });

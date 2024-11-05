@@ -6,10 +6,10 @@
 <div class='metrics__container'>
   <Input
     type='text'
-    @placeholder='Search by folder name'
+    placeholder='Search by folder name'
     @value={{this.searchTerm}}
   />
-  <button {{on 'click' this.searchFoldersByName}}>Search Folders</button>
+  <button type="button" {{on 'click' this.searchFoldersByName}}>Search Folders</button>
   {{!-- <SelectizeInput @store={{this.store}} @inputId="problem-select" @initialOptions={{this.model.problems}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="selectedProblem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" /> --}}
   <div class='metrics--scrollable'>
     <ul>

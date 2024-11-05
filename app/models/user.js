@@ -6,7 +6,7 @@ export default class UserModel extends AuditableModel {
   @attr('string') lastName;
   @attr('string') email;
   @attr('string') avatar;
-  @belongsTo('organization') organization;
+  @belongsTo('organization', { async: true }) organization;
   @attr('string') organizationRequest;
   @attr('string') location;
   @attr('string') username;
@@ -16,7 +16,7 @@ export default class UserModel extends AuditableModel {
   @attr('string') accountType;
   @attr('boolean') isEmailConfirmed;
   @attr('boolean', { defaultValue: false }) isAuthorized;
-  @belongsTo('user', { inverse: null }) authorizedBy;
+  @belongsTo('user', { inverse: null, async: true }) authorizedBy;
   @attr('date') seenTour;
   @attr('date') lastImported;
   @attr('date') lastLogin;
@@ -25,7 +25,8 @@ export default class UserModel extends AuditableModel {
   @hasMany('assignment', { async: true, inverse: null }) assignments;
   @hasMany('answer', { async: true }) answers;
   @attr('string') actingRole;
-  @hasMany('notifications', { inverse: 'recipient' }) notifications;
+  @hasMany('notifications', { inverse: 'recipient', async: true })
+  notifications;
   get actingRoleName() {
     let actingRole = this.actingRole;
     if (this.accountType === 'P') {

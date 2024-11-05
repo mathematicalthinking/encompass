@@ -1,228 +1,203 @@
-<div class='flex-container-full'>
-  <div class='flex-item-full filter-options collapse' id='filter-list-side'>
-
-    <ProblemFilter
-      @showCategoryList={{this.showCategoryList}}
-      @categoryTree={{this.categoryTree}}
-      @store={{this.store}}
-      @onUpdate={{action 'triggerFetch'}}
-      @triggerShowTrashed={{action 'triggerShowTrashed'}}
-      @filter={{this.filter}}
-      @primaryFilter={{this.primaryFilter}}
-      @adminFilterSelect={{this.adminFilterSelect}}
-      @orgs={{this.model.currentUser.organization}}
-      @categoriesFilter={{this.categoriesFilter}}
-      @doIncludeSubCategories={{this.doIncludeSubCategories}}
-      @toggleTrashed={{this.toggleTrashed}}
-      @sendtoApplication='sendtoApplication'
-    />
-  </div>
-
-  <div class='flex-item-full list-view'>
-    <div class='list-container'>
-      <h1>Problems</h1>
-      <div class='searchbar'>
-        <SearchBar
-          @onSearch={{action 'searchProblems'}}
-          @showFilter={{true}}
-          @searchOptions={{this.searchOptions}}
-          @basePlaceholder='Search problems'
-          @inputValue={{this.searchInputValue}}
-          @clearSearchResults={{action 'clearSearchResults'}}
-          @selectedCriterion={{this.searchCriterion}}
-        />
-
-        <LinkTo
-          @route='problems.new'
-          @id='problem-new-link'
-          class='new-link-btn'
-        >
-          <i class='fas fa-plus' title='Create new problem'></i>
-        </LinkTo>
-      </div>
+<div id='problem-list-container' {{did-insert this.detectWidth}}>
+  <div class='flex-container-full'>
+    <div
+      class='flex-item-full filter-options
+        {{if this.isFilterListCollapsed "collapse"}}'
+      id='filter-list-side'
+    >
+      <ProblemFilter
+        @filterName={{this.filterName}}
+        @adminFilterName={{this.adminFilterName}}
+        @showAdminFilters={{this.showAdminFilters}}
+        @onUpdate={{this.triggerFetch}}
+        @showTrashed={{this.toggleTrashed}}
+        @toggleTrashed={{this.triggerShowTrashed}}
+        @categoriesFilter={{this.categoriesFilter}}
+        @onUpdateCategories={{this.handleUpdateCategories}}
+      />
     </div>
-    <div class='results-list'>
-      <div class='results-info'>
-        <div class='results-message'>
-          {{{this.listResultsMessage}}}
-        </div>
-        <div class='side-icons'>
-          <i
-            class='fas fa-redo-alt refresh-icon'
-            {{action 'refreshList'}}
-            title='Refresh problem list'
-          ></i>
-          <span class='layout-icons'>
-            {{#if this.showList}}
-              <img
-                src='../assets/images/grid.svg'
-                alt='grid'
-                class='grid-icon'
-                {{action 'setGrid'}}
-                title='Show in grid view'
-              />
-              <img
-                src='../assets//images/list-active.svg'
-                alt='list'
-                class='list-icon'
-                {{action 'setList'}}
-                title='Currently in list view'
-              />
-            {{/if}}
-            {{#if this.showGrid}}
-              <img
-                src='../assets/images/grid-active.svg'
-                alt='grid'
-                class='grid-icon'
-                {{action 'setGrid'}}
-                title='Currently in grid view'
-              />
-              <img
-                src='../assets/images/list.svg'
-                alt='list'
-                class='list-icon'
-                {{action 'setList'}}
-                title='Show in list view'
-              />
-            {{/if}}
-          </span>
+
+    <div
+      class='flex-item-full list-view'
+      {{on 'click' this.handleListViewClick}}
+    >
+      <div class='list-container'>
+        <h1>Problems</h1>
+
+        <div class='searchbar'>
+          <SearchBar
+            @onSearch={{this.searchProblems}}
+            @showFilter={{true}}
+            @searchOptions={{this.searchOptions}}
+            @basePlaceholder='Search problems'
+            @inputValue={{this.searchInputValue}}
+            @clearSearchResults={{this.clearSearchResults}}
+            @selectedCriterion={{this.searchCriterion}}
+          />
+
+          <LinkTo
+            @route='problems.new'
+            id='problem-new-link'
+            class='new-link-btn'
+          >
+            <i class='fas fa-plus'></i>
+          </LinkTo>
         </div>
       </div>
-      <div class='results-items' id='layout-view'>
-        <div class='sort-bar'>
-          <div class='sort-bar-item privacy'>
-            Privacy
-            <i class='fas fa-filter sort-icon'></i>
-            <span class='hover-menu' id='privacy-menu'>
-              <ul>
-                {{#each this.privacySettingOptions as |option|}}
-                  <li>
-                    <RadioFilter
-                      @labelName={{option.label}}
-                      @labelIcon={{option.icon}}
-                      @inputValue={{option.value}}
-                      @isChecked={{option.isChecked}}
-                      @groupName='privacy'
-                      @onClick={{action 'updatePrivacySetting'}}
-                      @groupValue={{this.selectedPrivacySetting}}
-                    />
-                  </li>
-                {{/each}}
-              </ul>
+      <div class='results-list'>
+        <div class='results-info'>
+          <div class='results-message'>
+            {{this.listResultsMessage}}
+          </div>
+          <div class='side-icons'>
+            <i
+              class='fas fa-redo-alt refresh-icon'
+              {{on 'click' this.refreshList}}
+              title='Refresh Problem list'
+            ></i>
+            <span class='layout-icons'>
+              {{#if this.showList}}
+                <img
+                  src='../assets/images/grid.svg'
+                  alt='grid'
+                  {{on 'click' this.setGrid}}
+                  title='Show in grid view'
+                />
+                <img
+                  src='../assets/images/list-active.svg'
+                  alt='list'
+                  {{on 'click' this.setList}}
+                  title='Currently in list view'
+                />
+              {{/if}}
+              {{#if this.showGrid}}
+                <img
+                  src='../assets/images/grid-active.svg'
+                  alt='grid'
+                  {{on 'click' this.setGrid}}
+                  title='Currently in grid view'
+                />
+                <img
+                  src='../assets/images/list.svg'
+                  alt='list'
+                  {{on 'click' this.setList}}
+                  title='Show in list view'
+                />
+              {{/if}}
             </span>
           </div>
-          <ToggleControl
-            @classToAdd='sort-bar-item name'
-            @onUpdate={{action 'updateSortCriterion'}}
-            @initialState={{1}}
-            @options={{this.sortOptions.title}}
-            @label='Title'
-            @parentProp={{this.sortCriterion}}
-            @type='title'
-            @activeType={{this.sortCriterion.type}}
-          />
-          <div class='sort-bar-item description'>
-            Description
-          </div>
-          <ToggleControl
-            @classToAdd='sort-bar-item date'
-            @onUpdate={{action 'updateSortCriterion'}}
-            @initialState={{0}}
-            @options={{this.sortOptions.createDate}}
-            @label='Date'
-            @type='date'
-            @activeType={{this.sortCriterion.type}}
-          />
-          <div class='sort-bar-item status'>
-            Status
-            <i class='fas fa-filter sort-icon'></i>
-            <span class='hover-menu checkbox'>
-              <ul>
-                {{#each this.statusOptionsList as |option|}}
-                  <li>
-                    <label>
-                      <input
-                        type='checkbox'
-                        checked={{option.isChecked}}
-                        name={{option.name}}
-                        value={{option.value}}
-                        onclick={{action 'updateStatusFilter' option.value}}
-                      />
-                      <span>
-                        <svg height='20' width='20'>
-                          <circle
-                            cx='10'
-                            cy='15'
-                            r='5'
-                            fill={{option.fill}}
-                          ></circle>
-                        </svg>
-                        <span class='radio-text'>{{option.text}}</span>
-                      </span>
-                    </label>
-                  </li>
-                {{/each}}
-              </ul>
-            </span>
-          </div>
-          <div class='sort-bar-item action'></div>
-          <div class='sort-bar-item more'></div>
         </div>
-        <ProblemList
-          @recommendedProblems={{this.model.recommendedProblems}}
-          @currentUser={{this.currentUser}}
-          @isSearching={{this.isSearchingProblems}}
-          @problems={{this.displayProblems}}
-          @metadata={{this.problemsMetadata}}
-          @isList={{this.showList}}
-          @isGrid={{this.showGrid}}
-          @moreMenuOptions={{this.moreMenuOptions}}
-          @store={{this.store}}
-          @toProblemInfo='toProblemInfo'
-          @refreshList={{action 'refreshList'}}
-        />
+        <div
+          class='results-items {{if this.showGrid "grid-view"}}'
+          id='layout-view'
+        >
+          <div class='sort-bar'>
+            <div class='sort-bar-item privacy'>
+              Privacy
+              <i class='fas fa-filter sort-icon'></i>
+              <span class='hover-menu'>
+                <ul>
+                  {{#each this.privacySettingOptions as |option|}}
+                    <li>
+                      <RadioFilter
+                        @labelName={{option.label}}
+                        @labelIcon={{option.icon}}
+                        @inputValue={{option.value}}
+                        @isChecked={{option.isChecked}}
+                        @groupName='privacy'
+                        @onClick={{this.updatePrivacySetting}}
+                        @groupValue={{this.selectedPrivacySetting}}
+                      />
+                    </li>
+                  {{/each}}
+                </ul>
+              </span>
+            </div>
+            <ToggleControl
+              @classToAdd='sort-bar-item name'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.title}}
+              @label='Title'
+              @parentProp={{this.sortCriterion}}
+              @type='title'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <ToggleControl
+              @classToAdd='sort-bar-item date'
+              @onUpdate={{this.updateSortCriterion}}
+              @initialState={{0}}
+              @options={{this.sortOptions.createDate}}
+              @label='Date'
+              @type='date'
+              @activeType={{this.sortCriterion.type}}
+            />
+            <div class='sort-bar-item status'>
+              Status
+              <i class='fas fa-filter sort-icon'></i>
+              <span class='hover-menu'>
+                <ul>
+                  {{#each this.statusOptions as |option|}}
+                    <li>
+                      <label>
+                        <input
+                          type='checkbox'
+                          checked={{option.isChecked}}
+                          name={{option.name}}
+                          value={{option.value}}
+                          {{on
+                            'click'
+                            (fn this.updateStatusFilter option.value)
+                          }}
+                        />
+                        <span>
+                          <svg height='20' width='20'>
+                            <circle
+                              cx='10'
+                              cy='15'
+                              r='5'
+                              fill={{option.fill}}
+                            ></circle>
+                          </svg>
+                          <span class='radio-text'>{{option.text}}</span>
+                        </span>
+                      </label>
+                    </li>
+                  {{/each}}
+                </ul>
+              </span>
+            </div>
+            <div class='sort-bar-item action'></div>
+            <div class='sort-bar-item more'></div>
+          </div>
+          <ProblemList
+            @recommendedProblems={{this.model.recommendedProblems}}
+            @currentUser={{this.currentUser}}
+            @isSearching={{this.isSearchingProblems}}
+            @problems={{this.displayProblems}}
+            @metadata={{this.problemsMetadata}}
+            @isList={{this.showList}}
+            @isGrid={{this.showGrid}}
+            @moreMenuOptions={{this.moreMenuOptions}}
+            @store={{this.store}}
+            @toProblemInfo='toProblemInfo'
+            @refreshList={{this.refreshList}}
+          />
 
-        <PaginationControl
-          @details={{this.problemsMetadata}}
-          @initiatePageChange={{action 'initiatePageChange'}}
-        />
+          <PaginationControl
+            @details={{this.problemsMetadata}}
+            @initiatePageChange={{this.initiatePageChange}}
+          />
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <div class='toggle-filter-menu'>
-  <button {{action 'toggleMenu'}}><i
+  <button {{on 'click' this.toggleMenu}} type='button'><i
       id='arrow-icon'
-      class='fas fa-chevron-right'
+      class='fas fa-chevron-right
+        {{if this.isFilterListCollapsed "fa-rotate-180"}}'
     ></i></button>
 </div>
-
-{{#if this.showCategoryList}}
-  <div id='category-list-modal'>
-    <div class='modal-content'>
-      <h4>Select a Category</h4>
-      <button class='close' {{action 'closeModal'}}><i
-          class='fas fa-times'
-        ></i></button>
-      <CategoriesMenu
-        @categories={{this.categoryTree}}
-        @store={{this.store}}
-        @addCategories='searchCategory'
-      />
-    </div>
-  </div>
-{{/if}}
-
-<div class='list-outlet hidden' id='outlet'>
-  {{outlet}}
-</div>
-
-<script>
-  $('.list-view').click(function (e) { if
-  (!($('#filter-list-side').hasClass('collapse'))) {
-  $('#arrow-icon').toggleClass('fa-rotate-180'); }
-  $('#filter-list-side').addClass('collapse'); });
-  $('#problem-new-link').click(function (e) {
-  $('#outlet').removeClass('hidden'); });
-</script>

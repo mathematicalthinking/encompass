@@ -7,17 +7,17 @@ export default class AnswerModel extends AuditableModel {
     return this.id;
   }
   @attr('string') studentName;
-  @belongsTo('problem') problem;
+  @belongsTo('problem', { async: true }) problem;
   @attr('string') answer;
   @attr('string') explanation;
-  @belongsTo('image', { inverse: null }) explanationImage;
-  @belongsTo('section') section;
+  @belongsTo('image', { inverse: null, async: true }) explanationImage;
+  @belongsTo('section', { async: true }) section;
   @attr('boolean') isSubmitted;
-  @hasMany('users', { inverse: null }) students;
+  @hasMany('users', { inverse: null, async: true }) students;
   @attr studentNames;
-  @belongsTo('answer', { inverse: null }) priorAnswer;
+  @belongsTo('answer', { inverse: null, async: true }) priorAnswer;
   @belongsTo('assignment', { async: true }) assignment;
-  @belongsTo('image', { inverse: null }) additionalImage;
+  @belongsTo('image', { inverse: null, async: true }) additionalImage;
   @attr workspacesToUpdate;
   @attr vmtRoomInfo;
   get isVmt() {

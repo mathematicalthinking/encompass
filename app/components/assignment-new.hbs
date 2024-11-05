@@ -124,8 +124,8 @@
               </label>
               <div class='flex-input'>
                 <Input
-                  @id='assignedDate'
-                  @name='daterange'
+                  id='assignedDate'
+                  name='daterange'
                   @type='date'
                   @value={{this.assignedDate}}
                   {{on 'input' this.cancelDateError}}
@@ -148,8 +148,8 @@
               </label>
               <div class='flex-input dueDate'>
                 <Input
-                  @id='dueDate'
-                  @name='daterange'
+                  id='dueDate'
+                  name='daterange'
                   @type='date'
                   @value={{this.dueDate}}
                   {{on 'input' this.cancelDateError}}
@@ -284,11 +284,11 @@
     </form>
   </section>
   <section class='submit button-row'>
-    <button class='createAssignment' data-test='create' {{action 'validate'}}>
+    <button class='createAssignment' data-test='create' type="button" {{action 'validate'}}>
       Create Assignment
       <i class='fas fa-plus-circle'></i>
     </button>
-    <button class='cancelBtn' {{action 'cancel'}}>
+    <button class='cancelBtn' type="button" {{action 'cancel'}}>
       Cancel
       <i class='fas fa-times'></i>
     </button>

@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 /**
-  * @public
-  * @class UpdateWorkspaceRequest
-  * @description UpdateWorkspaceRequests are a student's response to a problem
-  */
+ * @public
+ * @class UpdateWorkspaceRequest
+ * @description UpdateWorkspaceRequests are a student's response to a problem
+ */
 var UpdateWorkspaceRequestSchema = new Schema(
   {
     //== Shared properties (Because Mongoose doesn't support schema inheritance)
@@ -31,56 +31,66 @@ var UpdateWorkspaceRequestSchema = new Schema(
       comments: [{ type: ObjectId, ref: 'Comment' }],
       responses: [{ type: ObjectId, ref: 'Responses' }],
       folders: [{ type: ObjectId, ref: 'Folder' }],
-      taggings: [{ type: ObjectId, ref: 'Tagging'}],
+      taggings: [{ type: ObjectId, ref: 'Tagging' }],
     },
     updatedParentData: {
-      submissions: [{
-        recordId: { type: ObjectId, ref: 'Submission'},
-        updatedFields: [ { type: String } ],
-        wasJustTrashed: { type: Boolean, default: false },
-        wasJustRestored: { type: Boolean, default: false },
-      }],
-      selections: [{
-        recordId: { type: ObjectId, ref: 'Selection'},
-        updatedFields: [ { type: String } ],
-        wasJustTrashed: { type: Boolean, default: false },
-        wasJustRestored: { type: Boolean, default: false },
-      }],
-      comments: [{
-        recordId: { type: ObjectId, ref: 'Comment'},
-        updatedFields: [ { type: String } ],
-        wasJustTrashed: { type: Boolean, default: false },
-        wasJustRestored: { type: Boolean, default: false },
-      }],
-      responses: [{
-        recordId: { type: ObjectId, ref: 'Response'},
-        updatedFields: [ { type: String } ],
-        wasJustTrashed: { type: Boolean, default: false },
-        wasJustRestored: { type: Boolean, default: false },
-      }],
-      folders: [{
-        recordId: { type: ObjectId, ref: 'Folder'},
-        updatedFields: [ { type: String } ],
-        wasJustTrashed: { type: Boolean, default: false },
-        wasJustRestored: { type: Boolean, default: false },
-      }],
-      taggings: [{
-        recordId: { type: ObjectId, ref: 'Tagging'},
-        updatedFields: [ { type: String } ],
-        wasJustTrashed: { type: Boolean, default: false },
-        wasJustRestored: { type: Boolean, default: false },
-      }],
-
-    }
-
+      submissions: [
+        {
+          recordId: { type: ObjectId, ref: 'Submission' },
+          updatedFields: [{ type: String }],
+          wasJustTrashed: { type: Boolean, default: false },
+          wasJustRestored: { type: Boolean, default: false },
+        },
+      ],
+      selections: [
+        {
+          recordId: { type: ObjectId, ref: 'Selection' },
+          updatedFields: [{ type: String }],
+          wasJustTrashed: { type: Boolean, default: false },
+          wasJustRestored: { type: Boolean, default: false },
+        },
+      ],
+      comments: [
+        {
+          recordId: { type: ObjectId, ref: 'Comment' },
+          updatedFields: [{ type: String }],
+          wasJustTrashed: { type: Boolean, default: false },
+          wasJustRestored: { type: Boolean, default: false },
+        },
+      ],
+      responses: [
+        {
+          recordId: { type: ObjectId, ref: 'Response' },
+          updatedFields: [{ type: String }],
+          wasJustTrashed: { type: Boolean, default: false },
+          wasJustRestored: { type: Boolean, default: false },
+        },
+      ],
+      folders: [
+        {
+          recordId: { type: ObjectId, ref: 'Folder' },
+          updatedFields: [{ type: String }],
+          wasJustTrashed: { type: Boolean, default: false },
+          wasJustRestored: { type: Boolean, default: false },
+        },
+      ],
+      taggings: [
+        {
+          recordId: { type: ObjectId, ref: 'Tagging' },
+          updatedFields: [{ type: String }],
+          wasJustTrashed: { type: Boolean, default: false },
+          wasJustRestored: { type: Boolean, default: false },
+        },
+      ],
+    },
   },
   { versionKey: false }
 );
 
 /**
-  * ## Pre-Validation
-  * Before saving we must verify (synchonously) that:
-  */
+ * ## Pre-Validation
+ * Before saving we must verify (synchonously) that:
+ */
 // UpdateWorkspaceRequestSchema.pre('save', function (next) {
 //   var toObjectId = function (elem, ind, arr) {
 //     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
@@ -103,9 +113,9 @@ var UpdateWorkspaceRequestSchema = new Schema(
 // });
 
 /**
-  * ## Post-Validation
-  * After saving we must ensure (synchonously) that:
-  */
+ * ## Post-Validation
+ * After saving we must ensure (synchonously) that:
+ */
 // UpdateWorkspaceRequestSchema.post('save', function (UpdateWorkspaceRequest) {
 //   var update = { $addToSet: { 'answers': UpdateWorkspaceRequest } };
 //   if (UpdateWorkspaceRequest.isTrashed) {
@@ -153,4 +163,7 @@ var UpdateWorkspaceRequestSchema = new Schema(
 
 // });
 
-module.exports.UpdateWorkspaceRequest = mongoose.model('UpdateWorkspaceRequest', UpdateWorkspaceRequestSchema);
+module.exports.UpdateWorkspaceRequest = mongoose.model(
+  'UpdateWorkspaceRequest',
+  UpdateWorkspaceRequestSchema
+);

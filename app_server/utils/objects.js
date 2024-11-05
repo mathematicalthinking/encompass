@@ -33,7 +33,9 @@ function isNonEmptyString(val) {
  * @returns {boolean}
  */
 function isNonEmptyObject(val) {
-  return _.isObject(val) && !_.isArray(val) && !_.isFunction(val) && !_.isEmpty(val);
+  return (
+    _.isObject(val) && !_.isArray(val) && !_.isFunction(val) && !_.isEmpty(val)
+  );
 }
 
 module.exports.isNil = isNil;

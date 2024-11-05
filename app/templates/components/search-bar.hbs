@@ -11,12 +11,9 @@
 <span class='clear-field'>
   <Input
     class='search-field'
-    @type='text'
-    @key-press={{action 'clearErrors'}}
-    @insert-newline={{action 'searchAction'}}
+    @type='text' @insert-newline={{action 'searchAction'}}
     @value={{this.inputValue}}
-    placeholder={{this.placeholder}}
-    @key-up={{action 'onInputChange'}}
+    placeholder={{this.placeholder}} {{on "keypress" (action 'clearErrors')}} {{on "keyup" (action 'onInputChange')}}
   />
 
   {{#if this.showClear}}

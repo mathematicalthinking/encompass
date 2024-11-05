@@ -1,20 +1,43 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 /*global _:false */
-import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { initial } from 'underscore';
 
 export default Component.extend({
   classNames: ['workspace-list-item'],
   alert: service('sweet-alert'),
   permissions: service('workspace-permissions'),
-  menuOptions: alias('parentView.moreMenuOptions'),
+  menuOptions: [
+    {
+      label: 'Copy',
+      value: 'copy',
+      action: 'copyWorkspace',
+      icon: 'fas fa-copy',
+    },
+    {
+      label: 'Assign',
+      value: 'assign',
+      action: 'assignWorkspace',
+      icon: 'fas fa-list-ul',
+    },
+    {
+      label: 'Hide',
+      value: 'hide',
+      action: 'hideWorkspace',
+      icon: 'fas fa-archive',
+    },
+    {
+      label: 'Delete',
+      value: 'delete',
+      action: 'deleteWorkspace',
+      icon: 'fas fa-trash',
+    },
+  ],
   store: service(),
   ellipsisMenuOptions: computed(
-    'workspace.id',
-    'workspace.isTrashed',
     'currentUser.hiddenWorkspaces',
+    'menuOptions',
+    'workspace.{id,isTrashed}',
     function () {
       let ws = this.workspace;
       let currentUser = this.currentUser;
@@ -69,25 +92,25 @@ export default Component.extend({
     async assignWorkspace() {
       let initialRequest = this.store.createRecord('copyWorkspaceRequest');
       let sections = await this.store.findAll('section');
-      let workspace = this.get('workspace');
+      let workspace = this.workspace;
       let workspaceName = this.get('workspace.name');
       let options = {};
       for (let section of sections.toArray()) {
         options[section.id] = section.name;
       }
-      let { value } = await this.get('alert').showPromptSelect(
+      let { value } = await this.alert.showPromptSelect(
         'Assign Workspace to class',
         options,
         'Choose a class'
       );
       if (!value) return;
-      let section = await this.get('store').findRecord('section', value);
-      let { value: mode } = await this.get('alert').showPromptSelect(
+      let section = await this.store.findRecord('section', value);
+      let { value: mode } = await this.alert.showPromptSelect(
         'Assign to groups, individuals, or both?',
         { group: 'Groups', individual: 'Individuals', both: 'Both' },
         'Select'
       );
-      let { value: parentChoice } = await this.get('alert').showModal(
+      let { value: parentChoice } = await this.alert.showModal(
         'info',
         'Make Parent Workspace?',
         null,
@@ -116,9 +139,9 @@ export default Component.extend({
         responseOptions: { none: true },
         permissionOptions: {},
         copyWorkspaceError: null,
-        createdBy: this.get('currentUser'),
-        lastModifiedBy: this.get('currentUser'),
-        owner: this.get('currentUser'),
+        createdBy: this.currentUser,
+        lastModifiedBy: this.currentUser,
+        owner: this.currentUser,
         originalWsId: workspace,
         createdWorkspace: null,
         createdFolderSet: null,

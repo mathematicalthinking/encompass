@@ -1,0 +1,96 @@
+<div id='problem-filter'>
+  <div class='filter-items'>
+    <h2>Filter Options</h2>
+    <PrimaryListFilter
+      @filterName={{@filterName}}
+      @adminFilterName={{@adminFilterName}}
+      @showAdminFilters={{@showAdminFilters}}
+      @onUpdate={{@onUpdate}}
+    />
+
+    <h3 class='category-header' {{on 'click' this.toggleCategoryFilters}}>
+      <i
+        class='fas
+          {{if this.showCategoryFilters "fa-chevron-down" "fa-chevron-right"}}'
+      ></i>
+      Category
+    </h3>
+    {{#if this.showCategoryFilters}}
+      <ul class='category-filter-list'>
+        <SelectizeInput
+          @inputId='categories-filter'
+          @onItemAdd={{this.addCategory}}
+          @maxItems={{1}}
+          @labelField='identifier'
+          @valueField='id'
+          @searchField='identifier'
+          @model='category'
+          @queryParamsKey='identifier'
+          @topLevelQueryParams='searchBy'
+          @isAsync={{true}}
+          @placeholder='Search categories to add'
+        />
+        <li>
+          <button
+            class='show-category-btn'
+            type='button'
+            {{on 'click' this.showCategoryMenu}}
+          >Show Category Menu</button>
+        </li>
+        <h5>Selected Categories</h5>
+        <label class='subfilter'>
+          <Input
+            id='toggle-sub-cats'
+            @type='checkbox'
+            @checked={{@doIncludeSubCategories}}
+            {{on 'change' this.toggleIncludeSubCats}}
+          />
+          <span>Include Subcategories</span>
+        </label>
+        {{#if @categoriesFilter}}
+          <ul class='selected-cat-list'>
+            {{#each @categoriesFilter as |category|}}
+              <li>
+                {{category.identifier}}
+                <i
+                  class='far fa-times-circle'
+                  {{on 'click' (fn this.removeCategory category)}}
+                  aria-hidden='true'
+                  title='Remove'
+                ></i>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <p>No categories selected.</p>
+        {{/if}}
+      </ul>
+    {{/if}}
+    {{#if this.isAdminUser}}
+      <h3
+        class='more-header {{if this.closedMenu "closed"}}'
+        {{on 'click' this.toggleMoreFilters}}
+      >
+        <i
+          class='fas
+            {{if this.showMoreFilters "fa-chevron-down" "fa-chevron-right"}}'
+        ></i>
+        More
+      </h3>
+      {{#if this.showMoreFilters}}
+        <ul class='more-filter-list'>
+          <h5>Trashed Problems</h5>
+          <label class='subfilter'>
+            <Input
+              id='toggle-trashed'
+              @type='checkbox'
+              @checked={{@showTrashed}}
+              {{on 'change' this.toggleTrashedProblems}}
+            />
+            <span>Show All Trashed Problems</span>
+          </label>
+        </ul>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>

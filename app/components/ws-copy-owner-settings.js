@@ -51,7 +51,7 @@ export default Component.extend(CurrentUserMixin, {
     return res;
   }),
 
-  validModeValues: computed('modeInputs', function () {
+  validModeValues: computed('modeInputs.inputs', function () {
     const modeInputs = this.get('modeInputs.inputs');
 
     if (this.utils.isNonEmptyArray(modeInputs)) {

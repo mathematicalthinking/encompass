@@ -1,225 +1,388 @@
-<header class="info-header">
-  <span class="remove-icon" {{action 'hideInfo' }}>
-    <i class="fas fa-times"></i>
+<header class='info-header'>
+  <span class='remove-icon' {{action 'hideInfo'}}>
+    <i class='fas fa-times'></i>
   </span>
 </header>
 
-<div class="side-info-menu">
-  <section class="info-details">
-    <div class="info-main">
-      <div class="heading">
+<div class='side-info-menu'>
+  <section class='info-details'>
+    <div class='info-main'>
+      <div class='heading'>
         Create New Problem
       </div>
     </div>
-    <div class="info-menu">
-      <button class="tab-name general {{if this.showGeneral 'active-btn'}}">General</button>
-      <button class="tab-name categories {{if this.showCats 'active-btn'}}">Categories</button>
-      <button class="tab-name additional {{if this.showAdditional 'active-btn'}}">Additional</button>
-      <button class="tab-name legal {{if this.showLegal 'active-btn'}}">Legal</button>
+    <div class='info-menu'>
+      <button
+        class='tab-name general {{if this.showGeneral "active-btn"}}'
+        type='button'
+      >General</button>
+      <button
+        class='tab-name categories {{if this.showCats "active-btn"}}'
+        type='button'
+      >Categories</button>
+      <button
+        class='tab-name additional {{if this.showAdditional "active-btn"}}'
+        type='button'
+      >Additional</button>
+      <button
+        class='tab-name legal {{if this.showLegal "active-btn"}}'
+        type='button'
+      >Legal</button>
     </div>
-    <div class="info-content">
+    <div class='info-content'>
       {{#if this.showGeneral}}
-      <p class="info-content-label title">
-        Problem Title <span class="required-star">*</span>
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.name}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <div class="input-container">
-          <Input @id="title" required="true" @type="text" @value={{this.title}} placeholder="Enter Problem Title"
-            {{on 'keydown' this.resetErrors}} {{on "change" this.observeErrors}} />
+        <p class='info-content-label title'>
+          Problem Title
+          <span class='required-star'>*</span>
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.name}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <div class='input-container'>
+            <Input
+              id='title'
+              required='true'
+              @type='text'
+              @value={{this.title}}
+              placeholder='Enter Problem Title'
+              {{on 'keydown' this.resetErrors}}
+              {{on 'change' this.observeErrors}}
+            />
+          </div>
         </div>
-      </div>
-      <p class="info-content-label statement">
-        Problem Statement <span class="required-star">*</span>
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.statement}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <QuillContainer @onEditorChange={{action "updateQuillText" }} @startingText={{this.problemStatement}} />
-      </div>
-      <p class="info-content-label author">
-        Author
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.author}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <div class="input-container">
-          <Input @name="author" @id="author" @type="text" @value={{this.author}} />
+        <p class='info-content-label statement'>
+          Problem Statement
+          <span class='required-star'>*</span>
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.statement}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <QuillContainer
+            @onEditorChange={{action 'updateQuillText'}}
+            @startingText={{this.problemStatement}}
+          />
         </div>
-      </div>
-      <p class="info-content-label privacy">
-        Privacy Setting <span class="required-star">*</span>
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.privacySettings}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block privacy">
-        <ul>
-          <li class="radio-item">
-            <label class="radio-label">
-              <input type="radio" checked={{is-equal this.privacySetting "M" }} value={{this.privacySetting}} required="true"
-                name="privacy" class="justMe" onclick={{action 'radioSelect' 'M' }} {{on "blur" this.observeErrors}}>
-              <span class="radio-text">Just Me</span>
-            </label>
-          </li>
-          <li class="radio-item">
-            <label class="radio-label">
-              <input type="radio" id="myOrg" checked={{is-equal this.privacySetting "O" }} value={{this.privacySetting}}
-                required="true" name="privacy" class="myOrg" onclick={{action 'radioSelect' 'O' }} {{on "blur" this.observeErrors}}>
-              <span class="radio-text">My Organization</span>
-            </label>
-          </li>
-          <li class="radio-item">
-            <label class="radio-label">
-              <input type="radio" checked={{is-equal this.privacySetting "E" }} value={{this.privacySetting}} required="true"
-                name="privacy" class="everyone" onclick={{action 'radioSelect' 'E' }} {{on "blur" this.observeErrors}}>
-              <span class="radio-text">Everyone</span>
-            </label>
-          </li>
-        </ul>
-      </div>
+        <p class='info-content-label author'>
+          Author
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.author}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <div class='input-container'>
+            <Input
+              name='author'
+              id='author'
+              @type='text'
+              @value={{this.author}}
+            />
+          </div>
+        </div>
+        <p class='info-content-label privacy'>
+          Privacy Setting
+          <span class='required-star'>*</span>
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.privacySettings}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block privacy'>
+          <ul>
+            <li class='radio-item'>
+              <label class='radio-label'>
+                <input
+                  type='radio'
+                  checked={{is-equal this.privacySetting 'M'}}
+                  value={{this.privacySetting}}
+                  required='true'
+                  name='privacy'
+                  class='justMe'
+                  onclick={{action 'radioSelect' 'M'}}
+                  {{on 'blur' this.observeErrors}}
+                />
+                <span class='radio-text'>Just Me</span>
+              </label>
+            </li>
+            <li class='radio-item'>
+              <label class='radio-label'>
+                <input
+                  type='radio'
+                  id='myOrg'
+                  checked={{is-equal this.privacySetting 'O'}}
+                  value={{this.privacySetting}}
+                  required='true'
+                  name='privacy'
+                  class='myOrg'
+                  onclick={{action 'radioSelect' 'O'}}
+                  {{on 'blur' this.observeErrors}}
+                />
+                <span class='radio-text'>My Organization</span>
+              </label>
+            </li>
+            <li class='radio-item'>
+              <label class='radio-label'>
+                <input
+                  type='radio'
+                  checked={{is-equal this.privacySetting 'E'}}
+                  value={{this.privacySetting}}
+                  required='true'
+                  name='privacy'
+                  class='everyone'
+                  onclick={{action 'radioSelect' 'E'}}
+                  {{on 'blur' this.observeErrors}}
+                />
+                <span class='radio-text'>Everyone</span>
+              </label>
+            </li>
+          </ul>
+        </div>
       {{/if}}
 
       {{#if this.showCats}}
-      <p class="info-content-label categories">
-        Problem Categories
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.categories}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block categories">
-        {{#if this.selectedCategories}}
-        <ul class="problem-info">
-          {{#each this.selectedCategories as |category|}}
-          <li class="category-item"><a href="{{category.url}}" target="_blank">{{category.identifier}}</a> <button
-              class="remove-cat" {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
-          {{/each}}
-        </ul>
-        {{/if}}
-        {{#unless this.showCategories}}
-        <button class="cancel-button show-cats-btn" {{action 'toggleCategories' }}>Show Category Menu</button>
-        {{/unless}}
-        {{#if this.showCategories}}
-        <button class="cancel-button hide-cats-btn" {{action 'toggleCategories' }}>Hide Category Menu</button>
-        <CategoriesMenu @categories={{this.categoryTree}} @store={{this.store}} @addCategories="addCategories" />
-        {{/if}}
-      </div>
-      <p class="info-content-label keywords">
-        Problem Keywords
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.keywords}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <SelectizeInput @inputId="select-add-keywords" @onItemAdd={{action "updateKeywords" }}
-          @onItemRemove={{action "updateKeywords" }} @maxItems={{5}} @create={{true}} @createFilter={{this.keywordFilter}}
-          @persist={{false}} />
-      </div>
+        <p class='info-content-label categories'>
+          Problem Categories
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.categories}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block categories'>
+          {{#if this.selectedCategories}}
+            <ul class='problem-info'>
+              {{#each this.selectedCategories as |category|}}
+                <li class='category-item'><a
+                    href='{{category.url}}'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >{{category.identifier}}</a>
+                  <button
+                    class='remove-cat'
+                    type='button'
+                    {{action 'removeCategory' category}}
+                  ><i class='far fa-times-circle'></i></button></li>
+              {{/each}}
+            </ul>
+          {{/if}}
+          {{#unless this.showCategories}}
+            <button
+              class='cancel-button show-cats-btn'
+              type='button'
+              {{action 'toggleCategories'}}
+            >Show Category Menu</button>
+          {{/unless}}
+          {{#if this.showCategories}}
+            <button
+              class='cancel-button hide-cats-btn'
+              type='button'
+              {{action 'toggleCategories'}}
+            >Hide Category Menu</button>
+            <CategoriesMenu
+              @categories={{this.categoryTree}}
+              @store={{this.store}}
+              @addCategories='addCategories'
+            />
+          {{/if}}
+        </div>
+        <p class='info-content-label keywords'>
+          Problem Keywords
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.keywords}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <SelectizeInput
+            @inputId='select-add-keywords'
+            @onItemAdd={{action 'updateKeywords'}}
+            @onItemRemove={{action 'updateKeywords'}}
+            @maxItems={{5}}
+            @create={{true}}
+            @createFilter={{this.keywordFilter}}
+            @persist={{false}}
+          />
+        </div>
       {{/if}}
 
       {{#if this.showAdditional}}
-      <p class="info-content-label additional">
-        Additional Information
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.additionalInfo}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <div class="input-container">
-          <Textarea class="additional-info-area" @value={{this.additionalInfo}} @rows="3" placeholder="Additional info..." />
-          <Input @id="additionalInfo" @type="hidden" @value={{this.additionalInfo}} />
+        <p class='info-content-label additional'>
+          Additional Information
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.additionalInfo}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <div class='input-container'>
+            <Textarea
+              class='additional-info-area'
+              @value={{this.additionalInfo}}
+              rows='3'
+              placeholder='Additional info...'
+            />
+            <Input
+              id='additionalInfo'
+              @type='hidden'
+              @value={{this.additionalInfo}}
+            />
+          </div>
         </div>
-      </div>
-      <p class="info-content-label image">
-        Additional Image
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.additionalImage}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        {{#if this.fileName}}
-        <p class="file-name"><span class="bold">Uploaded File</span> {{this.fileName}} <button class="remove-cat"
-            {{action 'removeFile' }}><i class="far fa-times-circle"></i></button></p>
-        {{else}}
-        <ImageUpload @filesToBeUploaded={{this.filesToBeUploaded}} @hideSubmit={{true}}
-          @storeFiles={{action "setFileToUpload" }} />
-        {{/if}}
-      </div>
+        <p class='info-content-label image'>
+          Additional Image
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.additionalImage}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          {{#if this.fileName}}
+            <p class='file-name'><span class='bold'>Uploaded File</span>
+              {{this.fileName}}
+              <button
+                class='remove-cat'
+                type='button'
+                {{action 'removeFile'}}
+              ><i class='far fa-times-circle'></i></button></p>
+          {{else}}
+            <ImageUpload
+              @filesToBeUploaded={{this.filesToBeUploaded}}
+              @hideSubmit={{true}}
+              @storeFiles={{action 'setFileToUpload'}}
+            />
+          {{/if}}
+        </div>
       {{/if}}
 
       {{#if this.showLegal}}
-      <p class="info-content-label copyright">
-        Copyright Notice
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.copyrightNotice}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <div class="input-container" id="copyright-container">
-          <span id="icon">&copy;</span>
-          <Input @name="copyright" @id="copyright" @type="text" @value={{this.copyrightNotice}}
-            placeholder="Add Copyright Notice" />
+        <p class='info-content-label copyright'>
+          Copyright Notice
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.copyrightNotice}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <div class='input-container' id='copyright-container'>
+            <span id='icon'>&copy;</span>
+            <Input
+              name='copyright'
+              id='copyright'
+              @type='text'
+              @value={{this.copyrightNotice}}
+              placeholder='Add Copyright Notice'
+            />
+          </div>
         </div>
-      </div>
-      <p class="info-content-label sharing">
-        Sharing Authorization
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.sharingAuth}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <div class="input-container">
-          <Input @name="sharing" @id="sharing" @type="text" @value={{this.sharingAuth}}
-            placeholder="Add Sharing Authorization" />
+        <p class='info-content-label sharing'>
+          Sharing Authorization
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.sharingAuth}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <div class='input-container'>
+            <Input
+              name='sharing'
+              id='sharing'
+              @type='text'
+              @value={{this.sharingAuth}}
+              placeholder='Add Sharing Authorization'
+            />
+          </div>
         </div>
-      </div>
-      <p class="info-content-label legal">
-        Legal Notice <span class="required-star">*</span>
-        <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth"
-          data-tooltip={{this.tooltips.legalNotice}}><i class="fas fa-info-circle info-icon"></i></span>
-      </p>
-      <div class="info-content-block">
-        <Input @type="checkbox" @id="legal-notice" @checked={{this.approvedProblem}} required="true"
-          {{on "click" this.resetErrors}} />
-        <span id="approved-problem">This problem does not contain any unapproved copywritten material</span>
-      </div>
+        <p class='info-content-label legal'>
+          Legal Notice
+          <span class='required-star'>*</span>
+          <span
+            class='info-text-tip simptip-position-left simptip-multiline simptip-smooth'
+            data-tooltip={{this.tooltips.legalNotice}}
+          ><i class='fas fa-info-circle info-icon'></i></span>
+        </p>
+        <div class='info-content-block'>
+          <Input
+            @type='checkbox'
+            id='legal-notice'
+            @checked={{this.approvedProblem}}
+            required='true'
+            {{on 'click' this.resetErrors}}
+          />
+          <span id='approved-problem'>This problem does not contain any
+            unapproved copywritten material</span>
+        </div>
       {{/if}}
     </div>
   </section>
 
-  <section class="info-actions">
-    <div class="buttons-container">
-      <span class="right-buttons">
+  <section class='info-actions'>
+    <div class='buttons-container'>
+      <span class='right-buttons'>
         {{#if this.showGeneral}}
-        <button class="action_button cancel-button" {{action 'cancelProblem' }}>Cancel</button>
-        <button class="action_button primary-button" {{action 'nextStep'}}>Next</button>
+          <button
+            class='action_button cancel-button'
+            type='button'
+            {{action 'cancelProblem'}}
+          >Cancel</button>
+          <button
+            class='action_button primary-button'
+            type='button'
+            {{action 'nextStep'}}
+          >Next</button>
         {{else}}
-        {{#if this.showLegal}}
-        <button class="action_button cancel-button" {{action 'backStep' }}>Back</button>
-        <button class="action_button primary-button" {{action 'validate' }}>Create</button>
-        {{else}}
-        <button class="action_button cancel-button" {{action 'backStep' }}>Back</button>
-        <button class="action_button primary-button" {{action 'nextStep' }}>Next</button>
-        {{/if}}
+          {{#if this.showLegal}}
+            <button
+              class='action_button cancel-button'
+              type='button'
+              {{action 'backStep'}}
+            >Back</button>
+            <button
+              class='action_button primary-button'
+              type='button'
+              {{action 'validate'}}
+            >Create</button>
+          {{else}}
+            <button
+              class='action_button cancel-button'
+              type='button'
+              {{action 'backStep'}}
+            >Back</button>
+            <button
+              class='action_button primary-button'
+              type='button'
+              {{action 'nextStep'}}
+            >Next</button>
+          {{/if}}
         {{/if}}
       </span>
     </div>
   </section>
 
   {{#each this.createProblemErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} />
+    <ErrorBox @error={{error}} @showDismiss={{true}} />
   {{/each}}
   {{#each this.imageUploadErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} />
+    <ErrorBox @error={{error}} @showDismiss={{true}} />
   {{/each}}
 
   {{#if this.isMissingRequiredFields}}
-  <ErrorBox @error="Please provide all required fields" @showDismiss={{true}} />
+    <ErrorBox
+      @error='Please provide all required fields'
+      @showDismiss={{true}}
+    />
   {{/if}}
 
   {{#if this.noLegalNotice}}
-  <ErrorBox @error="Please verify that you have permission to post this problem" @showDismiss={{true}} />
+    <ErrorBox
+      @error='Please verify that you have permission to post this problem'
+      @showDismiss={{true}}
+    />
   {{/if}}
 
 </div>
-
-
-
-
 
 {{!-- <section class="third submissions">
   <form id='newproblemform' class='properForm'>
@@ -351,5 +514,5 @@
   <button class="action_button" {{action 'validate' }}>
     Create Problem
   </button>
-  <button class="action_button cancel-button" type="submit" {{action 'cancelProblem' }}>Cancel</button>
+  <button class="action_button cancel-button" type="button" {{action 'cancelProblem' }}>Cancel</button>
 </section> --}}

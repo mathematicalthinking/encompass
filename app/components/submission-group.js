@@ -1,5 +1,4 @@
 import Component from '@ember/component';
-// import EmberMap from '@ember/map';
 import { computed, observer } from '@ember/object';
 import { alias, equal, gte, or, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
@@ -50,14 +49,16 @@ export default Component.extend({
   },
 
   didInsertElement() {
-    let revisionsNavHeight = this.$('#submission-nav').height();
+    this._super(...arguments);
+    let revisionsNavHeight = $('#submission-nav').height();
     this.set('isNavMultiLine', revisionsNavHeight > 52);
 
     $(window).on('resize', this.onNavResize);
   },
 
   didUpdateAttrs() {
-    let studentSelectize = this.$('#student-select')[0];
+    this._super();
+    let studentSelectize = $('#student-select')[0];
     if (studentSelectize) {
       let currentValue = studentSelectize.selectize.getValue();
 
@@ -69,6 +70,7 @@ export default Component.extend({
   },
 
   willDestroyElement() {
+    this._super(...arguments);
     $(window).off('resize', this.onNavResize);
   },
 
@@ -132,32 +134,48 @@ export default Component.extend({
     return revisions;
   }),
 
-  currentThread: computed('submission', function () {
-    return this.submissionThreads[this.currentStudent];
-  }),
+  currentThread: computed(
+    'currentStudent',
+    'submission',
+    'submissionThreads',
+    function () {
+      return this.submissionThreads[this.currentStudent];
+    }
+  ),
 
-  prevThread: computed('currentThread', 'firstThread', function () {
-    const currentThread = this.currentThread;
-    const ix = currentThread.indexOf(this.submission);
-    if (currentThread.length > 1) {
-      if (!isEqual(this.submission, currentThread[currentThread.length - 1])) {
-        return currentThread[ix + 1];
+  prevThread: computed(
+    'currentThread.lastObject',
+    'firstThread',
+    'lastThread',
+    'submission',
+    'submissionThreadHeads',
+    function () {
+      const currentThread = this.currentThread;
+      const ix = currentThread.indexOf(this.submission);
+      if (currentThread.length > 1) {
+        if (
+          !isEqual(this.submission, currentThread[currentThread.length - 1])
+        ) {
+          return currentThread[ix + 1];
+        }
       }
-    }
 
-    var thread = this.get('currentThread.lastObject');
-    if (thread === this.firstThread) {
-      return this.lastThread;
+      var thread = this.get('currentThread.lastObject');
+      if (thread === this.firstThread) {
+        return this.lastThread;
+      }
+      var prevIndex = this.submissionThreadHeads.indexOf(thread) - 1;
+      var prev = this.submissionThreadHeads.objectAt(prevIndex);
+      return prev;
     }
-    var prevIndex = this.submissionThreadHeads.indexOf(thread) - 1;
-    var prev = this.submissionThreadHeads.objectAt(prevIndex);
-    return prev;
-  }),
+  ),
 
   nextThread: computed(
-    'submission',
-    'currentThread',
+    'currentThread.lastObject',
+    'firstThread',
     'lastThread',
+    'submission',
+    'submissionThreadHeads',
     function () {
       const currentThread = this.currentThread;
       const ix = currentThread.indexOf(this.submission);
@@ -179,29 +197,34 @@ export default Component.extend({
     }
   ),
 
-  currentRevisionIndex: computed('submission', function () {
-    const revisions = this.currentRevisions;
-    if (!revisions || revisions.get('length') === 0) {
-      return 0;
-    }
-    const currentSubmissionId = this.get('submission.id');
-    if (revisions.length === 1) {
-      return 1;
-    }
+  currentRevisionIndex: computed(
+    'currentRevisions',
+    'submission.id',
+    function () {
+      const revisions = this.currentRevisions;
+      if (!revisions || revisions.get('length') === 0) {
+        return 0;
+      }
+      const currentSubmissionId = this.get('submission.id');
+      if (revisions.length === 1) {
+        return 1;
+      }
 
-    return revisions
-      .filter((rev) => {
-        return isEqual(rev.revision.id, currentSubmissionId);
-      })
-      .objectAt(0).index;
-  }),
+      return revisions
+        .filter((rev) => {
+          return isEqual(rev.revision.id, currentSubmissionId);
+        })
+        .objectAt(0).index;
+    }
+  ),
 
   sortCriteria: ['student', 'createDate:desc'],
   sortedSubmissions: sort('submissions', 'sortCriteria'),
 
   currentSubmissionIndex: computed(
-    'submissionThreads.[]',
+    'sortedSubmissions',
     'submission',
+    'submissionThreads.[]',
     function () {
       return this.sortedSubmissions.indexOf(this.submission) + 1;
     }
@@ -249,9 +272,9 @@ export default Component.extend({
   isTripaneled: equal('containerLayoutClass', 'fsc'),
 
   handleNavHeight() {
-    let height = this.$('#submission-nav').height();
+    let height = $('#submission-nav').height();
 
-    let ownHeight = this.$().height();
+    let ownHeight = $().height();
     this.set('ownHeight', ownHeight);
 
     let isNowMultiLine = height > 52;
@@ -270,7 +293,7 @@ export default Component.extend({
     });
   }),
   initialStudentItem: computed(
-    'submission',
+    'submission.student',
     'submissionThreadHeads.[]',
     function () {
       let currentStudent = this.get('submission.student');
@@ -320,7 +343,7 @@ export default Component.extend({
     },
 
     onStudentBlur() {
-      let studentSelectize = this.$('#student-select')[0];
+      let studentSelectize = $('#student-select')[0];
 
       if (studentSelectize) {
         let currentValue = studentSelectize.selectize.getValue();

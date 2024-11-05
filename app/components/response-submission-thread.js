@@ -53,8 +53,8 @@ export default Component.extend(CurrentUserMixin, {
   }),
 
   displayStatusText: computed(
-    'displayStatus',
     'currentCounterValue',
+    'displayStatus.display',
     function () {
       let text = this.get('displayStatus.display');
       return text + ' ' + this.currentCounterValue;
@@ -88,23 +88,31 @@ export default Component.extend(CurrentUserMixin, {
     return '';
   }),
 
-  unreadCounter: computed('unreadResponses.[]', function () {
-    let count = this.get('thread.unreadResponses.length');
+  unreadCounter: computed(
+    'thread.unreadResponses.length',
+    'unreadResponses.[]',
+    function () {
+      let count = this.get('thread.unreadResponses.length');
 
-    if (count > 1) {
-      return `(${count})`;
+      if (count > 1) {
+        return `(${count})`;
+      }
+      return '';
     }
-    return '';
-  }),
+  ),
 
-  draftCounter: computed('draftResponses.[]', function () {
-    let count = this.get('thread.draftResponses.length');
+  draftCounter: computed(
+    'draftResponses.[]',
+    'thread.draftResponses.length',
+    function () {
+      let count = this.get('thread.draftResponses.length');
 
-    if (count > 1) {
-      return `(${count})`;
+      if (count > 1) {
+        return `(${count})`;
+      }
+      return '';
     }
-    return '';
-  }),
+  ),
 
   needsRevisionCounter: computed(
     'thread.needsRevisionResponses.[]',
@@ -148,7 +156,7 @@ export default Component.extend(CurrentUserMixin, {
     return '';
   }),
 
-  mentors: computed('thread.mentors.[]', function () {
+  mentors: computed('store', 'thread.mentors.[]', function () {
     let mentorIds = this.get('thread.mentors') || [];
     return mentorIds
       .map((id) => {

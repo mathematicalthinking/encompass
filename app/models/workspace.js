@@ -1,7 +1,6 @@
 import AuditableModel from './auditable';
 import { attr, belongsTo, hasMany } from '@ember-data/model';
 import moment from 'moment';
-import _ from 'underscore';
 
 export default class WorkspaceModel extends AuditableModel {
   getWorkspaceId() {
@@ -18,8 +17,8 @@ export default class WorkspaceModel extends AuditableModel {
   @hasMany('response', { async: true }) responses;
   @hasMany('selection', { async: true }) selections;
   @hasMany('comments', { async: true }) comments;
-  @belongsTo('organization') organization;
-  @belongsTo('assignment') linkedAssignment;
+  @belongsTo('organization', { async: true }) organization;
+  @belongsTo('assignment', { async: true }) linkedAssignment;
   @hasMany('tagging', { async: true }) taggings;
   @attr('date') lastViewed;
   @attr('date') lastModifiedDate;
@@ -43,8 +42,8 @@ export default class WorkspaceModel extends AuditableModel {
   }
 
   @attr('string') workspaceType;
-  @hasMany('workspace', { inverse: null }) childWorkspaces;
-  @hasMany('workspace', { inverse: null }) parentWorkspaces;
+  @hasMany('workspace', { inverse: null, async: true }) childWorkspaces;
+  @hasMany('workspace', { inverse: null, async: true }) parentWorkspaces;
 
   _collectionLength(collections) {
     return this.hasMany(collections).ids().length;

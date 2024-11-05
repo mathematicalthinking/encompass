@@ -1,4 +1,8 @@
-const { waitForElementToHaveText, waitForRemoval, waitForAndClickElement } = require('../helpers');
+const {
+  waitForElementToHaveText,
+  waitForRemoval,
+  waitForAndClickElement,
+} = require('../helpers');
 
 const selectors = require('../selectors').sweetAlert;
 
@@ -7,24 +11,29 @@ module.exports = class SweetAlertDriver {
     this.driver = webDriver;
   }
 
-  verifyToast(toastText, options= {}) {
+  verifyToast(toastText, options = {}) {
     let doWaitForRemoval = options.doWaitForRemoval || true;
     let timeout = options.timeout;
 
     let toastSelector = selectors.toasts.title;
 
-    return waitForElementToHaveText(this.driver, toastSelector, toastText, timeout)
+    return waitForElementToHaveText(
+      this.driver,
+      toastSelector,
+      toastText,
+      timeout
+    )
       .then((results) => {
         // results is boolean
         if (!results) {
-          throw(new Error(`Toast with text ${toastText} did not appear`));
+          throw new Error(`Toast with text ${toastText} did not appear`);
         }
         if (doWaitForRemoval) {
           return waitForRemoval(this.driver, toastSelector, timeout);
         }
       })
       .catch((err) => {
-        throw(err);
+        throw err;
       });
   }
 
@@ -37,7 +46,10 @@ module.exports = class SweetAlertDriver {
 
     let timeout = options.timeout;
 
-    let btnSelector = confirmOrCancel === 'confirm' ? selectors.confirmBtn : selectors.cancelBtn;
+    let btnSelector =
+      confirmOrCancel === 'confirm'
+        ? selectors.confirmBtn
+        : selectors.cancelBtn;
 
     let modalSelector = selectors.modal;
     return waitForAndClickElement(this.driver, btnSelector, timeout)
@@ -49,7 +61,7 @@ module.exports = class SweetAlertDriver {
         return waitForRemoval(this.driver, modalSelector, timeout);
       })
       .catch((err) => {
-        throw(err);
+        throw err;
       });
   }
 

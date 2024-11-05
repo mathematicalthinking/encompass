@@ -65,7 +65,7 @@ export default Component.extend({
     }
   ),
 
-  inputStringValue: computed('inputValue', function () {
+  inputStringValue: computed('inputValue', 'queryErrors', function () {
     let val = this.inputValue;
     if (!val) {
       return '';
@@ -79,7 +79,7 @@ export default Component.extend({
     return lowercase;
   }),
 
-  inputConstraints: computed('constraints', function () {
+  inputConstraints: computed('constraints', 'defaultConstraints', function () {
     let constraints = this.constraints;
     if (constraints) {
       return constraints;

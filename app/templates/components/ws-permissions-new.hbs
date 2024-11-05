@@ -46,5 +46,5 @@
   <ErrorBox @error="Sorry, something went wrong. Please try again." @resetError={{action (mut saveError) null}} @showDismiss={{true}} />
 {{/if}}
 
-<button class="primary-button cancel-button" {{action (mut selectedUser) null}}>Cancel</button>
-<button class="primary-button" {{action "savePermissions"}}>Save Permissions</button>
+<button class="primary-button cancel-button" type="button" {{action (mut selectedUser) null}}>Cancel</button>
+<button class="primary-button" type="button" {{action "savePermissions"}}>Save Permissions</button>

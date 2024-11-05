@@ -1,0 +1,57 @@
+<div id='admin-workspace-filter'>
+  <!-- Main Dropdown -->
+  <div class='choose-filter-admin'>
+    <span class='filter-text'>Find by</span>
+    <!-- onItemAdd sends the value to the parent component -->
+    <SelectizeInput
+      @inputId='admin-filter-select'
+      @initialOptions={{this.mainOptions}}
+      @initialItems={{this.initialMainSelection}}
+      @onItemAdd={{this.handleUpdateMain}}
+      @maxItems={{1}}
+      @labelField='label'
+      @valueField='value'
+    />
+  </div>
+
+  <!-- Conditional Rendering of Options -->
+  {{#if (is-equal this.mainSelection.type 'list')}}
+    <div class='filter-admin'>
+      <SelectizeInput
+        @inputId={{this.mainSelection.inputId}}
+        @initialOptions={{this.mainSelection.options}}
+        @onItemAdd={{this.updateMultiSelect}}
+        @onItemRemove={{this.updateMultiSelect}}
+        @maxItems={{this.mainSelection.maxItems}}
+        @labelField={{this.mainSelection.labelField}}
+        @valueField={{this.mainSelection.valueField}}
+        @searchField={{this.mainSelection.searchField}}
+        @placeholder={{this.mainSelection.placeholder}}
+        @model={{this.mainSelection.model}}
+        @queryParamsKey={{this.mainSelection.queryParamsKey}}
+        @propName={{this.mainSelection.propName}}
+        @isAsync={{this.mainSelection.isAsync}}
+        key={{this.mainSelection.inputId}}
+      />
+    </div>
+  {{/if}}
+  <ul class='secondary-filter-options'>
+    {{#each this.subOptions as |option|}}
+      <li
+        class='checkbox-content
+          {{if (is-in this.subSelections option.value) "is-selected"}}'
+      >
+        <label for={{option.value}} class='checkbox-label'>
+          <i class='checkbox-icon {{option.icon}}'></i>
+          <span class='checkbox-text'>{{option.label}}</span>
+          <Input
+            id={{option.value}}
+            @type='checkbox'
+            @checked={{is-in this.subSelections option.value}}
+            {{on 'change' (fn this.toggleSubOption option)}}
+          />
+        </label>
+      </li>
+    {{/each}}
+  </ul>
+</div>

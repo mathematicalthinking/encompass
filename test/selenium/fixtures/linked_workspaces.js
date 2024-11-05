@@ -9,7 +9,7 @@ module.exports = {
       password: 'tracyc',
       submissionId: '5bb814d19885323f6d894973',
       originalRevisionCount: 1,
-    }
+    },
   },
   assignment: {
     _id: '5b91743a3da5efca74705773',
@@ -26,6 +26,6 @@ module.exports = {
       submissionId: '5bec36958c73047613e2f34d',
       responseId: '5bec6497aa4a927d50cd5b9b',
       originalRevisionCount: 1,
-    }
+    },
   },
 };

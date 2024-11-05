@@ -16,9 +16,9 @@ export default class ResponseThread extends Model {
   @attr('string') threadType; // submitter, mentor, approver
   @attr('string') studentDisplay;
 
-  @hasMany('submission') submissions;
-  @hasMany('response') responses;
-  @hasMany('user') mentors;
+  @hasMany('submission', { async: true }) submissions;
+  @hasMany('response', { async: true }) responses;
+  @hasMany('user', { async: true }) mentors;
 
   @attr('boolean', { defaultValue: false }) isNewThread;
 
@@ -36,7 +36,12 @@ export default class ResponseThread extends Model {
     }`;
   }
 
-  @computed('newNotifications.[]', 'cleanResponses.[]', 'sortedRevisions.[]')
+  @computed(
+    'cleanResponses.[]',
+    'newNotifications.[]',
+    'notificationService.newNotifications',
+    'sortedRevisions.[]'
+  )
   get relatedNewNtfs() {
     return this.notificationService.newNotifications.filter((ntf) => {
       if (ntf.primaryRecordType !== 'response') {
@@ -199,7 +204,11 @@ export default class ResponseThread extends Model {
     return this.submissions.content.sortBy('createDate');
   }
 
-  @computed('newNotifications.[]', 'sortedRevisions.[]')
+  @computed(
+    'newNotifications.[]',
+    'notificationService.newNotifications',
+    'sortedRevisions.[]'
+  )
   get newRevisions() {
     const newWorkNtfs = this.notificationService.newNotifications.filterBy(
       'notificationType',
@@ -220,12 +229,17 @@ export default class ResponseThread extends Model {
     return this.cleanResponses.filter((response) => {
       const creatorId = this.utils.getBelongsToId(response, 'createdBy');
       return (
-        response.responseType === 'mentor' && creatorId === this.currentUser.id
+        response.responseType === 'mentor' &&
+        creatorId === this.currentUser.user.id
       );
     });
   }
 
-  @computed('newNotifications.@each.notificationType', 'cleanResponses.[]')
+  @computed(
+    'cleanResponses.[]',
+    'newNotifications.@each.notificationType',
+    'notificationService.newNotifications'
+  )
   get newlyApprovedReplies() {
     const newlyApprovedNtfs =
       this.notificationService.newNotifications.filterBy(

@@ -1,4 +1,5 @@
 // use to indicate unread responses or responses that need approval or revisions for now
+// unused, but keeping because the logic here might be useful
 import { helper as buildHelper } from '@ember/component/helper';
 
 export default buildHelper(function (args) {

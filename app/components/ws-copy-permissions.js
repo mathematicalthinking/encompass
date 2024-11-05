@@ -36,7 +36,7 @@ export default Component.extend({
     this._super(...arguments);
   },
 
-  initialCollabOptions: computed('selectedCollaborators', function () {
+  initialCollabOptions: computed('selectedCollaborators', 'store', function () {
     let peeked = this.store.peekAll('user');
     let collabs = this.selectedCollaborators;
 
@@ -54,29 +54,33 @@ export default Component.extend({
     });
   }),
 
-  selectedCollaborators: computed('permissions.[]', 'newWsOwner', function () {
-    let hash = {};
-    let newWsOwnerId = this.get('newWsOwner.id');
+  selectedCollaborators: computed(
+    'newWsOwner.id',
+    'permissions.[]',
+    function () {
+      let hash = {};
+      let newWsOwnerId = this.get('newWsOwner.id');
 
-    // no reason to set owner as a collaborator
-    if (newWsOwnerId) {
-      hash[newWsOwnerId] = true;
-    }
-    const permissions = this.permissions;
+      // no reason to set owner as a collaborator
+      if (newWsOwnerId) {
+        hash[newWsOwnerId] = true;
+      }
+      const permissions = this.permissions;
 
-    if (!this.utils.isNonEmptyArray(permissions)) {
+      if (!this.utils.isNonEmptyArray(permissions)) {
+        return hash;
+      }
+      permissions.forEach((permission) => {
+        let user = permission.user;
+        if (_.isString(user)) {
+          hash[user] = true;
+        } else if (_.isObject(user)) {
+          hash[user.get('id')] = true;
+        }
+      });
       return hash;
     }
-    permissions.forEach((permission) => {
-      let user = permission.user;
-      if (_.isString(user)) {
-        hash[user] = true;
-      } else if (_.isObject(user)) {
-        hash[user.get('id')] = true;
-      }
-    });
-    return hash;
-  }),
+  ),
   actions: {
     setCollaborator(val, $item) {
       if (!val) {
@@ -124,11 +128,11 @@ export default Component.extend({
       // clear selectize input
 
       this.set('selectedCollaborator', null);
-      this.$('select#collab-select')[0].selectize.clear();
+      $('select#collab-select')[0].selectize.clear();
     },
     stopEditing() {
       this.set('selectedCollaborator', null);
-      this.$('select#collab-select')[0].selectize.clear();
+      $('select#collab-select')[0].selectize.clear();
     },
     next() {
       // check if user is in middle of editing a collab
@@ -148,7 +152,7 @@ export default Component.extend({
           if (result.value) {
             // clear values and then proceed
             this.set('selectedCollaborator', null);
-            this.$('select#collab-select')[0].selectize.clear();
+            $('select#collab-select')[0].selectize.clear();
             this.onProceed(this.permissions);
             return;
           }

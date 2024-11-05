@@ -7,22 +7,27 @@
 //drag and drop reordering at the same level doesn't work (need above/below drop target)
 //drag and drop reordering to top level doesn't work (need better defined drop targets)
 
-
 emq.globalize();
 emq.setResolver(Ember.DefaultResolver.create({ namespace: Encompass }));
 
 moduleFor('controller:folder', 'Folder Controller', {
-  needs: ['controller:folders', 'controller:workspaceSubmission', 'controller:workspace', 'controller:application', 'controller:comments']
+  needs: [
+    'controller:folders',
+    'controller:workspaceSubmission',
+    'controller:workspace',
+    'controller:application',
+    'controller:comments',
+  ],
 });
 
-test('editing a folder', function() {
+test('editing a folder', function () {
   var controller = this.subject();
   var model = {
     get: sinon.stub(),
-    save: sinon.spy()
+    save: sinon.spy(),
   };
 
-  var promise = new Ember.RSVP.Promise(function(resolve, reject) {
+  var promise = new Ember.RSVP.Promise(function (resolve, reject) {
     resolve('whatever');
   });
 
@@ -33,10 +38,9 @@ test('editing a folder', function() {
 
   controller.send('editFolderName');
 
-  promise.then(function(it) {
+  promise.then(function (it) {
     ok(model.save.calledOnce, 'the model was saved');
   });
 
   ok(model.save.notCalled, 'the model was saved');
-
 });

@@ -1,36 +1,38 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
-import _ from 'lodash';
 
 export default class UtilityService extends Service {
   @service currentUser;
 
   isNullOrUndefined(val) {
-    return _.isNull(val) || _.isUndefined(val);
+    return val === null || val === undefined;
   }
 
   isNonEmptyArray(val) {
-    return _.isArray(val) && !_.isEmpty(val);
+    return Array.isArray(val) && val.length > 0;
   }
 
   isNonEmptyString(val) {
-    return _.isString(val) && val.length > 0;
+    return typeof val === 'string' && val.length > 0;
   }
 
+  // Check if value is a non-empty object (excluding arrays and functions)
   isNonEmptyObject(val) {
     return (
-      _.isObject(val) &&
-      !_.isArray(val) &&
-      !_.isFunction(val) &&
-      !_.isEmpty(val)
+      val &&
+      typeof val === 'object' &&
+      !Array.isArray(val) &&
+      val !== null &&
+      Object.keys(val).length > 0
     );
   }
 
   isValidMongoId(val) {
-    let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
+    const checkForHexRegExp = /^[0-9a-fA-F]{24}$/;
     return checkForHexRegExp.test(val);
   }
 
+  // Get the ID of a belongs-to relationship
   getBelongsToId(record, relationshipName) {
     if (
       !this.isNonEmptyObject(record) ||
@@ -39,14 +41,13 @@ export default class UtilityService extends Service {
       return null;
     }
 
-    let hasEachRelationship = 'eachRelationship' in record;
-    if (!hasEachRelationship) {
+    if (!('eachRelationship' in record)) {
       return null;
     }
 
     let hasRequestedRelationship = false;
 
-    record.eachRelationship((name, descriptor) => {
+    record.eachRelationship((name) => {
       if (name === relationshipName) {
         hasRequestedRelationship = true;
       }
@@ -56,8 +57,7 @@ export default class UtilityService extends Service {
       return null;
     }
 
-    let ref = record.belongsTo(relationshipName);
-
+    const ref = record.belongsTo(relationshipName);
     if (ref) {
       return ref.id();
     }
@@ -65,6 +65,7 @@ export default class UtilityService extends Service {
     return null;
   }
 
+  // Get the IDs of a has-many relationship
   getHasManyIds(record, relationshipName) {
     if (
       !this.isNonEmptyObject(record) ||
@@ -73,14 +74,13 @@ export default class UtilityService extends Service {
       return [];
     }
 
-    let hasEachRelationship = 'eachRelationship' in record;
-    if (!hasEachRelationship) {
+    if (!('eachRelationship' in record)) {
       return [];
     }
 
     let hasRequestedRelationship = false;
 
-    record.eachRelationship((name, descriptor) => {
+    record.eachRelationship((name) => {
       if (name === relationshipName) {
         hasRequestedRelationship = true;
       }
@@ -90,7 +90,7 @@ export default class UtilityService extends Service {
       return [];
     }
 
-    let ref = record.hasMany(relationshipName);
+    const ref = record.hasMany(relationshipName);
     if (ref) {
       return ref.ids();
     }
@@ -98,8 +98,13 @@ export default class UtilityService extends Service {
     return [];
   }
 
+  // Filter records by belongs-to relationship ID
   filterByBelongsToId(records, relationshipName, targetId) {
-    if (!records || !relationshipName || !targetId) {
+    if (
+      !Array.isArray(records) ||
+      !this.isNonEmptyString(relationshipName) ||
+      !targetId
+    ) {
       return [];
     }
 
@@ -107,12 +112,12 @@ export default class UtilityService extends Service {
       if (!record) {
         return false;
       }
-      let id = this.getBelongsToId(record, relationshipName);
-
+      const id = this.getBelongsToId(record, relationshipName);
       return id === targetId;
     });
   }
 
+  // Find a record by belongs-to relationship ID
   findByBelongsToId(records, relationshipName, targetId) {
     if (!records || !relationshipName || !targetId) {
       return;
@@ -133,48 +138,27 @@ export default class UtilityService extends Service {
       return [0, 0, 0];
     }
 
-    let fullHours = ms * 0.001 * (1 / 60) * (1 / 60);
+    const fullHours = Math.floor(ms / (1000 * 60 * 60));
+    const fullMinutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const fullSeconds = Math.floor((ms % (1000 * 60)) / 1000);
 
-    let hourStr = fullHours.toString();
-    let decimalIx = hourStr.indexOf('.');
-
-    if (decimalIx === -1) {
-      return [fullHours, 0, 0];
-    }
-
-    let minStr = hourStr.slice(decimalIx);
-    let fullMinutes = Number(minStr) * 60;
-
-    let fullMinStr = fullMinutes.toString();
-    decimalIx = fullMinStr.indexOf('.');
-
-    if (decimalIx === -1) {
-      return [Math.floor(fullHours), fullMinutes, 0];
-    }
-
-    let fullSeconds = Number(fullMinStr.slice(decimalIx));
-
-    return [
-      Math.floor(fullHours),
-      Math.floor(fullMinutes),
-      Math.floor(fullSeconds * 60),
-    ];
+    return [fullHours, fullMinutes, fullSeconds];
   }
 
+  // Extract milliseconds from a time string in the format "HH:MM:SS"
   extractMsFromTimeString(timeString) {
     if (typeof timeString !== 'string') {
       return null;
     }
 
-    let split = timeString.split(':');
-
+    const split = timeString.split(':');
     if (split.length !== 3) {
       return null;
     }
 
-    let hours = parseInt(split[0], 10);
-    let minutes = parseInt(split[1], 10);
-    let seconds = parseInt(split[2], 10);
+    const hours = parseInt(split[0], 10);
+    const minutes = parseInt(split[1], 10);
+    const seconds = parseInt(split[2], 10);
 
     if (hours >= 0 && minutes >= 0 && seconds >= 0) {
       return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000;
@@ -183,11 +167,12 @@ export default class UtilityService extends Service {
     return null;
   }
 
+  // Get a time string in the format "HH:MM:SS" from milliseconds
   getTimeStringFromMs(ms) {
-    let [hours, minutes, seconds] = this.extractHoursMinsSecondsFromMs(ms);
-    let displayHours = hours < 10 ? `0${hours}` : `${hours}`;
-    let displayMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    let displaySeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+    const [hours, minutes, seconds] = this.extractHoursMinsSecondsFromMs(ms);
+    const displayHours = hours < 10 ? `0${hours}` : `${hours}`;
+    const displayMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
+    const displaySeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 
     return `${displayHours}:${displayMinutes}:${displaySeconds}`;
   }

@@ -1,82 +1,106 @@
-<section class="list-side">
-  <header class="list-header">
+<section class='list-side'>
+  <header class='list-header'>
     <h1>Classes</h1>
-    {{#if this.currentUser.isStudent}}
-    {{else}}
-      <LinkTo @route="sections.new" @id="new-section-link" class="new-link-btn"><span>Create New Class</span><i class="fas fa-plus"></i></LinkTo>
+    {{#if this.currentUser.isStudent}}{{else}}
+      <LinkTo
+        @route='sections.new'
+        @id='new-section-link'
+        class='new-link-btn'
+      ><span>Create New Class</span><i class='fas fa-plus'></i></LinkTo>
     {{/if}}
-    <div class="clear"></div>
+    <div class='clear'></div>
   </header>
 
   <section>
-    <nav class="list-box">
+    <nav class='list-box'>
       {{#unless this.currentUser.isStudent}}
-      <h2>{{this.currentUser.username}}'s Classes</h2>
-      <ul class="your-sections">
-        {{#if this.yourSections}}
-          {{#each this.yourSections as |section|}}
-            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
-          {{/each}}
-        {{else}}
-          <li>You have no classes</li>
-        {{/if}}
-      </ul>
+        <h2>{{this.currentUser.username}}'s Classes</h2>
+        <ul class='your-sections'>
+          {{#if this.yourSections}}
+            {{#each this.yourSections as |section|}}
+              <li><LinkTo
+                  @route='sections.section'
+                  @model={{section.id}}
+                  @classNames='section'
+                >{{section.name}}</LinkTo></li>
+            {{/each}}
+          {{else}}
+            <li>You have no classes</li>
+          {{/if}}
+        </ul>
 
-      <h2>Classes you belong to</h2>
-      <ul class="collab-sections">
-        {{#if this.collabSections}}
-          {{#each this.collabSections as |section|}}
-            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
-          {{/each}}
-        {{else}}
+        <h2>Classes you belong to</h2>
+        <ul class='collab-sections'>
+          {{#if this.collabSections}}
+            {{#each this.collabSections as |section|}}
+              <li><LinkTo
+                  @route='sections.section'
+                  @model={{section.id}}
+                  @classNames='section'
+                >{{section.name}}</LinkTo></li>
+            {{/each}}
+          {{else}}
             <li>You don't belong to any classes yet</li>
-        {{/if}}
-      </ul>
+          {{/if}}
+        </ul>
       {{/unless}}
 
-   {{#if this.currentUser.isStudent}}
-      <h2>Your Classes</h2>
-      <ul class="your-sections">
-        {{#if this.studentSections}}
-          {{#each this.studentSections as |section|}}
-            <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
-          {{/each}}
-        {{else}}
+      {{#if this.currentUser.isStudent}}
+        <h2>Your Classes</h2>
+        <ul class='your-sections'>
+          {{#if this.studentSections}}
+            {{#each this.studentSections as |section|}}
+              <li><LinkTo
+                  @route='sections.section'
+                  @model={{section.id}}
+                  @classNames='section'
+                >{{section.name}}</LinkTo></li>
+            {{/each}}
+          {{else}}
             <li>You don't belong to any classes yet</li>
-        {{/if}}
-      </ul>
-    {{/if}}
+          {{/if}}
+        </ul>
+      {{/if}}
 
-    {{#if this.currentUser.isPdAdmin}}
-      <h2>{{currentUser.organization.name}}'s Classes</h2>
-      <ul class="org-sections">
-        {{#if orgSections}}
-          {{#each orgSections as |section|}}
-          <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
-          {{/each}}
-        {{else}}
-          <li>{{currentUser.organization.name}} does not have any classes yet</li>
-        {{/if}}
-      </ul>
-    {{/if}}
+      {{#if this.currentUser.isPdAdmin}}
+        <h2>{{currentUser.organization.name}}'s Classes</h2>
+        <ul class='org-sections'>
+          {{#if orgSections}}
+            {{#each orgSections as |section|}}
+              <li><LinkTo
+                  @route='sections.section'
+                  @model={{section.id}}
+                  @classNames='section'
+                >{{section.name}}</LinkTo></li>
+            {{/each}}
+          {{else}}
+            <li>{{currentUser.organization.name}}
+              does not have any classes yet</li>
+          {{/if}}
+        </ul>
+      {{/if}}
 
-    {{#unless this.currentUser.isStudent}}
-    {{#if this.currentUser.isAdmin}}
-      <h2>All Classes</h2>
-      <ul class="all-sections">
-        {{#if this.allSections}}
-          {{#each this.allSections as |section|}}
-          <li><LinkTo @route="sections.section" @model={{section.id}} @classNames="section">{{section.name}}</LinkTo></li>
-          {{/each}}
+      {{#unless this.currentUser.isStudent}}
+        {{#if this.currentUser.isAdmin}}
+          <h2>All Classes</h2>
+          <ul class='all-sections'>
+            {{#if this.allSections}}
+              {{#each this.allSections as |section|}}
+                <li><LinkTo
+                    @route='sections.section'
+                    @model={{section.id}}
+                    @classNames='section'
+                  >{{section.name}}</LinkTo></li>
+              {{/each}}
+            {{/if}}
+          </ul>
         {{/if}}
-      </ul>
-    {{/if}}
-    {{/unless}}
+      {{/unless}}
 
     </nav>
   </section>
 </section>
 
-<div class="list-outlet">
+<div class='list-outlet'>
   {{outlet}}
 </div>

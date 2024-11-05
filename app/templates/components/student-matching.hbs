@@ -5,7 +5,7 @@
   <div class="proceed">
   {{#if isReadyToReviewAnswers}}
     <p class="instructions">Please click continue to review your submissions.</p>
-    <button {{action "reviewAnswers"}}>Continue</button>
+    <button type="button" {{action "reviewAnswers"}}>Continue</button>
   {{else}}
     <p class="instructions">Please ensure all submissions have been assigned a student before proceeding.</p>
   {{/if}}

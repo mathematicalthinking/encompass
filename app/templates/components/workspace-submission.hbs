@@ -11,10 +11,10 @@
       <div class='submission-row-item toggle-selecting'>
         <label class='makingSelection'>
           <Input
-            @name='is-selecting'
+            name='is-selecting'
             @type='checkbox'
             @checked={{this.shouldCheck}}
-            @click={{action 'toggleSelecting'}}
+            {{on 'click' (action 'toggleSelecting')}}
           />
           Selecting
         </label>
@@ -39,6 +39,7 @@
         class='puzzle'
         target='_blank'
         href='{{this.currentSubmission.puzzleUrl}}'
+        rel='noopener noreferrer'
       >
         <span
           class='problem-link-text'
@@ -52,6 +53,7 @@
       <button
         disabled={{this.areNoSelections}}
         class='action_button new-response'
+        type='button'
         {{action
           'toNewResponse'
           this.currentSubmission.id
@@ -73,6 +75,7 @@
         <div class='submission-row-item new-response'>
           <button
             class='action_button new-response'
+            type='button'
             {{action 'viewResponses'}}
           >View Responses</button>
           <span
@@ -203,7 +206,11 @@
 
   {{#if this.currentSubmission.uploadedFile.savedFileName}}
     <div id='submission_images'>
-      <a target='_blank' href='{{unbound this.currentSubmission.imageUrl}}'>
+      <a
+        target='_blank'
+        href='{{unbound this.currentSubmission.imageUrl}}'
+        rel='noopener noreferrer'
+      >
         <img
           src='{{this.currentSubmission.imageUrl}}'
           alt='Login to the PoWs to see image'
@@ -211,7 +218,7 @@
       </a>
     </div>
   {{/if}}
-</div><!--/al_submission-->
+</div>{{!/al_submission}}
 <h5 id='selections-header' class='submission-header selections'>
   Selections
   {{#if this.showExpandSelections}}
@@ -220,7 +227,7 @@
         title={{this.toggleSelectionInfo.title}}
         {{action 'toggleSelectionBox'}}
         class={{this.toggleSelectionInfo.className}}
-        src='../assets/images/{{this.toggleSelectionInfo.imgName}}'
+        src='/assets/images/{{this.toggleSelectionInfo.imgName}}'
         alt={{this.toggleSelectionInfo.alt}}
       />
     </div>

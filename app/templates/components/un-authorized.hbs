@@ -1,12 +1,21 @@
-{{#if currentUser.needAdditionalInfo}}
-  <SignupGoogle @organizations={{organizations}} />
-{{else}}
-  <div class="al_wtf main">
-    {{#if currentUser.googleId}}
-      <p class="info">Thank you for submitting the requested information. An admin will be reviewing your request shortly, and you will be notified via email once your account has been authorized. You can also log back in to EnCoMPASS anytime to check on the status of your request.</p>
-    {{else}}
-      <p class="info">Thanks for logging in. An admin will be reviewing your request shortly, and you will be notified via email once your account has been authorized. You can also log back in to EnCoMPASS anytime to check on the status of your request. If you have any questions, please contact us at <a>{{contactEmail}}</a>.</p>
-    {{/if}}
-  </div>
-{{/if}}
-
+<div id='un-authorized'>
+  {{#if this.needAdditionalInfo}}
+    <SignupGoogle @organizations={{@organizations}} />
+  {{else}}
+    <div class='al_wtf main'>
+      {{#if this.googleId}}
+        <p class='info'>Thank you for submitting the requested information. An
+          admin will be reviewing your request shortly, and you will be notified
+          via email once your account has been authorized. You can also log back
+          in to EnCoMPASS anytime to check on the status of your request.</p>
+      {{else}}
+        <p class='info'>Thanks for logging in. An admin will be reviewing your
+          request shortly, and you will be notified via email once your account
+          has been authorized. You can also log back in to EnCoMPASS anytime to
+          check on the status of your request. If you have any questions, please
+          contact us at
+          <a>{{this.contactEmail}}</a>.</p>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>

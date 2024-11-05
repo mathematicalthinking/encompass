@@ -4,9 +4,9 @@ const _ = require('underscore');
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
- mongoose.connect('mongodb://localhost:27017/encompass');
+mongoose.connect('mongodb://localhost:27017/encompass');
 
- /*
+/*
  findAll workspaces (non-trashed? or all?) and populate editors
  map editors array to permission objects and add to workspace's permissions
  add workspace to user's collabWorkspaces array
@@ -27,47 +27,49 @@ mongoose.Promise = global.Promise;
   }],
  */
 
- async function convertEditorsToCollabs() {
+async function convertEditorsToCollabs() {
   const workspaces = await models.Workspace.find({}).populate('editors').exec();
   let editorCount = 0;
-  const workspacesWithCollabs = await Promise.all(workspaces.map((ws) => {
-    const editors = ws.editors;
-    const editorsWithIds = _.filter(editors, editor => editor._id);
+  const workspacesWithCollabs = await Promise.all(
+    workspaces.map((ws) => {
+      const editors = ws.editors;
+      const editorsWithIds = _.filter(editors, (editor) => editor._id);
 
-    let permissionObjects = [];
-    if (_.isArray(editors)) {
-      permissionObjects = editorsWithIds.map((editor) => {
-        editorCount++;
-        return {
-          user: editor._id,
-          global: 'editor',
-          submissions: {
-            all: true
-          },
-          folders: 4,
-          comments: 4,
-          selections: 4,
-          feedback: 'preAuth'
-        };
-      });
-    }
-    ws.permissions = permissionObjects;
-    ws.editors = editorsWithIds.map(editor => editor._id);
-    return ws.save();
-  }));
+      let permissionObjects = [];
+      if (_.isArray(editors)) {
+        permissionObjects = editorsWithIds.map((editor) => {
+          editorCount++;
+          return {
+            user: editor._id,
+            global: 'editor',
+            submissions: {
+              all: true,
+            },
+            folders: 4,
+            comments: 4,
+            selections: 4,
+            feedback: 'preAuth',
+          };
+        });
+      }
+      ws.permissions = permissionObjects;
+      ws.editors = editorsWithIds.map((editor) => editor._id);
+      return ws.save();
+    })
+  );
   return editorCount;
+}
 
- }
+function migrate() {
+  return convertEditorsToCollabs()
+    .then((res) => {
+      console.log(`migrated ${res} editors`);
+      mongoose.connection.close();
+      console.log('done!');
+    })
+    .catch((err) => {
+      console.log('err', err);
+    });
+}
 
- function migrate() {
-   return convertEditorsToCollabs().then((res) => {
-    console.log(`migrated ${res} editors`);
-    mongoose.connection.close();
-    console.log('done!');
-   })
-   .catch((err) => {
-     console.log('err', err);
-   });
- }
-
- migrate();
+migrate();

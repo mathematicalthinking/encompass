@@ -1,164 +1,91 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
-import { alias, equal, reads } from '@ember/object/computed';
-// attrs passed in by parent
-// store
-// onUpdate
-// primaryFilter
-// orgs
-/*global _:false */
-import { isEqual } from '@ember/utils';
-// import CategoriesListMixin from '../mixins/categories_list_mixin';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
 
-export default Component.extend({
-  elementId: 'problem-filter',
-  currentUser: service('current-user'),
-  primaryFilterValue: alias('primaryFilter.value'),
-  primaryFilterInputs: alias('filter.primaryFilters.inputs'),
-  secondaryFilter: alias('primaryFilter.secondaryFilters'),
-  showAdminFilters: equal('primaryFilter.value', 'all'),
-  adminFilter: alias('filter.primaryFilters.inputs.all'),
-  showCategoryFilters: false,
-  showMoreFilters: false,
-  closedMenu: true,
+/**
+ *     <ProblemFilter
+        @mainOptions={{this.mainOptions}}
+        @mainSelection={{this.mainSelection}}
+        @onUpdateMain={{this.handleUpdateMain}}
+        @subOptions={{this.subOptions}}
+        @subSelections={{this.subSelections}}
+        @onUpdateSub={{this.handleUpdateSub}}
+        @showTrashed={{this.toggleTrashed}}
+        @toggleTrashed={{this.triggerShowTrashed}}
+        @categoriesFilter={{this.categoriesFilter}}
+        @onUpdateCategories={{this.handleUpdateCategories}}
+      >
+ */
+export default class ProblemFilterComponent extends Component {
+  @service currentUser;
+  @service store;
 
-  init: function () {
-    this._super(...arguments);
-    this.set('categoriesFilter', this.selectedCategories);
-  },
-  // current subFilter selected values
-  currentValues: reads('secondaryFilter.selectedValues'),
+  @tracked closedMenu = true;
+  @tracked showMoreFilters = false;
+  @tracked showCategoryFilters = false;
 
-  // used for populating the selectize instance
-  // orgs passed in from parent are all orgs from db
-  // ORGS IS RETURNING A
-  // orgOptions: computed('orgs.[]', function () {
-  //   let orgs = this.orgs;
-  //   console.log(this.orgs);
-  //   let toArray = orgs.toArray();
-  //   let mapped = _.map(toArray, (org) => {
-  //     return {
-  //       id: org.id,
-  //       name: org.get('name'),
-  //     };
-  //   });
-  //   return mapped;
-  // }),
+  get userIsAdmin() {
+    return this.currentUser.user.isAdmin;
+  }
 
-  primaryFilterOptions: computed('filter', 'primaryFilterInputs', function () {
-    let mapped = _.map(this.primaryFilterInputs, (val, key) => {
-      return val;
-    });
-    return _.sortBy(mapped, 'label');
-  }),
+  get showAdminFilters() {
+    return this.args.mainSelection.value === 'all';
+  }
 
-  secondaryFilterOptions: computed(
-    'primaryFilter.secondaryFilters.inputs',
-    function () {
-      return _.map(
-        this.get('primaryFilter.secondaryFilters.inputs'),
-        (val, key) => {
-          return val;
-        }
+  @action
+  updateTopLevel(val) {
+    if (this.args.onUpdateMain) {
+      this.args.onUpdateMain(val.value);
+    }
+  }
+
+  @action
+  toggleSubOption(option) {
+    if (this.args.onUpdateSub && this.args.subSelections) {
+      this.args.onUpdateSub(
+        !this.args.subSelections.includes(option.value),
+        option.value
       );
     }
-  ),
+  }
 
-  actions: {
-    updateTopLevel(val) {
-      // need to set filter[val] : true
-      // but also need to make sure the current selected item is now false
-      let currentValue = this.primaryFilterValue;
-      if (!isEqual(currentValue, val)) {
-        let newPrimaryFilter = this.primaryFilterInputs[val];
-        this.set('primaryFilter', newPrimaryFilter);
-        if (this.onUpdate) {
-          this.onUpdate();
-        }
-      }
-    },
-    updateSecondLevel(e) {
-      let { id } = e.target;
-      let secondaryFilter = this.secondaryFilter;
+  @action
+  toggleMoreFilters() {
+    this.showMoreFilters = !this.showMoreFilters;
+    this.closedMenu = !this.closedMenu;
+  }
 
-      let targetInput = secondaryFilter.inputs[id];
-      if (!targetInput) {
-        // not a valid option
-        return;
-      }
-      // valid option, toggle the inputs isApplied value
-      targetInput.isApplied = !targetInput.isApplied;
+  @action
+  toggleTrashedProblems() {
+    if (this.args.triggerShowTrashed) {
+      this.args.triggerShowTrashed();
+    }
+  }
 
-      // filter for inputs who are currently applied
-      let appliedInputs = _.filter(secondaryFilter.inputs, (input) => {
-        return input.isApplied;
-      });
+  @action
+  toggleCategoryFilters() {
+    this.showCategoryFilters = !this.showCategoryFilters;
+  }
 
-      let appliedValues = _.map(appliedInputs, (input) => input.value);
+  @action
+  addCategory(val) {
+    if (!val) {
+      return;
+    }
+    let category = this.args.store.peekRecord('category', val);
+    if (category) {
+      this.args.categoriesFilter.addObject(category);
+    }
+  }
 
-      // update selectedValues on secondaryFilter
+  @action
+  removeCategory(category) {
+    this.args.categoriesFilter.removeObject(category);
+  }
 
-      this.set('secondaryFilter.selectedValues', appliedValues);
-
-      if (this.onUpdate) {
-        this.onUpdate();
-      }
-    },
-
-    onUpdate() {
-      this.onUpdate();
-    },
-
-    toggleCategoryFilters() {
-      this.set('showCategoryFilters', !this.showCategoryFilters);
-    },
-
-    toggleMoreFilters() {
-      this.set('showMoreFilters', !this.showMoreFilters);
-      this.set('closedMenu', !this.closedMenu);
-    },
-
-    toggleTrashedProblems() {
-      this.set('toggleTrashed', !this.toggleTrashed);
-      this.triggerShowTrashed();
-    },
-
-    showCategoryMenu() {
-      this.store.query('category', {}).then((queryCats) => {
-        let categories = queryCats.get('meta');
-        this.set('categoryTree', categories.categories);
-        this.set('showCategoryList', true);
-      });
-    },
-
-    addCategorySelectize(val, $item) {
-      if (!val) {
-        return;
-      }
-
-      let peeked = this.store.peekAll('category');
-      let cat = peeked.findBy('id', val);
-      this.categoriesFilter.addObject(cat);
-
-      // clear input
-      this.$('select#categories-filter')[0].selectize.clear();
-    },
-
-    removeCategory(category) {
-      this.categoriesFilter.removeObject(category);
-    },
-
-    toggleIncludeSubCats() {
-      // toggle value
-      let doInclude = this.doIncludeSubCategories;
-      this.set('doIncludeSubCategories', !doInclude);
-
-      let filter = this.categoriesFilter;
-      // fetch problems if category filter isnt empty
-      if (!_.isEmpty(filter)) {
-        this.onUpdate();
-      }
-    },
-  },
-});
+  @action
+  toggleIncludeSubCats() {
+    this.args.onUpdate();
+  }
+}

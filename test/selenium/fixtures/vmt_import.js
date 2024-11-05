@@ -14,5 +14,5 @@ module.exports = {
       id: '5ba289c57223b9429888b9b6',
     },
     submissionsCount: 2,
-  }
+  },
 };

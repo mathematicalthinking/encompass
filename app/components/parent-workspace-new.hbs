@@ -7,7 +7,7 @@
       </span>
     </p>
     <div>
-      <Input @id="parent-ws-new-name" class="single-text-input" @type="text" @value={{this.workspaceName}} placeholder="Provide a name for your workspace" />
+      <Input id="parent-ws-new-name" class="single-text-input" @type="text" @value={{this.workspaceName}} placeholder="Provide a name for your workspace" />
     </div>
   {{#each this.workspaceNameErrors as |error|}}
     <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut this.workspaceNameErrors) null}} />
@@ -27,8 +27,8 @@
 
     {{#unless this.isRequestIsInProgress}}
       <div class="button-row">
-        <button class="primary-button" data-test="add-parent-ws-create" {{action "create"}}>Create Workspace</button>
-        <button class="primary-button cancel-button" data-test="add-parent-ws-cancel" {{action "cancel"}}>Cancel</button>
+        <button class="primary-button" data-test="add-parent-ws-create" type="button" {{action "create"}}>Create Workspace</button>
+        <button class="primary-button cancel-button" data-test="add-parent-ws-cancel" type="button" {{action "cancel"}}>Cancel</button>
       </div>
     {{/unless}}
   {{/unless}}

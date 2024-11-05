@@ -4,7 +4,7 @@ const sharp = require('sharp');
 // const base64Img = require('base64-img');
 // const fs = require('fs');
 
-const htmlparser = require("htmlparser2");
+const htmlparser = require('htmlparser2');
 
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
@@ -13,34 +13,37 @@ mongoose.Promise = global.Promise;
 
 //  let sizeThreshold = 1000000;
 
- function parseImageData(expl) {
-   let result = [];
+function parseImageData(expl) {
+  let result = [];
 
-  let parser = new htmlparser.Parser({
-    onopentag: function(name, attr) {
-      result.push('<' + name);
+  let parser = new htmlparser.Parser(
+    {
+      onopentag: function (name, attr) {
+        result.push('<' + name);
 
-      _.each(attr, (val, key) => {
-        result.push(` ${key}='${val}'`);
-      });
-      result.push('>');
-    },
+        _.each(attr, (val, key) => {
+          result.push(` ${key}='${val}'`);
+        });
+        result.push('>');
+      },
 
-    ontext: function(text) {
-      result.push(text);
+      ontext: function (text) {
+        result.push(text);
+      },
+      onclosetag: function (tagname) {
+        let nonClosingTags = ['img', 'br'];
+        if (!nonClosingTags.includes(tagname)) {
+          result.push('</' + tagname + '>');
+        }
+      },
     },
-    onclosetag: function(tagname) {
-      let nonClosingTags = ['img', 'br'];
-      if (!nonClosingTags.includes(tagname)) {
-        result.push('</' + tagname + '>');
-      }
-    },
-  }, {decodeEntities: true});
+    { decodeEntities: true }
+  );
 
   parser.write(expl);
   parser.end();
   return result;
- }
+}
 //  async function resizeLargeImages() {
 //    try {
 //     let answers = await models.Answer.find({
@@ -101,67 +104,68 @@ mongoose.Promise = global.Promise;
 //    }
 //  }
 
- let newlyCreatedImageIds = [];
- let modifiedAnswerIds = [];
+let newlyCreatedImageIds = [];
+let modifiedAnswerIds = [];
 
- async function reformatExplanationImages() {
+async function reformatExplanationImages() {
   try {
     let answers = await models.Answer.find({
-      explanation: {$exists: true, $ne: null},
-      $or: [
-        {powsSubmId: {$eq: null} },
-        {powsSubmId: {$exists: false}}
-        ]
+      explanation: { $exists: true, $ne: null },
+      $or: [{ powsSubmId: { $eq: null } }, { powsSubmId: { $exists: false } }],
     });
 
-    console.log(`There are ${answers.length} answers that are not old pows submissions`);
+    console.log(
+      `There are ${answers.length} answers that are not old pows submissions`
+    );
 
     let parsedArrays = answers.map(async (ans) => {
       let shouldSaveAnswer = false;
 
       let parsedExplanationArray = parseImageData(ans.explanation);
 
-      let resizedExplanation = await Promise.all(parsedExplanationArray.map(async (el) => {
-        let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
+      let resizedExplanation = await Promise.all(
+        parsedExplanationArray.map(async (el) => {
+          let first30Chars = typeof el === 'string' ? el.slice(0, 29) : '';
 
-        let target = 'base64,';
-        let targetIndex = first30Chars.indexOf(target);
+          let target = 'base64,';
+          let targetIndex = first30Chars.indexOf(target);
 
-        let isImageData = targetIndex !== -1;
+          let isImageData = targetIndex !== -1;
 
-        if (!isImageData) {
-          return el;
-        }
-        let dataStartIndex = targetIndex + target.length;
-        // does not include last char which is closing quote
-        let imageDataStr = el.slice(dataStartIndex);
+          if (!isImageData) {
+            return el;
+          }
+          let dataStartIndex = targetIndex + target.length;
+          // does not include last char which is closing quote
+          let imageDataStr = el.slice(dataStartIndex);
 
-        let dataFormatStartIndex = first30Chars.indexOf('data:');
-        let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
+          let dataFormatStartIndex = first30Chars.indexOf('data:');
+          let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
 
-        let origBuffer = Buffer.from(imageDataStr, 'base64');
+          let origBuffer = Buffer.from(imageDataStr, 'base64');
 
-        let originalSharp = sharp(origBuffer);
+          let originalSharp = sharp(origBuffer);
 
-        let originalMetadata = await originalSharp.metadata();
+          let originalMetadata = await originalSharp.metadata();
 
-        let { size, width, format, height } = originalMetadata;
+          let { size, width, format, height } = originalMetadata;
 
-        let newImage = new models.Image({
-          size: size,
-          width: width,
-          height: height,
-          mimetype: `image/${format}`,
-          createdBy: ans.createdBy,
-          imageData: imageDataStrWithFormat,
-        });
-        await newImage.save();
-        newlyCreatedImageIds.push(newImage._id);
-        shouldSaveAnswer = true;
+          let newImage = new models.Image({
+            size: size,
+            width: width,
+            height: height,
+            mimetype: `image/${format}`,
+            createdBy: ans.createdBy,
+            imageData: imageDataStrWithFormat,
+          });
+          await newImage.save();
+          newlyCreatedImageIds.push(newImage._id);
+          shouldSaveAnswer = true;
 
-        let url = `/api/images/file/${newImage._id}`;
-        return ` src='${url}'`;
-      }));
+          let url = `/api/images/file/${newImage._id}`;
+          return ` src='${url}'`;
+        })
+      );
 
       if (shouldSaveAnswer) {
         let joined = resizedExplanation.join('');
@@ -173,12 +177,10 @@ mongoose.Promise = global.Promise;
       }
     });
     return Promise.all(parsedArrays);
-   }catch(err) {
-     console.error(`Error reformatExplanationImages: ${err}`);
-   }
- }
-
-
+  } catch (err) {
+    console.error(`Error reformatExplanationImages: ${err}`);
+  }
+}
 
 // function migrate() {
 //   return resizeLargeImages().then((res) => {
@@ -193,11 +195,12 @@ mongoose.Promise = global.Promise;
 // }
 
 function convertExplanationImages() {
-  return reformatExplanationImages().then((res) => {
-    console.log(`Created: ${newlyCreatedImageIds.length} new Images`);
-    console.log(`Modified ${modifiedAnswerIds.length} answers`);
-     mongoose.connection.close();
-     console.log('done!');
+  return reformatExplanationImages()
+    .then((res) => {
+      console.log(`Created: ${newlyCreatedImageIds.length} new Images`);
+      console.log(`Modified ${modifiedAnswerIds.length} answers`);
+      mongoose.connection.close();
+      console.log('done!');
     })
     .catch((err) => {
       console.log('Error convertExplanationImages: ', err);

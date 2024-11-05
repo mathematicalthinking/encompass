@@ -12,9 +12,18 @@ async function getSubsWithoutAnswers() {
     let missingAnswers = 0;
     let missingPowsSubmIds = [];
     let updatedSubmissions = 0;
-    const submissions = await models.Submission.find({answer: {$exists: false}, 'thread.currentSubmissionId': {$exists: true, $ne: null}}).lean().exec();
-    console.log(`There are ${submissions.length} submissions without an answer field`);
-    console.log('This could take several moments for large numbers of submissions');
+    const submissions = await models.Submission.find({
+      answer: { $exists: false },
+      'thread.currentSubmissionId': { $exists: true, $ne: null },
+    })
+      .lean()
+      .exec();
+    console.log(
+      `There are ${submissions.length} submissions without an answer field`
+    );
+    console.log(
+      'This could take several moments for large numbers of submissions'
+    );
 
     // use thread.currentSubmissionId to look up corresponding answer in db
     // set answer field on submission model to corresponding answerId;
@@ -27,7 +36,9 @@ async function getSubsWithoutAnswers() {
 
       let submissionId = sub.thread.currentSubmissionId; // pows submission Id
 
-      let encAnswer = await models.Answer.find({powsSubmId: submissionId}).lean().exec();
+      let encAnswer = await models.Answer.find({ powsSubmId: submissionId })
+        .lean()
+        .exec();
 
       if (encAnswer.length === 0) {
         missingPowsSubmIds.push(submissionId);
@@ -36,19 +47,22 @@ async function getSubsWithoutAnswers() {
         let first = encAnswer[0];
         let answerId = first._id;
 
-        let updated = await models.Submission.update({_id: subId}, {$set: {answer: answerId }});
+        let updated = await models.Submission.update(
+          { _id: subId },
+          { $set: { answer: answerId } }
+        );
         updatedSubmissions++;
       }
     }
 
-    console.log(`Updated ${updatedSubmissions} submissions with the corresponding answer`);
-
-
+    console.log(
+      `Updated ${updatedSubmissions} submissions with the corresponding answer`
+    );
 
     console.log(`There are ${missingAnswers} missing answers`); // should be all ken ken related
 
     let uniqueMissing = _.uniq(missingPowsSubmIds);
-    let json = (JSON.stringify(uniqueMissing));
+    let json = JSON.stringify(uniqueMissing);
 
     console.log(`There are  ${uniqueMissing.length} missing submission ids`);
     fs.writeFile('missingPowsSubs.json', json, 'utf8', (err, data) => {
@@ -57,24 +71,32 @@ async function getSubsWithoutAnswers() {
       }
     });
 
-    let subsRelatedToMissingAnswers = await models.Submission.find({'thread.currentSubmissionId': {$in: uniqueMissing}});
+    let subsRelatedToMissingAnswers = await models.Submission.find({
+      'thread.currentSubmissionId': { $in: uniqueMissing },
+    });
 
-    let workspacesRelated = _.flatten(subsRelatedToMissingAnswers.map(sub => sub.workspaces));
+    let workspacesRelated = _.flatten(
+      subsRelatedToMissingAnswers.map((sub) => sub.workspaces)
+    );
     console.log('related workspaces', workspacesRelated); // workspace ids that correspond to the subs that are missing corresponding answer
 
-    let workspaces = await models.Workspace.find({_id: {$in: workspacesRelated}}).lean().exec();
-    console.log('works', workspaces.map(ws => ws.name)); // to confirm that all are ken ken related
+    let workspaces = await models.Workspace.find({
+      _id: { $in: workspacesRelated },
+    })
+      .lean()
+      .exec();
+    console.log(
+      'works',
+      workspaces.map((ws) => ws.name)
+    ); // to confirm that all are ken ken related
 
     // close mongo connection to encompass
     mongoose.connection.close();
 
     console.log('done');
-
-  }catch(err) {
+  } catch (err) {
     console.log(err);
   }
-
-
 }
 
 getSubsWithoutAnswers();

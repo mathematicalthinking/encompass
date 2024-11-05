@@ -29,6 +29,7 @@ export default Component.extend({
   defaultMaxLength: 14680064, // 14MB
 
   didReceiveAttrs() {
+    this._super();
     let attrSectionId = this.attrSectionId;
     if (!attrSectionId) {
       this.set('sectionId', 'editor');
@@ -65,6 +66,7 @@ export default Component.extend({
   },
 
   didUpdateAttrs() {
+    this._super();
     this.handleStartingText();
   },
 
@@ -80,13 +82,13 @@ export default Component.extend({
     let attrStartingText = this.startingText;
     let startingText =
       typeof attrStartingText === 'string' ? attrStartingText : '';
-    this.$('.ql-editor').html(startingText);
+    $('.ql-editor').html(startingText);
   },
   // Empty quill editor .html() property returns <p><br></p>
   // For quill to not be empty, there must either be some text or a student
   // must have uploaded an img so there must be an img tag
   isQuillNonEmpty() {
-    let editor = this.$('.ql-editor');
+    let editor = $('.ql-editor');
 
     if (!editor) {
       return false;
@@ -106,7 +108,7 @@ export default Component.extend({
   },
 
   handleQuillChange() {
-    let editor = this.$('.ql-editor');
+    let editor = $('.ql-editor');
     if (!editor) {
       return;
     }

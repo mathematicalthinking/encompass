@@ -1,10 +1,5 @@
 import Component from '@ember/component';
 
-
-
-
-
-
 export default Component.extend({
   elementId: 'ws-copy-review',
   createDate: Date.now(),
@@ -15,7 +10,6 @@ export default Component.extend({
     },
     back() {
       this.onBack(-1);
-    }
-  }
-
+    },
+  },
 });

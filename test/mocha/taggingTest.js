@@ -8,18 +8,18 @@ const helpers = require('./helpers');
 
 const expect = chai.expect;
 const host = helpers.host;
-const baseUrl = "/api/taggings/";
+const baseUrl = '/api/taggings/';
 
 chai.use(chaiHttp);
 
-describe('Tagging CRUD operations', function() {
+describe('Tagging CRUD operations', function () {
   this.timeout('10s');
   const agent = chai.request.agent(host);
 
-  before(async function(){
+  before(async function () {
     try {
       await helpers.setup(agent);
-    }catch(err) {
+    } catch (err) {
       console.log(err);
     }
   });
@@ -30,10 +30,8 @@ describe('Tagging CRUD operations', function() {
 
   /** GET **/
   describe('/GET taggings', () => {
-    it('should get all taggings', done => {
-      agent
-      .get(baseUrl)
-      .end((err, res) => {
+    it('should get all taggings', (done) => {
+      agent.get(baseUrl).end((err, res) => {
         if (err) {
           console.error(err);
         }
@@ -46,10 +44,8 @@ describe('Tagging CRUD operations', function() {
   });
 
   describe('/GET tagging by ID', () => {
-    it('should get tagging', done => {
-      agent
-      .get(baseUrl + fixtures.tagging._id)
-      .end((err, res) => {
+    it('should get tagging', (done) => {
+      agent.get(baseUrl + fixtures.tagging._id).end((err, res) => {
         if (err) {
           console.error(err);
         }
@@ -64,38 +60,50 @@ describe('Tagging CRUD operations', function() {
 
   /** POST **/
   describe('/POST tagging', () => {
-    it('should post a new tagging', done => {
+    it('should post a new tagging', (done) => {
       agent
-      .post(baseUrl)
-      .send({tagging: fixtures.tagging.validTagging})
-      .end((err, res) => {
-        if (err) {
-          console.error(err);
-        }
-        expect(res).to.have.status(200);
-        expect(res.body.tagging).to.have.any.keys('folder', 'workspace', 'submission');
-        expect(res.body.tagging.folder).to.eql(fixtures.tagging.validTagging.folder);
-        done();
-      });
+        .post(baseUrl)
+        .send({ tagging: fixtures.tagging.validTagging })
+        .end((err, res) => {
+          if (err) {
+            console.error(err);
+          }
+          expect(res).to.have.status(200);
+          expect(res.body.tagging).to.have.any.keys(
+            'folder',
+            'workspace',
+            'submission'
+          );
+          expect(res.body.tagging.folder).to.eql(
+            fixtures.tagging.validTagging.folder
+          );
+          done();
+        });
     });
   });
 
   /** PUT tagging text**/
   describe('/PUT update tagging text', () => {
-    it('should change the tagging text to "updated text"', done => {
+    it('should change the tagging text to "updated text"', (done) => {
       let url = baseUrl + fixtures.tagging._id;
       agent
-      .put(url)
-      .send({tagging: fixtures.tagging.validTagging})
-      .end((err, res) => {
-        if (err) {
-          console.error(err);
-        }
-        expect(res).to.have.status(200);
-        expect(res.body.tagging).to.have.any.keys('workspace', 'submission', 'folder');
-        expect(res.body.tagging.submission).to.eql(fixtures.tagging.validTagging.submission);
-        done();
-      });
+        .put(url)
+        .send({ tagging: fixtures.tagging.validTagging })
+        .end((err, res) => {
+          if (err) {
+            console.error(err);
+          }
+          expect(res).to.have.status(200);
+          expect(res.body.tagging).to.have.any.keys(
+            'workspace',
+            'submission',
+            'folder'
+          );
+          expect(res.body.tagging.submission).to.eql(
+            fixtures.tagging.validTagging.submission
+          );
+          done();
+        });
     });
   });
 });

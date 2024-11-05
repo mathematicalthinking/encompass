@@ -1,11 +1,11 @@
 /**
-  * # The Cache
-  * @description Cache is responsible for saving submission data from an external source to the database
-  *              This source may be a url or a file.
-  * @author Damola Mabogunje <damola@mathforum.org>
-  * @since 1.0.0
-  * @todo Do we need this, we are no longer getting submissions from an external source
-  */
+ * # The Cache
+ * @description Cache is responsible for saving submission data from an external source to the database
+ *              This source may be a url or a file.
+ * @author Damola Mabogunje <damola@mathforum.org>
+ * @since 1.0.0
+ * @todo Do we need this, we are no longer getting submissions from an external source
+ */
 
 //REQUIRE MODULES
 const mongoose = require('mongoose');
@@ -43,7 +43,10 @@ function connect() {
   if (mongoose.connection.readyState !== mongoose.Connection.STATES.connected) {
     var opts = { user: db.user, pass: db.pass };
     mongoose.connect(db.host, db.name, db.port, opts);
-    mongoose.connection.on('error', console.error.bind(console, 'connection error'));
+    mongoose.connection.on(
+      'error',
+      console.error.bind(console, 'connection error')
+    );
   }
 }
 
@@ -57,7 +60,7 @@ function duplicates(submissions) {
   var dups = [];
 
   submissions.sort(function (a, b) {
-    return (a.powId > b.powId) ? 1 : ((a.powId < b.powId) ? -1 : 0);
+    return a.powId > b.powId ? 1 : a.powId < b.powId ? -1 : 0;
   });
 
   for (var i = 0; i < count - 1; i++) {
@@ -68,7 +71,6 @@ function duplicates(submissions) {
 
   return dups;
 }
-
 
 /*
  *  @description Convert options to a queryString
@@ -104,7 +106,8 @@ function toQueryString(options, allowed) {
     }
   }
 
-  if (query.id) { //Ignore all other options if submission ids are given
+  if (query.id) {
+    //Ignore all other options if submission ids are given
     query = { id: query.id };
   }
 
@@ -112,34 +115,33 @@ function toQueryString(options, allowed) {
 }
 
 /**
-  * @public
-  * @method cache
-  * @description Cache Saves submission data to the database according to `options`
-  * @param {Object} options An options object
-  * @return {Object} A status object
-  * @howto The options object must have the following fields:
-  *         + user {String} (optional)
-  *         + class_id {Int} (optional)
-  *         + collection {String} (optional)
-  *         + teacher {String} --------
-  *         + publication {Int}        |
-  *         + puzzle {Int}             | - One or more of these 5 are required
-  *         + submitter {String}       |
-  *         + submissions {Int/Array} _|
-  *         + since_date {Int} (optional) -
-  *         + max_date {Int} (optional)    |
-  *         + since_id {Int} (optional)    | - These 4 can be used in place of submissions if submissions is an empty array
-  *         + max_id {Int} (optional) -----
-  *         + source (optional file or url path)
-  *           - file source paths only use user and/or collection
-  *        The returned object will contain the following fields:
-  *         + success (bool - did import succeed?)
-  *         + importer (same as user or teacher if user not provided)
-  *         + imported (number of imported submissions)
-  *         + duplicates (number of duplicates present)
-  */
+ * @public
+ * @method cache
+ * @description Cache Saves submission data to the database according to `options`
+ * @param {Object} options An options object
+ * @return {Object} A status object
+ * @howto The options object must have the following fields:
+ *         + user {String} (optional)
+ *         + class_id {Int} (optional)
+ *         + collection {String} (optional)
+ *         + teacher {String} --------
+ *         + publication {Int}        |
+ *         + puzzle {Int}             | - One or more of these 5 are required
+ *         + submitter {String}       |
+ *         + submissions {Int/Array} _|
+ *         + since_date {Int} (optional) -
+ *         + max_date {Int} (optional)    |
+ *         + since_id {Int} (optional)    | - These 4 can be used in place of submissions if submissions is an empty array
+ *         + max_id {Int} (optional) -----
+ *         + source (optional file or url path)
+ *           - file source paths only use user and/or collection
+ *        The returned object will contain the following fields:
+ *         + success (bool - did import succeed?)
+ *         + importer (same as user or teacher if user not provided)
+ *         + imported (number of imported submissions)
+ *         + duplicates (number of duplicates present)
+ */
 function cache(options) {
-
   if (options.teacher && !options.user) {
     options.user = options.teacher;
   }
@@ -174,18 +176,22 @@ function cache(options) {
     updatedExisting: 0,
     addedNew: 0,
     duplicates: 0,
-    detail: {}
+    detail: {},
   };
 
   var result = Q.defer();
 
   var hasRequiredUrlOptions = _.any(required);
-  var hasRequiredFileOptions = _.any([options.user, options.teacher, options.collection]);
+  var hasRequiredFileOptions = _.any([
+    options.user,
+    options.teacher,
+    options.collection,
+  ]);
 
   /**
-    * @description This callback runs toSubmission on a JSON array
-    * @see [toSubmission](./api/submissionApi)
-    */
+   * @description This callback runs toSubmission on a JSON array
+   * @see [toSubmission](./api/submissionApi)
+   */
 
   var processJSON = function (json) {
     try {
@@ -196,9 +202,8 @@ function cache(options) {
       } else {
         json.forEach(api.toSubmission);
       }
-    }
-    catch (e) {
-      e.info = "Invalid JSON: Could not convert to submission";
+    } catch (e) {
+      e.info = 'Invalid JSON: Could not convert to submission';
       return Q.reject(e);
     }
 
@@ -208,11 +213,11 @@ function cache(options) {
     return new Q(json);
   };
 
-/*eslint no-eval: "off"*/
+  /*eslint no-eval: "off"*/
 
   /**
-    * @description This callback handles the response of an HTTP request
-    */
+   * @description This callback handles the response of an HTTP request
+   */
   var processResponse = function (response) {
     var body = response[1];
     var json;
@@ -222,15 +227,13 @@ function cache(options) {
     if (_.isArray(body)) {
       try {
         json = eval(body);
-      }
-      catch (e) {
-        e.info = "Invalid JSON: Could not parse to response";
+      } catch (e) {
+        e.info = 'Invalid JSON: Could not parse to response';
         return Q.reject(e);
       }
 
       return new Q(json);
-    }
-    else {
+    } else {
       error = new Error('Invalid Data Received!');
       error.name = 'Response Error';
 
@@ -265,30 +268,33 @@ function cache(options) {
 
         if (options.user) {
           upsertData.teacher = { username: options.user };
-          query["teacher.username"] = options.user;
+          query['teacher.username'] = options.user;
         }
 
+        Model.update(
+          query,
+          upsertData,
+          { upsert: true },
+          function (err, affected) {
+            if (err) {
+              err.info = 'Save Failed: Unable to cache data';
+              return Q.reject(err);
+            }
+            if (affected.nModified) {
+              report.updatedExisting += 1;
+            } else {
+              report.addedNew += 1;
+            }
 
-        Model.update(query, upsertData, { upsert: true }, function (err, affected) {
-          if (err) {
-            err.info = "Save Failed: Unable to cache data";
-            return Q.reject(err);
+            total--;
+            if (total === 0) {
+              report.success = true;
+              result.resolve(report);
+            }
           }
-          if (affected.nModified) {
-            report.updatedExisting += 1;
-          } else {
-            report.addedNew += 1;
-          }
-
-          total--;
-          if (total === 0) {
-            report.success = true;
-            result.resolve(report);
-          }
-        });
+        );
       });
-    }
-    else {
+    } else {
       report.success = true;
       result.resolve(report);
     }
@@ -327,14 +333,16 @@ function cache(options) {
   if (hasRequiredUrlOptions) {
     var key = utils.generateApiKey(Date.now());
     var query = toQueryString(options, allowed);
-    var restEndpoint = (options.submissions) ? process.env.CACHE_GETURL : process.env.CACHE_SEARCHURL;
+    var restEndpoint = options.submissions
+      ? process.env.CACHE_GETURL
+      : process.env.CACHE_SEARCHURL;
 
     var params = {
-      uri: restEndpoint.concat("?", query),
+      uri: restEndpoint.concat('?', query),
       json: true,
       followRedirect: false,
       method: 'GET',
-      headers: key
+      headers: key,
     };
 
     readUrl(params)

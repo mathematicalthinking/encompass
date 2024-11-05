@@ -1,21 +1,21 @@
 /** Collections we expect the DB to have */
 var COLLECTIONS = [
-  "users",
-  "workspaces",
-  "folders", 
-  "submissions", 
-  "selections",
-  "comments",
-  "taggings",
-  "responses",
+  'users',
+  'workspaces',
+  'folders',
+  'submissions',
+  'selections',
+  'comments',
+  'taggings',
+  'responses',
 ];
 
 /** Relationship Types: DO NOT EDIT */
 var REL_TYPES = {
   OneToOne: 0,
-  OneToMany: 1, 
+  OneToMany: 1,
   ManyToOne: 2,
-  ManyToMany: 3
+  ManyToMany: 3,
 };
 
 /** Relationships we want to check
@@ -29,98 +29,98 @@ var REL_TYPES = {
 var RELATIONSHIPS = [
   {
     order: REL_TYPES.OneToMany,
-    objects: {"workspaces": "folders"},
+    objects: { workspaces: 'folders' },
     fields: {
       origin: 'workspace',
-      endpoint: 'folders'
+      endpoint: 'folders',
     },
   },
   {
     order: REL_TYPES.ManyToMany,
-    objects: {"workspaces": "submissions"},
+    objects: { workspaces: 'submissions' },
     fields: {
       origin: 'workspaces',
-      endpoint: 'submissions'
+      endpoint: 'submissions',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"workspaces": "selections"},
+    objects: { workspaces: 'selections' },
     fields: {
       origin: 'workspace',
-      endpoint: 'selections'
+      endpoint: 'selections',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"workspaces": "comments"},
+    objects: { workspaces: 'comments' },
     fields: {
       origin: 'workspace',
-      endpoint: 'comments'
+      endpoint: 'comments',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"workspaces": "responses"},
+    objects: { workspaces: 'responses' },
     fields: {
       origin: 'workspace',
-      endpoint: 'responses'
+      endpoint: 'responses',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"workspaces": "taggings"},
+    objects: { workspaces: 'taggings' },
     fields: {
       origin: 'workspace',
-      endpoint: 'taggings'
+      endpoint: 'taggings',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"folders": "taggings"},
+    objects: { folders: 'taggings' },
     fields: {
       origin: 'folder',
-      endpoint: 'taggings'
+      endpoint: 'taggings',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"submissions": "selections"},
+    objects: { submissions: 'selections' },
     fields: {
       origin: 'submission',
-      endpoint: 'selections'
+      endpoint: 'selections',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"submissions": "comments"},
+    objects: { submissions: 'comments' },
     fields: {
       origin: 'submission',
-      endpoint: 'comments'
+      endpoint: 'comments',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"submissions": "responses"},
+    objects: { submissions: 'responses' },
     fields: {
       origin: 'submission',
-      endpoint: 'responses'
+      endpoint: 'responses',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"selections": "comments"},
+    objects: { selections: 'comments' },
     fields: {
       origin: 'selection',
-      endpoint: 'comments'
+      endpoint: 'comments',
     },
   },
   {
     order: REL_TYPES.OneToMany,
-    objects: {"selections": "taggings"},
+    objects: { selections: 'taggings' },
     fields: {
       origin: 'selection',
-      endpoint: 'taggings'
+      endpoint: 'taggings',
     },
   },
 ];

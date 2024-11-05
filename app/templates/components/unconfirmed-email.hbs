@@ -5,7 +5,7 @@
 
   <p class="info">If for some reason the email is not delivered, please click the button below to have a new email sent.</p>
 
-  <button class="action_button" {{action "sendEmail"}}>Send New Email</button>
+  <button class="action_button" type="button" {{action "sendEmail"}}>Send New Email</button>
 
   {{#if emailSuccess}}
     <p id="resent-confirm" class="success-message">Email sent!</p>

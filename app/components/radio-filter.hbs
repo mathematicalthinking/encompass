@@ -1,6 +1,16 @@
-<div class="radio-filter">
-  <label class="radio-label" class={{if this.isSelected 'is-selected'}}>
-  <input type="radio" id={{@id}} checked={{@isChecked}} name={{@groupName}} value={{@inputValue}} onclick={{action "onClick" @inputValue}}>
-  <span class="radio-content"><i class="radio-icon {{@labelIcon}}"></i><span class="radio-text">{{@labelName}}</span></span>
+<div class='radio-filter'>
+  <label class='radio-label {{if this.isSelected "is-selected"}}'>
+    <input
+      type='radio'
+      id={{@id}}
+      checked={{this.isChecked}}
+      name={{@groupName}}
+      value={{@inputValue}}
+      {{on 'click' (fn this.onClick @inputValue)}}
+    />
+    <span class='radio-content'>
+      <i class='radio-icon {{@labelIcon}}'></i>
+      <span class='radio-text'>{{@labelName}}</span>
+    </span>
   </label>
 </div>

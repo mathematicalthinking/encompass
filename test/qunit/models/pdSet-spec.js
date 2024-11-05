@@ -6,10 +6,10 @@ emq.setResolver(Ember.DefaultResolver.create({ namespace: Encompass }));
 
 moduleForModel('pdSet', 'PD Set Model');
 
-test('label', function() {
+test('label', function () {
   var pdSet = this.subject({
     id: 'Fake PD Set',
-    count: 50
+    count: 50,
   });
 
   var expected = 'Fake PD Set (50 submissions)';

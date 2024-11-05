@@ -79,8 +79,7 @@
                 }}
                   <div class='button-row'>
                     <button
-                      class='primary-button cancel-button'
-                      {{action 'cancelEditCollab'}}
+                      class='primary-button cancel-button' type="button" {{action 'cancelEditCollab'}}
                     >Cancel</button>
                   </div>
                 {{/if}}
@@ -115,13 +114,13 @@
               </div>
               <div class='collab-settings'>
                 <div class='card-row'>
-                  {{#unless
-                    (is-equal collaborator.userObj this.selectedCollaborator)
+                  {{#if
+                    (not (is-equal collaborator.userObj this.selectedCollaborator))
                   }}
                     <div class='row-label'>
                       Permissions Type
                     </div>
-                  {{/unless}}
+                  {{/if}}
                   <div class='row-value'>
                     {{#if
                       (is-equal collaborator.userObj this.selectedCollaborator)
@@ -133,7 +132,7 @@
                       />
                     {{else}}
                       {{collab-permissions collaborator.global}}
-                      {{#unless (is-equal collaborator.global 'custom')}}
+                      {{#if (not (is-equal collaborator.global 'custom'))}}
                         <span
                           class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
                           data-tooltip={{collab-global-tooltip
@@ -142,7 +141,7 @@
                         >
                           <i class='far fa-question-circle info-icon'></i>
                         </span>
-                      {{/unless}}
+                      {{/if}}
                     {{/if}}
                   </div>
                 </div>
@@ -321,12 +320,10 @@
                 }}
                   <div class='button-row'>
                     <button
-                      class='primary-button cancel-button'
-                      {{action 'cancelEditCollab'}}
+                      class='primary-button cancel-button' type="button" {{action 'cancelEditCollab'}}
                     >Cancel</button>
                     <button
-                      class='primary-button'
-                      {{action 'savePermissions' collaborator}}
+                      class='primary-button' type="button" {{action 'savePermissions' collaborator}}
                     >Save</button>
                   </div>
                 {{/if}}

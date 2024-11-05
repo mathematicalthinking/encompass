@@ -9,27 +9,32 @@ const userFixtures = require('./userFixtures');
 
 const expect = chai.expect;
 const host = helpers.host;
-const baseUrl = "/api/foldersets/";
+const baseUrl = '/api/foldersets/';
 
 chai.use(chaiHttp);
 
-describe('FolderSet CRUD operations by Account Type',
- async function() {
+describe('FolderSet CRUD operations by Account Type', async function () {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`FolderSet CRUD operations as ${user.details.testDescriptionTitle}`, function(){
+    describe(`FolderSet CRUD operations as ${user.details.testDescriptionTitle}`, function () {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
-      const { accessibleFolderSetCount, inaccessibleFolderSet,  accessibleFolderSet, validFolderSet, modifiableFolderSet } = user.folderSets;
+      const {
+        accessibleFolderSetCount,
+        inaccessibleFolderSet,
+        accessibleFolderSet,
+        validFolderSet,
+        modifiableFolderSet,
+      } = user.folderSets;
 
       const isStudent = accountType === 'S' || actingRole === 'student';
 
-      before(async function(){
+      before(async function () {
         try {
           await helpers.setup(agent, username, password);
-        }catch(err) {
+        } catch (err) {
           console.log(err);
         }
       });
@@ -39,10 +44,8 @@ describe('FolderSet CRUD operations by Account Type',
       });
 
       describe('/GET FolderSets', () => {
-        it('should get all folderSets', done => {
-          agent
-          .get(baseUrl)
-          .end((err, res) => {
+        it('should get all folderSets', (done) => {
+          agent.get(baseUrl).end((err, res) => {
             if (err) {
               console.error(err);
             }
@@ -50,18 +53,18 @@ describe('FolderSet CRUD operations by Account Type',
             expect(res).to.have.status(200);
             expect(res.body).to.have.all.keys('folderSets');
             expect(res.body.folderSets).to.be.a('array');
-            expect(res.body.folderSets).to.have.lengthOf(accessibleFolderSetCount);
+            expect(res.body.folderSets).to.have.lengthOf(
+              accessibleFolderSetCount
+            );
             done();
           });
         });
       });
       if (accountType !== 'A') {
         describe('/GET inaccessible folderSet by id', () => {
-          it('should return 403 error', done => {
+          it('should return 403 error', (done) => {
             const url = baseUrl + inaccessibleFolderSet._id;
-            agent
-            .get(url)
-            .end((err, res) => {
+            agent.get(url).end((err, res) => {
               if (err) {
                 console.log(err);
               }
@@ -73,10 +76,8 @@ describe('FolderSet CRUD operations by Account Type',
       }
       if (!isStudent) {
         describe('/GET accessible folderSet by ID', () => {
-          it('should one folderSet with matching id', done => {
-            agent
-            .get(baseUrl + accessibleFolderSet._id)
-            .end((err, res) => {
+          it('should one folderSet with matching id', (done) => {
+            agent.get(baseUrl + accessibleFolderSet._id).end((err, res) => {
               if (err) {
                 console.error(err);
               }
@@ -93,16 +94,19 @@ describe('FolderSet CRUD operations by Account Type',
       /** POST **/
       describe('/POST folderSet', () => {
         let msg = 'should post a new folderSet';
-        it(msg, done => {
+        it(msg, (done) => {
           agent
-          .post(baseUrl)
-          .send({folderSet: validFolderSet})
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-            }
+            .post(baseUrl)
+            .send({ folderSet: validFolderSet })
+            .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(200);
-              expect(res.body.folderSet).to.have.any.keys('name', 'privacySetting');
+              expect(res.body.folderSet).to.have.any.keys(
+                'name',
+                'privacySetting'
+              );
               expect(res.body.folderSet.name).to.eql(validFolderSet.name);
               done();
             });
@@ -119,29 +123,29 @@ describe('FolderSet CRUD operations by Account Type',
           msg = 'should return 403 error';
         }
 
-        it(msg, done => {
+        it(msg, (done) => {
           let url = baseUrl + folderSet._id;
           agent
-          .put(url)
-          .send({
-                folderSet: {
-                  name: newName,
-                }
-              })
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-            }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
-              expect(res.body.folderSet).to.have.any.keys('name', );
-              expect(res.body.folderSet.name).to.eql(newName);
-              done();
-            }
-          });
+            .put(url)
+            .send({
+              folderSet: {
+                name: newName,
+              },
+            })
+            .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.folderSet).to.have.any.keys('name');
+                expect(res.body.folderSet.name).to.eql(newName);
+                done();
+              }
+            });
         });
       });
     });
