@@ -10,7 +10,7 @@ This file is an attempt to document what has and has not been done, as well as s
 
 ## Removal of Mixins
 
-A fair number of mixins have been removed, replaced by services. There are still more mixins on some legacy components and elsewhere. The plan is to step through all mixins in app/mixins, replacing them with existing or new services everywhere they are used.
+A fair number of mixins have been removed, replaced by services or component superclasses. There are still more mixins on some legacy components and elsewhere. The plan is to step through all mixins in app/mixins, replacing them with existing or new services everywhere they are used.
 
 ## Data down, actions up
 
@@ -101,3 +101,21 @@ ember-cli-dependency-checker is already installed and it never mentions anything
                     })
 
 If this.removeMessages is undefined, Ember might **not** show an error in the console or indicate anywhere that it failed. Subsequent lines will simply not execute but the app will continue running as if everything is fine.
+
+# Current Progress
+
+## Removal of mixins
+
+The following mixins have been deleted (11/10/2024)
+
+- addable_problems - had been used in one place (workspace-new-enc), however this usage appears to be a no-op. Perhaps someone didn't fully implement some change?
+- cacheable_models - not used on the current main branch
+- categories_list - usage is commented out on the main branch
+- mt_auth - this has been made into a service and is used on the main branch
+- user_signup - made into a component superclass on the main branch. The mixin is deleted and the component superclass should be made into a service.
+
+These mixins are slated to be removed:
+
+- current_user -- this is now a service. However, several classic components still use the mixin.
+- error_handling -- this is both a service and a component superclass. It should really be only a service. Several classic components still use the mixin.
+- vmt-host -- still be used as a mixin on the main branch.
