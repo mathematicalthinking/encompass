@@ -1,20 +1,39 @@
-<div class="card-container">
-  <div class="card-title">
-    <p class="card-heading">{{image.fileNameDisplay}}</p>
+<div class='card-container'>
+  <div class='card-title'>
+    <p class='card-heading'>{{image.fileNameDisplay}}</p>
   </div>
-  <div class="card-image" style="background: url({{image.imageData}}) no-repeat scroll center">
-    <div class="overlay">
-      <button type="button" {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+  <div
+    class='card-image'
+    style='background: url({{image.imageData}}) no-repeat scroll center'
+  >
+    <div class='overlay'>
+      <button type='button' {{action 'expandImage'}}><i
+          class='fas fa-expand'
+        ></i></button>
     </div>
   </div>
-  <div class="card-end">
-    <SelectizeInput @store={{this.store}} @inputId={{selectizeInputId}} @maxItems={{10}} @initialOptions={{studentOptions}} @initialItems={{initialStudentItems}} @onItemAdd={{action "updateSelectedIds"}} @onItemRemove={{action "updateSelectedIds"}} @labelField="username" @searchField="username" @valueField="id" @model="user" @placeholder="Search students by username" @create={{action "addStudentName"}} @createFilter={{newNameFilter}} />
+  <div class='card-end'>
+    <SelectizeInput
+      @inputId={{selectizeInputId}}
+      @maxItems={{10}}
+      @initialOptions={{studentOptions}}
+      @initialItems={{initialStudentItems}}
+      @onItemAdd={{action 'updateSelectedIds'}}
+      @onItemRemove={{action 'updateSelectedIds'}}
+      @labelField='username'
+      @searchField='username'
+      @valueField='id'
+      @model='user'
+      @placeholder='Search students by username'
+      @create={{action 'addStudentName'}}
+      @createFilter={{newNameFilter}}
+    />
   </div>
 </div>
 
 {{#if isExpanded}}
-  <div class="full-image">
-    <i class="fas fa-times" {{action 'expandImage'}}></i>
-    <img src="{{{image.imageData}}}" alt="">
+  <div class='full-image'>
+    <i class='fas fa-times' {{action 'expandImage'}}></i>
+    <img src='{{{image.imageData}}}' alt='' />
   </div>
 {{/if}}

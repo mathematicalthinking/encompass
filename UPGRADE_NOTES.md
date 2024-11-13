@@ -10,7 +10,11 @@ This file is an attempt to document what has and has not been done, as well as s
 
 ## Removal of Mixins
 
-A fair number of mixins have been removed, replaced by services or component superclasses. There are still more mixins on some legacy components and elsewhere. The plan is to step through all mixins in app/mixins, replacing them with existing or new services everywhere they are used.
+A fair number of mixins have been removed, replaced by services or component superclasses. There are still more mixins on some legacy components and elsewhere. The plan is to step through all mixins in app/mixins, replacing them with existing or new services everywhere they are used. See below: on 11/10/2024 I deleted most of them and identified just three that need refactoring before removal.
+
+## Store
+
+Store is a service, so there is no need for it to be passed as an argument to a comopnent, route ,or controller.
 
 ## Data down, actions up
 
@@ -76,6 +80,16 @@ Through the use of ?. and ??, we can avoid runtime errors if an attempt is made 
 ## Creation of an api service
 
 Right now, http methods are implemented using $.get(), $.post(), etc. or, on the server side, via axios.get(), axios.post(), etc. Modern Ember encourages the use of the ember-fetch package. With that package, we could make an api service so that client components could do api.get(), api.post(), etc. (A similar centralization could be done on the server side as well.) By centralizing all http requests into a service, it becomes easier to change how http requests are done if ember-fetch ever gets upgraded or a new approach is introduced.
+
+## Superclasses
+
+There are a variety of superclasses
+
+- Component - UserSignUp, ErrorHandling
+- Model - Auditable
+- Route - Authenticated
+
+I need to figure out if something needs to be done about this. I know that the Component superclasses should be made into services.
 
 ## Cleaning up packages and unused elements
 

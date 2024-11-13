@@ -4,7 +4,6 @@
     <li>
       <label title={{this.tooltips.teacher}}>Teacher</label>
       <SelectizeInput
-        @store={{this.store}}
         @inputId='select-add-teacher'
         @maxItems={{1}}
         @initialItems={{this.initialTeacherItem}}
@@ -26,7 +25,6 @@
     <li>
       <label title={{this.tooltips.assignment}}>Assignment</label>
       <SelectizeInput
-        @store={{this.store}}
         @inputId='select-add-assignment'
         @maxItems={{1}}
         @initialOptions={{this.assignmentOptions}}
@@ -48,7 +46,6 @@
     <li>
       <label title={{this.tooltips.problem}}>Problem</label>
       <SelectizeInput
-        @store={{this.store}}
         @inputId='select-add-problem'
         @isAsync={{true}}
         @maxItems={{1}}
@@ -74,7 +71,6 @@
     <li>
       <label title={{this.tooltips.class}}>Class</label>
       <SelectizeInput
-        @store={{this.store}}
         @inputId='select-add-section'
         @maxItems={{1}}
         @initialOptions={{this.sectionPoolOptions}}
@@ -95,7 +91,6 @@
     <li>
       <label>Student</label>
       <SelectizeInput
-        @store={{this.store}}
         @inputId='select-add-student'
         @maxItems={{20}}
         @initialOptions={{this.studentPoolOptions}}
@@ -156,9 +151,9 @@
     <h3 {{action 'toggleVmtFilters'}} class='vmt-header'>
       <i
         class='fas
-          {{if this.showVmtFilters 'fa-chevron-down'}}{{unless
+          {{if this.showVmtFilters "fa-chevron-down"}}{{unless
             this.showVmtFilters
-            'fa-chevron-right'
+            "fa-chevron-right"
           }}'
       ></i>
       Vmt
@@ -205,7 +200,9 @@
     {{/if}}
 
     <button
-      class='primary-button search-answers' type="button" {{action 'buildCriteria'}}
+      class='primary-button search-answers'
+      type='button'
+      {{action 'buildCriteria'}}
     >Search</button>
   </ul>
 </div>

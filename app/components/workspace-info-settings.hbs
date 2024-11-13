@@ -58,7 +58,6 @@
         <div class='row-value'>
           {{#if this.isEditing}}
             <SelectizeInput
-              @store={{this.store}}
               @inputId='owner-select'
               @maxItems={{1}}
               @initialItems={{this.initialOwnerItem}}
@@ -106,7 +105,6 @@
           <div data-test='linked-assn' class='row-value'>
             {{#if this.isEditing}}
               <SelectizeInput
-                @store={{this.store}}
                 @inputId='linked-assignment-select'
                 @maxItems={{1}}
                 @initialItems={{this.initialLinkedAssignmentItem}}
@@ -155,7 +153,9 @@
         {{#unless this.isEditing}}
           <div class='update-submissions'>
             <button
-              class='primary-button' type="button" {{action 'updateWithExistingWork'}}
+              class='primary-button'
+              type='button'
+              {{action 'updateWithExistingWork'}}
             >Update Workspace</button>
             <div class='update-results'>
               {{#if this.missingLinkedAssignment}}
@@ -234,7 +234,9 @@
           <div class='update-submissions'>
             <button
               class='primary-button'
-              data-test='parent-ws-update' type="button" {{action 'updateWithExistingWork'}}
+              data-test='parent-ws-update'
+              type='button'
+              {{action 'updateWithExistingWork'}}
             >Update Parent Workspace</button>
             <div class='update-results'>
               {{#if this.missingChildWorkspaces}}
@@ -290,10 +292,14 @@
       {{#if this.isEditing}}
         <div class='card-row button-row'>
           <button
-            class='primary-button cancel-button' type="button" {{action 'stopEditing'}}
+            class='primary-button cancel-button'
+            type='button'
+            {{action 'stopEditing'}}
           >Cancel</button>
           <button
-            class='primary-button' type="button" {{action 'checkWorkspace'}}
+            class='primary-button'
+            type='button'
+            {{action 'checkWorkspace'}}
           >Save</button>
         </div>
       {{/if}}
