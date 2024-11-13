@@ -1,7 +1,23 @@
 <p>Select a user to configure their permissions for this workspace.</p>
-<SelectizeInput @store={{this.store}} @inputId="collab-select" @maxItems={{1}} @onItemAdd={{action "setCollaborator"}} @onItemRemove={{action "setCollaborator"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search for collaborators to add" />
+<SelectizeInput
+  @inputId='collab-select'
+  @maxItems={{1}}
+  @onItemAdd={{action 'setCollaborator'}}
+  @onItemRemove={{action 'setCollaborator'}}
+  @labelField='username'
+  @valueField='id'
+  @searchField='username'
+  @model='user'
+  @queryParamsKey='usernameSearch'
+  @isAsync={{true}}
+  @placeholder='Search for collaborators to add'
+/>
 
 {{#if selectedCollaborator}}
-  <WsPermissionsNew @workspace={{workspace}} @permissions={{permissions}} @onSave={{action "savePermissions"}} @selectedUser={{selectedCollaborator}} />
+  <WsPermissionsNew
+    @workspace={{workspace}}
+    @permissions={{permissions}}
+    @onSave={{action 'savePermissions'}}
+    @selectedUser={{selectedCollaborator}}
+  />
 {{/if}}
-
