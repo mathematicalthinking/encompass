@@ -28,7 +28,7 @@ Instead, modern Ember uses the Data down, actions up pattern. Parent components 
 
 ## Placement of files
 
-1. **Template and Component files** should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
+**Template and Component files** should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
 
 ## Imports
 
@@ -46,7 +46,9 @@ There were several unused helpers, which have been deleted (10/13/2024 commit). 
 
 Some of the helpers could be replaced in a future upgrade with built-in helpers: is-in and is-equal.
 
-In a recent Ember update, helpers can now be regular functions rather than wrapped in a manager.
+In Ember 4.5, helpers can now be regular functions rather than wrapped in a manager.
+
+11/14/2024: Upgraded to 4.5 and simplified all helpers.
 
 ## EmberTable
 
@@ -143,3 +145,7 @@ These mixins are slated to be removed:
 - current_user -- this is now a service. However, several classic components still use the mixin.
 - error_handling -- this is both a service and a component superclass. It should really be only a service. Several classic components still use the mixin.
 - vmt-host -- still be used as a mixin on the main branch.
+
+## Upgrade of Helpers
+
+With the upgrade to Ember 4.5 (11/14/2024), all helpers have been simplified to regular functions.
