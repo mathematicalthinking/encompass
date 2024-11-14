@@ -1,16 +1,17 @@
-import { helper as buildHelper } from '@ember/component/helper';
+import { helper } from '@ember/component/helper';
+import { htmlSafe } from '@ember/template';
 
-export default buildHelper(function (setting) {
-  if (
-    setting[0] === 'O' ||
-    setting[0] === 'E' ||
-    setting[0] === 'public' ||
-    setting[0] === 'org'
-  ) {
-    return '<i class="fas fa-globe-americas"></i>';
-  } else if (setting[0] === 'M' || setting[0] === 'private') {
-    return '<i class="fas fa-unlock"></i>';
+function publicPrivateIcon([setting]) {
+  const globeSettings = ['O', 'E', 'public', 'org'];
+  const unlockSettings = ['M', 'private'];
+
+  if (globeSettings.includes(setting)) {
+    return htmlSafe('<i class="fas fa-globe-americas"></i>');
+  } else if (unlockSettings.includes(setting)) {
+    return htmlSafe('<i class="fas fa-unlock"></i>');
   } else {
-    return '<i class="fa fa-question"></i>';
+    return htmlSafe('<i class="fa fa-question"></i>');
   }
-});
+}
+
+export default helper(publicPrivateIcon);

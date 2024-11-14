@@ -14,7 +14,11 @@ A fair number of mixins have been removed, replaced by services or component sup
 
 ## Store
 
-Store is a service, so there is no need for it to be passed as an argument to a comopnent, route ,or controller.
+Store is a service, so there is no need for it to be passed as an argument to a comopnent, route, or controller. This has been done for many cases (selectize-input, various aspects of the workspace and problem subsystems), but there are several more uses of @store={{this.store}} that need to be refactored.
+
+## Triple curly braces
+
+These should be replaced with usage of htmlSafe().
 
 ## Data down, actions up
 
@@ -41,6 +45,12 @@ As possible, I will be replacing <Input> with <input>, and so forth. Although th
 There were several unused helpers, which have been deleted (10/13/2024 commit). I left in two of them: debug (expect it to be used only for debugging and seems useful) and is-unread-response (not used, but might contain useful logic to help people understand how responses work).
 
 Some of the helpers could be replaced in a future upgrade with built-in helpers: is-in and is-equal.
+
+In a recent Ember update, helpers can now be regular functions rather than wrapped in a manager.
+
+## EmberTable
+
+There are other packages that are more aligned with Glimmer and Octane approaches to Ember. However, depending on the needs, perhaps the 5 uses of EmberTable could be replaced with vanilla JS.
 
 ## Independent Components
 

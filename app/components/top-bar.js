@@ -1,95 +1,101 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend(CurrentUserMixin, {
-  tagName: 'header',
-  errorHandling: service('error-handling'),
-  toggleRoleErrors: [],
-  alert: service('sweet-alert'),
+export default class TopBarComponent extends Component {
+  @service errorHandling;
+  @service('sweet-alert') alert;
+  @service('current-user') currentUserService;
+  @service store;
 
-  toggleRoleErrors: [],
-  open: false,
+  @tracked isOpen = false;
+  @tracked isToggleError = false;
+  @tracked toggleRoleErrors = [];
+  drawerElement = null;
 
-  init() {
-    this._super(...arguments);
-    this.handleClickOutside = this._handleClickOutside.bind(this);
-  },
-
-  didInsertElement() {
-    this._super(...arguments);
+  constructor() {
+    super(...arguments);
+    // Bind the click outside handler as an action for easy teardown and to access class properties
     document.addEventListener('click', this.handleClickOutside);
-  },
+  }
 
-  willDestroyElement() {
-    this._super(...arguments);
+  willDestroy() {
+    super.willDestroy(...arguments);
     document.removeEventListener('click', this.handleClickOutside);
-  },
+  }
 
-  _handleClickOutside(event) {
-    if (this.open && !this.element.contains(event.target)) {
-      this.set('open', false);
+  get currentUser() {
+    return this.currentUserService.user;
+  }
+
+  get isStudentAccount() {
+    return this.currentUser && this.currentUser.accountType === 'S';
+  }
+
+  @action
+  setDrawerElement(element) {
+    this.drawerElement = element;
+  }
+
+  // Handle clicks outside the component to close the hamburger menu
+  @action
+  handleClickOutside(event) {
+    if (this.isOpen && !this.drawerElement?.contains(event.target)) {
+      this.isOpen = false;
     }
-  },
+  }
 
-  didReceiveAttrs: function () {
-    this._super();
-    let currentUser = this.currentUser;
-    if (currentUser) {
-      this.set('isStudentAccount', currentUser.get('accountType') === 'S');
+  // Toggle the drawer open or closed
+  @action
+  toggleDrawer() {
+    this.isOpen = !this.isOpen;
+  }
+
+  // Show confirmation modal before toggling roles
+  @action
+  async showToggleModal() {
+    const result = await this.alert.showModal(
+      'question',
+      'Are you sure you want to switch roles?',
+      'If you are currently modifying or creating a new record, you will lose all unsaved progress',
+      'Ok'
+    );
+
+    if (result.value) {
+      this.toggleActingRole();
     }
-  },
+  }
 
-  actions: {
-    toggleDrawer: function () {
-      this.set('open', !this.open);
-    },
+  // Toggle between teacher and student roles
+  @action
+  async toggleActingRole() {
+    if (this.currentUser.accountType === 'S') {
+      return;
+    }
 
-    showToggleModal: function () {
-      this.alert
-        .showModal(
-          'question',
-          'Are you sure you want to switch roles?',
-          'If you are currently modifying or creating a new record, you will lose all unsaved progress',
-          'Ok'
-        )
-        .then((result) => {
-          if (result.value) {
-            this.send('toggleActingRole');
-          }
-        });
-    },
+    const currentUser = this.currentUser;
+    const newRole =
+      currentUser.actingRole === 'teacher' ? 'student' : 'teacher';
 
-    toggleActingRole: function () {
-      const currentUser = this.currentUser;
-      if (currentUser.accountType === 'S') {
-        return;
-      }
-      const actingRole = currentUser.get('actingRole');
-      if (actingRole === 'teacher') {
-        currentUser.set('actingRole', 'student');
-      } else {
-        currentUser.set('actingRole', 'teacher');
-      }
-      currentUser
-        .save()
-        .then(() => {
-          this.set('actionToConfirm', null);
-          this.store.unloadAll('assignment');
-          this.sendAction('toHome');
-          this.alert.showToast(
-            'success',
-            'Successfully switched roles',
-            'bottom-end',
-            2500,
-            false,
-            null
-          );
-        })
-        .catch((err) => {
-          this.errorHandling.handleErrors(err, 'toggleRoleErrors', currentUser);
-          this.set('isToggleError', true);
-        });
-    },
-  },
-});
+    try {
+      currentUser.actingRole = newRole;
+      await currentUser.save();
+
+      this.store.unloadAll('assignment');
+      if (this.args.toHome) this.args.toHome();
+
+      this.alert.showToast(
+        'success',
+        'Successfully switched roles',
+        'bottom-end',
+        2500,
+        false,
+        null
+      );
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'toggleRoleErrors', currentUser);
+      this.isToggleError = true;
+    }
+  }
+}

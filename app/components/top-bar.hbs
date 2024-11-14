@@ -1,6 +1,6 @@
-{{#if this.user.isAuthenticated}}
-  <nav id='al_header'>
-    <div class='hamburger' {{action 'toggleDrawer'}}>
+{{#if this.currentUser.isAuthenticated}}
+  <nav id='al_header' {{did-insert this.setDrawerElement}}>
+    <div class='hamburger' {{on 'click' this.toggleDrawer}}>
       <i class='fa fa-bars hamburger-icon'></i>
 
     </div>
@@ -12,18 +12,20 @@
       />
     </LinkTo>
     <div
-      class='overlay {{if this.open "show"}}'
-      {{action 'toggleDrawer'}}
+      class='overlay {{if this.isOpen "show"}}'
+      {{on 'click' this.toggleDrawer}}
     ></div>
     {{! main nav bar  }}
     <ul class='al_nav menu-toggle' id='main-nav'>
       {{#unless this.isStudentAccount}}
         {{! role: admin, teacher, student etc. }}
         <li id='role-toggle'>
-          <span class='toggle-role' {{action 'showToggleModal'}}>
+          <span class='toggle-role' {{on 'click' this.showToggleModal}}>
             <span class='menuButton'>Switch Role:
-              <span class='acting-role'>{{this.user.actingRoleName}}
-                <i class='fas fa-sync-alt'></i></span>
+              <span class='acting-role'>
+                {{this.currentUser.actingRoleName}}
+                <i class='fas fa-sync-alt'></i>
+              </span>
             </span>
           </span>
         </li>
@@ -36,23 +38,23 @@
       </li>
     </ul>
     {{! side bar content when logged in }}
-    <div class='hamburger-menu {{if this.open "open"}}'>
+    <div class='hamburger-menu {{if this.isOpen "open"}}'>
       <div class='drawer'>
         <ul>
-          <li {{action 'toggleDrawer'}}>
+          <li {{on 'click' this.toggleDrawer}}>
             <LinkTo @route='index'>
               <div class='testHome'><i class='fa fa-home'></i>
                 Home</div>
             </LinkTo>
           </li>
-          <li {{action 'toggleDrawer'}}>
+          <li {{on 'click' this.toggleDrawer}}>
             <LinkTo @route='assignments'>
               <div class='testHome'>
                 <i class='fa fa-clipboard'></i>
                 Assignments</div>
             </LinkTo>
           </li>
-          <li {{action 'toggleDrawer'}}>
+          <li {{on 'click' this.toggleDrawer}}>
             <LinkTo @route='sections'>
               <div class='testHome'>
                 <i class='fa fa-graduation-cap'></i>
@@ -60,7 +62,7 @@
 
             </LinkTo>
           </li>
-          <li {{action 'toggleDrawer'}}>
+          <li {{on 'click' this.toggleDrawer}}>
             <LinkTo @route='workspaces'>
               <div class='testHome'>
                 <i class='fa fa-building'></i>
@@ -68,7 +70,7 @@
 
             </LinkTo>
           </li>
-          <li {{action 'toggleDrawer'}}>
+          <li {{on 'click' this.toggleDrawer}}>
             <LinkTo @route='problems'>
               <div class='testHome'>
                 <i class='fa fa-puzzle-piece'></i>
@@ -76,7 +78,7 @@
 
             </LinkTo>
           </li>
-          <li {{action 'toggleDrawer'}}>
+          <li {{on 'click' this.toggleDrawer}}>
             <LinkTo @route='responses'>
               <div class='testHome'>
                 <i class='fa fa-comments'></i>
@@ -85,7 +87,7 @@
             </LinkTo>
           </li>
           {{#unless this.isStudentAccount}}
-            <li {{action 'toggleDrawer'}}>
+            <li {{on 'click' this.toggleDrawer}}>
               <LinkTo @route='users.user' @model={{this.currentUser.id}}>
                 <div class='testHome'><i class='fas fa-user-circle'></i>
                   Users</div>
@@ -109,7 +111,7 @@
                 Privacy Policy</div>
             </LinkTo>
           </li>
-          <li {{action 'toggleDrawer'}}>
+          <li {{on 'click' this.toggleDrawer}}>
             <LinkTo @route='logout'>
               <div class='testHome'><i class='fa fa-power-off'></i>
                 Log out</div>
