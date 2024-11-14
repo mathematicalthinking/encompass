@@ -1,7 +1,6 @@
-import { helper } from '@ember/component/helper';
 import { htmlSafe } from '@ember/template';
 
-function publicPrivateIcon([setting]) {
+export default function (setting) {
   const globeSettings = ['O', 'E', 'public', 'org'];
   const unlockSettings = ['M', 'private'];
 
@@ -13,5 +12,3 @@ function publicPrivateIcon([setting]) {
     return htmlSafe('<i class="fa fa-question"></i>');
   }
 }
-
-export default helper(publicPrivateIcon);

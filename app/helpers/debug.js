@@ -1,7 +1,5 @@
 // not currently used, but seems very useful for debugging.
-import { helper as buildHelper } from '@ember/component/helper';
-
-export default buildHelper(function (optionalValue) {
+export default function (optionalValue) {
   console.log('Current Context');
   console.log('====================');
   console.log(this);
@@ -11,4 +9,4 @@ export default buildHelper(function (optionalValue) {
     console.log('====================');
     console.log(optionalValue);
   }
-});
+}

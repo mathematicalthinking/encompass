@@ -1,5 +1,3 @@
-import { helper } from '@ember/component/helper';
-
-export default helper(function ([val]) {
+export default function (val) {
   return val === true ? 'Yes' : 'No';
-});
+}
