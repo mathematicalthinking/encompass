@@ -514,12 +514,6 @@ export default class WorkspaceListContainerComponent extends Component {
           return { organization: userOrgId };
         },
       },
-      {
-        value: 'everyone',
-        label: 'Public',
-        icon: 'fas fa-globe-americas',
-        buildFilter: () => ({ mode: 'public' }),
-      },
     ]);
 
     // Substates for 'mine'

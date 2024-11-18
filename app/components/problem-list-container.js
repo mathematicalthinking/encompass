@@ -272,12 +272,6 @@ export default class ProblemListContainerComponent extends Component {
           organization: this.currentUser.user.organization.id,
         }),
       },
-      {
-        value: 'everyone',
-        label: 'Public',
-        icon: 'fas fa-globe-americas',
-        buildFilter: () => ({ privacySetting: { $in: ['E'] } }),
-      },
     ]);
 
     this.inputState.createSubStates(
@@ -356,26 +350,6 @@ export default class ProblemListContainerComponent extends Component {
         },
       ],
       { listBased: true, multiSelect: true }
-    );
-
-    this.inputState.createSubStates(
-      this.adminFilterName,
-      'pows',
-      [
-        {
-          label: 'Private',
-          value: 'unshared',
-          icon: 'fas fa-unlock',
-          default: true,
-        },
-        {
-          label: 'Public',
-          value: 'shared',
-          icon: 'fas fa-globe-americas',
-          default: true,
-        },
-      ],
-      { listBased: false, multiSelect: true, persist: true }
     );
   }
 
