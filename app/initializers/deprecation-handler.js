@@ -1,13 +1,18 @@
-// app/initializers/deprecation-handler.js
+// Note that this initializer should be deleted before the app is deployed to production.
+
 import { registerDeprecationHandler } from '@ember/debug';
 
 export function initialize() {
   registerDeprecationHandler((message, options, next) => {
-    // Example: Skip deprecations that aren't until version 4.0.0
-    if (options && options.until && options.until !== '4.0.0') {
+    // Skip deprecations targeted for future versions
+    if (options?.until && options.until > '4.5.0') {
       return;
     }
-    // Call the next handler if you want to log the deprecation
+
+    // Log deprecations for monitoring (optional)
+    console.warn(`Deprecation: ${message}`, options);
+
+    // Pass to the next handler
     next(message, options);
   });
 }

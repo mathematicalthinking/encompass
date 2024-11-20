@@ -1,11 +1,11 @@
 import Transform from '@ember-data/serializer/transform';
 
-export default Transform.extend({
-  deserialize: function (serialized) {
+export default class RawTransform extends Transform {
+  deserialize(serialized) {
     return serialized;
-  },
+  }
 
-  serialize: function (deserialized) {
+  serialize(deserialized) {
     return deserialized;
-  },
-});
+  }
+}
