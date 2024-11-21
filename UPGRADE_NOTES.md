@@ -12,9 +12,15 @@ This file is an attempt to document what has and has not been done, as well as s
 
 A fair number of mixins have been removed, replaced by services or component superclasses. There are still more mixins on some legacy components and elsewhere. The plan is to step through all mixins in app/mixins, replacing them with existing or new services everywhere they are used. See below: on 11/10/2024 I deleted most of them and identified just three that need refactoring before removal.
 
+## Error handling service
+
+The error handling service was previously implemented incorrectly. The ErrorHandling superclass worked, but was a bit obscure in terms of creating properties for the component behind-the-scenes. The corrected error handling service is more explict in how it works and how components should use it. Note that all components that use this service should create a getter to access the errors generated. Also, the component should clean up those errors when it unmounts or at least regularly clean out the errors when we have a successful action.
+
+Note that there are many classic components that use the error handling service but it does not exactly behave as these components expect, so this needs to be fixed.
+
 ## Store
 
-Store is a service, so there is no need for it to be passed as an argument to a comopnent, route, or controller. This has been done for many cases (selectize-input, various aspects of the workspace and problem subsystems), but there are several more uses of @store={{this.store}} that need to be refactored.
+Store is a service, so there is no need for it to be passed as an argument to a component, route, or controller. This has been corrected for many cases (selectize-input, various aspects of the workspace and problem subsystems), but there are several more uses of @store={{this.store}} that need to be refactored.
 
 ## Triple curly braces
 
@@ -26,9 +32,9 @@ A number of components used two-way data binding, which is discouraged in modern
 
 Instead, modern Ember uses the Data down, actions up pattern. Parent components send data down to their child components. A parent also sends actions (functions) to the child when updates are needed. When the child wants to update the property's value, it uses the appropriate action (essentially a callback to the parent). In this way, the parent is responsible for all of its properties' values, both getting and setting them.
 
-## Placement of files
+## Template and Component files
 
-**Template and Component files** should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
+Should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
 
 ## Imports
 
@@ -103,6 +109,8 @@ There are a variety of superclasses
 
 I need to figure out if something needs to be done about this. I know that the Component superclasses should be made into services.
 
+In particular, the ErrorHandling superclass works, but it obscures how errors are accumulated (i.e., handleErrors creates a new property in the component that typically the template accesses). There is an error-handling service that handles errors more explicitly, requiring the component to create a getter to access the error variable created. Also, components should clean these up when they unmount.
+
 ## Cleaning up packages and unused elements
 
 I've used ember-unused-components to determine that we do not have any unused components as of late 2024.
@@ -110,6 +118,21 @@ I've used ember-unused-components to determine that we do not have any unused co
 npm-check reveals quite a lot of packages that are either unused, in need of upgrade (minor or major). There are several packages listed as missing, but I believe that almost all of these are Ember packages that are automatically loaded elsewhere.
 
 ember-cli-dependency-checker is already installed and it never mentions anything out of the ordinary. Nevertheless, I've manually found a few packages that aren't used (g, gm, gm-reload, express-session) and removed them.
+
+## Simplify the testing frameworks
+
+The codebase currently has tests written in qunit, mocha, chai, jasmine, selenium, and casper.
+
+Overview: (from ChatGPT)
+
+- QUnit - Ember's default framework for unit, integration, and application tests. RECOMMENDED
+- Mocha - Alternative to QUnit with a different syntax. Used if your team prefers Mocha's style. REFACTOR TO QUNIT
+- Chai - Assertion library often used with Mocha or Jasmine for more expressive tests. REFACTOR TO QUNIT
+- Jasmine - Older test framework, largely replaced by Mocha. Sometimes used for legacy projects. REFACTOR TO QUNIT
+- Selenium - Browser automation tool, often used for end-to-end (E2E) tests. KEEP OR REFACTOR TO CYPRESS
+- CasperJS - Another E2E testing framework, based on PhantomJS. Deprecated and no longer maintained. REFACTOR TO CYPRESS OR SELENIUM
+
+There are several README.md files scattered through the /test folder.
 
 # Gotchas
 
@@ -127,6 +150,8 @@ ember-cli-dependency-checker is already installed and it never mentions anything
                     })
 
 If this.removeMessages is undefined, Ember might **not** show an error in the console or indicate anywhere that it failed. Subsequent lines will simply not execute but the app will continue running as if everything is fine.
+
+- Be careful around the use of objects that are being tracked. One must be careful to update their references so that they are reactive. Just setting a property won't be enough unless you use TrackedObject from tracked-built-ins.
 
 # Current Progress
 

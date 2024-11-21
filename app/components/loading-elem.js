@@ -1,4 +1,4 @@
-import Component from '@ember/glimmer';
+import Component from '@glimmer/component';
 
 export default class LoadingElemComponent extends Component {
   defaultMessage = 'Request in progress. Thank you for your patience!';
