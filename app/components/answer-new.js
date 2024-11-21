@@ -1,7 +1,7 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
+import isEqual from 'lodash/isEqual';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import { all, reject, resolve } from 'rsvp';
@@ -268,7 +268,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
 
     let newContribIds = newContributors.mapBy('id');
 
-    let didContribsChange = !_.isEqual(originalContribIds, newContribIds);
+    let didContribsChange = !isEqual(originalContribIds, newContribIds);
 
     return didContribsChange;
   }
