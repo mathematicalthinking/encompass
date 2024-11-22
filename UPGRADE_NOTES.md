@@ -18,6 +18,8 @@ The error handling service was previously implemented incorrectly. The ErrorHand
 
 Note that there are many classic components that use the error handling service but it does not exactly behave as these components expect, so this needs to be fixed.
 
+But the above is not enough! Apparently the display of errors was a work-in-progresss. There are several components (e.g., workspace-list-container, problem-list-container) that incorporate either the error-handling service, superclass, or mixin, but don't display the errors (albiet they do nicely keep track of them).
+
 ## Store
 
 Store is a service, so there is no need for it to be passed as an argument to a component, route, or controller. This has been corrected for many cases (selectize-input, various aspects of the workspace and problem subsystems), but there are several more uses of @store={{this.store}} that need to be refactored.

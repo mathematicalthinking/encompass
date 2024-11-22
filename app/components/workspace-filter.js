@@ -30,18 +30,4 @@ export default class WorkspaceFilterComponent extends Component {
     this.showMoreFilters = !this.showMoreFilters;
     this.closedMenu = !this.closedMenu;
   }
-
-  @action
-  toggleTrashedWorkspaces() {
-    if (this.args.triggerShowTrashed) {
-      this.args.triggerShowTrashed();
-    }
-  }
-
-  @action
-  toggleHiddenWorkspaces() {
-    if (this.args.triggerShowHidden) {
-      this.args.triggerShowHidden();
-    }
-  }
 }

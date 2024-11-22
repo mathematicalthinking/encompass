@@ -223,6 +223,10 @@ export default class WorkspaceListContainerComponent extends Component {
     });
   }
 
+  get workspaceLoadErrors() {
+    return this.errorHandling.getErrors('workspaceLoadErrors') || [];
+  }
+
   get workspacesMetadata() {
     return this.workspaces?.meta || null;
   }
@@ -735,7 +739,6 @@ export default class WorkspaceListContainerComponent extends Component {
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
     }
-    console.log('params are', params);
     return params;
   }
 

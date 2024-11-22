@@ -125,6 +125,10 @@ export default class ProblemListContainerComponent extends Component {
     });
   }
 
+  get problemLoadErrors() {
+    return this.errorHandling.getErrors('problemLoadErrors') || [];
+  }
+
   get problemsMetadata() {
     return this.problems?.meta || {};
   }
@@ -262,15 +266,19 @@ export default class ProblemListContainerComponent extends Component {
         value: 'mine',
         label: 'Mine',
         icon: 'fas fa-user',
-        buildFilter: () => ({ createdBy: this.currentUser.user.id }),
+        buildFilter: () => {
+          const id = this.currentUser.user?.id ?? null;
+          return id ? { createdBy: id } : {};
+        },
       },
       {
         value: 'myOrg',
         label: 'My Org',
         icon: 'fas fa-university',
-        buildFilter: () => ({
-          organization: this.currentUser.user.organization.id,
-        }),
+        buildFilter: () => {
+          const id = this.currentUser.user?.organization?.id ?? null;
+          return id ? { organization: id } : {};
+        },
       },
     ]);
 
@@ -371,11 +379,12 @@ export default class ProblemListContainerComponent extends Component {
     this.store
       .query('problem', queryParams)
       .then((results) => {
+        this.errorHandling.removeMessages('problemLoadErrors');
         this.problems = results;
         this.isFetchingProblems = false;
       })
       .catch((err) => {
-        this.errorHandling.handleErrors(err);
+        this.errorHandling.handleErrors(err, 'problemLoadErrors');
         this.isFetchingProblems = false;
       });
   }
@@ -388,9 +397,8 @@ export default class ProblemListContainerComponent extends Component {
     return this.sortCriterion?.sortParam;
   }
 
-  getUserOrg() {
-    return this.currentUser.user.organization.then(
-      (org) => org?.name || 'undefined'
-    );
+  async getUserOrg() {
+    const org = await this.currentUser.user?.organization;
+    return org?.name || 'undefined';
   }
 }

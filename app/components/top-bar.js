@@ -11,7 +11,6 @@ export default class TopBarComponent extends Component {
 
   @tracked isOpen = false;
   @tracked isToggleError = false;
-  @tracked toggleRoleErrors = [];
   drawerElement = null;
 
   constructor() {
@@ -23,6 +22,10 @@ export default class TopBarComponent extends Component {
   willDestroy() {
     super.willDestroy(...arguments);
     document.removeEventListener('click', this.handleClickOutside);
+  }
+
+  get toggleRoleErrors() {
+    return this.errorHandling.getErrors('toggleRoleErrors') || [];
   }
 
   get currentUser() {
@@ -79,6 +82,7 @@ export default class TopBarComponent extends Component {
       currentUser.actingRole === 'teacher' ? 'student' : 'teacher';
 
     try {
+      this.errorHandling.removeMessages('toggleRoleErrors');
       currentUser.actingRole = newRole;
       await currentUser.save();
 

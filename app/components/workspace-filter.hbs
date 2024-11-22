@@ -21,11 +21,11 @@
       <ul class='more-filter-list'>
         <h5>Hidden Workspaces</h5>
         <label class='subfilter'>
-          <Input
+          <input
             id='toggle-hidden'
-            @type='checkbox'
-            @checked={{@showHidden}}
-            @onChange={{this.toggleHiddenWorkspaces}}
+            type='checkbox'
+            checked={{@showHidden}}
+            {{on 'change' @toggleHidden}}
           />
           <span>Show All Hidden Workspaces</span>
         </label>
@@ -36,7 +36,7 @@
               id='toggle-trashed'
               type='checkbox'
               checked={{@showTrashed}}
-              {{on 'change' this.toggleTrashedWorkspaces}}
+              {{on 'change' @toggleTrashed}}
             />
             <span>Show All Trashed Workspaces</span>
           </label>

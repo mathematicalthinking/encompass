@@ -7,7 +7,6 @@ import $ from 'jquery';
 
 export default class WorkspaceSubmissionCompComponent extends Component {
   @service currentUser;
-  @service errorHandling;
   @service('utility-methods') utils;
   @service('workspace-permissions') permissions;
 
@@ -15,7 +14,6 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   @tracked showingSelections = false;
   @tracked isTransitioning = false;
   @tracked isDirty = false;
-  @tracked wsSaveErrors = [];
   @tracked wasShowingBeforeResizing = false;
   @tracked isSelectionsBoxExpanded = false;
   @tracked isMessageListenerAttached = false;

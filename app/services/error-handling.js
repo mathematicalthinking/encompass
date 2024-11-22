@@ -1,11 +1,12 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
 export default class ErrorHandlingService extends Service {
   @service('sweet-alert') alert;
 
-  errors = {};
+  @tracked errors = {};
 
   isAdapterError(err) {
     if (!err) {
@@ -26,14 +27,14 @@ export default class ErrorHandlingService extends Service {
       return;
     }
 
-    let errors = err.errors;
-    if (!errors || !Array.isArray(errors)) {
-      this.errors[propName] = ['Unknown Error'];
-      return;
+    if (err.errors && Array.isArray(err.errors)) {
+      const details = err.errors.map((e) => e.detail);
+      this.errors = { ...this.errors, [propName]: details };
+    } else if (typeof err.message === 'string') {
+      this.errors = { ...this.errors, [propName]: [err.message] };
+    } else {
+      this.errors = { ...this.errors, [propName]: ['Unknown Error'] };
     }
-    let details = errors.map((e) => e.detail);
-    this.errors[propName] = details;
-    return;
   }
 
   handleErrors(err, propName, record = null, records = []) {
@@ -51,6 +52,10 @@ export default class ErrorHandlingService extends Service {
         }
       });
     }
+  }
+
+  getErrors(prop) {
+    return this.errors[prop];
   }
 
   removeMessages(...errors) {
@@ -80,6 +85,7 @@ export default class ErrorHandlingService extends Service {
         this.errors[err] = null;
       }
     }
+    this.errors = { ...this.errors };
   }
 
   displayErrorToast(err, recordsToRollback) {
@@ -116,6 +122,7 @@ export default class ErrorHandlingService extends Service {
       return;
     }
     this.errors[prop].splice(this.errors[prop].indexOf(err), 1);
+    this.errors = { ...this.errors };
     return;
   }
 }

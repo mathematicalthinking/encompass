@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Component from '@ember/glimmer';
+import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
@@ -7,8 +7,11 @@ import { inject as service } from '@ember/service';
 export default class UnconfirmedEmailComponent extends Component {
   @service errorHandling;
   @service currentUser;
-  @tracked emailErrors = [];
   @tracked emailSuccess = false;
+
+  get emailErrors() {
+    return this.errorHandling.getErrors('emailErrors') || [];
+  }
 
   get displayName() {
     return this.currentUser.user.displayName;
@@ -24,6 +27,7 @@ export default class UnconfirmedEmailComponent extends Component {
       .then((res) => {
         if (res.isSuccess) {
           this.emailSuccess = true;
+          this.errorHandling.removeMessages('emailErrors');
         }
       })
       .catch((err) => {

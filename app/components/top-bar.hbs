@@ -29,6 +29,9 @@
             </span>
           </span>
         </li>
+        {{#each this.toggleRoleErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
       {{/unless}}
       {{! logout button }}
       <li class='menu-items' id='logout-btn'>
