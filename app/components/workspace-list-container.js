@@ -254,10 +254,6 @@ export default class WorkspaceListContainerComponent extends Component {
     return this.isSearchingWorkspaces || this.isDisplayingSearchResults;
   }
 
-  get modeFilter() {
-    return { $in: this.selectedMode };
-  }
-
   get orgOptions() {
     return (
       this.args.organizations?.map((org) => ({
@@ -740,11 +736,6 @@ export default class WorkspaceListContainerComponent extends Component {
       params.searchBy = searchBy;
     }
     return params;
-  }
-
-  //privacy setting determined from privacy drop down on main display
-  buildModeFilter() {
-    return { $in: this.modeFilter };
   }
 
   buildSortBy() {

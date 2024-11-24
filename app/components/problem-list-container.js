@@ -10,7 +10,8 @@ export default class ProblemListContainerComponent extends Component {
   @service errorHandling;
   @service inputState;
 
-  @tracked problems = [];
+  @tracked problems = this.args.problems || [];
+  @tracked selectedPrivacySetting = ['M', 'O', 'E'];
   @tracked showList = true;
   @tracked showGrid = false;
   @tracked isFilterListCollapsed = true;
@@ -152,6 +153,15 @@ export default class ProblemListContainerComponent extends Component {
     return this.currentUser.user;
   }
 
+  get displayProblems() {
+    if (!this.problems) {
+      return [];
+    }
+    return this.toggleTrashed
+      ? this.problems
+      : this.problems.filter((p) => !p.isTrashed);
+  }
+
   get listResultsMessage() {
     if (this.isFetchingProblems) {
       return this.showLoadingMessage
@@ -192,6 +202,12 @@ export default class ProblemListContainerComponent extends Component {
     } else {
       statusFilter.addObject(status);
     }
+    this.triggerFetch();
+  }
+
+  @action
+  updatePrivacySetting(privacySetting) {
+    this.selectedPrivacySetting = privacySetting;
     this.triggerFetch();
   }
 
@@ -390,7 +406,9 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   buildFilterBy() {
-    return this.inputState.getFilter(this.filterName);
+    const filter = { privacySetting: { $in: this.selectedPrivacySetting } };
+    const mainFilter = this.inputState.getFilter(this.filterName);
+    return { ...filter, ...mainFilter };
   }
 
   buildSortBy() {

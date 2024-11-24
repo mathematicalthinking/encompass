@@ -1,4 +1,4 @@
-This are notes taken as I attempt to upgrade Encompass to Ember 4.4
+This are notes taken as I attempt to upgrade Encompass to Ember 4.5. Note that there is a fair bit of redundancy in this file as these notes are being created as I do the work.
 
 # Backstory
 
@@ -136,6 +136,11 @@ Overview: (from ChatGPT)
 
 There are several README.md files scattered through the /test folder.
 
+## Other upgrades
+
+- **Routes** Many of the routes are in the classic style, so should be upgraded to JS classes, although they all seem to work fine in Ember 4.5.
+-
+
 # Gotchas
 
 - For the built-in component <Input>, the id argument should be id= rather than @id=. If you do "@id", the component will not respond to clicks.
@@ -156,6 +161,20 @@ If this.removeMessages is undefined, Ember might **not** show an error in the co
 - Be careful around the use of objects that are being tracked. One must be careful to update their references so that they are reactive. Just setting a property won't be enough unless you use TrackedObject from tracked-built-ins.
 
 # Current Progress
+
+## Upgrade of elements
+
+- **Components** - most of the discussion in this file focuses on the upgrading of components from classic to modern (Glimmer, Octane, Ember 4.5).
+- **Adapters** - Upgraded
+- **Controllers** - Seem to have already been upgraded. I've not tested these.
+- **Helpers** - as document elsewhere in this document, all upgraded.
+- **Initializers** - only one and I believe it's not needed for production. I upgraded it, however.
+- **Mixins** - as documented elsewhere, I'm in the process of eliminating these and double-checking others' work on removing these from components, etc.
+- **Routes** - haven't upgraded these as yet (11/22/2024). They seem to work fine but should be upgraded to modern Ember.
+- **Serializers** - upgraded
+- **Services** - upgraded as documented elsewhere in this document.
+- **Styles** - everything seems to work, although they could be upgraded to more modern best practice. I'll leave that work for someone with more expertise in CSS and related technologies.
+- **Templates** - as documented elsewhere, I've been moving the component templates into app/components as they are upgraded. I've also been deleting templates that are unused. Other types of templates are still in need of upgrading.
 
 ## Removal of mixins
 

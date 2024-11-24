@@ -27,32 +27,32 @@ export default class ProblemListItemComponent extends Component {
     {
       label: 'Edit',
       value: 'edit',
-      action: 'editProblem',
+      action: this.editProblem,
       icon: 'far fa-edit',
     },
     {
       label: 'Assign',
       value: 'assign',
-      action: 'assignProblem',
+      action: this.assignProblem,
       icon: 'fas fa-list-ul',
     },
     {
       label: 'Pending',
       value: 'pending',
-      action: 'makePending',
+      action: this.makePending,
       icon: 'far fa-clock',
       adminOnly: true,
     },
     {
       label: 'Report',
       value: 'flag',
-      action: 'reportProblem',
+      action: this.reportProblem,
       icon: 'fas fa-exclamation-circle',
     },
     {
       label: 'Delete',
       value: 'delete',
-      action: 'deleteProblem',
+      action: this.deleteProblem,
       icon: 'fas fa-trash',
     },
   ];
