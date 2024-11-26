@@ -38,11 +38,13 @@ Instead, modern Ember uses the Data down, actions up pattern. Parent components 
 
 Should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
 
-## Imports
+## Vendor imports
 
 Currently, ember-cli-build.js and the vendor/ folder reflects an older-style of imports. Wouldn't it be better to include the necessary packages and import them as needed in the various components?
 
-This has been done for randomcolor, jQuery, and selectize.
+This has been done for randomcolor, jQuery (older versions), typeahead.js, and selectize. Imports that were unused were deleted, including ajax (part of Ember), daterangePicker, error, ie_hacks, and jquery.mousewheel.
+
+Changing these vendor imports involved installing the corresponding packages (selectize and typeahead.js), then importing those packages into the wrapping components (selectize-input and twitter-typeahead).
 
 ## Move from built-in Ember components (Input, TextArea, Select, etc.) to the plain HTML versions
 
@@ -72,6 +74,10 @@ The current code includes several subsystems of components that are tightly coup
 - the way that filtering worked in the workspace subsystem required the different filters to have deep understanding of how the filtering (options and their states) are structured. This has been changed so that each type of filter receives specific options, selections, and the actions to change the selections.
 
 # Possible future upgrades
+
+## New Workspaces
+
+The components workspace-new, workspace-new-enc, and workspace-new-pows are currently not used. They seem to reflect some type of new functionality (rather than template/workspaces/new.hbs and workspace-new-container, which are used) that Pedro was working on but never finished. I'm leaving these files in the codebase with the hope that someday someone will use them to figure out what was being done and to finish the work. Likely the intent was to have tempalte/workspaces/new.hbs use the workspace-new component.
 
 ## Removal of underscore and reduction of lodash
 
@@ -172,8 +178,8 @@ If this.removeMessages is undefined, Ember might **not** show an error in the co
 - **Mixins** - as documented elsewhere, I'm in the process of eliminating these and double-checking others' work on removing these from components, etc.
 - **Routes** - haven't upgraded these as yet (11/22/2024). They seem to work fine but should be upgraded to modern Ember.
 - **Serializers** - upgraded
-- **Services** - upgraded as documented elsewhere in this document.
-- **Styles** - everything seems to work, although they could be upgraded to more modern best practice. I'll leave that work for someone with more expertise in CSS and related technologies.
+- **Services** - Some are upgraded; some were removed. Some still need to be upgraded.
+- **Styles** - everything seems to work, although they could be upgraded to more modern best practices. I'll leave that work for someone with more expertise in CSS and related technologies.
 - **Templates** - as documented elsewhere, I've been moving the component templates into app/components as they are upgraded. I've also been deleting templates that are unused. Other types of templates are still in need of upgrading.
 
 ## Removal of mixins

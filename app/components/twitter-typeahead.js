@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import 'typeahead.js';
 
 export default Ember.Component.extend({
   classNames: ['twitter-typeahead'],
@@ -66,8 +67,8 @@ export default Ember.Component.extend({
 
     $('.typeahead').on('typeahead:select', function (ev, suggestion) {
       that.set('selectedValue', suggestion);
-      if (that.get('onSelect')) {
-        that.sendAction('onSelect', suggestion);
+      if (typeof that.onSelect === 'function') {
+        that[that.onSelect](suggestion);
       }
       if (that.get('allowMultiple')) {
         that.$('.typeahead').typeahead('val', '');
@@ -95,8 +96,8 @@ export default Ember.Component.extend({
         }
 
         that.set('selectedValue', inputValue);
-        if (that.get('onSelect')) {
-          that.sendAction('onSelect', inputValue);
+        if (typeof that.onSelect === 'function') {
+          that[that.onSelect](inputValue);
         }
         if (that.get('allowMultiple')) {
           that.$('.typeahead').typeahead('val', '');

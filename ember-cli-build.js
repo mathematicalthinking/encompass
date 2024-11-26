@@ -21,7 +21,6 @@ module.exports = function (defaults) {
 
   app.import('vendor/guiders.js');
   app.import('vendor/jq.keys.js');
-  app.import('vendor/typeahead.bundle.js');
   app.import('vendor/validate.min.js');
   app.import('vendor/dropzone.js');
 
