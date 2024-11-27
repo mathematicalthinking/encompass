@@ -1,0 +1,46 @@
+<div class='ui-form-field'>
+  {{! If isEditing is true, render an input/checkbox/other editable UI }}
+  {{#if @isEditing}}
+    {{#if (is-equal @type 'checkbox')}}
+      <input
+        type='checkbox'
+        class='ui-checkbox {{@className}}'
+        checked={{this.currentValue}}
+        {{on 'change' this.handleCheckboxChange}}
+      />
+    {{else if (is-equal @type 'textarea')}}
+      <textarea
+        class='ui-textarea {{@className}}'
+        value={{this.currentValue}}
+        {{on 'input' this.handleInput}}
+      ></textarea>
+    {{else}}
+      <input
+        type='{{@type}}'
+        class='ui-input {{@className}}'
+        value={{this.currentValue}}
+        {{on 'input' this.handleInput}}
+      />
+    {{/if}}
+    {{! If not editing, display the value }}
+  {{else}}
+    <span class='{{@className}}'>
+      {{#if (is-equal @type 'checkbox')}}
+        {{if @value 'Yes' 'No'}}
+      {{else}}
+        {{@value}}
+      {{/if}}
+    </span>
+  {{/if}}
+
+  {{! Render a button if provided }}
+  {{#if @buttonLabel}}
+    <button
+      type='button'
+      class='ui-button {{@className}}'
+      {{on 'click' this.handleButtonClick}}
+    >
+      {{@buttonLabel}}
+    </button>
+  {{/if}}
+</div>

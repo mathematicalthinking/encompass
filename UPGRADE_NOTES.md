@@ -75,6 +75,18 @@ The current code includes several subsystems of components that are tightly coup
 
 # Possible future upgrades
 
+## DB document timestamps
+
+Currently, all timestamping of db documents (users, problems, workspaces, etc.) appears to be done manually primarily on the client side. This approach could cause issues because the clients clocks might be wrong. Also, because the dates are updated manually (all over the codebase), there is a higher likelihood of errors.
+
+Instead, we could leverage the {timestamps: true} option when defining all the Mongoose Schemas. This option has the db (a single )
+
+## Component organization
+
+# UI Elements
+
+There is now the folder app/components/ui that contains the form-field and expandable-cell components. The purpose of this folder is a place for generic UI components. Other generic UI components include: my-select, selectize-input, twitter-typeahead, radio-group (and radio-group-item), toggle-control, checkbox-list (and checkbox-list-item), collapsible-list, and quill-container. Once these get moved into that folder, every usage must reference the "Ui" namespace, such as <Ui::ToggleControl /> or <Ui::MySelect />.
+
 ## New Workspaces
 
 The components workspace-new, workspace-new-enc, and workspace-new-pows are currently not used. They seem to reflect some type of new functionality (rather than template/workspaces/new.hbs and workspace-new-container, which are used) that Pedro was working on but never finished. I'm leaving these files in the codebase with the hope that someday someone will use them to figure out what was being done and to finish the work. Likely the intent was to have tempalte/workspaces/new.hbs use the workspace-new component.
@@ -145,7 +157,7 @@ There are several README.md files scattered through the /test folder.
 ## Other upgrades
 
 - **Routes** Many of the routes are in the classic style, so should be upgraded to JS classes, although they all seem to work fine in Ember 4.5.
--
+- **Services** Most of the services are still in the classic style.
 
 # Gotchas
 

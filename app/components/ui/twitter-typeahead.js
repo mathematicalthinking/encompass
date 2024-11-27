@@ -10,27 +10,12 @@ export default Ember.Component.extend({
 
   didReceiveAttrs() {
     this._super(...arguments);
-    let templates = {};
-    let notFound = this.showNotFound;
-    let header = this.header;
-    let footer = this.footer;
-    let pending = this.pending;
-
-    if (notFound) {
-      templates.notFound = notFound;
-    }
-
-    if (header) {
-      templates.header = header;
-    }
-
-    if (footer) {
-      templates.footer = footer;
-    }
-
-    if (pending) {
-      templates.pending = pending;
-    }
+    let templates = {
+      ...(this.showNotFound && { notFound: this.showNotFound }),
+      ...(this.header && { header: this.header }),
+      ...(this.footer && { footer: this.footer }),
+      ...(this.pending && { pending: this.pending }),
+    };
 
     this.set('templates', templates);
   },
