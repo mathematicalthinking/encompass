@@ -1,21 +1,41 @@
-<div class='ui-form-field'>
+<div class='ui-form-field' {{did-update this.resetValue @isEditing}}>
   {{! If isEditing is true, render an input/checkbox/other editable UI }}
   {{#if @isEditing}}
     {{#if (is-equal @type 'checkbox')}}
+      {{#if @label}}
+        <label for='{{this.id}}'>{{@label}}</label>
+      {{/if}}
       <input
+        id='{{this.id}}'
         type='checkbox'
         class='ui-checkbox {{@className}}'
         checked={{this.currentValue}}
         {{on 'change' this.handleCheckboxChange}}
       />
     {{else if (is-equal @type 'textarea')}}
+      {{#if @label}}
+        <label for='{{this.id}}'>{{@label}}</label>
+      {{/if}}
       <textarea
+        id='{{this.id}}'
         class='ui-textarea {{@className}}'
         value={{this.currentValue}}
         {{on 'input' this.handleInput}}
       ></textarea>
+    {{else if (is-equal @type 'button')}}
+      <button
+        type='button'
+        class='ui-button {{@className}}'
+        {{on 'click' this.handleButtonClick}}
+      >
+        {{@label}}
+      </button>
     {{else}}
+      {{#if @label}}
+        <label for='{{this.id}}'>{{@label}}</label>
+      {{/if}}
       <input
+        id='{{this.id}}'
         type='{{@type}}'
         class='ui-input {{@className}}'
         value={{this.currentValue}}
@@ -33,14 +53,16 @@
     </span>
   {{/if}}
 
-  {{! Render a button if provided }}
+  {{! Render a post-field button if provided }}
   {{#if @buttonLabel}}
-    <button
-      type='button'
-      class='ui-button {{@className}}'
-      {{on 'click' this.handleButtonClick}}
-    >
-      {{@buttonLabel}}
-    </button>
+    {{#if @isEditing}}
+      <button
+        type='button'
+        class='ui-button {{@className}}'
+        {{on 'click' this.handleButtonClick}}
+      >
+        {{@buttonLabel}}
+      </button>
+    {{/if}}
   {{/if}}
 </div>

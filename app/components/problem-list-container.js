@@ -157,6 +157,10 @@ export default class ProblemListContainerComponent extends Component {
     if (!this.problems) {
       return [];
     }
+    console.log(
+      'at least one trashed',
+      this.problems.some((p) => p.isTrashed)
+    );
     return this.toggleTrashed
       ? this.problems
       : this.problems.filter((p) => !p.isTrashed);
@@ -391,6 +395,8 @@ export default class ProblemListContainerComponent extends Component {
     let filterBy = this.buildFilterBy();
     let sortBy = this.buildSortBy();
     let queryParams = { filterBy, sortBy };
+
+    console.log('queryParams', queryParams);
 
     this.store
       .query('problem', queryParams)

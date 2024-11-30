@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import { resource, use } from 'ember-resources';
 import moment from 'moment';
 
 export default class UserInfoComponent extends Component {
@@ -13,62 +14,65 @@ export default class UserInfoComponent extends Component {
 
   @tracked isEditing = false;
   @tracked authorized = null;
-  @tracked selectedType = null;
-  @tracked willOveride = null;
   @tracked fieldType = 'password';
-  @tracked loadOrgsErrors = [];
-  @tracked updateRecordErrors = [];
-  @tracked createRecordErrors = [];
-  @tracked findRecordErrors = [];
   @tracked isResettingPassword = false;
+  @tracked user = null;
+
+  @use userReaction = resource(() => {
+    console.log('userReaction');
+    this.isEditing = false;
+    this.user = this.extractEditableProperties(this.args.user);
+    return this.args.user;
+  });
+
+  get loadOrgsErrors() {
+    return this.errorHandling.getErrors('loadOrgsErrors');
+  }
+
+  get updateRecordErrors() {
+    return this.errorHandling.getErrors('updateRecordErrors');
+  }
+
+  get createRecordErrors() {
+    return this.errorHandling.getErrors('createRecordErrors');
+  }
+
+  get findRecordErrors() {
+    return this.errorHandling.getErrors('findRecordErrors');
+  }
+
+  get noEmail() {
+    return !this.args.user.email;
+  }
 
   get canEdit() {
-    let user = this.args.user;
-    let currentUser = this.args.currentUser;
-    if (!user || !currentUser) {
-      return false;
-    }
+    const { user, currentUser } = this.args;
+    if (!user || !currentUser) return false;
 
-    // is Admin
-    if (this.args.currentUser.accountType === 'A') {
-      return true;
-    }
+    const creatorId = this.utils.getBelongsToId(user, 'createdBy');
 
-    // is self
-    if (user.get('id') === currentUser.get('id')) {
-      return true;
-    }
-
-    let creatorId = this.utils.getBelongsToId(user, 'createdBy');
-
-    // is creator
-    if (currentUser.get('id') === creatorId) {
-      return true;
-    }
-
-    // pd admin for user's org
-    if (this.basePermissions.isRecordInPdDomain(user)) {
-      return true;
-    }
-    return false;
+    // can edit if:
+    // - current user is an admin
+    // - current user is editing their own profile
+    // - current user is the creator of the user
+    // - current user is a PD admin for the user's org
+    return (
+      currentUser.accountType === 'A' ||
+      user.id === currentUser.id ||
+      creatorId === currentUser.id ||
+      this.basePermissions.isRecordInPdDomain(user)
+    );
   }
 
   get canConfirm() {
-    if (this.basePermissions.isActingAdmin) {
-      return true;
-    }
-    if (this.basePermissions.isRecordInPdDomain(this.args.user)) {
-      return true;
-    }
-    return false;
-  }
-
-  get unconfirmedEmail() {
-    return !this.args.user.isEmailConfirmed;
+    return (
+      this.basePermissions.isActingAdmin ||
+      this.basePermissions.isRecordInPdDomain(this.args.user)
+    );
   }
 
   get accountTypes() {
-    let accountType = this.args.currentUser.get('accountType');
+    let accountType = this.args.currentUser.accountType;
     let accountTypes;
 
     if (accountType === 'A') {
@@ -85,49 +89,48 @@ export default class UserInfoComponent extends Component {
   }
 
   get tourDate() {
-    var date = this.seenTour;
+    var date = this.args.user.seenTour;
     if (date) {
       return moment(date).fromNow();
     }
     return 'no';
   }
 
-  @action editUser() {
-    let user = this.args.user;
-    this.userEmail = user.email;
-
-    let accountType = user.get('accountType');
-    if (accountType === 'S') {
-      this.selectedType = 'Student';
-    } else if (accountType === 'T') {
-      this.selectedType = 'Teacher';
-    } else if (accountType === 'A') {
-      this.selectedType = 'Admin';
-    } else if (accountType === 'P') {
-      this.selectedType = 'Pd Admin';
-    } else {
-      this.selectedType = null;
-    }
+  @action
+  editUser() {
     this.isEditing = true;
-    let isAuth = user.get('isAuthorized');
-    this.authorized = isAuth;
+    this.user = this.extractEditableProperties(this.args.user);
+  }
+
+  @action
+  handleCancelEdit() {
+    this.isEditing = false;
+    this.user = this.extractEditableProperties(this.args.user);
+  }
+
+  @action
+  handleSave() {
+    this.checkOrgExists();
+  }
+
+  @action
+  handleChange(property, value) {
+    this.user = { ...this.user, [property]: value };
+  }
+
+  @action
+  handleAccountTypeChange(value) {
+    this.handleChange('accountType', value[0]);
   }
 
   @action checkOrgExists() {
-    let user = this.args.user;
-    let userOrg = user.get('organization.content');
-    let userOrgRequest = user.get('organizationRequest');
+    let user = this.user;
+    let userOrg = user.organization?.content;
+    let userOrgRequest = user.organizationRequest;
     let org = this.org;
     let orgReq = this.orgReq;
 
-    let options = [
-      Boolean(userOrg),
-      Boolean(userOrgRequest),
-      Boolean(org),
-      Boolean(orgReq),
-    ];
-
-    if (options.includes(true)) {
+    if (userOrg || userOrgRequest || org || orgReq) {
       this.saveUser();
     } else {
       this.alert
@@ -146,10 +149,21 @@ export default class UserInfoComponent extends Component {
   }
 
   saveUser() {
-    let currentUser = this.args.currentUser;
-    let user = this.args.user;
-    let org = this.org;
-    let orgReq = this.orgReq;
+    const currentUser = this.args.currentUser;
+    const user = this.args.user;
+
+    // set the isConfirmingEmail flag if the current user has manually confirmed this user's email
+    // so server knows whether to make request to sso server
+    user.isConfirmingEmail =
+      this.user.isEmailConfirmed && !user.isEmailConfirmed;
+
+    // update user with the values from the properties in this.user
+    Object.keys(this.user).forEach((key) => {
+      user.set(key, this.user[key]);
+    });
+
+    const org = this.org;
+    const orgReq = this.orgReq;
 
     let orgs = this.args.orgList;
     let matchingOrg = orgs.findBy('name', orgReq);
@@ -158,26 +172,16 @@ export default class UserInfoComponent extends Component {
       orgReq = null;
     }
 
-    // should we check to see if any information was actually updated before updating modified by/date?
-    let accountType = this.selectedType;
-    let accountTypeLetter = accountType.charAt(0).toUpperCase();
-    user.set('accountType', accountTypeLetter);
-
     if (org) {
-      user.set('organization', org);
+      user.org = org;
     }
     if (orgReq) {
-      user.set('organizationRequest', orgReq);
+      user.organizationRequest = orgReq;
     }
-    user.set('email', this.userEmail);
 
     //if is authorized is now true, then we need to set the value of authorized by to current user
-    let newDate = new Date();
-    user.set('lastModifiedBy', currentUser);
-    user.set('lastModifiedDate', newDate);
-
-    // so server knows whether to make request to sso server
-    user.set('isConfirmingEmail', this.isConfirmingEmail);
+    user.lastModifiedBy = currentUser;
+    user.lastModifiedDate = new Date();
 
     user
       .save()
@@ -190,7 +194,6 @@ export default class UserInfoComponent extends Component {
           false,
           null
         );
-        this.isEditing = false;
         this.errorHandling.removeMessages('updateRecordErrors');
       })
       .catch((err) => {
@@ -211,12 +214,9 @@ export default class UserInfoComponent extends Component {
     }
   }
 
-  @action resetPassword() {
+  @action
+  resetPassword() {
     this.isResettingPassword = true;
-  }
-
-  @action authEmail() {
-    this.willOveride = true;
   }
 
   @action confirmOrgModal() {
@@ -377,22 +377,32 @@ export default class UserInfoComponent extends Component {
     this.args.refresh();
   }
 
-  @action clearTour() {
-    this.args.user.seenTour = null;
+  @action
+  clearTour() {
+    this.handleChange('seenTour', null);
   }
 
-  @action doneTour() {
-    this.args.user.seenTour = new Date();
+  @action
+  doneTour() {
+    console.log('done tour');
+    this.handleChange('seenTour', new Date());
+    console.log('this.user.seenTour', this.user.seenTour);
   }
-  @action onManualConfirm() {
-    // clicked manual confirm email box
-    let user = this.args.user;
 
-    if (user) {
-      let isConfirmingEmail = !user.get('isEmailConfirmed');
-
-      this.isConfirmingEmail = isConfirmingEmail;
-      user.toggleProperty('isEmailConfirmed');
-    }
+  extractEditableProperties(user) {
+    return {
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isEmailConfirmed: user.isEmailConfirmed,
+      organizationRequest: user.organizationRequest,
+      location: user.location,
+      accountType: user.accountType,
+      organization: user.organization,
+      isAuthorized: user.isAuthorized,
+      isTrashed: user.isTrashed,
+      seenTour: user.seenTour,
+    };
   }
 }

@@ -6,6 +6,19 @@ There has been various attempts to upgrade this app to modern Ember (Octane, Emb
 
 This file is an attempt to document what has and has not been done, as well as suggestions for future developers if I (like all others) leave an incomplete upgrade process.
 
+# Notes about the current state
+
+Enc-test has been updated with the latest version of the work that I've done over the last couple of months, as represented in this file. Of course, there is plenty that does not work; mostly parts of the system that have not yet been upgraded, upgrades that have not been adequately tested, and a few items that I document below that represent my current work when this contracted ended. To help the next developer, there are two files beyond this one:
+
+1. component audit.xls -- contains notes about all components in the Encompass system, including which have been upgraded or deleted.
+2. componentFinder.js -- script (run with "node componentFinder") that produces a report of all the components used in the different routes, all the components used by other components, etc. This should help the next developer in understanding how the Encompass app is organized.
+
+## Items in progress
+
+1. user-info component -- mostly works except for a few of the updates: seen tour, authorized, etc.
+2. problem-list-container and related components -- trashed problems might not be showing up correctly. Deleting and some actions might not be working.
+3. workspace-list-container and related components -- trashed and hidden workspaces might not be showing up correctly. Many of the actions in the three-dot (more) menu are not working.
+
 # Upgrades needed globally
 
 ## Removal of Mixins

@@ -39,10 +39,10 @@
         </li>
         <h5>Selected Categories</h5>
         <label class='subfilter'>
-          <Input
+          <input
             id='toggle-sub-cats'
-            @type='checkbox'
-            @checked={{@doIncludeSubCategories}}
+            type='checkbox'
+            checked={{@doIncludeSubCategories}}
             {{on 'change' this.toggleIncludeSubCats}}
           />
           <span>Include Subcategories</span>
@@ -66,7 +66,7 @@
         {{/if}}
       </ul>
     {{/if}}
-    {{#if this.isAdminUser}}
+    {{#if this.userIsAdmin}}
       <h3
         class='more-header {{if this.closedMenu "closed"}}'
         {{on 'click' this.toggleMoreFilters}}
@@ -85,7 +85,7 @@
               id='toggle-trashed'
               @type='checkbox'
               @checked={{@showTrashed}}
-              {{on 'change' this.toggleTrashedProblems}}
+              {{on 'change' @toggleTrashed}}
             />
             <span>Show All Trashed Problems</span>
           </label>

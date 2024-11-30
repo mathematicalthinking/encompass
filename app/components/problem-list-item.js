@@ -11,6 +11,7 @@ const ACTION_BUTTONS = {
     this.confirmStatusUpdate(problem, 'title', 'approved'),
   Assign: (problem) => () => this.assignProblem(problem),
   Copy: (problem) => () => this.addToMyProblems(problem),
+  Delete: (problem) => () => this.deleteProblem(problem),
 };
 
 export default class ProblemListItemComponent extends Component {
