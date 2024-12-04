@@ -1,34 +1,75 @@
-<p class="input-label">
+<p class='input-label'>
   Collaborators
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Collaborators are users that can see or participate in your workspace. You can customize their permissions settings in detail after you add them.">
-    <i class="fas fa-info-circle info-icon"></i>
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='Collaborators are users that can see or participate in your workspace. You can customize their permissions settings in detail after you add them.'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
   </span>
 </p>
 
-<p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
-  <SelectizeInput @store={{this.store}} @inputId="collab-select" @maxItems={{1}} @onItemAdd={{action "setCollaborator"}} @onItemRemove={{action "setCollaborator"}} @initialOptions={{initialCollabOptions}} @selectedItemsHash={{selectedCollaborators}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search for collaborators to add" @preload="focus" />
+<p class='sub-input-label'>Select a user to configure their permissions for this
+  workspace.</p>
+<SelectizeInput
+  @inputId='collab-select'
+  @maxItems={{1}}
+  @onItemAdd={{action 'setCollaborator'}}
+  @onItemRemove={{action 'setCollaborator'}}
+  @initialOptions={{initialCollabOptions}}
+  @selectedItemsHash={{selectedCollaborators}}
+  @labelField='username'
+  @valueField='id'
+  @searchField='username'
+  @model='user'
+  @queryParamsKey='usernameSearch'
+  @isAsync={{true}}
+  @placeholder='Search for collaborators to add'
+  @preload='focus'
+/>
 
 {{#if permissions}}
-  <div class="collaborator-list">
-    <p class="input-label">Added Collaborators</p>
+  <div class='collaborator-list'>
+    <p class='input-label'>Added Collaborators</p>
     <ul>
       {{#each permissions as |permission|}}
-      <li>{{permission.user.username}}
-        <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
-        <i {{action "removeCollab" permission}} class="fas fa-minus-circle" aria-hidden="true" title="Remove"></i>
-      </li>
+        <li>{{permission.user.username}}
+          <i
+            {{action 'editCollab' permission}}
+            class='far fa-edit'
+            aria-hidden='true'
+            title='Modify'
+          ></i>
+          <i
+            {{action 'removeCollab' permission}}
+            class='fas fa-minus-circle'
+            aria-hidden='true'
+            title='Remove'
+          ></i>
+        </li>
       {{/each}}
     </ul>
   </div>
 {{/if}}
 
 {{#if selectedCollaborator}}
-  <WsPermissionsNew @submissionsPool={{submissionsPool}} @workspace={{workspace}} @onSave={{action "savePermissions"}} @permissions={{permissions}} @selectedUser={{selectedCollaborator}} @stopEditing={{action "stopEditing"}} @isShowingSubView={{doHideNavButtons}} />
+  <WsPermissionsNew
+    @submissionsPool={{submissionsPool}}
+    @workspace={{workspace}}
+    @onSave={{action 'savePermissions'}}
+    @permissions={{permissions}}
+    @selectedUser={{selectedCollaborator}}
+    @stopEditing={{action 'stopEditing'}}
+    @isShowingSubView={{doHideNavButtons}}
+  />
 {{/if}}
 
 {{#unless doHideNavButtons}}
-  <div class="nav-btn-container">
-    <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
-    <button class="primary-button" type="button" {{action "next"}}>Next</button>
+  <div class='nav-btn-container'>
+    <button
+      class='primary-button cancel-button'
+      type='button'
+      {{action 'back'}}
+    >Back</button>
+    <button class='primary-button' type='button' {{action 'next'}}>Next</button>
   </div>
 {{/unless}}

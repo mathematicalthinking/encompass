@@ -10,7 +10,8 @@ export default class ProblemListContainerComponent extends Component {
   @service errorHandling;
   @service inputState;
 
-  @tracked problems = [];
+  @tracked problems = this.args.problems || [];
+  @tracked selectedPrivacySetting = ['M', 'O', 'E'];
   @tracked showList = true;
   @tracked showGrid = false;
   @tracked isFilterListCollapsed = true;
@@ -125,6 +126,10 @@ export default class ProblemListContainerComponent extends Component {
     });
   }
 
+  get problemLoadErrors() {
+    return this.errorHandling.getErrors('problemLoadErrors') || [];
+  }
+
   get problemsMetadata() {
     return this.problems?.meta || {};
   }
@@ -146,6 +151,15 @@ export default class ProblemListContainerComponent extends Component {
 
   get user() {
     return this.currentUser.user;
+  }
+
+  get displayProblems() {
+    if (!this.problems) {
+      return [];
+    }
+    return this.toggleTrashed
+      ? this.problems
+      : this.problems.filter((p) => !p.isTrashed);
   }
 
   get listResultsMessage() {
@@ -188,6 +202,12 @@ export default class ProblemListContainerComponent extends Component {
     } else {
       statusFilter.addObject(status);
     }
+    this.triggerFetch();
+  }
+
+  @action
+  updatePrivacySetting(privacySetting) {
+    this.selectedPrivacySetting = privacySetting;
     this.triggerFetch();
   }
 
@@ -262,21 +282,19 @@ export default class ProblemListContainerComponent extends Component {
         value: 'mine',
         label: 'Mine',
         icon: 'fas fa-user',
-        buildFilter: () => ({ createdBy: this.currentUser.user.id }),
+        buildFilter: () => {
+          const id = this.currentUser.user?.id ?? null;
+          return id ? { createdBy: id } : {};
+        },
       },
       {
         value: 'myOrg',
         label: 'My Org',
         icon: 'fas fa-university',
-        buildFilter: () => ({
-          organization: this.currentUser.user.organization.id,
-        }),
-      },
-      {
-        value: 'everyone',
-        label: 'Public',
-        icon: 'fas fa-globe-americas',
-        buildFilter: () => ({ privacySetting: { $in: ['E'] } }),
+        buildFilter: () => {
+          const id = this.currentUser.user?.organization?.id ?? null;
+          return id ? { organization: id } : {};
+        },
       },
     ]);
 
@@ -357,26 +375,6 @@ export default class ProblemListContainerComponent extends Component {
       ],
       { listBased: true, multiSelect: true }
     );
-
-    this.inputState.createSubStates(
-      this.adminFilterName,
-      'pows',
-      [
-        {
-          label: 'Private',
-          value: 'unshared',
-          icon: 'fas fa-unlock',
-          default: true,
-        },
-        {
-          label: 'Public',
-          value: 'shared',
-          icon: 'fas fa-globe-americas',
-          default: true,
-        },
-      ],
-      { listBased: false, multiSelect: true, persist: true }
-    );
   }
 
   getOrgOptions() {
@@ -397,26 +395,28 @@ export default class ProblemListContainerComponent extends Component {
     this.store
       .query('problem', queryParams)
       .then((results) => {
+        this.errorHandling.removeMessages('problemLoadErrors');
         this.problems = results;
         this.isFetchingProblems = false;
       })
       .catch((err) => {
-        this.errorHandling.handleErrors(err);
+        this.errorHandling.handleErrors(err, 'problemLoadErrors');
         this.isFetchingProblems = false;
       });
   }
 
   buildFilterBy() {
-    return this.inputState.getFilter(this.filterName);
+    const filter = { privacySetting: { $in: this.selectedPrivacySetting } };
+    const mainFilter = this.inputState.getFilter(this.filterName);
+    return { ...filter, ...mainFilter };
   }
 
   buildSortBy() {
     return this.sortCriterion?.sortParam;
   }
 
-  getUserOrg() {
-    return this.currentUser.user.organization.then(
-      (org) => org?.name || 'undefined'
-    );
+  async getUserOrg() {
+    const org = await this.currentUser.user?.organization;
+    return org?.name || 'undefined';
   }
 }

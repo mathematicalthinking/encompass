@@ -87,13 +87,16 @@
             </span>
           </div>
         </div>
+        {{#each this.workspaceLoadErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
         <div
           class='results-items {{if this.showGrid "grid-view"}}'
           id='layout-view'
         >
           <div class='sort-bar'>
-            <div class='sort-bar-item mode'>
-              Mode
+            <div class='sort-bar-item privacy'>
+              Privacy
               <i class='fas fa-filter sort-icon'></i>
               <span class='hover-menu'>
                 <ul>
@@ -197,7 +200,6 @@
             @metadata={{this.workspacesMetadata}}
             @isList={{this.showList}}
             @isGrid={{this.showGrid}}
-            @store={{this.store}}
             @toCopyWorkspace={{@toCopyWorkspace}}
           />
 

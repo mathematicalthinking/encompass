@@ -1,11 +1,10 @@
 import Service from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { TrackedObject } from 'tracked-built-ins';
 
 export default class InputStateService extends Service {
-  @tracked states = new TrackedObject(); // Main options per id
-  @tracked subStates = new TrackedObject(); // Sub-options per id and option value
-  @tracked listState = new TrackedObject(); // List state per id
+  @tracked states = {}; // Main options per id
+  @tracked subStates = {}; // Sub-options per id and option value
+  @tracked listState = {}; // List state per id
 
   // Create main options for a given id
   createStates(id, options) {
@@ -15,7 +14,7 @@ export default class InputStateService extends Service {
       selectedOption,
     };
 
-    this.states[id] = newOptions;
+    this.states = { ...this.states, [id]: newOptions };
   }
 
   // Create sub-options for a given id and option value, with the persist option
@@ -40,7 +39,10 @@ export default class InputStateService extends Service {
     };
 
     // Update the tracked `subStates` property once
-    this.subStates[`${id}_${optionValue}`] = newSubState;
+    this.subStates = {
+      ...this.subStates,
+      [`${id}_${optionValue}`]: newSubState,
+    };
   }
 
   // Get all options for a given id
@@ -117,12 +119,16 @@ export default class InputStateService extends Service {
       };
     }
 
-    this.states[id] = { ...state, selectedOption };
+    this.states = { ...this.states, [id]: { ...state, selectedOption } };
 
-    this.listState[id] = []; // Reset list state for the new selection,
+    // Reset list state for the new selection,
+    this.listState = { ...this.listState, [id]: [] };
 
     if (updatedSubState) {
-      this.subStates[`${id}_${selectedOption.value}`] = updatedSubState;
+      this.subStates = {
+        ...this.subStates,
+        [`${id}_${selectedOption.value}`]: updatedSubState,
+      };
     }
   }
 
@@ -134,7 +140,7 @@ export default class InputStateService extends Service {
   // Set the list state for a given id
   setListState(id, listState) {
     // Use a new array for list state and update in a single step
-    this.listState[id] = [...listState];
+    this.listState = { ...this.listState, [id]: listState };
   }
 
   // Set sub-option selection for a given id and option value
@@ -160,17 +166,17 @@ export default class InputStateService extends Service {
       newSelections = value ? [optionValue] : [];
     }
 
-    this.subStates[`${id}_${selectedValue}`] = {
-      ...subState,
-      selections: newSelections,
+    this.subStates = {
+      ...this.subStates,
+      [`${id}_${selectedValue}`]: { ...subState, selections: newSelections },
     };
   }
 
   // Clear all selections and states
   clear() {
-    this.states = TrackedObject();
-    this.subStates = TrackedObject();
-    this.listState = TrackedObject();
+    this.states = {};
+    this.subStates = {};
+    this.listState = {};
   }
 
   getFilter(id) {

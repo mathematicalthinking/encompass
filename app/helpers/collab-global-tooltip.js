@@ -1,9 +1,4 @@
-/*global _:false */
-import { helper as buildHelper } from '@ember/component/helper';
-
-export default buildHelper(function (args) {
-  let [val] = args;
-
+export default function (val) {
   let hash = {
     viewOnly:
       'This user will be able to see the workspace, but not add or make any changes',
@@ -18,4 +13,4 @@ export default buildHelper(function (args) {
   };
 
   return hash[val] || '';
-});
+}

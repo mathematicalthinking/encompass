@@ -87,6 +87,9 @@
             </span>
           </div>
         </div>
+        {{#each this.problemLoadErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
         <div
           class='results-items {{if this.showGrid "grid-view"}}'
           id='layout-view'
@@ -179,7 +182,6 @@
             @isList={{this.showList}}
             @isGrid={{this.showGrid}}
             @moreMenuOptions={{this.moreMenuOptions}}
-            @store={{this.store}}
             @toProblemInfo='toProblemInfo'
             @refreshList={{this.refreshList}}
           />

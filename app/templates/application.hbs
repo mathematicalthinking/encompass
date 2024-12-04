@@ -2,14 +2,8 @@
 <div class='ember-view'>
   {{!outlet header}}
 
-  <TopBar
-    @store={{this.store}}
-    @user={{this.currentUser}}
-    @currentUser={{this.currentUser}}
-    @isHidden={{this.isHidden}}
-    @toHome='toHome'
-  />
-  <SocketLoader @store={{this.store}} />
+  <TopBar @toHome={{action 'toHome'}} />
+  <SocketLoader />
   <section id='al_body'>
     {{outlet}}
   </section>

@@ -1,87 +1,172 @@
-<div class="ws-copy-input name">
-  <p class="input-label">
+<div class='ws-copy-input name'>
+  <p class='input-label'>
     Workspace Name
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide the new name for your workspace">
-      <i class="fas fa-info-circle info-icon"></i>
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='Provide the new name for your workspace'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
-  <div class="single-text-input-container">
-    <Input class="single-text-input" id="ws-copy-name" @type="text" @value={{selectedName}} placeholder="Provide a name for your workspace" />
+  <div class='single-text-input-container'>
+    <Input
+      class='single-text-input'
+      id='ws-copy-name'
+      @type='text'
+      @value={{selectedName}}
+      placeholder='Provide a name for your workspace'
+    />
   </div>
 </div>
 
 {{#each nameErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut nameErrors) null}} />
+  <ErrorBox
+    @error={{error}}
+    @showDismiss={{true}}
+    @resetError={{action (mut nameErrors) null}}
+  />
 {{/each}}
 
-<div class="ws-copy-input owner">
-  <p class="input-label">
+<div class='ws-copy-input owner'>
+  <p class='input-label'>
     Owner
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Select or type the username of the desired owner for this workspace">
-      <i class="fas fa-info-circle info-icon"></i>
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='Select or type the username of the desired owner for this workspace'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
-  <SelectizeInput @store={{this.store}} @inputId="owner-select" @initialOptions={{initialOwnerOptions}} @initialItems={{initialOwnerItem}} @maxItems={{1}} @onItemAdd={{action "setOwner"}} @onItemRemove={{action "setOwner"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @queryParamsKey="usernameSearch" @isAsync={{true}} @placeholder="Search users to choose as owner" />
+  <SelectizeInput
+    @inputId='owner-select'
+    @initialOptions={{initialOwnerOptions}}
+    @initialItems={{initialOwnerItem}}
+    @maxItems={{1}}
+    @onItemAdd={{action 'setOwner'}}
+    @onItemRemove={{action 'setOwner'}}
+    @labelField='username'
+    @valueField='id'
+    @searchField='username'
+    @model='user'
+    @queryParamsKey='usernameSearch'
+    @isAsync={{true}}
+    @placeholder='Search users to choose as owner'
+  />
 </div>
 
 {{#each ownerErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut ownerErrors) null}} />
+  <ErrorBox
+    @error={{error}}
+    @showDismiss={{true}}
+    @resetError={{action (mut ownerErrors) null}}
+  />
 {{/each}}
 
-<div class="ws-copy-input mode">
-  <p class="input-label">
+<div class='ws-copy-input mode'>
+  <p class='input-label'>
     Privacy Setting
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide who can see this workspace, hover over the question icons for more info">
-      <i class="fas fa-info-circle info-icon"></i>
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='Decide who can see this workspace, hover over the question icons for more info'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
-  <RadioGroup @options={{modeInputs}} @selectedValue={{this.selectedMode}} @updateValue={{action "updateSelectedMode"}} />
+  <RadioGroup
+    @options={{modeInputs}}
+    @selectedValue={{this.selectedMode}}
+    @updateValue={{action 'updateSelectedMode'}}
+  />
 </div>
 
 {{#each modeErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut modeErrors) null}} />
+  <ErrorBox
+    @error={{error}}
+    @showDismiss={{true}}
+    @resetError={{action (mut modeErrors) null}}
+  />
 {{/each}}
 
-<div class="ws-copy-input folderset">
-  <p class="input-label">
+<div class='ws-copy-input folderset'>
+  <p class='input-label'>
     Folder Set
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="You can save the folder structure from this workspace as a reusable fodler set">
-      <i class="fas fa-info-circle info-icon"></i>
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='You can save the folder structure from this workspace as a reusable fodler set'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
 
   {{#if isCopyingFolders}}
 
-    <p class="sub-input-label">Do you want to save this folder structure as a folder set for future use?</p>
-    <ul class="radio-list">
-      <li class="radio-group-item">
+    <p class='sub-input-label'>Do you want to save this folder structure as a
+      folder set for future use?</p>
+    <ul class='radio-list'>
+      <li class='radio-group-item'>
         <label>
-          <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet true}} onclick={{action "toggleCreateFolderset" true}}>
+          <input
+            type='radio'
+            name='doCreateFolderSet'
+            checked={{is-equal doCreateFolderSet true}}
+            onclick={{action 'toggleCreateFolderset' true}}
+          />
           <span>Yes</span>
         </label>
       </li>
-      <li class="radio-group-item">
+      <li class='radio-group-item'>
         <label>
-          <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet false}} onclick={{action "toggleCreateFolderset" false}}>
+          <input
+            type='radio'
+            name='doCreateFolderSet'
+            checked={{is-equal doCreateFolderSet false}}
+            onclick={{action 'toggleCreateFolderset' false}}
+          />
           <span>No</span>
         </label>
       </li>
     </ul>
 
     {{#if doCreateFolderSet}}
-      <NewFoldersetForm @nameErrors={{folderSetNameErrors}} @privacyErrors={{folderSetPrivacySettingErrors}} @name={{folderSetName}} @privacySetting={{folderSetPrivacy}} />
+      <NewFoldersetForm
+        @nameErrors={{folderSetNameErrors}}
+        @privacyErrors={{folderSetPrivacySettingErrors}}
+        @name={{folderSetName}}
+        @privacySetting={{folderSetPrivacy}}
+      />
       {{#if duplicateFolderSetName}}
-        <ErrorBox @error="There already exists a public Folder Set with that name. Please choose a different name." @showDismiss={{true}} @resetError={{action (mut duplicateFolderSetName) null}} />
+        <ErrorBox
+          @error='There already exists a public Folder Set with that name. Please choose a different name.'
+          @showDismiss={{true}}
+          @resetError={{action (mut duplicateFolderSetName) null}}
+        />
       {{/if}}
     {{/if}}
 
-    {{else}}
-      <p class="sub-input-label">Your workspace will have 0 folders. Select a pre-existing folder set below or continue on without any folders</p>
-      <SelectizeInput @store={{this.store}} @inputId="folderset-select" @maxItems={{1}} @initialOptions={{initialFolderSetOptions}} @initialItems={{initialFolderSetItem}} @onItemAdd={{action "setFolderSet"}} @onItemRemove={{action "setFolderSet"}} @labelField="name" @valueField="id" @searchField="name" @model="folder-set" @placeholder="Select a Folder Set" />
-    {{/if}}
+  {{else}}
+    <p class='sub-input-label'>Your workspace will have 0 folders. Select a
+      pre-existing folder set below or continue on without any folders</p>
+    <SelectizeInput
+      @inputId='folderset-select'
+      @maxItems={{1}}
+      @initialOptions={{initialFolderSetOptions}}
+      @initialItems={{initialFolderSetItem}}
+      @onItemAdd={{action 'setFolderSet'}}
+      @onItemRemove={{action 'setFolderSet'}}
+      @labelField='name'
+      @valueField='id'
+      @searchField='name'
+      @model='folder-set'
+      @placeholder='Select a Folder Set'
+    />
+  {{/if}}
 </div>
 
-<div class="nav-btn-container">
-  <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
-  <button class="primary-button" type="button" {{action "next"}}>Next</button>
+<div class='nav-btn-container'>
+  <button
+    class='primary-button cancel-button'
+    type='button'
+    {{action 'back'}}
+  >Back</button>
+  <button class='primary-button' type='button' {{action 'next'}}>Next</button>
 </div>

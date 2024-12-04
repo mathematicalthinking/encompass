@@ -223,6 +223,10 @@ export default class WorkspaceListContainerComponent extends Component {
     });
   }
 
+  get workspaceLoadErrors() {
+    return this.errorHandling.getErrors('workspaceLoadErrors') || [];
+  }
+
   get workspacesMetadata() {
     return this.workspaces?.meta || null;
   }
@@ -248,10 +252,6 @@ export default class WorkspaceListContainerComponent extends Component {
 
   get doUseSearchQuery() {
     return this.isSearchingWorkspaces || this.isDisplayingSearchResults;
-  }
-
-  get modeFilter() {
-    return { $in: this.selectedMode };
   }
 
   get orgOptions() {
@@ -514,12 +514,6 @@ export default class WorkspaceListContainerComponent extends Component {
           return { organization: userOrgId };
         },
       },
-      {
-        value: 'everyone',
-        label: 'Public',
-        icon: 'fas fa-globe-americas',
-        buildFilter: () => ({ mode: 'public' }),
-      },
     ]);
 
     // Substates for 'mine'
@@ -741,13 +735,7 @@ export default class WorkspaceListContainerComponent extends Component {
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
     }
-    console.log('params are', params);
     return params;
-  }
-
-  //privacy setting determined from privacy drop down on main display
-  buildModeFilter() {
-    return { $in: this.modeFilter };
   }
 
   buildSortBy() {

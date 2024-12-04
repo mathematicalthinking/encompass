@@ -1,112 +1,186 @@
 <h3>Create a New User</h3>
-<article class="user">
-  <table class="values rows">
+<article class='user'>
+  <table class='values rows'>
     <tr>
       <th>Label</th>
       <th>Value</th>
     </tr>
     <tr>
-      <td>Username <span class="required-star">*</span></td>
+      <td>Username <span class='required-star'>*</span></td>
       <td>
-        <Input @type="text" class="user-username" @value={{this.username}} {{on "focusout" (action 'usernameValidate')}} {{on "focusin" (action 'resetErrors')}} />
+        <Input
+          @type='text'
+          class='user-username'
+          @value={{this.username}}
+          {{on 'focusout' (action 'usernameValidate')}}
+          {{on 'focusin' (action 'resetErrors')}}
+        />
       </td>
     </tr>
     <tr>
-      <td>Password <span class="required-star">*</span></td>
+      <td>Password <span class='required-star'>*</span></td>
       <td>
-        <Input @type="password" class="user-password" @value={{this.password}} {{on "focusout" (action 'passwordValidate')}} {{on "focusin" (action 'resetErrors')}} />
+        <Input
+          @type='password'
+          class='user-password'
+          @value={{this.password}}
+          {{on 'focusout' (action 'passwordValidate')}}
+          {{on 'focusin' (action 'resetErrors')}}
+        />
       </td>
     </tr>
     <tr>
       <td>First Name</td>
       <td>
-        <Input @type="text" @value={{this.firstName}} class="user-first-name" />
+        <Input @type='text' @value={{this.firstName}} class='user-first-name' />
       </td>
     </tr>
     <tr>
       <td>Last Name</td>
       <td>
-        <Input @type="text" @value={{this.lastName}} class="user-last-name" />
+        <Input @type='text' @value={{this.lastName}} class='user-last-name' />
       </td>
     </tr>
     {{#unless @currentUser.isTeacher}}
-    <tr>
-      <td>Email
+      <tr>
+        <td>Email
           {{#if this.isEmailRequired}}
-            <span class="required-star">*</span>
+            <span class='required-star'>*</span>
           {{/if}}
-      </td>
-      <td>
-        <Input @type="text" class="user-email" @value={{this.email}} {{on "focusout" (action 'emailValidate')}} {{on "focusin" (action 'resetErrors')}} />
-      </td>
-    </tr>
-    <tr>
-      <td>Organization <span class="required-star">*</span></td>
-      <td>
-        {{#if @currentUser.isAdmin}}
-          <TwitterTypeahead @dataList={{@organizations}} @minLength={{0}} @onSelect="setOrg" @optionLabelPath="name" @setSelectedValueOnChange={{true}} />
-        {{else}}
-          {{@currentUser.organization.name}}
-        {{/if}}
-      </td>
-    </tr>
-    <tr>
-      <td>Location</td>
-      <td>
-        <Input @type="text" @value={{this.location}} class="user-location" />
-      </td>
-    </tr>
-    <tr>
-      <td>Account Type <span class="required-star">*</span></td>
-      <td>
-        <MySelect @selectedValue={{this.selectedType}} @prompt="Select Account Type" @content={{this.accountTypes}} @action={{action (mut this.selectedType)}} @cannotBeNull={{true}} @classNames="user-account-type" />
-      </td>
-    </tr>
-    <tr>
-      <td>Authorized <span class="required-star">*</span></td>
-      <td>
-        <Input @type="checkbox" @checked={{this.isAuthorized}} class="user-isAuth" />
-      </td>
-    </tr>
+        </td>
+        <td>
+          <Input
+            @type='text'
+            class='user-email'
+            @value={{this.email}}
+            {{on 'focusout' (action 'emailValidate')}}
+            {{on 'focusin' (action 'resetErrors')}}
+          />
+        </td>
+      </tr>
+      <tr>
+        <td>Organization <span class='required-star'>*</span></td>
+        <td>
+          {{#if @currentUser.isAdmin}}
+            <Ui::TwitterTypeahead
+              @dataList={{@organizations}}
+              @minLength={{0}}
+              @onSelect='setOrg'
+              @optionLabelPath='name'
+              @setSelectedValueOnChange={{true}}
+            />
+          {{else}}
+            {{@currentUser.organization.name}}
+          {{/if}}
+        </td>
+      </tr>
+      <tr>
+        <td>Location</td>
+        <td>
+          <Input @type='text' @value={{this.location}} class='user-location' />
+        </td>
+      </tr>
+      <tr>
+        <td>Account Type <span class='required-star'>*</span></td>
+        <td>
+          <MySelect
+            @selectedValue={{this.selectedType}}
+            @prompt='Select Account Type'
+            @content={{this.accountTypes}}
+            @action={{action (mut this.selectedType)}}
+            @cannotBeNull={{true}}
+            @classNames='user-account-type'
+          />
+        </td>
+      </tr>
+      <tr>
+        <td>Authorized <span class='required-star'>*</span></td>
+        <td>
+          <Input
+            @type='checkbox'
+            @checked={{this.isAuthorized}}
+            class='user-isAuth'
+          />
+        </td>
+      </tr>
     {{/unless}}
   </table>
-  
+
   {{#if this.usernameError}}
-    <ErrorBox @error={{this.usernameError}} @showDismiss={{true}} @resetError={{action (mut this.usernameError) null}} />
+    <ErrorBox
+      @error={{this.usernameError}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.usernameError) null}}
+    />
   {{/if}}
 
   {{#if this.emailError}}
-    <ErrorBox @error={{this.emailError}} @showDismiss={{true}} @resetError={{action (mut this.emailError) null}} />
+    <ErrorBox
+      @error={{this.emailError}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.emailError) null}}
+    />
   {{/if}}
 
   {{#if this.passwordError}}
-    <ErrorBox @error={{this.passwordError}} @showDismiss={{true}} @resetError={{action (mut this.passwordError) null}} />
+    <ErrorBox
+      @error={{this.passwordError}}
+      @showDismiss={{true}}
+      @resetError={{action (mut this.passwordError) null}}
+    />
   {{/if}}
 
   {{#if this.noSpacesError}}
-    <ErrorBox @error="Passwords cannot contain spaces" @showDismiss={{true}} @resetError={{action (mut this.noSpacesError) null}} />
+    <ErrorBox
+      @error='Passwords cannot contain spaces'
+      @showDismiss={{true}}
+      @resetError={{action (mut this.noSpacesError) null}}
+    />
   {{/if}}
 
   {{#if this.missingAccountType}}
-    <ErrorBox @error="Missing account type" @showDismiss={{true}} @resetError={{action (mut this.missingAccountType) null}} />
+    <ErrorBox
+      @error='Missing account type'
+      @showDismiss={{true}}
+      @resetError={{action (mut this.missingAccountType) null}}
+    />
   {{/if}}
 
   {{#if this.errorMessage}}
-    <ErrorBox @error="Missing required fields" @showDismiss={{true}} @resetError={{action (mut this.errorMessage) null}} />
+    <ErrorBox
+      @error='Missing required fields'
+      @showDismiss={{true}}
+      @resetError={{action (mut this.errorMessage) null}}
+    />
   {{/if}}
 
   {{#each this.createOrgErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "createOrgErrors" error}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action 'removeErrorFromArray' 'createOrgErrors' error}}
+    />
   {{/each}}
   {{#each this.createUserErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action "removeErrorFromArray" "createUserErrors" error}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action 'removeErrorFromArray' 'createUserErrors' error}}
+    />
   {{/each}}
 
-
-  <div class="button-row">
-    <button class='action_button new-user' id="new-user-btn" type="button" {{action 'confirmOrg'}}>Create New User</button>
-    <button class='action_button new-user cancel-button' type="button" {{action 'cancelNew'}}>Cancel</button>
+  <div class='button-row'>
+    <button
+      class='action_button new-user'
+      id='new-user-btn'
+      type='button'
+      {{action 'confirmOrg'}}
+    >Create New User</button>
+    <button
+      class='action_button new-user cancel-button'
+      type='button'
+      {{action 'cancelNew'}}
+    >Cancel</button>
   </div>
 
 </article>
-

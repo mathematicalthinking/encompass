@@ -1,13 +1,9 @@
-import { helper as buildHelper } from '@ember/component/helper';
+const PRIVACY_SETTINGS = {
+  M: 'Just Me',
+  O: 'My Organization',
+  E: 'Everyone',
+};
 
-export default buildHelper(function (setting) {
-  if (setting[0] === 'M') {
-    return 'Just Me';
-  } else if (setting[0] === 'O') {
-    return 'My Organization';
-  } else if (setting[0] === 'E') {
-    return 'Everyone';
-  } else {
-    return 'Undefined';
-  }
-});
+export default function (setting) {
+  return PRIVACY_SETTINGS[setting] || 'Undefined';
+}

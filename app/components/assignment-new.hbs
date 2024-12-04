@@ -40,7 +40,6 @@
                   @propToUpdate='selectedSection'
                   @placeholder='Search for a class by name'
                   @model='section'
-                  @store={{this.store}}
                 />
                 <Input
                   required={{true}}
@@ -80,7 +79,6 @@
             {{else}}
               <div class='flex-input'>
                 <SelectizeInput
-                  @store={{this.store}}
                   @inputId='assn-new-problem-select'
                   @initialOptions={{this.problemOptions}}
                   @onItemAdd={{action 'updateSelectizeSingle'}}
@@ -284,11 +282,16 @@
     </form>
   </section>
   <section class='submit button-row'>
-    <button class='createAssignment' data-test='create' type="button" {{action 'validate'}}>
+    <button
+      class='createAssignment'
+      data-test='create'
+      type='button'
+      {{action 'validate'}}
+    >
       Create Assignment
       <i class='fas fa-plus-circle'></i>
     </button>
-    <button class='cancelBtn' type="button" {{action 'cancel'}}>
+    <button class='cancelBtn' type='button' {{action 'cancel'}}>
       Cancel
       <i class='fas fa-times'></i>
     </button>

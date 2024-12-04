@@ -1,6 +1,3 @@
-import { helper } from '@ember/component/helper';
-
-export default helper(function calculateTableHeight(args) {
-  let [amount] = args;
+export default function (amount) {
   return amount * 31 + 'px';
-});
+}

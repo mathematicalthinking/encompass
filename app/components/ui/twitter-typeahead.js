@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import 'typeahead.js';
 
 export default Ember.Component.extend({
   classNames: ['twitter-typeahead'],
@@ -9,27 +10,12 @@ export default Ember.Component.extend({
 
   didReceiveAttrs() {
     this._super(...arguments);
-    let templates = {};
-    let notFound = this.showNotFound;
-    let header = this.header;
-    let footer = this.footer;
-    let pending = this.pending;
-
-    if (notFound) {
-      templates.notFound = notFound;
-    }
-
-    if (header) {
-      templates.header = header;
-    }
-
-    if (footer) {
-      templates.footer = footer;
-    }
-
-    if (pending) {
-      templates.pending = pending;
-    }
+    let templates = {
+      ...(this.showNotFound && { notFound: this.showNotFound }),
+      ...(this.header && { header: this.header }),
+      ...(this.footer && { footer: this.footer }),
+      ...(this.pending && { pending: this.pending }),
+    };
 
     this.set('templates', templates);
   },
@@ -66,8 +52,8 @@ export default Ember.Component.extend({
 
     $('.typeahead').on('typeahead:select', function (ev, suggestion) {
       that.set('selectedValue', suggestion);
-      if (that.get('onSelect')) {
-        that.sendAction('onSelect', suggestion);
+      if (typeof that.onSelect === 'function') {
+        that[that.onSelect](suggestion);
       }
       if (that.get('allowMultiple')) {
         that.$('.typeahead').typeahead('val', '');
@@ -95,8 +81,8 @@ export default Ember.Component.extend({
         }
 
         that.set('selectedValue', inputValue);
-        if (that.get('onSelect')) {
-          that.sendAction('onSelect', inputValue);
+        if (typeof that.onSelect === 'function') {
+          that[that.onSelect](inputValue);
         }
         if (that.get('allowMultiple')) {
           that.$('.typeahead').typeahead('val', '');

@@ -18,7 +18,8 @@
 <div class='metrics__container'>
   <div class='metrics--flex'>
     <div id='ws-list'>
-      <button type="button" {{on 'click' this.toggleShowWorkspaces}}>Show/Hide Workspaces</button>
+      <button type='button' {{on 'click' this.toggleShowWorkspaces}}>Show/Hide
+        Workspaces</button>
       {{#if this.showWorkspaces}}
         <ul>
           {{#each this.model.allSubmissions as |submission|}}
@@ -43,11 +44,13 @@
     <div id='submission'>
       <div class='metrics__card'>
         <h3>Problem</h3>
-        <ExpandableCell @text={{this.model.submission.answer.problem.text}} />
+        <Ui::ExpandableCell
+          @text={{this.model.submission.answer.problem.text}}
+        />
       </div>
       <div class='metrics__card'>
         <h3>answer</h3>
-        <ExpandableCell
+        <Ui::ExpandableCell
           @text={{if
             this.model.submission.shortAnswer
             this.model.submission.shortAnswer
@@ -57,7 +60,7 @@
       </div>
       <div class='metrics__card'>
         <h3>explanation</h3>
-        <ExpandableCell
+        <Ui::ExpandableCell
           @text={{if
             this.model.submission.longAnswer
             (make-html-safe this.model.submission.longAnswer)

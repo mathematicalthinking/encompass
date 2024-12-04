@@ -168,8 +168,10 @@ export default class IndexController extends Controller {
       ];
       return this.model.user.isStudent ? menuItems.reverse() : menuItems;
     }
+
     if (this.dataToShow === 'feedback') {
-      const responses = this.model.responseThreads.filter((thread) => {
+      const responseThreads = this.model.responseThreads || [];
+      const responses = responseThreads.filter((thread) => {
         return (
           thread.highestPrioritySubmission?.createDate.getTime() >
             this.dateBounds[this.currentBound].getTime() ||

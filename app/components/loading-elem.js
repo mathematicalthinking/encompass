@@ -1,12 +1,9 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
 
-export default Component.extend({
-  classNames: 'loading-elem',
+export default class LoadingElemComponent extends Component {
+  defaultMessage = 'Request in progress. Thank you for your patience!';
 
-  defaultMessage: 'Request in progress. Thank you for your patience!',
-
-  loadingText: computed('loadingMessage', 'defaultMessage', function () {
-    return this.loadingMessage || this.defaultMessage;
-  }),
-});
+  get loadingText() {
+    return this.args.loadingMessage || this.defaultMessage;
+  }
+}

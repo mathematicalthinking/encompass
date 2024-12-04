@@ -1,9 +1,6 @@
-import { helper as buildHelper } from '@ember/component/helper';
 import moment from 'moment';
 
-export default buildHelper(function (args) {
-  // args is array of arguments passed in from template
-  let [date, format, doUseRelativeTime] = args;
+export default function (date, format, doUseRelativeTime) {
   if (date === null || date === undefined) {
     return 'N/A';
   }
@@ -25,4 +22,4 @@ export default buildHelper(function (args) {
   }
 
   return formattedDate;
-});
+}

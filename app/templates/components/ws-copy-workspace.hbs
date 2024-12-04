@@ -1,32 +1,59 @@
 {{#unless fromWorkspaceList}}
-<div class="select-workspace-container">
-  <p class="input-label">
-    Choose a workspace to copy
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Start typing or use the drop down to select the name of the workspace you would like to copy">
-      <i class="fas fa-info-circle info-icon"></i>
-    </span>
-  </p>
-  <SelectizeInput @store={{this.store}} @inputId="select-workspace" @isAsync={{true}} @maxItems={{1}} @initialOptions={{initialWorkspaceOptions}} @initialItems={{initialWorkspaceItem}} @onItemAdd={{action "setSelectedWorkspace"}} @onItemRemove={{action "setSelectedWorkspace"}} @labelField="name" @searchField="name" @valueField="id" @model="workspace" @queryParamsKey="query" @searchCriterion="name" @topLevelQueryParams="searchBy" @placeholder="Search for workspaces by name..." @preload="focus" />
-  {{#if missingWorkspace}}
-    <ErrorBox @error="Please select a workspace." @resetError={{action (mut missingWorkspace) null}} @showDismiss={{true}} />
-  {{/if}}
-</div>
+  <div class='select-workspace-container'>
+    <p class='input-label'>
+      Choose a workspace to copy
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Start typing or use the drop down to select the name of the workspace you would like to copy'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
+      </span>
+    </p>
+    <SelectizeInput
+      @inputId='select-workspace'
+      @isAsync={{true}}
+      @maxItems={{1}}
+      @initialOptions={{initialWorkspaceOptions}}
+      @initialItems={{initialWorkspaceItem}}
+      @onItemAdd={{action 'setSelectedWorkspace'}}
+      @onItemRemove={{action 'setSelectedWorkspace'}}
+      @labelField='name'
+      @searchField='name'
+      @valueField='id'
+      @model='workspace'
+      @queryParamsKey='query'
+      @searchCriterion='name'
+      @topLevelQueryParams='searchBy'
+      @placeholder='Search for workspaces by name...'
+      @preload='focus'
+    />
+    {{#if missingWorkspace}}
+      <ErrorBox
+        @error='Please select a workspace.'
+        @resetError={{action (mut missingWorkspace) null}}
+        @showDismiss={{true}}
+      />
+    {{/if}}
+  </div>
 {{/unless}}
 
 {{#if selectedWorkspace}}
   <WorkspaceInfoSummary @workspace={{selectedWorkspace}} />
 {{/if}}
 
-
 {{#if tooFewSubmissions}}
-  <ErrorBox @error="Please select a workspace with at least 1 submission." @resetError={{action (mut tooFewSubmissions) null}} @showDismiss={{true}} />
+  <ErrorBox
+    @error='Please select a workspace with at least 1 submission.'
+    @resetError={{action (mut tooFewSubmissions) null}}
+    @showDismiss={{true}}
+  />
 {{/if}}
 {{#if showLoadingSubmissions}}
-  <p class="loading-message">Loading submissions... Thank you for your patience.</p>
+  <p class='loading-message'>Loading submissions... Thank you for your patience.</p>
 {{/if}}
 {{#each loadSubmissionErrors as |error|}}
-  <p class="error-message">{{error}}</p>
+  <p class='error-message'>{{error}}</p>
 {{/each}}
-<div class="nav-btn-container">
-  <button class="primary-button" type="button" {{action "next"}}>Next</button>
+<div class='nav-btn-container'>
+  <button class='primary-button' type='button' {{action 'next'}}>Next</button>
 </div>

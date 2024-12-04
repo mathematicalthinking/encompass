@@ -1,6 +1,3 @@
-import { helper as buildHelper } from '@ember/component/helper';
-
-export default buildHelper(function (args) {
-  let [leftSide, rightSide] = args;
+export default function (leftSide, rightSide) {
   return leftSide >= rightSide;
-});
+}

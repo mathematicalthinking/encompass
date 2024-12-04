@@ -5,7 +5,7 @@ export default class PaginationControlComponent extends Component {
   @tracked goToPage = null;
 
   get showPageNavigation() {
-    const count = this.args.details.pageCount;
+    const count = this.args.details?.pageCount ?? 0;
     return count && count > 1;
   }
 
