@@ -28,7 +28,10 @@ export default class ErrorHandlingService extends Service {
     }
 
     if (err.errors && Array.isArray(err.errors)) {
-      const details = err.errors.map((e) => e.detail);
+      const details = err.errors.map((e) => {
+        if (typeof e.detail === 'object') console.log(e.detail);
+        return e.detail;
+      });
       this.errors = { ...this.errors, [propName]: details };
     } else if (typeof err.message === 'string') {
       this.errors = { ...this.errors, [propName]: [err.message] };

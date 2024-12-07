@@ -6,6 +6,19 @@ There has been various attempts to upgrade this app to modern Ember (Octane, Emb
 
 This file is an attempt to document what has and has not been done, as well as suggestions for future developers if I (like all others) leave an incomplete upgrade process.
 
+# Notes about the current state
+
+Enc-test has been updated with the latest version of the work that I've done over the last couple of months, as represented in this file. Of course, there is plenty that does not work; mostly parts of the system that have not yet been upgraded, upgrades that have not been adequately tested, and a few items that I document below that represent my current work when this contracted ended. To help the next developer, there are two files beyond this one:
+
+1. component audit.xls -- contains notes about all components in the Encompass system, including which have been upgraded or deleted.
+2. componentFinder.js -- script (run with "node componentFinder") that produces a report of all the components used in the different routes, all the components used by other components, etc. This should help the next developer in understanding how the Encompass app is organized.
+
+## Items in progress
+
+1. user-info component -- mostly works except for a few of the updates: seen tour, authorized, etc.
+2. problem-list-container and related components -- trashed problems might not be showing up correctly. Deleting and some actions might not be working.
+3. workspace-list-container and related components -- trashed and hidden workspaces might not be showing up correctly. Many of the actions in the three-dot (more) menu are not working.
+
 # Upgrades needed globally
 
 ## Removal of Mixins
@@ -60,6 +73,10 @@ In Ember 4.5, helpers can now be regular functions rather than wrapped in a mana
 
 11/14/2024: Upgraded to 4.5 and simplified all helpers.
 
+## Controllers
+
+Controllers are slated to be deprecated. Best practices are to replace them with the use of components -- the idea is that route templates reference components that contain work that had been done by controllers.
+
 ## EmberTable
 
 There are other packages that are more aligned with Glimmer and Octane approaches to Ember. However, depending on the needs, perhaps the 5 uses of EmberTable could be replaced with vanilla JS.
@@ -86,6 +103,10 @@ Instead, we could leverage the {timestamps: true} option when defining all the M
 # UI Elements
 
 There is now the folder app/components/ui that contains the form-field and expandable-cell components. The purpose of this folder is a place for generic UI components. Other generic UI components include: my-select, selectize-input, twitter-typeahead, radio-group (and radio-group-item), toggle-control, checkbox-list (and checkbox-list-item), collapsible-list, and quill-container. Once these get moved into that folder, every usage must reference the "Ui" namespace, such as <Ui::ToggleControl /> or <Ui::MySelect />.
+
+# Other components
+
+Similar to the Ui example above, usage of Namespaces is encouraged in Ember moving forward. Thus, we should reorganize the app/components folder with subfolders representing the distinct subsystems of Encompass. The components in the folders would then be referenced in templates via namespaces, such as <Users::UserList> which refers to app/components/users/user-list.js and user-list.hbs.
 
 ## New Workspaces
 
@@ -184,7 +205,7 @@ If this.removeMessages is undefined, Ember might **not** show an error in the co
 
 - **Components** - most of the discussion in this file focuses on the upgrading of components from classic to modern (Glimmer, Octane, Ember 4.5).
 - **Adapters** - Upgraded
-- **Controllers** - Seem to have already been upgraded. I've not tested these.
+- **Controllers** - Controllers are slated to be deprecated in favor of using components. That is, the template for a route would simply contain invocations of one or ore components. Thus, working through the controllers and refactoring to remove them all is another goal of the upgrade.
 - **Helpers** - as document elsewhere in this document, all upgraded.
 - **Initializers** - only one and I believe it's not needed for production. I upgraded it, however.
 - **Mixins** - as documented elsewhere, I'm in the process of eliminating these and double-checking others' work on removing these from components, etc.
