@@ -19,12 +19,14 @@ export default class UsersRoute extends Route {
       this.transitionTo('/');
     }
   }
-  model() {
+  async model() {
     const currentUser = this.modelFor('application');
+    const users = await this.store.findAll('user');
     return hash({
       currentUser,
-      users: this.store.findAll('user'),
+      users,
       organizations: this.store.findAll('organization'),
+      trashedUsers: users.filter((user) => user.isTrashed),
     });
   }
 }
