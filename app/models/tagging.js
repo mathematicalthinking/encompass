@@ -3,9 +3,9 @@ import { belongsTo } from '@ember-data/model';
 import AuditableModel from './auditable';
 
 export default class TaggingModel extends AuditableModel {
-  @belongsTo('workspace', { async: false }) workspace;
-  @belongsTo('selection', { async: true }) selection;
-  @belongsTo('folder', { async: true }) folder;
+  @belongsTo('workspace', { inverse: 'taggings', async: false }) workspace;
+  @belongsTo('selection', { inverse: 'taggings', async: true }) selection;
+  @belongsTo('folder', { inverse: 'taggings', async: true }) folder;
   @belongsTo('tagging', { inverse: null, async: true }) originalTagging;
 
   copy() {

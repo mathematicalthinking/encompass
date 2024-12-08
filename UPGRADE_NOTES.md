@@ -75,7 +75,11 @@ In Ember 4.5, helpers can now be regular functions rather than wrapped in a mana
 
 ## Controllers
 
-Controllers are slated to be deprecated. Best practices are to replace them with the use of components -- the idea is that route templates reference components that contain work that had been done by controllers.
+Controllers are slated to be deprecated. Best practice is to refactor the logic and properties in the controller, distributing them as appropriate to the route (for building the model), a service (for application state that will be used elsewhere), and a component (for everything else). The idea is that a route templates should be simple and reference just one or moe components that contain much of the work that had been done by the controller.
+
+## Route Templates
+
+Route templates should refer to the model via @model rather than this.model as per the Ember Octane upgrade guide.
 
 ## EmberTable
 
@@ -91,6 +95,10 @@ The current code includes several subsystems of components that are tightly coup
 - the way that filtering worked in the workspace subsystem required the different filters to have deep understanding of how the filtering (options and their states) are structured. This has been changed so that each type of filter receives specific options, selections, and the actions to change the selections.
 
 # Possible future upgrades
+
+## Model definitions
+
+All hasMany and belowsTo relationships should specify inverse and async options explicitly. Not doing so is deprecated.
 
 ## DB document timestamps
 

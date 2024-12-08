@@ -4,7 +4,7 @@ import AuditableModel from './auditable';
 export default class FolderModel extends AuditableModel {
   @attr('string') name;
   @attr('number') weight;
-  @hasMany('tagging', { async: true }) taggings;
+  @hasMany('tagging', { inverse: 'folder', async: true }) taggings;
   @belongsTo('folder', { inverse: 'children', async: true }) parent;
   @hasMany('folder', { inverse: 'parent', async: true }) children;
   @belongsTo('workspace', { async: true }) workspace;
