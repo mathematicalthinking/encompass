@@ -9,6 +9,6 @@ export default class SectionModel extends Auditable {
   @hasMany('user', { inverse: null, async: true }) teachers;
   @attr('string') sectionPassword;
   @hasMany('user', { inverse: null, async: true }) students;
-  @hasMany('problem', { async: true }) problems;
-  @hasMany('assignment', { async: true }) assignments;
+  @hasMany('problem', { inverse: null, async: true }) problems;
+  @hasMany('assignment', { inverse: 'section', async: true }) assignments;
 }
