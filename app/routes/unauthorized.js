@@ -4,12 +4,13 @@ import { action } from '@ember/object';
 
 export default class UnauthorizedRoute extends Route {
   @service store;
+  @service router;
   beforeModel() {
     // redirect to login if no user logged in
     const user = this.modelFor('application');
 
     if (!user || !user.get('isAuthenticated')) {
-      return this.transitionTo('auth.login');
+      return this.router.transitionTo('auth.login');
     }
     // redirect to confirm email info page if
     // email still needs confirming
@@ -19,12 +20,12 @@ export default class UnauthorizedRoute extends Route {
       !user.get('isStudent');
 
     if (doesEmailNeedConfirming) {
-      return this.transitionTo('unconfirmed');
+      return this.router.transitionTo('unconfirmed');
     }
 
     // redirect to home page if already authorized
     if (user.get('isAuthz')) {
-      this.transitionTo('/');
+      this.router.transitionTo('/');
     }
   }
 

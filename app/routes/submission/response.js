@@ -4,33 +4,34 @@ import { action } from '@ember/object';
 export default class ResponsesRoute extends ConfirmLeavingRoute {
   @service('utility-methods') utils;
   @service store;
+  @service router;
   model(params) {
     return this.store.findRecord('response', params.response_id);
   }
 
   redirect(model, transition) {
     if (!model) {
-      this.transitionTo('responses');
+      this.router.transitionTo('responses');
     } else {
       let submissionId = this.utils.getBelongsToId(model, 'submission');
       if (this.utils.isValidMongoId(submissionId)) {
-        this.transitionTo('responses.submission', submissionId, {
+        this.router.transitionTo('responses.submission', submissionId, {
           queryParams: { responseId: model.get('id') },
         });
       } else {
-        this.transitionTo('responses');
+        this.router.transitionTo('responses');
       }
     }
   }
 
   @action toResponseInfo(response) {
-    this.transitionTo('response', response.get('id'));
+    this.router.transitionTo('response', response.get('id'));
   }
   @action toResponses() {
-    this.transitionTo('responses');
+    this.router.transitionTo('responses');
   }
   @action toNewResponse(submissionId, workspaceId) {
-    this.transitionTo('responses.new.submission', submissionId, {
+    this.router.transitionTo('responses.new.submission', submissionId, {
       queryParams: { workspaceId: workspaceId },
     });
   }

@@ -5,6 +5,7 @@ import AuthenticatedRoute from '../_authenticated_route';
 
 export default class ProblemsNewRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
   model() {
     let currentUser = this.modelFor('application');
     return hash({
@@ -15,9 +16,9 @@ export default class ProblemsNewRoute extends AuthenticatedRoute {
   }
 
   @action toProblemInfo(problem) {
-    this.transitionTo('problems.problem', problem.id);
+    this.router.transitionTo('problems.problem', problem.id);
   }
   @action toProblemList() {
-    this.transitionTo('problems');
+    this.router.transitionTo('problems');
   }
 }

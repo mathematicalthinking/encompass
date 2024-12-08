@@ -5,6 +5,7 @@ import AuthenticatedRoute from '../_authenticated_route';
 
 export default class WorkspacesCopyRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
   workspaceToCopy = null;
   workspaceId = null;
   beforeModel(transition) {
@@ -23,6 +24,6 @@ export default class WorkspacesCopyRoute extends AuthenticatedRoute {
   }
 
   @action toWorkspace(id) {
-    this.transitionTo('workspace.work', id);
+    this.router.transitionTo('workspace.work', id);
   }
 }

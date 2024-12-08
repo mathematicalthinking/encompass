@@ -6,6 +6,11 @@ import $ from 'jquery';
 import moment from 'moment';
 
 export default class AssignmentInfoTeacherComponent extends ErrorHandlingComponent {
+  @service store;
+  @service router;
+  @service('sweet-alert') alert;
+  @service('assignment-permissions') permissions;
+  @service('utility-methods') utils;
   @tracked formattedDueDate = null;
   @tracked formattedAssignedDate = null;
   @tracked isEditing = false;
@@ -45,11 +50,6 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   get allGroupsHaveWs() {
     return this.groupsWithoutWorkspaces.length === 0;
   }
-  @service store;
-  @service router;
-  @service('sweet-alert') alert;
-  @service('assignment-permissions') permissions;
-  @service('utility-methods') utils;
 
   get hasLinkedWorkspaces() {
     return this.args.assignment.linkedWorkspaces.length > 0;

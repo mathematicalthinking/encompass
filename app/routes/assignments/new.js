@@ -4,12 +4,13 @@ import AuthenticatedRoute from '../_authenticated_route';
 import { inject as service } from '@ember/service';
 export default class AssignmentsNewRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
   beforeModel() {
     const user = this.modelFor('application');
     const isStudent = user.get('isStudent');
 
     if (isStudent) {
-      this.transitionTo('assignments');
+      this.router.transitionTo('assignments');
     }
   }
   async model() {
@@ -22,9 +23,9 @@ export default class AssignmentsNewRoute extends AuthenticatedRoute {
     });
   }
   @action toAssignmentInfo(model) {
-    this.transitionTo('assignment', model);
+    this.router.transitionTo('assignment', model);
   }
   @action toAssignmentsHome() {
-    this.transitionTo('assignments');
+    this.router.transitionTo('assignments');
   }
 }

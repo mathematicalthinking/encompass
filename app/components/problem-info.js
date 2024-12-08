@@ -6,6 +6,11 @@ import { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default class ProblemInfoComponent extends ErrorHandlingComponent {
+  @service('sweet-alert') alert;
+  @service('problem-permissions') permissions;
+  @service('utility-methods') utils;
+  @service store;
+  @service router;
   @tracked isEditing = false;
   @tracked showGeneral = true;
   @tracked problemName = null;
@@ -32,11 +37,6 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   @tracked showAdditional = false;
   @tracked showLegal = false;
   @tracked categoryTree = {};
-  @service('sweet-alert') alert;
-  @service('problem-permissions') permissions;
-  @service('utility-methods') utils;
-  @service store;
-  @service router;
   @tracked copyrightNotice = '';
   @tracked sharingAuth = '';
   @tracked author = '';

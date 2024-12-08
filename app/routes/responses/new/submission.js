@@ -9,6 +9,7 @@ export default class ResponsesNewSubmissionRoute extends Route.extend(
 ) {
   @service('utility-methods') utils;
   @service store;
+  @service router;
   renderTemplate() {
     this.render('responses/response');
   }
@@ -130,18 +131,18 @@ export default class ResponsesNewSubmissionRoute extends Route.extend(
 
   afterModel(model) {
     if (model.isDraft) {
-      this.transitionTo('responses.submission', model.submissionId, {
+      this.router.transitionTo('responses.submission', model.submissionId, {
         queryParams: { responseId: model.responseId },
       });
     }
   }
 
   @action toResponse(submissionId, responseId) {
-    this.transitionTo('responses.submission', submissionId, {
+    this.router.transitionTo('responses.submission', submissionId, {
       queryParams: { responseId: responseId },
     });
   }
   @action toResponseSubmission(subId) {
-    this.transitionTo('responses.submission', subId);
+    this.router.transitionTo('responses.submission', subId);
   }
 }

@@ -4,6 +4,7 @@ import { hash } from 'rsvp';
 import { inject as service } from '@ember/service';
 export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
   async model(params) {
     let currentUser = this.modelFor('application');
     const assignment = await this.store.findRecord(
@@ -27,6 +28,6 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
     });
   }
   @action toAssignments() {
-    this.transitionTo('assignments');
+    this.router.transitionTo('assignments');
   }
 }

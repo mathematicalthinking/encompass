@@ -1,8 +1,10 @@
 import { hash } from 'rsvp';
 import AuthenticatedRoute from '../_authenticated_route';
+import { inject as service } from '@ember/service';
 
 export default AuthenticatedRoute.extend({
   controllerName: 'vmt-import',
+  router: service(),
 
   model() {
     return hash({
@@ -13,7 +15,7 @@ export default AuthenticatedRoute.extend({
 
   actions: {
     toWorkspaces: function (workspaceId) {
-      this.transitionTo('workspace.work', workspaceId);
+      this.router.transitionTo('workspace.work', workspaceId);
       // window.location.href = `#/workspaces/${workspace._id}/submissions/${workspace.submissions[0]}`;
     },
   },

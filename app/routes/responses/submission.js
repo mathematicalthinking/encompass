@@ -5,6 +5,7 @@ import { action } from '@ember/object';
 export default class ResponsesRoute extends AuthenticatedRoute {
   @service('utility-methods') utils;
   @service store;
+  @service router;
   queryParams = {
     responseId: {
       refreshModel: true,
@@ -86,26 +87,26 @@ export default class ResponsesRoute extends AuthenticatedRoute {
 
   redirect(model, transition) {
     if (!model) {
-      this.transitionTo('responses');
+      this.router.transitionTo('responses');
     }
   }
 
   @action toResponseSubmission(subId) {
-    this.transitionTo('responses.submission', subId);
+    this.router.transitionTo('responses.submission', subId);
   }
 
   @action toResponse(submissionId, responseId) {
-    this.transitionTo('responses.submission', submissionId, {
+    this.router.transitionTo('responses.submission', submissionId, {
       queryParams: { responseId: responseId },
     });
   }
 
   @action toResponses() {
-    this.transitionTo('responses');
+    this.router.transitionTo('responses');
   }
 
   @action toNewResponse(submissionId, workspaceId) {
-    this.transitionTo('responses.new.submission', submissionId, {
+    this.router.transitionTo('responses.new.submission', submissionId, {
       queryParams: { workspaceId: workspaceId },
     });
   }

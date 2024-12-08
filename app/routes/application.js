@@ -13,11 +13,12 @@ import { action } from '@ember/object';
 
 export default class Application extends Route {
   //the application route can't require authentication since it's getting the user
-  @service('user-ntfs') userNtfs;
+  @service userNtfs;
   @service store;
-  @service('workspace-permissions') workspacePermissions;
-  @service('edit-permissions') editPermissions;
-  @service('current-user') currentUser;
+  @service router;
+  @service workspacePermissions;
+  @service editPermissions;
+  @service currentUser;
   beforeModel() {
     let that = this;
     window.addEventListener(
@@ -62,11 +63,11 @@ export default class Application extends Route {
     // should be extending AuthenticatedRoute.
     if (!user.get('isAuthenticated')) {
       this.store.unloadAll();
-      this.transitionTo('welcome');
+      this.router.transitionTo('welcome');
     } else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
-      this.transitionTo('unconfirmed');
+      this.router.transitionTo('unconfirmed');
     } else if (!user.get('isAuthz')) {
-      this.transitionTo('unauthorized');
+      this.router.transitionTo('unauthorized');
     }
   }
 
