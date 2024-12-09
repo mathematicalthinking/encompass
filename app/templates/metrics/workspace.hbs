@@ -9,7 +9,7 @@
               this.model.workspace.lastModifiedDate
               'MM/DD/YYYY'
             }}</span></h2>
-        <button id='metrics-workspace-button' type="button">
+        <button id='metrics-workspace-button' type='button'>
           <LinkTo
             @route='workspace.work'
             @model={{this.model.workspace.id}}
@@ -65,10 +65,13 @@
 
   <div class='metrics-container'>
     <div class='controls'>
-      <button type="button" {{on 'click' (fn this.handleToggle 'showCloud')}}>Generate
-        Wordcloud</button>
       <button
-        type="button" {{on 'click' (fn this.handleToggle 'showSubmissions')}}
+        type='button'
+        {{on 'click' (fn this.handleToggle 'showCloud')}}
+      >Generate Wordcloud</button>
+      <button
+        type='button'
+        {{on 'click' (fn this.handleToggle 'showSubmissions')}}
       >Submissions: {{this.model.workspace.submissionsLength}}</button>
     </div>
 
@@ -107,7 +110,7 @@
       </EmberTable>
     {{/if}}
 
-    <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
+    <Ui::WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
   </div>
 
 </div>
