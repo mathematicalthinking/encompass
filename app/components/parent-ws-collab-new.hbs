@@ -6,7 +6,7 @@
       @updateValue={{action 'updateAddType'}}
     />
     {{#if isBulkAdd}}
-      <CheckboxList
+      <Ui::CheckboxList
         @items={{this.usersToAdd}}
         @selectedItems={{this.collabsToAdd}}
         @itemDisplayProp='username'
