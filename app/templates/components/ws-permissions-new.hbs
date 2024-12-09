@@ -1,18 +1,35 @@
-
-<p class="input-label">
-  Configure Permissions for <span class="username">{{selectedUser.username}}</span>
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Select which permissions this user should have for this new workspace">
-    <i class="fas fa-info-circle info-icon"></i>
+<p class='input-label'>
+  Configure Permissions for
+  <span class='username'>{{selectedUser.username}}</span>
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='Select which permissions this user should have for this new workspace'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
   </span>
 </p>
 
-<div class="submission-permissions">
-<RadioGroup @options={{submissionItems}} @selectedValue={{submissions}} @updateValue={{action "updateSubmissions"}} />
-{{#if closedCustomView}}
-  <span class="show-viewer" {{action (mut showCustomSubmissionViewer) true}}>Show Viewer</span>
-{{/if}}
+<div class='submission-permissions'>
+  <Ui::RadioGroup
+    @options={{submissionItems}}
+    @selectedValue={{submissions}}
+    @updateValue={{action 'updateSubmissions'}}
+  />
+  {{#if closedCustomView}}
+    <span
+      class='show-viewer'
+      {{action (mut showCustomSubmissionViewer) true}}
+    >Show Viewer</span>
+  {{/if}}
   {{#if showCustomSubmissions}}
-    <CustomSubmissionViewerList @submissions={{submissionsPool}} @selectedSubmissionIds={{customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @showView={{showCustomSubmissionViewer}} />
+    <CustomSubmissionViewerList
+      @submissions={{submissionsPool}}
+      @selectedSubmissionIds={{customSubmissionIds}}
+      @onSelect={{action 'updateCustomSubs'}}
+      @onSelectAll={{action 'selectAllSubmissions'}}
+      @onUnselectAll={{action 'deselectAllSubmissions'}}
+      @showView={{showCustomSubmissionViewer}}
+    />
     {{!-- <ul>
     {{#each workspace.submissions.content as |submission|}}
       <li>
@@ -24,27 +41,59 @@
   {{/if}}
 </div>
 
-<div class="global-permissions">
-  <RadioGroup @options={{globalItems}} @selectedValue={{global}} @updateValue={{action "updateGlobal"}} />
+<div class='global-permissions'>
+  <Ui::RadioGroup
+    @options={{globalItems}}
+    @selectedValue={{global}}
+    @updateValue={{action 'updateGlobal'}}
+  />
   {{#if showCustom}}
-  <div class="custom-global-permissions">
-    <p class="input-label">
-      Configure Custom Permissions
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide user permissions for each aspect of this workspace">
-        <i class="fas fa-info-circle info-icon"></i>
-      </span>
-    </p>
-    <RadioGroup @options={{selectionItems}} @selectedValue={{selections}} @updateValue={{action "updateSelections"}} />
-    <RadioGroup @options={{commentItems}} @selectedValue={{comments}} @updateValue={{action "updateComments"}} />
-    <RadioGroup @options={{folderItems}} @selectedValue={{folders}} @updateValue={{action "updateFolders"}} />
-    <RadioGroup @options={{feedbackItems}} @selectedValue={{feedback}} @updateValue={{action "updateFeedback"}} />
-  </div>
+    <div class='custom-global-permissions'>
+      <p class='input-label'>
+        Configure Custom Permissions
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='Decide user permissions for each aspect of this workspace'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
+        </span>
+      </p>
+      <Ui::RadioGroup
+        @options={{selectionItems}}
+        @selectedValue={{selections}}
+        @updateValue={{action 'updateSelections'}}
+      />
+      <Ui::RadioGroup
+        @options={{commentItems}}
+        @selectedValue={{comments}}
+        @updateValue={{action 'updateComments'}}
+      />
+      <Ui::RadioGroup
+        @options={{folderItems}}
+        @selectedValue={{folders}}
+        @updateValue={{action 'updateFolders'}}
+      />
+      <Ui::RadioGroup
+        @options={{feedbackItems}}
+        @selectedValue={{feedback}}
+        @updateValue={{action 'updateFeedback'}}
+      />
+    </div>
   {{/if}}
 </div>
 
 {{#if saveError}}
-  <ErrorBox @error="Sorry, something went wrong. Please try again." @resetError={{action (mut saveError) null}} @showDismiss={{true}} />
+  <ErrorBox
+    @error='Sorry, something went wrong. Please try again.'
+    @resetError={{action (mut saveError) null}}
+    @showDismiss={{true}}
+  />
 {{/if}}
 
-<button class="primary-button cancel-button" type="button" {{action (mut selectedUser) null}}>Cancel</button>
-<button class="primary-button" type="button" {{action "savePermissions"}}>Save Permissions</button>
+<button
+  class='primary-button cancel-button'
+  type='button'
+  {{action (mut selectedUser) null}}
+>Cancel</button>
+<button class='primary-button' type='button' {{action 'savePermissions'}}>Save
+  Permissions</button>

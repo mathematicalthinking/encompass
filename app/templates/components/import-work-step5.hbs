@@ -1,111 +1,202 @@
-<p class="input-label">
+<p class='input-label'>
   Would you like to create a new workspace?
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="You can always create a workspace at a later date from your imported submissions via the Create Workspace page">
-    <i class="fas fa-info-circle info-icon"></i>
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='You can always create a workspace at a later date from your imported submissions via the Create Workspace page'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
   </span>
 </p>
-<RadioGroup @options={{createWs}} @selectedValue={{this.doCreateWs}} @updateValue={{action "updateDoCreateWs"}} />
+<Ui::RadioGroup
+  @options={{createWs}}
+  @selectedValue={{this.doCreateWs}}
+  @updateValue={{action 'updateDoCreateWs'}}
+/>
 
 {{#if creatingWs}}
-<div class="create-ws-content">
-  <div class="ws-new name">
-    <p class="input-label">
-      Workspace Name
-      <span class="required-star">*</span>
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this workspace">
-        <i class="fas fa-info-circle info-icon"></i>
-      </span>
-    </p>
-    <div class="single-text-input-container">
-      <Input id="ws-new-name" class="single-text-input" @type="text" @value={{workspaceName}} placeholder="Provide a name for your workspace" />
+  <div class='create-ws-content'>
+    <div class='ws-new name'>
+      <p class='input-label'>
+        Workspace Name
+        <span class='required-star'>*</span>
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='Provide an easily identifiable name for this workspace'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
+        </span>
+      </p>
+      <div class='single-text-input-container'>
+        <Input
+          id='ws-new-name'
+          class='single-text-input'
+          @type='text'
+          @value={{workspaceName}}
+          placeholder='Provide a name for your workspace'
+        />
+      </div>
+      {{#if missingNameError}}
+        <div class='create-ws-error'>
+          <ErrorBox
+            @error={{missingNameError}}
+            @showDismiss={{true}}
+            @resetError={{action (mut missingNameError) null}}
+          />
+        </div>
+      {{/if}}
     </div>
-    {{#if missingNameError}}
-    <div class="create-ws-error">
-      <ErrorBox @error={{missingNameError}} @showDismiss={{true}} @resetError={{action (mut missingNameError) null}} />
+
+    <div class='ws-new owner'>
+      <p class='input-label'>
+        Workspace Owner
+        <span class='required-star'>*</span>
+
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='The owner of the workspace has the ability to edit every aspect of this workspace. You can make it yourself'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
+        </span>
+      </p>
+      <SelectizeInput
+        @store={{this.store}}
+        @inputId='owner-select'
+        @initialOptions={{ownerOptions}}
+        @initialItems={{initialOwnerItem}}
+        @maxItems={{1}}
+        @onItemAdd={{action 'updateSelectizeSingle'}}
+        @onItemRemove={{action 'updateSelectizeSingle'}}
+        @labelField='username'
+        @valueField='id'
+        @searchField='username'
+        @model='user'
+        @propToUpdate='selectedOwner'
+        @placeholder='Search by username to choose as owner'
+      />
+      {{#if missingOwnerError}}
+        <div class='create-ws-error'>
+          <ErrorBox
+            @error={{missingOwnerError}}
+            @showDismiss={{true}}
+            @resetError={{action (mut missingOwnerError) null}}
+          />
+        </div>
+      {{/if}}
     </div>
-    {{/if}}
-  </div>
 
-
-  <div class="ws-new owner">
-    <p class="input-label">
-      Workspace Owner
-      <span class="required-star">*</span>
-
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="The owner of the workspace has the ability to edit every aspect of this workspace. You can make it yourself">
-        <i class="fas fa-info-circle info-icon"></i>
-      </span>
-    </p>
-    <SelectizeInput @store={{this.store}} @inputId="owner-select" @initialOptions={{ownerOptions}} @initialItems={{initialOwnerItem}} @maxItems={{1}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="username" @valueField="id" @searchField="username" @model="user" @propToUpdate="selectedOwner" @placeholder="Search by username to choose as owner" />
-    {{#if missingOwnerError}}
-    <div class="create-ws-error">
-      <ErrorBox @error={{missingOwnerError}} @showDismiss={{true}} @resetError={{action (mut missingOwnerError) null}} />
+    <div class='ws-new mode'>
+      <p class='input-label'>
+        Privacy Setting
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='Decide who can see this workspace, hover over the question mark icons for more info'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
+        </span>
+      </p>
+      <Ui::RadioGroup
+        @options={{modeInputs}}
+        @selectedValue={{this.selectedMode}}
+        @updateValue={{action 'updateSelectedMode'}}
+      />
     </div>
-    {{/if}}
-  </div>
 
-  <div class="ws-new mode">
-    <p class="input-label">
-      Privacy Setting
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide who can see this workspace, hover over the question mark icons for more info">
-        <i class="fas fa-info-circle info-icon"></i>
-      </span>
-    </p>
-    <RadioGroup @options={{modeInputs}} @selectedValue={{this.selectedMode}} @updateValue={{action "updateSelectedMode"}} />
+    <div class='ws-new folderset'>
+      <p class='input-label'>
+        Folder Set
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='You can choose one of your saved folder sets or a provided set'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
+        </span>
+      </p>
+      <SelectizeInput
+        @store={{this.store}}
+        @inputId='folderset-select'
+        @initialOptions={{folderSetOptions}}
+        @maxItems={{1}}
+        @initialItems={{initialFolderSetItem}}
+        @onItemAdd={{action 'updateSelectizeSingle'}}
+        @onItemRemove={{action 'updateSelectizeSingle'}}
+        @labelField='name'
+        @valueField='id'
+        @searchField='name'
+        @model='folder-set'
+        @propToUpdate='selectedFolderSet'
+        @placeholder='Select a Folder Set'
+      />
+    </div>
+    <p class='info'>You can add collaborators and change workspace settings
+      after creating the workspace</p>
   </div>
+{{/if}}
 
-
-  <div class="ws-new folderset">
-    <p class="input-label">
-      Folder Set
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="You can choose one of your saved folder sets or a provided set">
-        <i class="fas fa-info-circle info-icon"></i>
-      </span>
-    </p>
-    <SelectizeInput @store={{this.store}} @inputId="folderset-select" @initialOptions={{folderSetOptions}} @maxItems={{1}} @initialItems={{initialFolderSetItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @labelField="name" @valueField="id" @searchField="name" @model="folder-set" @propToUpdate="selectedFolderSet" @placeholder="Select a Folder Set" />
-  </div>
-    <p class="info">You can add collaborators and change workspace settings after creating the workspace</p>
-  </div>
-  {{/if}}
-
-  {{#unless this.currentUser.isStudent}}
-    {{#if selectedSection}}
-    <div class="ws-new assignment">
-      <p class="input-label">
+{{#unless this.currentUser.isStudent}}
+  {{#if selectedSection}}
+    <div class='ws-new assignment'>
+      <p class='input-label'>
         Would you like to save this work as an assignment?
-        <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Saving this as an assignment will make it easier to find uploaded work and add additional revisions">
-          <i class="fas fa-info-circle info-icon"></i>
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='Saving this as an assignment will make it easier to find uploaded work and add additional revisions'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
         </span>
       </p>
-      <RadioGroup @options={{createAssignment}} @selectedValue={{this.createAssignmentValue}} @updateValue={{action "updateCreateAssignmentValue"}} />
+      <Ui::RadioGroup
+        @options={{createAssignment}}
+        @selectedValue={{this.createAssignmentValue}}
+        @updateValue={{action 'updateCreateAssignmentValue'}}
+      />
     </div>
-    {{/if}}
-  {{/unless}}
+  {{/if}}
+{{/unless}}
 
-  {{#if creatingAssignment}}
-  <div class="create-ws-content">
-    <div class="ws-new name">
-      <p class="input-label">
+{{#if creatingAssignment}}
+  <div class='create-ws-content'>
+    <div class='ws-new name'>
+      <p class='input-label'>
         Assignment Name
-        <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this assignment">
-          <i class="fas fa-info-circle info-icon"></i>
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='Provide an easily identifiable name for this assignment'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
         </span>
       </p>
-      <div class="single-text-input-container">
-        <Input id="assignment-name" class="single-text-input" @type="text" @value={{assignmentName}} placeholder="Provide a name for your assignment" />
+      <div class='single-text-input-container'>
+        <Input
+          id='assignment-name'
+          class='single-text-input'
+          @type='text'
+          @value={{assignmentName}}
+          placeholder='Provide a name for your assignment'
+        />
       </div>
       {{#if missingAssignmentError}}
-      <div class="create-ws-error">
-        <ErrorBox @error={{missingAssignmentError}} @showDismiss={{true}} @resetError={{action (mut missingAssignmentError) null}} />
-      </div>
+        <div class='create-ws-error'>
+          <ErrorBox
+            @error={{missingAssignmentError}}
+            @showDismiss={{true}}
+            @resetError={{action (mut missingAssignmentError) null}}
+          />
+        </div>
       {{/if}}
     </div>
   </div>
-  {{/if}}
+{{/if}}
 
-
-
-<div class="nav-btn-container">
-  <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
-  <button class="primary-button" data-test="next" type="button" {{action "next"}}>Next</button>
+<div class='nav-btn-container'>
+  <button
+    class='primary-button cancel-button'
+    type='button'
+    {{action 'back'}}
+  >Back</button>
+  <button
+    class='primary-button'
+    data-test='next'
+    type='button'
+    {{action 'next'}}
+  >Next</button>
 </div>

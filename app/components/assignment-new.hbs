@@ -200,7 +200,7 @@
               </span>
             </label>
             <div class='choice-selection'>
-              <RadioGroup
+              <Ui::RadioGroup
                 @options={{this.linkedWsOptions}}
                 @selectedValue={{this.doCreateLinkedWorkspaces}}
                 @updateValue={{action 'updateDoCreateLinkedWorkspaces'}}
@@ -211,7 +211,7 @@
                 class='group-selection'
                 {{on 'click' this.updateSectionGroups}}
               >
-                <RadioGroup
+                <Ui::RadioGroup
                   @options={{this.groupWsOptions}}
                   @selectedValue={{this.linkedWorkspacesMode}}
                   @updateValue={{action 'updateLinkedWorkspacesMode'}}
@@ -242,7 +242,7 @@
                     Create Parent Workspace Now?
                   </span>
                 </label>
-                <RadioGroup
+                <Ui::RadioGroup
                   @options={{this.parentWsOptions}}
                   @selectedValue={{this.doCreateParentWorkspace}}
                   @updateValue={{action 'updateDoCreateParentWorkspace'}}
@@ -257,7 +257,7 @@
                       Share parent workspace with students?
                     </span>
                   </label>
-                  <RadioGroup
+                  <Ui::RadioGroup
                     @options={{this.parentWorkspaceAccessOptions}}
                     @selectedValue={{this.parentWorkspaceAccess}}
                     @updateValue={{action 'updateParentWorkspaceAccess'}}

@@ -1,6 +1,6 @@
 <div id='parent-ws-collab-new'>
   <div class='collab-container'>
-    <RadioGroup
+    <Ui::RadioGroup
       @options={{this.addTypeItems}}
       @selectedValue={{this.addType}}
       @updateValue={{action 'updateAddType'}}
@@ -36,7 +36,7 @@
     {{/if}}
     {{#unless this.isNoActionToTake}}
       <div class='collab-settings global'>
-        <RadioGroup
+        <Ui::RadioGroup
           @options={{this.globalItems}}
           @selectedValue={{this.globalPermissionValue}}
           @updateValue={{action 'updateGlobalPermissionValue'}}

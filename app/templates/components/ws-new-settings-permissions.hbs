@@ -26,7 +26,7 @@
 
 {{#if selectedCollaborator}}
   <div class='global-permissions'>
-    <RadioGroup
+    <Ui::RadioGroup
       @options={{globalItems}}
       @selectedValue={{this.globalPermissionValue}}
       @updateValue={{action 'updateGlobalPermissionValue'}}

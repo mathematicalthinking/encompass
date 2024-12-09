@@ -1,27 +1,51 @@
-<div class="new-folderset name">
-  <p class="input-label">
+<div class='new-folderset name'>
+  <p class='input-label'>
     Folder Set Name
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide a specific enough name for you folder set in order to be able to indentify and reuse it">
-      <i class="fas fa-info-circle info-icon"></i>
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='Provide a specific enough name for you folder set in order to be able to indentify and reuse it'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
-  <div class="single-text-input-container">
-    <Input id="folderset-name" class="single-text-input" @type="text" @value={{name}} placeholder="Provide a name for the new folder set" />
+  <div class='single-text-input-container'>
+    <Input
+      id='folderset-name'
+      class='single-text-input'
+      @type='text'
+      @value={{name}}
+      placeholder='Provide a name for the new folder set'
+    />
   </div>
   {{#each nameErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut nameErrors) null}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action (mut nameErrors) null}}
+    />
   {{/each}}
 </div>
 
-<div class="new-folderset privacy">
-  <p class="input-label">
+<div class='new-folderset privacy'>
+  <p class='input-label'>
     Folder Set Privacy Setting
-    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Folder sets can be shared with other users or private. Hover over the question icon for more info">
-      <i class="fas fa-info-circle info-icon"></i>
+    <span
+      class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+      data-tooltip='Folder sets can be shared with other users or private. Hover over the question icon for more info'
+    >
+      <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
-  <RadioGroup @options={{privacyInputs}} @selectedValue={{this.privacySetting}} @updateValue={{action "updatePrivacySetting"}} />
+  <Ui::RadioGroup
+    @options={{privacyInputs}}
+    @selectedValue={{this.privacySetting}}
+    @updateValue={{action 'updatePrivacySetting'}}
+  />
   {{#each privacyErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut privacyErrors) null}} />
+    <ErrorBox
+      @error={{error}}
+      @showDismiss={{true}}
+      @resetError={{action (mut privacyErrors) null}}
+    />
   {{/each}}
 </div>

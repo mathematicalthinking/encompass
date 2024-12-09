@@ -79,7 +79,9 @@
                 }}
                   <div class='button-row'>
                     <button
-                      class='primary-button cancel-button' type="button" {{action 'cancelEditCollab'}}
+                      class='primary-button cancel-button'
+                      type='button'
+                      {{action 'cancelEditCollab'}}
                     >Cancel</button>
                   </div>
                 {{/if}}
@@ -115,7 +117,9 @@
               <div class='collab-settings'>
                 <div class='card-row'>
                   {{#if
-                    (not (is-equal collaborator.userObj this.selectedCollaborator))
+                    (not
+                      (is-equal collaborator.userObj this.selectedCollaborator)
+                    )
                   }}
                     <div class='row-label'>
                       Permissions Type
@@ -125,7 +129,7 @@
                     {{#if
                       (is-equal collaborator.userObj this.selectedCollaborator)
                     }}
-                      <RadioGroup
+                      <Ui::RadioGroup
                         @options={{this.globalItems}}
                         @selectedValue={{globalPermissionValue}}
                         @updateValue={{action 'updateGlobalPermissionValue'}}
@@ -320,10 +324,14 @@
                 }}
                   <div class='button-row'>
                     <button
-                      class='primary-button cancel-button' type="button" {{action 'cancelEditCollab'}}
+                      class='primary-button cancel-button'
+                      type='button'
+                      {{action 'cancelEditCollab'}}
                     >Cancel</button>
                     <button
-                      class='primary-button' type="button" {{action 'savePermissions' collaborator}}
+                      class='primary-button'
+                      type='button'
+                      {{action 'savePermissions' collaborator}}
                     >Save</button>
                   </div>
                 {{/if}}

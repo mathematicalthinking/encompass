@@ -1,25 +1,50 @@
-<p class="input-label">
+<p class='input-label'>
   Choose Copy Configuration
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Select how you would like to copy this workspace. Hover over the question icons to learn more">
-    <i class="fas fa-info-circle info-icon"></i>
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='Select how you would like to copy this workspace. Hover over the question icons to learn more'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
   </span>
 </p>
-<RadioGroup @options={{copyConfig}} @selectedValue={{this.selectedConfig}} @updateValue={{action "updateSelectedConfig"}} />
+<Ui::RadioGroup
+  @options={{copyConfig}}
+  @selectedValue={{this.selectedConfig}}
+  @updateValue={{action 'updateSelectedConfig'}}
+/>
 
 {{#if showCustomConfig}}
-  <WsCopyCustomConfig @workspace={{workspace}} @submissionThreads={{submissionThreads}} @onProceed={{action "nextCustom"}} @onBack={{action "back"}} @insufficientSubmissions={{insufficientSubmissions}} />
+  <WsCopyCustomConfig
+    @workspace={{workspace}}
+    @submissionThreads={{submissionThreads}}
+    @onProceed={{action 'nextCustom'}}
+    @onBack={{action 'back'}}
+    @insufficientSubmissions={{insufficientSubmissions}}
+  />
 
   {{#if insufficientSubmissions}}
-    <ErrorBox @error="Please choose a configuration that includes at least 1 submission." @showDismiss={{true}} @resetError={{action (mut insufficientSubmissions) null}} />
+    <ErrorBox
+      @error='Please choose a configuration that includes at least 1 submission.'
+      @showDismiss={{true}}
+      @resetError={{action (mut insufficientSubmissions) null}}
+    />
   {{/if}}
-  {{else}}
+{{else}}
 
   {{#if invalidOrMissingConfig}}
-    <ErrorBox @showDismiss={{true}} @error="Please select a valid configuration option." @resetError={{action (mut invalidOrMissingConfig) null}} />
+    <ErrorBox
+      @showDismiss={{true}}
+      @error='Please select a valid configuration option.'
+      @resetError={{action (mut invalidOrMissingConfig) null}}
+    />
   {{/if}}
 
-  <div class="nav-btn-container">
-    <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
-    <button class="primary-button" type="button" {{action "next"}}>Next</button>
+  <div class='nav-btn-container'>
+    <button
+      class='primary-button cancel-button'
+      type='button'
+      {{action 'back'}}
+    >Back</button>
+    <button class='primary-button' type='button' {{action 'next'}}>Next</button>
   </div>
 {{/if}}
