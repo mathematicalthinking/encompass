@@ -1,6 +1,18 @@
-<label class="input-label">Search for VMT Rooms / Activities</label>
-<SearchBar @onSearch={{action "submitSearch"}} @basePlaceholder="Room / Activity Name" @inputValue={{searchText}} @clearSearchResults={{action "clearSearchResults"}} @doSearchOnInputChange={{true}} @doDebounce={{true}} @constraints={{searchConstraints}} />
+<label class='input-label'>Search for VMT Rooms / Activities</label>
+<SearchBar
+  @onSearch={{action 'submitSearch'}}
+  @basePlaceholder='Room / Activity Name'
+  @inputValue={{searchText}}
+  @clearSearchResults={{action 'clearSearchResults'}}
+  @doSearchOnInputChange={{true}}
+  @doDebounce={{true}}
+  @constraints={{searchConstraints}}
+/>
 
 {{#each searchErrors as |error|}}
-  <ErrorBox @error={{error}} @showDismiss={{true}} @resetError={{action (mut searchErrors) null}} />
+  <Ui::ErrorBox
+    @error={{error}}
+    @showDismiss={{true}}
+    @resetError={{action (mut searchErrors) null}}
+  />
 {{/each}}

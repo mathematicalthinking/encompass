@@ -83,7 +83,7 @@
 </div>
 
 {{#if saveError}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error='Sorry, something went wrong. Please try again.'
     @resetError={{action (mut saveError) null}}
     @showDismiss={{true}}

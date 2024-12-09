@@ -1,66 +1,117 @@
-<div class="flex-container-full">
-  <div class="flex-item-full filter-options collapse" id="filter-list-side">
-    <div class="filter-items">
+<div class='flex-container-full'>
+  <div class='flex-item-full filter-options collapse' id='filter-list-side'>
+    <div class='filter-items'>
       <h2>Summary</h2>
-      <ul class="primary-filter-list">
+      <ul class='primary-filter-list'>
         {{#each detailsItems as |item|}}
-          <DetailsListItem @label={{item.label}} @displayValue={{item.displayValue}} @emptyValue={{item.emptyValue}} @propName={{item.propName}} @children={{item.children}} @isArray={{item.isArray}} @editValue={{action "goToStep"}} @associatedStep={{item.associatedStep}} @currentStep={{currentStep.value}} />
+          <DetailsListItem
+            @label={{item.label}}
+            @displayValue={{item.displayValue}}
+            @emptyValue={{item.emptyValue}}
+            @propName={{item.propName}}
+            @children={{item.children}}
+            @isArray={{item.isArray}}
+            @editValue={{action 'goToStep'}}
+            @associatedStep={{item.associatedStep}}
+            @currentStep={{currentStep.value}}
+          />
         {{/each}}
       </ul>
     </div>
   </div>
-  <div class="flex-item-full list-view">
-    <div class="results-list">
-      <div class="header">
+  <div class='flex-item-full list-view'>
+    <div class='results-list'>
+      <div class='header'>
         <h1>Import VMT Work</h1>
       </div>
 
-      <div class="step-display">
-        <div class="container">
-          <ul class="progressbar">
-            <li class="step-1 active-step">
+      <div class='step-display'>
+        <div class='container'>
+          <ul class='progressbar'>
+            <li class='step-1 active-step'>
               <span>Select Rooms</span>
             </li>
-            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
+            <li
+              class='step-2
+                {{if (greater-equal currentStep.value 2) "active-step"}}'
+            >
               <span>Create Workspace</span>
             </li>
-            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
+            <li
+              class='step-3
+                {{if (greater-equal currentStep.value 3) "active-step"}}'
+            >
               <span>Review</span>
             </li>
           </ul>
         </div>
       </div>
 
-      <div class="step-content">
+      <div class='step-content'>
         {{#if showSelectRooms}}
-          <VmtImportStep2 @store={{this.store}} @onBack={{action "changeStep"}} @onProceed={{action "setSelectedRooms"}} @existingSelectedRooms={{selectedRooms}} @previousResults={{mostRecentSearchResults}} @existingSelectedActivities={{selectedActivities}} />
+          <VmtImportStep2
+            @store={{this.store}}
+            @onBack={{action 'changeStep'}}
+            @onProceed={{action 'setSelectedRooms'}}
+            @existingSelectedRooms={{selectedRooms}}
+            @previousResults={{mostRecentSearchResults}}
+            @existingSelectedActivities={{selectedActivities}}
+          />
         {{/if}}
 
         {{#if showCreateWs}}
-          <ImportWorkStep5 @users={{users}} @selectedOwner={{selectedOwner}} @selectedFolderSet={{selectedFolderSet}} @doCreateWs={{doCreateWs}} @selectedMode={{selectedMode}} @folderSets={{folderSets}} @store={{this.store}} @answers={{selectedRooms}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @onBack={{action "changeStep"}} @onProceed={{action "prepareReview"}} />
+          <ImportWorkStep5
+            @users={{users}}
+            @selectedOwner={{selectedOwner}}
+            @selectedFolderSet={{selectedFolderSet}}
+            @doCreateWs={{doCreateWs}}
+            @selectedMode={{selectedMode}}
+            @folderSets={{folderSets}}
+            @store={{this.store}}
+            @answers={{selectedRooms}}
+            @workspaceName={{workspaceName}}
+            @workspaceOwner={{workspaceOwner}}
+            @workspaceMode={{workspaceMode}}
+            @folderSet={{folderSet}}
+            @onBack={{action 'changeStep'}}
+            @onProceed={{action 'prepareReview'}}
+          />
         {{/if}}
 
         {{#if showReview}}
-          <VmtImportStep4 @store={{this.store}} @answers={{selectedRooms}} @workspaceName={{workspaceName}} @workspaceOwner={{workspaceOwner}} @workspaceMode={{workspaceMode}} @folderSet={{folderSet}} @isUploadingAnswer={{isUploadingAnswer}} @isCreatingWorkspace={{isCreatingWorkspace}} @uploadedAnswers={{uploadedAnswers}} @createdWorkspace={{createdWorkspace}} @onBack={{action "changeStep"}} @onProceed={{action "importWork"}} />
+          <VmtImportStep4
+            @store={{this.store}}
+            @answers={{selectedRooms}}
+            @workspaceName={{workspaceName}}
+            @workspaceOwner={{workspaceOwner}}
+            @workspaceMode={{workspaceMode}}
+            @folderSet={{folderSet}}
+            @isUploadingAnswer={{isUploadingAnswer}}
+            @isCreatingWorkspace={{isCreatingWorkspace}}
+            @uploadedAnswers={{uploadedAnswers}}
+            @createdWorkspace={{createdWorkspace}}
+            @onBack={{action 'changeStep'}}
+            @onProceed={{action 'importWork'}}
+          />
         {{/if}}
       </div>
 
-    {{#each findRecordErrors as |error|}}
-      <ErrorBox @error={{error}} @showDismiss={{true}} />
-    {{/each}}
-    {{#each postErrors as |error|}}
-      <ErrorBox @error={{error}} @showDismiss={{true}} />
-    {{/each}}
-    {{#each createAnswerErrors as |error|}}
-      <ErrorBox @error={{error}} @showDismiss={{true}} />
-    {{/each}}
+      {{#each findRecordErrors as |error|}}
+        <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
+      {{/each}}
+      {{#each postErrors as |error|}}
+        <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
+      {{/each}}
+      {{#each createAnswerErrors as |error|}}
+        <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
+      {{/each}}
     </div>
   </div>
 </div>
 
-<div class="toggle-filter-menu">
-  <button type="button" {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+<div class='toggle-filter-menu'>
+  <button type='button' {{action 'toggleMenu'}}><i
+      id='arrow-icon'
+      class='fas fa-chevron-right'
+    ></i></button>
 </div>
-
-
-

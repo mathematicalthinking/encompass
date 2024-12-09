@@ -108,7 +108,7 @@
       {{/if}}
       {{#if this.missingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Please select a user'
             @resetError={{action (mut this.missingUserError) false}}
             @showDismiss={{true}}
@@ -117,7 +117,7 @@
       {{/if}}
       {{#if this.existingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Collaborator already exists. Edit permissions below'
             @resetError={{action (mut existingUserError) false}}
             @showDismiss={{true}}

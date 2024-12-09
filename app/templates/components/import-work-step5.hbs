@@ -37,7 +37,7 @@
       </div>
       {{#if missingNameError}}
         <div class='create-ws-error'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error={{missingNameError}}
             @showDismiss={{true}}
             @resetError={{action (mut missingNameError) null}}
@@ -75,7 +75,7 @@
       />
       {{#if missingOwnerError}}
         <div class='create-ws-error'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error={{missingOwnerError}}
             @showDismiss={{true}}
             @resetError={{action (mut missingOwnerError) null}}
@@ -176,7 +176,7 @@
       </div>
       {{#if missingAssignmentError}}
         <div class='create-ws-error'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error={{missingAssignmentError}}
             @showDismiss={{true}}
             @resetError={{action (mut missingAssignmentError) null}}

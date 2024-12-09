@@ -47,7 +47,7 @@
                   @value={{this.selectedSection}}
                 />
                 {{#each this.sectionFormErrors as |error|}}
-                  <ErrorBox
+                  <Ui::ErrorBox
                     @error={{error}}
                     @showDismiss={{true}}
                     @resetError={{action
@@ -97,7 +97,7 @@
                   @preload={{this.problemsPreloadValue}}
                 />
                 {{#each this.problemFormErrors as |error|}}
-                  <ErrorBox
+                  <Ui::ErrorBox
                     @error={{error}}
                     @showDismiss={{true}}
                     @resetError={{action
@@ -158,7 +158,7 @@
                   </p>
                 {{/each}}
                 {{#if this.invalidDateRange}}
-                  <ErrorBox
+                  <Ui::ErrorBox
                     @error='Invalid Date Range'
                     @showDismiss={{true}}
                     @resetError={{action (mut this.invalidDateRange) null}}

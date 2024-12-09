@@ -362,21 +362,21 @@
   </section>
 
   {{#each this.createProblemErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} />
+    <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
   {{/each}}
   {{#each this.imageUploadErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} />
+    <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
   {{/each}}
 
   {{#if this.isMissingRequiredFields}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Please provide all required fields'
       @showDismiss={{true}}
     />
   {{/if}}
 
   {{#if this.noLegalNotice}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Please verify that you have permission to post this problem'
       @showDismiss={{true}}
     />

@@ -15,7 +15,7 @@
 </form>
 
 {{#if missingFilesError}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error='Please select files to upload'
     @resetError={{action (mut missingFilesError) null}}
     @showDismiss={{true}}
@@ -24,15 +24,15 @@
 
 {{#if isOverSizeLimit}}
   {{#if isOverPdfLimit}}
-    <ErrorBox @error={{overPdfLimitMsg}} @showDismiss={{true}} />
+    <Ui::ErrorBox @error={{overPdfLimitMsg}} @showDismiss={{true}} />
   {{/if}}
   {{#if isOverImageLimit}}
-    <ErrorBox @error={{overImageLimitMsg}} @showDismiss={{true}} />
+    <Ui::ErrorBox @error={{overImageLimitMsg}} @showDismiss={{true}} />
   {{/if}}
 {{/if}}
 
 {{#if overSizedFileError}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error={{overSizedFileError}}
     @showDismiss={{true}}
     @resetError={{action (mut overSizedFileError) null}}

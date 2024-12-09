@@ -46,7 +46,7 @@
     <div class='collab-settings'>
       {{#if this.missingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Please select a user'
             @resetError={{action (mut this.missingUserError) false}}
             @showDismiss={{true}}
@@ -55,7 +55,7 @@
       {{/if}}
       {{#if this.existingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Collaborator already exists. Edit permissions below'
             @resetError={{action (mut this.existingUserError) false}}
             @showDismiss={{true}}

@@ -35,7 +35,7 @@
       create the workspace</p>
 
     {{#if saveError}}
-      <ErrorBox
+      <Ui::ErrorBox
         @error='Sorry, something went wrong. Please try again'
         @showDismiss={{true}}
         @resetError={{action (mut saveError) null}}

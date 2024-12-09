@@ -107,7 +107,7 @@
   </table>
 
   {{#if this.usernameError}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{this.usernameError}}
       @showDismiss={{true}}
       @resetError={{action (mut this.usernameError) null}}
@@ -115,7 +115,7 @@
   {{/if}}
 
   {{#if this.emailError}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{this.emailError}}
       @showDismiss={{true}}
       @resetError={{action (mut this.emailError) null}}
@@ -123,7 +123,7 @@
   {{/if}}
 
   {{#if this.passwordError}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{this.passwordError}}
       @showDismiss={{true}}
       @resetError={{action (mut this.passwordError) null}}
@@ -131,7 +131,7 @@
   {{/if}}
 
   {{#if this.noSpacesError}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Passwords cannot contain spaces'
       @showDismiss={{true}}
       @resetError={{action (mut this.noSpacesError) null}}
@@ -139,7 +139,7 @@
   {{/if}}
 
   {{#if this.missingAccountType}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Missing account type'
       @showDismiss={{true}}
       @resetError={{action (mut this.missingAccountType) null}}
@@ -147,7 +147,7 @@
   {{/if}}
 
   {{#if this.errorMessage}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Missing required fields'
       @showDismiss={{true}}
       @resetError={{action (mut this.errorMessage) null}}
@@ -155,14 +155,14 @@
   {{/if}}
 
   {{#each this.createOrgErrors as |error|}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
       @resetError={{action 'removeErrorFromArray' 'createOrgErrors' error}}
     />
   {{/each}}
   {{#each this.createUserErrors as |error|}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
       @resetError={{action 'removeErrorFromArray' 'createUserErrors' error}}

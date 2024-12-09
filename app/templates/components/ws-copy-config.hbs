@@ -23,7 +23,7 @@
   />
 
   {{#if insufficientSubmissions}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Please choose a configuration that includes at least 1 submission.'
       @showDismiss={{true}}
       @resetError={{action (mut insufficientSubmissions) null}}
@@ -32,7 +32,7 @@
 {{else}}
 
   {{#if invalidOrMissingConfig}}
-    <ErrorBox
+    <Ui::ErrorBox
       @showDismiss={{true}}
       @error='Please select a valid configuration option.'
       @resetError={{action (mut invalidOrMissingConfig) null}}

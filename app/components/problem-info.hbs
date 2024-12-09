@@ -51,20 +51,31 @@
           @problem.createDate
           'MM/DD/YYYY'
         }}</div>
-      <div class='subheading'><LinkTo @route='metrics.problem' @model={{@problem}}>See Reports</LinkTo></div>
+      <div class='subheading'><LinkTo
+          @route='metrics.problem'
+          @model={{@problem}}
+        >See Reports</LinkTo></div>
     </div>
     <div class='info-menu'>
       <button
-        class='tab-link general {{if this.showGeneral 'active-btn'}}' type="button" {{on 'click' this.toggleGeneral}}
+        class='tab-link general {{if this.showGeneral "active-btn"}}'
+        type='button'
+        {{on 'click' this.toggleGeneral}}
       >General</button>
       <button
-        class='tab-link categories {{if this.showCats 'active-btn'}}' type="button" {{on 'click' this.toggleCats}}
+        class='tab-link categories {{if this.showCats "active-btn"}}'
+        type='button'
+        {{on 'click' this.toggleCats}}
       >Categories</button>
       <button
-        class='tab-link additional {{if this.showAdditional 'active-btn'}}' type="button" {{on 'click' this.toggleAdditional}}
+        class='tab-link additional {{if this.showAdditional "active-btn"}}'
+        type='button'
+        {{on 'click' this.toggleAdditional}}
       >Additional</button>
       <button
-        class='tab-link legal {{if this.showLegal 'active-btn'}}' type="button" {{on 'click' this.toggleLegal}}
+        class='tab-link legal {{if this.showLegal "active-btn"}}'
+        type='button'
+        {{on 'click' this.toggleLegal}}
       >Legal</button>
     </div>
     <div class='info-content'>
@@ -204,10 +215,13 @@
                   <li class='category-item'>
                     <a
                       href='{{category.url}}'
-                      target='_blank' rel="noopener noreferrer"
+                      target='_blank'
+                      rel='noopener noreferrer'
                     >{{category.identifier}}</a>
                     <button
-                      class='remove-cat' type="button" {{action 'removeCategory' category}}
+                      class='remove-cat'
+                      type='button'
+                      {{action 'removeCategory' category}}
                     ><i class='far fa-times-circle'></i></button>
                     <p class='category-description'>{{category.description}}</p>
                   </li>
@@ -216,14 +230,18 @@
               {{#unless this.showCategories}}
                 <div class='button-row-list'>
                   <button
-                    class='cancel-button' type="button" {{action 'toggleCategories'}}
+                    class='cancel-button'
+                    type='button'
+                    {{action 'toggleCategories'}}
                   >Add Categories</button>
                 </div>
               {{/unless}}
               {{#if this.showCategories}}
                 <div class='button-row-list'>
                   <button
-                    class='cancel-button' type="button" {{action 'toggleCategories'}}
+                    class='cancel-button'
+                    type='button'
+                    {{action 'toggleCategories'}}
                   >Hide Categories</button>
                 </div>
                 <CategoriesMenu
@@ -236,14 +254,18 @@
               {{#unless this.showCategories}}
                 <div class='button-row'>
                   <button
-                    class='cancel-button' type="button" {{action 'toggleCategories'}}
+                    class='cancel-button'
+                    type='button'
+                    {{action 'toggleCategories'}}
                   >Add Categories</button>
                 </div>
               {{/unless}}
               {{#if this.showCategories}}
                 <div class='button-row'>
                   <button
-                    class='cancel-button' type="button" {{action 'toggleCategories'}}
+                    class='cancel-button'
+                    type='button'
+                    {{action 'toggleCategories'}}
                   >Hide Categories</button>
                 </div>
                 {{#if this.categoryTree}}
@@ -262,7 +284,8 @@
                   <li class='category-item'>
                     <a
                       href='{{category.url}}'
-                      target='_blank' rel="noopener noreferrer"
+                      target='_blank'
+                      rel='noopener noreferrer'
                     >{{category.identifier}}</a>
                     <p class='category-description'>{{category.description}}</p>
                   </li>
@@ -340,7 +363,7 @@
               <img
                 src='{{@problem.image.imageData}}'
                 alt='Image Error'
-                class='additional-image {{if this.isWide 'wide'}}'
+                class='additional-image {{if this.isWide "wide"}}'
               />
             </a>
           {{else}}
@@ -351,7 +374,9 @@
           {{#if this.isEditing}}
             {{#if @problem.image}}
               <button
-                class='edit-image-btn' type="button" {{action 'deleteImage'}}
+                class='edit-image-btn'
+                type='button'
+                {{action 'deleteImage'}}
               >Delete</button>
             {{else}}
               <div class='input-container' id='image-upload'>
@@ -434,18 +459,22 @@
       <span class='left-buttons'>
         {{#if this.isEditing}}
           {{#unless @problem.isTrashed}}
-            <button class='button-icon' type="button" {{on 'click' this.deleteProblem}}><i
-                class='fas fa-trash'
-              ></i></button>
+            <button
+              class='button-icon'
+              type='button'
+              {{on 'click' this.deleteProblem}}
+            ><i class='fas fa-trash'></i></button>
           {{/unless}}
         {{else}}
           <span
             class='info-text-tip simptip-position-right simptip-smooth'
             data-tooltip='Make a Copy of this Problem'
           >
-            <button class='button-icon' type="button" {{action 'addToMyProblems'}}><i
-                class='far fa-copy'
-              ></i></button>
+            <button
+              class='button-icon'
+              type='button'
+              {{action 'addToMyProblems'}}
+            ><i class='far fa-copy'></i></button>
           </span>
           {{#unless @currentUser.isTeacher}}
             {{#unless @problem.isTrashed}}
@@ -456,7 +485,9 @@
                     data-tooltip='Remove this Problem from Recommended'
                   >
                     <button
-                      class='button-icon star-icon' type="button" {{action 'removeRecommend'}}
+                      class='button-icon star-icon'
+                      type='button'
+                      {{action 'removeRecommend'}}
                     >
                       <i class='fas fa-star star-filled'></i>
                     </button>
@@ -467,7 +498,9 @@
                     data-tooltip='Add this Problem to Recommended'
                   >
                     <button
-                      class='button-icon star-icon' type="button" {{action 'checkRecommend'}}
+                      class='button-icon star-icon'
+                      type='button'
+                      {{action 'checkRecommend'}}
                     >
                       <i class='far fa-star star-line'></i>
                     </button>
@@ -478,7 +511,7 @@
           {{/unless}}
           {{#if @currentUser.isTeacher}}
             {{#if this.isRecommended}}
-              <button class='button-icon star-icon no-cursor' type="button">
+              <button class='button-icon star-icon no-cursor' type='button'>
                 <i class='fas fa-star star-filled'></i>
               </button>
             {{/if}}
@@ -488,29 +521,39 @@
       <span class='right-buttons'>
         {{#if this.isEditing}}
           <button
-            class='action_button cancel-button' type="button" {{action 'cancelEdit'}}
+            class='action_button cancel-button'
+            type='button'
+            {{action 'cancelEdit'}}
           >Cancel</button>
           <button
-            class='primary-button save' type="button" {{action 'checkPrivacy'}}
+            class='primary-button save'
+            type='button'
+            {{action 'checkPrivacy'}}
           >Save</button>
         {{else}}
           {{#if this.writePermissions.canEdit}}
             {{#if @problem.isUsed}}
               {{#if @currentUser.isAdmin}}
                 <button
-                  class='primary-button edit' type="button" {{action 'editProblem'}}
+                  class='primary-button edit'
+                  type='button'
+                  {{action 'editProblem'}}
                 >Edit</button>
               {{/if}}
             {{else}}
               <button
-                class='primary-button edit' type="button" {{action 'editProblem'}}
+                class='primary-button edit'
+                type='button'
+                {{action 'editProblem'}}
               >Edit</button>
             {{/if}}
           {{/if}}
           {{#unless @problem.isTrashed}}
             {{#if (not (is-equal @problem.status 'flagged'))}}
               <button
-                class='primary-button assign' type="button" {{action 'toggleAssignment'}}
+                class='primary-button assign'
+                type='button'
+                {{action 'toggleAssignment'}}
               >Assign</button>
             {{/if}}
           {{/unless}}
@@ -519,7 +562,9 @@
           {{#if @currentUser.isAdmin}}
             {{#unless this.isEditing}}
               <button
-                class='primary-button restore' type="button" {{action 'restoreProblem'}}
+                class='primary-button restore'
+                type='button'
+                {{action 'restoreProblem'}}
               >Restore</button>
             {{/unless}}
           {{/if}}
@@ -528,35 +573,35 @@
     </div>
   </section>
   {{#if this.isMissingRequiredFields}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Please fill in all required fields'
       @showDismiss={{true}}
     />
   {{/if}}
 
   {{#each this.updateProblemErrors as |error|}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
       @resetError={{action (mut this.updateProblemErrors) null}}
     />
   {{/each}}
   {{#each this.imageUploadErrors as |error|}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
       @resetError={{action (mut this.imageUploadErrors) null}}
     />
   {{/each}}
   {{#each this.createRecordErrors as |error|}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
       @resetError={{action (mut this.createRecordErrors) null}}
     />
   {{/each}}
   {{#each this.findRecordErrors as |error|}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
       @resetError={{action (mut this.findRecordErrors) null}}

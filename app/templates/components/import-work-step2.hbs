@@ -48,7 +48,7 @@
 {{/if}}
 
 {{#if missingSection}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error='Please select a class or no class'
     @resetError={{action (mut missingSection) null}}
     @showDismiss={{true}}

@@ -1,32 +1,56 @@
-<p class="input-label">
+<p class='input-label'>
   Select Files to Upload
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="We currently only accept pictures and pdfs">
-    <i class="fas fa-info-circle info-icon"></i>
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='We currently only accept pictures and pdfs'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
   </span>
 </p>
-<p class="sub-input-label">Supported files are jpeg, png or pdf. Multipage pdfs will convert each page into a single image.</p>
-<ImageUpload @class="form-file" @handleUploadResults={{action "updateCurrentFiles"}} @filesToBeUploaded={{selectedFiles}} @acceptMultiple={{true}} @doResetFilesAfterUpload={{true}} />
+<p class='sub-input-label'>Supported files are jpeg, png or pdf. Multipage pdfs
+  will convert each page into a single image.</p>
+<ImageUpload
+  @class='form-file'
+  @handleUploadResults={{action 'updateCurrentFiles'}}
+  @filesToBeUploaded={{selectedFiles}}
+  @acceptMultiple={{true}}
+  @doResetFilesAfterUpload={{true}}
+/>
 
 {{#if missingFiles}}
-  <ErrorBox @error="You must upload at least one file to continue" @resetError={{action (mut missingFiles) null}} @showDismiss={{true}} />
+  <Ui::ErrorBox
+    @error='You must upload at least one file to continue'
+    @resetError={{action (mut missingFiles) null}}
+    @showDismiss={{true}}
+  />
 {{/if}}
 
 {{#if uploadedFiles}}
   <h5> Uploaded Files</h5>
   <ul>
-    {{#each uploadedFiles as  |f| }}
+    {{#each uploadedFiles as |f|}}
       <li>
 
-        {{f.originalname}} {{#if f.pdfPageNum}}(pg. {{f.pdfPageNum}}){{/if}}
+        {{f.originalname}}
+        {{#if f.pdfPageNum}}(pg. {{f.pdfPageNum}}){{/if}}
 
-        <i {{action "removeFile" f}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
+        <i
+          {{action 'removeFile' f}}
+          class='far fa-times-circle'
+          aria-hidden='true'
+          title='Remove'
+        ></i>
 
       </li>
     {{/each}}
   </ul>
 {{/if}}
 
-<div class="nav-btn-container">
-  <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
-  <button class="primary-button" type="button" {{action "next"}}>Next</button>
+<div class='nav-btn-container'>
+  <button
+    class='primary-button cancel-button'
+    type='button'
+    {{action 'back'}}
+  >Back</button>
+  <button class='primary-button' type='button' {{action 'next'}}>Next</button>
 </div>
