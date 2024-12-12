@@ -4,7 +4,7 @@
  */
 import Model, { attr } from '@ember-data/model';
 import Auditable from './auditable';
-export default class ImportRequestModel extends Model(Auditable) {
+export default class ImportRequestModel extends Auditable {
   @attr('string') teacher;
   @attr('string') submitter;
   @attr('number') publication;

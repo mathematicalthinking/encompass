@@ -1,12 +1,9 @@
-import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { hash, resolve } from 'rsvp';
 import ConfirmLeavingRoute from '../../_confirm_leaving_route';
 import { action } from '@ember/object';
 
-export default class ResponsesNewSubmissionRoute extends Route.extend(
-  ConfirmLeavingRoute
-) {
+export default class ResponsesNewSubmissionRoute extends ConfirmLeavingRoute {
   @service('utility-methods') utils;
   @service store;
   @service router;

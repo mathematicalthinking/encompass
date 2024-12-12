@@ -1,4 +1,4 @@
-This are notes taken as I attempt to upgrade Encompass to Ember 4.5. Note that there is a fair bit of redundancy in this file as these notes are being created as I do the work.
+These are notes taken as I attempt to upgrade Encompass to Ember 4.5. Note that there is a fair bit of redundancy in this file as these notes are being created as I do the work.
 
 # Backstory
 
@@ -108,11 +108,11 @@ Instead, we could leverage the {timestamps: true} option when defining all the M
 
 ## Component organization
 
-# UI Elements
+### UI Elements
 
 There is now the folder app/components/ui that contains the form-field and expandable-cell components. The purpose of this folder is a place for generic UI components. Other generic UI components include: my-select, selectize-input, twitter-typeahead, radio-group (and radio-group-item), toggle-control, checkbox-list (and checkbox-list-item), collapsible-list, and quill-container. Once these get moved into that folder, every usage must reference the "Ui" namespace, such as <Ui::ToggleControl /> or <Ui::MySelect />.
 
-# Other components
+### Other components
 
 Similar to the Ui example above, usage of Namespaces is encouraged in Ember moving forward. Thus, we should reorganize the app/components folder with subfolders representing the distinct subsystems of Encompass. The components in the folders would then be referenced in templates via namespaces, such as <Users::UserList> which refers to app/components/users/user-list.js and user-list.hbs.
 
@@ -206,6 +206,7 @@ There are several README.md files scattered through the /test folder.
 If this.removeMessages is undefined, Ember might **not** show an error in the console or indicate anywhere that it failed. Subsequent lines will simply not execute but the app will continue running as if everything is fine.
 
 - Be careful around the use of objects that are being tracked. One must be careful to update their references so that they are reactive. Just setting a property won't be enough unless you use TrackedObject from tracked-built-ins.
+- The error "Error while processing route: assignments.new Assertion Failed: Expected hash or Mixin instance, got [object Function]" was just caused by a syntax error in a model. The assertion failed because when hydrating a model, trying get all the documents from the store in that model failed.
 
 # Current Progress
 
@@ -242,3 +243,37 @@ These mixins are slated to be removed:
 ## Upgrade of Helpers
 
 With the upgrade to Ember 4.5 (11/14/2024), all helpers have been simplified to regular functions.
+
+## .gitkeep
+
+Removed all the unnecessary .gitkeep files that were created when the project began 6 years ago. This empty file is just a convention so that git will keep an otherwise empty folder in the history.
+
+## UI folder
+
+As of 12/9, the components/ui folder contains the following:
+
+- checkbox-list, checkbox-list-item
+- error-box
+- expandable-cell
+- form-field
+- radio-group, radio-group-item
+- twitter-typeahead
+- wordcloud-container
+
+Components potentially to include in the ui folder:
+
+- bread-crumbs, bread-crumbs-item
+- draggable-selection, DragNDrop, Droppable
+- my-select
+- pagination-control
+- quill-container
+- radio-filter
+- selectize-input
+- toggle-control
+
+The following components, included above, are actually wrappers for third-party packages, so might go into their own folder: (uiwrappers?):
+
+- quill-container
+- selectize-input
+- twitter-typeahead
+- wordcloud-container
