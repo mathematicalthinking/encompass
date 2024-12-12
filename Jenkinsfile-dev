@@ -3,7 +3,7 @@ pipeline {
         registry = 'mathematicalthinking/encompass'
         registryCredential = 'mt-docker-hub-credentials'
         dockerImage = ''
-        deploymentHost = 'mttest'
+        deploymentHost = 'mt-test'
         githubRepo = 'git@github.com:mathematicalthinking/encompass.git'
         githubBranch = 'develop'
     }
