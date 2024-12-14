@@ -9,17 +9,9 @@ import { inject as service } from '@ember/service';
 export default class AssignmentsRoute extends AuthenticatedRoute {
   @service store;
 
-  async model() {
-    let currentUser = this.modelFor('application');
-    let assignments = await this.store.findAll('assignment');
-    let filtered = assignments.filter((assignment) => {
-      return assignment.id && !assignment.get('isTrashed');
-    });
-    filtered = filtered.sortBy('createDate').reverse();
+  model() {
     return hash({
-      currentUser,
-      assignments,
-      filtered,
+      assignments: this.store.findAll('assignment'),
     });
   }
 }

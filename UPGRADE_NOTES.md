@@ -207,6 +207,7 @@ If this.removeMessages is undefined, Ember might **not** show an error in the co
 
 - Be careful around the use of objects that are being tracked. One must be careful to update their references so that they are reactive. Just setting a property won't be enough unless you use TrackedObject from tracked-built-ins.
 - The error "Error while processing route: assignments.new Assertion Failed: Expected hash or Mixin instance, got [object Function]" was just caused by a syntax error in a model. The assertion failed because when hydrating a model, trying get all the documents from the store in that model failed.
+- Not really a gotcha, just something about Ember. If there is an async relationship, in the route when the model is being put together, there are cases where you'll need to `await` a property access to ensure that the value has arrived.
 
 # Current Progress
 

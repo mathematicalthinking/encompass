@@ -1,18 +1,21 @@
- <h2 class="info-header">Assignment Details</h2>
-  <div class="clear"></div>
-{{#each this.initialLoadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-{{/each}}
+<h2 class='info-header'>Assignment Details</h2>
+<div class='clear'></div>
 {{#if @currentUser.isStudent}}
-  <AssignmentInfoStudent @assignment={{@assignment}} @problem={{this.currentProblem}} @section={{this.currentSection}} @answerList={{@assignment.answers.content}} />
+  <AssignmentInfoStudent
+    @assignment={{@assignment}}
+    @problem={{this.currentProblem}}
+    @section={{this.currentSection}}
+    @answerList={{@assignment.answers.content}}
+  />
 {{else}}
-  <AssignmentInfoTeacher @groups={{@groups}} @sections={{@sections}} @assignment={{@assignment}} @currentUser={{@currentUser}} @studentList={{@assignmentStudents}} @section={{this.currentSection}} @problem={{this.currentProblem}} @linkedWorkspaces={{@assignment.linkedWorkspaces.content}} @parentWorkspace={{@assignment.parentWorkspace.content}} />
+  <AssignmentInfoTeacher
+    @groups={{@groups}}
+    @sections={{@sections}}
+    @assignment={{@assignment}}
+    @studentList={{@assignmentStudents}}
+    @section={{this.currentSection}}
+    @problem={{this.currentProblem}}
+    @linkedWorkspaces={{@assignment.linkedWorkspaces.content}}
+    @parentWorkspace={{@assignment.parentWorkspace.content}}
+  />
 {{/if}}
-
-
-
-
-
-
-
-
