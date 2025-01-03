@@ -10,10 +10,9 @@
         @adminFilterName={{this.adminFilterName}}
         @showAdminFilters={{this.showAdminFilters}}
         @onUpdate={{this.triggerFetch}}
-        @showTrashed={{this.toggleTrashed}}
+        @showTrashed={{this.showOnlyTrashed}}
         @toggleTrashed={{this.triggerShowTrashed}}
-        @categoriesFilter={{this.categoriesFilter}}
-        @onUpdateCategories={{this.handleUpdateCategories}}
+        @categoryFilterName={{this.categoryFilterName}}
       />
     </div>
 
@@ -102,7 +101,7 @@
                 <ul>
                   {{#each this.privacySettingOptions as |option|}}
                     <li>
-                      <RadioFilter
+                      <Ui::RadioFilter
                         @labelName={{option.label}}
                         @labelIcon={{option.icon}}
                         @inputValue={{option.value}}
@@ -126,6 +125,9 @@
               @type='title'
               @activeType={{this.sortCriterion.type}}
             />
+            <div class='sort-bar-item description'>
+              Description
+            </div>
             <ToggleControl
               @classToAdd='sort-bar-item date'
               @onUpdate={{this.updateSortCriterion}}
@@ -140,7 +142,7 @@
               <i class='fas fa-filter sort-icon'></i>
               <span class='hover-menu'>
                 <ul>
-                  {{#each this.statusOptions as |option|}}
+                  {{#each this.statusOptionsList as |option|}}
                     <li>
                       <label>
                         <input
@@ -177,7 +179,7 @@
             @recommendedProblems={{this.model.recommendedProblems}}
             @currentUser={{this.currentUser}}
             @isSearching={{this.isSearchingProblems}}
-            @problems={{this.displayProblems}}
+            @problems={{this.problems}}
             @metadata={{this.problemsMetadata}}
             @isList={{this.showList}}
             @isGrid={{this.showGrid}}

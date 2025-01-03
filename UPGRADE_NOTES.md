@@ -6,7 +6,7 @@ There has been various attempts to upgrade this app to modern Ember (Octane, Emb
 
 This file is an attempt to document what has and has not been done, as well as suggestions for future developers if I (like all others) leave an incomplete upgrade process.
 
-# Notes about the current state
+# Notes about the current state (1 Dec 2024)
 
 Enc-test has been updated with the latest version of the work that I've done over the last couple of months, as represented in this file. Of course, there is plenty that does not work; mostly parts of the system that have not yet been upgraded, upgrades that have not been adequately tested, and a few items that I document below that represent my current work when this contracted ended. To help the next developer, there are two files beyond this one:
 
@@ -33,6 +33,10 @@ Note that there are many classic components that use the error handling service 
 
 But the above is not enough! Apparently the display of errors was a work-in-progresss. There are several components (e.g., workspace-list-container, problem-list-container) that incorporate either the error-handling service, superclass, or mixin, but don't display the errors (albiet they do nicely keep track of them).
 
+## .slice() replaces .toArray()
+
+To convert a RecordArray to a plain JS array, Ember docs now recommend using .slice() as .toArray() has been deprecated. As of 1/2/2025 I've made this replacement in selectize-input.js and troubleshooting.md, but still have to change it in about 55 places among 31 files.
+
 ## Store
 
 Store is a service, so there is no need for it to be passed as an argument to a component, route, or controller. This has been corrected for many cases (selectize-input, various aspects of the workspace and problem subsystems), but there are several more uses of @store={{this.store}} that need to be refactored.
@@ -49,7 +53,7 @@ Instead, modern Ember uses the Data down, actions up pattern. Parent components 
 
 ## Template and Component files
 
-Should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
+Should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to-be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
 
 ## Vendor imports
 
@@ -59,9 +63,11 @@ This has been done for randomcolor, jQuery (older versions), typeahead.js, and s
 
 Changing these vendor imports involved installing the corresponding packages (selectize and typeahead.js), then importing those packages into the wrapping components (selectize-input and twitter-typeahead).
 
+There are also several packages that are essentially polyfills for outdated browsers, such as IE.
+
 ## Move from built-in Ember components (Input, TextArea, Select, etc.) to the plain HTML versions
 
-As possible, I will be replacing <Input> with <input>, and so forth. Although the Ember built-ins provide some convenience for assessibility options, they also encourage older-style approachs such as two-way data binding.
+As possible, I will be replacing <Input> with <input>, and so forth. Although the Ember built-ins provide some convenience for assessibility options, they also encourage older-style approachs such as two-way data binding. [NOTE: I'm not certain this is always a good idea.]
 
 ## Helpers
 
@@ -75,7 +81,7 @@ In Ember 4.5, helpers can now be regular functions rather than wrapped in a mana
 
 ## Controllers
 
-Controllers are slated to be deprecated. Best practice is to refactor the logic and properties in the controller, distributing them as appropriate to the route (for building the model), a service (for application state that will be used elsewhere), and a component (for everything else). The idea is that a route templates should be simple and reference just one or moe components that contain much of the work that had been done by the controller.
+Controllers are slated to be deprecated. Best practice is to refactor the logic and properties in the controller, distributing them as appropriate to the route (for building the model), a service (for application state that will be used elsewhere), and a component (for everything else). The idea is that a route templates should be simple and reference just one or more components that contain much of the work that had been done by the controller.
 
 ## Route Templates
 
@@ -104,7 +110,7 @@ All hasMany and belowsTo relationships should specify inverse and async options 
 
 Currently, all timestamping of db documents (users, problems, workspaces, etc.) appears to be done manually primarily on the client side. This approach could cause issues because the clients clocks might be wrong. Also, because the dates are updated manually (all over the codebase), there is a higher likelihood of errors.
 
-Instead, we could leverage the {timestamps: true} option when defining all the Mongoose Schemas. This option has the db (a single )
+Instead, we could leverage the {timestamps: true} option when defining all the Mongoose Schemas. This option has the db (a single source of truth) automatically insert and maintain createdAt and updatedAt fields.
 
 ## Component organization
 
@@ -187,6 +193,7 @@ There are several README.md files scattered through the /test folder.
 
 - **Routes** Many of the routes are in the classic style, so should be upgraded to JS classes, although they all seem to work fine in Ember 4.5.
 - **Services** Most of the services are still in the classic style.
+- **Models** Several models include component-specific logic, including both derived properties (via get) and functions. Modern Ember encourages leaner models that focus on the data and their relationships. It would be best to trim down several of the models, pushing the specific logic out into the components.
 
 # Gotchas
 
@@ -207,7 +214,7 @@ If this.removeMessages is undefined, Ember might **not** show an error in the co
 
 - Be careful around the use of objects that are being tracked. One must be careful to update their references so that they are reactive. Just setting a property won't be enough unless you use TrackedObject from tracked-built-ins.
 - The error "Error while processing route: assignments.new Assertion Failed: Expected hash or Mixin instance, got [object Function]" was just caused by a syntax error in a model. The assertion failed because when hydrating a model, trying get all the documents from the store in that model failed.
-- Not really a gotcha, just something about Ember. If there is an async relationship, in the route when the model is being put together, there are cases where you'll need to `await` a property access to ensure that the value has arrived.
+- Not really a gotcha, just something about Ember. If there is an async relationship in the route when the model is being put together, there are cases where you'll need to `await` a property access to ensure that the value has arrived.
 
 # Current Progress
 
