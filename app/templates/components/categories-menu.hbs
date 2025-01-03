@@ -1,124 +1,84 @@
-<ul class='cd-accordion-menu animated'>
-  {{#each @categories as |category|}}
-    <li class='has-children'>
-      <input
-        type='checkbox'
-        name='{{category.identifier}}'
-        id='{{category.identifier}}'
-      />
-      <label
-        class='menu-label'
-        for='{{category.identifier}}'
-      >{{category.description}}</label>
-      <ul>
-        {{#each category.domains as |domain|}}
-          <li class='has-children'>
-            <input
-              type='checkbox'
-              name='{{domain.identifier}}'
-              id='{{domain.identifier}}'
-            />
-            <label
-              class='menu-label'
-              for='{{domain.identifier}}'
-            >{{domain.description}}<a
-                href='{{domain.url}}'
-                target='_blank'
-                rel='noopener noreferrer'
-              > <i class='fas fa-external-link-alt'></i></a></label>
-            <ul>
-              {{#each domain.topics as |topic|}}
-                {{#if topic.standards}}
-                  <li class='has-children'>
-                    <input
-                      type='checkbox'
-                      name='{{topic.identifier}}'
-                      id='{{topic.identifier}}'
-                    />
-                    <label
-                      class='menu-label'
-                      for='{{topic.identifier}}'
-                    >{{topic.description}}</label>
+<div id='categories'><ul class='cd-accordion-menu animated'>
+    {{#each @categories as |category|}}
+      <Ui::AccordionItem
+        @id={{category.identifier}}
+        @name={{category.identifier}}
+        @label={{category.description}}
+        @hasChildren={{not-empty category.domains}}
+      >
+        <ul>
+          {{#each category.domains as |domain|}}
+            <Ui::AccordionItem
+              @id={{domain.identifier}}
+              @name={{domain.identifier}}
+              @label={{domain.description}}
+              @hasChildren={{not-empty domain.topics}}
+            >
+              <ul>
+                {{#each domain.topics as |topic|}}
+                  <Ui::AccordionItem
+                    @id={{topic.identifier}}
+                    @name={{topic.identifier}}
+                    @label={{topic.description}}
+                    @hasChildren={{not-empty topic.standards}}
+                  >
                     <ul>
                       {{#each topic.standards as |standard|}}
-                        {{#if standard.substandards}}
-                          <li class='has-children'>
-                            <input
-                              type='checkbox'
-                              name='{{standard.identifier}}'
-                              id='{{standard.identifier}}'
-                            />
-                            <label
-                              class='menu-label'
-                              for='{{standard.identifier}}'
-                            >{{standard.description}}</label>
-                            <ul>
-                              {{#each standard.substandards as |sub|}}
-                                <li class='item'><button
-                                    type='button'
-                                    {{on 'click' (fn this.addCategory sub)}}
-                                  >+</button>
-                                  <span>{{sub.identifier}}</span>
-                                  -
-                                  {{sub.description}}</li>
-                              {{/each}}
-                            </ul>
-                          </li>
-                        {{else}}
-                          <li class='item'><button
-                              id='{{standard.identifier}}'
-                              type='button'
-                              {{on 'click' (fn this.addCategory standard)}}
-                            >+</button>
-                            <span>{{standard.identifier}}</span>
-                            -
-                            {{standard.description}}</li>
-                        {{/if}}
+                        <Ui::AccordionItem
+                          @id={{standard.identifier}}
+                          @name={{standard.identifier}}
+                          @label={{standard.description}}
+                          @hasChildren={{not-empty standard.substandards}}
+                        >
+                          <ul>
+                            {{#each standard.substandards as |sub|}}
+                              <li class='item'>
+                                <button
+                                  type='button'
+                                  {{on 'click' (fn this.addCategory sub)}}
+                                >
+                                  +
+                                </button>
+                                <span>{{sub.identifier}}</span>
+                                -
+                                {{sub.description}}
+                              </li>
+                            {{/each}}
+                          </ul>
+                        </Ui::AccordionItem>
                       {{/each}}
-                      <li class='item'><button
+                      <li class='item'>
+                        <button
                           type='button'
                           {{on 'click' (fn this.addCategory topic)}}
-                        >+</button>
-                        Other</li>
+                        >
+                          +
+                        </button>
+                        Other
+                      </li>
                     </ul>
-                  </li>
-                {{else}}
-                  <li class='item'><button
-                      type='button'
-                      {{on 'click' (fn this.addCategory topic)}}
-                    >+</button>
-                    <span>{{topic.identifier}}</span>
-                    -
-                    {{topic.description}}</li>
-                {{/if}}
-              {{/each}}
-              <li class='item'><button
-                  type='button'
-                  {{on 'click' (fn this.addCategory domain)}}
-                >+</button>
-                Other</li>
-            </ul>
+                  </Ui::AccordionItem>
+                {{/each}}
+                <li class='item'>
+                  <button
+                    type='button'
+                    {{on 'click' (fn this.addCategory domain)}}
+                  >
+                    +
+                  </button>
+                  Other
+                </li>
+              </ul>
+            </Ui::AccordionItem>
+          {{/each}}
+          <li class='item'>
+            <button type='button' {{on 'click' (fn this.addCategory category)}}>
+              +
+            </button>
+            Other
           </li>
-        {{/each}}
-        <li>
-          <label for='other' class='menu-label-2'><button
-              type='button'
-              {{on 'click' (fn this.addCategory category)}}
-            >+</button>
-            Other</label>
-        </li>
-      </ul>
-    </li>
-  {{/each}}
-</ul>
-
-<script>
-  jQuery(document).ready(function () { var accordionsMenu =
-  $('.cd-accordion-menu'); if (accordionsMenu.length > 0) {
-  accordionsMenu.each(function () { var accordion = $(this); //detect change in
-  the input[type="checkbox"] value accordion.on('change',
-  'input[type="checkbox"]', function () { var checkbox = $(this);
-  (checkbox.prop('checked')) ? checkbox.siblings('ul').attr('style',
-  'display:none;').slideDown(300) : checkbox.siblings('ul').attr('style',
-  'display:block;').slideUp(300); }); }); } });
-</script>
+        </ul>
+      </Ui::AccordionItem>
+    {{/each}}
+  </ul>
+</div>

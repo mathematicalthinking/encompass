@@ -1,0 +1,23 @@
+<li class='has-children'>
+  {{#if @hasChildren}}
+    <!-- If a block is passed in, show the checkbox -->
+    <input
+      type='checkbox'
+      id={{@id}}
+      name={{@name}}
+      checked={{this.isOpen}}
+      {{on 'change' this.toggleOpen}}
+    />
+
+    <label class='menu-label' for={{@id}}>
+      {{@label}}
+    </label>
+
+    {{#if this.isOpen}}
+      {{yield}}
+    {{/if}}
+  {{else}}
+    <!-- If no block, just render a label -->
+    <span>{{@label}}</span>
+  {{/if}}
+</li>
