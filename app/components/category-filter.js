@@ -61,8 +61,7 @@ export default class CategoryFilterComponent extends Component {
   }
 
   @action
-  handleAddCategory(categoryId) {
-    let category = this.store.peekRecord('category', categoryId);
+  handleAddCategory(category) {
     if (category && !this.selectedCategories.includes(category)) {
       this.selectedCategories = [...this.selectedCategories, category];
       this.inputState.setListState(
@@ -74,6 +73,19 @@ export default class CategoryFilterComponent extends Component {
       }
     }
   }
+  //   handleAddCategory(categoryId) {
+  //     let category = this.store.peekRecord('category', categoryId);
+  //     if (category && !this.selectedCategories.includes(category)) {
+  //       this.selectedCategories = [...this.selectedCategories, category];
+  //       this.inputState.setListState(
+  //         this.args.filterName,
+  //         this.selectedCategories
+  //       );
+  //       if (this.args.onUpdate) {
+  //         this.args.onUpdate();
+  //       }
+  //     }
+  //   }
 
   @action
   handleRemoveCategory(category) {

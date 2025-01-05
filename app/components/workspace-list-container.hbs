@@ -10,8 +10,8 @@
         @adminFilterName={{this.adminFilterName}}
         @showAdminFilters={{this.showAdminFilters}}
         @onUpdate={{this.triggerFetch}}
-        @showTrashed={{this.toggleTrashed}}
-        @showHidden={{this.toggleHidden}}
+        @showTrashed={{this.showOnlyTrashed}}
+        @showHidden={{this.showOnlyHidden}}
         @toggleTrashed={{this.triggerShowTrashed}}
         @toggleHidden={{this.triggerShowHidden}}
       />
@@ -102,7 +102,7 @@
                 <ul>
                   {{#each this.modeOptions as |option|}}
                     <li>
-                      <RadioFilter
+                      <Ui::RadioFilter
                         @labelName={{option.label}}
                         @labelIcon={{option.icon}}
                         @inputValue={{option.value}}

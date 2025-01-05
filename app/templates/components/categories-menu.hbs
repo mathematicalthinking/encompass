@@ -35,7 +35,7 @@
                               <li class='item'>
                                 <button
                                   type='button'
-                                  {{on 'click' (fn this.addCategory sub)}}
+                                  {{on 'click' (fn @addCategories sub)}}
                                 >
                                   +
                                 </button>
@@ -50,7 +50,7 @@
                       <li class='item'>
                         <button
                           type='button'
-                          {{on 'click' (fn this.addCategory topic)}}
+                          {{on 'click' (fn @addCategories topic)}}
                         >
                           +
                         </button>
@@ -62,7 +62,7 @@
                 <li class='item'>
                   <button
                     type='button'
-                    {{on 'click' (fn this.addCategory domain)}}
+                    {{on 'click' (fn @addCategories domain)}}
                   >
                     +
                   </button>
@@ -72,7 +72,7 @@
             </Ui::AccordionItem>
           {{/each}}
           <li class='item'>
-            <button type='button' {{on 'click' (fn this.addCategory category)}}>
+            <button type='button' {{on 'click' (fn @addCategories category)}}>
               +
             </button>
             Other
