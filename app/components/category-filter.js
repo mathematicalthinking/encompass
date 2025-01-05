@@ -31,7 +31,6 @@ export default class CategoryFilterComponent extends Component {
     let queryCats = await this.store.query('category', {});
     let categories = queryCats.meta;
     this.categoryTree = categories.categories;
-    console.log('categoryTree', this.categoryTree);
   }
 
   get hasSelectedCategories() {
