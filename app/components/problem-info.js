@@ -72,6 +72,10 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
       this.privacySettingIcon = this.args.problem.privacySetting;
     }
   }
+
+  get notFlagged() {
+    return this.args.problem.status !== 'flagged';
+  }
   get writePermissions() {
     return this.permissions.writePermissions(this.args.problem);
   }

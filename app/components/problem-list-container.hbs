@@ -1,4 +1,5 @@
-<div id='problem-list-container' {{did-insert this.detectWidth}}>
+{{! took out the problem-list-container id and put it in the route so that the outlet can be rendered in the right place }}
+<div {{did-insert this.detectWidth}}>
   <div class='flex-container-full'>
     <div
       class='flex-item-full filter-options
@@ -184,7 +185,7 @@
             @isList={{this.showList}}
             @isGrid={{this.showGrid}}
             @moreMenuOptions={{this.moreMenuOptions}}
-            @toProblemInfo='toProblemInfo'
+            @toProblemInfo={{@toProblemInfo}}
             @refreshList={{this.refreshList}}
           />
 

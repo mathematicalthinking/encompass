@@ -1,8 +1,11 @@
 {{page-title 'Problems'}}
-<ProblemListContainer
-  @currentUser={{this.model.currentUser}}
-  @problems={{this.model.problems}}
-  @organizations={{this.model.organizations}}
-  @toProblemInfo='toProblemInfo'
-  @sendtoApplication='sendtoApplication'
-/>
+<div id='problem-list-container'><ProblemListContainer
+    @problems={{@model.problems}}
+    @organizations={{@model.organizations}}
+    @toProblemInfo={{@toProblemInfo}}
+    @sendtoApplication='sendtoApplication'
+  />
+  <div class='list-outlet hidden' id='outlet'>
+    {{outlet}}
+  </div>
+</div>

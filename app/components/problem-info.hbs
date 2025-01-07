@@ -478,7 +478,7 @@
           </span>
           {{#unless @currentUser.isTeacher}}
             {{#unless @problem.isTrashed}}
-              {{#if (not (is-equal @problem.status 'flagged'))}}
+              {{#if this.notFlagged}}
                 {{#if this.isRecommended}}
                   <span
                     class='info-text-tip simptip-position-right simptip-smooth'
@@ -549,7 +549,7 @@
             {{/if}}
           {{/if}}
           {{#unless @problem.isTrashed}}
-            {{#if (not (is-equal @problem.status 'flagged'))}}
+            {{#if this.notFlagged}}
               <button
                 class='primary-button assign'
                 type='button'
