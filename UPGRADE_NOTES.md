@@ -21,6 +21,14 @@ Enc-test has been updated with the latest version of the work that I've done ove
 
 # Upgrades needed globally
 
+## Use of this.model or @model
+
+There are several components (js or template) that reference the model. In standard Ember practice, only the route templates should access the model and pass along the specific bits of the model needed by each component. That way, there's a single source of model truth (from the route) and we don't have components knowing about what's in the model.
+
+## Use to 'toXXX' methods
+
+There are several, largely unused, methods throughout the codebase such as 'toProblemInfo' that seem to be intended to transition to certain routes. It seems like these are legacy code so should be removed because the more modern approach -- using LinkTo in templates -- seems to be used throughout the app. The use of LinkTo is much better than prop-drilling these 'toXXX' methods.
+
 ## Removal of Mixins
 
 A fair number of mixins have been removed, replaced by services or component superclasses. There are still more mixins on some legacy components and elsewhere. The plan is to step through all mixins in app/mixins, replacing them with existing or new services everywhere they are used. See below: on 11/10/2024 I deleted most of them and identified just three that need refactoring before removal.
@@ -215,6 +223,12 @@ If this.removeMessages is undefined, Ember might **not** show an error in the co
 - Be careful around the use of objects that are being tracked. One must be careful to update their references so that they are reactive. Just setting a property won't be enough unless you use TrackedObject from tracked-built-ins.
 - The error "Error while processing route: assignments.new Assertion Failed: Expected hash or Mixin instance, got [object Function]" was just caused by a syntax error in a model. The assertion failed because when hydrating a model, trying get all the documents from the store in that model failed.
 - Not really a gotcha, just something about Ember. If there is an async relationship in the route when the model is being put together, there are cases where you'll need to `await` a property access to ensure that the value has arrived.
+- a gotcha related to above: 'hash' waits for the resolution of regular Promises but not Ember ProxyPromises. Thus, if there's an async relationship in a model, if you use dot notation you must wait for that access to fully resolve (i.e., use await). 'hash' will not wait for that type of Promise. You'll see this via an error message such as:
+
+`Error while processing route: problems.problem.index Assertion Failed: You attempted to access the recommendedProblems property (of <(unknown):ember236>).
+Since Ember 3.1, this is usually fine as you no longer need to use .get() to access computed properties. However, in this case, the object in question is a special kind of Ember object (a proxy). Therefore, it is still necessary to use .get('recommendedProblems') in this case.`
+
+- related to above, in components, dot notation might result in a PromiseProxy. However, if it's used in a template, Ember will re-render once the value is fully resolved, so you don't have to worry about it. However, if you are using the value in js, such as wanting to loop over an array, you need to use await. (Of course, if you are just defining a convenience get that uses dot notiation for use by a template, you don't have to await.)
 
 # Current Progress
 
@@ -285,3 +299,13 @@ The following components, included above, are actually wrappers for third-party 
 - selectize-input
 - twitter-typeahead
 - wordcloud-container
+
+## New Routes
+
+- I upgraded the problems parent route:
+
+  - problems/problem/<id>
+  - problems/problem/<id>/edit
+  - problems/problem/<id>/assignment
+
+  Previously, edit and assignment were handled by flags in the db inside of a problem. When we transitioned to the problem, we first set the correct flag so that <ProblemInfo> would render correctly. With this change, we don't use the db for local application state, which is poor practice.

@@ -1,9 +1,9 @@
-// app/routes/problems/problem.js
+// app/routes/problems/edit.js
 import AuthenticatedRoute from '../_authenticated_route';
 import { service } from '@ember/service';
 import fetchProblemData from 'encompass/utils/fetch-problem-data';
 
-export default class ProblemsProblemRoute extends AuthenticatedRoute {
+export default class ProblemsEditRoute extends AuthenticatedRoute {
   @service store;
 
   async model(params) {

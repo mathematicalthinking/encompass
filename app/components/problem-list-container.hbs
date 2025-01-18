@@ -58,13 +58,13 @@
             <span class='layout-icons'>
               {{#if this.showList}}
                 <img
-                  src='../assets/images/grid.svg'
+                  src='/assets/images/grid.svg'
                   alt='grid'
                   {{on 'click' this.setGrid}}
                   title='Show in grid view'
                 />
                 <img
-                  src='../assets/images/list-active.svg'
+                  src='/assets/images/list-active.svg'
                   alt='list'
                   {{on 'click' this.setList}}
                   title='Currently in list view'
@@ -185,7 +185,6 @@
             @isList={{this.showList}}
             @isGrid={{this.showGrid}}
             @moreMenuOptions={{this.moreMenuOptions}}
-            @toProblemInfo={{@toProblemInfo}}
             @refreshList={{this.refreshList}}
           />
 

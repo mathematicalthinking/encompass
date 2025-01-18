@@ -52,7 +52,7 @@
       {{#if (is-equal @type 'checkbox')}}
         {{if @value 'Yes' 'No'}}
       {{else}}
-        {{@value}}
+        {{make-html-safe @value}}
       {{/if}}
     </span>
   {{/if}}

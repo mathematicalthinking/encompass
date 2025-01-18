@@ -1,9 +1,8 @@
 {{page-title 'Problems'}}
-<div id='problem-list-container'><ProblemListContainer
+<div id='problem-list-container'>
+  <ProblemListContainer
     @problems={{@model.problems}}
     @organizations={{@model.organizations}}
-    @toProblemInfo={{@toProblemInfo}}
-    @sendtoApplication='sendtoApplication'
   />
   <div class='list-outlet hidden' id='outlet'>
     {{outlet}}

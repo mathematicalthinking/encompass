@@ -1,7 +1,7 @@
 import AuthenticatedRoute from '../_authenticated_route';
 import { action } from '@ember/object';
 import { hash } from 'rsvp';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
   @service store;
   @service router;
@@ -19,9 +19,14 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
     });
     return hash({
       assignment,
+      currentSection: section,
+      currentProblem: assignment.problem,
       groups,
       students: assignment.students,
       sections: this.store.findAll('section'),
+      linkedWorkspaces: assignment.linkedWorkspaces,
+      parentWorkspace: assignment.parentWorkspace,
+      answers: assignment.answers,
     });
   }
   @action toAssignments() {

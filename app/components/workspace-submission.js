@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
 
@@ -166,7 +166,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   @action
   onSelectionSelect() {
     if (this.isVmt) {
-      let vmtStartTime = this.currentSelection.vmtInfo.startTime;
+      let vmtStartTime = this.currentSelection.vmtInfo?.startTime;
       if (vmtStartTime >= 0) {
         let endTime = this.currentSelection.vmtInfo.endTime;
         this.setVmtReplayerTime(vmtStartTime, true, endTime);
@@ -353,7 +353,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
   get isVmt() {
     return this.utils.isValidMongoId(
-      this.args.currentSubmission.vmtRoomInfo.roomId
+      this.args.currentSubmission?.vmtRoomInfo?.roomId
     );
   }
 
