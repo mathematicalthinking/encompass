@@ -83,13 +83,12 @@
       <tr>
         <td>Account Type <span class='required-star'>*</span></td>
         <td>
-          <MySelect
+          <Ui::MySelect
             @selectedValue={{this.selectedType}}
             @prompt='Select Account Type'
             @content={{this.accountTypes}}
             @action={{action (mut this.selectedType)}}
             @cannotBeNull={{true}}
-            @classNames='user-account-type'
           />
         </td>
       </tr>

@@ -225,7 +225,7 @@
       {{#if this.isEditing}}
         <td>
           {{#if this.canEdit}}
-            <MySelect
+            <Ui::MySelect
               @selectedValue={{account-types @user.accountType}}
               @cannotBeNull={{true}}
               @content={{this.accountTypes}}

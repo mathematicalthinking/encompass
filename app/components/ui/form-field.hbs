@@ -24,6 +24,7 @@
         id='{{this.id}}'
         class='ui-textarea {{@className}}'
         value={{this.currentValue}}
+        placeholder={{@placeholder}}
         {{on 'input' this.handleInput}}
       ></textarea>
     {{else if (is-equal @type 'button')}}
@@ -43,6 +44,7 @@
         type='{{@type}}'
         class='ui-input {{@className}}'
         value={{this.currentValue}}
+        placeholder={{@placeholder}}
         {{on 'input' this.handleInput}}
       />
     {{/if}}

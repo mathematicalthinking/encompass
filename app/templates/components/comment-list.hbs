@@ -9,7 +9,7 @@
   </header>
   {{#if this.canComment}}
     <div class='label-select {{this.newCommentLabel}}'>
-      <MySelect
+      <Ui::MySelect
         @content={{this.labelOptions}}
         @cannotBeNull={{true}}
         @selectedValue={{this.newCommentLabel}}
