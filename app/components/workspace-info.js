@@ -11,7 +11,6 @@ export default class WorkspaceInfoComponent extends ErrorHandlingComponent {
   // comments: controller(),
   @service('sweet-alert') alert;
   @service store;
-  @service('workspace-permissions') permissions;
   @service('utility-methods') utils;
   @tracked updateRecordErrors = [];
   @tracked isShowingCustomViewer = false;

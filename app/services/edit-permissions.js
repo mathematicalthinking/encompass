@@ -1,49 +1,75 @@
-import { computed } from '@ember/object';
-import { alias, equal } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
+export default class EditPermissionsService extends Service {
+  @service('utility-methods') utils;
+  @service currentUser;
 
-export default Service.extend({
-  utils: service('utility-methods'),
-  user: null,
-  setUser(user) {
-    this.set('user', user);
-  },
-  userId: alias('user.id'),
-  userOrg: alias('user.organization'),
-  accountType: alias('user.accountType'),
-  actingRole: alias('user.actingRole'),
-  isAdmin: equal('accountType', 'A'),
-  isPdAdmin: equal('accountType', 'P'),
-  isTeacher: equal('accountType', 'T'),
-  isStudent: equal('accountType', 'S'),
-  isPseudoStudent: equal('actingRole', 'S'),
+  get user() {
+    return this.currentUser.user;
+  }
 
-  userOrgId: computed('user', function () {
+  get userId() {
+    return this.user.id;
+  }
+
+  get userOrg() {
+    return this.user.organization;
+  }
+
+  get accountType() {
+    return this.user.accountType;
+  }
+
+  get actingRole() {
+    return this.user.actingRole;
+  }
+
+  get isAdmin() {
+    return this.accountType === 'A';
+  }
+
+  get isPdAdmin() {
+    return this.accountType === 'P';
+  }
+
+  get isTeacher() {
+    return this.accountType === 'T';
+  }
+
+  get isStudent() {
+    return this.accountType === 'S';
+  }
+
+  get isPseudoStudent() {
+    return this.actingRole === 'S';
+  }
+
+  get userOrgId() {
     return this.utils.getBelongsToId(this.user, 'organization');
-  }),
-  isActingAdmin: computed('isPseudoStudent', 'isAdmin', function () {
+  }
+
+  get isActingAdmin() {
     return !this.isPseudoStudent && this.isAdmin;
-  }),
+  }
 
-  isActingPdAdmin: computed('isPseudoStudent', 'isPdAdmin', function () {
+  get isActingPdAdmin() {
     return !this.isPseudoStudent && this.isPdAdmin;
-  }),
+  }
 
-  isCreator: function (record, user = this.user) {
+  isCreator(record, user = this.user) {
     if (!user || !record) {
       return;
     }
     return this.utils.getBelongsToId(record, 'createdBy') === this.userId;
-  },
+  }
 
   doesRecordBelongToOrg(record, orgId = this.userOrgId) {
     if (!record || !orgId) {
       return;
     }
     return this.utils.getBelongsToId(record, 'organization') === orgId;
-  },
+  }
 
   isRecordInPdDomain(record) {
     return this.isActingPdAdmin && this.doesRecordBelongToOrg(record);
-  },
-});
+  }
+}

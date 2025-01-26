@@ -1,25 +1,27 @@
 import Service, { inject as service } from '@ember/service';
 
-export default Service.extend({
-  base: service('edit-permissions'),
-  isPublic: function (problem) {
-    return problem.get('privacySetting') === 'E';
-  },
-  isPrivate: function (problem) {
-    return problem.get('privacySetting') === 'M';
-  },
+export default class ProblemPermissionsService extends Service {
+  @service('edit-permissions') base;
+
+  isPublic(problem) {
+    return problem.privacySetting === 'E';
+  }
+
+  isPrivate(problem) {
+    return problem.privacySetting === 'M';
+  }
 
   isApproved(problem) {
-    return problem.get('status') === 'approved';
-  },
-
-  isUsed(problem) {
-    return problem.get('isUsed');
-  },
+    return problem.status === 'approved';
+  }
 
   isTrashed(problem) {
-    return problem.get('isTrashed');
-  },
+    return problem.isTrashed;
+  }
+
+  isUsed(problem) {
+    return problem.isUsed;
+  }
 
   canDelete(problem) {
     // undefined if no or bad argument passed in
@@ -27,7 +29,7 @@ export default Service.extend({
       return;
     }
     // if admin return true
-    if (this.get('base.isAdmin')) {
+    if (this.base.isAdmin) {
       return true;
     }
 
@@ -45,7 +47,7 @@ export default Service.extend({
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.get('base.isPdAdmin')) {
+    if (!this.base.isPdAdmin) {
       return false;
     }
 
@@ -57,7 +59,7 @@ export default Service.extend({
 
     // privacy setting can now only be 'O' or 'M'
     return this.base.doesRecordBelongToOrg(problem);
-  },
+  }
 
   canEdit(problem) {
     // undefined if no or bad argument passed in
@@ -65,7 +67,7 @@ export default Service.extend({
       return;
     }
     // if admin return true
-    if (this.get('base.isAdmin')) {
+    if (this.base.isAdmin) {
       return true;
     }
 
@@ -83,7 +85,7 @@ export default Service.extend({
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.get('base.isPdAdmin')) {
+    if (!this.base.isPdAdmin) {
       return false;
     }
 
@@ -96,7 +98,7 @@ export default Service.extend({
     // privacy setting can now only be 'O' or 'M'
 
     return this.base.doesRecordBelongToOrg(problem);
-  },
+  }
 
   canAssign(problem) {
     // undefined if no or bad argument passed in
@@ -104,19 +106,19 @@ export default Service.extend({
       return;
     }
     // if admin return true
-    if (this.get('base.isAdmin')) {
+    if (this.base.isAdmin) {
       return true;
     }
 
     return this.isApproved(problem);
-  },
+  }
 
   canPend(problem) {
     if (!problem) {
       return;
     }
-    return this.get('base.isAdmin');
-  },
+    return this.base.isAdmin;
+  }
 
   writePermissions(problem, isDeleteSameAsEdit = true) {
     let ret = {};
@@ -134,5 +136,5 @@ export default Service.extend({
     ret.canPend = this.canPend(problem);
 
     return ret;
-  },
-});
+  }
+}
