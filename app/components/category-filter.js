@@ -8,7 +8,6 @@ export default class CategoryFilterComponent extends Component {
   @service inputState;
   @tracked showCategoryList = false;
   @tracked selectedCategories = [];
-  categoryTree = [];
 
   /**
    * <Problems::CategoryFilter
@@ -21,17 +20,6 @@ export default class CategoryFilterComponent extends Component {
     The single main option has a single suboption, which is whether to include
     subcategories in the filter.
  */
-
-  constructor() {
-    super(...arguments);
-    this.loadCategoryTree();
-  }
-
-  async loadCategoryTree() {
-    let queryCats = await this.store.query('category', {});
-    let categories = queryCats.meta;
-    this.categoryTree = categories.categories;
-  }
 
   get hasSelectedCategories() {
     return this.selectedCategories.length > 0;
@@ -60,7 +48,19 @@ export default class CategoryFilterComponent extends Component {
   }
 
   @action
+  handleAddCategoryIdentifier(identifier) {
+    // get the category by identifier from the store
+    // then call handleAddCategory with the full category object
+    this.store.query('category', { identifier }).then((categories) => {
+      if (categories.length > 0) {
+        this.handleAddCategory(categories.firstObject);
+      }
+    });
+  }
+
+  @action
   handleAddCategory(category) {
+    console.log('category', category);
     if (category && !this.selectedCategories.includes(category)) {
       this.selectedCategories = [...this.selectedCategories, category];
       this.inputState.setListState(

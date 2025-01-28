@@ -1,11 +1,22 @@
 import Component from '@glimmer/component';
-
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 export default class CategoriesMenuComponent extends Component {
-  categories = [];
+  @service store;
+  @tracked categories = [];
 
   constructor() {
     super(...arguments);
-    this.categories = this.normalizeCategories(this.args.categories);
+    this.loadCategoryTree().then((categories) => {
+      this.categories = this.normalizeCategories(categories);
+    });
+  }
+
+  async loadCategoryTree() {
+    const queryCats = await this.store.query('category', {});
+    const categories = queryCats.meta;
+    return categories.categories;
   }
 
   normalizeCategories(categories = []) {
@@ -45,5 +56,18 @@ export default class CategoriesMenuComponent extends Component {
         children: standard.substandards || [],
       };
     });
+  }
+
+  @action
+  async addCategory(category) {
+    if (category) {
+      const [categ] = await this.store.query('category', {
+        identifier: category.identifier,
+      });
+      console.log('categ', categ);
+      if (categ && this.args.addCategory) {
+        this.args.addCategory(categ);
+      }
+    }
   }
 }

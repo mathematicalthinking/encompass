@@ -59,22 +59,6 @@ export default class ProblemFilterComponent extends Component {
   }
 
   @action
-  addCategory(val) {
-    if (!val) {
-      return;
-    }
-    let category = this.args.store.peekRecord('category', val);
-    if (category) {
-      this.args.categoriesFilter.addObject(category);
-    }
-  }
-
-  @action
-  removeCategory(category) {
-    this.args.categoriesFilter.removeObject(category);
-  }
-
-  @action
   toggleIncludeSubCats() {
     this.args.onUpdate();
   }

@@ -1,4 +1,4 @@
-{{page-title this.model.problem.title}}
+{{page-title @model.problem.title}}
 <div id='problem-info' class='side-info'>
   <ProblemInfo
     @orgList={{@model.orgList}}
@@ -8,5 +8,7 @@
     @flaggedBy={{@model.flaggedBy}}
     @flaggedDate={{@model.flaggedDate}}
     @isEditing={{true}}
+    {{! from the query parameter, via the controller}}
+    @tab={{this.tab}}
   />
 </div>

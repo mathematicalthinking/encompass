@@ -1,7 +1,7 @@
 <div id='categories'>
   <ul class='cd-accordion-menu animated'>
     {{#each this.categories as |category|}}
-      <RecursiveMenu @item={{category}} @onAddCategory={{@addCategories}} />
+      <RecursiveMenu @item={{category}} @onAddCategory={{this.addCategory}} />
     {{/each}}
   </ul>
 </div>

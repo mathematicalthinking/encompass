@@ -2,10 +2,10 @@
   <ul class='category-filter-list'>
     <SelectizeInput
       @inputId='categories-filter'
-      @onItemAdd={{this.handleAddCategory}}
+      @onItemAdd={{this.handleAddCategoryIdentifier}}
       @maxItems={{1}}
       @labelField='identifier'
-      @valueField='id'
+      @valueField='identifier'
       @searchField='identifier'
       @model='category'
       @queryParamsKey='identifier'
@@ -56,10 +56,7 @@
         <button class='close' {{on 'click' this.handleCloseCategoryList}}>
           <i class='fas fa-times'></i>
         </button>
-        <CategoriesMenu
-          @categories={{this.categoryTree}}
-          @addCategories={{this.handleAddCategory}}
-        />
+        <CategoriesMenu @addCategory={{this.handleAddCategory}} />
       </div>
     </div>
   {{/if}}
