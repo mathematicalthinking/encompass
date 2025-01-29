@@ -8,6 +8,7 @@ import { service } from '@ember/service';
 export default class ProblemInfoComponent extends Component {
   @service('sweet-alert') alert;
   @service('problem-permissions') permissions;
+  @service problemUtils;
   @service('utility-methods') utils;
   @service store;
   @service router;
@@ -69,25 +70,9 @@ export default class ProblemInfoComponent extends Component {
   // b. the problem passed in as an argument changes
   @action
   async loadLocalProblem() {
-    this.problem = await this.extractEditableProperties(this.args.problem);
-  }
-
-  // Create a local copy of the problem as an object.
-  async extractEditableProperties(problem) {
-    const categories = await problem.categories; // fully load
-    return {
-      title: problem.title,
-      author: problem.author,
-      text: problem.text,
-      categories: categories || [],
-      status: problem.status,
-      privacySetting: problem.privacySetting,
-      sharingAuth: problem.sharingAuth,
-      additionalInfo: problem.additionalInfo,
-      copyrightNotice: problem.copyrightNotice,
-      image: problem.image,
-      keywords: problem.keywords?.slice() || [],
-    };
+    this.problem = await this.problemUtils.extractEditableProperties(
+      this.args.problem
+    );
   }
 
   get user() {
@@ -332,54 +317,24 @@ export default class ProblemInfoComponent extends Component {
     this.problem = { ...this.problem, [property]: value };
   }
 
-  @action deleteProblem() {
-    let problem = this.args.problem;
-    this.alert
-      .showModal(
-        'warning',
-        'Are you sure you want to delete this problem?',
-        null,
-        'Yes, delete it'
-      )
-      .then((result) => {
-        if (result.value) {
-          this.hideInfo();
-          problem.isTrashed = true;
-          window.history.back();
-          problem
-            .save()
-            .then((problem) => {
-              this.alert
-                .showToast(
-                  'success',
-                  'Problem Deleted',
-                  'bottom-end',
-                  5000,
-                  true,
-                  'Undo'
-                )
-                .then((result) => {
-                  if (result.value) {
-                    problem.isTrashed = false;
-                    problem.save().then(() => {
-                      this.alert.showToast(
-                        'success',
-                        'Problem Restored',
-                        'bottom-end',
-                        3000,
-                        false,
-                        null
-                      );
-                      window.history.back();
-                    });
-                  }
-                });
-            })
-            .catch((err) => {
-              this.errorHandling.handleErrors(err, this.errorLabel, problem);
-            });
-        }
-      });
+  @action async deleteProblem() {
+    try {
+      const { wasDeleted, wasRestored } = await this.problemUtils.deleteProblem(
+        this.args.problem
+      );
+      if (wasDeleted) {
+        this.hideInfo();
+        window.history.back();
+        return;
+      }
+
+      if (wasRestored) {
+        window.history.back();
+        return;
+      }
+    } catch (err) {
+      this.errorHandling.handleErrors(err, this.errorLabel, problem);
+    }
   }
 
   @action editProblem() {
@@ -497,8 +452,7 @@ export default class ProblemInfoComponent extends Component {
   // this function is used when we aren't editing, so it's appropriate that we reference this.args.problem.
   @action
   addToMyProblems() {
-    const problemCopy = {
-      ...this.args.problem,
+    const copyProperties = {
       title: `Copy of ${this.args.problem.title}`,
       createdBy: this.user,
       organization: this.user.organization,
@@ -506,10 +460,8 @@ export default class ProblemInfoComponent extends Component {
       createDate: new Date(),
     };
 
-    const newProblem = this.store.createRecord('problem', problemCopy);
-
-    newProblem
-      .save()
+    this.problemUtils
+      .saveCopy(this.args.problem, copyProperties)
       .then((problem) => {
         this.alert.showToast(
           'success',
