@@ -17,6 +17,7 @@ const ACTION_BUTTONS = {
 export default class ProblemListItemComponent extends Component {
   @service('sweet-alert') alert;
   @service('problem-permissions') permissions;
+  @service currentUser;
   @service problemUtils;
   @service router;
   @service store;
@@ -60,11 +61,11 @@ export default class ProblemListItemComponent extends Component {
   ];
 
   get isAdminUser() {
-    return this.args.currentUser.isAdmin;
+    return this.currentUser.isAdmin;
   }
 
   get isPdAdminUser() {
-    return this.args.currentUser.isPdAdmin;
+    return this.currentUser.isPdAdmin;
   }
 
   get actionButtonName() {
@@ -211,18 +212,16 @@ export default class ProblemListItemComponent extends Component {
   }
 
   get actionButton() {
-    let actionBtn = {};
-    let isAdmin = this.args.currentUser.isAdmin;
-    let isPdAdmin = this.args.currentUser.isPdAdmin;
-    let problem = this.args.problem;
+    const actionBtn = {};
+    const problem = this.args.problem;
 
-    if (isAdmin) {
+    if (this.isAdmin) {
       if (problem.isTrashed) {
         actionBtn.function = 'restoreProblem';
         actionBtn.name = 'Restore';
       } else {
         actionBtn.function = 'confirmStatusUpdate';
-        if (problem.get('status') === 'approved') {
+        if (problem.status === 'approved') {
           actionBtn.name = 'Flag';
           actionBtn.argument1 = 'title';
           actionBtn.argument2 = 'flagged';
@@ -233,17 +232,14 @@ export default class ProblemListItemComponent extends Component {
         }
       }
     } else {
-      if (isPdAdmin) {
-        if (
-          problem.get('privacySetting') !== 'E' &&
-          problem.get('status') !== 'approved'
-        ) {
+      if (this.isPdAdmin) {
+        if (problem.privacySetting !== 'E' && problem.status !== 'approved') {
           actionBtn.function = 'confirmStatusUpdate';
           actionBtn.name = 'Approve';
           actionBtn.argument1 = 'title';
           actionBtn.argument2 = 'approved';
         } else {
-          if (problem.get('status') !== 'flagged') {
+          if (problem.status !== 'flagged') {
             actionBtn.function = 'assignProblem';
             actionBtn.name = 'Assign';
           } else {
@@ -338,7 +334,7 @@ export default class ProblemListItemComponent extends Component {
     record.set('status', value);
     if (reason) {
       let flagReason = {
-        flaggedBy: this.args.currentUser.id,
+        flaggedBy: this.currentUser.id,
         reason: reason,
         flaggedDate: new Date(),
       };
