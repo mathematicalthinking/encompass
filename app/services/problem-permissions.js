@@ -2,6 +2,7 @@ import Service, { inject as service } from '@ember/service';
 
 export default class ProblemPermissionsService extends Service {
   @service('edit-permissions') base;
+  @service currentUser;
 
   isPublic(problem) {
     return problem.privacySetting === 'E';
@@ -29,7 +30,7 @@ export default class ProblemPermissionsService extends Service {
       return;
     }
     // if admin return true
-    if (this.base.isAdmin) {
+    if (this.currentUser.isAdmin) {
       return true;
     }
 
@@ -47,7 +48,7 @@ export default class ProblemPermissionsService extends Service {
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.base.isPdAdmin) {
+    if (!this.currentUser.isPdAdmin) {
       return false;
     }
 
@@ -67,7 +68,7 @@ export default class ProblemPermissionsService extends Service {
       return;
     }
     // if admin return true
-    if (this.base.isAdmin) {
+    if (this.currentUser.isAdmin) {
       return true;
     }
 
@@ -85,7 +86,7 @@ export default class ProblemPermissionsService extends Service {
 
     // currently this means that any non PdAdmin would not be able to edit/delete
 
-    if (!this.base.isPdAdmin) {
+    if (!this.currentUser.isPdAdmin) {
       return false;
     }
 
@@ -106,7 +107,7 @@ export default class ProblemPermissionsService extends Service {
       return;
     }
     // if admin return true
-    if (this.base.isAdmin) {
+    if (this.currentUser.isAdmin) {
       return true;
     }
 
@@ -117,7 +118,7 @@ export default class ProblemPermissionsService extends Service {
     if (!problem) {
       return;
     }
-    return this.base.isAdmin;
+    return this.currentUser.isAdmin;
   }
 
   writePermissions(problem, isDeleteSameAsEdit = true) {
