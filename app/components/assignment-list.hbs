@@ -118,7 +118,7 @@
         </ul>
       {{/if}}
       {{#if this.user.isPdAdmin}}
-        <h2>{{this.user.organization.name}} Assignments</h2>
+        <h2>{{this.organizationName}} Assignments</h2>
         <ul class='pd-assignments'>
           {{#if (not-empty this.pdList)}}
             {{#each this.pdList as |assignment|}}

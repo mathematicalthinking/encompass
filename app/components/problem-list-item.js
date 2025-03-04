@@ -342,7 +342,7 @@ export default class ProblemListItemComponent extends Component {
     }
     record
       .save()
-      .then((record) => {
+      .then(() => {
         this.alert.showToast('success', msg, 'bottom-end', 5000, false, null);
         if (this.showMoreMenu) {
           this.showMoreMenu = false;

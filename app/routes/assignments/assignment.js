@@ -5,6 +5,7 @@ import { service } from '@ember/service';
 export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
   @service store;
   @service router;
+  @service currentUser;
   async model(params) {
     const assignment = await this.store.findRecord(
       'assignment',
@@ -27,9 +28,19 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
       linkedWorkspaces: assignment.linkedWorkspaces,
       parentWorkspace: assignment.parentWorkspace,
       answers: assignment.answers,
+      isStudent: this.currentUser.isStudent,
     });
   }
-  @action toAssignments() {
-    this.router.transitionTo('assignments');
+
+  @action
+  async onAnswerCreated(answer) {
+    const { assignment } = this.model;
+    assignment.answers.pushObject(answer);
+
+    try {
+      await assignment.save();
+    } catch (error) {
+      console.error('Error saving assignment:', error);
+    }
   }
 }

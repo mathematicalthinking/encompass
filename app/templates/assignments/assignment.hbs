@@ -1,8 +1,14 @@
-{{page-title this.model.assignment.name}}
+{{page-title @model.assignment.name}}
 <AssignmentInfo
-  @sections={{@sections}}
-  @assignment={{@assignment}}
-  @groups={{@groups}}
-  @assignmentStudents={{@students}}
-  @toAssignments='toAssignments'
+  @sections={{@model.sections}}
+  @assignment={{@model.assignment}}
+  @groups={{@model.groups}}
+  @assignmentStudents={{@model.students}}
+  @currentProblem={{@model.currentProblem}}
+  @currentSection={{@model.currentSection}}
+  @linkedWorkspaces={{@model.linkedWorkspaces}}
+  @parentWorkspace={{@model.parentWorkspace}}
+  @answers={{@model.answers}}
+  @onAnswerCreated={{this.onAnswerCreated}}
+  @isStudent={{@model.isStudent}}
 />

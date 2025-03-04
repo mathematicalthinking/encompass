@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class AssignmentListComponent extends Component {
   @service('utility-methods') utils;
@@ -14,23 +14,23 @@ export default class AssignmentListComponent extends Component {
   }
 
   get yourList() {
-    let yourList = this.args.assignments.filter((assignment) => {
-      let assigmentCreatorId = this.utils.getBelongsToId(
+    const yourList = this.args.assignments.filter((assignment) => {
+      const assignmentCreatorId = this.utils.getBelongsToId(
         assignment,
         'createdBy'
       );
-      return this.userId === assigmentCreatorId && !assignment.get('isTrashed');
+      return this.userId === assignmentCreatorId && !assignment.isTrashed;
     });
     return yourList.sortBy('createDate').reverse();
   }
 
   get notYourList() {
-    let notYourList = this.args.assignments.filter((assignment) => {
-      let assigmentCreatorId = this.utils.getBelongsToId(
+    const notYourList = this.args.assignments.filter((assignment) => {
+      const assignmentCreatorId = this.utils.getBelongsToId(
         assignment,
         'createdBy'
       );
-      return this.userId !== assigmentCreatorId && !assignment.get('isTrashed');
+      return this.userId !== assignmentCreatorId && !assignment.isTrashed;
     });
     return notYourList.sortBy('createDate').reverse();
   }
@@ -45,8 +45,12 @@ export default class AssignmentListComponent extends Component {
 
   get studentList() {
     return this.user.assignments
-      .toArray()
+      .slice()
       .filter((assignment) => assignment.name && !assignment.isTrashed)
       .reverse();
+  }
+
+  get organizationName() {
+    return this.user.organization?.name ?? 'No Organization';
   }
 }
