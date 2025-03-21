@@ -14,10 +14,12 @@ export default class MetricsWorkspaceController extends Controller {
   ];
 
   get workspaceCsv() {
-    return this.workspaceReports.submissionReport(this.model);
+    return encodeURIComponent(
+      this.workspaceReports.submissionReport(this.model)
+    );
   }
   get responseCsv() {
-    return this.workspaceReports.responseReport(this.model);
+    return encodeURIComponent(this.workspaceReports.responseReport(this.model));
   }
   @action
   handleToggle(prop) {
