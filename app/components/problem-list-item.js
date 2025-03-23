@@ -258,6 +258,16 @@ export default class ProblemListItemComponent extends Component {
   @action showStatusOptions() {
     this.showAdminStatusMenu = true;
   }
+
+  @action
+  handleShowMoreMenu() {
+    this.showMoreMenu = true;
+  }
+  @action
+  handleHideMoreMenu() {
+    this.showMoreMenu = false;
+  }
+
   @action toggleShowMoreMenu() {
     let isShowing = this.showMoreMenu;
     this.showMoreMenu = !isShowing;
