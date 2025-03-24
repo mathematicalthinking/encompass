@@ -54,7 +54,7 @@ pipeline {
                     userRemoteConfigs: [[credentialsId: 'jenkins-docker-ssh', url: 'git@github.com:21pstem/devops.git']]
                     ])                    
                     // copy .env files into same dir as stack file
-                    sh 'cp /home/jenkins/app-config/mt/environments/staging/.env* DevOpsTemp/mt/'                    
+                    sh 'cp /home/jenkins/app-config/mt/environments/test/.env* DevOpsTemp/mt/'                    
                     // use sshagent plugin to ssh to remote server
                     sshagent(['jenkins-docker-ssh']) {
                         sh """
