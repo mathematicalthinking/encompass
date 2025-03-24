@@ -3,7 +3,7 @@ pipeline {
         registry = 'mathematicalthinking/encompass'
         registryCredential = 'mt-docker-hub-credentials'
         dockerImage = ''
-        deploymentHost = 'mtstaging'
+        deploymentHost = 'mt-test'
         githubRepo = 'git@github.com:mathematicalthinking/encompass.git'
         githubBranch = 'main'
     }
@@ -41,50 +41,50 @@ pipeline {
                 }
             }
         }
-        // stage('Deploy to test server') {
-        //     steps {
-        //         script {
-        //             // checkout the devops git repo to get the swarm stack file
-        //             checkout([
-        //             $class: 'GitSCM',
-        //             branches: [[name: 'refs/heads/main']],
-        //             doGenerateSubmoduleConfigurations: false, 
-        //             extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'DevOpsTemp']], 
-        //             submoduleCfg: [], 
-        //             userRemoteConfigs: [[credentialsId: 'jenkins-docker-ssh', url: 'git@github.com:21pstem/devops.git']]
-        //             ])                    
-        //             // copy .env files into same dir as stack file
-        //             sh 'cp /home/jenkins/app-config/mt/environments/staging/.env* DevOpsTemp/mt/'                    
-        //             // use sshagent plugin to ssh to remote server
-        //             sshagent(['jenkins-docker-ssh']) {
-        //                 sh """
-        //                     # setup the /mtdocker folder on remote host (for manual manipulation of stack)
-        //                     ssh ${deploymentHost} 'mkdir -p /mtdocker'
-        //                     scp DevOpsTemp/mt/docker-compose*.yml DevOpsTemp/mt/swarm-monitoring/docker-compose*.yml DevOpsTemp/mt/.env* jenkins@${deploymentHost}:/mtdocker
-        //                     ssh ${deploymentHost} 'chown -R :docker /mtdocker && chmod -R 770 /mtdocker'    
+        stage('Deploy to test server') {
+            steps {
+                script {
+                    // checkout the devops git repo to get the swarm stack file
+                    checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'refs/heads/main']],
+                    doGenerateSubmoduleConfigurations: false, 
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'DevOpsTemp']], 
+                    submoduleCfg: [], 
+                    userRemoteConfigs: [[credentialsId: 'jenkins-docker-ssh', url: 'git@github.com:21pstem/devops.git']]
+                    ])                    
+                    // copy .env files into same dir as stack file
+                    sh 'cp /home/jenkins/app-config/mt/environments/test/.env* DevOpsTemp/mt/'                    
+                    // use sshagent plugin to ssh to remote server
+                    sshagent(['jenkins-docker-ssh']) {
+                        sh """
+                            # setup the /mtdocker folder on remote host (for manual manipulation of stack)
+                            ssh ${deploymentHost} 'mkdir -p /mtdocker'
+                            scp DevOpsTemp/mt/docker-compose*.yml DevOpsTemp/mt/swarm-monitoring/docker-compose*.yml DevOpsTemp/mt/.env* jenkins@${deploymentHost}:/mtdocker
+                            ssh ${deploymentHost} 'chown -R :docker /mtdocker && chmod -R 770 /mtdocker'    
 
-        //                     # set the docker remote host context
-        //                     docker context use ${deploymentHost}
+                            # set the docker remote host context
+                            docker context use ${deploymentHost}
                             
-        //                     # pull the latest image
-        //                     docker pull ${registry}:staging-latest
+                            # pull the latest image
+                            docker pull ${registry}:staging-latest
                                                         
-        //                     # remove the docker swarm service
-        //                     docker service rm mt-staging_encompass
+                            # remove the docker swarm service
+                            docker service rm mt-test_encompass-staging
 
-        //                     # redeploy the app service                            
-        //                     docker stack deploy --compose-file DevOpsTemp/mt/docker-compose-mt-apps-staging.yml mt-staging
+                            # redeploy the app service                            
+                            docker stack deploy --compose-file DevOpsTemp/mt/docker-compose-mt-apps-test.yml mt-test
 
-        //                     # restart nginx (clears the cache and reconnects the backend service)
-        //                     docker service update --force mt-staging_nginx
+                            # restart nginx (clears the cache and reconnects the backend service)
+                            docker service update --force mt-test_nginx
 
-        //                     # set the docker build context back to local
-        //                     docker context use default
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+                            # set the docker build context back to local
+                            docker context use default
+                        """
+                    }
+                }
+            }
+        }
     }
     post {
         success {
