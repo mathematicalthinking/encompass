@@ -6,8 +6,20 @@ export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
   @service currentUrl;
 
+  getUniqueFolderNames(submission) {
+    const folderNames = new Set();
+    const selections = submission.get('selections') || [];
+    selections.forEach((selection) => {
+      const folders = selection.get('folders') || [];
+      folders.forEach((folder) => {
+        folderNames.add(folder.get('name'));
+      });
+    });
+    return Array.from(folderNames);
+  }
+
   submissionReportCsv(model) {
-    const submissionsArray = model.submissions.toArray();
+    const submissionsArray = model.submissions.slice();
 
     // Group submissions by submitter
     const submissionsByUser = submissionsArray.reduce((acc, submission) => {
@@ -34,17 +46,8 @@ export default class WorkspaceReportsService extends Service {
     // Flatten the grouped submissions back into an array
     const labeledSubmissions = [].concat(...Object.values(submissionsByUser));
 
-    // Determine the maximum number of selections
-    let maxSelections = 0;
-    labeledSubmissions.forEach((submission) => {
-      const selectionsCount = submission.get('selections').length;
-      if (selectionsCount > maxSelections) {
-        maxSelections = selectionsCount;
-      }
-    });
-
     // Generate CSV data with dynamic columns for selections
-    return labeledSubmissions.flatMap((submission) => {
+    const data = labeledSubmissions.flatMap((submission) => {
       const baseData = {
         'Name of workspace': submission.get('workspaces.firstObject.name'),
         'Workspace URL': this.currentUrl.currentUrl,
@@ -65,33 +68,35 @@ export default class WorkspaceReportsService extends Service {
         }`,
         'Submission ID': submission.id,
         'Submission or Revision': submission.submissionLabel,
-        'Number of Folders': model.workspace.foldersLength,
+        'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
-        // Do we need this? Submission order currently inaccurate due to sorting of array.
-        // 'Submission Order': index + 1,
+        'Folders used for this submission':
+          this.getUniqueFolderNames(submission).join(';'),
       };
-
-      const selections = submission.get('selections').toArray();
+      const selections = submission.get('selections').slice();
       if (selections.length === 0) {
         // For submissions without selections, return the base data only
         return [baseData];
       } else {
         // For submissions with selections, add additional columns
-        return selections.map((selection) => {
+        return selections.map((selection, index) => {
           const selectorInfo = this.createSelectorInfo(selection);
           let selectionData = {
-            [`Selector of Text`]: selectorInfo.username,
-            [`Text of Selection`]: selectorInfo.text,
-            [`Selector Date`]: selectorInfo.selectionCreateDate,
-            [`Annotator`]: selectorInfo.annotatorUsername,
-            [`Text of Annotator`]: selectorInfo.annotatorText,
-            ['Annotator Date']: selectorInfo.annotatorCreateDate,
+            [`Selector of Text ${index + 1}`]: selectorInfo.username,
+            [`Text of Selection ${index + 1}`]: selectorInfo.text,
+            [`Selector Date ${index + 1}`]: selectorInfo.selectionCreateDate,
+            [`Annotator ${index + 1}`]: selectorInfo.annotatorUsername,
+            [`Text of Annotator ${index + 1}`]: selectorInfo.annotatorText,
+            [`Annotator Date ${index + 1}`]: selectorInfo.annotatorCreateDate,
           };
 
           return { ...baseData, ...selectionData };
         });
       }
     });
+
+    const headers = [...new Set(data.flatMap((row) => Object.keys(row)))];
+    return { headers, data };
   }
 
   createSelectorInfo(selector) {
@@ -187,7 +192,8 @@ export default class WorkspaceReportsService extends Service {
     });
   }
   submissionReport(model) {
-    return this.jsonCsv.arrayToCsv(this.submissionReportCsv(model));
+    const { headers, data } = this.submissionReportCsv(model);
+    return this.jsonCsv.arrayToCsv(data, headers);
   }
 
   responseReport(model) {

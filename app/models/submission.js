@@ -28,18 +28,6 @@ export default Model.extend(Auditable, {
   responses: hasMany('response', { async: true }),
   vmtRoomInfo: attr(''),
 
-  folders: computed('selections.[].folders', function () {
-    var folders = [];
-    this.selections.forEach(function (selection) {
-      folders.pushObjects(selection.get('folders'));
-    });
-    return folders.uniq();
-  }),
-
-  // selectedComments: function () {
-  //   return this.get('comments').filterBy('useForResponse', true);
-  // }.property('comments.[].useForResponse'),
-
   puzzle: computed(function () {
     return this.get('publication.puzzle');
   }),
@@ -47,12 +35,6 @@ export default Model.extend(Auditable, {
   puzzleUrl: computed(function () {
     return '/library/go.html?destination=' + this.get('puzzle.puzzleId');
   }),
-
-  /*
-  attachment: function(){
-    return this.get('data.uploadedFile');
-  }.property(),
-  */
 
   imageUrl: computed(function () {
     return (
