@@ -1,6 +1,5 @@
 import Service, { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { TrackedObject } from 'tracked-built-ins';
 
 /**
  * A service for collecting, storing, and auto-clearing error messages,
@@ -16,7 +15,7 @@ export default class ErrorHandlingService extends Service {
    * Store of all errors, keyed by a property name (e.g., "problemLoadErrors").
    * Using a TrackedObject so that updates remain reactive in templates.
    */
-  @tracked errors = new TrackedObject({});
+  @tracked errors = {};
 
   /**
    * Delays (in ms) after which errors are automatically removed for a given key.
@@ -122,12 +121,14 @@ export default class ErrorHandlingService extends Service {
 
     const idx = this.errors[prop].indexOf(err);
     if (idx !== -1) {
-      this.errors[prop].splice(idx, 1);
-    }
-
-    if (this.errors[prop].length === 0) {
-      delete this.errors[prop];
-      this._cancelTimerFor(prop);
+      const updatedErrors = [...this.errors[prop]];
+      updatedErrors.splice(idx, 1);
+      if (updatedErrors.length === 0) {
+        delete this.errors[prop];
+        this._cancelTimerFor(prop);
+      } else {
+        this.errors = { ...this.errors, [prop]: updatedErrors };
+      }
     }
   }
 
@@ -155,6 +156,8 @@ export default class ErrorHandlingService extends Service {
       return;
     }
 
+    let updatedErrors = { ...this.errors };
+
     if (err.errors && Array.isArray(err.errors)) {
       // Typically an array of { detail: 'Message...' }
       const details = err.errors.map((e) => {
@@ -163,13 +166,14 @@ export default class ErrorHandlingService extends Service {
         }
         return e.detail;
       });
-      this.errors[propName] = details;
+      updatedErrors[propName] = details;
     } else if (typeof err.message === 'string') {
-      this.errors[propName] = [err.message];
+      updatedErrors[propName] = [err.message];
     } else {
-      this.errors[propName] = ['Unknown Error'];
+      updatedErrors[propName] = ['Unknown Error'];
     }
 
+    this.errors = updatedErrors;
     this._restartAutoClearTimer(propName);
   }
 
@@ -199,7 +203,9 @@ export default class ErrorHandlingService extends Service {
     }
 
     if (this.errors[key]) {
-      delete this.errors[key];
+      const updatedErrors = { ...this.errors };
+      delete updatedErrors[key];
+      this.errors = updatedErrors;
       this._cancelTimerFor(key);
     }
   }
@@ -214,7 +220,9 @@ export default class ErrorHandlingService extends Service {
 
     this._autoClearTimers[key] = setTimeout(() => {
       if (this.errors[key]) {
-        delete this.errors[key];
+        const updatedErrors = { ...this.errors };
+        delete updatedErrors[key];
+        this.errors = updatedErrors;
       }
       delete this._autoClearTimers[key];
     }, this.AUTO_CLEAR_DELAY);
