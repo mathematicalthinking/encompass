@@ -6,14 +6,11 @@ export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
   @service currentUrl;
 
-  getUniqueFolderNames(submission) {
+  getUniqueFolderNames(selection) {
     const folderNames = new Set();
-    const selections = submission.get('selections') || [];
-    selections.forEach((selection) => {
-      const folders = selection.get('folders') || [];
-      folders.forEach((folder) => {
-        folderNames.add(folder.get('name'));
-      });
+    const folders = selection.get('folders') || [];
+    folders.forEach((folder) => {
+      folderNames.add(folder.get('name'));
     });
     return Array.from(folderNames);
   }
@@ -70,8 +67,6 @@ export default class WorkspaceReportsService extends Service {
         'Submission or Revision': submission.submissionLabel,
         'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
-        'Folders used for this submission':
-          this.getUniqueFolderNames(submission).join(';'),
       };
       const selections = submission.get('selections').slice();
       if (selections.length === 0) {
@@ -79,15 +74,17 @@ export default class WorkspaceReportsService extends Service {
         return [baseData];
       } else {
         // For submissions with selections, add additional columns
-        return selections.map((selection, index) => {
+        return selections.map((selection) => {
           const selectorInfo = this.createSelectorInfo(selection);
           let selectionData = {
-            [`Selector of Text ${index + 1}`]: selectorInfo.username,
-            [`Text of Selection ${index + 1}`]: selectorInfo.text,
-            [`Selector Date ${index + 1}`]: selectorInfo.selectionCreateDate,
-            [`Annotator ${index + 1}`]: selectorInfo.annotatorUsername,
-            [`Text of Annotator ${index + 1}`]: selectorInfo.annotatorText,
-            [`Annotator Date ${index + 1}`]: selectorInfo.annotatorCreateDate,
+            [`Selector of Text`]: selectorInfo.username,
+            [`Text of Selection`]: selectorInfo.text,
+            [`Selector Date`]: selectorInfo.selectionCreateDate,
+            [`Annotator`]: selectorInfo.annotatorUsername,
+            [`Text of Annotator`]: selectorInfo.annotatorText,
+            [`Annotator Date`]: selectorInfo.annotatorCreateDate,
+            [`Folder(s) for Selection`]:
+              this.getUniqueFolderNames(selection).join('; '),
           };
 
           return { ...baseData, ...selectionData };
