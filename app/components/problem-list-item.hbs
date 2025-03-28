@@ -47,14 +47,21 @@
         {{this.getActionButtonName}}
       </button>
     </div>
-    <div class='item-section more' {{on 'click' this.toggleShowMoreMenu}}>
+    <div
+      class='item-section more'
+      {{on 'mouseenter' this.handleShowMoreMenu}}
+      {{on 'mouseleave' this.handleHideMoreMenu}}
+    >
       <i class='fas fa-ellipsis-v more-menu'></i>
       {{#if this.showMoreMenu}}
         <span class='click-menu'>
           <ul>
             {{#if this.ellipsisMenuOptions}}
               {{#each this.ellipsisMenuOptions as |option|}}
-                <li {{on 'click' option.action}}>
+                <li
+                  {{on 'click' option.action}}
+                  {{on 'click' this.handleHideMoreMenu}}
+                >
                   <label>
                     <span class='icon-text'>{{option.label}}</span>
                     <i class={{option.icon}}></i>
@@ -150,12 +157,3 @@
     </div>
   </div>
 {{/if}}
-
-<!-- Leaving this for now. Relates to the pop up of Problem info -->
-<script>
-  $('.problem-title').click(function (e) {
-  $('.list-outlet').removeClass('hidden'); $('.list-outlet').addClass('animated
-  slideInRight'); }); $('.results-list').click(function (e) {
-  $('.click-menu').addClass('hidden'); }); $('.flex-item-full').click(function
-  (e) { $('.click-menu').addClass('hidden'); });
-</script>

@@ -12,18 +12,15 @@ import { inject as service } from '@ember/service';
 import config from 'encompass/config/environment';
 
 export default class IndexController extends Controller {
-  @service('edit-permissions') basePermissions;
-  @tracked dataToShow = this.basePermissions.isStudent
-    ? 'assignment'
-    : 'workspace';
+  @service currentUser;
+  @tracked dataToShow = this.currentUser.isStudent ? 'assignment' : 'workspace';
   @tracked currentBound = 'oneWeek';
   @tracked showTable = true;
   // this changes when user changes the tab. initially starts at "mine"
   @tracked selectedData = this.data[0].details;
-  @tracked activeDetailTab = this.basePermissions.isStudent
+  @tracked activeDetailTab = this.currentUser.isStudent
     ? 'Assigned To Me'
     : 'Mine';
-  @service('edit-permissions') basePermissions;
 
   version = config.APP.VERSION;
   buildDate = config.APP.BUILD_DATE;

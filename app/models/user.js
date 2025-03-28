@@ -49,6 +49,17 @@ export default class UserModel extends AuditableModel {
   get isStudent() {
     return this.accountType === 'S' || this.actingRole === 'student';
   }
+  get isPseudoStudent() {
+    return this.actingRole === 'S';
+  }
+
+  get isActingAdmin() {
+    return !this.isPseudoStudent && this.isAdmin;
+  }
+
+  get isActingPdAdmin() {
+    return !this.isPseudoStudent && this.isPdAdmin;
+  }
   get isPdAdmin() {
     return this.accountType === 'P';
   }

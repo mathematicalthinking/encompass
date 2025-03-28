@@ -16,8 +16,6 @@ export default class Application extends Route {
   @service userNtfs;
   @service store;
   @service router;
-  @service workspacePermissions;
-  @service editPermissions;
   @service currentUser;
   beforeModel() {
     let that = this;
@@ -33,8 +31,6 @@ export default class Application extends Route {
 
   async model() {
     let user = await this.store.queryRecord('user', { alias: 'current' });
-    this.workspacePermissions.setUser(user);
-    this.editPermissions.setUser(user);
     this.currentUser.setUser(user);
     return user;
   }

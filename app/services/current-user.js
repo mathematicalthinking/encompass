@@ -7,4 +7,32 @@ export default class CurrentUserService extends Service {
   setUser(data) {
     this.user = data;
   }
+
+  get isAdmin() {
+    return this.user.isAdmin;
+  }
+
+  get isPdAdmin() {
+    return this.user.isPdAdmin;
+  }
+
+  get isTeacher() {
+    return this.user.isTeacher;
+  }
+
+  get isStudent() {
+    return this.user.isStudent;
+  }
+
+  get isActingAdmin() {
+    return this.user.isActingAdmin;
+  }
+
+  get isActingPdAdmin() {
+    return this.user.isActingPdAdmin;
+  }
+
+  get id() {
+    return this.user.id;
+  }
 }

@@ -158,11 +158,10 @@
                         Submissions
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.submissions}}
                           @content={{this.submissionPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.submissions)}}
                         />
                         {{#if (is-equal this.submissions.value 'custom')}}
@@ -189,11 +188,10 @@
                         Selections
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.selections}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.selections)}}
                         />
                       </div>
@@ -203,11 +201,10 @@
                         Comments
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.comments}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.comments)}}
                         />
                       </div>
@@ -217,11 +214,10 @@
                         Folders
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.folders}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.folders)}}
                         />
                       </div>
@@ -231,11 +227,10 @@
                         Feedback
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.feedback}}
                           @content={{this.feedbackPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.feedback)}}
                         />
                       </div>
@@ -254,11 +249,10 @@
                             collaborator.userObj this.selectedCollaborator
                           )
                         }}
-                          <MySelect
+                          <Ui::MySelect
                             @cannotBeNull={{true}}
                             @selectedValue={{this.submissions}}
                             @content={{this.submissionPermissions}}
-                            @optionLabelPath='display'
                             @action={{action (mut this.submissions)}}
                           />
                           {{#if (is-equal this.submissions.value 'custom')}}

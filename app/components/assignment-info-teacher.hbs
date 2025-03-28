@@ -24,7 +24,8 @@
         name='daterange'
         id='assignedDate'
         @type='date'
-        @value={{(format-date @assignment.assignedDate 'YYYY-MM-DD')}} {{on "change" (action 'updateAssignedDate')}}
+        @value={{(format-date @assignment.assignedDate 'YYYY-MM-DD')}}
+        {{on 'change' (action 'updateAssignedDate')}}
       />
     {{else}}
       <p class='label'>
@@ -41,7 +42,8 @@
         id='dueDate'
         name='daterange'
         @type='date'
-        @value={{(format-date @assignment.dueDate 'YYYY-MM-DD')}} {{on "change" (action 'updateDueDate')}}
+        @value={{(format-date @assignment.dueDate 'YYYY-MM-DD')}}
+        {{on 'change' (action 'updateDueDate')}}
       />
     {{else}}
       <p class='label'>
@@ -54,16 +56,12 @@
   </div>
   {{! Class, Problem }}
   <div class='section-details'>
-    {{!-- {{#if this.showSectionInput}}
-      <SelectizeInput @inputId="assn-new-section-select" @initialOptions={{this.sectionOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @propToUpdate="section" @placeholder="Search for a section by name" @model="section" @store={{this.store}} />
-    {{else}} --}}
     <p>
       Class:
       <LinkTo @route='sections.section' @model={{@section.id}}>
         <span>{{@section.name}}</span>
       </LinkTo>
     </p>
-    {{!-- {{/if}} --}}
   </div>
   <div class='section-details'>
     <p>
@@ -72,10 +70,6 @@
         <span>{{@problem.title}}</span>
       </LinkTo>
     </p>
-    {{!-- {{#if this.showProblemInput}}
-      <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="problem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
-    {{else}} --}}
-    {{!-- {{/if}} --}}
   </div>
   <div class='workspace-details'>
     <p class='labelP'>
@@ -109,14 +103,15 @@
         @section={{@section}}
         @problem={{@problem}}
         @onCancel={{action (mut showLinkedWsForm) false}}
-        @store={{this.store}}
         @handleResults={{action 'handleCreatedLinkedWs'}}
       />
     {{/if}}
     {{#if this.showAddLinkedWsBtn}}
       <button
         data-test='add-linked-ws'
-        class='add-linkedworkspaces-btn' type="button" {{action (mut showLinkedWsForm) true}}
+        class='add-linkedworkspaces-btn'
+        type='button'
+        {{action (mut showLinkedWsForm) true}}
       >
         Add Linked Workspaces
         <i class='fas fa-plus-circle'></i>
@@ -152,14 +147,15 @@
         @section={{@section}}
         @problem={{@problem}}
         @onCancel={{action (mut showParentWsForm) false}}
-        @store={{this.store}}
         @handleResults={{action 'handleCreatedParentWs'}}
       />
     {{/if}}
     {{#if this.showAddParentWsBtn}}
       <button
         data-test='add-parent-ws'
-        class='add-parent-workspace-btn' type="button" {{action (mut showParentWsForm) true}}
+        class='add-parent-workspace-btn'
+        type='button'
+        {{action (mut showParentWsForm) true}}
       >Add Parent Workspace <i class='fas fa-plus-circle'></i></button>
     {{/if}}
     {{#if this.showNoParentWsMsg}}
@@ -188,7 +184,9 @@
     {{#if this.showEditButton}}
       <button
         data-test='edit-assignment'
-        class='edit-assignment-button' type="button" {{action 'editAssignment'}}
+        class='edit-assignment-button'
+        type='button'
+        {{action 'editAssignment'}}
       >
         Edit Assignment
         <i class='fas fa-edit'></i>
@@ -197,19 +195,28 @@
     {{#if this.isEditing}}
       <button
         class='save-assign-btn'
-        data-test='assn-save' type="button" {{action 'updateAssignment'}}
+        data-test='assn-save'
+        type='button'
+        {{action 'updateAssignment'}}
       >
         Save Assignment
         <i class='fas fa-save'></i>
       </button>
       <button
         class='cancelEditBtn'
-        data-test='assn-cancel' type="button" {{action 'stopEditing'}}
+        data-test='assn-cancel'
+        type='button'
+        {{action 'stopEditing'}}
       >
         Cancel
         <i class='fas fa-times'></i>
       </button>
-      <button data-test='trash-assn' class='right' type="button" {{action 'showDeleteModal'}}>
+      <button
+        data-test='trash-assn'
+        class='right'
+        type='button'
+        {{action 'showDeleteModal'}}
+      >
         <i class='fa fa-trash' aria-hidden='true'></i>
       </button>
     {{/if}}

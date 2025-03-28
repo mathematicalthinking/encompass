@@ -3,12 +3,13 @@ import Service, { inject as service } from '@ember/service';
 export default class AssignmentPermissionsService extends Service {
   @service('edit-permissions') base;
   @service('utility-methods') utils;
+  @service currentUser;
 
-  getPermissionsLevel(assignment, section, user = this.base.user) {
+  getPermissionsLevel(assignment, section, user = this.currentUser.user) {
     if (!user) {
       return 0;
     }
-    if (this.base.isActingAdmin) {
+    if (this.currentUser.isActingAdmin) {
       return 4;
     }
     if (this.base.isRecordInPdDomain(section)) {
@@ -37,18 +38,18 @@ export default class AssignmentPermissionsService extends Service {
     if (!this.utils.isNonEmptyArray(teacherIds)) {
       return false;
     }
-    return teacherIds.includes(this.base.userId);
+    return teacherIds.includes(this.currentUser.id);
   }
 
   canDelete(assignment) {
-    if (this.base.isActingAdmin) {
+    if (this.currentUser.isActingAdmin) {
       return true;
     }
     return !this.haveAnswersBeenSubmitted(assignment);
   }
 
   canEditProblem(assignment, section) {
-    if (this.base.isActingAdmin) {
+    if (this.currentUser.isActingAdmin) {
       return true;
     }
     if (this.haveAnswersBeenSubmitted(assignment)) {
@@ -58,7 +59,7 @@ export default class AssignmentPermissionsService extends Service {
   }
 
   canEditLinkedWorkspace(assignment) {
-    if (this.base.isActingAdmin) {
+    if (this.currentUser.isActingAdmin) {
       return true;
     }
     return this.base.isCreator(assignment);
@@ -82,7 +83,7 @@ export default class AssignmentPermissionsService extends Service {
   }
 
   canEditDueDate(assignment) {
-    if (this.base.isActingAdmin) {
+    if (this.currentUser.isActingAdmin) {
       return true;
     }
     return this.base.isCreator(assignment);

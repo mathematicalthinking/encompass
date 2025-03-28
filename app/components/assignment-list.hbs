@@ -2,7 +2,7 @@
 <section class='list-side'>
   <header class='list-header'>
     <h1>Assignments</h1>
-    {{#unless @currentUser.isStudent}}
+    {{#unless this.user.isStudent}}
       <LinkTo
         @route='assignments.new'
         id='assignment-new-btn'
@@ -17,10 +17,10 @@
 
   <section>
     <nav class='list-box'>
-      {{#unless @currentUser.isStudent}}
-        <h2>{{@currentUser.username}}'s Assignments</h2>
+      {{#unless this.user.isStudent}}
+        <h2>{{this.user.username}}'s Assignments</h2>
         <ul class='your-assignments'>
-          {{#if this.yourList}}
+          {{#if (not-empty this.yourList)}}
             {{#each this.yourList as |assignment|}}
               {{#if assignment.name}}
                 <li>
@@ -51,8 +51,8 @@
           {{/if}}
         </ul>
       {{/unless}}
-      {{#if @currentUser.isStudent}}
-        <h2>{{@currentUser.username}}'s Assignments</h2>
+      {{#if this.user.isStudent}}
+        <h2>{{this.user.username}}'s Assignments</h2>
         <ul class='your-assignments'>
           {{#if this.studentList}}
             {{#each this.studentList as |assignment|}}
@@ -83,10 +83,10 @@
           {{/if}}
         </ul>
       {{/if}}
-      {{#if @currentUser.isAdmin}}
+      {{#if this.user.isAdmin}}
         <h2>All Assignments</h2>
         <ul class='admin-assignments'>
-          {{#if this.adminList}}
+          {{#if (not-empty this.adminList)}}
             {{#each this.adminList as |assignment|}}
               {{#if assignment.name}}
                 <li>
@@ -117,10 +117,10 @@
           {{/if}}
         </ul>
       {{/if}}
-      {{#if @currentUser.isPdAdmin}}
-        <h2>{{@currentUser.organization.name}} Assignments</h2>
+      {{#if this.user.isPdAdmin}}
+        <h2>{{this.organizationName}} Assignments</h2>
         <ul class='pd-assignments'>
-          {{#if this.pdList}}
+          {{#if (not-empty this.pdList)}}
             {{#each this.pdList as |assignment|}}
               {{#if assignment.name}}
                 <li>

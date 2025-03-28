@@ -33,7 +33,7 @@ var ProblemSchema = new Schema(
     organization: { type: ObjectId, ref: 'Organization' },
     categories: [{ type: ObjectId, ref: 'Category' }],
     keywords: [{ type: String }],
-    isUsed: { type: Boolean, default: false },
+    isUsed: { type: Boolean, default: false }, // indicates if a problem has associated answers
     status: { type: String, enum: ['approved', 'pending', 'flagged'] },
     flagReason: {
       flaggedBy: { type: ObjectId, ref: 'User' },

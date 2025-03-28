@@ -9,6 +9,7 @@ export default class UserInfoComponent extends Component {
   @service('utility-methods') utils;
   @service('error-handling') errorHandling;
   @service('edit-permissions') basePermissions;
+  @service currentUser;
   @service store;
 
   @tracked isEditing = false;
@@ -36,8 +37,8 @@ export default class UserInfoComponent extends Component {
   }
 
   get canEdit() {
-    const { user, currentUser } = this.args;
-    if (!user || !currentUser) return false;
+    const user = this.args.user;
+    if (!user) return false;
 
     const creatorId = this.utils.getBelongsToId(user, 'createdBy');
 
@@ -47,35 +48,30 @@ export default class UserInfoComponent extends Component {
     // - current user is the creator of the user
     // - current user is a PD admin for the user's org
     return (
-      currentUser.accountType === 'A' ||
-      user.id === currentUser.id ||
-      creatorId === currentUser.id ||
+      this.currentUser.isAdmin ||
+      user.id === this.currentUser.id ||
+      creatorId === this.currentUser.id ||
       this.basePermissions.isRecordInPdDomain(user)
     );
   }
 
   get canConfirm() {
     return (
-      this.basePermissions.isActingAdmin ||
+      this.currentUser.isActingAdmin ||
       this.basePermissions.isRecordInPdDomain(this.args.user)
     );
   }
 
   get accountTypes() {
-    let accountType = this.args.currentUser.accountType;
-    let accountTypes;
-
-    if (accountType === 'A') {
-      accountTypes = ['Teacher', 'Student', 'Pd Admin', 'Admin'];
-    } else if (accountType === 'P') {
-      accountTypes = ['Teacher', 'Student'];
-    } else if (accountType === 'T') {
-      accountTypes = ['Student'];
+    if (this.currentUser.isAdmin) {
+      return ['Teacher', 'Student', 'Pd Admin', 'Admin'];
+    } else if (this.currentUser.isPdAdmin) {
+      return ['Teacher', 'Student'];
+    } else if (this.currentUser.isTeacher) {
+      return ['Student'];
     } else {
-      accountTypes = [];
+      return [];
     }
-
-    return accountTypes;
   }
 
   get seenTour() {
@@ -143,7 +139,6 @@ export default class UserInfoComponent extends Component {
   }
 
   saveUser() {
-    const currentUser = this.args.currentUser;
     const user = this.args.user;
 
     // set the isConfirmingEmail flag if the current user has manually confirmed this user's email
@@ -174,7 +169,7 @@ export default class UserInfoComponent extends Component {
     }
 
     //if is authorized is now true, then we need to set the value of authorized by to current user
-    user.lastModifiedBy = currentUser;
+    user.lastModifiedBy = this.currentUser.user;
     user.lastModifiedDate = new Date();
 
     user
@@ -232,11 +227,10 @@ export default class UserInfoComponent extends Component {
 
   @action createNewOrg() {
     let user = this.args.user;
-    let currentUser = this.args.currentUser;
     let reqOrg = user.get('organizationRequest');
     let newOrg = this.store.createRecord('organization', {
       name: reqOrg,
-      createdBy: currentUser,
+      createdBy: this.currentUser.user,
     });
     newOrg
       .save()

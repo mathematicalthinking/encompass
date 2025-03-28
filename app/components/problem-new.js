@@ -1,18 +1,17 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import _ from 'underscore';
-import $ from 'jquery';
+import { service } from '@ember/service';
+import _isNull from 'lodash/isNull';
 
-export default class ProblemNewComponent extends ErrorHandlingComponent {
+export default class ProblemNewComponent extends Component {
   @service('sweet-alert') alert;
+  @service errorHandling;
   @service store;
   @service router;
+  @service currentUser;
   @tracked showGeneral = true;
   @tracked filesToBeUploaded = null;
-  @tracked createProblemErrors = [];
-  @tracked imageUploadErrors = [];
   @tracked isMissingRequiredFields = null;
   @tracked isPublic = null;
   @tracked privacySetting = null;
@@ -26,7 +25,6 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
   @tracked showGeneral = true;
   @tracked showAdditional = false;
   @tracked showLegal = false;
-  // parentActions: alias('parentView.actions'),
   @tracked approvedProblem = false;
   @tracked noLegalNotice = null;
   @tracked showCategories = false;
@@ -34,7 +32,6 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
   @tracked uploadResults = null;
   @tracked additionalImage = null;
   @tracked fileName = null;
-  @tracked categoryTree = {};
   tooltips = {
     name: 'Please try and give all your problems a unique title',
     statement: 'Content of the problem to be completed',
@@ -55,9 +52,18 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
   };
   @tracked selectedCategories = [];
 
+  get createProblemErrors() {
+    return this.errorHandling.getErrors('createProblemErrors') || [];
+  }
+
+  get imageUploadErrors() {
+    return this.errorHandling.getErrors('imageUploadErrors') || [];
+  }
+
   constructor() {
     super(...arguments);
-    $('.list-outlet').removeClass('hidden');
+    // if the outlet exists (where this component appears in the parent), show it
+    document.getElementById('outlet')?.classList.remove('hidden');
   }
 
   @action observeErrors() {
@@ -81,11 +87,11 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
 
   createProblem() {
     const problemStatement = this.problemStatement;
-    let createdBy = this.args.currentUser;
+    const currentUser = this.currentUser.user;
+    let createdBy = currentUser;
     let title = this.problemTitle.trim();
     let additionalInfo = this.additionalInfo;
     let privacySetting = this.privacySetting;
-    let currentUser = this.args.currentUser;
     let accountType = currentUser.accountType;
     let organization = currentUser.organization;
     let categories = this.selectedCategories;
@@ -139,18 +145,22 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
       for (let f of uploadData) {
         formData.append('photo', f);
       }
+      formData.append('createdBy', createdBy);
       let firstItem = uploadData[0];
       let isPDF = firstItem.type === 'application/pdf';
 
       if (isPDF) {
-        $.post({
-          url: '/pdf',
-          processData: false,
-          contentType: false,
-          data: formData,
-          createdBy: createdBy,
+        fetch('/pdf', {
+          method: 'POST',
+          body: formData,
         })
-          .then(function (res) {
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((res) => {
             this.uploadResults = res.images;
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               createProblemData.set('image', image);
@@ -176,7 +186,7 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
                   ) {
                     this.toggleGeneral();
                   }
-                  this.handleErrors(
+                  this.errorHandling.handleErrors(
                     err,
                     'createProblemErrors',
                     createProblemData
@@ -185,16 +195,19 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
             });
           })
           .catch(function (err) {
-            this.handleErrors(err, 'imageUploadErrors');
+            this.errorHandling.handleErrors(err, 'imageUploadErrors');
           });
       } else {
-        $.post({
-          url: '/image',
-          processData: false,
-          contentType: false,
-          data: formData,
-          createdBy: createdBy,
+        fetch('/image', {
+          method: 'POST',
+          body: formData,
         })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
           .then(function (res) {
             this.uploadResults = res.images;
             this.store.findRecord('image', res.images[0]._id).then((image) => {
@@ -210,8 +223,6 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
                     false,
                     null
                   );
-                  // let parentView = this.parentView;
-                  // this.get('parentActions.refreshList').call(parentView);
                   this.router.transitionTo('problems.problem', problem.id);
                 })
                 .catch((err) => {
@@ -221,7 +232,7 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
                   ) {
                     this.toggleGeneral();
                   }
-                  this.handleErrors(
+                  this.errorHandling.handleErrors(
                     err,
                     'createProblemErrors',
                     createProblemData
@@ -230,7 +241,7 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
             });
           })
           .catch(function (err) {
-            this.handleErrors(err, 'imageUploadErrors');
+            this.errorHandling.handleErrors(err, 'imageUploadErrors');
           });
       }
     } else {
@@ -256,24 +267,36 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
           ) {
             this.toggleGeneral();
           }
-          this.handleErrors(err, 'createProblemErrors', createProblemData);
+          this.errorHandling.handleErrors(
+            err,
+            'createProblemErrors',
+            createProblemData
+          );
         });
     }
   }
 
   keywordFilter(keyword) {
     if (!keyword) {
-      return;
+      // No keyword was entered
+      return false;
     }
-    let keywords = $('#select-add-keywords')[0].selectize.items;
 
-    let keywordLower = keyword.trim().toLowerCase();
+    // Grab the element without jQuery
+    const selectEl = document.getElementById('select-add-keywords');
+    if (!selectEl || !selectEl.selectize) {
+      // If the element or Selectize isn't set up, allow keyword creation by default
+      return true;
+    }
 
-    let keywordsLower = _.map(keywords, (key) => {
-      return key.toLowerCase();
-    });
-    // don't let user create keyword if it matches exactly an existing keyword
-    return !_.contains(keywordsLower, keywordLower);
+    // Get the current list of items (strings/IDs)
+    const items = selectEl.selectize.items;
+    // Convert the new keyword and existing items to lowercase
+    const keywordLower = keyword.trim().toLowerCase();
+    const itemsLower = items.map((item) => item.toLowerCase());
+
+    // Don't let the user create the keyword if it matches an existing one exactly
+    return !itemsLower.includes(keywordLower);
   }
 
   @action radioSelect(value) {
@@ -297,14 +320,10 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
   }
 
   @action toggleCategories() {
-    this.store.query('category', {}).then((queryCats) => {
-      let categories = queryCats.get('meta');
-      this.categoryTree = categories.categories;
-    });
     this.showCategories = !this.showCategories;
   }
 
-  @action addCategories(category) {
+  @action addCategory(category) {
     let categories = this.selectedCategories;
     if (!categories.includes(category)) {
       categories.pushObject(category);
@@ -316,8 +335,9 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
     categories.removeObject(category);
   }
 
-  @action cancelProblem() {
-    $('.list-outlet').addClass('hidden');
+  @action
+  cancelProblem() {
+    document.getElementById('outlet')?.classList.add('hidden');
     this.router.transitionTo('problems');
   }
 
@@ -326,11 +346,6 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
     this.fileName = file[0].name;
   }
 
-  // @action removeFile() {
-  //   this.additionalImage = null;
-  //   this.fileName = null;
-  // }
-
   @action resetErrors() {
     const errors = [
       'noLegalNotice',
@@ -338,15 +353,12 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
       'imageUploadErrors',
     ];
 
-    for (let error of errors) {
-      if (this[error]) {
-        this[error] = null;
-      }
-    }
+    this.errorHandling.removeMessages(...errors);
   }
 
-  @action hideInfo() {
-    $('.list-outlet').addClass('hidden');
+  @action
+  hideInfo() {
+    document.getElementById('outlet')?.classList.add('hidden');
     this.router.transitionTo('problems');
   }
 
@@ -369,18 +381,16 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
   }
 
   @action toggleGeneral() {
-    // this.set('privacySetting', this.privacySetting);
     this.showGeneral = true;
     this.showCats = false;
     this.showAdditional = false;
     this.showLegal = false;
   }
 
-  @action toggleCats() {
+  @action
+  toggleCats() {
     // clear existing errors before validating
-    if (this.createProblemErrors) {
-      this.createProblemErrors = [];
-    }
+    this.errorHandling.removeMessages('createProblemErrors');
 
     if (this.showAdditional) {
       this.showCats = true;
@@ -389,12 +399,12 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
       this.showLegal = false;
     } else {
       this.problemTitle = this.title;
-      let quillContent = $('.ql-editor').html();
-      let problemStatement = quillContent.replace(/["]/g, "'");
+      const quillContent =
+        document.querySelector('.ql-editor')?.innerHTML || '';
+      const problemStatement = quillContent.replace(/["]/g, "'");
       this.problemStatement = problemStatement;
-      // this.set('privacySetting', this.privacySetting);
 
-      let isQuillValid = this.isQuillValid();
+      const isQuillValid = this.isQuillValid();
       if (
         !isQuillValid ||
         !this.problemTitle ||
@@ -456,7 +466,7 @@ export default class ProblemNewComponent extends ErrorHandlingComponent {
     }
     let keywords = this.keywords;
 
-    let isRemoval = _.isNull($item);
+    let isRemoval = _isNull($item);
 
     if (isRemoval) {
       keywords.removeObject(val);

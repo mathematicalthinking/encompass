@@ -1,4 +1,5 @@
-<div id='problem-list-container' {{did-insert this.detectWidth}}>
+{{! took out the problem-list-container id and put it in the route so that the outlet can be rendered in the right place }}
+<div {{did-insert this.detectWidth}}>
   <div class='flex-container-full'>
     <div
       class='flex-item-full filter-options
@@ -10,10 +11,9 @@
         @adminFilterName={{this.adminFilterName}}
         @showAdminFilters={{this.showAdminFilters}}
         @onUpdate={{this.triggerFetch}}
-        @showTrashed={{this.toggleTrashed}}
+        @showTrashed={{this.showOnlyTrashed}}
         @toggleTrashed={{this.triggerShowTrashed}}
-        @categoriesFilter={{this.categoriesFilter}}
-        @onUpdateCategories={{this.handleUpdateCategories}}
+        @categoryFilterName={{this.categoryFilterName}}
       />
     </div>
 
@@ -58,13 +58,13 @@
             <span class='layout-icons'>
               {{#if this.showList}}
                 <img
-                  src='../assets/images/grid.svg'
+                  src='/assets/images/grid.svg'
                   alt='grid'
                   {{on 'click' this.setGrid}}
                   title='Show in grid view'
                 />
                 <img
-                  src='../assets/images/list-active.svg'
+                  src='/assets/images/list-active.svg'
                   alt='list'
                   {{on 'click' this.setList}}
                   title='Currently in list view'
@@ -102,7 +102,7 @@
                 <ul>
                   {{#each this.privacySettingOptions as |option|}}
                     <li>
-                      <RadioFilter
+                      <Ui::RadioFilter
                         @labelName={{option.label}}
                         @labelIcon={{option.icon}}
                         @inputValue={{option.value}}
@@ -126,6 +126,9 @@
               @type='title'
               @activeType={{this.sortCriterion.type}}
             />
+            <div class='sort-bar-item description'>
+              Description
+            </div>
             <ToggleControl
               @classToAdd='sort-bar-item date'
               @onUpdate={{this.updateSortCriterion}}
@@ -140,7 +143,7 @@
               <i class='fas fa-filter sort-icon'></i>
               <span class='hover-menu'>
                 <ul>
-                  {{#each this.statusOptions as |option|}}
+                  {{#each this.statusOptionsList as |option|}}
                     <li>
                       <label>
                         <input
@@ -177,12 +180,11 @@
             @recommendedProblems={{this.model.recommendedProblems}}
             @currentUser={{this.currentUser}}
             @isSearching={{this.isSearchingProblems}}
-            @problems={{this.displayProblems}}
+            @problems={{this.problems}}
             @metadata={{this.problemsMetadata}}
             @isList={{this.showList}}
             @isGrid={{this.showGrid}}
             @moreMenuOptions={{this.moreMenuOptions}}
-            @toProblemInfo='toProblemInfo'
             @refreshList={{this.refreshList}}
           />
 

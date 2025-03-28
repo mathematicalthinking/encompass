@@ -86,7 +86,7 @@
         </div>
         <div class='row-value'>
           {{#if this.isEditing}}
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.selectedMode}}
               @content={{this.modes}}
@@ -139,7 +139,7 @@
           </div>
           <div data-test='allow-updates' class='row-value'>
             {{#if this.isEditing}}
-              <MySelect
+              <Ui::MySelect
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}
@@ -219,7 +219,7 @@
           </div>
           <div data-test='allow-updates' class='row-value'>
             {{#if this.isEditing}}
-              <MySelect
+              <Ui::MySelect
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}

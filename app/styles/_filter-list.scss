@@ -434,7 +434,7 @@
             }
           }
         }
-        #admin-problem-filter, #admin-workspace-filter {
+        #admin-filter {
           background-color: $background-body;
           padding: 10px 0 20px 20px;
           .choose-filter-admin {
@@ -790,7 +790,7 @@
 .click-menu {
   position: absolute;
   z-index: 100;
-  margin-top: 28px;
+  margin-top: 10px;
   margin-left: -120px;
   width: 100px;
   padding: 10px 15px;

@@ -162,7 +162,7 @@ export default class SelectizeInputComponent extends Component {
       .then((results) => {
         // results is Ember AdapterPopulatedRecordArray
         this.metaData = results.meta;
-        let resultsArray = results.toArray();
+        let resultsArray = results.slice();
         const selectedItemsHash = this.args.selectedItemsHash;
         const valueField = this.args.valueField;
 

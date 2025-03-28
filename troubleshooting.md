@@ -20,7 +20,7 @@
 
 # store query is immutable
 
-- convert to array with `.toArray()`
+- convert to array with `.slice()`
 
 # tables use [Ember Table](https://opensource.addepar.com/ember-table/docs)
 

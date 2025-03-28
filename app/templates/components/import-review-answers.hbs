@@ -1,63 +1,83 @@
-<div class="import-review-answers-page">
-  <p class="info">Please review your submissions to ensure everything is accurate. You can either defer creating a workspace until a later date, or we can automatically create a workspace for you from your uploaded submissions</p>
+<div class='import-review-answers-page'>
+  <p class='info'>Please review your submissions to ensure everything is
+    accurate. You can either defer creating a workspace until a later date, or
+    we can automatically create a workspace for you from your uploaded
+    submissions</p>
 
-  <div class="workspace-options">
-    <form id="import-workspace-options">
+  <div class='workspace-options'>
+    <form id='import-workspace-options'>
       <fieldset>
-      <h3>Workspace Creation Options</h3>
-      <ol>
-        <li>
-          <label for="createWorkspace">Do not create workspace</label>
-          <Input @type="checkbox" name="createWorkspace" @checked={{doNotCreateWorkspace}} />
-        </li>
+        <h3>Workspace Creation Options</h3>
+        <ol>
+          <li>
+            <label for='createWorkspace'>Do not create workspace</label>
+            <Input
+              @type='checkbox'
+              name='createWorkspace'
+              @checked={{doNotCreateWorkspace}}
+            />
+          </li>
 
+          {{#unless doNotCreateWorkspace}}
+            <li>
+              <label for='name'>Workspace Name</label>
+              <Input id='requestedName' @type='text' @value={{requestedName}} />
+            </li>
+            <li>
+              <label for='folders'>Folders</label>
+              <Ui::MySelect
+                @content={{folderSets}}
+                @prompt='Please select a folder set'
+                @action={{action (mut selectedFolderSet)}}
+              />
+            </li>
 
-        {{#unless doNotCreateWorkspace}}
-        <li>
-          <label for="name">Workspace Name</label>
-          <Input id="requestedName" @type="text" @value={{requestedName}} />
-        </li>
-        <li>
-          <label for="folders">Folders</label>
-          <MySelect @content={{folderSets}} @optionLabelPath="name" @prompt="Please select a folder set" @action={{action (mut selectedFolderSet)}} />
-        </li>
-
-
-        <li class="mode">
-          <label>Privacy Setting <span class="required-star">*</span></label>
-            <input type="radio" checked={{is-equal mode "private"}} required="true" name="mode" value="private" onclick={{action "radioSelect" "private"}}>
-            <label class="radio-label">Private</label>
-            <input type="radio" checked={{is-equal mode "public"}} required="true" name="mode" value="public" onclick={{action "radioSelect" "public"}}>
-            <label class="radio-label">Public</label>
-        </li>
-        {{/unless}}
-      </ol>
+            <li class='mode'>
+              <label>Privacy Setting
+                <span class='required-star'>*</span></label>
+              <input
+                type='radio'
+                checked={{is-equal mode 'private'}}
+                required='true'
+                name='mode'
+                value='private'
+                onclick={{action 'radioSelect' 'private'}}
+              />
+              <label class='radio-label'>Private</label>
+              <input
+                type='radio'
+                checked={{is-equal mode 'public'}}
+                required='true'
+                name='mode'
+                value='public'
+                onclick={{action 'radioSelect' 'public'}}
+              />
+              <label class='radio-label'>Public</label>
+            </li>
+          {{/unless}}
+        </ol>
       </fieldset>
     </form>
 
-
-
-  <div class="proceed">
-    {{#if doNotCreateWorkspace}}
-      <p>Click submit to upload your submissions.</p>
-    {{else}}
-      <p>Click submit to create your {{mode}} workspace.</p>
-    {{/if}}
-    <button type="button" {{action "formatAnswers"}}>Submit</button>
+    <div class='proceed'>
+      {{#if doNotCreateWorkspace}}
+        <p>Click submit to upload your submissions.</p>
+      {{else}}
+        <p>Click submit to create your {{mode}} workspace.</p>
+      {{/if}}
+      <button type='button' {{action 'formatAnswers'}}>Submit</button>
+    </div>
   </div>
-</div>
 
-
-
-  <div class="review-answers">
+  <div class='review-answers'>
     {{#each answers as |answer|}}
-      <div class="answer-info">
-        <div class="answer-img">
+      <div class='answer-info'>
+        <div class='answer-img'>
           <p>{{answer.explanationImage.originalname}}</p>
-          <img src="{{{answer.explanationImage.imageData}}}" alt="">
+          <img src='{{{answer.explanationImage.imageData}}}' alt='' />
         </div>
 
-        <div class="creators">
+        <div class='creators'>
           <label>Assigned Students</label>
           <ul>
             {{#each answer.students as |student|}}
@@ -69,8 +89,4 @@
     {{/each}}
   </div>
 
-
 </div>
-
-
-

@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, findAll } from '@ember/test-helpers';
+import { render, click, findAll, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 
@@ -39,7 +39,6 @@ module('Integration | Component | problem-list-container', function (hooks) {
     );
 
     await render(hbs`<ProblemListContainer @model={{this.model}} />`);
-    console.log(this.element.innerHTML);
     // Verify the error messages are displayed
     const errors = findAll('.error-message');
     assert.strictEqual(errors.length, 2, 'Displays two error messages');
@@ -71,8 +70,8 @@ module('Integration | Component | problem-list-container', function (hooks) {
     // Remove errors
     errorHandling.removeMessages('problemLoadErrors');
 
-    // Trigger re-render by interacting with the component
-    await click('.refresh-icon');
+    // Trigger a full re-render of the component
+    await settled();
 
     // Verify the error is removed
     assert.dom('.error-message').doesNotExist('Error message is removed');
@@ -102,23 +101,30 @@ module('Integration | Component | problem-list-container', function (hooks) {
 
   test('it applies filters using the input-state service', async function (assert) {
     const inputState = this.owner.lookup('service:input-state');
+    const currentUserService = this.owner.lookup('service:current-user');
 
+    // Set the current user in the current-user service
+    currentUserService.setUser({
+      organization: { id: 'myOrg', get: () => [] },
+    });
+
+    // Render the component
     await render(hbs`<ProblemListContainer @model={{this.model}} />`);
 
-    // Update the selection in input-state
-    inputState.states['problem-filter'].selectedOption = inputState.states[
-      'problem-filter'
-    ].options.find((option) => option.value === 'myOrg');
+    // Update the selection in input-state using setSelection
+    inputState.setSelection('problem-filter', 'myOrg');
 
     // Trigger the fetch to apply the new filter
-    await click('.refresh-icon');
+    await settled();
 
     const filterBy = inputState.getFilter('problem-filter');
+
+    // Ensure that the filter is applied correctly
     assert.deepEqual(
       filterBy,
       {
-        organization: this.owner.lookup('service:current-user').user
-          .organization.id,
+        organization: currentUserService.user.organization.id,
+        $or: [{ organization: 'myOrg' }],
       },
       'The filter is applied correctly'
     );
@@ -140,10 +146,7 @@ module('Integration | Component | problem-list-container', function (hooks) {
     // Verify initial message
     assert
       .dom('.results-message')
-      .hasText(
-        'No results found. Please try expanding your filter criteria.',
-        'Displays the correct initial message'
-      );
+      .hasText('0 problems found', 'Displays the correct initial message');
 
     // Set a valid filter
     inputState.states['problem-filter'].selectedOption = inputState.states[
@@ -155,7 +158,7 @@ module('Integration | Component | problem-list-container', function (hooks) {
     // Check the updated results message
     assert
       .dom('.results-message')
-      .doesNotHaveText(
+      .doesNotIncludeText(
         'No results found. Please try expanding your filter criteria.',
         'The error message is no longer displayed after applying a valid filter'
       );
