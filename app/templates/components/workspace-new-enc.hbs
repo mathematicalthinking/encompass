@@ -18,10 +18,9 @@
         {{#if currentUser.isTeacher}}
           <p class='workspace-info'>{{currentUser.username}}</p>
         {{else}}
-          <MySelect
+          <Ui::MySelect
             @selectedValue={{selectedTeacher}}
             @content={{teacherPool}}
-            @optionLabelPath='username'
             @prompt='Please select
         a username'
             @action={{action (mut selectedTeacher)}}
@@ -35,9 +34,8 @@
             data-tooltip={{tooltips.assignment}}
           >Assignment </span>
         </label>
-        <MySelect
+        <Ui::MySelect
           @content={{model.assignments}}
-          @optionLabelPath='problem.title'
           @prompt='Please select an assignment'
           @action={{action (mut selectedAssignment)}}
         />
@@ -83,9 +81,8 @@
             data-tooltip={{tooltips.class}}
           >Class </span>
         </label>
-        <MySelect
+        <Ui::MySelect
           @content={{model.sections}}
-          @optionLabelPath='name'
           @prompt='Please select a class'
           @action={{action (mut selectedSection)}}
         />
@@ -125,10 +122,9 @@
         {{#if currentUser.isTeacher}}
           <p class='workspace-info'>{{currentUser.username}}</p>
         {{else}}
-          <MySelect
+          <Ui::MySelect
             @selectedValue={{selectedOwner}}
             @content={{teacherPool}}
-            @optionLabelPath='username'
             @prompt='Please select an
         owner'
             @action={{action (mut selectedOwner)}}
@@ -157,9 +153,8 @@
             data-tooltip={{tooltips.folders}}
           >Folders</span>
         </label>
-        <MySelect
+        <Ui::MySelect
           @content={{model.folderSets}}
-          @optionLabelPath='name'
           @prompt='Please select a folder set'
           @action={{action (mut selectedFolderSet)}}
         />

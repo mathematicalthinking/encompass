@@ -8,126 +8,128 @@ export default class UserListComponent extends Component {
   @service store;
 
   get unauthUsers() {
-    let users = this.args.users.filterBy('isTrashed', false);
-    let unauthUsers = users.filterBy('isAuthorized', false);
-    if (this.args.currentUser.isPdAdmin) {
-      let orgUsersNotYou = unauthUsers
-        .filterBy(
-          'organization.id',
-          this.args.currentUser.get('organization.id')
-        )
-        .rejectBy('username', this.args.currentUser.user);
-      return orgUsersNotYou.sortBy('createDate').reverse();
+    const { users, currentUser } = this.args;
+    const filteredUsers = users.filter(
+      (user) => !user.isTrashed && !user.isAuthorized
+    );
+
+    if (currentUser.isPdAdmin) {
+      const orgUsers = filteredUsers.filter(
+        (user) =>
+          user.organization?.id === currentUser.organization?.id &&
+          user.username !== currentUser.username
+      );
+      return this.sortByCreateDateDesc(orgUsers);
     }
-    return unauthUsers.sortBy('createDate').reverse();
+
+    return this.sortByCreateDateDesc(filteredUsers);
   }
 
   get adminUsers() {
-    let users = this.args.users.filterBy('isTrashed', false);
-    let authUsers = users.filterBy('isAuthorized', true);
-    let adminUsers = authUsers.filterBy('accountType', 'A');
-    let adminUsersNotYou = adminUsers.rejectBy(
-      'username',
-      this.args.currentUser.username
+    const { users, currentUser } = this.args;
+    const filteredAdmins = users.filter(
+      (user) =>
+        !user.isTrashed &&
+        user.isAuthorized &&
+        user.accountType === 'A' &&
+        user.username !== currentUser.username
     );
-    return adminUsersNotYou.sortBy('createDate').reverse();
+
+    return this.sortByCreateDateDesc(filteredAdmins);
   }
 
   get pdUsers() {
-    let users = this.args.users.filterBy('isTrashed', false);
-    let authUsers = users.filterBy('isAuthorized', true);
-    let students = authUsers.filterBy('accountType', 'P');
-    return students.sortBy('createDate').reverse();
+    const filteredPdUsers = this.args.users.filter(
+      (user) => !user.isTrashed && user.isAuthorized && user.accountType === 'P'
+    );
+    return this.sortByCreateDateDesc(filteredPdUsers);
   }
 
+  // Getter for teacher users
   get teacherUsers() {
-    let users = this.args.users.filterBy('isTrashed', false);
-    let teacherUsers = users.filterBy('accountType', 'T');
-    let authTeachers = teacherUsers.filterBy('isAuthorized', true);
-    if (this.args.currentUser.isPdAdmin) {
-      let orgUsersNotYou = authTeachers
-        .filterBy(
-          'organization.id',
-          this.args.currentUser.get('organization.id')
-        )
-        .rejectBy('username', this.args.currentUser.username);
-      return orgUsersNotYou.sortBy('createDate').reverse();
+    const { users, currentUser } = this.args;
+    const filteredTeachers = users.filter(
+      (user) => !user.isTrashed && user.isAuthorized && user.accountType === 'T'
+    );
+    if (currentUser.isPdAdmin) {
+      const orgUsersNotYou = filteredTeachers.filter(
+        (user) =>
+          user.organization?.id === currentUser.organization?.id &&
+          user.username !== currentUser.username
+      );
+      return this.sortByCreateDateDesc(orgUsersNotYou);
     }
-    return authTeachers.sortBy('createDate').reverse();
+    return this.sortByCreateDateDesc(filteredTeachers);
   }
 
   get studentUsers() {
-    let users = this.args.users.filterBy('isTrashed', false);
-    let authUsers = users.filterBy('isAuthorized', true);
-    let students = authUsers.filterBy('accountType', 'S');
-    if (this.args.currentUser.isPdAdmin) {
-      let orgUsersNotYou = students
-        .filterBy(
-          'organization.id',
-          this.args.currentUser.get('organization.id')
-        )
-        .rejectBy('username', this.args.currentUser.username);
-      return orgUsersNotYou.sortBy('createDate').reverse();
+    const { users, currentUser } = this.args;
+    const filteredStudents = users.filter(
+      (user) => !user.isTrashed && user.isAuthorized && user.accountType === 'S'
+    );
+    if (currentUser.isPdAdmin) {
+      const orgUsersNotYou = filteredStudents.filter(
+        (user) =>
+          user.organization?.id === currentUser.organization?.id &&
+          user.username !== currentUser.username
+      );
+      return this.sortByCreateDateDesc(orgUsersNotYou);
     }
-    return students.sortBy('createDate').reverse();
+    return this.sortByCreateDateDesc(filteredStudents);
   }
 
-  get trashedUsers() {
-    return this.store.query('user', {
-      isTrashed: true,
-    });
-  }
   // These are all the students that are in sections you are a teacher of
-
   get yourStudents() {
-    let yourSections = this.args.currentUser.get('sections');
-    let yourTeacherSections = yourSections.filterBy('role', 'teacher');
-    let yourSectionIds = yourTeacherSections.map((section) => {
-      return section.sectionId;
-    });
+    const { users, currentUser } = this.args;
+    const teacherSections =
+      currentUser.sections?.filter((section) => section.role === 'teacher') ??
+      [];
+    const teacherSectionIds = teacherSections.map(
+      (section) => section.sectionId
+    );
 
-    let studentUsers = this.args.users.filterBy('accountType', 'S');
-
-    let studentListing = studentUsers.map((student) => {
-      for (let section of student.get('sections')) {
-        if (section.role === 'student') {
-          if (yourSectionIds.includes(section.sectionId)) {
-            return student;
-          }
-        }
-      }
-    });
-
-    return studentListing.without(undefined);
+    return users.filter((user) =>
+      user.sections.some(
+        (section) =>
+          section.role === 'student' &&
+          teacherSectionIds.includes(section.sectionId)
+      )
+    );
   }
 
   // These are all the users that you have created - filter out duplicates
-
   get yourUsers() {
-    let yourId = this.args.currentUser.get('id');
-    let yourUsers = this.args.users.filterBy('createdBy.id', yourId);
-    return yourUsers.sortBy('createDate').reverse();
+    const yourId = this.args.currentUser.id;
+    const yourUsers = this.args.users.filter(
+      (user) => user.createdBy?.id === yourId
+    );
+    return this.sortByCreateDateDesc(yourUsers);
   }
 
   // These are all the users that are in the same org as you
-
   get orgUsers() {
-    let usersWithOrgs = this.args.users.filter((user) => {
-      let accountType = user.get('accountType');
-      return (
-        !user.get('isTrashed') &&
-        user.get('organization.id') &&
-        accountType !== 'S' &&
-        accountType
-      );
-    });
-    let yourOrgId = this.args.currentUser.get('organization').get('id');
-    usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
-    let orgUsersNotYou = usersWithOrgs.rejectBy(
-      'username',
-      this.args.currentUser.username
+    const { users, currentUser } = this.args;
+    const yourOrgId = currentUser.organization?.id;
+
+    const orgUsers = users.filter(
+      (user) =>
+        !user.isTrashed &&
+        user.organization?.id === yourOrgId &&
+        user.accountType &&
+        user.accountType !== 'S' &&
+        user.username !== currentUser.username
     );
-    return orgUsersNotYou.sortBy('createDate').reverse();
+
+    return this.sortByCreateDateDesc(orgUsers);
+  }
+
+  // Helper method to sort by create date in descending order
+  sortByCreateDateDesc(users) {
+    return users.sort((a, b) => {
+      const dateA = new Date(a.createDate);
+      const dateB = new Date(b.createDate);
+      return dateB - dateA;
+    });
   }
 
   @action

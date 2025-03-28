@@ -9,7 +9,7 @@
   <form class='form-signin'>
     <div class='auth-form-input'>
       {{#if this.missingCredentials}}
-        <ErrorBox
+        <Ui::ErrorBox
           @error='Incorrect username or password'
           @showDismiss={{true}}
         />
@@ -27,7 +27,7 @@
       />
 
       {{#if this.incorrectUsername}}
-        <ErrorBox @error='Incorrect Username' @showDismiss={{true}} />
+        <Ui::ErrorBox @error='Incorrect Username' @showDismiss={{true}} />
       {{/if}}
     </div>
 
@@ -44,18 +44,18 @@
       />
 
       {{#if this.incorrectPassword}}
-        <ErrorBox @error='Incorrect Password' @showDismiss={{true}} />
+        <Ui::ErrorBox @error='Incorrect Password' @showDismiss={{true}} />
       {{/if}}
 
       {{#if this.oauthErrorMsg}}
-        <ErrorBox @error={{this.oauthErrorMsg}} @showDismiss={{true}} />
+        <Ui::ErrorBox @error={{this.oauthErrorMsg}} @showDismiss={{true}} />
       {{/if}}
 
     </div>
 
     <button class='auth-button' type='button' {{action 'login'}}>Log In</button>
     {{#each this.postErrors as |error|}}
-      <ErrorBox @error={{error}} @showDismiss={{true}} />
+      <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
     {{/each}}
   </form>
 

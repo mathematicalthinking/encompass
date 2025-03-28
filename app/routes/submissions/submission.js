@@ -18,6 +18,7 @@ import VmtHostMixin from '../mixins/vmt-host';
 export default Route.extend(CurrentUserMixin, VmtHostMixin, {
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
+  router: service(),
 
   queryParams: 'vmtRoomId',
 
@@ -39,9 +40,13 @@ export default Route.extend(CurrentUserMixin, VmtHostMixin, {
 
       // so links to selections still work
       if (transition.intent.name === 'workspace.submissions.submission') {
-        this.transitionTo('workspace.submissions.submission', submission, {
-          queryParams: { vmtRoomId },
-        });
+        this.router.transitionTo(
+          'workspace.submissions.submission',
+          submission,
+          {
+            queryParams: { vmtRoomId },
+          }
+        );
       }
     });
   },

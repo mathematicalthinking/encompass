@@ -16,7 +16,7 @@ Admin filter expects the subOptions to be an object with the following structure
     val2: {type: 'checkbox', options: [{value, icon, label}, {value, icon, label, etc...]}
  */
 
-export default class AdminWorkspaceFilterComponent extends Component {
+export default class AdminFilterComponent extends Component {
   @service('utility-methods') utils;
   @service inputState;
   @tracked dropdownSelections = [];

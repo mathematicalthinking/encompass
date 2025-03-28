@@ -6,6 +6,12 @@ import $ from 'jquery';
 import moment from 'moment';
 
 export default class AssignmentInfoTeacherComponent extends ErrorHandlingComponent {
+  @service store;
+  @service router;
+  @service currentUser;
+  @service('sweet-alert') alert;
+  @service('assignment-permissions') permissions;
+  @service('utility-methods') utils;
   @tracked formattedDueDate = null;
   @tracked formattedAssignedDate = null;
   @tracked isEditing = false;
@@ -21,6 +27,11 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   @tracked showLinkedWsForm = false;
   @tracked areSubmissionsExpanded = true;
   @tracked cachedProblem = [];
+
+  get user() {
+    return this.currentUser.user;
+  }
+
   get showProblemInput() {
     return this.isEditing && this.canEditProblem;
   }
@@ -45,11 +56,6 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   get allGroupsHaveWs() {
     return this.groupsWithoutWorkspaces.length === 0;
   }
-  @service store;
-  @service router;
-  @service('sweet-alert') alert;
-  @service('assignment-permissions') permissions;
-  @service('utility-methods') utils;
 
   get hasLinkedWorkspaces() {
     return this.args.assignment.linkedWorkspaces.length > 0;
@@ -86,7 +92,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
       this.args.assignment,
       'createdBy'
     );
-    return this.args.currentUser.id === creatorId;
+    return this.user.id === creatorId;
   }
 
   get isDirty() {
@@ -103,7 +109,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   get canEdit() {
-    const isAdmin = this.args.currentUser.isAdmin;
+    const isAdmin = this.user.isAdmin;
     const isClean = this.isClean;
     const isYourOwn = this.isYourOwn;
 
@@ -140,7 +146,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   get canEditDate() {
-    const isAdmin = this.args.currentUser.isAdmin;
+    const isAdmin = this.user.isAdmin;
     const canEdit = this.canEdit;
     const isBeforeAssignedDate = this.isBeforeAssignedDate;
     return isAdmin || (canEdit && isBeforeAssignedDate);

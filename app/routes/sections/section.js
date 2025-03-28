@@ -5,6 +5,7 @@ import { inject as service } from '@ember/service';
 
 export default class SectionsSectionRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
   async model(params) {
     let section = await this.store.findRecord('section', params.section_id);
     let groups = await this.store.query('group', {
@@ -23,10 +24,10 @@ export default class SectionsSectionRoute extends AuthenticatedRoute {
   }
 
   @action toSectionList() {
-    this.transitionTo('sections');
+    this.router.transitionTo('sections');
   }
   @action toAssignmentInfo(assignment) {
-    this.transitionTo('assignments.assignment', assignment);
+    this.router.transitionTo('assignments.assignment', assignment);
   }
   @action refreshModel() {
     this.refresh();

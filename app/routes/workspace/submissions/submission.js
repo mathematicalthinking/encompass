@@ -11,12 +11,12 @@ import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
 import { hash, resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
-import $ from 'jquery';
 import { action } from '@ember/object';
 export default class WorkspaceSubmissionRoute extends Route {
   @service sweetAlert;
   @service('utility-methods') utils;
   @service currentUser;
+  @service router;
 
   queryParams = {
     vmtRoomId: {
@@ -44,9 +44,13 @@ export default class WorkspaceSubmissionRoute extends Route {
 
       // so links to selections still work
       if (transition.intent.name === 'workspace.submissions.submission') {
-        this.transitionTo('workspace.submissions.submission', submission, {
-          queryParams: { vmtRoomId },
-        });
+        this.router.transitionTo(
+          'workspace.submissions.submission',
+          submission,
+          {
+            queryParams: { vmtRoomId },
+          }
+        );
       }
     });
   }

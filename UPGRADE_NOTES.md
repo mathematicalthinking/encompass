@@ -1,4 +1,4 @@
-This are notes taken as I attempt to upgrade Encompass to Ember 4.5. Note that there is a fair bit of redundancy in this file as these notes are being created as I do the work.
+These are notes taken as I attempt to upgrade Encompass to Ember 4.5. Note that there is a fair bit of redundancy in this file as these notes are being created as I do the work.
 
 # Backstory
 
@@ -6,7 +6,28 @@ There has been various attempts to upgrade this app to modern Ember (Octane, Emb
 
 This file is an attempt to document what has and has not been done, as well as suggestions for future developers if I (like all others) leave an incomplete upgrade process.
 
+# Notes about the current state (1 Dec 2024)
+
+Enc-test has been updated with the latest version of the work that I've done over the last couple of months, as represented in this file. Of course, there is plenty that does not work; mostly parts of the system that have not yet been upgraded, upgrades that have not been adequately tested, and a few items that I document below that represent my current work when this contracted ended. To help the next developer, there are two files beyond this one:
+
+1. component audit.xls -- contains notes about all components in the Encompass system, including which have been upgraded or deleted.
+2. componentFinder.js -- script (run with "node componentFinder") that produces a report of all the components used in the different routes, all the components used by other components, etc. This should help the next developer in understanding how the Encompass app is organized.
+
+## Items in progress
+
+1. user-info component -- mostly works except for a few of the updates: seen tour, authorized, etc.
+2. problem-list-container and related components -- trashed problems might not be showing up correctly. Deleting and some actions might not be working.
+3. workspace-list-container and related components -- trashed and hidden workspaces might not be showing up correctly. Many of the actions in the three-dot (more) menu are not working.
+
 # Upgrades needed globally
+
+## Use of this.model or @model
+
+There are several components (js or template) that reference the model. In standard Ember practice, only the route templates should access the model and pass along the specific bits of the model needed by each component. That way, there's a single source of model truth (from the route) and we don't have components knowing about what's in the model.
+
+## Use to 'toXXX' methods
+
+There are several, largely unused, methods throughout the codebase such as 'toProblemInfo' that seem to be intended to transition to certain routes. It seems like these are legacy code so should be removed because the more modern approach -- using LinkTo in templates -- seems to be used throughout the app. The use of LinkTo is much better than prop-drilling these 'toXXX' methods.
 
 ## Removal of Mixins
 
@@ -14,11 +35,15 @@ A fair number of mixins have been removed, replaced by services or component sup
 
 ## Error handling service
 
-The error handling service was previously implemented incorrectly. The ErrorHandling superclass worked, but was a bit obscure in terms of creating properties for the component behind-the-scenes. The corrected error handling service is more explict in how it works and how components should use it. Note that all components that use this service should create a getter to access the errors generated. Also, the component should clean up those errors when it unmounts or at least regularly clean out the errors when we have a successful action.
+The error handling service was previously implemented incorrectly. The ErrorHandling superclass worked, but was a bit obscure in terms of creating properties for the component behind-the-scenes. The corrected error handling service is more explict in how it works and how components should use it. Note that all components that use this service should create a getter to access the errors generated. Also, the component should clean up those errors when it unmounts or at least regularly clean out the errors when we have a successful action. (In January 2025, I added a timer to the ErrorHandling service such that errors automatically clear after 3 minutes.)
 
 Note that there are many classic components that use the error handling service but it does not exactly behave as these components expect, so this needs to be fixed.
 
 But the above is not enough! Apparently the display of errors was a work-in-progresss. There are several components (e.g., workspace-list-container, problem-list-container) that incorporate either the error-handling service, superclass, or mixin, but don't display the errors (albiet they do nicely keep track of them).
+
+## .slice() replaces .toArray()
+
+To convert a RecordArray to a plain JS array, Ember docs now recommend using .slice() because .toArray() has been deprecated. As of 1/2/2025 I've made this replacement in selectize-input.js and troubleshooting.md, but still have to change it in about 55 places among 31 files.
 
 ## Store
 
@@ -32,23 +57,25 @@ These should be replaced with usage of htmlSafe().
 
 A number of components used two-way data binding, which is discouraged in modern Ember. In two-way data binding, it's possible to mutate the value of a property and have that property's value be changed in the property of the original component. Difficulties arise because it's tricky to recognize when two-way data binding is being used and therefore tricky for a new developer to see how (or that) certain property values are being updated.
 
-Instead, modern Ember uses the Data down, actions up pattern. Parent components send data down to their child components. A parent also sends actions (functions) to the child when updates are needed. When the child wants to update the property's value, it uses the appropriate action (essentially a callback to the parent). In this way, the parent is responsible for all of its properties' values, both getting and setting them.
+Instead, modern Ember uses the Data down, Actions up pattern. Parent components send data down to their child components. A parent also sends actions (functions) to the child when updates are needed. When the child wants to update the property's value, it uses the appropriate action (essentially a callback to the parent). In this way, the parent is responsible for all of its properties' values, both getting and setting them.
 
 ## Template and Component files
 
-Should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
+Should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to-be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
 
 ## Vendor imports
 
 Currently, ember-cli-build.js and the vendor/ folder reflects an older-style of imports. Wouldn't it be better to include the necessary packages and import them as needed in the various components?
 
-This has been done for randomcolor, jQuery (older versions), typeahead.js, and selectize. Imports that were unused were deleted, including ajax (part of Ember), daterangePicker, error, ie_hacks, and jquery.mousewheel.
+This has been done for randomcolor, jQuery (older versions), typeahead.js, and selectize. Imports that were unused were deleted, including ajax (it's already part of Ember so no need to import it), daterangePicker, error, ie_hacks, and jquery.mousewheel.
 
 Changing these vendor imports involved installing the corresponding packages (selectize and typeahead.js), then importing those packages into the wrapping components (selectize-input and twitter-typeahead).
 
+There are also several packages that are essentially polyfills for outdated browsers, such as IE.
+
 ## Move from built-in Ember components (Input, TextArea, Select, etc.) to the plain HTML versions
 
-As possible, I will be replacing <Input> with <input>, and so forth. Although the Ember built-ins provide some convenience for assessibility options, they also encourage older-style approachs such as two-way data binding.
+As possible, I will be replacing <Input> with <input>, and so forth. Although the Ember built-ins provide some convenience for assessibility options, they also encourage older-style approachs such as two-way data binding. [NOTE: I'm not certain this is always a good idea.]
 
 ## Helpers
 
@@ -59,6 +86,14 @@ Some of the helpers could be replaced in a future upgrade with built-in helpers:
 In Ember 4.5, helpers can now be regular functions rather than wrapped in a manager.
 
 11/14/2024: Upgraded to 4.5 and simplified all helpers.
+
+## Controllers
+
+Controllers may be slated for deprecation. Best practice is to refactor the logic and properties in the controller, distributing them as appropriate to the route (for building the model), a service (for application state that will be used elsewhere), and a component (for everything else). The idea is that a route templates should be simple and reference just one or more components that contain much of the work that had been done by the controller.
+
+## Route Templates
+
+Route templates should refer to the model via @model rather than this.model as per the Ember Octane upgrade guide.
 
 ## EmberTable
 
@@ -75,17 +110,33 @@ The current code includes several subsystems of components that are tightly coup
 
 # Possible future upgrades
 
+## Model definitions
+
+All hasMany and belongsTo relationships should specify inverse and async options explicitly. Not doing so is deprecated.
+
 ## DB document timestamps
 
 Currently, all timestamping of db documents (users, problems, workspaces, etc.) appears to be done manually primarily on the client side. This approach could cause issues because the clients clocks might be wrong. Also, because the dates are updated manually (all over the codebase), there is a higher likelihood of errors.
 
-Instead, we could leverage the {timestamps: true} option when defining all the Mongoose Schemas. This option has the db (a single )
+Instead, we could leverage the {timestamps: true} option when defining all the Mongoose Schemas. This option has the db (a single source of truth) automatically insert and maintain createdAt and updatedAt fields.
+
+## Route organization
+
+There are several routes directly under the routes/ folder that have corresponding subfolders. For example, there is app/routes/assignments.js as well as app/routes/assignments/assignment.js and app/routes/assignments/new.js. A more consistent naming scheme would be to move these top-level routes to be index.js files in their corresponding folders (e.g., assignments.js file would become app/routes/assignments/index.js). That way, all the related routing files are grouped together.
+
+Another argument for this approach is that this is how the corresponding template files are organized. For example, there is a app/templates/assignments/ folder with index.hbs, assignment.hbs, and new.hbs.
+
+On the other hand, the current structure reflects a parent / child route structure because there are also files such as app/templates/assignments.hbs in addition to app/templates/assignments/index.hbs. On the other hand, we have to ask if the complexity is needed, but that is an issue for another day.
 
 ## Component organization
 
-# UI Elements
+### UI Elements
 
 There is now the folder app/components/ui that contains the form-field and expandable-cell components. The purpose of this folder is a place for generic UI components. Other generic UI components include: my-select, selectize-input, twitter-typeahead, radio-group (and radio-group-item), toggle-control, checkbox-list (and checkbox-list-item), collapsible-list, and quill-container. Once these get moved into that folder, every usage must reference the "Ui" namespace, such as <Ui::ToggleControl /> or <Ui::MySelect />.
+
+### Other components
+
+Similar to the Ui example above, usage of Namespaces is encouraged in Ember moving forward. Thus, we should reorganize the app/components folder with subfolders representing the distinct subsystems of Encompass. The components in the folders would then be referenced in templates via namespaces, such as <Users::UserList> which refers to app/components/users/user-list.js and user-list.hbs.
 
 ## New Workspaces
 
@@ -97,13 +148,13 @@ Both lodash and underscore are used extensively throughout the app. These cases 
 
 Underscore is not as well maintained as is lodash, so lodash should be used as needed. Note that underscore is used extensively in the app_server. It is used in about 15 files in the client code.
 
-There are certainly cases where lodash is helpful, but uses of underscore could be replaced by lodash. Also, rather than globally making the underscore character a reference to the entire lodash library, it would be better to import just the lodash functions needed. Also, rather than lodash, using native JS functions such as map, filter, etc. would be good.
+There are certainly cases where lodash is helpful, but uses of underscore could be replaced by lodash. Also, rather than globally making the underscore character a reference to the entire lodash library, it would be better to import just the lodash functions needed.
 
-Also, of course, as possible we should replace the use of lodash functions with native JS equivalents.
+Also, rather than lodash, using native JS functions such as map, filter, etc. would be good.
 
 ## Removal of jQuery
 
-Modern Ember recommends removing jQuery, using standard DOM access routines instead. Our file app.js sets $ globally to jQuery, so finding all instances will involve both searching for imports of jQuery and for $ (whether "$." or "$("). Note that we cannot completely eliminate jQuery because the selectize package depends on it.
+Modern Ember recommends removing jQuery, using standard DOM access routines instead. Our file app.js sets $ globally to jQuery, so finding all instances will involve both searching for imports of jQuery and for $ (whether "$." or "$(").
 
 Note that we cannot completely remove jQuery because it's a dependency of selectize. But we can eliminate its use in our own code to be conistent with modern Ember best practices.
 
@@ -129,7 +180,7 @@ There are a variety of superclasses
 
 I need to figure out if something needs to be done about this. I know that the Component superclasses should be made into services.
 
-In particular, the ErrorHandling superclass works, but it obscures how errors are accumulated (i.e., handleErrors creates a new property in the component that typically the template accesses). There is an error-handling service that handles errors more explicitly, requiring the component to create a getter to access the error variable created. Also, components should clean these up when they unmount.
+In particular, the ErrorHandling superclass works, but it obscures how errors are accumulated (i.e., handleErrors creates a new property in the component that typically the template accesses). See earlier notes on the ErrorHandling service.
 
 ## Cleaning up packages and unused elements
 
@@ -158,11 +209,12 @@ There are several README.md files scattered through the /test folder.
 
 - **Routes** Many of the routes are in the classic style, so should be upgraded to JS classes, although they all seem to work fine in Ember 4.5.
 - **Services** Most of the services are still in the classic style.
+- **Models** Several models include component-specific logic, including both derived properties (via get) and functions. Modern Ember encourages leaner models that focus on the data and their relationships. It would be best to trim down several of the models, pushing the specific logic out into the components.
 
 # Gotchas
 
 - For the built-in component <Input>, the id argument should be id= rather than @id=. If you do "@id", the component will not respond to clicks.
-- If a classic component receives @store={{this.store}} but this.store is undefined, then that component will see this.store as undefined even if you added store as a service.
+- If a classic component receives @store={{this.store}} but this.store (i.e., the argument) is undefined, then that component will see this.store as undefined even if you added store as a service.
 - "Error: Expected a dynamic component definition, but received an object or function that did not have a component manager associated with it. The dynamic invocation was <(result of a unknown helper)> or {{(result of a unknown helper)}}, and the incorrect definition is the value at the path (result of a unknown helper), which was: Object". This error has nothing to do with helpers. For some reason, a template file didn't like that I used the standard <input> tag. When I switched to the Ember <Input> tag, the problem went away.
 - Occasionally, Ember will fail quietly. For example,
 
@@ -177,14 +229,26 @@ There are several README.md files scattered through the /test folder.
 If this.removeMessages is undefined, Ember might **not** show an error in the console or indicate anywhere that it failed. Subsequent lines will simply not execute but the app will continue running as if everything is fine.
 
 - Be careful around the use of objects that are being tracked. One must be careful to update their references so that they are reactive. Just setting a property won't be enough unless you use TrackedObject from tracked-built-ins.
+- The error "Error while processing route: assignments.new Assertion Failed: Expected hash or Mixin instance, got [object Function]" was just caused by a syntax error in a model. The assertion failed because when hydrating a model, trying get all the documents from the store in that model failed.
+- Not really a gotcha, just something about Ember. If there is an async relationship in the route when the model is being put together, there are cases where you'll need to `await` a property access to ensure that the value has arrived.
+- a gotcha related to above: 'hash' waits for the resolution of regular Promises but not Ember ProxyPromises. Thus, if there's an async relationship in a model, if you use dot notation you must wait for that access to fully resolve (i.e., use await). 'hash' will not wait for that type of Promise. You'll see this via an error message such as:
+
+`Error while processing route: problems.problem.index Assertion Failed: You attempted to access the recommendedProblems property (of <(unknown):ember236>).
+Since Ember 3.1, this is usually fine as you no longer need to use .get() to access computed properties. However, in this case, the object in question is a special kind of Ember object (a proxy). Therefore, it is still necessary to use .get('recommendedProblems') in this case.`
+
+- related to above, in components, dot notation might result in a PromiseProxy. However, if it's used in a template, Ember will re-render once the value is fully resolved, so you don't have to worry about it. However, if you are using the value in js, such as wanting to loop over an array, you need to use await. (Of course, if you are just defining a convenience getter that uses dot notiation for use by a template, you don't have to await.)
 
 # Current Progress
+
+## CurrentUser service
+
+Today (Feb 10, 2025) I upgraded the currentUser service so that clients don't have to always dig in to the user object it provides. Now you can do this.currentUser.isAdmin, etc., instead of this.currentUser.user.isAdmin. In other words, you can get directly to the most popular properties of user, most of which are getters in the model. Really, though, the model should be simply the specs of the data and the currentUser service should be calculating all the things that right now the user model is doing. Before I do that, I need to make sure that I replace accessing the user object (e.g., this.user.XXX) with accessing the service (e.g., this.currentUser.XXX, but really we could name the service 'user' in the components) in the entire codebase for those calculated properties.
 
 ## Upgrade of elements
 
 - **Components** - most of the discussion in this file focuses on the upgrading of components from classic to modern (Glimmer, Octane, Ember 4.5).
 - **Adapters** - Upgraded
-- **Controllers** - Seem to have already been upgraded. I've not tested these.
+- **Controllers** - Controllers might be slated to be deprecated in favor of using components. That is, the template for a route would simply contain invocations of one or ore components. Thus, working through the controllers and refactoring to remove them all is another goal of the upgrade.
 - **Helpers** - as document elsewhere in this document, all upgraded.
 - **Initializers** - only one and I believe it's not needed for production. I upgraded it, however.
 - **Mixins** - as documented elsewhere, I'm in the process of eliminating these and double-checking others' work on removing these from components, etc.
@@ -213,3 +277,47 @@ These mixins are slated to be removed:
 ## Upgrade of Helpers
 
 With the upgrade to Ember 4.5 (11/14/2024), all helpers have been simplified to regular functions.
+
+## .gitkeep
+
+Removed all the unnecessary .gitkeep files that were created when the project began 6 years ago. This empty file is just a convention so that git will keep an otherwise empty folder in the history.
+
+## UI folder
+
+As of 12/9, the components/ui folder contains the following:
+
+- checkbox-list, checkbox-list-item
+- error-box
+- expandable-cell
+- form-field
+- radio-group, radio-group-item
+- twitter-typeahead
+- wordcloud-container
+
+Components potentially to include in the ui folder:
+
+- bread-crumbs, bread-crumbs-item
+- draggable-selection, DragNDrop, Droppable
+- my-select
+- pagination-control
+- quill-container
+- radio-filter
+- selectize-input
+- toggle-control
+
+The following components, included above, are actually wrappers for third-party packages, so might go into their own folder: (uiwrappers?):
+
+- quill-container
+- selectize-input
+- twitter-typeahead
+- wordcloud-container
+
+## New Routes
+
+- I upgraded the problems parent route:
+
+  - problems/problem/<id>
+  - problems/problem/<id>/edit
+  - problems/problem/<id>/assignment
+
+  Previously, edit and assignment were handled by flags in the db inside of a problem. When we transitioned to the problem, we first set the correct flag so that <ProblemInfo> would render correctly. With this change, we don't use the db for local application state, which is poor practice.

@@ -28,7 +28,7 @@
       @preload='focus'
     />
     {{#if missingWorkspace}}
-      <ErrorBox
+      <Ui::ErrorBox
         @error='Please select a workspace.'
         @resetError={{action (mut missingWorkspace) null}}
         @showDismiss={{true}}
@@ -42,7 +42,7 @@
 {{/if}}
 
 {{#if tooFewSubmissions}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error='Please select a workspace with at least 1 submission.'
     @resetError={{action (mut tooFewSubmissions) null}}
     @showDismiss={{true}}

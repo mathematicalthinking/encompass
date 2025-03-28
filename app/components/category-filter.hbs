@@ -1,0 +1,63 @@
+<div>
+  <ul class='category-filter-list'>
+    <SelectizeInput
+      @inputId='categories-filter'
+      @onItemAdd={{this.handleAddCategoryIdentifier}}
+      @maxItems={{1}}
+      @labelField='identifier'
+      @valueField='identifier'
+      @searchField='identifier'
+      @model='category'
+      @queryParamsKey='identifier'
+      @topLevelQueryParams='searchBy'
+      @isAsync={{true}}
+      @placeholder='Search categories to add'
+    />
+    <li>
+      <button
+        class='show-category-btn'
+        type='button'
+        {{on 'click' this.handleOpenCategoryList}}
+      >Show Category Menu</button>
+    </li>
+    <h5>Selected Categories</h5>
+    <label class='subfilter'>
+      <input
+        id='toggle-sub-cats'
+        type='checkbox'
+        checked={{this.includeSubCats}}
+        {{on 'change' this.toggleIncludeSubCats}}
+      />
+      <span>Include Subcategories</span>
+    </label>
+    {{#if this.hasSelectedCategories}}
+      <ul class='selected-cat-list'>
+        {{#each this.selectedCategories as |category|}}
+          <li>
+            {{category.identifier}}
+            <i
+              class='far fa-times-circle'
+              {{on 'click' (fn this.handleRemoveCategory category)}}
+              aria-hidden='true'
+              title='Remove'
+            ></i>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>No categories selected.</p>
+    {{/if}}
+  </ul>
+
+  {{#if this.showCategoryList}}
+    <div id='category-list-modal'>
+      <div class='modal-content'>
+        <h4>Select a Category</h4>
+        <button class='close' {{on 'click' this.handleCloseCategoryList}}>
+          <i class='fas fa-times'></i>
+        </button>
+        <CategoriesMenu @addCategory={{this.handleAddCategory}} />
+      </div>
+    </div>
+  {{/if}}
+</div>

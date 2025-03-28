@@ -1,89 +1,97 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
+import _isEqual from 'lodash/isEqual';
+import _isNull from 'lodash/isNull';
+import { service } from '@ember/service';
 
-export default class ProblemInfoComponent extends ErrorHandlingComponent {
-  @tracked isEditing = false;
-  @tracked showGeneral = true;
-  @tracked problemName = null;
-  @tracked problemText = null;
-  @tracked problemPublic = true;
-  @tracked privacySetting = null;
-  @tracked savedProblem = null;
-  @tracked showFlagReason = false;
-  @tracked isWide = false;
-  @tracked checked = true;
-  @tracked filesToBeUploaded = null;
-  @tracked isProblemUsed = false;
-  @tracked showAssignment = false;
-  @tracked problemList = [];
-  @tracked sectionList = null;
-  @tracked updateProblemErrors = [];
-  @tracked imageUploadErrors = [];
-  @tracked findRecordErrors = [];
-  @tracked createRecordErrors = [];
-  @tracked isMissingRequiredFields = null;
-  @tracked showCategories = false;
-  @tracked showGeneral = true;
-  @tracked showCats = false;
-  @tracked showAdditional = false;
-  @tracked showLegal = false;
-  @tracked categoryTree = {};
+export default class ProblemInfoComponent extends Component {
   @service('sweet-alert') alert;
   @service('problem-permissions') permissions;
+  @service problemUtils;
   @service('utility-methods') utils;
   @service store;
   @service router;
-  @tracked copyrightNotice = '';
-  @tracked sharingAuth = '';
-  @tracked author = '';
-  @tracked problemName = '';
-  @tracked problemText = '';
-  @tracked organization = '';
-  @tracked problemCategories = '';
-  @tracked problemStatus = '';
-  @tracked additionalInfo = '';
-  @tracked privacySetting = '';
-  @tracked sharingAuth = '';
-  @tracked privacySettingIcon = '';
+  @service currentUser;
+  @service errorHandling;
+  @tracked problem = {};
+  @tracked showFlagReason = false;
+  @tracked showCategories = false;
+  @tracked isWide = false;
+  @tracked filesToBeUploaded = null;
+  @tracked isMissingRequiredFields = false;
+
+  get tabs() {
+    return [
+      { label: 'General', key: 'general' },
+      { label: 'Categories', key: 'categories' },
+      { label: 'Additional', key: 'additional' },
+      { label: 'Legal', key: 'legal' },
+    ];
+  }
+
+  get showGeneral() {
+    return this.activeTab === 'general';
+  }
+
+  get showCats() {
+    return this.activeTab === 'categories';
+  }
+
+  get showAdditional() {
+    return this.activeTab === 'additional';
+  }
+
+  get showLegal() {
+    return this.activeTab === 'legal';
+  }
+
+  get activeTab() {
+    const tabValue = this.args.tab; // could be undefined if no query param
+    const validTabs = this.tabs.map((tab) => tab.key);
+    if (!validTabs.includes(tabValue)) {
+      return 'general';
+    }
+    return tabValue;
+  }
+
   constructor() {
     super(...arguments);
-    $('.list-outlet').removeClass('hidden');
-    if (this.args.problem.isForAssignment) {
-      this.showAssignment = true;
+    const outletEl = document.getElementById('outlet');
+    if (outletEl) {
+      outletEl.classList.remove('hidden');
     }
-    if (this.args.problem.isForEdit) {
-      this.isEditing = true;
-      this.privacySettingIcon = this.args.problem.privacySetting;
-      this.copyrightNotice = this.args.problem.copyrightNotice;
-      this.sharingAuth = this.args.problem.sharingAuth;
-      this.author = this.args.problem.author;
-      this.problemName = this.args.problem.title;
-      this.problemText = this.args.problem.text;
-      this.organization = this.args.problem.organization;
-      this.problemCategories = this.args.problem.categories;
-      this.problemStatus = this.args.problem.status;
-      this.additionalInfo = this.args.problem.additionalInfo;
-      this.privacySetting = this.args.problem.privacySetting;
-      this.sharingAuth = this.args.problem.sharingAuth;
-      this.privacySettingIcon = this.args.problem.privacySetting;
-    }
+    this.loadLocalProblem();
+  }
+
+  // use @action to mark that this function is called by a lifecycle hook and ensure that 'this' is the component.
+  // updates the local problem object with the properties of the problem passed in as an argument when:
+  // a. the component is first rendered
+  // b. the problem passed in as an argument changes
+  @action
+  async loadLocalProblem() {
+    this.problem = await this.problemUtils.extractEditableProperties(
+      this.args.problem
+    );
+  }
+
+  get user() {
+    return this.currentUser.user;
+  }
+
+  get notFlagged() {
+    return this.problem.status !== 'flagged';
   }
   get writePermissions() {
     return this.permissions.writePermissions(this.args.problem);
   }
-  get parentActions() {
-    return this.parentView.actions;
+
+  get errors() {
+    return this.errorHandling.getErrors(this.errorLabel);
   }
-  get flaggedBy() {
-    if (!this.args.problem.get('flagReason.flaggedBy')) return '';
-    return this.store.findRecord(
-      'user',
-      this.args.problem.get('flagReason.flaggedBy')
-    );
+
+  get errorLabel() {
+    return 'problemInfoErrors';
   }
   iconFillOptions = {
     approved: '#35A853',
@@ -98,21 +106,16 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     other: 'Other Reason',
   };
   get statusIconFill() {
-    let status = this.args.problem.status;
+    let status = this.problem.status;
     return this.iconFillOptions[status];
   }
 
+  get canEditStatus() {
+    return !this.user.isTeacher && this.args.isEditing;
+  }
+
   resetErrors() {
-    let errors = [
-      'updateProblemErrors',
-      'imageUploadErrors',
-      'isMissingRequiredFields',
-    ];
-    for (let error of errors) {
-      if (this[error]) {
-        this[error] = null;
-      }
-    }
+    this.errorHandling.removeMessages(this.errorLabel);
   }
   // Empty quill editor .html() property returns <p><br></p>
   // For quill to not be empty, there must either be some text or
@@ -122,330 +125,224 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
   }
 
   get keywordSelectOptions() {
-    let keywords = this.args.problem.keywords;
-    if (!_.isArray(keywords)) {
+    let keywords = this.problem.keywords;
+    if (!Array.isArray(keywords)) {
       return [];
     }
-    return _.map(keywords, (keyword) => {
-      return {
-        value: keyword,
-        label: keyword,
-      };
-    });
+    return keywords.map((keyword) => ({
+      value: keyword,
+      label: keyword,
+    }));
   }
   get isRecommended() {
     let problem = this.args.problem;
-    let recommendedProblems = this.args.recommendedProblems.toArray() || [];
-    if (recommendedProblems.includes(problem)) {
-      return true;
-    } else {
-      return false;
-    }
+    let recommendedProblems = this.args.recommendedProblems.slice() || [];
+    return recommendedProblems.includes(problem);
   }
 
   createKeywordFilter(keyword) {
     if (!keyword) {
-      return;
+      return false;
     }
-    let keywords = $('#select-edit-keywords')[0].selectize.items;
-    let keywordLower = keyword.trim().toLowerCase();
 
-    let keywordsLower = _.map(keywords, (key, val) => {
-      return key.toLowerCase();
-    });
+    // Grab the element without jQuery
+    const selectEl = document.getElementById('select-edit-keywords');
+    if (!selectEl || !selectEl.selectize) {
+      // Fallback if the element or selectize instance isn't found
+      return true;
+    }
 
-    // don't let user create keyword if it matches exactly an existing keyword
-    return !_.contains(keywordsLower, keywordLower);
+    // Get the selected items array (strings/IDs)
+    const items = selectEl.selectize.items;
+
+    // Lowercase the new keyword
+    const keywordLower = keyword.trim().toLowerCase();
+
+    // Convert each selected item to lowercase
+    const itemsLower = items.map((item) => item.toLowerCase());
+
+    // Return true if the new keyword does NOT already exist
+    return !itemsLower.includes(keywordLower);
   }
 
   continueEdit() {
-    this.showEditWarning = false;
-    this.isEditing = true;
-    let problem = this.args.problem;
-    this.problemName = problem.title;
-    this.problemText = problem.text;
-    this.privacySetting = problem.privacySetting;
+    this.router.transitionTo('problems.edit', this.args.problem.id, {
+      queryParams: { tab: this.activeTab },
+    });
   }
 
-  setStatus() {
-    let problem = this.args.problem;
-    let currentUser = this.args.currentUser;
-    let accountType = currentUser.get('accountType');
-    let privacy = this.privacySetting;
-    let originalPrivacy = problem.get('privacySetting');
-    let status;
-
-    if (originalPrivacy !== privacy) {
+  adjustStatus(originalPrivacy, newPrivacy, accountType) {
+    if (originalPrivacy !== newPrivacy) {
       if (accountType === 'A') {
-        status = this.problemStatus;
+        return this.problem.status;
       } else if (accountType === 'P') {
-        if (privacy === 'E') {
-          status = 'pending';
+        if (newPrivacy === 'E') {
+          return 'pending';
         } else {
-          status = this.problemStatus;
+          return this.problem.status;
         }
       } else {
-        if (privacy === 'M') {
-          status = 'approved';
+        if (newPrivacy === 'M') {
+          return 'approved';
         } else {
-          status = 'pending';
+          return 'pending';
         }
       }
     } else {
-      status = this.problemStatus;
-    }
-
-    this.generatedStatus = status;
-
-    if (accountType === 'A' || accountType === 'P') {
-      this.checkStatus();
-    } else {
-      return this.updateProblem();
+      return this.problem.status;
     }
   }
 
-  updateProblem() {
-    let problem = this.args.problem;
-    let currentUser = this.args.currentUser;
-    let title = this.problemName.trim();
-    const quillContent = $('.ql-editor').html();
-    let text;
-    let isQuillValid;
+  @action
+  async updateProblem() {
+    const isPrivacyOk = await this.checkPrivacy(
+      this.args.problem.privacySetting,
+      this.problem.privacySetting
+    );
 
-    if (quillContent !== undefined) {
-      text = quillContent.replace(/["]/g, "'");
-      isQuillValid = this.isQuillValid();
-    } else {
-      text = problem.get('text');
-      isQuillValid = true;
+    if (!isPrivacyOk) {
+      return;
     }
-    let privacy = this.privacySetting;
-    let additionalInfo = this.additionalInfo;
-    let copyright = this.copyrightNotice;
-    let sharingAuth = this.sharingAuth;
 
-    let keywords = problem.get('keywords');
-    let initialKeywords = this.initialKeywords;
-    let didKeywordsChange = !_.isEqual(keywords, initialKeywords);
+    const currentStatus = this.args.problem.status;
+    const newStatus = this.adjustStatus(
+      this.args.problem.status,
+      this.problem.status,
+      this.user.accountType
+    );
 
-    let flaggedReason = this.flaggedReason;
+    if (currentStatus !== 'flagged' && newStatus === 'flagged') {
+      const { isStatusOk, flaggedReason } = await this.handleFlaggedStatus();
+      if (!isStatusOk) {
+        return;
+      }
+      this.problem.flagReason = flaggedReason;
+    } else {
+      this.problem.flagReason = null;
+    }
 
-    let author = this.author;
-    let status = this.generatedStatus;
+    // adjust properties of the local copy of the problem
+    this.problem.title = this.problem.title.trim();
 
-    if (!title || !isQuillValid || !privacy) {
+    this.problem.text = (this.problem.text || '').replace(/["]/g, "'");
+
+    if (
+      !this.problem.title ||
+      !this.isQuillValid ||
+      !this.problem.privacySetting
+    ) {
       this.isMissingRequiredFields = true;
       return;
     } else {
-      if (this.isMissingRequiredFields) {
-        this.isMissingRequiredFields = null;
-      }
+      this.isMissingRequiredFields = false;
     }
 
-    if (privacy !== null) {
-      problem.set('privacySetting', privacy);
+    const uploadResults = this.filesToBeUploaded
+      ? await this.uploadFiles(this.filesToBeUploaded)
+      : null;
+
+    if (uploadResults) {
+      const image = await this.store.findRecord('image', uploadResults[0]._id);
+      this.problem.image = image;
     }
 
-    problem.set('title', title);
-    problem.set('text', text);
-    problem.set('additionalInfo', additionalInfo);
-    problem.set('copyrightNotice', copyright);
-    problem.set('sharingAuth', sharingAuth);
-    problem.set('author', author);
-    problem.set('status', status);
-    problem.set('flagReason', flaggedReason);
-
-    if (this.filesToBeUploaded) {
-      var uploadData = this.filesToBeUploaded;
-      var formData = new FormData();
-      for (let f of uploadData) {
-        formData.append('photo', f);
-      }
-      let firstItem = uploadData[0];
-      let isPDF = firstItem.type === 'application/pdf';
-
-      if (isPDF) {
-        $.post({
-          url: '/pdf',
-          processData: false,
-          contentType: false,
-          data: formData,
+    if (
+      !_isEqual(this.problem, this.args.problem) ||
+      !_isEqual(this.problem.keywords, this.args.problem.keywords) ||
+      !_isEqual(
+        this.problem.categories.slice(),
+        this.args.problem.categories.slice()
+      )
+    ) {
+      // update problem with the values from the local copy
+      Object.keys(this.problem).forEach((key) => {
+        this.args.problem.set(key, this.problem[key]);
+      });
+      this.args.problem
+        .save()
+        .then(() => {
+          this.alert.showToast(
+            'success',
+            'Problem Updated',
+            'bottom-end',
+            3000,
+            false,
+            null
+          );
+          // handle success
+          this.showConfirmModal = false;
+          this.router.transitionTo('problems.problem', this.args.problem.id, {
+            queryParams: { tab: this.activeTab },
+          });
         })
-          .then((res) => {
-            this.uploadResults = res.images;
-            this.store.findRecord('image', res.images[0]._id).then((image) => {
-              problem.set('image', image);
-              problem
-                .save()
-                .then((res) => {
-                  this.alert.showToast(
-                    'success',
-                    'Problem Updated',
-                    'bottom-end',
-                    3000,
-                    false,
-                    null
-                  );
-                  // handle success
-                  this.isEditing = false;
-                  if (problem.get('isForEdit')) {
-                    problem.set('isForEdit', false);
-                  }
-                  this.resetErrors();
-                })
-                .catch((err) => {
-                  this.handleErrors(err, 'updateProblemErrors', problem);
-                  this.showConfirmModal = false;
-                });
-            });
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'imageUploadErrors');
-          });
-      } else {
-        $.post({
-          url: '/image',
-          processData: false,
-          contentType: false,
-          data: formData,
-        })
-          .then((res) => {
-            this.uploadResults = res.images;
-            this.store.findRecord('image', res.images[0]._id).then((image) => {
-              problem.set('image', image);
-              problem
-                .save()
-                .then((res) => {
-                  this.alert.showToast(
-                    'success',
-                    'Problem Updated',
-                    'bottom-end',
-                    3000,
-                    false,
-                    null
-                  );
-                  this.isEditing = false;
-                  if (problem.get('isForEdit')) {
-                    problem.set('isForEdit', false);
-                  }
-                  this.resetErrors();
-                })
-                .catch((err) => {
-                  this.handleErrors(err, 'updateProblemErrors', problem);
-                  this.showConfirmModal = false;
-                });
-            });
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'imageUploadErrors');
-          });
-      }
-    } else {
-      if (problem.get('hasDirtyAttributes') || didKeywordsChange) {
-        problem.set('modifiedBy', currentUser);
-        problem
-          .save()
-          .then(() => {
-            this.alert.showToast(
-              'success',
-              'Problem Updated',
-              'bottom-end',
-              3000,
-              false,
-              null
-            );
-            this.resetErrors();
-            this.showConfirmModal = false;
-            this.isEditing = false;
-            if (problem.get('isForEdit')) {
-              problem.set('isForEdit', false);
-            }
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'updateProblemErrors', problem);
-            this.showConfirmModal = false;
-            return;
-          });
-      } else {
-        this.isEditing = false;
-      }
+        .catch((err) => {
+          this.errorHandling.handleErrors(
+            err,
+            this.errorLabel,
+            this.args.problem
+          );
+          this.showConfirmModal = false;
+        });
     }
   }
 
-  @action deleteProblem() {
-    let problem = this.args.problem;
-    this.alert
-      .showModal(
-        'warning',
-        'Are you sure you want to delete this problem?',
-        null,
-        'Yes, delete it'
-      )
-      .then((result) => {
-        if (result.value) {
-          this.hideInfo();
-          problem.set('isTrashed', true);
-          window.history.back();
-          problem
-            .save()
-            .then((problem) => {
-              this.alert
-                .showToast(
-                  'success',
-                  'Problem Deleted',
-                  'bottom-end',
-                  5000,
-                  true,
-                  'Undo'
-                )
-                .then((result) => {
-                  if (result.value) {
-                    problem.set('isTrashed', false);
-                    problem.save().then(() => {
-                      this.alert.showToast(
-                        'success',
-                        'Problem Restored',
-                        'bottom-end',
-                        3000,
-                        false,
-                        null
-                      );
-                      window.history.back();
-                    });
-                  }
-                });
-            })
-            .catch((err) => {
-              this.handleErrors(err, 'updateProblemErrors', problem);
-            });
+  uploadFiles(filesToBeUploaded = []) {
+    const formData = new FormData();
+    filesToBeUploaded.forEach((f) => {
+      formData.append('photo', f);
+    });
+
+    const isPDF = filesToBeUploaded[0].type === 'application/pdf';
+    const url = isPDF ? '/pdf' : '/image';
+    return fetch(url, {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return response.json();
+      })
+      .then((res) => {
+        return res.images;
+      })
+      .catch((err) => {
+        this.errorHandling.handleErrors(err, this.errorLabel);
       });
+  }
+
+  @action
+  handleChange(property, value) {
+    this.problem = { ...this.problem, [property]: value };
+  }
+
+  @action async deleteProblem() {
+    try {
+      const { wasDeleted, wasRestored } = await this.problemUtils.deleteProblem(
+        this.args.problem
+      );
+      if (wasDeleted) {
+        this.hideInfo();
+        window.history.back();
+        return;
+      }
+
+      if (wasRestored) {
+        window.history.back();
+        return;
+      }
+    } catch (err) {
+      this.errorHandling.handleErrors(err, this.errorLabel, problem);
+    }
   }
 
   @action editProblem() {
     let problem = this.args.problem;
-    let problemId = problem.get('id');
-    let currentUserAccountType = this.args.currentUser.get('accountType');
-    let isAdmin = currentUserAccountType === 'A';
-    this.copyrightNotice = problem.copyrightNotice;
-    this.sharingAuth = problem.sharingAuth;
-    this.author = problem.author;
-    this.problemName = problem.title;
-    this.problemText = problem.text;
-    this.organization = problem.organization;
-    this.problemCategories = problem.categories;
-    this.problemStatus = problem.status;
-    this.additionalInfo = problem.additionalInfo;
-    this.privacySetting = problem.privacySetting;
-    this.sharingAuth = problem.sharingAuth;
-    this.privacySettingIcon = problem.privacySetting;
+    let problemId = problem.id;
+    let isAdmin = this.user.isAdmin;
 
-    let keywords = problem.get('keywords') || [];
-
-    let keywordsCopy = keywords.slice();
-    this.initialKeywords = keywordsCopy;
-
-    if (!problem.get('isUsed')) {
+    if (!problem.isUsed) {
       this.store
         .queryRecord('assignment', {
           problem: problemId,
@@ -486,164 +383,95 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     }
   }
 
-  @action cancelEdit() {
-    this.isEditing = false;
-
-    let problem = this.args.problem;
-    if (problem.get('isForEdit')) {
-      problem.set('isForEdit', false);
-    }
-    this.resetErrors();
+  @action
+  onSelectTab(tab) {
+    // this.activeTab = tab;
+    this.router.transitionTo({
+      queryParams: { tab },
+    });
   }
 
-  @action radioSelect(value) {
-    this.privacySetting = value;
+  @action
+  changePrivacy(event) {
+    const newPrivacy = event.target.value;
+    this.problem = { ...this.problem, privacySetting: newPrivacy };
   }
 
-  @action changePrivacy() {
-    let privacy = $('#privacy-select :selected').val();
-    this.privacySettingIcon = privacy;
-  }
-
-  @action checkPrivacy() {
-    let currentPrivacy = this.args.problem.get('privacySetting');
-    let privacy = $('#privacy-select :selected').val();
-    this.privacySetting = privacy;
-
-    if (currentPrivacy !== 'E' && privacy === 'E') {
-      this.alert
-        .showModal(
-          'question',
-          'Are you sure you want to make your problem public?',
-          "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
-          'Yes'
-        )
-        .then((result) => {
-          if (result.value) {
-            return this.setStatus();
-          }
-        });
+  async checkPrivacy(currentPrivacy, newPrivacy) {
+    if (currentPrivacy !== 'E' && newPrivacy === 'E') {
+      const response = await this.alert.showModal(
+        'question',
+        'Are you sure you want to make your problem public?',
+        "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
+        'Yes'
+      );
+      return response.value;
     } else {
-      return this.setStatus();
+      return true;
     }
   }
 
-  @action checkStatus() {
-    let currentUser = this.args.currentUser;
-    let status = this.generatedStatus;
-    let problem = this.args.problem;
-    let title = this.problemName;
-    let flaggedReason = {
-      flaggedBy: currentUser.get('id'),
+  async handleFlaggedStatus() {
+    const flaggedReason = {
+      flaggedBy: this.user,
       reason: '',
       flaggedDate: new Date(),
     };
 
-    if (status === 'approved' || status === 'pending') {
-      this.flaggedReason = null;
-      return this.updateProblem();
-    } else if (status === 'flagged' && !problem.get('flagReason')) {
-      this.alert
-        .showModal(
-          'warning',
-          `Are you sure you want to mark ${title} as flagged`,
-          null,
-          `Yes, Flag it!`
-        )
-        .then((result) => {
-          if (result.value) {
-            this.alert
-              .showPromptSelect(
-                'Flag Reason',
-                this.flagOptions,
-                'Select a reason'
-              )
-              .then((result) => {
-                if (result.value) {
-                  if (result.value === 'other') {
-                    this.alert
-                      .showPrompt(
-                        'text',
-                        'Other Flag Reason',
-                        'Please provide a brief explanation for why this problem should be flagged.',
-                        'Flag'
-                      )
-                      .then((result) => {
-                        if (result.value) {
-                          flaggedReason.reason = result.value;
-                          this.flaggedBy = currentUser;
-                          this.flaggedReason = flaggedReason;
-                          return this.updateProblem();
-                        }
-                      });
-                  } else {
-                    flaggedReason.reason = result.value;
-                    this.flaggedBy = currentUser;
-                    this.flaggedReason = flaggedReason;
-                    return this.updateProblem();
-                  }
-                }
-              });
-          }
-        });
+    const { value: isStatusOk } = await this.alert.showModal(
+      'warning',
+      `Are you sure you want to mark ${this.problem.title} as flagged`,
+      null,
+      `Yes, Flag it!`
+    );
+
+    if (!isStatusOk) {
+      return { isStatusOk: false, flaggedReason: null };
     }
+
+    const { value: reason } = await this.alert.showPromptSelect(
+      'Flag Reason',
+      this.flagOptions,
+      'Select a reason'
+    );
+
+    flaggedReason.reason = reason;
+
+    if (reason === 'other') {
+      const { value: other } = this.alert.showPrompt(
+        'text',
+        'Other Flag Reason',
+        'Please provide a brief explanation for why this problem should be flagged.',
+        'Flag'
+      );
+      flaggedReason.reason = other;
+    }
+    return { isStatusOk: true, flaggedReason };
   }
 
-  @action addToMyProblems() {
-    let problem = this.args.problem;
-    let originalTitle = problem.get('title');
-    let title = 'Copy of ' + originalTitle;
-    let text = problem.get('text');
-    let author = problem.get('author');
-    let additionalInfo = problem.get('additionalInfo');
-    let isPublic = problem.get('isPublic');
-    let image = problem.get('image');
-    let imageUrl = problem.get('imageUrl');
-    let createdBy = this.args.currentUser;
-    let categories = problem.get('categories');
-    let status = problem.get('status');
-    let currentUser = this.args.currentUser;
-    let keywords = problem.get('keywords');
-    let organization = currentUser.get('organization');
-    let copyright = problem.get('copyrightNotice');
-    let sharingAuth = problem.get('sharingAuth');
-
-    let newProblem = this.store.createRecord('problem', {
-      title: title,
-      text: text,
-      author: author,
-      additionalInfo: additionalInfo,
-      imageUrl: imageUrl,
-      isPublic: isPublic,
-      origin: problem,
-      categories: categories,
-      createdBy: createdBy,
-      image: image,
-      organization: organization,
+  // this function is used when we aren't editing, so it's appropriate that we reference this.args.problem.
+  @action
+  addToMyProblems() {
+    const copyProperties = {
+      title: `Copy of ${this.args.problem.title}`,
+      createdBy: this.user,
+      organization: this.user.organization,
       privacySetting: 'M',
-      copyrightNotice: copyright,
-      sharingAuth: sharingAuth,
-      status: status,
       createDate: new Date(),
-      keywords: keywords,
-    });
+    };
 
-    newProblem
-      .save()
+    this.problemUtils
+      .saveCopy(this.args.problem, copyProperties)
       .then((problem) => {
-        let name = problem.get('title');
-        this.savedProblem = problem;
         this.alert.showToast(
           'success',
-          `${name} added to your problems`,
+          `${problem.title} added to your problems`,
           'bottom-end',
           3000,
           false,
           null
         );
         this.router.transitionTo('problems.problem', problem.id);
-        // let parentView = this.parentView;
-        // this.parentActions.refreshList.call(parentView);
       })
       .catch((err) => {
         this.alert.showToast(
@@ -654,142 +482,55 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
           false,
           null
         );
-        // this.handleErrors(err, 'createRecordErrors', newProblem);
       });
   }
 
-  @action toggleImageSize() {
+  @action
+  toggleImageSize() {
     this.isWide = !this.isWide;
   }
 
-  @action deleteImage() {
-    let problem = this.args.problem;
-    problem.set('image', null);
-    problem
-      .save()
-      .then((res) => {
-        this.alert.showToast(
-          'success',
-          'Image Deleted',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'updateProblemErrors', problem);
-      });
+  @action
+  deleteImage() {
+    this.problem = { ...this.problem, image: null };
   }
 
-  @action toggleCategories() {
-    this.store.query('category', {}).then((queryCats) => {
-      let categories = queryCats.get('meta');
-      this.categoryTree = categories.categories;
-    });
-    this.showCategories = !this.showCategories;
-  }
-
-  @action addCategories(category) {
-    let problem = this.args.problem;
-    let categories = problem.get('categories');
-    if (!categories.includes(category)) {
+  @action
+  addCategory(category) {
+    const categories = this.problem.categories;
+    if (category && !categories.includes(category)) {
       categories.pushObject(category);
-      problem.save().then(() => {
-        this.alert
-          .showToast(
-            'success',
-            'Category Added',
-            'bottom-end',
-            4000,
-            true,
-            'Undo'
-          )
-          .then((result) => {
-            if (result.value) {
-              problem.get('categories').removeObject(category);
-              problem.save().then(() => {
-                this.alert.showToast(
-                  'success',
-                  'Category Removed',
-                  'bottom-end',
-                  4000,
-                  false,
-                  null
-                );
-              });
-            }
-          });
-      });
     }
   }
 
-  @action removeCategory(category) {
-    let problem = this.args.problem;
-    let categories = problem.get('categories');
-    categories.removeObject(category);
-    problem.save().then(() => {
-      this.alert
-        .showToast(
-          'success',
-          'Category Removed',
-          'bottom-end',
-          4000,
-          true,
-          'Undo'
-        )
-        .then((result) => {
-          if (result.value) {
-            problem.get('categories').pushObject(category);
-            problem.save().then(() => {
-              this.alert.showToast(
-                'success',
-                'Category Restored',
-                'bottom-end',
-                4000,
-                false,
-                null
-              );
-            });
-          }
-        });
-    });
+  @action
+  removeCategory(category) {
+    this.problem.categories.removeObject(category);
   }
 
-  @action toAssignmentInfo(assignment) {
-    this.router.transitionTo('assignments.assignment', assignment);
+  @action
+  toggleAssignment() {
+    this.router.transitionTo(
+      'problems.problem.assignment',
+      this.args.problem.id
+    );
   }
 
-  @action toggleAssignment() {
-    this.showAssignment = true;
-    this.args.problem.isForAssignment = true;
-    this.problemList.pushObject(this.args.problem);
-    var scr = $('#outlet')[0].scrollHeight;
-    $('#outlet').animate({ scrollTop: scr }, 100);
-  }
-
-  @action hideInfo(doTransition = true) {
+  @action
+  hideInfo() {
     // transition back to list
-
-    if (this.isEditing) {
-      this.isEditing = false;
+    const outletEl = document.getElementById('outlet');
+    if (outletEl) {
+      outletEl.classList.add('hidden');
     }
-    let problem = this.args.problem;
-    if (problem.isForEdit) {
-      problem.isForEdit = false;
-    }
-    $('.list-outlet').addClass('hidden');
-    if (doTransition) {
-      this.router.transitionTo('problems');
-    }
+    this.router.transitionTo('problems');
   }
 
   @action checkRecommend() {
-    let currentUser = this.args.currentUser;
-    let accountType = currentUser.get('accountType');
-    let problem = this.args.problem;
-    let privacySetting = problem.get('privacySetting');
-    let status = problem.get('status');
+    const accountType = this.user.accountType;
+    const problem = this.args.problem;
+    const privacySetting = problem.privacySetting;
+    const status = problem.status;
 
     if (accountType === 'T') {
       return;
@@ -832,9 +573,9 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
 
   @action addToRecommend() {
     let problem = this.args.problem;
-    let accountType = this.args.currentUser.accountType;
+    let accountType = this.user.accountType;
     if (accountType === 'A') {
-      let orgList = this.args.orgList.toArray();
+      let orgList = this.args.orgList.slice();
       let optionList = {};
       for (let org of orgList) {
         let id = org.id;
@@ -886,7 +627,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
 
   @action removeRecommend() {
     let problem = this.args.problem;
-    return this.args.currentUser.get('organization').then((org) => {
+    return this.user.get('organization').then((org) => {
       org.get('recommendedProblems').removeObject(problem);
       org.save().then(() => {
         this.alert.showToast(
@@ -901,35 +642,8 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
     });
   }
 
-  @action toggleGeneral() {
-    this.showGeneral = true;
-    this.showCats = false;
-    this.showAdditional = false;
-    this.showLegal = false;
-  }
-
-  @action toggleCats() {
-    this.showCats = true;
-    this.showGeneral = false;
-    this.showAdditional = false;
-    this.showLegal = false;
-  }
-
-  @action toggleAdditional() {
-    this.showAdditional = true;
-    this.showCats = false;
-    this.showGeneral = false;
-    this.showLegal = false;
-  }
-
-  @action toggleLegal() {
-    this.showLegal = true;
-    this.showCats = false;
-    this.showAdditional = false;
-    this.showGeneral = false;
-  }
-
-  @action restoreProblem() {
+  @action
+  restoreProblem() {
     let problem = this.args.problem;
     this.alert
       .showModal(
@@ -940,7 +654,7 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
       )
       .then((result) => {
         if (result.value) {
-          problem.set('isTrashed', false);
+          problem.isTrashed = false;
           problem.save().then(() => {
             this.alert.showToast(
               'success',
@@ -950,37 +664,45 @@ export default class ProblemInfoComponent extends ErrorHandlingComponent {
               false,
               null
             );
-            let parentView = this.parentView;
-            this.parentActions.refreshList.call(parentView);
           });
         }
       });
   }
 
-  @action toggleShowFlagReason() {
+  @action
+  toggleCategories() {
+    this.showCategories = !this.showCategories;
+  }
+
+  @action
+  toggleShowFlagReason() {
     this.showFlagReason = !this.showFlagReason;
   }
-  @action updateKeywords(val, $item) {
+  @action
+  updateKeywords(val, $item) {
     if (!val) {
       return;
     }
 
-    let keywords = this.args.problem.keywords;
-    if (!_.isArray(keywords)) {
-      this.args.problem.keywords = [];
-      keywords = this.args.problem.keywords;
-    }
-    let isRemoval = _.isNull($item);
+    const isRemoval = _isNull($item);
 
     if (isRemoval) {
-      keywords.removeObject(val);
-      return;
+      const keywords = this.problem.keywords.filter(
+        (keyword) => keyword !== val
+      );
+      this.problem = { ...this.problem, keywords };
+    } else {
+      this.problem = {
+        ...this.problem,
+        keywords: [...this.problem.keywords, val],
+      };
     }
-    keywords.addObject(val);
   }
-  @action updateQuillText(content, isEmpty, isOverLengthLimit) {
-    this.quillText = content;
+
+  @action
+  updateQuillText(text, isEmpty, isOverLengthLimit) {
     this.isQuillEmpty = isEmpty;
     this.isQuillTooLong = isOverLengthLimit;
+    this.problem = { ...this.problem, text };
   }
 }

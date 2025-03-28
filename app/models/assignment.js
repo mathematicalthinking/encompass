@@ -6,10 +6,10 @@ export default class AssignmentModel extends AuditableModel {
     return this.id;
   }
   @attr('string') name;
-  @hasMany('answer', { async: true }) answers;
+  @hasMany('answer', { inverse: 'assignment', async: true }) answers;
   @hasMany('user', { inverse: null, async: true }) students;
-  @belongsTo('section', { async: true }) section;
-  @belongsTo('problem', { async: true }) problem;
+  @belongsTo('section', { inverse: 'assignments', async: true }) section;
+  @belongsTo('problem', { inverse: null, async: true }) problem;
   @attr('date') assignedDate;
   @attr('date') dueDate;
   @belongsTo('workspace', { inverse: null, async: true }) taskWorkspace;

@@ -32,21 +32,23 @@ export default class IndexRoute extends Route {
       const user = this.currentUser.user;
       const sections = await this.store.findAll('section');
 
-      const teacherSections = sections.filter((section) =>
-        section.teachers.includes(user)
-      );
+      const teacherAssignments = (
+        await Promise.all(
+          sections.map(async (section) => {
+            const teachers = await section.teachers;
+            return teachers.includes(user) ? section.assignments.toArray() : [];
+          })
+        )
+      ).flat();
 
-      const studentSections = sections.filter((section) =>
-        section.students.includes(user)
-      );
-
-      const teacherAssignments = teacherSections.flatMap((section) =>
-        section.assignments.toArray()
-      );
-
-      const studentAssignments = studentSections.flatMap((section) =>
-        section.assignments.toArray()
-      );
+      const studentAssignments = (
+        await Promise.all(
+          sections.map(async (section) => {
+            const students = await section.students;
+            return students.includes(user) ? section.assignments.toArray() : [];
+          })
+        )
+      ).flat();
 
       const teacherClasses = user.sections.map((section) => section.sectionId);
 

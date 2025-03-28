@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { action } from '@ember/object';
 
 export default class ProblemListContainerComponent extends Component {
@@ -12,10 +12,13 @@ export default class ProblemListContainerComponent extends Component {
 
   @tracked problems = this.args.problems || [];
   @tracked selectedPrivacySetting = ['M', 'O', 'E'];
+  @tracked selectedStatusSetting = ['approved', 'pending', 'flagged'];
   @tracked showList = true;
   @tracked showGrid = false;
   @tracked isFilterListCollapsed = true;
-  @tracked toggleTrashed = false;
+  @tracked showOnlyTrashed = false;
+  @tracked criteriaTooExclusive = false;
+  @tracked areNoRecommendedProblems = false;
   @tracked isFetchingProblems = false;
   @tracked isDisplayingSearchResults = false;
   @tracked searchCriterion = 'general';
@@ -122,7 +125,7 @@ export default class ProblemListContainerComponent extends Component {
       this.userOrgName = name;
       this.configureFilters();
       this.configureAdminFilter();
-      // this.setCategoriesFilter(this.selectedCategories);
+      this.configureCategoryFilter();
     });
   }
 
@@ -149,17 +152,12 @@ export default class ProblemListContainerComponent extends Component {
     return 'problem-filter';
   }
 
-  get user() {
-    return this.currentUser.user;
+  get categoryFilterName() {
+    return 'category-filter';
   }
 
-  get displayProblems() {
-    if (!this.problems) {
-      return [];
-    }
-    return this.toggleTrashed
-      ? this.problems
-      : this.problems.filter((p) => !p.isTrashed);
+  get user() {
+    return this.currentUser.user;
   }
 
   get listResultsMessage() {
@@ -173,6 +171,10 @@ export default class ProblemListContainerComponent extends Component {
       return 'No results found. Please try expanding your filter criteria.';
     }
 
+    if (this.areNoRecommendedProblems) {
+      return `There are currently no recommended problems for ${this.userOrgName}.`;
+    }
+
     if (this.isDisplayingSearchResults) {
       let total = this.problemsMetadata?.total || 0;
       let countDescriptor = total === 1 ? 'problem' : 'problems';
@@ -184,24 +186,22 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   get statusOptionsList() {
-    return this.currentUser.isTeacher
+    return this.user.isTeacher
       ? this.statusOptions.filter((option) => !option.teacherHide)
       : this.statusOptions;
   }
 
   @action
   updateStatusFilter(status) {
-    let allowedValues = ['approved', 'pending', 'flagged'];
+    let allowedValues = this.statusOptionsList.map((option) => option.value);
     if (!allowedValues.includes(status)) {
       return;
     }
-    let statusFilter = this.statusFilter;
 
-    if (statusFilter.includes(status)) {
-      statusFilter.removeObject(status);
-    } else {
-      statusFilter.addObject(status);
-    }
+    this.selectedStatusSetting = this.selectedStatusSetting.includes(status)
+      ? this.selectedStatusSetting.filter((item) => item !== status)
+      : [...this.selectedStatusSetting, status];
+
     this.triggerFetch();
   }
 
@@ -213,9 +213,8 @@ export default class ProblemListContainerComponent extends Component {
 
   @action
   triggerFetch() {
-    if (this.criteriaTooExclusive) {
-      this.criteriaTooExclusive = null;
-    }
+    this.criteriaTooExclusive = false;
+    this.areNoRecommendedProblems = false;
     this.getProblems();
   }
 
@@ -226,6 +225,7 @@ export default class ProblemListContainerComponent extends Component {
 
   @action
   triggerShowTrashed() {
+    this.showOnlyTrashed = !this.showOnlyTrashed;
     this.getProblems();
   }
 
@@ -274,7 +274,10 @@ export default class ProblemListContainerComponent extends Component {
               value: 'all',
               label: 'All',
               icon: 'fas fa-infinity',
-              buildFilter: () => ({}),
+              buildFilter: () => {
+                // Admin can see everything, no restrictions
+                return this.inputState.getFilter(this.adminFilterName);
+              },
             },
           ]
         : []),
@@ -283,7 +286,7 @@ export default class ProblemListContainerComponent extends Component {
         label: 'Mine',
         icon: 'fas fa-user',
         buildFilter: () => {
-          const id = this.currentUser.user?.id ?? null;
+          const id = this.user.id ?? null;
           return id ? { createdBy: id } : {};
         },
       },
@@ -292,7 +295,7 @@ export default class ProblemListContainerComponent extends Component {
         label: 'My Org',
         icon: 'fas fa-university',
         buildFilter: () => {
-          const id = this.currentUser.user?.organization?.id ?? null;
+          const id = this.user.organization?.id ?? null;
           return id ? { organization: id } : {};
         },
       },
@@ -303,20 +306,85 @@ export default class ProblemListContainerComponent extends Component {
       'myOrg',
       [
         {
-          label: `Created by ${this.userOrgName} Members`,
-          value: 'fromOrg',
-          icon: 'fas fa-users',
-          default: true,
-        },
-        {
           label: 'Recommended',
           value: 'recommended',
           icon: 'fas fa-star',
           default: true,
         },
-        { label: 'Owner', value: 'owner', default: true },
+        {
+          label: `Created by ${this.userOrgName} Members`,
+          value: 'fromOrg',
+          icon: 'fas fa-users',
+          default: true,
+        },
       ],
-      { multiSelect: true, persist: true }
+      { multiSelect: true, persist: true },
+      (selections = []) => {
+        const includeRecommended = selections.includes('recommended');
+        const includeFromOrg = selections.includes('fromOrg');
+
+        if (!includeRecommended && !includeFromOrg) {
+          this.criteriaTooExclusive = true;
+          return {};
+        }
+
+        const recommendedProblems =
+          this.user?.organization?.get('recommendedProblems') ?? [];
+        const recommendedIds = recommendedProblems.map((p) => p.id);
+
+        if (
+          includeRecommended &&
+          recommendedIds.length === 0 &&
+          !includeFromOrg
+        ) {
+          this.areNoRecommendedProblems = true;
+          return {};
+        }
+
+        const conditions = [];
+
+        if (includeRecommended && recommendedIds.length > 0) {
+          conditions.push({ id: { $in: recommendedIds } });
+        }
+
+        if (includeFromOrg && this.user?.organization?.id) {
+          conditions.push({ organization: this.user.organization.id });
+        }
+
+        return conditions.length > 0 ? { $or: conditions } : {};
+      }
+    );
+  }
+
+  configureCategoryFilter() {
+    this.inputState.createStates(this.categoryFilterName, [
+      {
+        value: 'categories',
+        label: 'Categories',
+        type: 'list',
+      },
+    ]);
+    this.inputState.createSubStates(
+      this.categoryFilterName,
+      'categories',
+      [
+        {
+          label: 'Include Subcategories',
+          value: 'includeSubcats',
+          default: false,
+        },
+      ],
+      {},
+      (selections = []) => {
+        const selectedCategories =
+          this.inputState.getListState(this.categoryFilterName) || [];
+        if (selectedCategories.length === 0) {
+          return {};
+        }
+        const ids = selectedCategories.map((cat) => cat.id);
+        const includeSubCats = selections.includes('includeSubcats');
+        return { categories: { ids, includeSubCats } };
+      }
     );
   }
 
@@ -349,10 +417,18 @@ export default class ProblemListContainerComponent extends Component {
         queryParamsKey: 'usernameSearch',
         isAsync: true,
         type: 'list',
+        buildFilter: () => {
+          const selectedUsers =
+            this.inputState.getListState(this.adminFilterName) || [];
+          return { createdBy: { $in: selectedUsers } };
+        },
       },
       {
         value: 'pows',
         label: 'PoWs',
+        buildFilter: () => {
+          return { pows: 'all' };
+        },
       },
     ]);
 
@@ -373,7 +449,27 @@ export default class ProblemListContainerComponent extends Component {
           default: true,
         },
       ],
-      { listBased: true, multiSelect: true }
+      { listBased: true, multiSelect: true },
+      (selections = []) => {
+        const includeRecommended = selections.includes('recommended');
+        const includeFromOrg = selections.includes('fromOrg');
+
+        if (!includeRecommended && !includeFromOrg) {
+          this.criteriaTooExclusive = true;
+          return { all: {} };
+        }
+
+        const organizations =
+          this.inputState.getListState(this.adminFilterName) || [];
+        return {
+          all: {
+            org: {
+              ...(includeRecommended && { recommended: organizations }),
+              ...(includeFromOrg && { organizations }),
+            },
+          },
+        };
+      }
     );
   }
 
@@ -388,15 +484,27 @@ export default class ProblemListContainerComponent extends Component {
 
   getProblems() {
     this.isFetchingProblems = true;
-    let filterBy = this.buildFilterBy();
-    let sortBy = this.buildSortBy();
-    let queryParams = { filterBy, sortBy };
+    const queryParams = {};
+    if (!this.showOnlyTrashed) {
+      queryParams.filterBy = this.buildFilterBy();
+      queryParams.sortBy = this.buildSortBy();
+    } else {
+      queryParams.isTrashedOnly = true;
+    }
+
+    if (this.criteriaTooExclusive || this.areNoRecommendedProblems) {
+      this.problems = [];
+      this.isFetchingProblems = false;
+      return;
+    }
+
+    console.log('queryParams', queryParams);
 
     this.store
       .query('problem', queryParams)
       .then((results) => {
         this.errorHandling.removeMessages('problemLoadErrors');
-        this.problems = results;
+        this.problems = results || [];
         this.isFetchingProblems = false;
       })
       .catch((err) => {
@@ -406,9 +514,16 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   buildFilterBy() {
-    const filter = { privacySetting: { $in: this.selectedPrivacySetting } };
-    const mainFilter = this.inputState.getFilter(this.filterName);
-    return { ...filter, ...mainFilter };
+    if (this.selectedStatusSetting.length === 0) {
+      this.criteriaTooExclusive = true;
+    }
+    const filter = {
+      privacySetting: { $in: this.selectedPrivacySetting },
+      status: { $in: this.selectedStatusSetting },
+    };
+    const mainFilter = this.inputState.getFilter(this.filterName); // includes admin filter
+    const categoryFilter = this.inputState.getFilter(this.categoryFilterName);
+    return { ...filter, ...mainFilter, ...categoryFilter };
   }
 
   buildSortBy() {
@@ -416,7 +531,7 @@ export default class ProblemListContainerComponent extends Component {
   }
 
   async getUserOrg() {
-    const org = await this.currentUser.user?.organization;
+    const org = await this.user.organization;
     return org?.name || 'undefined';
   }
 }

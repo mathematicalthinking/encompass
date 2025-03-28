@@ -20,7 +20,7 @@
 </div>
 
 {{#each nameErrors as |error|}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error={{error}}
     @showDismiss={{true}}
     @resetError={{action (mut nameErrors) null}}
@@ -55,7 +55,7 @@
 </div>
 
 {{#each ownerErrors as |error|}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error={{error}}
     @showDismiss={{true}}
     @resetError={{action (mut ownerErrors) null}}
@@ -72,7 +72,7 @@
       <i class='fas fa-info-circle info-icon'></i>
     </span>
   </p>
-  <RadioGroup
+  <Ui::RadioGroup
     @options={{modeInputs}}
     @selectedValue={{this.selectedMode}}
     @updateValue={{action 'updateSelectedMode'}}
@@ -80,7 +80,7 @@
 </div>
 
 {{#each modeErrors as |error|}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error={{error}}
     @showDismiss={{true}}
     @resetError={{action (mut modeErrors) null}}
@@ -135,7 +135,7 @@
         @privacySetting={{folderSetPrivacy}}
       />
       {{#if duplicateFolderSetName}}
-        <ErrorBox
+        <Ui::ErrorBox
           @error='There already exists a public Folder Set with that name. Please choose a different name.'
           @showDismiss={{true}}
           @resetError={{action (mut duplicateFolderSetName) null}}

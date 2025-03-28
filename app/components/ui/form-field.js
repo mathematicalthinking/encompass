@@ -3,7 +3,11 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class UiFormFieldComponent extends Component {
-  @tracked currentValue = this.args.value; // Track the value for inline editing
+  @tracked currentValue = this.args.value;
+
+  get id() {
+    return this.args.id || this.args.name || 'xyzzy';
+  }
 
   @action
   handleInput(event) {
@@ -26,5 +30,10 @@ export default class UiFormFieldComponent extends Component {
     if (this.args.onClick) {
       this.args.onClick();
     }
+  }
+
+  @action
+  resetEditingValue() {
+    this.currentValue = this.args.value;
   }
 }

@@ -28,13 +28,17 @@
             {{#if this.toggleTrashed}}
               <div class='action restore-all'>
                 <button
-                  class='primary-button animated fadeIn' type="button" {{action 'restoreAllSelected'}}
+                  class='primary-button animated fadeIn'
+                  type='button'
+                  {{action 'restoreAllSelected'}}
                 >Restore {{this.selectedAnswers.length}} Submissions</button>
               </div>
             {{else}}
               <div class='action'>
                 <button
-                  class='primary-button animated fadeIn create-ws' type="button" {{action 'toSettingsConfig'}}
+                  class='primary-button animated fadeIn create-ws'
+                  type='button'
+                  {{action 'toSettingsConfig'}}
                 >Create Workspace</button>
               </div>
             {{/if}}
@@ -68,7 +72,7 @@
             {{/if}}
           </div>
           <div class='side-icons'>
-            <MySelect
+            <Ui::MySelect
               @content={{this.revisionsSelectOptions}}
               @cannotBeNull={{true}}
               @selectedValue={{this.selectedRevisionOption}}
@@ -181,7 +185,7 @@
 {{/if}}
 {{#if this.showSubmissionViewer}}
   <div class='toggle-filter-menu'>
-    <button type="button" {{action 'toggleMenu'}}><i
+    <button type='button' {{action 'toggleMenu'}}><i
         id='arrow-icon'
         class='fas fa-chevron-right'
       ></i></button>

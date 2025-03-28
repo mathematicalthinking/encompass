@@ -76,7 +76,7 @@ If you run into the following error while running tests:
 
 ## Client `/app`
 
-EnCOMPASS uses Ember for the client and was recently migrated to Ember Octane from v2.14. Portions are not fully migrated.
+EnCOMPASS uses Ember for the client and was recently migrated to Ember Octane from v2.14. Portions are not fully migrated. See [UPGRADE_NOTES](./UPGRADE_NOTES.md) for more information.
 
 ### workflow
 
@@ -89,9 +89,6 @@ EnCOMPASS uses Ember for the client and was recently migrated to Ember Octane fr
 ### components
 
 Ember is switching to Glimmer for its component engine. Components that have their templates (.hbs files) in `app/components` have been migrated. Their classes (.js files) will look like native JS classes. Components with templates in `app/templates/components` have not been migrated and still use Classic Ember component classes. I tried to combine similar components when possible.
-
-- `admin-problem-filter` and `admin-workspace-filter` could be comined
-- `problem-filter` and `workspace-filter` could be combined
 
 ### mixins
 
@@ -122,9 +119,7 @@ Each route has a corresponding template that gets rendered. It should be in the 
 
 Libraries that are not managed by npm are added in the `/vendor` directory and configured into the bundle in `/ember-cli-build.js` including:
 
-1. selectize input library (see `app/components/selectize-input.js`)
-2. typeahead library (see `app/components/twitter-typeahead.js`)
-3. selection libraries (`vendor/image-tagging.js` and `vendor/selection-highlighting.js`) that are used in `app/components/workspace-submission.js`
+- selection libraries (`vendor/image-tagging.js` and `vendor/selection-highlighting.js`) that are used in `app/components/workspace-submission.js`
 
 ### `/helpers`
 

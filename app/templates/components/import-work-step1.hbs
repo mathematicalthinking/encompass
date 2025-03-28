@@ -30,7 +30,7 @@
 />
 
 {{#if missingProblem}}
-  <ErrorBox
+  <Ui::ErrorBox
     @error='Please select a problem'
     @resetError={{action (mut missingProblem) null}}
     @showDismiss={{true}}

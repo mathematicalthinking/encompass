@@ -12,7 +12,7 @@ export default class WorkspaceModel extends AuditableModel {
   @belongsTo('user', { async: true }) owner;
   @hasMany('user', { async: true }) editors;
   @hasMany('folder', { async: true }) folders;
-  @attr() group;
+  @belongsTo('group', { inverse: null, async: true }) group;
   @hasMany('submission', { async: true }) submissions;
   @hasMany('response', { async: true }) responses;
   @hasMany('selection', { async: true }) selections;

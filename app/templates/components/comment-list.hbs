@@ -9,7 +9,7 @@
   </header>
   {{#if this.canComment}}
     <div class='label-select {{this.newCommentLabel}}'>
-      <MySelect
+      <Ui::MySelect
         @content={{this.labelOptions}}
         @cannotBeNull={{true}}
         @selectedValue={{this.newCommentLabel}}
@@ -41,10 +41,14 @@
     {{#if this.showComposeButtons}}
       <div class='submit-buttons'>
         <button
-          class='primary-button cancel-button' type="button" {{action 'cancelComment'}}
+          class='primary-button cancel-button'
+          type='button'
+          {{action 'cancelComment'}}
         >Cancel</button>
         <button
-          class='primary-button save' type="button" {{action 'madeSelection'}}
+          class='primary-button save'
+          type='button'
+          {{action 'madeSelection'}}
         >Save</button>
       </div>
     {{/if}}
@@ -87,7 +91,10 @@
                   @value={{this.sinceDate}}
                 />
                 {{#if this.showApplyDate}}
-                  <button type="button" {{action 'applySinceDate'}}>Apply</button>
+                  <button
+                    type='button'
+                    {{action 'applySinceDate'}}
+                  >Apply</button>
                 {{/if}}
               </span>
             </label>
@@ -126,7 +133,7 @@
     <p class='error-message'>{{error}}</p>
   {{/each}}
   {{#if this.invalidDateError}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error={{this.invalidDateError}}
       @showDismiss={{true}}
       @resetError={{action (mut this.invalidDateError) null}}

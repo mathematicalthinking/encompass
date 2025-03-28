@@ -5,12 +5,13 @@ import AuthenticatedRoute from '../_authenticated_route';
 
 export default class WorkspacesNewRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
   beforeModel() {
     const user = this.modelFor('application');
     const isStudent = user.get('isStudent');
 
     if (isStudent) {
-      this.transitionTo('/');
+      this.router.transitionTo('/');
     }
   }
   model() {
@@ -27,10 +28,10 @@ export default class WorkspacesNewRoute extends AuthenticatedRoute {
   }
   // Created workspaceId and is passed from component to redirect
   @action toWorkspaces(id) {
-    this.transitionTo('workspace.work', id);
+    this.router.transitionTo('workspace.work', id);
   }
 
   @action toWorkspace(id) {
-    this.transitionTo('workspace/work', id);
+    this.router.transitionTo('workspace/work', id);
   }
 }

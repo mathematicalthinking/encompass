@@ -1,85 +1,82 @@
-/* eslint-disable */
-import Service, { inject as service } from '@ember/service';
+import Service, { service } from '@ember/service';
 
-export default Service.extend({
-  currentUser: null,
-  setUser(user) {
-    this.set('currentUser', user);
-  },
-  utils: service('utility-methods'),
+export default class WorkspacePermissionsService extends Service {
+  @service('utility-methods') utils;
+  @service currentUser;
 
-  isAdmin() {
-    return this.get('currentUser.isAdmin');
-  },
+  get user() {
+    return this.currentUser.user;
+  }
 
-  isPdAdmin() {
-    return this.get('currentUser.isPdAdmin');
-  },
+  get isAdmin() {
+    return this.user.isAdmin;
+  }
+
+  get isPdAdmin() {
+    return this.user.isPdAdmin;
+  }
 
   isOwner(ws) {
     let ownerId = this.utils.getBelongsToId(ws, 'owner');
-    return ownerId === this.get('currentUser.id');
-  },
+    return ownerId === this.user.id;
+  }
 
   isCreator(ws) {
     let creatorId = this.utils.getBelongsToId(ws, 'createdBy');
-    return creatorId === this.get('currentUser.id');
-  },
+    return creatorId === this.user.id;
+  }
 
   isInPdAdminDomain(ws) {
-    if (!this.isPdAdmin()) {
+    if (!this.isPdAdmin) {
       return false;
     }
     let utils = this.utils;
 
-    let userOrgId = utils.getBelongsToId(this.currentUser, 'organization');
+    let userOrgId = utils.getBelongsToId(this.user, 'organization');
     let wsOrgId = utils.getBelongsToId(ws, 'organization');
 
     return userOrgId === wsOrgId;
-  },
+  }
 
   canDelete(ws) {
-    return this.isAdmin() || this.isCreator(ws) || this.isOwner(ws);
-  },
+    return this.isAdmin || this.isCreator(ws) || this.isOwner(ws);
+  }
 
   hasOwnerPrivileges(ws) {
     return (
-      this.isAdmin() ||
+      this.isAdmin ||
       this.isOwner(ws) ||
       this.isCreator(ws) ||
       this.isInPdAdminDomain(ws)
     );
-  },
+  }
 
   canCopy(ws) {
     // have to add a check is workspace is allowed to be copied
-    if (this.canDelete(ws) || this.isInPdAdminDomain(ws)) {
-      return true;
-    } else {
-      return false;
-    }
-  },
+    return this.canDelete(ws) || this.isInPdAdminDomain(ws);
+  }
+
   isFeedbackApprover(ws) {
     if (!ws) {
       return false;
     }
 
-    let approvers = ws.get('feedbackAuthorizers') || [];
-    return approvers.includes(this.get('currentUser.id'));
-  },
+    let approvers = ws.feedbackAuthorizers || [];
+    return approvers.includes(this.user.id);
+  }
 
   canApproveFeedback(ws) {
     if (!ws || ws.workspaceType === 'parent') {
       return false;
     }
     return (
-      this.isAdmin() ||
+      this.isAdmin ||
       this.isOwner(ws) ||
       this.isCreator(ws) ||
       this.isFeedbackApprover(ws) ||
       this.isInPdAdminDomain(ws)
     );
-  },
+  }
 
   canEdit(ws, recordType, requiredPermissionLevel) {
     const utils = this.utils;
@@ -88,7 +85,7 @@ export default Service.extend({
       return false;
     }
 
-    let wsType = ws.get('workspaceType');
+    let wsType = ws.workspaceType;
 
     if (wsType === 'parent') {
       // cannot create new selections or taggings or edit folders
@@ -103,7 +100,7 @@ export default Service.extend({
     }
 
     if (
-      this.isAdmin() ||
+      this.isAdmin ||
       this.isOwner(ws) ||
       this.isCreator(ws) ||
       this.isInPdAdminDomain(ws)
@@ -111,7 +108,7 @@ export default Service.extend({
       return true;
     }
 
-    let wsMode = ws.get('mode');
+    let wsMode = ws.mode;
 
     let isPublic = wsMode === 'public' || wsMode === 'internet';
 
@@ -122,16 +119,13 @@ export default Service.extend({
 
     // check ws permissions
 
-    const wsPermissions = ws.get('permissions');
+    const wsPermissions = ws.permissions;
 
     if (!utils.isNonEmptyArray(wsPermissions)) {
       return false;
     }
 
-    const userPermissions = wsPermissions.findBy(
-      'user',
-      this.get('currentUser.id')
-    );
+    const userPermissions = wsPermissions.findBy('user', this.user.id);
     if (!utils.isNonEmptyObject(userPermissions)) {
       return false;
     }
@@ -169,5 +163,5 @@ export default Service.extend({
     }
 
     return permissionLevel >= requiredPermissionLevel;
-  },
-});
+  }
+}

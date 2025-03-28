@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 const ACTION_BUTTONS = {
   Restore: (problem) => () => this.restoreProblem(problem),
@@ -11,11 +11,14 @@ const ACTION_BUTTONS = {
     this.confirmStatusUpdate(problem, 'title', 'approved'),
   Assign: (problem) => () => this.assignProblem(problem),
   Copy: (problem) => () => this.addToMyProblems(problem),
+  Delete: (problem) => () => this.deleteProblem(problem),
 };
 
 export default class ProblemListItemComponent extends Component {
   @service('sweet-alert') alert;
   @service('problem-permissions') permissions;
+  @service currentUser;
+  @service problemUtils;
   @service router;
   @service store;
 
@@ -58,11 +61,11 @@ export default class ProblemListItemComponent extends Component {
   ];
 
   get isAdminUser() {
-    return this.args.currentUser.isAdmin;
+    return this.currentUser.isAdmin;
   }
 
   get isPdAdminUser() {
-    return this.args.currentUser.isPdAdmin;
+    return this.currentUser.isPdAdmin;
   }
 
   get actionButtonName() {
@@ -209,18 +212,16 @@ export default class ProblemListItemComponent extends Component {
   }
 
   get actionButton() {
-    let actionBtn = {};
-    let isAdmin = this.args.currentUser.isAdmin;
-    let isPdAdmin = this.args.currentUser.isPdAdmin;
-    let problem = this.args.problem;
+    const actionBtn = {};
+    const problem = this.args.problem;
 
-    if (isAdmin) {
+    if (this.isAdmin) {
       if (problem.isTrashed) {
         actionBtn.function = 'restoreProblem';
         actionBtn.name = 'Restore';
       } else {
         actionBtn.function = 'confirmStatusUpdate';
-        if (problem.get('status') === 'approved') {
+        if (problem.status === 'approved') {
           actionBtn.name = 'Flag';
           actionBtn.argument1 = 'title';
           actionBtn.argument2 = 'flagged';
@@ -231,17 +232,14 @@ export default class ProblemListItemComponent extends Component {
         }
       }
     } else {
-      if (isPdAdmin) {
-        if (
-          problem.get('privacySetting') !== 'E' &&
-          problem.get('status') !== 'approved'
-        ) {
+      if (this.isPdAdmin) {
+        if (problem.privacySetting !== 'E' && problem.status !== 'approved') {
           actionBtn.function = 'confirmStatusUpdate';
           actionBtn.name = 'Approve';
           actionBtn.argument1 = 'title';
           actionBtn.argument2 = 'approved';
         } else {
-          if (problem.get('status') !== 'flagged') {
+          if (problem.status !== 'flagged') {
             actionBtn.function = 'assignProblem';
             actionBtn.name = 'Assign';
           } else {
@@ -260,6 +258,16 @@ export default class ProblemListItemComponent extends Component {
   @action showStatusOptions() {
     this.showAdminStatusMenu = true;
   }
+
+  @action
+  handleShowMoreMenu() {
+    this.showMoreMenu = true;
+  }
+  @action
+  handleHideMoreMenu() {
+    this.showMoreMenu = false;
+  }
+
   @action toggleShowMoreMenu() {
     let isShowing = this.showMoreMenu;
     this.showMoreMenu = !isShowing;
@@ -336,7 +344,7 @@ export default class ProblemListItemComponent extends Component {
     record.set('status', value);
     if (reason) {
       let flagReason = {
-        flaggedBy: this.args.currentUser.id,
+        flaggedBy: this.currentUser.id,
         reason: reason,
         flaggedDate: new Date(),
       };
@@ -344,7 +352,7 @@ export default class ProblemListItemComponent extends Component {
     }
     record
       .save()
-      .then((record) => {
+      .then(() => {
         this.alert.showToast('success', msg, 'bottom-end', 5000, false, null);
         if (this.showMoreMenu) {
           this.showMoreMenu = false;
@@ -404,7 +412,6 @@ export default class ProblemListItemComponent extends Component {
       .then((result) => {
         if (result.value) {
           problem.set('isTrashed', true);
-          // this.sendAction('toProblemList');
           problem
             .save()
             .then((problem) => {
@@ -432,78 +439,49 @@ export default class ProblemListItemComponent extends Component {
                         false,
                         null
                       );
-                      // window.history.back();
                     });
                   }
                 });
             })
             .catch((err) => {
-              this.handleErrors(err, 'updateProblemErrors', problem);
+              this.alert.showToast(
+                'error',
+                `${err}`,
+                'bottom-end',
+                3000,
+                false,
+                null
+              );
             });
         }
       });
   }
   @action assignProblem() {
-    // this.set('creatingAssignment', true);
-    // send to parent to handle?
-    let problem = this.args.problem;
-    problem.set('isForAssignment', true);
-    this.router.transitionTo('problems.problem', problem.id);
+    this.router.transitionTo(
+      'problems.problem.assignment',
+      this.args.problem.id
+    );
   }
   @action editProblem() {
-    // send to parent to handle?
-    let problem = this.args.problem;
-    problem.set('isForEdit', true);
-    this.router.transitionTo('problems.problem', problem.id);
+    this.router.transitionTo('problems.edit', this.args.problem.id);
   }
 
   @action addToMyProblems() {
-    let problem = this.args.problem;
-    let originalTitle = problem.title;
-    let title = 'Copy of ' + originalTitle;
-    let text = problem.text;
-    let author = problem.author;
-    let additionalInfo = problem.additionalInfo;
-    let isPublic = problem.isPublic;
-    let image = problem.image;
-    let imageUrl = problem.imageUrl;
-    let createdBy = this.args.currentUser;
-    let categories = problem.categories;
-    let status = problem.status;
-    let currentUser = this.args.currentUser;
-    let keywords = problem.keywords;
-    let organization = currentUser.get('organization');
-    let copyright = problem.copyrightNotice;
-    let sharingAuth = problem.sharingAuth;
-
-    let newProblem = this.store.createRecord('problem', {
-      title: title,
-      text: text,
-      author: author,
-      additionalInfo: additionalInfo,
-      imageUrl: imageUrl,
-      isPublic: isPublic,
-      origin: problem,
-      categories: categories,
-      createdBy: createdBy,
-      image: image,
-      organization: organization,
+    const copyProperties = {
+      title: `Copy of ${this.args.problem.title}`,
+      createdBy: this.user,
+      organization: this.user.organization,
       privacySetting: 'M',
-      copyrightNotice: copyright,
-      sharingAuth: sharingAuth,
-      status: status,
       createDate: new Date(),
-      keywords: keywords,
-    });
+    };
 
-    newProblem
-      .save()
+    this.problemUtils
+      .saveCopy(this.args.problem, copyProperties)
       .then((problem) => {
-        let name = problem.get('title');
-        this.avedProblem = problem;
+        this.savedProblem = problem;
         this.alert.showToast(
           'success',
-          `${name} added to your problems`,
+          `${problem.title} added to your problems`,
           'bottom-end',
           3000,
           false,
@@ -520,13 +498,9 @@ export default class ProblemListItemComponent extends Component {
           false,
           null
         );
-        // this.handleErrors(err, 'createRecordErrors', newProblem);
       });
   }
 
-  @action toProblemInfo(problem) {
-    this.router.transitionTo('problems.problem', problem.id);
-  }
   @action makePending() {
     this.confirmStatusUpdate(this.args.problem, 'title', 'pending');
   }

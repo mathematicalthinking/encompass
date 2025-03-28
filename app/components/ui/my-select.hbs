@@ -1,0 +1,31 @@
+<div class='mySelect my-select'><select
+    disabled={{@isDisabled}}
+    {{on 'change' this.selectChange}}
+  >
+    {{#if @prompt}}
+      {{#unless @selectedValue}}
+        <option value='' id='select-prompt'>{{@prompt}}</option>
+      {{/unless}}
+    {{/if}}
+
+    {{#each @content as |item|}}
+      <option
+        class='option'
+        value='{{item}}'
+        selected={{is-equal item @selectedValue}}
+      >
+        {{item}}
+      </option>
+    {{/each}}
+  </select>
+
+  {{#unless @cannotBeNull}}
+    {{#if @selectedValue}}
+      <i
+        {{on 'click' this.clearSelection}}
+        class='fa fa-times cancel-icon'
+        aria-hidden='true'
+      ></i>
+    {{/if}}
+  {{/unless}}
+</div>

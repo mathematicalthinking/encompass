@@ -1,90 +1,166 @@
-<div class="flex-container-full">
-  <div class="flex-item-full filter-options collapse" id="filter-list-side">
-    <div class="filter-items">
+<div class='flex-container-full'>
+  <div class='flex-item-full filter-options collapse' id='filter-list-side'>
+    <div class='filter-items'>
       <h2>Summary</h2>
-      <ul class="primary-filter-list">
+      <ul class='primary-filter-list'>
         {{#each detailsItems as |item|}}
-          <DetailsListItem @label={{item.label}} @displayValue={{item.displayValue}} @emptyValue={{item.emptyValue}} @propName={{item.propName}} @children={{item.children}} @isArray={{item.isArray}} @editValue={{action "goToStep"}} @associatedStep={{item.associatedStep}} @currentStep={{currentStep.value}} />
+          <DetailsListItem
+            @label={{item.label}}
+            @displayValue={{item.displayValue}}
+            @emptyValue={{item.emptyValue}}
+            @propName={{item.propName}}
+            @children={{item.children}}
+            @isArray={{item.isArray}}
+            @editValue={{action 'goToStep'}}
+            @associatedStep={{item.associatedStep}}
+            @currentStep={{currentStep.value}}
+          />
         {{/each}}
       </ul>
     </div>
   </div>
-  <div class="flex-item-full list-view">
-    <div class="results-list">
-      <div class="header">
+  <div class='flex-item-full list-view'>
+    <div class='results-list'>
+      <div class='header'>
         <h1>Copy Workspace</h1>
       </div>
 
-      <div class="step-display">
-        <div class="container">
-          <ul class="progressbar">
-            <li class="step-1 active-step">
+      <div class='step-display'>
+        <div class='container'>
+          <ul class='progressbar'>
+            <li class='step-1 active-step'>
               <span>Select Workspace</span>
             </li>
-            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
+            <li
+              class='step-2
+                {{if (greater-equal currentStep.value 2) "active-step"}}'
+            >
               <span>Copy Configuration</span>
             </li>
-            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
+            <li
+              class='step-3
+                {{if (greater-equal currentStep.value 3) "active-step"}}'
+            >
               <span>Workspace Info</span>
             </li>
-            <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
+            <li
+              class='step-4
+                {{if (greater-equal currentStep.value 4) "active-step"}}'
+            >
               <span>Collaborators</span>
             </li>
-            <li class="step-5 {{if (greater-equal currentStep.value 5) 'active-step'}}">
+            <li
+              class='step-5
+                {{if (greater-equal currentStep.value 5) "active-step"}}'
+            >
               <span>Review</span>
             </li>
           </ul>
         </div>
       </div>
 
-      <div class="step-content">
+      <div class='step-content'>
         {{!-- <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5> --}}
 
         {{#if showSelectWorkspace}}
-          <WsCopyWorkspace @showLoadingSubmissions={{showLoadingSubmissions}} @loadSubmissionErrors={{loadSubmissionErrors}} @store={{this.store}} @workspaceToCopy={{workspaceToCopy}} @selectedWorkspace={{selectedWorkspace}} @fromWorkspaceList={{fromWorkspaceList}} @onProceed={{action "setOriginalWorkspace"}} />
+          <WsCopyWorkspace
+            @showLoadingSubmissions={{showLoadingSubmissions}}
+            @loadSubmissionErrors={{loadSubmissionErrors}}
+            @store={{this.store}}
+            @workspaceToCopy={{workspaceToCopy}}
+            @selectedWorkspace={{selectedWorkspace}}
+            @fromWorkspaceList={{fromWorkspaceList}}
+            @onProceed={{action 'setOriginalWorkspace'}}
+          />
         {{/if}}
 
         {{#if showSelectConfig}}
-          <WsCopyConfig @workspace={{workspaceToCopy}} @submissionThreads={{submissionThreads}} @newWsConfig={{newWsConfig}} @copyConfig={{copyConfig}} @onProceed={{action "setConfig"}} @onBack={{action "changeStep"}} />
+          <WsCopyConfig
+            @workspace={{workspaceToCopy}}
+            @submissionThreads={{submissionThreads}}
+            @newWsConfig={{newWsConfig}}
+            @copyConfig={{copyConfig}}
+            @onProceed={{action 'setConfig'}}
+            @onBack={{action 'changeStep'}}
+          />
         {{/if}}
 
         {{#if showOwnerSettings}}
-          <WsCopyOwnerSettings @newWsOwner={{newWsOwner}} @newWsMode={{newWsMode}} @newWsName={{newWsName}} @newFolderSetOptions={{newFolderSetOptions}} @workspace={{selectedWorkspace}} @store={{this.store}} @modeInputs={{modeInputs}} @onProceed={{action "setOwnerSettings"}} @folderSetInputs={{folderSetInputs}} @folderSets={{model.folderSets}} @isCopyingFolders={{isCopyingFolders}} @onBack={{action "changeStep"}} @existingFolderSet={{existingFolderSet}} />
+          <WsCopyOwnerSettings
+            @newWsOwner={{newWsOwner}}
+            @newWsMode={{newWsMode}}
+            @newWsName={{newWsName}}
+            @newFolderSetOptions={{newFolderSetOptions}}
+            @workspace={{selectedWorkspace}}
+            @store={{this.store}}
+            @modeInputs={{modeInputs}}
+            @onProceed={{action 'setOwnerSettings'}}
+            @folderSetInputs={{folderSetInputs}}
+            @folderSets={{model.folderSets}}
+            @isCopyingFolders={{isCopyingFolders}}
+            @onBack={{action 'changeStep'}}
+            @existingFolderSet={{existingFolderSet}}
+          />
         {{/if}}
 
         {{#if showPermissions}}
-          <WsCopyPermissions @submissionsPool={{submissionsPool}} @workspace={{workspaceToCopy}} @newWsPermissions={{newWsPermissions}} @store={{this.store}} @newWsOwner={{newWsOwner}} @onProceed={{action "setPermissions"}} @onBack={{action "changeStep"}} />
+          <WsCopyPermissions
+            @submissionsPool={{submissionsPool}}
+            @workspace={{workspaceToCopy}}
+            @newWsPermissions={{newWsPermissions}}
+            @store={{this.store}}
+            @newWsOwner={{newWsOwner}}
+            @onProceed={{action 'setPermissions'}}
+            @onBack={{action 'changeStep'}}
+          />
         {{/if}}
 
         {{#if showReview}}
-          <WsCopyReview @showLoadingMessage={{showRequestLoading}} @mode={{newWsMode}} @owner={{newWsOwner}} @name={{newWsName}} @workspace={{workspaceToCopy}} @onProceed={{action "createCopyRequest"}} @onBack={{action "changeStep"}} @recordCounts={{recordCounts}} />
+          <WsCopyReview
+            @showLoadingMessage={{showRequestLoading}}
+            @mode={{newWsMode}}
+            @owner={{newWsOwner}}
+            @name={{newWsName}}
+            @workspace={{workspaceToCopy}}
+            @onProceed={{action 'createCopyRequest'}}
+            @onBack={{action 'changeStep'}}
+            @recordCounts={{recordCounts}}
+          />
         {{/if}}
       </div>
 
-
       {{#if customConfigError}}
-        <ErrorBox @error="Sorry, something went wrong processing your custom configuration." @showDismiss={{true}} @resetError={{action (mut customConfigError) null}} />
+        <Ui::ErrorBox
+          @error='Sorry, something went wrong processing your custom configuration.'
+          @showDismiss={{true}}
+          @resetError={{action (mut customConfigError) null}}
+        />
       {{/if}}
       {{#if copyWorkspaceError}}
-        <ErrorBox @error={{copyWorkspaceError}} @showDismiss={{true}} @resetError={{action (mut copyWorkspaceError) null}} />
+        <Ui::ErrorBox
+          @error={{copyWorkspaceError}}
+          @showDismiss={{true}}
+          @resetError={{action (mut copyWorkspaceError) null}}
+        />
       {{/if}}
 
       {{#each serverErrors as |error|}}
-        <ErrorBox @error={{error}} @showDismiss={{true}} />
+        <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
       {{/each}}
     </div>
   </div>
 </div>
 
-<div class="toggle-filter-menu">
-  <button type="button" {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+<div class='toggle-filter-menu'>
+  <button type='button' {{action 'toggleMenu'}}><i
+      id='arrow-icon'
+      class='fas fa-chevron-right'
+    ></i></button>
 </div>
 
 <script>
-  $('.list-view').click(function (e) {
-    if (!($('#filter-list-side').hasClass('collapse'))) {
-      $('#arrow-icon').toggleClass('fa-rotate-180');
-    }
-    $('#filter-list-side').addClass('collapse');
-  });
+  $('.list-view').click(function (e) { if
+  (!($('#filter-list-side').hasClass('collapse'))) {
+  $('#arrow-icon').toggleClass('fa-rotate-180'); }
+  $('#filter-list-side').addClass('collapse'); });
 </script>

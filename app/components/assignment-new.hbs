@@ -46,17 +46,6 @@
                   @type='hidden'
                   @value={{this.selectedSection}}
                 />
-                {{#each this.sectionFormErrors as |error|}}
-                  <ErrorBox
-                    @error={{error}}
-                    @showDismiss={{true}}
-                    @resetError={{action
-                      'removeErrorFromArray'
-                      'sectionFormErrors'
-                      error
-                    }}
-                  />
-                {{/each}}
               {{/if}}
             </div>
           </li>
@@ -96,17 +85,6 @@
                   @topLevelQueryParams='searchBy'
                   @preload={{this.problemsPreloadValue}}
                 />
-                {{#each this.problemFormErrors as |error|}}
-                  <ErrorBox
-                    @error={{error}}
-                    @showDismiss={{true}}
-                    @resetError={{action
-                      'removeErrorFromArray'
-                      'problemFormErrors'
-                      error
-                    }}
-                  />
-                {{/each}}
               </div>
             {{/if}}
           </li>
@@ -128,11 +106,6 @@
                   @value={{this.assignedDate}}
                   {{on 'input' this.cancelDateError}}
                 />
-                {{#each this.assignedDateFormErrors as |error|}}
-                  <p class='error-message'>
-                    {{error}}
-                  </p>
-                {{/each}}
               </div>
             </li>
             <li>
@@ -152,13 +125,8 @@
                   @value={{this.dueDate}}
                   {{on 'input' this.cancelDateError}}
                 />
-                {{#each this.dueDateFormErrors as |error|}}
-                  <p class='error-message'>
-                    {{error}}
-                  </p>
-                {{/each}}
                 {{#if this.invalidDateRange}}
-                  <ErrorBox
+                  <Ui::ErrorBox
                     @error='Invalid Date Range'
                     @showDismiss={{true}}
                     @resetError={{action (mut this.invalidDateRange) null}}
@@ -183,11 +151,6 @@
                 @value={{this.name}}
                 class='assignmentInput'
               />
-              {{#each this.nameFormErrors as |error|}}
-                <p class='error-message'>
-                  {{error}}
-                </p>
-              {{/each}}
             </div>
           </li>
           <li class='linked-ws'>
@@ -200,7 +163,7 @@
               </span>
             </label>
             <div class='choice-selection'>
-              <RadioGroup
+              <Ui::RadioGroup
                 @options={{this.linkedWsOptions}}
                 @selectedValue={{this.doCreateLinkedWorkspaces}}
                 @updateValue={{action 'updateDoCreateLinkedWorkspaces'}}
@@ -211,7 +174,7 @@
                 class='group-selection'
                 {{on 'click' this.updateSectionGroups}}
               >
-                <RadioGroup
+                <Ui::RadioGroup
                   @options={{this.groupWsOptions}}
                   @selectedValue={{this.linkedWorkspacesMode}}
                   @updateValue={{action 'updateLinkedWorkspacesMode'}}
@@ -242,7 +205,7 @@
                     Create Parent Workspace Now?
                   </span>
                 </label>
-                <RadioGroup
+                <Ui::RadioGroup
                   @options={{this.parentWsOptions}}
                   @selectedValue={{this.doCreateParentWorkspace}}
                   @updateValue={{action 'updateDoCreateParentWorkspace'}}
@@ -257,7 +220,7 @@
                       Share parent workspace with students?
                     </span>
                   </label>
-                  <RadioGroup
+                  <Ui::RadioGroup
                     @options={{this.parentWorkspaceAccessOptions}}
                     @selectedValue={{this.parentWorkspaceAccess}}
                     @updateValue={{action 'updateParentWorkspaceAccess'}}
@@ -296,7 +259,7 @@
       <i class='fas fa-times'></i>
     </button>
   </section>
-  {{#each this.createRecordErrors as |error|}}
+  {{#each this.errors as |error|}}
     <p class='error-message'>
       {{error}}
     </p>

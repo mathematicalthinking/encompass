@@ -1,5 +1,4 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import _ from 'underscore';
 import AuditableModel from './auditable';
 
 export default class AnswerModel extends AuditableModel {
@@ -7,16 +6,16 @@ export default class AnswerModel extends AuditableModel {
     return this.id;
   }
   @attr('string') studentName;
-  @belongsTo('problem', { async: true }) problem;
+  @belongsTo('problem', { inverse: null, async: true }) problem;
   @attr('string') answer;
   @attr('string') explanation;
   @belongsTo('image', { inverse: null, async: true }) explanationImage;
-  @belongsTo('section', { async: true }) section;
+  @belongsTo('section', { inverse: null, async: true }) section;
   @attr('boolean') isSubmitted;
   @hasMany('users', { inverse: null, async: true }) students;
   @attr studentNames;
   @belongsTo('answer', { inverse: null, async: true }) priorAnswer;
-  @belongsTo('assignment', { async: true }) assignment;
+  @belongsTo('assignment', { inverse: 'answers', async: true }) assignment;
   @belongsTo('image', { inverse: null, async: true }) additionalImage;
   @attr workspacesToUpdate;
   @attr vmtRoomInfo;
@@ -45,7 +44,7 @@ export default class AnswerModel extends AuditableModel {
     const names = this.studentNames;
 
     if (Array.isArray(names)) {
-      let firstStringName = _.find(names, _.isString);
+      const firstStringName = names.find((name) => typeof name === 'string');
       if (firstStringName) {
         return firstStringName.trim();
       }

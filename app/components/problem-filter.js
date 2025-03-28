@@ -4,18 +4,15 @@ import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
 /**
- *     <ProblemFilter
-        @mainOptions={{this.mainOptions}}
-        @mainSelection={{this.mainSelection}}
-        @onUpdateMain={{this.handleUpdateMain}}
-        @subOptions={{this.subOptions}}
-        @subSelections={{this.subSelections}}
-        @onUpdateSub={{this.handleUpdateSub}}
-        @showTrashed={{this.toggleTrashed}}
+ *   <ProblemFilter
+        @filterName={{this.filterName}}
+        @adminFilterName={{this.adminFilterName}}
+        @showAdminFilters={{this.showAdminFilters}}
+        @onUpdate={{this.triggerFetch}}
+        @showTrashed={{this.showOnlyTrashed}}
         @toggleTrashed={{this.triggerShowTrashed}}
-        @categoriesFilter={{this.categoriesFilter}}
-        @onUpdateCategories={{this.handleUpdateCategories}}
-      >
+        @categoryFilterName={{this.categoryFilterName}}
+      />
  */
 export default class ProblemFilterComponent extends Component {
   @service currentUser;
@@ -57,31 +54,8 @@ export default class ProblemFilterComponent extends Component {
   }
 
   @action
-  toggleTrashedProblems() {
-    if (this.args.triggerShowTrashed) {
-      this.args.triggerShowTrashed();
-    }
-  }
-
-  @action
   toggleCategoryFilters() {
     this.showCategoryFilters = !this.showCategoryFilters;
-  }
-
-  @action
-  addCategory(val) {
-    if (!val) {
-      return;
-    }
-    let category = this.args.store.peekRecord('category', val);
-    if (category) {
-      this.args.categoriesFilter.addObject(category);
-    }
-  }
-
-  @action
-  removeCategory(category) {
-    this.args.categoriesFilter.removeObject(category);
   }
 
   @action

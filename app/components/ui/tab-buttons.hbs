@@ -1,0 +1,15 @@
+<div class='info-menu'>
+  {{! We expect @tabs to be an array of objects like:
+       [{ label: "General", key: "general" }, ... ] }}
+  {{#each @tabs as |tab|}}
+    <button
+      type='button'
+      class='tab-link
+        {{tab.key}}
+        {{if (is-equal tab.key @activeTab) "active-btn"}}'
+      {{on 'click' (fn @onSelect tab.key)}}
+    >
+      {{tab.label}}
+    </button>
+  {{/each}}
+</div>

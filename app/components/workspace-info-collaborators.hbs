@@ -79,7 +79,9 @@
                 }}
                   <div class='button-row'>
                     <button
-                      class='primary-button cancel-button' type="button" {{action 'cancelEditCollab'}}
+                      class='primary-button cancel-button'
+                      type='button'
+                      {{action 'cancelEditCollab'}}
                     >Cancel</button>
                   </div>
                 {{/if}}
@@ -115,7 +117,9 @@
               <div class='collab-settings'>
                 <div class='card-row'>
                   {{#if
-                    (not (is-equal collaborator.userObj this.selectedCollaborator))
+                    (not
+                      (is-equal collaborator.userObj this.selectedCollaborator)
+                    )
                   }}
                     <div class='row-label'>
                       Permissions Type
@@ -125,7 +129,7 @@
                     {{#if
                       (is-equal collaborator.userObj this.selectedCollaborator)
                     }}
-                      <RadioGroup
+                      <Ui::RadioGroup
                         @options={{this.globalItems}}
                         @selectedValue={{globalPermissionValue}}
                         @updateValue={{action 'updateGlobalPermissionValue'}}
@@ -154,11 +158,10 @@
                         Submissions
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.submissions}}
                           @content={{this.submissionPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.submissions)}}
                         />
                         {{#if (is-equal this.submissions.value 'custom')}}
@@ -185,11 +188,10 @@
                         Selections
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.selections}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.selections)}}
                         />
                       </div>
@@ -199,11 +201,10 @@
                         Comments
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.comments}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.comments)}}
                         />
                       </div>
@@ -213,11 +214,10 @@
                         Folders
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.folders}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.folders)}}
                         />
                       </div>
@@ -227,11 +227,10 @@
                         Feedback
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.feedback}}
                           @content={{this.feedbackPermissions}}
-                          @optionLabelPath='display'
                           @action={{action (mut this.feedback)}}
                         />
                       </div>
@@ -250,11 +249,10 @@
                             collaborator.userObj this.selectedCollaborator
                           )
                         }}
-                          <MySelect
+                          <Ui::MySelect
                             @cannotBeNull={{true}}
                             @selectedValue={{this.submissions}}
                             @content={{this.submissionPermissions}}
-                            @optionLabelPath='display'
                             @action={{action (mut this.submissions)}}
                           />
                           {{#if (is-equal this.submissions.value 'custom')}}
@@ -320,10 +318,14 @@
                 }}
                   <div class='button-row'>
                     <button
-                      class='primary-button cancel-button' type="button" {{action 'cancelEditCollab'}}
+                      class='primary-button cancel-button'
+                      type='button'
+                      {{action 'cancelEditCollab'}}
                     >Cancel</button>
                     <button
-                      class='primary-button' type="button" {{action 'savePermissions' collaborator}}
+                      class='primary-button'
+                      type='button'
+                      {{action 'savePermissions' collaborator}}
                     >Save</button>
                   </div>
                 {{/if}}

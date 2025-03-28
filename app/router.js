@@ -21,7 +21,10 @@ Router.map(function () {
 
   // PROBLEMS PARENT ROUTE
   this.route('problems', function () {
-    this.route('problem', { path: '/:problem_id' });
+    this.route('problem', { path: '/:problem_id' }, function () {
+      this.route('assignment');
+    });
+    this.route('edit', { path: '/:problem_id/edit' });
     this.route('new');
   });
 

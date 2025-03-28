@@ -24,7 +24,7 @@
           <Input id='answer' required='true' @type='hidden' @value={{answer}} />
         </div>
         {{#each this.briefSummaryErrors as |error|}}
-          <ErrorBox
+          <Ui::ErrorBox
             @error={{error}}
             @resetError={{action (mut this.briefSummaryErrors) null}}
             @showDismiss={{true}}
@@ -42,7 +42,7 @@
           />
         </div>
         {{#each this.explanationErrors as |error|}}
-          <ErrorBox
+          <Ui::ErrorBox
             @error={{error}}
             @resetError={{action (mut this.explanationErrors) null}}
             @showDismiss={{true}}
@@ -119,21 +119,21 @@
         {{/if}}
       </fieldset>
       {{#if this.isMissingRequiredFields}}
-        <ErrorBox
+        <Ui::ErrorBox
           @error='Please provide all required fields.'
           @showDismiss={{true}}
           @resetError={{action (mut this.isMissingRequiredFields) null}}
         />
       {{/if}}
       {{#if this.overSizedFileError}}
-        <ErrorBox
+        <Ui::ErrorBox
           @error={{this.overSizedFileError}}
           @showDismiss={{true}}
           @resetError={{action (mut this.overSizedFileError) null}}
         />
       {{/if}}
       {{#if this.isExplanationTooLarge}}
-        <ErrorBox
+        <Ui::ErrorBox
           @error={{this.tooLargeExplanationMsg}}
           @showDismiss={{true}}
           @resetError={{action (mut this.isExplanationTooLarge) null}}

@@ -1,30 +1,26 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
+import { service } from '@ember/service';
 import moment from 'moment';
 
-export default class AssignmentNewComponent extends ErrorHandlingComponent {
+export default class AssignmentNewComponent extends Component {
   @service router;
   @service store;
   @service('sweet-alert') alert;
-  @tracked createAssignmentError = null;
+  @service currentUser;
+  @service errorHandling;
   @tracked isMissingRequiredFields = null;
   @tracked selectedSection = null;
   @tracked selectedProblem = null;
   @tracked problemList = null;
   @tracked formId = null;
-  @tracked createRecordErrors = [];
-  @tracked queryErrors = [];
   @tracked linkedWorkspacesMode = 'individual';
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
   @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
   @tracked allSelected = true;
-  @tracked problemFormErrors = [];
-  @tracked sectionFormErrors = [];
   @tracked invalidDateRange = false;
   @tracked assignedDate = moment(new Date()).format('YYYY-MM-DD');
   tooltips = {
@@ -154,6 +150,10 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     }
   }
 
+  get user() {
+    return this.currentUser.user;
+  }
+
   get hasSelectedSection() {
     return !!this.selectedSection;
   }
@@ -210,13 +210,14 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     }
   }
 
+  get errors() {
+    return this.errorHandling.getErrors('createRecordErrors');
+  }
+
   constructor() {
     super(...arguments);
-    let selectedProblem = this.args.selectedProblem;
-    if (selectedProblem && selectedProblem.isForAssignment) {
-      this.fromProblemInfo = true;
-      this.selectedProblem = selectedProblem;
-    }
+    if (this.args.fromProbleInfo)
+      this.selectedProblem = this.args.selectedProblem;
     if (this.args.fromSectionInfo) {
       this.fromSectionInfo = true;
       this.selectedSection = this.args.selectedSection;
@@ -233,7 +234,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
   createAssignment(formValues) {
     let { section, problem, assignedDate, dueDate, name } = formValues;
-    const createdBy = this.args.currentUser;
+    const createdBy = this.user;
 
     if (!name) {
       // let nameDate = $('#assignedDate')
@@ -269,14 +270,14 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     const doCreateLinkedWorkspaces = this.doCreateLinkedWorkspaces;
     const doCreateParentWorkspace = this.doCreateParentWorkspace;
 
-    let linkedFormatInput = $('#linked-ws-new-name');
+    let linkedFormatInput = document.getElementById('linked-ws-new-name');
     let linkedNameFormat;
 
     if (linkedFormatInput) {
       linkedNameFormat = linkedFormatInput.val();
     }
 
-    let parentFormatInput = $('#parent-ws-new-name');
+    let parentFormatInput = document.getElementById('parent-ws-new-name');
     let parentNameFormat;
 
     if (parentFormatInput) {
@@ -315,7 +316,11 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'createRecordErrors', createAssignmentData);
+        this.errorHandling.handleErrors(
+          err,
+          'createRecordErrors',
+          createAssignmentData
+        );
       });
   }
 
@@ -380,8 +385,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @action validate() {
     const section = this.selectedSection;
     const problem = this.selectedProblem;
-    let assignedDate = $('#assignedDate').val();
-    let dueDate = $('#dueDate').val();
+    let assignedDate = document.getElementById('assignedDate')?.value;
+    let dueDate = document.getElementById('dueDate')?.value;
     const name = this.name;
 
     const values = {

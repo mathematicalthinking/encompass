@@ -86,7 +86,7 @@
         </div>
         <div class='row-value'>
           {{#if this.isEditing}}
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.selectedMode}}
               @content={{this.modes}}
@@ -139,7 +139,7 @@
           </div>
           <div data-test='allow-updates' class='row-value'>
             {{#if this.isEditing}}
-              <MySelect
+              <Ui::MySelect
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}
@@ -159,14 +159,14 @@
             >Update Workspace</button>
             <div class='update-results'>
               {{#if this.missingLinkedAssignment}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error='Please link an assignment first.'
                   @showDismiss={{true}}
                   @resetError={{action (mut this.missingLinkedAssignment) null}}
                 />
               {{/if}}
               {{#each this.updateErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
                   @resetError={{action
@@ -177,7 +177,7 @@
                 />
               {{/each}}
               {{#each this.serverErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
                   @resetError={{action
@@ -219,7 +219,7 @@
           </div>
           <div data-test='allow-updates' class='row-value'>
             {{#if this.isEditing}}
-              <MySelect
+              <Ui::MySelect
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}
@@ -240,14 +240,14 @@
             >Update Parent Workspace</button>
             <div class='update-results'>
               {{#if this.missingChildWorkspaces}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error='No child workspaces to update from'
                   @showDismiss={{true}}
                   @resetError={{action (mut this.missingChildWorkspaces) null}}
                 />
               {{/if}}
               {{#each this.updateErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
                   @resetError={{action
@@ -258,7 +258,7 @@
                 />
               {{/each}}
               {{#each this.serverErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
                   @resetError={{action

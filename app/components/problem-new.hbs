@@ -1,5 +1,5 @@
 <header class='info-header'>
-  <span class='remove-icon' {{action 'hideInfo'}}>
+  <span class='remove-icon' {{on 'click' this.hideInfo}}>
     <i class='fas fa-times'></i>
   </span>
 </header>
@@ -62,7 +62,7 @@
         </p>
         <div class='info-content-block'>
           <QuillContainer
-            @onEditorChange={{action 'updateQuillText'}}
+            @onEditorChange={{this.updateQuillText}}
             @startingText={{this.problemStatement}}
           />
         </div>
@@ -102,7 +102,8 @@
                   required='true'
                   name='privacy'
                   class='justMe'
-                  onclick={{action 'radioSelect' 'M'}}
+                  onclick={{fn this.radioSelect 'M'}}
+                  {{on 'click' (fn this.radioSelect 'M')}}
                   {{on 'blur' this.observeErrors}}
                 />
                 <span class='radio-text'>Just Me</span>
@@ -118,7 +119,8 @@
                   required='true'
                   name='privacy'
                   class='myOrg'
-                  onclick={{action 'radioSelect' 'O'}}
+                  onclick={{fn this.radioSelect 'O'}}
+                  {{on 'click' (fn this.radioSelect 'O')}}
                   {{on 'blur' this.observeErrors}}
                 />
                 <span class='radio-text'>My Organization</span>
@@ -133,7 +135,8 @@
                   required='true'
                   name='privacy'
                   class='everyone'
-                  onclick={{action 'radioSelect' 'E'}}
+                  onclick={{fn this.radioSelect 'E'}}
+                  {{on 'click' (fn this.radioSelect 'E')}}
                   {{on 'blur' this.observeErrors}}
                 />
                 <span class='radio-text'>Everyone</span>
@@ -163,7 +166,7 @@
                   <button
                     class='remove-cat'
                     type='button'
-                    {{action 'removeCategory' category}}
+                    {{on 'click' (fn this.removeCategory category)}}
                   ><i class='far fa-times-circle'></i></button></li>
               {{/each}}
             </ul>
@@ -172,20 +175,16 @@
             <button
               class='cancel-button show-cats-btn'
               type='button'
-              {{action 'toggleCategories'}}
+              {{on 'click' this.toggleCategories}}
             >Show Category Menu</button>
           {{/unless}}
           {{#if this.showCategories}}
             <button
               class='cancel-button hide-cats-btn'
               type='button'
-              {{action 'toggleCategories'}}
+              {{on 'click' this.toggleCategories}}
             >Hide Category Menu</button>
-            <CategoriesMenu
-              @categories={{this.categoryTree}}
-              @store={{this.store}}
-              @addCategories='addCategories'
-            />
+            <CategoriesMenu @addCategory={{this.addCategory}} />
           {{/if}}
         </div>
         <p class='info-content-label keywords'>
@@ -198,8 +197,8 @@
         <div class='info-content-block'>
           <SelectizeInput
             @inputId='select-add-keywords'
-            @onItemAdd={{action 'updateKeywords'}}
-            @onItemRemove={{action 'updateKeywords'}}
+            @onItemAdd={{this.updateKeywords}}
+            @onItemRemove={{this.updateKeywords}}
             @maxItems={{5}}
             @create={{true}}
             @createFilter={{this.keywordFilter}}
@@ -245,13 +244,13 @@
               <button
                 class='remove-cat'
                 type='button'
-                {{action 'removeFile'}}
+                {{on 'click' this.removeFile}}
               ><i class='far fa-times-circle'></i></button></p>
           {{else}}
             <ImageUpload
               @filesToBeUploaded={{this.filesToBeUploaded}}
               @hideSubmit={{true}}
-              @storeFiles={{action 'setFileToUpload'}}
+              @storeFiles={{this.setFileToUpload}}
             />
           {{/if}}
         </div>
@@ -325,35 +324,35 @@
           <button
             class='action_button cancel-button'
             type='button'
-            {{action 'cancelProblem'}}
+            {{on 'click' this.cancelProblem}}
           >Cancel</button>
           <button
             class='action_button primary-button'
             type='button'
-            {{action 'nextStep'}}
+            {{on 'click' this.nextStep}}
           >Next</button>
         {{else}}
           {{#if this.showLegal}}
             <button
               class='action_button cancel-button'
               type='button'
-              {{action 'backStep'}}
+              {{on 'click' this.backStep}}
             >Back</button>
             <button
               class='action_button primary-button'
               type='button'
-              {{action 'validate'}}
+              {{on 'click' this.validate}}
             >Create</button>
           {{else}}
             <button
               class='action_button cancel-button'
               type='button'
-              {{action 'backStep'}}
+              {{on 'click' this.backStep}}
             >Back</button>
             <button
               class='action_button primary-button'
               type='button'
-              {{action 'nextStep'}}
+              {{on 'click' this.nextStep}}
             >Next</button>
           {{/if}}
         {{/if}}
@@ -362,157 +361,24 @@
   </section>
 
   {{#each this.createProblemErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} />
+    <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
   {{/each}}
   {{#each this.imageUploadErrors as |error|}}
-    <ErrorBox @error={{error}} @showDismiss={{true}} />
+    <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
   {{/each}}
 
   {{#if this.isMissingRequiredFields}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Please provide all required fields'
       @showDismiss={{true}}
     />
   {{/if}}
 
   {{#if this.noLegalNotice}}
-    <ErrorBox
+    <Ui::ErrorBox
       @error='Please verify that you have permission to post this problem'
       @showDismiss={{true}}
     />
   {{/if}}
 
 </div>
-
-{{!-- <section class="third submissions">
-  <form id='newproblemform' class='properForm'>
-    <fieldset>
-      <ol>
-        <li>
-          <label class="form-label" for="title" id="problemName">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.name}}>Problem Name </span>
-            <span class="required-star">*</span>
-          </label>
-          {{input id="title" required="true" type="text" value=title placeholder="enter problem name"
-          action="resetErrors" on="key-down"}}
-        </li>
-        <li>
-          <label class="form-label" for="text">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.statement}}>Problem Statement </span>
-            <span class="required-star">*</span></label>
-          <div class="quill-container">
-            <section id="editor"></section>
-          </div>
-        </li>
-        <li>
-          <label class="form-label" for="categories">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.categories}}>Problem Categories </span>
-            <span class="required-star">*</span>
-          </label>
-          {{#if selectedCategories}}
-          <ul class="problem-info">
-            {{#each selectedCategories as |category|}}
-            <li><a href="{{category.url}}" target="_blank">{{category.identifier}}</a> <button {{action 'removeCategory'
-                category}}><i class="far fa-times-circle"></i></button></li>
-            {{/each}}
-          </ul>
-          {{/if}}
-          {{#unless showCategories}}
-          <div class="button-row {{if selectedCategories " center"}}">
-            <button id="add-category" {{action 'showCategories' }}>Show Category Menu</button>
-          </div>
-          {{/unless}}
-          {{#if showCategories}}
-          <div class="button-row {{if selectedCategories " center"}}">
-            <button id="add-category" {{action 'showCategories' }}>Hide Category Menu</button>
-          </div>
-          {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
-          {{/if}}
-        </li>
-        <li>
-          <label class="form-label" for="keywords">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.keywords}}>Keywords</span>
-          </label>
-          {{twitter-typeahead}}
-        </li>
-        <li>
-          <label class="form-label" for="additionalInfo">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.additionalInfo}}>Additional Info</span>
-          </label>
-          {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
-          {{input id="additionalInfo" type="hidden" value=additionalInfo }}
-        </li>
-        <li>
-          <label class="form-label" for="imageUrl">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.additionalImage}}> Additional Image</span>
-          </label>
-          {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
-        </li>
-        <li class="privacy-settings">
-          <label class="form-label">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.privacySettings}}> Privacy Settings</span>
-            <span class="required-star">*</span>
-          </label>
-          {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action
-          "radioSelect" 'M')}}
-          <label class="radio-label">Just Me</label>
-          {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg"
-          click=(action "radioSelect" 'O')}}
-          <label class="radio-label">My Organization</label>
-          {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action
-          "radioSelect" 'E')}}
-          <label class="radio-label">Everyone</label>
-        </li>
-        <li>
-          <label class="form-label" for="copyright">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.copyrightNotice}}> Copyright Notice</span>
-          </label>
-          <span id="copyright-container">
-            <span id="icon">&copy;</span>
-            {{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
-          </span>
-        </li>
-        <li>
-          <label class="form-label" for="sharing">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.sharingAuth}}> Sharing Authorization</span>
-          </label>
-          {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
-        </li>
-        <li>
-          <label class="form-label" for="author">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.author}}> Author</span>
-          </label>
-          {{input name="author" id="author" type="text" value=author}}
-        </li>
-        <li>
-          <label class="form-label" for="legal-notice">
-            <span class="label-text simptip-position-right simptip-multiline simptip-smooth"
-              data-tooltip={{tooltips.legalNotice}}> Legal Notice</span>
-            <span class="required-star">*</span>
-          </label>
-          {{input type="checkbox" id="legal-notice" checked=approvedProblem required="true" click=(action
-          "resetErrors")}}
-          <span id="approved-problem">This problem does not contain any unapproved copywritten material</span>
-        </li>
-      </ol>
-    </fieldset>
-  </form>
-
-</section>
-<div style="clear: left"></div>
-<section class="submit">
-  <button class="action_button" {{action 'validate' }}>
-    Create Problem
-  </button>
-  <button class="action_button cancel-button" type="button" {{action 'cancelProblem' }}>Cancel</button>
-</section> --}}

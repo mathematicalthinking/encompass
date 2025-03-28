@@ -19,7 +19,7 @@
       />
     </div>
     <div class='collab-settings global'>
-      <RadioGroup
+      <Ui::RadioGroup
         @options={{@globalItems}}
         @selectedValue={{this.globalPermissionValue}}
         @updateValue={{action 'updateGlobalPermissionValue'}}
@@ -33,11 +33,10 @@
             Submissions
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.submissions}}
               @content={{this.submissionPermissions}}
-              @optionLabelPath='display'
               @action={{action (mut this.submissions)}}
             />
             {{#if (is-equal this.submissions.value 'custom')}}
@@ -54,11 +53,10 @@
             Selections
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.selections}}
               @content={{this.mainPermissions}}
-              @optionLabelPath='display'
               @action={{action (mut this.selections)}}
             />
           </div>
@@ -68,11 +66,10 @@
             Comments
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.comments}}
               @content={{this.mainPermissions}}
-              @optionLabelPath='display'
               @action={{action (mut this.comments)}}
             />
           </div>
@@ -82,11 +79,10 @@
             Folders
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.folders}}
               @content={{mainPermissions}}
-              @optionLabelPath='display'
               @action={{action (mut folders)}}
             />
           </div>
@@ -96,11 +92,10 @@
             Feedback
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.feedback}}
               @content={{this.feedbackPermissions}}
-              @optionLabelPath='display'
               @action={{action (mut this.feedback)}}
             />
           </div>
@@ -108,7 +103,7 @@
       {{/if}}
       {{#if this.missingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Please select a user'
             @resetError={{action (mut this.missingUserError) false}}
             @showDismiss={{true}}
@@ -117,7 +112,7 @@
       {{/if}}
       {{#if this.existingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Collaborator already exists. Edit permissions below'
             @resetError={{action (mut existingUserError) false}}
             @showDismiss={{true}}

@@ -10,6 +10,7 @@ import { inject as service } from '@ember/service';
 export default Route.extend({
   utils: service('utility-methods'),
   alert: service('sweet-alert'),
+  router: service(),
 
   model: function () {
     return this.modelFor('workspace.submissions');
@@ -22,7 +23,7 @@ export default Route.extend({
       let firstStudent = sorted.get('firstObject.student');
       let lastRevision = sorted.getEach('student').lastIndexOf(firstStudent);
 
-      this.transitionTo(
+      this.router.transitionTo(
         'workspace.submissions.submission',
         workspace,
         sorted.objectAt(lastRevision).get('id')
@@ -38,7 +39,7 @@ export default Route.extend({
         null
       );
 
-      this.transitionTo('workspace.info');
+      this.router.transitionTo('workspace.info');
     }
   },
 });

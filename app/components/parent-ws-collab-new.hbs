@@ -1,12 +1,12 @@
 <div id='parent-ws-collab-new'>
   <div class='collab-container'>
-    <RadioGroup
+    <Ui::RadioGroup
       @options={{this.addTypeItems}}
       @selectedValue={{this.addType}}
       @updateValue={{action 'updateAddType'}}
     />
     {{#if isBulkAdd}}
-      <CheckboxList
+      <Ui::CheckboxList
         @items={{this.usersToAdd}}
         @selectedItems={{this.collabsToAdd}}
         @itemDisplayProp='username'
@@ -36,7 +36,7 @@
     {{/if}}
     {{#unless this.isNoActionToTake}}
       <div class='collab-settings global'>
-        <RadioGroup
+        <Ui::RadioGroup
           @options={{this.globalItems}}
           @selectedValue={{this.globalPermissionValue}}
           @updateValue={{action 'updateGlobalPermissionValue'}}
@@ -46,7 +46,7 @@
     <div class='collab-settings'>
       {{#if this.missingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Please select a user'
             @resetError={{action (mut this.missingUserError) false}}
             @showDismiss={{true}}
@@ -55,7 +55,7 @@
       {{/if}}
       {{#if this.existingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Collaborator already exists. Edit permissions below'
             @resetError={{action (mut this.existingUserError) false}}
             @showDismiss={{true}}

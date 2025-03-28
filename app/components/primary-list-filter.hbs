@@ -2,7 +2,7 @@
 <ul class='primary-filter-list'>
   {{#each this.mainOptions as |input|}}
     <li class='filter-{{input.value}}'>
-      <RadioFilter
+      <Ui::RadioFilter
         @groupValue={{this.mainSelection}}
         @isChecked={{(is-equal this.mainSelectionValue input.value)}}
         @groupName='top-level'

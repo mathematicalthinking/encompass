@@ -6,15 +6,11 @@
  */
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
-import { computed } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class WorkspaceController extends Controller {
-  // comments: controller();
-
   @tracked currentSelection = null; //ENC-397, ENC-398
 
-  @computed('makingSelection', 'taggingSelection')
   get showOverlay() {
     return this.makingSelection || this.taggingSelection;
   }
@@ -23,9 +19,4 @@ export default class WorkspaceController extends Controller {
   popupMaskClicked() {
     this.transitionToRoute('workspace.submission', this.currentSubmission);
   }
-  // Was this ever used? If not, remove it.
-  // @action
-  // tagSelection(selection, tags) {
-  //   // Your implementation here
-  // }
 }

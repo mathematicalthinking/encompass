@@ -4,12 +4,13 @@ import { inject as service } from '@ember/service';
 
 export default class SectionsNewRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
   beforeModel() {
     const user = this.modelFor('application');
     const isStudent = user.get('isStudent');
 
     if (isStudent) {
-      this.transitionTo('sections');
+      this.router.transitionTo('sections');
     }
   }
 
