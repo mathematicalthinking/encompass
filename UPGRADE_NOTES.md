@@ -59,6 +59,8 @@ A number of components used two-way data binding, which is discouraged in modern
 
 Instead, modern Ember uses the Data down, Actions up pattern. Parent components send data down to their child components. A parent also sends actions (functions) to the child when updates are needed. When the child wants to update the property's value, it uses the appropriate action (essentially a callback to the parent). In this way, the parent is responsible for all of its properties' values, both getting and setting them.
 
+One way this comes into play is when we update DB objects via editing. Right now, the update to the DB occurs at the component level. I need to think about whether the components should do the updating of those objects or if we should have a service that provides creation and updating methods (deleting is an update in our system). This allows for all DB operations to be centralized rather than spread over components, with a lot of duplicated code.
+
 ## Template and Component files
 
 Should be co-located in the app/components folder rather than in the app/templates/components folder. The app/templates folder should be for route templates only. Note that many of the still-to-be upgraded components are split between the folders; the upgraded ones have their hbs files in app/components.
