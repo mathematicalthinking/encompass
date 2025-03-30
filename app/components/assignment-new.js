@@ -18,7 +18,6 @@ export default class AssignmentNewComponent extends Component {
   @tracked linkedWorkspacesMode = 'individual';
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
-  @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
   @tracked allSelected = true;
   @tracked invalidDateRange = false;
@@ -114,8 +113,9 @@ export default class AssignmentNewComponent extends Component {
 
   @tracked sectionGroups = [];
   @tracked groupWorkspacesToMake = [];
-  @tracked studentWorkspacesToMake = this.selectedSection.students.mapBy('id');
-  //TODO: refactor
+  @tracked studentWorkspacesToMake =
+    this.selectedSection?.students?.map((student) => student.id) ?? [];
+
   @action updateLists(record) {
     this.allSelected = false;
     if (record.constructor.modelName === 'user') {
@@ -224,22 +224,11 @@ export default class AssignmentNewComponent extends Component {
     }
   }
 
-  willDestroy() {
-    super.willDestroy(...arguments);
-    let problem = this.selectedProblem;
-    if (problem && problem.isForAssignment) {
-      problem.isForAssignment = false;
-    }
-  }
-
   createAssignment(formValues) {
     let { section, problem, assignedDate, dueDate, name } = formValues;
     const createdBy = this.user;
 
     if (!name) {
-      // let nameDate = $('#assignedDate')
-      //   .data('daterangepicker')
-      //   .startDate.format('MMM Do YYYY');
       let nameDate = assignedDate
         ? moment(new Date(assignedDate.replace(/-/g, '/'))).format(
             'MMM Do YYYY'
@@ -427,17 +416,20 @@ export default class AssignmentNewComponent extends Component {
       return;
     }
     if (this.linkedWorkspacesMode === 'individual') {
-      this.studentWorkspacesToMake = this.workspacesList.mapBy('id');
+      this.studentWorkspacesToMake =
+        this.workspacesList?.map((workspace) => workspace.id) ?? [];
       this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'group') {
-      this.groupWorkspacesToMake = this.workspacesList.mapBy('id');
+      this.groupWorkspacesToMake =
+        this.workspacesList?.map((workspace) => workspace.id) ?? [];
       this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'both') {
       this.studentWorkspacesToMake =
-        this.selectedSection.students.content.mapBy('id');
-      this.groupWorkspacesToMake = this.sectionGroups.mapBy('id');
+        this.selectedSection?.students?.map((student) => student.id) ?? [];
+      this.groupWorkspacesToMake =
+        this.sectionGroups?.map((group) => group.id) ?? [];
       this.allSelected = true;
     }
   }
@@ -464,5 +456,12 @@ export default class AssignmentNewComponent extends Component {
   }
   @action cancelDateError() {
     this.invalidDateRange = false;
+  }
+
+  @action
+  scrollIntoView(element) {
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }
