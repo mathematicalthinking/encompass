@@ -1,4 +1,4 @@
-<div id='assignment-new'>
+<div id='assignment-new' {{did-insert this.scrollIntoView}}>
   <header id='assignmentnewheader'>
     <h2>
       Enter assignment information below
@@ -31,8 +31,8 @@
                 <SelectizeInput
                   @inputId='assn-new-section-select'
                   @initialOptions={{this.sectionOptions}}
-                  @onItemAdd={{action 'updateSelectizeSingle'}}
-                  @onItemRemove={{action 'updateSelectizeSingle'}}
+                  @onItemAdd={{this.updateSelectizeSingle}}
+                  @onItemRemove={{this.updateSelectizeSingle}}
                   @maxItems={{1}}
                   @labelField='name'
                   @valueField='id'
@@ -61,7 +61,7 @@
                 *
               </span>
             </label>
-            {{#if this.fromProblemInfo}}
+            {{#if @showTitle}}
               <p>
                 {{this.selectedProblem.title}}
               </p>
@@ -70,8 +70,8 @@
                 <SelectizeInput
                   @inputId='assn-new-problem-select'
                   @initialOptions={{this.problemOptions}}
-                  @onItemAdd={{action 'updateSelectizeSingle'}}
-                  @onItemRemove={{action 'updateSelectizeSingle'}}
+                  @onItemAdd={{this.updateSelectizeSingle}}
+                  @onItemRemove={{this.updateSelectizeSingle}}
                   @maxItems={{1}}
                   @labelField='title'
                   @valueField='id'
@@ -129,7 +129,7 @@
                   <Ui::ErrorBox
                     @error='Invalid Date Range'
                     @showDismiss={{true}}
-                    @resetError={{action (mut this.invalidDateRange) null}}
+                    @resetError={{this.cancelDateError}}
                   />
                 {{/if}}
               </div>
@@ -166,7 +166,7 @@
               <Ui::RadioGroup
                 @options={{this.linkedWsOptions}}
                 @selectedValue={{this.doCreateLinkedWorkspaces}}
-                @updateValue={{action 'updateDoCreateLinkedWorkspaces'}}
+                @updateValue={{this.updateDoCreateLinkedWorkspaces}}
               />
             </div>
             {{#if this.showLinkedWsForm}}
@@ -177,7 +177,7 @@
                 <Ui::RadioGroup
                   @options={{this.groupWsOptions}}
                   @selectedValue={{this.linkedWorkspacesMode}}
-                  @updateValue={{action 'updateLinkedWorkspacesMode'}}
+                  @updateValue={{this.updateLinkedWorkspacesMode}}
                   @noWidth={{true}}
                 />
               </div>
@@ -208,7 +208,7 @@
                 <Ui::RadioGroup
                   @options={{this.parentWsOptions}}
                   @selectedValue={{this.doCreateParentWorkspace}}
-                  @updateValue={{action 'updateDoCreateParentWorkspace'}}
+                  @updateValue={{this.updateDoCreateParentWorkspace}}
                 />
 
                 {{#if this.doCreateParentWorkspace}}
@@ -223,7 +223,7 @@
                   <Ui::RadioGroup
                     @options={{this.parentWorkspaceAccessOptions}}
                     @selectedValue={{this.parentWorkspaceAccess}}
-                    @updateValue={{action 'updateParentWorkspaceAccess'}}
+                    @updateValue={{this.updateParentWorkspaceAccess}}
                     @noWidth={{true}}
                   />
                   <ParentWorkspaceNew
@@ -249,12 +249,12 @@
       class='createAssignment'
       data-test='create'
       type='button'
-      {{action 'validate'}}
+      {{on 'click' this.validate}}
     >
       Create Assignment
       <i class='fas fa-plus-circle'></i>
     </button>
-    <button class='cancelBtn' type='button' {{action 'cancel'}}>
+    <button class='cancelBtn' type='button' {{on 'click' this.cancel}}>
       Cancel
       <i class='fas fa-times'></i>
     </button>
