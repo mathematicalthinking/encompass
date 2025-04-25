@@ -1,7 +1,8 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 /*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import validate from 'validate.js';
 
 export default Component.extend({
   elementId: 'workspace-new-settings',
@@ -200,7 +201,7 @@ export default Component.extend({
       const permissions = this.workspacePermissions;
       const submissionSettings = this.selectedSubmissionSettings;
 
-      errors = window.validate(
+      errors = validate(
         { workspaceName, owner, privacySetting },
         this.constraints
       );

@@ -2,7 +2,8 @@ import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import isEqual from 'lodash/isEqual';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import validate from 'validate.js';
 import $ from 'jquery';
 import { all, reject, resolve } from 'rsvp';
 
@@ -292,7 +293,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
     };
     let constraints = this.constraints;
 
-    let errors = window.validate(values, constraints);
+    let errors = validate(values, constraints);
     if (errors) {
       for (let key of Object.keys(errors)) {
         let errorProp = `${key}Errors`;
