@@ -1,15 +1,19 @@
-import { inject as service } from '@ember/service';
-import Component from '@ember/component';
-import $ from 'jquery';
+// app/components/quill-container.js
 
-export default Component.extend({
-  classNames: ['quill-container'],
-  utils: service('utility-methods'),
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
+import Quill from 'quill';
 
-  isEmpty: true,
-  isOverLengthLimit: false,
+export default class QuillContainerComponent extends Component {
+  @service('utility-methods') utils;
 
-  defaultOptions: {
+  @tracked quillInstance = null;
+  @tracked isEmpty = true;
+  @tracked isOverLengthLimit = false;
+
+  defaultOptions = {
     debug: 'false',
     modules: {
       toolbar: [
@@ -24,110 +28,68 @@ export default Component.extend({
     theme: 'snow',
     placeholder:
       'Type a detailed explanation here. This box will expand as you type.',
-  },
+  };
 
-  defaultMaxLength: 14680064, // 14MB
+  defaultMaxLength = 14680064; // 14MB
 
-  didReceiveAttrs() {
-    this._super();
-    let attrSectionId = this.attrSectionId;
-    if (!attrSectionId) {
-      this.set('sectionId', 'editor');
-    } else {
-      this.set('sectionId', attrSectionId);
-    }
+  get sectionId() {
+    return this.args.attrSectionId || 'editor';
+  }
 
-    let limit = this.maxLength || this.defaultMaxLength;
-    this.set('lengthLimit', limit);
-  },
+  get lengthLimit() {
+    return this.args.maxLength || this.defaultMaxLength;
+  }
 
-  didInsertElement() {
-    let elId = this.elementId;
-    let selector = `#${elId} section`;
+  @action
+  setupQuill(element) {
+    const options = this.args.options || this.defaultOptions;
+    options.bounds = element;
 
-    let options;
-    if (!this.options) {
-      options = this.defaultOptions;
-    }
-    options.bounds = selector;
+    const quill = new Quill(element, options);
+    this.quillInstance = quill;
 
-    $(selector).ready(() => {
-      let quill = new window.Quill(selector, options);
-      this.set('quillInstance', quill);
+    quill.on('text-change', this.handleQuillChange.bind(this));
 
-      quill.on('text-change', (delta, oldDelta, source) => {
-        this.handleQuillChange();
-      });
-
-      this.handleStartingText();
-      this.handleQuillChange();
-    });
-    this._super(...arguments);
-  },
-
-  didUpdateAttrs() {
-    this._super();
     this.handleStartingText();
-  },
+    this.handleQuillChange();
+  }
 
-  willDestroyElement() {
-    let quill = this.quillInstance;
-    if (quill) {
-      quill.off('text-change');
+  @action
+  teardownQuill() {
+    if (this.quillInstance) {
+      this.quillInstance.off('text-change');
+      this.quillInstance = null;
     }
-    this._super(...arguments);
-  },
+  }
 
   handleStartingText() {
-    let attrStartingText = this.startingText;
-    let startingText =
-      typeof attrStartingText === 'string' ? attrStartingText : '';
-    $('.ql-editor').html(startingText);
-  },
-  // Empty quill editor .html() property returns <p><br></p>
-  // For quill to not be empty, there must either be some text or a student
-  // must have uploaded an img so there must be an img tag
-  isQuillNonEmpty() {
-    let editor = $('.ql-editor');
-
-    if (!editor) {
-      return false;
+    if (this.quillInstance && typeof this.args.startingText === 'string') {
+      this.quillInstance.root.innerHTML = this.args.startingText;
     }
-    let editorText = editor.text();
-    let trimmed = typeof editorText === 'string' ? editorText.trim() : '';
-
-    if (trimmed.length > 0) {
-      return true;
-    }
-
-    let content = editor.html();
-    if (content.includes('<img')) {
-      return true;
-    }
-    return false;
-  },
+  }
 
   handleQuillChange() {
-    let editor = $('.ql-editor');
-    if (!editor) {
-      return;
+    if (!this.quillInstance) return;
+
+    const htmlContents = this.quillInstance.root.innerHTML;
+    const replaced = htmlContents.replace(/"/g, "'");
+
+    const isEmpty = this.isQuillNonEmpty();
+    const isOverLengthLimit = replaced.length > this.lengthLimit;
+
+    this.isEmpty = !isEmpty;
+    this.isOverLengthLimit = isOverLengthLimit;
+
+    if (this.args.onEditorChange) {
+      this.args.onEditorChange(replaced, !isEmpty, isOverLengthLimit);
     }
+  }
 
-    let htmlContents = editor.html();
-
-    let replaced = htmlContents.replace(/["]/g, "'");
-    let isEmpty = !this.isQuillNonEmpty();
-    this.set('isEmpty', isEmpty);
-
-    let isOverLengthLimit = replaced.length > this.lengthLimit;
-    this.set('isOverLengthLimit', isOverLengthLimit);
-
-    this.onTextChange(replaced, isEmpty, isOverLengthLimit);
-  },
-
-  onTextChange(html, isEmpty, isOverLengthLimit) {
-    if (this.onEditorChange) {
-      this.onEditorChange(html, isEmpty, isOverLengthLimit);
-    }
-  },
-});
+  isQuillNonEmpty() {
+    if (!this.quillInstance) return false;
+    const text = this.quillInstance.getText().trim();
+    if (text.length > 0) return true;
+    const content = this.quillInstance.root.innerHTML;
+    return content.includes('<img');
+  }
+}

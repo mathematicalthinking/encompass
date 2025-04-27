@@ -79,6 +79,7 @@
     "nodemailer": "^6.9.13",
     "pdf2pic": "^2.2.4",
     "q": "^1.5.1",
+    "quill": "^2.0.3",
     "randomcolor": "^0.6.2",
     "request": "^2.88.2",
     "selectize": "^0.12.6",
@@ -90,6 +91,7 @@
     "typeahead.js": "^0.11.1",
     "underscore": "^1.13.6",
     "uuid": "^8.3.2",
+    "validate.js": "^0.13.1",
     "wordcloud": "^1.2.2"
   },
   "devDependencies": {
