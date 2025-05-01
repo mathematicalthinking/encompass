@@ -6,12 +6,19 @@
       placeholder={{this.placeholder}}
       value={{this.query}}
       {{on 'input' this.updateQuery}}
+      {{on 'keydown' this.handleKeydown}}
     />
 
     {{#if this.hasResults}}
       <ul class='typeahead-dropdown'>
-        {{#each this.filteredList as |entry|}}
-          <li {{on 'click' (fn this.selectItem entry)}}>
+        {{#each this.filteredList as |entry index|}}
+          <li
+            class={{if
+              (is-equal index this.highlightedIndex)
+              'highlighted-item'
+            }}
+            {{on 'click' (fn this.selectItem entry)}}
+          >
             {{entry.label}}
           </li>
         {{/each}}

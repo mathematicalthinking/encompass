@@ -115,7 +115,7 @@ export default class UserInfoComponent extends Component {
 
   @action checkOrgExists() {
     let user = this.user;
-    let userOrg = user.organization?.content;
+    let userOrg = user.organization;
     let userOrgRequest = user.organizationRequest;
     let org = this.org;
     let orgReq = this.orgReq;
@@ -151,21 +151,21 @@ export default class UserInfoComponent extends Component {
       user.set(key, this.user[key]);
     });
 
-    const org = this.org;
-    const orgReq = this.orgReq;
-
     let orgs = this.args.orgList;
-    let matchingOrg = orgs.findBy('name', orgReq);
+    let matchingOrg = orgs.findBy('name', this.orgReq);
     if (matchingOrg) {
       this.org = matchingOrg;
       this.orgReq = null;
+      user.organizationRequest = null;
     }
 
-    if (org) {
-      user.org = org;
+    if (this.org) {
+      user.organization = this.org;
+      this.orgReq = null;
+      user.organizationRequest = null;
     }
-    if (orgReq) {
-      user.organizationRequest = orgReq;
+    if (this.orgReq) {
+      user.organizationRequest = this.orgReq;
     }
 
     //if is authorized is now true, then we need to set the value of authorized by to current user
@@ -200,6 +200,7 @@ export default class UserInfoComponent extends Component {
       this.orgReq = org;
     } else {
       this.org = org;
+      this.orgReq = null;
     }
   }
 
@@ -220,7 +221,7 @@ export default class UserInfoComponent extends Component {
       )
       .then((result) => {
         if (result.value) {
-          this.send('createNewOrg');
+          this.createNewOrg();
         }
       });
   }

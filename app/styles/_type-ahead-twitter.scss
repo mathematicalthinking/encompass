@@ -30,10 +30,16 @@
     li {
       padding: 0.5rem;
       cursor: pointer;
-
+      margin: 0;
+  
       &:hover {
         color: #eee;
         background-color: #0097cf;
+      }
+  
+      &.highlighted-item {
+        background-color: #0097cf;
+        color: #eee;
       }
     }
   }
