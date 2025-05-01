@@ -52,9 +52,8 @@
           <Input
             @type='text'
             class='user-email'
-            @value={{this.email}}
-            {{on 'focusout' (action 'emailValidate')}}
-            {{on 'focusin' (action 'resetErrors')}}
+            {{on 'focusout' this.emailValidate}}
+            {{on 'focusin' this.resetErrors}}
           />
         </td>
       </tr>
@@ -64,10 +63,8 @@
           {{#if @currentUser.isAdmin}}
             <Ui::TwitterTypeahead
               @dataList={{@organizations}}
-              @minLength={{0}}
-              @onSelect='setOrg'
+              @onSelect={{this.setOrg}}
               @optionLabelPath='name'
-              @setSelectedValueOnChange={{true}}
             />
           {{else}}
             {{@currentUser.organization.name}}
