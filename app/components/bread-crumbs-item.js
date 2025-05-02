@@ -1,9 +1,9 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import moment from 'moment';
-import isEqual from 'lodash/isEqual';
-import isString from 'lodash/isString';
-import isObject from 'lodash/isObject';
+import isEqual from 'lodash-es/isEqual';
+import isString from 'lodash-es/isString';
+import isObject from 'lodash-es/isObject';
 
 export default class BreadCumbsItemComponent extends Component {
   get isSelected() {

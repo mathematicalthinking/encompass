@@ -1,11 +1,14 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { equal, or } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import $ from 'jquery';
 import moment from 'moment';
-/*global _:false */
 import { all } from 'rsvp';
+import isArray from 'lodash-es/isArray';
+import isUndefined from 'lodash-es/isUndefined';
+import keys from 'lodash-es/keys';
+import sortBy from 'lodash-es/sortBy';
 
 export default Component.extend({
   elementId: 'workspace-new-container',
@@ -225,7 +228,7 @@ export default Component.extend({
   ),
 
   getMostRecentAnswers: function (answers) {
-    if (!_.isArray(answers)) {
+    if (!isArray(answers)) {
       return [];
     }
     const threads = {};
@@ -300,7 +303,7 @@ export default Component.extend({
     }
 
     let doHideOutlet = this.doHideOutlet;
-    if (_.isUndefined(doHideOutlet)) {
+    if (isUndefined(doHideOutlet)) {
       this.set('doHideOutlet', this.get('model.hideOutlet'));
     }
     if (this.doHideOutlet === false) {
@@ -510,7 +513,7 @@ export default Component.extend({
         // default to alphabetical
         return defaultSorted;
       }
-      let field = _.keys(sortParam)[0];
+      let field = keys(sortParam)[0];
       let direction = sortParam[field];
 
       if (field === 'explanation') {
@@ -530,7 +533,7 @@ export default Component.extend({
       }
 
       if (field === 'revisions') {
-        let ascending = _.sortBy(defaultSorted, (answer) => {
+        let ascending = sortBy(defaultSorted, (answer) => {
           let student = answer.get('student');
           let revisionCount = this.submissionThreads[student].get('length');
           return revisionCount;

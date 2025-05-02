@@ -1,10 +1,12 @@
 import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { equal } from '@ember/object/computed';
-/*global _:false */
 import { later } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
+import isString from 'lodash-es/isString';
+import isNull from 'lodash-es/isNull';
+import each from 'lodash-es/each';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(CurrentUserMixin, {
@@ -399,7 +401,7 @@ export default Component.extend(CurrentUserMixin, {
     'store',
     function () {
       let id = this.get('newFolderSetOptions.existingFolderSetToUse');
-      if (!_.isString(id)) {
+      if (!isString(id)) {
         return null;
       }
       let record = this.store.peekRecord('folder-set', id);
@@ -424,7 +426,7 @@ export default Component.extend(CurrentUserMixin, {
   ),
 
   selectedConfigDisplay: computed('newWsConfig', function () {
-    if (_.isNull(this.newWsConfig)) {
+    if (isNull(this.newWsConfig)) {
       return;
     }
     const hash = {
@@ -557,7 +559,7 @@ export default Component.extend(CurrentUserMixin, {
         'newWsName',
         'newFolderSetOptions',
       ];
-      _.each(propsToReset, (prop) => {
+      each(propsToReset, (prop) => {
         if (prop) {
           this.set(prop, null);
         }

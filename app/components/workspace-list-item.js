@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import filter from 'lodash-es/filter';
 
 export default Component.extend({
   classNames: ['workspace-list-item'],
@@ -48,18 +48,18 @@ export default Component.extend({
       let moreMenuOptions = this.menuOptions;
       let options = moreMenuOptions.slice();
       if (currentUser.isStudent) {
-        options = _.filter(options, (option) => {
+        options = filter(options, (option) => {
           return option.value !== 'assign';
         });
       }
       if (!canDelete || deleted) {
-        options = _.filter(options, (option) => {
+        options = filter(options, (option) => {
           return option.value !== 'delete';
         });
       }
 
       if (!canCopy) {
-        options = _.filter(options, (option) => {
+        options = filter(options, (option) => {
           return option.value !== 'copy';
         });
       }
@@ -67,7 +67,7 @@ export default Component.extend({
       if (hiddenWorkspaces.length >= 1) {
         let wsId = ws.get('id');
         if (hiddenWorkspaces.includes(wsId)) {
-          options = _.filter(options, (option) => {
+          options = filter(options, (option) => {
             return option.value !== 'hide';
           });
         }

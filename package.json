@@ -70,6 +70,7 @@
     "jsonwebtoken": "^8.5.1",
     "loader.js": "^4.7.0",
     "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "log4js": "^6.9.1",
     "moment": "^2.30.1",
     "mongoose": "^5.13.22",

@@ -1,7 +1,10 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import isArray from 'lodash-es/isArray';
+import isString from 'lodash-es/isString';
+import isObject from 'lodash-es/isObject';
+import isNull from 'lodash-es/isNull';
 
 export default Component.extend({
   elementId: 'ws-copy-permissions',
@@ -11,12 +14,12 @@ export default Component.extend({
   didReceiveAttrs() {
     // set already saved permissions in case user went back to previous step and then came back to permissions
     const newWsPermissions = this.newWsPermissions;
-    if (_.isArray(newWsPermissions)) {
+    if (isArray(newWsPermissions)) {
       let copy = [...newWsPermissions];
       // find record in store based off id in order to display username in collab list
       copy.forEach((obj) => {
         let user = obj.user;
-        if (_.isString(user)) {
+        if (isString(user)) {
           let record = this.store.peekRecord('user', user);
           if (record) {
             obj.user = record;
@@ -40,7 +43,7 @@ export default Component.extend({
     let peeked = this.store.peekAll('user');
     let collabs = this.selectedCollaborators;
 
-    if (!_.isObject(peeked)) {
+    if (!isObject(peeked)) {
       return [];
     }
     let filtered = peeked.reject((record) => {
@@ -72,9 +75,9 @@ export default Component.extend({
       }
       permissions.forEach((permission) => {
         let user = permission.user;
-        if (_.isString(user)) {
+        if (isString(user)) {
           hash[user] = true;
-        } else if (_.isObject(user)) {
+        } else if (isObject(user)) {
           hash[user.get('id')] = true;
         }
       });
@@ -87,7 +90,7 @@ export default Component.extend({
         return;
       }
 
-      const isRemoval = _.isNull($item);
+      const isRemoval = isNull($item);
       if (isRemoval) {
         this.set('selectedCollaborator', null);
         return;

@@ -1,7 +1,7 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 import { inject as service } from '@ember/service';
 import $ from 'jquery';
 import { all, reject, resolve } from 'rsvp';

@@ -1,4 +1,4 @@
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 
 export default function (leftSide, rightSide) {
   return isEqual(leftSide, rightSide);

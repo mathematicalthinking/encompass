@@ -3,8 +3,8 @@ import { tracked } from '@glimmer/tracking';
 // import { inject as controller } from '@ember/controller';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import isObject from 'lodash/isObject';
-import isString from 'lodash/isString';
+import isObject from 'lodash-es/isObject';
+import isString from 'lodash-es/isString';
 
 export default class WorkspaceInfoComponent extends ErrorHandlingComponent {
   @service('current-user') currentUser;

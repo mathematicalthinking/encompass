@@ -1,7 +1,6 @@
-/*global _:false */
-import { inject as service } from '@ember/service';
-
 import Component from '@ember/component';
+import { service } from '@ember/service';
+import isNull from 'lodash-es/isNull';
 
 export default Component.extend({
   elementId: 'ws-new-settings-permissions',
@@ -113,7 +112,7 @@ export default Component.extend({
         return;
       }
 
-      const isRemoval = _.isNull($item);
+      const isRemoval = isNull($item);
       if (isRemoval) {
         this.set('selectedCollaborator', null);
         return;

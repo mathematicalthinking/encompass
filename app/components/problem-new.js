@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
-import _isNull from 'lodash/isNull';
+import _isNull from 'lodash-es/isNull';
 
 export default class ProblemNewComponent extends Component {
   @service('sweet-alert') alert;
