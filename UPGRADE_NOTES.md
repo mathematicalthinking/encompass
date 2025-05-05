@@ -323,3 +323,25 @@ The following components, included above, are actually wrappers for third-party 
   - problems/problem/<id>/assignment
 
   Previously, edit and assignment were handled by flags in the db inside of a problem. When we transitioned to the problem, we first set the correct flag so that <ProblemInfo> would render correctly. With this change, we don't use the db for local application state, which is poor practice.
+
+## Quill upgrades
+
+I upgraded the loading and use of the Quill (enhanced text editing) package:
+
+- Quill is now loaded as any other third party package, rather than via the vendor folder and manual install.
+- The Ember component, quill-container, has been upgraded to modern Ember (v4.5 at least).
+- The quill-container component has been moved to the components/ui folder.
+- In all quill-container clients, the reference has been updated (<<Ui::QuillContainer ...>>)
+- TODO: in response-submission-view.hbs, the use of quill-container has always had an incorrect signature. I need to figure out what would be the correct signature should be.
+
+## Validate.js
+
+This package's loading has also been upgrading to the modern approach. TODO -- consider whether a custom utility function should replace using a 3rd party package.
+
+## Twitter typeahead
+
+This package has been removed from the system in favor of a simpler, custom component. The new component is contained within the file twitter-typeahead.js/hbs just to simplify references throughout the system. I tested all clients of the new component and they appear to work. Still need to test the usage in the signup-google component (TODO). Note that getting typeahead to work in some components (section-new, user-info, and user-new) involved upgrades to those components because of various old-style Ember idioms, such as the use of two-way binding.
+
+## lodash-es
+
+loadash-es is now loaded. I did this because some of the regular lodash subpackages (e.g., lodash/isEqual) are being deprecated. Thus, the correct thing to do now is to use lodash-es/isEqual, for example. Eventually, I should change all uses of lodash to lodash-es.

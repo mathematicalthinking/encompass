@@ -1,7 +1,6 @@
-/*global _:false */
 import Service from '@ember/service';
 
-export default Service.extend({
+export default class StringSimilarityService extends Service {
   compareTwoStrings(str1, str2) {
     if (!str1.length && !str2.length) {
       // if both are empty strings
@@ -26,7 +25,7 @@ export default Service.extend({
     let intersection = 0;
     pairs1.forEach((pair1) => {
       //eslint-disable-next-line
-      for (let i = 0, pair2; pair2 = pairs2[i]; i++) {
+      for (let i = 0, pair2; (pair2 = pairs2[i]); i++) {
         if (pair1 !== pair2) {
           continue; //eslint-disable-line
         }
@@ -36,7 +35,7 @@ export default Service.extend({
       }
     });
     return (intersection * 2) / union;
-  },
+  }
 
   findBestMatch(mainString, targetStrings) {
     if (!this.areArgsValid(mainString, targetStrings)) {
@@ -52,13 +51,13 @@ export default Service.extend({
       (a, b) => b.rating - a.rating
     )[0];
     return { ratings, bestMatch };
-  },
+  }
 
   flattenDeep(arr) {
     return Array.isArray(arr)
       ? arr.reduce((a, b) => a.concat(this.flattenDeep(b)), [])
       : [arr];
-  },
+  }
 
   areArgsValid(mainString, targetStrings) {
     if (typeof mainString !== 'string') {
@@ -74,7 +73,7 @@ export default Service.extend({
       return false;
     }
     return true;
-  },
+  }
 
   letterPairs(str) {
     const pairs = [];
@@ -82,26 +81,26 @@ export default Service.extend({
       pairs[i] = str.substring(i, i + 2);
     }
     return pairs;
-  },
+  }
 
   wordLetterPairs(str) {
     const pairs = str.toUpperCase().split(' ').map(this.letterPairs);
     return this.flattenDeep(pairs);
-  },
+  }
 
   // trims, converts to lowercase, splits into words, removes any stopwords and then rejoins to string
   convertStringForCompare(str, stopwords) {
-    if (!_.isString(str)) {
+    if (typeof str !== 'string') {
       return;
     }
 
     let lower = str.trim().toLowerCase();
     let tokens = lower.split(' ');
 
-    if (_.isArray(stopwords)) {
-      tokens = _.difference(tokens, stopwords);
+    if (Array.isArray(stopwords)) {
+      tokens = tokens.filter((token) => !stopwords.includes(token));
     }
 
     return tokens.join('');
-  },
-});
+  }
+}

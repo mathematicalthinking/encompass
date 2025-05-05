@@ -1,16 +1,16 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import isEqual from 'lodash/isEqual';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
-import { all, reject, resolve } from 'rsvp';
+import { service } from '@ember/service';
+import isEqual from 'lodash-es/isEqual';
+import validate from 'validate.js';
 
-export default class AnswerNew extends ErrorHandlingComponent {
+export default class AnswerNew extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
   @service currentUser;
   @service store;
+  @service errorHandling;
   @tracked filesToBeUploaded = null;
   @tracked createAnswerError = null;
   @tracked isMissingRequiredFields = null;
@@ -76,13 +76,10 @@ export default class AnswerNew extends ErrorHandlingComponent {
       //prefill form if revising
       const ans = this.args.priorAnswer;
       this.answer = ans.answer;
-      let explanation = ans.explanation;
-
-      this.explanationText = explanation;
-      let students = ans.students;
-      this.contributors = students.map((s) => s);
+      this.explanationText = ans.explanation;
+      this.contributors = [...ans.students.slice()];
     } else {
-      this.contributors.addObject(this.currentUser.user);
+      this.contributors = [this.currentUser.user];
     }
   }
 
@@ -96,15 +93,15 @@ export default class AnswerNew extends ErrorHandlingComponent {
     super.willDestroy(...arguments);
   }
 
-  handleImages() {
+  async handleImages() {
     if (this.existingImageId) {
-      return resolve(this.existingImageId);
+      return this.existingImageId;
     }
 
     let filesToUpload = this.filesToBeUploaded;
 
     if (!filesToUpload) {
-      return resolve(null);
+      return null;
     }
 
     const formData = new FormData();
@@ -112,7 +109,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
     for (let f of filesToUpload) {
       if (f.size > this.singleFileSizeLimit) {
         this.overSizedFileError = this.getOverSizedFileMsg(f.size, f.name);
-        return reject('oversizedFile');
+        throw new Error('oversizedFile');
       } else {
         formData.append('photo', f);
       }
@@ -121,32 +118,28 @@ export default class AnswerNew extends ErrorHandlingComponent {
     let firstItem = filesToUpload[0];
     let isPDF = firstItem.type === 'application/pdf';
     let postUrl = isPDF ? '/pdf' : '/image';
-    let resultingImages;
 
-    resultingImages = $.post({
-      url: postUrl,
-      processData: false,
-      contentType: false,
-      data: formData,
+    let response = await fetch(postUrl, {
+      method: 'POST',
+      body: formData,
     });
 
-    return resolve(resultingImages)
-      .then((results) => {
-        let images = results.images;
-        this.store.pushPayload({ images });
-        return resolve(images);
-      })
-      .catch((err) => {
-        return reject(err);
-      });
+    if (!response.ok) {
+      throw new Error('Upload failed');
+    }
+
+    let results = await response.json();
+    let images = results.images;
+    this.store.pushPayload({ images });
+
+    return images;
   }
 
   createAnswer() {
     this.isCreatingAnswer = true;
 
     const answer = this.answer; // brief summary
-    const quillContent = $('.ql-editor').html();
-    let explanation = quillContent.replace(/["]/g, "'");
+    let explanation = this.quillText.replace(/["]/g, "'");
     const priorAnswer = this.args.priorAnswer ? this.args.priorAnswer : null;
     const students = this.contributors;
     if (priorAnswer) {
@@ -202,7 +195,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
           });
         });
         // additional uploaded image base 64 data was concatenated to explanation
-        return all(
+        return Promise.all(
           records.map((rec) => {
             return rec.save();
           })
@@ -221,21 +214,21 @@ export default class AnswerNew extends ErrorHandlingComponent {
               null
             );
 
-            this.args.handleCreatedAnswer(yourAnswer);
+            this.args.handleCreatedAnswer?.(yourAnswer);
           })
           .catch((err) => {
             // do we need to roll back all recs this were created?
             if (!this.isDestroying && !this.isDestroyed) {
               this.isCreatingAnswer = false;
             }
-            this.handleErrors(err, 'createRecordErrors');
+            this.errorHandling.handleErrors(err, 'createRecordErrors');
           });
       })
       .catch((err) => {
         if (!this.isDestroying && !this.isDestroyed) {
           this.isCreatingAnswer = false;
         }
-        if (err === 'oversizedFile') {
+        if (err.message === 'oversizedFile') {
           return;
         }
       });
@@ -275,12 +268,10 @@ export default class AnswerNew extends ErrorHandlingComponent {
 
   @action validate() {
     // remove existing errors
-    const formErrors = ['briefSummaryErrors', 'explanationErrors'];
-    for (let error of formErrors) {
-      if (this[error]) {
-        this[error] = null;
-      }
-    }
+    this.errorHandling.removeMessages(
+      'briefSummaryErrors',
+      'explanationErrors'
+    );
 
     let isQuillValid = !this.isQuillEmpty;
     let briefSummary = this.answer;
@@ -292,7 +283,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
     };
     let constraints = this.constraints;
 
-    let errors = window.validate(values, constraints);
+    let errors = validate(values, constraints);
     if (errors) {
       for (let key of Object.keys(errors)) {
         let errorProp = `${key}Errors`;
@@ -324,14 +315,12 @@ export default class AnswerNew extends ErrorHandlingComponent {
       return;
     }
 
-    let students = this.contributors;
-
-    if (students.includes(student)) {
+    if (this.contributors.includes(student)) {
       this.userAlreadyInSection = true;
       return;
     }
 
-    students.pushObject(student);
+    this.contributors = [...this.contributors, student];
     this.alert.showToast(
       'success',
       'Student Added',
@@ -345,8 +334,7 @@ export default class AnswerNew extends ErrorHandlingComponent {
     if (!student) {
       return;
     }
-    let students = this.contributors;
-    students.removeObject(student);
+    this.contributors = this.contributors.filter((s) => !isEqual(s, student));
     this.alert.showToast(
       'success',
       'Student Removed',
@@ -356,6 +344,34 @@ export default class AnswerNew extends ErrorHandlingComponent {
       null
     );
   }
+  @action
+  resetBriefSummaryErrors() {
+    this.errorHandling.removeMessages('briefSummaryErrors');
+  }
+  @action resetExplanationErrors() {
+    this.errorHandling.removeMessages('explanationErrors');
+  }
+  @action resetImageErrors() {
+    this.errorHandling.removeMessages('imageErrors');
+  }
+  @action resetFileErrors() {
+    this.errorHandling.removeMessages('fileErrors');
+  }
+  @action resetMissingRequiredFields() {
+    this.isMissingRequiredFields = null;
+  }
+  @action resetOverSizedFileError() {
+    this.overSizedFileError = null;
+  }
+  @action resetIsExplanationTooLarge() {
+    this.isExplanationTooLarge = null;
+  }
+
+  @action
+  updateAnswer(event) {
+    this.answer = event.target.value;
+  }
+
   @action updateQuillText(content, isEmpty, isOverLengthLimit) {
     this.quillText = content;
     this.isQuillEmpty = isEmpty;

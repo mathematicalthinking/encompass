@@ -8,12 +8,12 @@
     {{/if}}
     <div class='info-detail'>
       <label>Problem Name:</label>
-      <p>{{@assignment.problem.title}}</p>
+      <p>{{@problem.title}}</p>
     </div>
     <div class='info-detail'>
       <label>Class:</label>
-      <a><LinkTo @route='sections.section' @model={{@assignment.section.id}}>
-          {{@assignment.section.name}}</LinkTo></a>
+      <a><LinkTo @route='sections.section' @model={{@section.id}}>
+          {{@section.name}}</LinkTo></a>
     </div>
 
     <div class='info-detail'>
@@ -35,15 +35,12 @@
     </div>
     <div class='info-detail'>
       <label>Problem Statement:</label>
-      <p>{{{@assignment.problem.text}}}</p>
+      <p>{{{@problem.text}}}</p>
     </div>
-    {{#if @assignment.problem.image}}
+    {{#if @problem.image}}
       <div class='assignmentImage info-detail'>
         <label>Problem Image:</label>
-        <img
-          src='{{{@assignment.problem.image.imageData}}}'
-          alt={{@problem.title}}
-        />
+        <img src='{{{@problem.image.imageData}}}' alt={{@problem.title}} />
       </div>
     {{/if}}
   </section>
@@ -51,16 +48,16 @@
     <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
-      @resetError={{action 'removeErrorFromArray' 'loadAnswerErrors' error}}
+      @resetError={{fn this.removeErrorFromArray 'loadAnswerErrors' error}}
     />
   {{/each}}
   {{#if this.isResponding}}
     <AnswerNew
       @assignment={{@assignment}}
-      @cancelResponse={{action 'cancelResponse'}}
+      @cancelResponse={{this.cancelResponse}}
       @section={{@section}}
       @problem={{@problem}}
-      @handleCreatedAnswer={{action 'handleCreatedAnswer'}}
+      @handleCreatedAnswer={{this.handleCreatedAnswer}}
       @workspacesToUpdateIds={{this.workspacesToUpdateIds}}
     />
   {{/if}}
@@ -73,8 +70,8 @@
       @priorAnswer={{this.priorAnswer}}
       @section={{@section}}
       @problem={{@problem}}
-      @cancelResponse={{action 'cancelResponse'}}
-      @handleCreatedAnswer={{action 'handleCreatedAnswer'}}
+      @cancelResponse={{this.cancelResponse}}
+      @handleCreatedAnswer={{this.handleCreatedAnswer}}
       @workspacesToUpdateIds={{this.workspacesToUpdateIds}}
     />
   {{/if}}
@@ -82,14 +79,14 @@
     <button
       class='edit-assignment-button'
       type='button'
-      {{action 'reviseAssignmentResponse'}}
+      {{on 'click' this.reviseAssignmentResponse}}
     >Revise <i class='fas fa-edit'></i></button>
   {{/if}}
   {{#if this.showRespondButton}}
     <button
       class='save-assign-btn'
       type='button'
-      {{action 'beginAssignmentResponse'}}
+      {{on 'click' this.beginAssignmentResponse}}
     >Share Your Ideas
       <i class='fas fa-lightbulb'></i></button>
   {{/if}}
@@ -118,10 +115,10 @@
           {{#each this.sortedList as |answer|}}
             <li
               class={{if
-                (is-equal answer.answerId displayedAnswer.answerId)
+                (is-equal answer.answerId this.displayedAnswer.answerId)
                 'highlight'
               }}
-              {{action 'displayAnswer' answer}}
+              {{on 'click' (fn this.displayAnswer answer)}}
             >{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}</li>
           {{/each}}
         </ol>
