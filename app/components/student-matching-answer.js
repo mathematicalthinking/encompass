@@ -1,6 +1,8 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import each from 'lodash-es/each';
+import isNull from 'lodash-es/isNull';
 
 export default Component.extend({
   classNames: ['student-matching-answer'],
@@ -59,7 +61,7 @@ export default Component.extend({
       let options = [];
       let selectedIds = this.selectedIds || [];
 
-      _.each(this.studentMap, (val, key) => {
+      each(this.studentMap, (val, key) => {
         if (!selectedIds.includes(val)) {
           options.addObject({
             id: val.get('id'),
@@ -67,7 +69,7 @@ export default Component.extend({
           });
         }
       });
-      _.each(this.addedStudentNames, (name) => {
+      each(this.addedStudentNames, (name) => {
         options.addObject({
           id: name,
           username: name,
@@ -122,7 +124,7 @@ export default Component.extend({
         return;
       }
       let doRemove;
-      if (_.isNull($item)) {
+      if (isNull($item)) {
         this.selectedIds.removeObject(val);
         doRemove = true;
       } else {

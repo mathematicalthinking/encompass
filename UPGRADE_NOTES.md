@@ -154,6 +154,8 @@ There are certainly cases where lodash is helpful, but uses of underscore could 
 
 Also, rather than lodash, using native JS functions such as map, filter, etc. would be good.
 
+5/5/2025: Lodash global has been replaced by pulling out individual functions from lodash-es. Also, underscore has been removed entirely from the client side.
+
 ## Removal of jQuery
 
 Modern Ember recommends removing jQuery, using standard DOM access routines instead. Our file app.js sets $ globally to jQuery, so finding all instances will involve both searching for imports of jQuery and for $ (whether "$." or "$(").

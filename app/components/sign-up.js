@@ -1,9 +1,11 @@
 import UserSignupComponent from './user-signup';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import _ from 'underscore';
+import { service } from '@ember/service';
 import $ from 'jquery';
+import isNull from 'lodash-es/isNull';
+import filter from 'lodash-es/filter';
+import map from 'lodash-es/map';
 
 export default class SignUpComponent extends UserSignupComponent {
   @tracked missingCredentials = false;
@@ -64,7 +66,7 @@ export default class SignUpComponent extends UserSignupComponent {
       stopWords
     );
 
-    let similarOrgs = _.filter(sliced, (org) => {
+    let similarOrgs = filter(sliced, (org) => {
       let name = org.get('name');
       let compare = this.similarity.convertStringForCompare(name, stopWords);
       let score = this.similarity.compareTwoStrings(compare, requestCompare);
@@ -80,7 +82,7 @@ export default class SignUpComponent extends UserSignupComponent {
     }
 
     let toArray = orgs.toArray();
-    let mapped = _.map(toArray, (org) => {
+    let mapped = map(toArray, (org) => {
       return {
         id: org.id,
         name: org.get('name'),
@@ -100,7 +102,7 @@ export default class SignUpComponent extends UserSignupComponent {
       return org.get('name').toLowerCase();
     });
     // don't let user create org request if it matches exactly an existing org name
-    return !_.contains(orgNamesLower, requestLower);
+    return !orgNamesLower.includes(requestLower);
   }
   @action signup() {
     var firstName = this.firstName;
@@ -243,7 +245,7 @@ export default class SignUpComponent extends UserSignupComponent {
       return;
     }
 
-    let isRemoval = _.isNull($item);
+    let isRemoval = isNull($item);
     if (isRemoval) {
       this.org = null;
       return;

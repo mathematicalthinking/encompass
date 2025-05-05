@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
+import _each from 'lodash-es/each';
 
 export default class AssignmentReportComponent extends Component {
   @tracked sortCriterion = {
@@ -14,7 +14,7 @@ export default class AssignmentReportComponent extends Component {
   get sortedReportItems() {
     let reportObj = this.reportWithUser;
     let items = [];
-    _.each(reportObj, (info, username) => {
+    _each(reportObj, (info, username) => {
       // eslint-disable-next-line prefer-object-spread
       let obj = Object.assign({}, info);
       obj.username = username;
@@ -39,7 +39,7 @@ export default class AssignmentReportComponent extends Component {
 
     let results = {};
 
-    _.each(details, (val, userId) => {
+    _each(details, (val, userId) => {
       let user = this.args.students.findBy('id', userId);
       if (user) {
         let username = user.get('username');

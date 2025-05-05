@@ -4,6 +4,7 @@ import { inject as service } from '@ember/service';
 import { action, computed } from '@ember/object';
 import { alias, equal, gt } from '@ember/object/computed';
 import { set } from '@ember/object';
+import isEqual from 'lodash-es/isEqual';
 export default class ResponseContainer extends Component {
   @service('current-user') currentUser;
   @service('workspace-permissions') wsPermissions;
@@ -305,7 +306,7 @@ export default class ResponseContainer extends Component {
     }
 
     return peekedResponseThreads.find((thread) => {
-      return thread.threadType === threadType && _.isEqual(thread.id, threadId);
+      return thread.threadType === threadType && isEqual(thread.id, threadId);
     });
   }
 

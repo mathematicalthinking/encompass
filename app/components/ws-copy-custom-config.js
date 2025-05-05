@@ -5,7 +5,6 @@ import { service } from '@ember/service';
 import without from 'lodash-es/without';
 import chain from 'lodash-es/chain';
 import isNull from 'lodash-es/isNull';
-import contains from 'lodash-es/contains';
 
 export default Component.extend({
   elementId: 'ws-copy-custom-config',
@@ -406,7 +405,7 @@ export default Component.extend({
         keys = ['all', 'includeStructureOnly', 'none'];
       }
 
-      if (!contains(keys, val)) {
+      if (!keys.includes(val)) {
         return;
       }
       const propToToggle = `${propName}.${val}`;

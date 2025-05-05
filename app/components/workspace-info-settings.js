@@ -1,9 +1,9 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
-import { inject as service } from '@ember/service';
-
+import { service } from '@ember/service';
+import each from 'lodash-es/each';
+import isNull from 'lodash-es/isNull';
 export default class WorkspaceInfoSettingsComponent extends ErrorHandlingComponent {
   @service('current-user') currentUser;
   @service('sweet-alert') alert;
@@ -147,7 +147,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
 
     let linkedAssignmentId = this.args.linkedAssignment.id;
 
-    if (_.isNull($item)) {
+    if (isNull($item)) {
       if (linkedAssignmentId) {
         this.selectedLinkedAssignment = null;
         this.didLinkedAssignmentChange = true;
@@ -264,7 +264,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
 
   @action updateWithExistingWork() {
-    _.each(
+    each(
       [
         'wereNoAnswersToUpdate',
         'updateErrors',
