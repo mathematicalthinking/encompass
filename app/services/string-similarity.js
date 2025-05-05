@@ -1,9 +1,6 @@
 import Service from '@ember/service';
-import isString from 'lodash-es/isString';
-import isArray from 'lodash-es/isArray';
-import difference from 'lodash-es/difference';
 
-export default Service.extend({
+export default class StringSimilarityService extends Service {
   compareTwoStrings(str1, str2) {
     if (!str1.length && !str2.length) {
       // if both are empty strings
@@ -38,7 +35,7 @@ export default Service.extend({
       }
     });
     return (intersection * 2) / union;
-  },
+  }
 
   findBestMatch(mainString, targetStrings) {
     if (!this.areArgsValid(mainString, targetStrings)) {
@@ -54,13 +51,13 @@ export default Service.extend({
       (a, b) => b.rating - a.rating
     )[0];
     return { ratings, bestMatch };
-  },
+  }
 
   flattenDeep(arr) {
     return Array.isArray(arr)
       ? arr.reduce((a, b) => a.concat(this.flattenDeep(b)), [])
       : [arr];
-  },
+  }
 
   areArgsValid(mainString, targetStrings) {
     if (typeof mainString !== 'string') {
@@ -76,7 +73,7 @@ export default Service.extend({
       return false;
     }
     return true;
-  },
+  }
 
   letterPairs(str) {
     const pairs = [];
@@ -84,26 +81,26 @@ export default Service.extend({
       pairs[i] = str.substring(i, i + 2);
     }
     return pairs;
-  },
+  }
 
   wordLetterPairs(str) {
     const pairs = str.toUpperCase().split(' ').map(this.letterPairs);
     return this.flattenDeep(pairs);
-  },
+  }
 
   // trims, converts to lowercase, splits into words, removes any stopwords and then rejoins to string
   convertStringForCompare(str, stopwords) {
-    if (!isString(str)) {
+    if (!_.isString(str)) {
       return;
     }
 
     let lower = str.trim().toLowerCase();
     let tokens = lower.split(' ');
 
-    if (isArray(stopwords)) {
-      tokens = difference(tokens, stopwords);
+    if (_.isArray(stopwords)) {
+      tokens = _.difference(tokens, stopwords);
     }
 
     return tokens.join('');
-  },
-});
+  }
+}

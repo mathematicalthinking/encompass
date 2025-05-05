@@ -13,7 +13,7 @@ export default class FolderModel extends AuditableModel {
   sortProperties = ['weight', 'name'];
 
   get cleanTaggings() {
-    return this.taggings.filter((tagging) => !tagging.isTrashed);
+    return this.taggings.filter((tagging) => !tagging.get('isTrashed'));
   }
 
   get taggedSelections() {
@@ -23,11 +23,13 @@ export default class FolderModel extends AuditableModel {
   }
 
   get cleanSelections() {
-    return this.taggedSelections.filter((selection) => !selection.isTrashed);
+    return this.taggedSelections.filter(
+      (selection) => !selection.get('isTrashed')
+    );
   }
 
   get cleanChildren() {
-    return this.children.filter((child) => !child.isTrashed);
+    return this.children.filter((child) => !child.get('isTrashed'));
   }
 
   get hasChildren() {

@@ -264,14 +264,14 @@ export default class AssignmentNewComponent extends Component {
     let linkedNameFormat;
 
     if (linkedFormatInput) {
-      linkedNameFormat = linkedFormatInput.val();
+      linkedNameFormat = linkedFormatInput.value;
     }
 
     let parentFormatInput = document.getElementById('parent-ws-new-name');
     let parentNameFormat;
 
     if (parentFormatInput) {
-      parentNameFormat = parentFormatInput.val();
+      parentNameFormat = parentFormatInput.value;
     }
 
     createAssignmentData.linkedWorkspacesRequest = {
