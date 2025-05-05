@@ -1,7 +1,8 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 /*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import validate from 'validate.js';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
 export default Component.extend(CurrentUserMixin, {
@@ -183,12 +184,12 @@ export default Component.extend(CurrentUserMixin, {
       if (!doCreateFolderSet) {
         this.set('folderSetName', null);
         this.set('folderSetPrivacy', null);
-        errors = window.validate(
+        errors = validate(
           { name, owner, mode, doCreateFolderSet },
           this.constraints
         );
       } else {
-        errors = window.validate(
+        errors = validate(
           {
             name,
             owner,
