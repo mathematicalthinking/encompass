@@ -11,7 +11,6 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   @service router;
   @service('sweet-alert') alert;
   @tracked createRecordErrors = [];
-  @tracked teacher = null;
   @tracked leader = null;
   @tracked teachers = [];
   @tracked selectedOrganization = null;
@@ -53,42 +52,6 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
       this.organization = this.args.user.get('organization');
     }
   }
-
-  // get invalidTeacherUsername() {
-  //   return !this.teacher;
-  // }
-
-  // setTeacher: observer('teacher', function () {
-  //   let teacher = this.teacher;
-  //   if (!teacher) {
-  //     if (this.organization) {
-  //       this.set('organization', null);
-  //     }
-  //     return;
-  //   }
-
-  //   if (typeof teacher === 'string') {
-  //     let users = this.users;
-  //     let user = users.findBy('username', teacher);
-  //     if (!user) {
-  //       this.set('invalidTeacherUsername', true);
-  //       this.set('organization', null);
-  //       return;
-  //     }
-  //     teacher = user;
-  //   }
-
-  //   let organization = teacher.get('organization');
-
-  //   if (organization) {
-  //     this.set('organization', organization);
-  //   } else {
-  //     this.set('organization', this.get('currentUser.organization'));
-  //   }
-  //   if (this.invalidTeacherUsername) {
-  //     this.set('invalidTeacherUsername', null);
-  //   }
-  // }),
 
   get validTeacher() {
     return this.teacher && !this.invalidTeacherUsername;
@@ -176,5 +139,10 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
 
   @action cancel() {
     this.router.transitionTo('sections');
+  }
+
+  @action
+  setTeacher(selectedTeacher) {
+    this.teacher = selectedTeacher;
   }
 }

@@ -60,7 +60,7 @@
               @placeholder="Teacher's username"
               @dataList={{@addableTeachers}}
               @optionLabelPath='username'
-              @selectedValue={{this.teacher}}
+              @onSelect={{this.setTeacher}}
               @minLength={{2}}
               @setSelectedValueOnChange={{true}}
             />

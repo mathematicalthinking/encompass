@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class UserSignupComponent extends ErrorHandlingComponent {
-  emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   usernameRegEx = /^[a-z0-9_]{3,30}$/;
   passwordMinLength = 10;
   passwordMaxLength = 72;
@@ -62,11 +62,8 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   validateEmail(email) {
-    if (!email) {
-      return false;
-    }
-    var emailPattern = new RegExp(this.emailRegEx);
-    return emailPattern.test(email);
+    if (!email) return false;
+    return this.emailRegEx.test(email.trim());
   }
 
   validatePassword(password) {
@@ -123,7 +120,8 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
       this.password = password;
     }
   }
-  @action emailValidate(email) {
+  @action emailValidate(event) {
+    const email = event.target.value;
     let isValid = this.validateEmail(email);
     if (isValid) {
       this.emailError = null;
@@ -132,6 +130,7 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
       this.emailError = this.emailErrors.invalid;
     }
   }
+
   @action resetErrors() {
     const errors = [
       'missingCredentials',
