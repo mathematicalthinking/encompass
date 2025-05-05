@@ -90,15 +90,15 @@ export default class StringSimilarityService extends Service {
 
   // trims, converts to lowercase, splits into words, removes any stopwords and then rejoins to string
   convertStringForCompare(str, stopwords) {
-    if (!_.isString(str)) {
+    if (typeof str !== 'string') {
       return;
     }
 
     let lower = str.trim().toLowerCase();
     let tokens = lower.split(' ');
 
-    if (_.isArray(stopwords)) {
-      tokens = _.difference(tokens, stopwords);
+    if (Array.isArray(stopwords)) {
+      tokens = tokens.filter((token) => !stopwords.includes(token));
     }
 
     return tokens.join('');
