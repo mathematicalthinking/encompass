@@ -68,7 +68,7 @@
           <div class='info-content-block statement large-content'>
             {{#if @isEditing}}
               {{! The starting text is from the argument; we change the local value }}
-              <QuillContainer
+              <Ui::QuillContainer
                 @onEditorChange={{this.updateQuillText}}
                 @startingText={{@problem.text}}
               />

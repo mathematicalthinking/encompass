@@ -44,7 +44,7 @@
     <div class='compose-reply-container'>
       <p class='info'>{{replyHeadingText}}</p>
       <div class='compose-approver-reply'>
-        <QuillContainer
+        <Ui::QuillContainer
           @onEditorChange={{action 'updateQuillText'}}
           @attrSectionId={{quillEditorId}}
           @startingText={{editRevisionText}}
@@ -208,7 +208,7 @@
 
       {{#if isEditingApproverReply}}
         <div class='reply-revise'>
-          <QuillContainer
+          <Ui::QuillContainer
             @onEditorChange={{action 'updateQuillText'}}
             @attrSectionId={{quillEditorId}}
             @startingText={{editRevisionText}}
