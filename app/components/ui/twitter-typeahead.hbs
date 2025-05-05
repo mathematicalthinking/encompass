@@ -1,2 +1,21 @@
+<div class='typeahead-container' {{on 'focusout' this.handleBlur}}>
+  <div class='twitter-typeahead'>
+    <input
+      type='text'
+      class='typeahead-input'
+      placeholder={{this.placeholder}}
+      value={{this.query}}
+      {{on 'input' this.updateQuery}}
+    />
 
-  <input class="typeahead" type="text" placeholder={{this.placeholder}}>
+    {{#if this.hasResults}}
+      <ul class='typeahead-dropdown'>
+        {{#each this.filteredList as |entry|}}
+          <li {{on 'click' (fn this.selectItem entry)}}>
+            {{entry.label}}
+          </li>
+        {{/each}}
+      </ul>
+    {{/if}}
+  </div>
+</div>
