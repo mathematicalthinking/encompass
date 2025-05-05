@@ -117,10 +117,10 @@
         {{#if this.isEditing}}
           {{#if @currentUser.isAdmin}}
             <td>
+              {{@user.organization.name}}
               <Ui::TwitterTypeahead
                 @dataList={{@orgList}}
-                @selectedValue={{@user.organization}}
-                @onSelect='setOrg'
+                @onSelect={{this.setOrg}}
                 @minLength={{0}}
                 @optionLabelPath='name'
                 @setSelectedValueOnChange={{true}}
