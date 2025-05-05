@@ -2,6 +2,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import debounce from 'lodash-es/debounce';
+import validate from 'validate.js';
 
 export default Component.extend({
   classNames: ['search-bar-comp'],
@@ -104,7 +105,7 @@ export default Component.extend({
       let values = { query: val };
       let constraints = this.inputConstraints;
 
-      let errors = window.validate(values, constraints);
+      let errors = validate(values, constraints);
       if (errors) {
         for (let key of Object.keys(errors)) {
           let errorProp = `${key}Errors`;

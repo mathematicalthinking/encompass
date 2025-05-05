@@ -2,7 +2,8 @@ import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import validate from 'validate.js';
 import $ from 'jquery';
 
 export default class SectionNewComponent extends ErrorHandlingComponent {
@@ -110,7 +111,7 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
       teacher: teacher,
       organization: organization,
     };
-    let validation = window.validate(values, constraints);
+    let validation = validate(values, constraints);
     if (validation) {
       // errors
       for (let key of Object.keys(validation)) {

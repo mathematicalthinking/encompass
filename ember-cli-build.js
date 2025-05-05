@@ -17,7 +17,6 @@ module.exports = function (defaults) {
    */
 
   app.import('vendor/guiders.js');
-  app.import('vendor/validate.min.js');
   app.import('vendor/dropzone.js');
 
   // Use `app.import` to add additional libraries to the generated

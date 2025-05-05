@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import validate from 'validate.js';
 import moment from 'moment';
 
 export default class AssignmentNewComponent extends Component {
@@ -388,7 +389,7 @@ export default class AssignmentNewComponent extends Component {
 
     const constraints = this.constraints;
 
-    let errors = window.validate(values, constraints);
+    let errors = validate(values, constraints);
     if (errors) {
       // errors
       for (let key of Object.keys(errors)) {

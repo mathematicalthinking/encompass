@@ -4,6 +4,7 @@ import { service } from '@ember/service';
 import isObject from 'lodash-es/isObject';
 import isString from 'lodash-es/isString';
 import isNull from 'lodash-es/isNull';
+import validate from 'validate.js';
 
 export default Component.extend({
   elementId: 'workspace-new-settings',
@@ -202,7 +203,7 @@ export default Component.extend({
       const permissions = this.workspacePermissions;
       const submissionSettings = this.selectedSubmissionSettings;
 
-      errors = window.validate(
+      errors = validate(
         { workspaceName, owner, privacySetting },
         this.constraints
       );
