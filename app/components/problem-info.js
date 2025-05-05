@@ -1,8 +1,8 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _isEqual from 'lodash/isEqual';
-import _isNull from 'lodash/isNull';
+import _isEqual from 'lodash-es/isEqual';
+import _isNull from 'lodash-es/isNull';
 import { service } from '@ember/service';
 
 export default class ProblemInfoComponent extends Component {

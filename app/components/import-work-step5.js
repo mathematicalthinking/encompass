@@ -1,8 +1,8 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import isNull from 'lodash-es/isNull';
 
 export default Component.extend({
   elementId: 'import-work-step5',
@@ -132,7 +132,7 @@ export default Component.extend({
       this.set('createAssignmentValue', val);
     },
     updateSelectizeSingle(val, $item, propToUpdate, model) {
-      if (_.isNull($item)) {
+      if (isNull($item)) {
         this.set(propToUpdate, null);
         return;
       }

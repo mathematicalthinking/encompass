@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
 import { alias } from '@ember/object/computed';
+import debounce from 'lodash-es/debounce';
 import validate from 'validate.js';
 
 export default Component.extend({
@@ -23,10 +23,7 @@ export default Component.extend({
     let doDebounce = this.doDebounce || false;
     let debounceTime = this.debounceTime || 300;
     if (doDebounce) {
-      this.set(
-        'debouncedSearch',
-        _.debounce(this.onChangeSearch, debounceTime)
-      );
+      this.set('debouncedSearch', debounce(this.onChangeSearch, debounceTime));
     }
   },
 
@@ -99,17 +96,7 @@ export default Component.extend({
 
   actions: {
     clearResults: function () {
-      // let textVal = this.get("inputValue");
-      // let isString = _.isString(textVal);
-      // if (!isString) {
-      //   return;
-      // }
-      // let trimmed = textVal.trim();
-      // if (trimmed.length === 0) {
-      // just empty spaces, clear out search bar but dont bubble up and fetch
       this.set('inputValue', null);
-      // return;
-      // }
       this.clearSearchResults();
     },
 

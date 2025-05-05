@@ -6,12 +6,12 @@
   * @since 1.0.1
   * @see workspace_submissions_route
   */
-/*global _:false */
 import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import $ from 'jquery';
 import { resolve } from 'rsvp';
+import keys from 'lodash-es/keys';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 import VmtHostMixin from '../mixins/vmt-host';
 
@@ -139,7 +139,7 @@ export default Route.extend(CurrentUserMixin, VmtHostMixin, {
           lcFolders[f.get('name').toLowerCase().replace(/\s+/g, '')] = f;
         });
         tags.forEach(function (tag) {
-          if (_.keys(lcFolders).includes(tag)) {
+          if (keys(lcFolders).includes(tag)) {
             route.send(
               'fileSelectionInFolder',
               selection.get('id'),

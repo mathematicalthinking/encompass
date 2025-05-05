@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import map from 'lodash-es/map';
 
 export default Component.extend({
   elementId: 'import-work-step4',
@@ -19,7 +19,7 @@ export default Component.extend({
     if (!this.studentMap) {
       return [];
     }
-    return _.map(this.studentMap, (val, key) => {
+    return map(this.studentMap, (val, key) => {
       return val;
     });
   }),

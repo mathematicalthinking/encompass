@@ -1,8 +1,11 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
 import { alias, equal } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import without from 'lodash-es/without';
+import chain from 'lodash-es/chain';
+import isNull from 'lodash-es/isNull';
+import contains from 'lodash-es/contains';
 
 export default Component.extend({
   elementId: 'ws-copy-custom-config',
@@ -285,7 +288,7 @@ export default Component.extend({
       if (!threads || !this.utils.isNonEmptyArray(students)) {
         return [];
       }
-      return _.chain(students)
+      return chain(students)
         .map((student) => threads.get(student))
         .flatten()
         .value();
@@ -372,7 +375,7 @@ export default Component.extend({
         return;
       }
       // removal
-      if (_.isNull($item)) {
+      if (isNull($item)) {
         this.get(propToUpdate).removeObject(val);
         return;
       }
@@ -403,7 +406,7 @@ export default Component.extend({
         keys = ['all', 'includeStructureOnly', 'none'];
       }
 
-      if (!_.contains(keys, val)) {
+      if (!contains(keys, val)) {
         return;
       }
       const propToToggle = `${propName}.${val}`;
@@ -411,9 +414,9 @@ export default Component.extend({
         this.set(propToToggle, true);
       }
 
-      const without = _.without(keys, val);
+      const newList = without(keys, val);
 
-      without.forEach((key) => {
+      newList.forEach((key) => {
         let prop = `${propName}.${key}`;
         if (this.get(prop)) {
           this.set(prop, false);

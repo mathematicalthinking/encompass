@@ -1,8 +1,9 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import isObject from 'lodash-es/isObject';
+import isArray from 'lodash-es/isArray';
 
 export default Component.extend({
   elementId: 'ws-copy-config',
@@ -59,11 +60,11 @@ export default Component.extend({
       let isAllSubmissions;
       let customSubmissionsCount;
 
-      if (_.isObject(submissionOptions)) {
+      if (isObject(submissionOptions)) {
         isAllSubmissions = submissionOptions.all === true;
         let customIds = submissionOptions.submissionIds;
 
-        if (_.isArray(customIds)) {
+        if (isArray(customIds)) {
           customSubmissionsCount = customIds.length;
         }
       }

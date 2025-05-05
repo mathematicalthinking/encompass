@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import isNull from 'lodash-es/isNull';
 
 export default Component.extend({
   elementId: 'ws-copy-workspace',
@@ -46,7 +46,7 @@ export default Component.extend({
         return;
       }
 
-      const isRemoval = _.isNull($item);
+      const isRemoval = isNull($item);
       if (isRemoval) {
         this.set('selectedWorkspace', null);
         return;

@@ -1,8 +1,9 @@
 import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
-/*global _:false */
 import { equal } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import each from 'lodash-es/each';
+import isArray from 'lodash-es/isArray';
 
 export default Component.extend({
   elementId: 'ws-permissions-new',
@@ -250,7 +251,7 @@ export default Component.extend({
 
       if (utils.isNonEmptyObject(userPermissions)) {
         //prefill for editing
-        _.each(
+        each(
           ['folders', 'comments', 'selections', 'feedback', 'global'],
           (prop) => {
             let val = userPermissions[prop];
@@ -266,7 +267,7 @@ export default Component.extend({
             this.set('submissions', 'all');
           } else if (submissions.userOnly === true) {
             this.set('submissions', 'userOnly');
-          } else if (_.isArray(submissions.submissionIds)) {
+          } else if (isArray(submissions.submissionIds)) {
             this.set('submissions', 'custom');
             this.set('customSubmissionIds', [...submissions.submissionIds]);
           }

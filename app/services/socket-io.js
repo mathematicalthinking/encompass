@@ -1,6 +1,7 @@
 /*global io:false */
-/*global _:false */
 import Service, { inject as service } from '@ember/service';
+import each from 'lodash-es/each';
+import isEqual from 'lodash-es/isEqual';
 
 export default Service.extend({
   currentUser: service('current-user').user,
@@ -21,7 +22,7 @@ export default Service.extend({
     }
 
     socket.on('NEW_NOTIFICATION', (data) => {
-      _.each(data, (val, key) => {
+      each(data, (val, key) => {
         if (val) {
           this.store.pushPayload({
             [key]: val,
@@ -269,7 +270,7 @@ export default Service.extend({
     return peekedResponseThreads.find((thread) => {
       return (
         thread.get('threadType') === threadType &&
-        _.isEqual(thread.get('id'), uniqueIdentifier)
+        isEqual(thread.get('id'), uniqueIdentifier)
       );
     });
   },

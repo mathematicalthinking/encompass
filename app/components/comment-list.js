@@ -13,11 +13,13 @@ import { computed } from '@ember/object';
  *   TODO:
  *   - Test the hashtag stuff to see if that is still working.
  */
-/*global _:false */
 import { and, equal } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import $ from 'jquery';
 import moment from 'moment';
+import isArray from 'lodash-es/isArray';
+import isNaN from 'lodash-es/isNaN';
+import random from 'lodash-es/random';
 import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
 export default Component.extend(ErrorHandlingMixin, {
@@ -119,8 +121,8 @@ export default Component.extend(ErrorHandlingMixin, {
     let path = `labels.${newCommentLabel}.placeholder`;
     let placeholder = this.get(path);
 
-    if (_.isArray(placeholder)) {
-      placeholder = placeholder[_.random(0, placeholder.length - 1)];
+    if (isArray(placeholder)) {
+      placeholder = placeholder[random(0, placeholder.length - 1)];
     }
     return placeholder;
   }),
@@ -340,20 +342,20 @@ export default Component.extend(ErrorHandlingMixin, {
     }
     let month = split[0];
     let monthInt = parseInt(month, 10);
-    if (_.isNaN(monthInt) || monthInt > 12 || monthInt < 1) {
+    if (isNaN(monthInt) || monthInt > 12 || monthInt < 1) {
       return false;
     }
     let day = split[1];
     let dayInt = parseInt(day, 10);
 
-    if (_.isNaN(dayInt) || dayInt < 1 || dayInt > 31) {
+    if (isNaN(dayInt) || dayInt < 1 || dayInt > 31) {
       return false;
     }
 
     let year = split[2];
     let yearInt = parseInt(year, 10);
 
-    if (_.isNaN(yearInt) || yearInt < 1000 || yearInt > 9999) {
+    if (isNaN(yearInt) || yearInt < 1000 || yearInt > 9999) {
       return false;
     }
     return true;
@@ -599,7 +601,7 @@ export default Component.extend(ErrorHandlingMixin, {
         let dateInput = this.sinceDate;
         let parsedDate = Date.parse(dateInput);
 
-        if (_.isNaN(parsedDate)) {
+        if (isNaN(parsedDate)) {
           return this.set('invalidDateError', 'Please enter a valid date');
         }
         options.sinceDate = dateInput;

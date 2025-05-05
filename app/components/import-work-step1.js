@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import isNull from 'lodash-es/isNull';
+import { service } from '@ember/service';
 
 export default Component.extend({
   elementId: 'import-work-step1',
@@ -21,7 +21,7 @@ export default Component.extend({
         return;
       }
 
-      const isRemoval = _.isNull($item);
+      const isRemoval = isNull($item);
       if (isRemoval) {
         this.set('selectedProblem', null);
         return;

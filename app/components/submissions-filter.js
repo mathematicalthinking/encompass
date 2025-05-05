@@ -1,10 +1,14 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
 import { later } from '@ember/runloop';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import $ from 'jquery';
 import moment from 'moment';
+import isArray from 'lodash-es/isArray';
+import isObject from 'lodash-es/isObject';
+import isNull from 'lodash-es/isNull';
+import map from 'lodash-es/map';
+import each from 'lodash-es/each';
 
 export default Component.extend({
   elementId: 'submissions-filter',
@@ -33,58 +37,6 @@ export default Component.extend({
     this._super(...arguments);
     this.set('startDate', moment().subtract(1, 'y').format('YYYY-MM-DD'));
     this.set('endDate', moment().format('YYYY-MM-DD'));
-    // const that = this;
-
-    // $(function () {
-    //   let startDate = that.get('startDate');
-    //   let endDate = that.get('endDate');
-
-    //   if (!startDate) {
-    //     startDate = moment().subtract(1, 'years');
-    //   } else if (_.isString(startDate)) {
-    //     startDate = moment(startDate);
-    //   }
-    //   if (!endDate) {
-    //     endDate = moment();
-    //   } else if (_.isString(endDate)) {
-    //     endDate = moment(endDate);
-    //   }
-
-    // $('input[name="startDate"]').daterangepicker({
-    //   singleDatePicker: true,
-    //   showDropdowns: true,
-    //   minYear: 1990,
-    //   autoUpdateInput: true,
-    //   locale: {
-    //     cancelLabel: 'Clear',
-    //   },
-    //   startDate: startDate,
-    // });
-    // $('input[name="endDate"]').daterangepicker({
-    //   singleDatePicker: true,
-    //   showDropdowns: true,
-    //   minYear: 1990,
-    //   autoUpdateInput: true,
-    //   locale: {
-    //     cancelLabel: 'Clear',
-    //   },
-    //   startDate: endDate,
-    // });
-    // $('input[name="startDate"]').on(
-    //   'apply.daterangepicker',
-    //   function (ev, picker) {
-    //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
-    //   }
-    // );
-    // $('input[name="endDate"]').on(
-    //   'apply.daterangepicker',
-    //   function (ev, picker) {
-    //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
-    //   }
-    // );
-    // $('input[name="startDate"]').attr('placeholder', 'mm/dd/yyyy');
-    // $('input[name="endDate"]').attr('placeholder', 'mm/dd/yyyy');
-    // });
   },
   missingCriteriaMessage:
     'Please select either a teacher, assignment, problem, class, or at least one student.',
@@ -132,7 +84,7 @@ export default Component.extend({
       if (this.get('currentUser.isStudent')) {
         return [this.get('currentUser.id')];
       }
-      if (_.isArray(this.selectedStudents)) {
+      if (isArray(this.selectedStudents)) {
         return this.selectedStudents.mapBy('id');
       }
       return [];
@@ -294,7 +246,7 @@ export default Component.extend({
   studentPoolOptions: computed('studentPool.[]', function () {
     let students = this.studentPool;
 
-    if (!_.isObject(students)) {
+    if (!isObject(students)) {
       return [];
     }
     return students.map((user) => {
@@ -437,7 +389,7 @@ export default Component.extend({
         });
       }
 
-      let mapped = _.map(assignments, (assignment) => {
+      let mapped = map(assignments, (assignment) => {
         return {
           id: assignment.id,
           name: assignment.get('name'),
@@ -521,7 +473,7 @@ export default Component.extend({
         return [];
       }
       const ids = this.selectedStudentSectionIds;
-      if (sections && _.isArray(ids)) {
+      if (sections && isArray(ids)) {
         return sections.filter((section) => {
           return ids.includes(section.get('id'));
         });
@@ -539,7 +491,7 @@ export default Component.extend({
       }
       const sections = this.baseSections;
       const ids = this.selectedTeacherSectionIds;
-      if (sections && _.isArray(ids)) {
+      if (sections && isArray(ids)) {
         return sections.filter((section) => {
           return ids.includes(section.get('id'));
         });
@@ -599,7 +551,7 @@ export default Component.extend({
         });
       }
 
-      let mapped = _.map(sections, (section) => {
+      let mapped = map(sections, (section) => {
         return {
           id: section.id,
           name: section.get('name'),
@@ -675,7 +627,7 @@ export default Component.extend({
     buildCriteria: function () {
       //clear errors if any
       let errorProps = ['isMissingCriteria', 'isInvalidDateRange'];
-      _.each(errorProps, (prop) => {
+      each(errorProps, (prop) => {
         if (this.get(prop)) {
           this.set(prop, null);
         }
@@ -711,7 +663,7 @@ export default Component.extend({
         vmtSearchText: this.vmtSearchText,
         isTrashedOnly: this.isTrashedOnly,
       };
-      _.each(criteria, (val, key) => {
+      each(criteria, (val, key) => {
         if (utils.isNullOrUndefined(val) || val === '') {
           delete criteria[key];
         }
@@ -728,7 +680,7 @@ export default Component.extend({
     },
 
     updateSelectizeSingle(val, $item, propToUpdate, model) {
-      if (_.isNull($item)) {
+      if (isNull($item)) {
         this.set(propToUpdate, null);
         return;
       }
@@ -743,7 +695,7 @@ export default Component.extend({
         return;
       }
       let selectedStudents = this.selectedStudents;
-      if (_.isNull($item)) {
+      if (isNull($item)) {
         // removal
         let studentToRemove = selectedStudents.findBy('id', val);
         if (studentToRemove) {
@@ -760,9 +712,9 @@ export default Component.extend({
       if (!val || !propToUpdate) {
         return;
       }
-      let isRemoval = _.isNull($item);
+      let isRemoval = isNull($item);
       let prop = this.get(propToUpdate);
-      let isPropArray = _.isArray(prop);
+      let isPropArray = isArray(prop);
 
       if (isRemoval) {
         if (!isPropArray) {

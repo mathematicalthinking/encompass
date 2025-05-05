@@ -1,5 +1,7 @@
-/*global _:false */
 import Service from '@ember/service';
+import isString from 'lodash-es/isString';
+import isArray from 'lodash-es/isArray';
+import difference from 'lodash-es/difference';
 
 export default Service.extend({
   compareTwoStrings(str1, str2) {
@@ -26,7 +28,7 @@ export default Service.extend({
     let intersection = 0;
     pairs1.forEach((pair1) => {
       //eslint-disable-next-line
-      for (let i = 0, pair2; pair2 = pairs2[i]; i++) {
+      for (let i = 0, pair2; (pair2 = pairs2[i]); i++) {
         if (pair1 !== pair2) {
           continue; //eslint-disable-line
         }
@@ -91,15 +93,15 @@ export default Service.extend({
 
   // trims, converts to lowercase, splits into words, removes any stopwords and then rejoins to string
   convertStringForCompare(str, stopwords) {
-    if (!_.isString(str)) {
+    if (!isString(str)) {
       return;
     }
 
     let lower = str.trim().toLowerCase();
     let tokens = lower.split(' ');
 
-    if (_.isArray(stopwords)) {
-      tokens = _.difference(tokens, stopwords);
+    if (isArray(stopwords)) {
+      tokens = difference(tokens, stopwords);
     }
 
     return tokens.join('');

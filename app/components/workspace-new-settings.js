@@ -1,7 +1,9 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
 import { service } from '@ember/service';
+import isObject from 'lodash-es/isObject';
+import isString from 'lodash-es/isString';
+import isNull from 'lodash-es/isNull';
 import validate from 'validate.js';
 
 export default Component.extend({
@@ -137,7 +139,7 @@ export default Component.extend({
     let peeked = this.store.peekAll('user');
     let collabs = this.selectedCollaborators;
 
-    if (!_.isObject(peeked)) {
+    if (!isObject(peeked)) {
       return [];
     }
     let filtered = peeked.reject((record) => {
@@ -166,9 +168,9 @@ export default Component.extend({
     }
     workspacePermissions.forEach((obj) => {
       let user = obj.user;
-      if (_.isString(user)) {
+      if (isString(user)) {
         hash[user] = true;
-      } else if (_.isObject(user)) {
+      } else if (isObject(user)) {
         hash[user.get('id')] = true;
       }
     });
@@ -182,7 +184,7 @@ export default Component.extend({
       this.set('selectedSubmissionSettings', val);
     },
     updateSelectizeSingle(val, $item, propToUpdate, model) {
-      if (_.isNull($item)) {
+      if (isNull($item)) {
         this.set(propToUpdate, null);
         return;
       }

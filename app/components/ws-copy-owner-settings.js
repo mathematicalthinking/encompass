@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-/*global _:false */
 import { service } from '@ember/service';
+import isNull from 'lodash-es/isNull';
 import validate from 'validate.js';
 import CurrentUserMixin from '../mixins/current_user_mixin';
 
@@ -223,7 +223,7 @@ export default Component.extend(CurrentUserMixin, {
       if (!val) {
         return;
       }
-      const isRemoval = _.isNull($item);
+      const isRemoval = isNull($item);
       if (isRemoval) {
         this.set('selectedOwner', null);
         return;
@@ -235,7 +235,7 @@ export default Component.extend(CurrentUserMixin, {
       if (!val) {
         return;
       }
-      const isRemoval = _.isNull($item);
+      const isRemoval = isNull($item);
       if (isRemoval) {
         this.set('existingFolderSetToUse', null);
         return;
