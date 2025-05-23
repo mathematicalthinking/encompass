@@ -1,6 +1,6 @@
 <li class='has-children'>
   {{#if (not-empty @item.children)}}
-    <!-- Expandable (has children) -->
+    {{!-- Expandable (has children) --}}
     <input
       type='checkbox'
       id={{@item.identifier}}
@@ -20,11 +20,11 @@
     {{#if this.isOpen}}
       <ul>
         {{#each @item.children as |child|}}
-          <!-- Recursively render each child as a <RecursiveMenu> -->
+          {{!-- Recursively render each child as a <RecursiveMenu> --}}
           <RecursiveMenu @item={{child}} @onAddCategory={{@onAddCategory}} />
         {{/each}}
 
-        <!-- The 'Other' button for this parent item -->
+        {{!-- The 'Other' button for this parent item --}}
         <li class='item'>
           <button type='button' {{on 'click' (fn @onAddCategory @item)}}>
             +
@@ -34,7 +34,7 @@
       </ul>
     {{/if}}
   {{else}}
-    <!-- Leaf (no children) -->
+    {{!-- Leaf (no children) --}}
     <li class='item'>
       <button type='button' {{on 'click' (fn @onAddCategory @item)}}>
         +

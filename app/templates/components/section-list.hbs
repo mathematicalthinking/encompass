@@ -4,7 +4,7 @@
     {{#if this.currentUser.isStudent}}{{else}}
       <LinkTo
         @route='sections.new'
-        @id='new-section-link'
+        id='new-section-link'
         class='new-link-btn'
       ><span>Create New Class</span><i class='fas fa-plus'></i></LinkTo>
     {{/if}}
@@ -21,7 +21,7 @@
               <li><LinkTo
                   @route='sections.section'
                   @model={{section.id}}
-                  @classNames='section'
+                  class='section'
                 >{{section.name}}</LinkTo></li>
             {{/each}}
           {{else}}
@@ -36,7 +36,7 @@
               <li><LinkTo
                   @route='sections.section'
                   @model={{section.id}}
-                  @classNames='section'
+                  class='section'
                 >{{section.name}}</LinkTo></li>
             {{/each}}
           {{else}}
@@ -53,7 +53,7 @@
               <li><LinkTo
                   @route='sections.section'
                   @model={{section.id}}
-                  @classNames='section'
+                  class='section'
                 >{{section.name}}</LinkTo></li>
             {{/each}}
           {{else}}
@@ -70,7 +70,7 @@
               <li><LinkTo
                   @route='sections.section'
                   @model={{section.id}}
-                  @classNames='section'
+                  class='section'
                 >{{section.name}}</LinkTo></li>
             {{/each}}
           {{else}}
@@ -89,7 +89,7 @@
                 <li><LinkTo
                     @route='sections.section'
                     @model={{section.id}}
-                    @classNames='section'
+                    class='section'
                   >{{section.name}}</LinkTo></li>
               {{/each}}
             {{/if}}

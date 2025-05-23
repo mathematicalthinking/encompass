@@ -53,7 +53,7 @@
     <div id='category-list-modal'>
       <div class='modal-content'>
         <h4>Select a Category</h4>
-        <button class='close' {{on 'click' this.handleCloseCategoryList}}>
+        <button class='close' type="button" {{on 'click' this.handleCloseCategoryList}}>
           <i class='fas fa-times'></i>
         </button>
         <CategoriesMenu @addCategory={{this.handleAddCategory}} />
