@@ -18,7 +18,6 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
       isTrashed: false,
     });
     return hash({
-      sections: this.store.findAll('section'),
       assignment,
       groups,
       students: assignment.students,

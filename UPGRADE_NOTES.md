@@ -244,6 +244,8 @@ Since Ember 3.1, this is usually fine as you no longer need to use .get() to acc
 
 - related to above, in components, dot notation might result in a PromiseProxy. However, if it's used in a template, Ember will re-render once the value is fully resolved, so you don't have to worry about it. However, if you are using the value in js, such as wanting to loop over an array, you need to use await. (Of course, if you are just defining a convenience getter that uses dot notiation for use by a template, you don't have to await.)
 
+- if you forget to put the @action decorator on a function then call it from your template, 'this' will not be defined.
+
 # Current Progress
 
 ## CurrentUser service

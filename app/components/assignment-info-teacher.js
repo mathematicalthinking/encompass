@@ -1,35 +1,30 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
-import moment from 'moment';
+import { service } from '@ember/service';
 
-export default class AssignmentInfoTeacherComponent extends ErrorHandlingComponent {
+export default class AssignmentInfoTeacherComponent extends Component {
   @service store;
   @service router;
   @service currentUser;
   @service('sweet-alert') alert;
   @service('assignment-permissions') permissions;
   @service('utility-methods') utils;
-  @tracked formattedDueDate = null;
-  @tracked formattedAssignedDate = null;
+  @service errorHandling;
   @tracked isEditing = false;
-  @tracked isPreparingReport = false;
-  @tracked htmlDateFormat = 'YYYY-MM-DD';
-  @tracked displayDateFormat = 'MMM Do YYYY';
   @tracked assignmentToDelete = null;
-  @tracked dataFetchErrors = [];
-  @tracked findRecordErrors = [];
-  @tracked updateRecordErrors = [];
   @tracked areLinkedWsExpanded = true;
   @tracked showParentWsForm = false;
   @tracked showLinkedWsForm = false;
   @tracked areSubmissionsExpanded = true;
-  @tracked cachedProblem = [];
+  @tracked invalidDateRange = false;
 
   get user() {
     return this.currentUser.user;
+  }
+
+  get updateRecordErrors() {
+    return this.errorHandling.getErrors('updateRecordErrors');
   }
 
   get showProblemInput() {
@@ -65,11 +60,11 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   get showFullLinkedWsMsg() {
-    if (this.args.assignment.linkedWorkspacesRequest.linkType === 'group') {
+    if (this.args.assignment.linkedWorkspacesRequest?.linkType === 'group') {
       return this.isEditing && this.allGroupsHaveWs;
     }
     if (
-      this.args.assignment.linkedWorkspacesRequest.linkType === 'individual'
+      this.args.assignment.linkedWorkspacesRequest?.linkType === 'individual'
     ) {
       return this.isEditing && this.allStudentsHaveWs;
     }
@@ -77,14 +72,6 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
   get showNoParentWsMsg() {
     return this.isEditing && this.doesNotHaveLinkedWs;
-  }
-
-  constructor() {
-    super(...arguments);
-    // get all sections and problems
-    // only need to get these on init because user won't be creating new sections or problems from this component
-
-    this.cachedProblems = this.store.peekAll('problem');
   }
 
   get isYourOwn() {
@@ -157,21 +144,13 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   getMongoDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    return new Date(dateMoment);
+    if (typeof htmlDateString !== 'string') return;
+    return new Date(`${htmlDateString}T00:00:00`);
   }
 
   getEndDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD HH:mm';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    let date = new Date(dateMoment);
+    if (typeof htmlDateString !== 'string') return;
+    const date = new Date(htmlDateString);
     date.setHours(23, 59, 59);
     return date;
   }
@@ -180,35 +159,6 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
     return (
       !this.isEditing && this.hasBasicEditPrivileges && !this.showParentWsForm
     );
-  }
-
-  get problemOptions() {
-    let cachedProblems = this.cachedProblems;
-    let toArray = cachedProblems.toArray();
-    return toArray.map((cachedProblem) => {
-      return {
-        id: cachedProblem.id,
-        title: cachedProblem.get('title'),
-      };
-    });
-  }
-  get sectionOptions() {
-    let sections = this.args.sections || [];
-    let toArray = sections.toArray();
-    return toArray.map((section) => {
-      return {
-        id: section.id,
-        name: section.get('name'),
-      };
-    });
-  }
-
-  get initialProblemItem() {
-    return [this.args.assignment.get('problem.id')];
-  }
-
-  get initialSectionItem() {
-    return [this.args.assignment.get('section.id')];
   }
 
   get showAddParentWsBtn() {
@@ -264,7 +214,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
     return students.reject((student) => {
       return existingWorkspaces.find((ws) => {
         let ownerId = this.utils.getBelongsToId(ws, 'owner');
-        return ownerId === student.get('id');
+        return ownerId === student.id;
       });
     });
   }
@@ -279,15 +229,15 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
   }
 
   get linkedByGroup() {
-    return this.args.assignment.linkedWorkspacesRequest.linkType === 'group';
+    return this.args.assignment.linkedWorkspacesRequest?.linkType === 'group';
   }
 
   get missingWorkspaces() {
-    if (this.args.assignment.linkedWorkspacesRequest.linkType === 'group') {
+    if (this.args.assignment.linkedWorkspacesRequest?.linkType === 'group') {
       return this.groupsWithoutWorkspaces;
     }
     if (
-      this.args.assignment.linkedWorkspacesRequest.linkType === 'individual'
+      this.args.assignment.linkedWorkspacesRequest?.linkType === 'individual'
     ) {
       return this.studentsWithoutWorkspaces;
     }
@@ -318,7 +268,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
 
   @action deleteAssignment() {
     const assignment = this.args.assignment;
-    assignment.set('isTrashed', true);
+    assignment.isTrashed = true;
     return assignment
       .save()
       .then((assignment) => {
@@ -334,7 +284,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
           )
           .then((result) => {
             if (result.value) {
-              assignment.set('isTrashed', false);
+              assignment.isTrashed = false;
               assignment.save().then(() => {
                 this.alert.showToast(
                   'success',
@@ -352,7 +302,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
       })
       .catch((err) => {
         this.assignmentToDelete = null;
-        this.handleErrors(err, 'updateRecordErrors', assignment);
+        this.errorHandling.handleErrors(err, 'updateRecordErrors', assignment);
       });
   }
 
@@ -376,10 +326,7 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
 
     const assignment = this.args.assignment;
 
-    if (
-      !this.args.assignment.get('problem') ||
-      !this.args.assignment.get('section')
-    ) {
+    if (!this.args.problem || !this.args.section) {
       return this.alert.showToast(
         'error',
         'Class and Problem are required',
@@ -427,10 +374,10 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
       }
     }
 
-    if (assignment.get('hasDirtyAttributes')) {
+    if (assignment.hasDirtyAttributes) {
       // never creating workspaces from this function
-      assignment.set('linkedWorkspacesRequest', { doCreate: false });
-      assignment.set('parentWorkspaceRequest', { doCreate: false });
+      assignment.linkedWorkspacesRequest = { doCreate: false };
+      assignment.parentWorkspaceRequest = { doCreate: false };
 
       return assignment
         .save()
@@ -444,12 +391,15 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
             null
           );
           this.assignmentUpdateSuccess = true;
-          $('.daterangepicker').remove();
           this.isEditing = false;
           return;
         })
         .catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors', assignment);
+          this.errorHandling.handleErrors(
+            err,
+            'updateRecordErrors',
+            assignment
+          );
         });
     } else {
       this.alert.showToast(
@@ -462,7 +412,6 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
       );
       this.args.assignment.rollbackAttributes();
       this.isEditing = false;
-      $('.daterangepicker').remove();
     }
   }
   @action stopEditing() {
@@ -485,32 +434,12 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
               this.showParentWsForm = false;
             }
             this.isEditing = false;
-            $('.daterangepicker').remove();
           }
         });
     } else {
       this.isEditing = false;
-      $('.daterangepicker').remove();
     }
     this.args.assignment.rollbackAttributes();
-  }
-  @action updateSelectizeSingle(val, $item, propToUpdate, model) {
-    let errorProp = `${model}FormErrors`;
-    this[errorProp] = [];
-
-    if ($item === null) {
-      this.args[propToUpdate] = null;
-      return;
-    }
-    let record = this.store.peekRecord(model, val);
-    if (!record) {
-      return;
-    }
-    if (propToUpdate === 'section') {
-      this.args.assignment.section = record;
-    } else if (propToUpdate === 'problem') {
-      this.args.assignment.problem = record;
-    }
   }
   @action handleCreatedParentWs(assignment) {
     if (assignment) {
@@ -552,5 +481,25 @@ export default class AssignmentInfoTeacherComponent extends ErrorHandlingCompone
     this.args.assignment.dueDate = new Date(
       event.target.value.replace(/-/g, '/')
     );
+  }
+
+  @action
+  showLinkedWs() {
+    this.showLinkedWsForm = true;
+  }
+
+  @action
+  hideLinkedWs() {
+    this.showLinkedWsForm = false;
+  }
+
+  @action
+  hideParentWs() {
+    this.showParentWsForm = false;
+  }
+
+  @action
+  showParentWs() {
+    this.showParentWsForm = true;
   }
 }

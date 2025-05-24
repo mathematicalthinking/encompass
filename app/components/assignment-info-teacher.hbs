@@ -25,7 +25,7 @@
         id='assignedDate'
         @type='date'
         @value={{(format-date @assignment.assignedDate 'YYYY-MM-DD')}}
-        {{on 'change' (action 'updateAssignedDate')}}
+        {{on 'change' this.updateAssignedDate}}
       />
     {{else}}
       <p class='label'>
@@ -43,7 +43,7 @@
         name='daterange'
         @type='date'
         @value={{(format-date @assignment.dueDate 'YYYY-MM-DD')}}
-        {{on 'change' (action 'updateDueDate')}}
+        {{on 'change' this.updateDueDate}}
       />
     {{else}}
       <p class='label'>
@@ -102,8 +102,8 @@
         @assignment={{@assignment}}
         @section={{@section}}
         @problem={{@problem}}
-        @onCancel={{action (mut showLinkedWsForm) false}}
-        @handleResults={{action 'handleCreatedLinkedWs'}}
+        @onCancel={{this.hideLinkedWs}}
+        @handleResults={{this.handleCreatedLinkedWs}}
       />
     {{/if}}
     {{#if this.showAddLinkedWsBtn}}
@@ -111,7 +111,7 @@
         data-test='add-linked-ws'
         class='add-linkedworkspaces-btn'
         type='button'
-        {{action (mut showLinkedWsForm) true}}
+        {{on 'click' this.showLinkedWs}}
       >
         Add Linked Workspaces
         <i class='fas fa-plus-circle'></i>
@@ -146,8 +146,8 @@
         @assignment={{@assignment}}
         @section={{@section}}
         @problem={{@problem}}
-        @onCancel={{action (mut showParentWsForm) false}}
-        @handleResults={{action 'handleCreatedParentWs'}}
+        @onCancel={{this.hideParentWs}}
+        @handleResults={{this.handleCreatedParentWs}}
       />
     {{/if}}
     {{#if this.showAddParentWsBtn}}
@@ -155,7 +155,7 @@
         data-test='add-parent-ws'
         class='add-parent-workspace-btn'
         type='button'
-        {{action (mut showParentWsForm) true}}
+        {{on 'click' this.showParentWs}}
       >Add Parent Workspace <i class='fas fa-plus-circle'></i></button>
     {{/if}}
     {{#if this.showNoParentWsMsg}}
@@ -169,7 +169,7 @@
       Submissions
       <i
         class={{this.displayListsOptions.submissions.icon}}
-        {{action 'toggleProperty' 'areSubmissionsExpanded'}}
+        {{on 'click' (fn this.toggleProperty 'areSubmissionsExpanded')}}
       ></i>
     </p>
     {{#if this.areSubmissionsExpanded}}
@@ -186,7 +186,7 @@
         data-test='edit-assignment'
         class='edit-assignment-button'
         type='button'
-        {{action 'editAssignment'}}
+        {{on 'click' this.editAssignment}}
       >
         Edit Assignment
         <i class='fas fa-edit'></i>
@@ -197,7 +197,7 @@
         class='save-assign-btn'
         data-test='assn-save'
         type='button'
-        {{action 'updateAssignment'}}
+        {{on 'click' this.updateAssignment}}
       >
         Save Assignment
         <i class='fas fa-save'></i>
@@ -206,7 +206,7 @@
         class='cancelEditBtn'
         data-test='assn-cancel'
         type='button'
-        {{action 'stopEditing'}}
+        {{on 'click' this.stopEditing}}
       >
         Cancel
         <i class='fas fa-times'></i>
@@ -215,25 +215,16 @@
         data-test='trash-assn'
         class='right'
         type='button'
-        {{action 'showDeleteModal'}}
+        {{on 'click' this.showDeleteModal}}
       >
         <i class='fa fa-trash' aria-hidden='true'></i>
       </button>
     {{/if}}
   </div>
   <div class='info-flex-item errors'>
-    {{#each this.findRecordErrors as |error|}}
-      <p class='error-message'>{{error}}</p>
-    {{/each}}
     {{#each this.updateRecordErrors as |error|}}
       <p class='error-message'>{{error}}</p>
     {{/each}}
-    {{#each this.dataFetchErrors as |error|}}
-      <p class='error-message'>{{error}}</p>
-    {{/each}}
-    {{#if this.isMissingRequiredFields}}
-      <p class='error-message'>Please provide all required fields.</p>
-    {{/if}}
     {{#if this.invalidDateRange}}
       <p class='error-message'>Invalid Date Range</p>
     {{/if}}

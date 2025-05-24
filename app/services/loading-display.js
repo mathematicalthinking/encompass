@@ -1,7 +1,6 @@
-import { later } from '@ember/runloop';
 import Service from '@ember/service';
 
-export default Service.extend({
+export default class LoadingMessageService extends Service {
   handleLoadingMessage(
     context,
     eventType,
@@ -9,42 +8,37 @@ export default Service.extend({
     propToSet,
     timeout = 500
   ) {
-    if (context.get('isDestroyed') || context.get('isDestroying')) {
-      return;
-    }
+    if (context.isDestroyed || context.isDestroying) return;
 
-    let isDisplayingLoadingMessage = context.get(propToSet);
+    let isDisplayingLoadingMessage = context[propToSet];
 
     if (eventType === 'start') {
-      context.set(triggerProperty, true);
+      context[triggerProperty] = true;
     } else if (eventType === 'end') {
-      context.set(triggerProperty, false);
+      context[triggerProperty] = false;
       if (isDisplayingLoadingMessage) {
-        context.set(propToSet, false);
+        context[propToSet] = false;
       }
       return;
     } else {
-      // invalid eventType
-      return;
+      return; // invalid eventType
     }
 
-    later(function () {
-      if (context.isDestroyed || context.isDestroying) {
-        return;
-      }
-      let isInProgress = context.get(triggerProperty);
-      let isDisplayingLoadingMessage = context.get(propToSet);
+    setTimeout(() => {
+      if (context.isDestroyed || context.isDestroying) return;
+
+      let isInProgress = context[triggerProperty];
+      let isStillDisplaying = context[propToSet];
 
       if (isInProgress) {
-        if (!isDisplayingLoadingMessage) {
-          context.set(propToSet, true);
-          return;
+        if (!isStillDisplaying) {
+          context[propToSet] = true;
         }
       } else {
-        if (isDisplayingLoadingMessage) {
-          context.set(propToSet, false);
+        if (isStillDisplaying) {
+          context[propToSet] = false;
         }
       }
     }, timeout);
-  },
-});
+  }
+}

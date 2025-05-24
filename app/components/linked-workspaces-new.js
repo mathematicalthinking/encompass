@@ -9,22 +9,18 @@ import { inject as service } from '@ember/service';
 
 export default class LinkedWorkspacesNew extends Component {
   @service('loading-display') loading;
-  @tracked workspaceName = '';
+  @tracked workspaceName = this.defaultName;
   @tracked isCreating = true;
   @tracked groupWorkspacesToMake = [];
   @tracked studentWorkspacesToMake = [];
   @tracked allSelected = false;
+  @tracked isRequestInProgress = false;
+  @tracked doShowLoadingMessage = false;
+  @tracked createWorkspaceError = null;
+
   get showAllSelected() {
     return this.args.allSelected || this.allSelected;
   }
-  constructor() {
-    super(...arguments);
-    this.workspaceName = this.defaultName;
-    if (!this.args.isDisplayOnly) {
-      this.selectAll();
-    }
-  }
-
   get defaultName() {
     let assignmentName = this.args.assignmentName || this.args.assignment.name;
     let sectionName = this.args.sectionName || this.args.section.name;
@@ -46,9 +42,16 @@ export default class LinkedWorkspacesNew extends Component {
     return [...this.groupWorkspacesToMake, ...this.studentWorkspacesToMake];
   }
 
+  @action
+  initialSelectAll() {
+    if (!this.args.isDisplayOnly) {
+      this.args.selectAll?.();
+    }
+  }
+
   @action selectAll() {
     if (this.args.isDisplayOnly) {
-      return this.args.selectAll();
+      return this.args.selectAll?.();
     }
     if (this.allSelected) {
       this.studentWorkspacesToMake = [];
@@ -57,10 +60,10 @@ export default class LinkedWorkspacesNew extends Component {
       return;
     }
     this.studentWorkspacesToMake = this.args.students
-      .filter((item) => item.constructor.modelName === 'user')
+      .filter((item) => item.isModelType('user'))
       .map((item) => item.id);
     this.groupWorkspacesToMake = this.args.students
-      .filter((item) => item.constructor.modelName === 'group')
+      .filter((item) => item.isModelType('group'))
       .map((item) => item.id);
     this.allSelected = true;
   }
@@ -69,11 +72,10 @@ export default class LinkedWorkspacesNew extends Component {
     if (this.args.isDisplayOnly) {
       return this.args.updateLists(student);
     }
-    if (student.constructor.modelName === 'user') {
+    if (student.isModelType('user')) {
       if (this.studentWorkspacesToMake.includes(student.id)) {
-        this.studentWorkspacesToMake.splice(
-          this.studentWorkspacesToMake.indexOf(student.id),
-          1
+        this.studentWorkspacesToMake = this.studentWorkspacesToMake.filter(
+          (id) => id !== student.id
         );
       } else {
         this.studentWorkspacesToMake = [
@@ -81,11 +83,10 @@ export default class LinkedWorkspacesNew extends Component {
           student.id,
         ];
       }
-    } else if (student.constructor.modelName === 'group') {
+    } else if (student.isModelType('group')) {
       if (this.groupWorkspacesToMake.includes(student.id)) {
-        this.groupWorkspacesToMake.splice(
-          this.groupWorkspacesToMake.indexOf(student.id),
-          1
+        this.groupWorkspacesToMake = this.groupWorkspacesToMake.filter(
+          (id) => id !== student.id
         );
       } else {
         this.groupWorkspacesToMake = [
@@ -106,6 +107,12 @@ export default class LinkedWorkspacesNew extends Component {
       this.isCreating = false;
     }
   }
+
+  @action
+  resetCreateWorkspaceError() {
+    this.createWorkspaceError = null;
+  }
+
   @action create() {
     let assignment = this.args.assignment;
 
@@ -113,12 +120,12 @@ export default class LinkedWorkspacesNew extends Component {
       return;
     }
 
-    // this.loading.handleLoadingMessage(
-    //   this,
-    //   'start',
-    //   'isRequestInProgress',
-    //   'doShowLoadingMessage'
-    // );
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isRequestInProgress',
+      'doShowLoadingMessage'
+    );
 
     assignment.linkedWorkspacesRequest = {
       ...assignment.linkedWorkspacesRequest,
@@ -133,31 +140,29 @@ export default class LinkedWorkspacesNew extends Component {
     return assignment
       .save()
       .then((assignment) => {
-        // this.loading.handleLoadingMessage(
-        //   this,
-        //   'end',
-        //   'isRequestInProgress',
-        //   'doShowLoadingMessage'
-        // );
-
-        let createWorkspaceError = assignment.get(
-          'linkedWorkspacesRequest.error'
+        this.loading.handleLoadingMessage(
+          this,
+          'end',
+          'isRequestInProgress',
+          'doShowLoadingMessage'
         );
+
+        let createWorkspaceError = assignment.linkedWorkspacesRequest.error;
 
         if (createWorkspaceError) {
           return (this.createWorkspaceError = createWorkspaceError);
         }
 
-        this.args.handleResults(assignment);
+        this.args.handleResults?.(assignment);
         this.cancel();
       })
       .catch((err) => {
-        // this.loading.handleLoadingMessage(
-        //   this,
-        //   'start',
-        //   'isRequestInProgress',
-        //   'doShowLoadingMessage'
-        // );
+        this.loading.handleLoadingMessage(
+          this,
+          'end',
+          'isRequestInProgress',
+          'doShowLoadingMessage'
+        );
 
         this.createWorkspaceError = err;
       });
