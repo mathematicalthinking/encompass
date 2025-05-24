@@ -166,6 +166,8 @@ Note that we cannot completely remove jQuery because it's a dependency of select
 
 Moment as a package has a fairly large footprint and is considered a legacy project. Because Encompass uses only uncomplicated pieces of moment, all of the app's usage could be replaced by modern JS or more lightweight, modular packages (e.g., date-fns).
 
+5/24/2025: Changed format-date helper to use date-fns. Removed redundant 'dates' helper and changed its one use in a component. Also removed moment in components/models that I already had upgrade.
+
 ## Avoid runtime errors through use of optional chaining and nullish coalescing
 
 Through the use of ?. and ??, we can avoid runtime errors if an attempt is made to get a property from undefined.

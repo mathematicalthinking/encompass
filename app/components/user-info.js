@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import moment from 'moment';
+import { formatDistanceToNow, isValid } from 'date-fns';
 
 export default class UserInfoComponent extends Component {
   @service('sweet-alert') alert;
@@ -79,9 +79,9 @@ export default class UserInfoComponent extends Component {
   }
 
   get tourDate() {
-    var date = this.args.user.seenTour;
-    if (date) {
-      return moment(date).fromNow();
+    const date = this.args.user.seenTour;
+    if (date instanceof Date && isValid(date)) {
+      return formatDistanceToNow(date, { addSuffix: true });
     }
     return 'No';
   }
