@@ -44,13 +44,6 @@
       </div>
     {{/if}}
   </section>
-  {{#each this.loadAnswerErrors as |error|}}
-    <Ui::ErrorBox
-      @error={{error}}
-      @showDismiss={{true}}
-      @resetError={{fn this.removeErrorFromArray 'loadAnswerErrors' error}}
-    />
-  {{/each}}
   {{#if this.isResponding}}
     <AnswerNew
       @assignment={{@assignment}}
