@@ -6,4 +6,8 @@ export default class AuditableModel extends Model {
   @attr('boolean', { defaultValue: false }) isTrashed;
   @belongsTo('user', { inverse: null, async: true }) lastModifiedBy;
   @attr('date') lastModifiedDate;
+
+  isModelType(type) {
+    return this.constructor.modelName === type;
+  }
 }

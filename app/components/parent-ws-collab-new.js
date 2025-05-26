@@ -1,8 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class ParentWsCollabNewComponent extends Component {
   @service('utility-methods') utils;
@@ -122,9 +121,9 @@ export default class ParentWsCollabNewComponent extends Component {
     if (!val) {
       return;
     }
-    let existingCollab = this.args.workspace.get('collaborators');
+    let existingCollab = this.args.workspace.get('collaborators') || [];
     const user = this.store.peekRecord('user', val);
-    let alreadyCollab = _.contains(existingCollab, user.get('id'));
+    let alreadyCollab = existingCollab.includes(user.get('id'));
 
     if (alreadyCollab) {
       this.existingUserError = true;

@@ -6,14 +6,10 @@ import { tracked } from '@glimmer/tracking';
  * plus optional record rollback and SweetAlert toasts.
  */
 export default class ErrorHandlingService extends Service {
-  /**
-   * The SweetAlert service for showing error toasts, etc.
-   */
   @service('sweet-alert') alert;
 
   /**
    * Store of all errors, keyed by a property name (e.g., "problemLoadErrors").
-   * Using a TrackedObject so that updates remain reactive in templates.
    */
   @tracked errors = {};
 

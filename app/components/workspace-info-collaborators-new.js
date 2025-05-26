@@ -1,8 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import _ from 'underscore';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
   @service('utility-methods') utils;
@@ -96,7 +95,7 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
     }
     let existingCollab = this.args.workspace.get('collaborators');
     const user = this.store.peekRecord('user', val);
-    let alreadyCollab = _.contains(existingCollab, user.get('id'));
+    let alreadyCollab = existingCollab.includes(user.get('id'));
 
     if (alreadyCollab) {
       this.existingUserError = true;

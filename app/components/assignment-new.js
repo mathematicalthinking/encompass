@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import validate from 'validate.js';
-import moment from 'moment';
+import { format, parse, parseISO } from 'date-fns';
 
 export default class AssignmentNewComponent extends Component {
   @service router;
@@ -22,7 +22,7 @@ export default class AssignmentNewComponent extends Component {
   @tracked parentWorkspaceAccess = false;
   @tracked allSelected = true;
   @tracked invalidDateRange = false;
-  @tracked assignedDate = moment(new Date()).format('YYYY-MM-DD');
+  @tracked assignedDate = format(new Date(), 'yyyy-MM-dd');
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -49,7 +49,7 @@ export default class AssignmentNewComponent extends Component {
       presence: false,
     },
   };
-  nameDate = moment().format('MMM Do YYYY');
+  nameDate = format(new Date(), 'MMM do yyyy');
 
   linkedWsOptions = {
     groupName: 'linkedWorkspaces',
@@ -195,7 +195,7 @@ export default class AssignmentNewComponent extends Component {
     }
     let title = this.selectedProblem.title;
 
-    return `${title} / ${moment(this.assignedDate).format('MMM Do YYYY')}`;
+    return `${title} / ${format(parseISO(this.assignedDate), 'MMM do yyyy')}`;
   }
   //for the 'workspaces to be created' list
   get workspacesList() {
@@ -231,10 +231,8 @@ export default class AssignmentNewComponent extends Component {
 
     if (!name) {
       let nameDate = assignedDate
-        ? moment(new Date(assignedDate.replace(/-/g, '/'))).format(
-            'MMM Do YYYY'
-          )
-        : moment(new Date()).format('MMM Do YYYY');
+        ? format(new Date(assignedDate.replace(/-/g, '/')), 'MMM do yyyy')
+        : format(new Date(), 'MMM do yyyy');
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
     }
@@ -264,14 +262,14 @@ export default class AssignmentNewComponent extends Component {
     let linkedNameFormat;
 
     if (linkedFormatInput) {
-      linkedNameFormat = linkedFormatInput.val();
+      linkedNameFormat = linkedFormatInput.value;
     }
 
     let parentFormatInput = document.getElementById('parent-ws-new-name');
     let parentNameFormat;
 
     if (parentFormatInput) {
-      parentNameFormat = parentFormatInput.val();
+      parentNameFormat = parentFormatInput.value;
     }
 
     createAssignmentData.linkedWorkspacesRequest = {
@@ -315,24 +313,17 @@ export default class AssignmentNewComponent extends Component {
   }
 
   getMongoDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    return new Date(dateMoment);
+    if (typeof htmlDateString !== 'string') return;
+    return parse(htmlDateString, 'yyyy-MM-dd', new Date());
   }
 
   getEndDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD HH:mm';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    let date = new Date(dateMoment);
-    date.setHours(23, 59, 59);
-    return date;
+    if (typeof htmlDateString !== 'string') return;
+    const parsed = parse(htmlDateString, 'yyyy-MM-dd HH:mm', new Date());
+    parsed.setHours(23, 59, 59);
+    return parsed;
   }
+
   get problemOptions() {
     let cachedProblems = this.args.cachedProblems;
     if (cachedProblems) {

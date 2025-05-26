@@ -1,8 +1,8 @@
 <div id='admin-filter'>
-  <!-- Main Dropdown -->
+  {{!-- Main Dropdown --}}
   <div class='choose-filter-admin'>
     <span class='filter-text'>Find by</span>
-    <!-- onItemAdd sends the value to the parent component -->
+    {{!-- onItemAdd sends the value to the parent component --}}
     <SelectizeInput
       @inputId='admin-filter-select'
       @initialOptions={{this.mainOptions}}
@@ -14,7 +14,7 @@
     />
   </div>
 
-  <!-- Conditional Rendering of Options -->
+  {{!-- Conditional Rendering of Options --}}
   {{#if (is-equal this.mainSelection.type 'list')}}
     <div class='filter-admin'>
       <SelectizeInput

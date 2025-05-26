@@ -82,7 +82,7 @@
 
                     <div class='response-text-container'>
                       {{#if this.isComposing}}
-                        <QuillContainer
+                        <Ui::QuillContainer
                           @onEditorChange={{action 'updateQuillText'}}
                           @attrSectionId={{quillEditorId}}
                           @startingText={{editRevisionText}}

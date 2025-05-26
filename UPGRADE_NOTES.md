@@ -154,6 +154,8 @@ There are certainly cases where lodash is helpful, but uses of underscore could 
 
 Also, rather than lodash, using native JS functions such as map, filter, etc. would be good.
 
+5/5/2025: Lodash global has been replaced by pulling out individual functions from lodash-es. Also, underscore has been removed entirely from the client side.
+
 ## Removal of jQuery
 
 Modern Ember recommends removing jQuery, using standard DOM access routines instead. Our file app.js sets $ globally to jQuery, so finding all instances will involve both searching for imports of jQuery and for $ (whether "$." or "$(").
@@ -163,6 +165,8 @@ Note that we cannot completely remove jQuery because it's a dependency of select
 ## Removal of moment
 
 Moment as a package has a fairly large footprint and is considered a legacy project. Because Encompass uses only uncomplicated pieces of moment, all of the app's usage could be replaced by modern JS or more lightweight, modular packages (e.g., date-fns).
+
+5/24/2025: Changed format-date helper to use date-fns. Removed redundant 'dates' helper and changed its one use in a component. Also removed moment in components/models that I already had upgrade.
 
 ## Avoid runtime errors through use of optional chaining and nullish coalescing
 
@@ -239,6 +243,8 @@ If this.removeMessages is undefined, Ember might **not** show an error in the co
 Since Ember 3.1, this is usually fine as you no longer need to use .get() to access computed properties. However, in this case, the object in question is a special kind of Ember object (a proxy). Therefore, it is still necessary to use .get('recommendedProblems') in this case.`
 
 - related to above, in components, dot notation might result in a PromiseProxy. However, if it's used in a template, Ember will re-render once the value is fully resolved, so you don't have to worry about it. However, if you are using the value in js, such as wanting to loop over an array, you need to use await. (Of course, if you are just defining a convenience getter that uses dot notiation for use by a template, you don't have to await.)
+
+- if you forget to put the @action decorator on a function then call it from your template, 'this' will not be defined.
 
 # Current Progress
 
@@ -323,3 +329,25 @@ The following components, included above, are actually wrappers for third-party 
   - problems/problem/<id>/assignment
 
   Previously, edit and assignment were handled by flags in the db inside of a problem. When we transitioned to the problem, we first set the correct flag so that <ProblemInfo> would render correctly. With this change, we don't use the db for local application state, which is poor practice.
+
+## Quill upgrades
+
+I upgraded the loading and use of the Quill (enhanced text editing) package:
+
+- Quill is now loaded as any other third party package, rather than via the vendor folder and manual install.
+- The Ember component, quill-container, has been upgraded to modern Ember (v4.5 at least).
+- The quill-container component has been moved to the components/ui folder.
+- In all quill-container clients, the reference has been updated (<<Ui::QuillContainer ...>>)
+- TODO: in response-submission-view.hbs, the use of quill-container has always had an incorrect signature. I need to figure out what would be the correct signature should be.
+
+## Validate.js
+
+This package's loading has also been upgrading to the modern approach. TODO -- consider whether a custom utility function should replace using a 3rd party package.
+
+## Twitter typeahead
+
+This package has been removed from the system in favor of a simpler, custom component. The new component is contained within the file twitter-typeahead.js/hbs just to simplify references throughout the system. I tested all clients of the new component and they appear to work. Still need to test the usage in the signup-google component (TODO). Note that getting typeahead to work in some components (section-new, user-info, and user-new) involved upgrades to those components because of various old-style Ember idioms, such as the use of two-way binding.
+
+## lodash-es
+
+loadash-es is now loaded. I did this because some of the regular lodash subpackages (e.g., lodash/isEqual) are being deprecated. Thus, the correct thing to do now is to use lodash-es/isEqual, for example. Eventually, I should change all uses of lodash to lodash-es.

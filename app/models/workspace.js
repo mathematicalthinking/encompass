@@ -1,6 +1,6 @@
 import AuditableModel from './auditable';
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import moment from 'moment';
+import { format, isValid } from 'date-fns';
 
 export default class WorkspaceModel extends AuditableModel {
   getWorkspaceId() {
@@ -88,24 +88,25 @@ export default class WorkspaceModel extends AuditableModel {
   }
 
   get submissionDates() {
-    let loFmt,
-      lo = this.data.submissionSet.description.firstSubmissionDate;
-    let hiFmt,
-      hi = this.data.submissionSet.description.lastSubmissionDate;
+    let lo = this.data.submissionSet.description.firstSubmissionDate;
+    let hi = this.data.submissionSet.description.lastSubmissionDate;
+
+    if (!(lo instanceof Date) || !(hi instanceof Date)) {
+      return null;
+    }
+
+    if (!isValid(lo) || !isValid(hi)) {
+      return null;
+    }
+
     if (lo > hi) {
-      const tmp = lo;
-      lo = hi;
-      hi = tmp;
+      [lo, hi] = [hi, lo]; // swap
     }
-    if (lo && hi) {
-      loFmt = moment(lo).zone('us').format('l');
-      hiFmt = moment(hi).zone('us').format('l');
-      if (loFmt === hiFmt) {
-        return loFmt;
-      }
-      return loFmt + ' - ' + hiFmt;
-    }
-    return null;
+
+    const loFmt = format(lo, 'MM/dd/yyyy'); // equivalent to 'l' in moment
+    const hiFmt = format(hi, 'MM/dd/yyyy');
+
+    return loFmt === hiFmt ? loFmt : `${loFmt} - ${hiFmt}`;
   }
 
   @attr() permissions;

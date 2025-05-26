@@ -1,15 +1,16 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class ParentWorkspaceNewComponent extends Component {
   @service('loading-display') loading;
-  @service('current-user') currentUser;
-  @tracked isRequestInProgess = false;
+  @service currentUser;
+  @tracked isRequestInProgress = false;
   @tracked doShowLoadingMessage = false;
   @tracked workspaceName = '';
   @tracked isCreating = true;
+  @tracked createWorkspaceError = null;
 
   constructor() {
     super(...arguments);
@@ -38,21 +39,22 @@ export default class ParentWorkspaceNewComponent extends Component {
   }
   @action create() {
     let childWorkspaces = this.args.childWorkspaces || [];
-    if (!childWorkspaces) {
-      return (this.createWorkspaceError =
-        'Must provide child workspaces to create parent workspace');
+    if (childWorkspaces.length === 0) {
+      this.createWorkspaceError =
+        'Must provide child workspaces to create parent workspace';
+      return;
     }
 
-    // this.loading.handleLoadingMessage(
-    //   this,
-    //   'start',
-    //   'isRequestInProgress',
-    //   'doShowLoadingMessage'
-    // );
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isRequestInProgress',
+      'doShowLoadingMessage'
+    );
 
     let assignment = this.args.assignment;
     let data = {
-      childWorkspaces: childWorkspaces.mapBy('id'),
+      childWorkspaces: childWorkspaces.map((ws) => ws.id),
       doAutoUpdateFromChildren: true,
       name: this.workspaceName || this.defaultName,
       doCreate: true,
@@ -65,33 +67,37 @@ export default class ParentWorkspaceNewComponent extends Component {
     return assignment
       .save()
       .then((results) => {
-        // this.loading.handleLoadingMessage(
-        //   this,
-        //   'end',
-        //   'isRequestInProgress',
-        //   'doShowLoadingMessage'
-        // );
-
-        let createWorkspaceError = results.get('parentWorkspaceRequest.error');
-        let createdWorkspace = results.get(
-          'parentWorkspaceRequest.createdWorkspace'
+        this.loading.handleLoadingMessage(
+          this,
+          'end',
+          'isRequestInProgress',
+          'doShowLoadingMessage'
         );
 
+        let createWorkspaceError = results.parentWorkspaceRequest?.error;
+        let createdWorkspace = results.parentWorkspaceRequest?.createdWorkspace;
+
         if (createWorkspaceError) {
-          return (this.createWorkspaceError = createWorkspaceError);
+          this.createWorkspaceError = createWorkspaceError;
+          return;
         }
 
-        this.args.handleResults(createdWorkspace);
+        this.args.handleResults?.(createdWorkspace);
         this.cancel();
       })
       .catch((err) => {
-        // this.loading.handleLoadingMessage(
-        //   this,
-        //   'end',
-        //   'isRequestInProgress',
-        //   'doShowLoadingMessage'
-        // );
+        this.loading.handleLoadingMessage(
+          this,
+          'end',
+          'isRequestInProgress',
+          'doShowLoadingMessage'
+        );
         this.createWorkspaceError = err;
       });
+  }
+
+  @action
+  resetCreateWorkspaceError() {
+    this.createWorkspaceError = null;
   }
 }

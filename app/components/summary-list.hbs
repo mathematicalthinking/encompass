@@ -37,7 +37,7 @@
         <LinkTo
           @route='workspace.submissions.submission'
           @model={{submission.id}}
-        >{{dates
+        >{{format-date
             submission.newestSubmission.createDate
             'MM-D-YYYY @h:mm A'
           }}</LinkTo>
@@ -64,7 +64,7 @@
             @model={{submission.newestSubmission.id}}
             class='response-link'
           >
-            {{dates
+            {{format-date
               submission.newestResponse.createDate
               'MM-DD-YYYY @h:mm A'
             }}</LinkTo>

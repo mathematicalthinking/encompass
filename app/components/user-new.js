@@ -1,14 +1,14 @@
-import { later } from '@ember/runloop';
-import { inject as service } from '@ember/service';
+import UserSignupComponent from './user-signup';
+import { service } from '@ember/service';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import UserSignupComponent from './user-signup';
-import $ from 'jquery';
 
 export default class UserNewComponent extends UserSignupComponent {
   @service router;
   @service store;
   @service('sweet-alert') alert;
+  @service currentUser;
+  @service errorHandling;
   @tracked errorMessage = null;
   @tracked username = '';
   @tracked password = '';
@@ -17,35 +17,51 @@ export default class UserNewComponent extends UserSignupComponent {
   @tracked email = '';
   @tracked org = null;
   @tracked location = '';
-  get accountTypes() {
-    return this.args.currentUser.isAdmin
-      ? ['Teacher', 'Student', 'Pd Admin', 'Admin']
-      : ['Teacher', 'Student'];
-  }
   @tracked isAuthorized = null;
   @tracked authorizedBy = '';
   newUserData = {};
   @tracked actingRole = null;
   orgReq = null;
-  @tracked createOrgErrors = [];
-  @tracked createUserErrors = [];
   @tracked missingAccountType = false;
-  createNewUser(data) {
-    return new Promise((resolve, reject) => {
-      if (!data) {
-        return reject('Invalid data');
+
+  get accountTypes() {
+    return this.currentUser.isAdmin
+      ? ['Teacher', 'Student', 'Pd Admin', 'Admin']
+      : ['Teacher', 'Student'];
+  }
+  
+
+  get createOrgErrors() {
+    return this.errorHandling.getErrors('createOrgErrors')
+  }
+
+  get createUserErrors() {
+    return this.errorHandling.getErrors('createUserErrors')
+  }
+
+  async createNewUser(data) {
+    if (!data) {
+      throw new Error('Invalid data');
+    }
+
+    try {
+      let response = await fetch('/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        let error = await response.text(); // or `await response.json()` if JSON
+        throw new Error(error);
       }
-      $.post({
-        url: '/auth/signup',
-        data: data,
-      })
-        .then((res) => {
-          return resolve(res);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+
+      return await response.json(); // adjust based on actual response type
+    } catch (err) {
+      throw err;
+    }
   }
 
   handleOrg(org) {
@@ -71,20 +87,20 @@ export default class UserNewComponent extends UserSignupComponent {
       if (orgReq) {
         let rec = that.store.createRecord('organization', {
           name: orgReq,
-          createdBy: that.get('currentUser'),
+          createdBy: that.currentUser.user,
         });
 
         rec
           .save()
-          .then((res) => {
-            return resolve(res.get('organizationId'));
+          .then((newOrg) => {
+            return resolve(newOrg.id);
           })
           .catch((err) => {
-            this.handleErrors(err, 'createOrgErrors', rec);
+            this.errorHandling.handleErrors(err, 'createOrgErrors', rec);
             return reject(err);
           });
       } else {
-        return resolve(org.get('organizationId'));
+        return resolve(org.id);
       }
     });
   }
@@ -128,7 +144,7 @@ export default class UserNewComponent extends UserSignupComponent {
     var lastName = this.lastName;
     var email = this.email;
     var organization =
-      this.org || (await this.args.currentUser.get('organization'));
+      this.org || (await this.currentUser.user.organization);
     var location = this.location;
     var accountType = this.selectedType || 'student';
     var accountTypeLetter;
@@ -136,15 +152,13 @@ export default class UserNewComponent extends UserSignupComponent {
       accountTypeLetter = accountType.charAt(0).toUpperCase();
     } else {
       this.missingAccountType = true;
-      $('.account').show();
       return;
     }
     var isAuthorized = this.isAuthorized;
-    var currentUserId = this.args.currentUser.get('id');
+    var currentUserId = this.currentUser.id;
 
     if (!username || !password) {
       this.errorMessage = true;
-      $('.required').show();
       return;
     }
 
@@ -175,12 +189,12 @@ export default class UserNewComponent extends UserSignupComponent {
       this.newUserData = userData;
     } else {
       let userData = {
-        username: username,
-        password: password,
+        username,
+        password,
         firstName,
         lastName,
-        email: email,
-        location: location,
+        email,
+        location,
         accountType: accountTypeLetter,
         isAuthorized: false,
         createdBy: currentUserId,
@@ -219,11 +233,11 @@ export default class UserNewComponent extends UserSignupComponent {
             ) {
               this.emailError = this.emailErrors.taken;
             } else {
-              this.createUserErrors = [res.message];
+              this.errorHandling.handleErrors(res.message, 'createUserErrors');
             }
           })
           .catch((err) => {
-            this.handleErrors(err, 'createUserErrors', newUserData);
+            this.errorHandling.handleErrors(err, 'createUserErrors', newUserData);
           });
       })
       .catch(() => {
@@ -243,11 +257,19 @@ export default class UserNewComponent extends UserSignupComponent {
     //  }
   }
 
-  @action closeError(error) {
-    $(`.${error}`).addClass('fadeOutRight');
-    later(() => {
-      $(`.${error}`).removeClass('fadeOutRight');
-      $(`.${error}`).hide();
-    }, 500);
+  @action
+  setAccountType (type) {
+    this.selectedType = type;
   }
+
+  @action
+  resetError(errorType) {
+    this.errorHandling.removeMessages(errorType)
+  }
+
+  @action
+  removeErrorFromArray(type, error) {
+    this.errorHandling.removeErrorFromArray(type, error);
+  }
+
 }

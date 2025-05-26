@@ -1,0 +1,8 @@
+{{!-- app/components/quill-container.hbs --}}
+<div class='quill-container'>
+  <section
+    {{did-insert this.setupQuill}}
+    {{will-destroy this.teardownQuill}}
+    id={{this.sectionId}}
+  ></section>
+</div>

@@ -83,7 +83,7 @@ export default class ImageUploadComponent extends Component {
       })
       .catch((err) => {
         this.setShowLoadingMessage(false);
-        this.errorHandling.handleErrors(err, 'uploadErrors', err);
+        this.errorHandling.handleErrors(err, 'uploadErrors');
         return err;
       });
   }

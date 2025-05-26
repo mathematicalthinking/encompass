@@ -16,17 +16,18 @@
             <span class='required-star'>*</span></label>
           <Textarea
             name='brief-summary'
-            cols='80'
-            @value={{answer}}
-            rows='3'
+            cols={{80}}
+            rows={{3}}
+            @value={{this.answer}}
             placeholder='Brief Summary...'
+            {{on 'input' this.updateAnswer}}
           />
-          <Input id='answer' required='true' @type='hidden' @value={{answer}} />
+
         </div>
         {{#each this.briefSummaryErrors as |error|}}
           <Ui::ErrorBox
             @error={{error}}
-            @resetError={{action (mut this.briefSummaryErrors) null}}
+            @resetError={{this.resetBriefSummaryErrors}}
             @showDismiss={{true}}
           />
         {{/each}}
@@ -35,8 +36,8 @@
             out
             <span class='required-star'>*</span></label>
 
-          <QuillContainer
-            @onEditorChange={{action 'updateQuillText'}}
+          <Ui::QuillContainer
+            @onEditorChange={{this.updateQuillText}}
             @attrSectionId={{this.quillEditorId}}
             @startingText={{this.explanationText}}
           />
@@ -44,7 +45,7 @@
         {{#each this.explanationErrors as |error|}}
           <Ui::ErrorBox
             @error={{error}}
-            @resetError={{action (mut this.explanationErrors) null}}
+            @resetError={{this.resetExplanationErrors}}
             @showDismiss={{true}}
           />
         {{/each}}
@@ -52,34 +53,24 @@
           {{! <label for="uploadedFile">Upload PDF</label> }}
           {{#if this.imageData}}
             <a
-              {{action 'toggleImageSize'}}
+              {{on 'click' this.toggleImageSize}}
               class='image {{if this.isWide " wide "}}'
             >
               <img
-                src='{{this.imageData}}'
-                alt='{{format-date
-                  this.answer.createDate
-                  "MMM Do YYYY hh:mm A"
-                }}'
+                src={{this.imageData}}
+                alt={{format-date this.answer.createDate 'MMM Do YYYY hh:mm A'}}
               />
             </a>
             <button
               class='edit-image-btn'
               type='button'
-              {{action 'deleteImage'}}
+              {{on 'click' this.deleteImage}}
             >Delete</button>
             <button
               class='edit-image-btn'
               type='submit'
-              {{action 'addImage'}}
+              {{on 'click' this.addImage}}
             >Add</button>
-            {{!-- {{else}}
-              {{image-upload
-                filesToBeUploaded=filesToBeUploaded
-                hideSubmit=true
-                acceptMultiple=true
-                isPdfOnly=true
-                }} --}}
           {{/if}}
         </div>
         <div class='new-answer-input contributors'>
@@ -88,9 +79,9 @@
             <ul>
               {{#each this.contributors as |student|}}
                 <li>{{student.username}}
-                  {{#if (not (is-equal student this.currentUser.user))}}
+                  {{#if (not-equal student this.currentUser.user)}}
                     <i
-                      {{action 'removeStudent' student}}
+                      {{on 'click' (fn this.removeStudent student)}}
                       class='far fa-times-circle'
                       aria-hidden='true'
                       title='Remove'
@@ -104,7 +95,7 @@
         <Ui::TwitterTypeahead
           @selectedValue={{this.studentToAdd}}
           @selectedItems={{this.contributors}}
-          @onSelect='addStudent'
+          @onSelect={{this.addStudent}}
           @dataList={{@section.students}}
           @placeholder='username'
           @optionLabelPath='username'
@@ -122,21 +113,21 @@
         <Ui::ErrorBox
           @error='Please provide all required fields.'
           @showDismiss={{true}}
-          @resetError={{action (mut this.isMissingRequiredFields) null}}
+          @resetError={{this.resetMissingRequiredFields}}
         />
       {{/if}}
       {{#if this.overSizedFileError}}
         <Ui::ErrorBox
           @error={{this.overSizedFileError}}
           @showDismiss={{true}}
-          @resetError={{action (mut this.overSizedFileError) null}}
+          @resetError={{this.resetOverSizedFileError}}
         />
       {{/if}}
       {{#if this.isExplanationTooLarge}}
         <Ui::ErrorBox
           @error={{this.tooLargeExplanationMsg}}
           @showDismiss={{true}}
-          @resetError={{action (mut this.isExplanationTooLarge) null}}
+          @resetError={{this.resetIsExplanationTooLarge}}
         />
       {{/if}}
     </form>
@@ -152,14 +143,14 @@
           class='add-parent-workspace-btn create'
           data-test='submit-answer'
           type='button'
-          {{action 'validate'}}
+          {{on 'click' this.validate}}
         >{{if @createButtonText @createButtonText 'Submit Answer'}} </button>
       </span>
       <span class='cancelResponse'>
         <button
           class='cancelEditBtn'
           type='button'
-          {{action 'cancelResponse'}}
+          {{on 'click' this.cancelResponse}}
         >Cancel</button>
       </span>
 

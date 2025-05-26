@@ -4,7 +4,6 @@ import { hash } from 'rsvp';
 import { service } from '@ember/service';
 export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
   @service store;
-  @service router;
   @service currentUser;
   async model(params) {
     const assignment = await this.store.findRecord(
@@ -20,11 +19,10 @@ export default class AssignmentsAssignmentRoute extends AuthenticatedRoute {
     });
     return hash({
       assignment,
-      currentSection: section,
-      currentProblem: assignment.problem,
       groups,
       students: assignment.students,
-      sections: this.store.findAll('section'),
+      currentProblem: assignment.problem,
+      currentSection: section,
       linkedWorkspaces: assignment.linkedWorkspaces,
       parentWorkspace: assignment.parentWorkspace,
       answers: assignment.answers,
