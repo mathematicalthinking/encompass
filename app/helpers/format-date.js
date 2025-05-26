@@ -15,6 +15,7 @@ const FORMAT_ALIASES = {
   'l h:mm a': 'P h:mm a',
   'MM-D-YYYY @h:mm A': 'MM-d-yyyy @h:mm a',
   'MM-DD-YYYY @h:mm A': 'MM-dd-yyyy @h:mm a',
+  'MMM Do YYYY h:mm A': 'MMM do yyyy h:mm a',
 };
 
 export default function formatDate(

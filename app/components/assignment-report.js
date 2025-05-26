@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _each from 'lodash-es/each';
 
 export default class AssignmentReportComponent extends Component {
   @tracked sortCriterion = {
@@ -12,44 +11,46 @@ export default class AssignmentReportComponent extends Component {
   };
 
   get sortedReportItems() {
-    let reportObj = this.reportWithUser;
-    let items = [];
-    _each(reportObj, (info, username) => {
-      // eslint-disable-next-line prefer-object-spread
-      let obj = Object.assign({}, info);
-      obj.username = username;
-      //make sure latestRevision is instanceof Date
-      obj.latestRevision = obj.latestRevision
-        ? new Date(obj.latestRevision)
-        : obj.latestRevision;
-      items.push(obj);
-    });
-    let sortValue = this.sortCriterion.sortParam.param || 'username';
-    let sortDirection = this.sortCriterion.sortParam.direction || 'asc';
-    let sorted = items.sortBy(sortValue);
+    const reportObj = this.reportWithUser;
 
-    if (sortDirection === 'desc') {
-      return sorted.reverse();
-    }
-    return sorted;
+    const items = Object.entries(reportObj).map(([username, info]) => ({
+      ...info,
+      username,
+      //make sure latestRevision is instanceof Date
+      latestRevision: info.latestRevision
+        ? new Date(info.latestRevision)
+        : info.latestRevision,
+    }));
+
+    const { param: sortValue = 'username', direction: sortDirection = 'asc' } =
+      this.sortCriterion.sortParam;
+
+    const sorted = [...items].sort((a, b) => {
+      const valA = a[sortValue];
+      const valB = b[sortValue];
+
+      if (valA == null) return 1;
+      if (valB == null) return -1;
+
+      if (valA < valB) return -1;
+      if (valA > valB) return 1;
+      return 0;
+    });
+
+    return sortDirection === 'desc' ? sorted.reverse() : sorted;
   }
 
   get reportWithUser() {
-    let details = this.args.details;
+    const { details, students } = this.args;
 
-    let results = {};
-
-    _each(details, (val, userId) => {
-      let user = this.args.students.findBy('id', userId);
-      if (user) {
-        let username = user.get('username');
-        if (username) {
-          results[username] = val;
-        }
+    return Object.entries(details).reduce((acc, [userId, val]) => {
+      const user = students.find((s) => s.id === userId);
+      const username = user?.username;
+      if (username) {
+        acc[username] = val;
       }
-    });
-
-    return results;
+      return acc;
+    }, {});
   }
 
   sortOptions = {
@@ -103,24 +104,23 @@ export default class AssignmentReportComponent extends Component {
   };
 
   get totalSubmissionsCount() {
-    return this.sortedReportItems.mapBy('count').reduce((acc, val) => {
-      return acc + val;
-    }, 0);
+    return this.sortedReportItems.reduce(
+      (acc, item) => acc + (item.count || 0),
+      0
+    );
   }
 
   get uniqueSubmitters() {
-    return this.sortedReportItems.filter((item) => {
-      return item.count > 0;
-    });
+    return this.sortedReportItems.filter((item) => item.count > 0);
   }
 
   get summaryMessage() {
-    let numStudents = this.sortedReportItems.length;
-    let numSubmitters = this.uniqueSubmitters.length;
-    let numSubmissions = this.totalSubmissionsCount;
+    const numStudents = this.sortedReportItems.length;
+    const numSubmitters = this.uniqueSubmitters.length;
+    const numSubmissions = this.totalSubmissionsCount;
 
-    let studentNoun = numStudents === 1 ? 'student' : 'students';
-    let submissionNoun = numSubmissions === 1 ? 'submission' : 'submissions';
+    const studentNoun = numStudents === 1 ? 'student' : 'students';
+    const submissionNoun = numSubmissions === 1 ? 'submission' : 'submissions';
 
     return `${numSubmitters} out of ${numStudents} ${studentNoun} have submitted to this assignment, for a total of ${numSubmissions} ${submissionNoun}.`;
   }
