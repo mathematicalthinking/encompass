@@ -12,8 +12,8 @@
           @type='text'
           class='user-username'
           @value={{this.username}}
-          {{on 'focusout' (action 'usernameValidate')}}
-          {{on 'focusin' (action 'resetErrors')}}
+          {{on 'focusout' this.usernameValidate}}
+          {{on 'focusin' this.resetErrors}}
         />
       </td>
     </tr>
@@ -24,8 +24,8 @@
           @type='password'
           class='user-password'
           @value={{this.password}}
-          {{on 'focusout' (action 'passwordValidate')}}
-          {{on 'focusin' (action 'resetErrors')}}
+          {{on 'focusout' (fn this.passwordValidate this.password)}}
+          {{on 'focusin' this.resetErrors}}
         />
       </td>
     </tr>
@@ -41,7 +41,7 @@
         <Input @type='text' @value={{this.lastName}} class='user-last-name' />
       </td>
     </tr>
-    {{#unless @currentUser.isTeacher}}
+    {{#unless this.currentUser.isTeacher}}
       <tr>
         <td>Email
           {{#if this.isEmailRequired}}
@@ -60,14 +60,14 @@
       <tr>
         <td>Organization <span class='required-star'>*</span></td>
         <td>
-          {{#if @currentUser.isAdmin}}
+          {{#if this.currentUser.isAdmin}}
             <Ui::TwitterTypeahead
               @dataList={{@organizations}}
               @onSelect={{this.setOrg}}
               @optionLabelPath='name'
             />
           {{else}}
-            {{@currentUser.organization.name}}
+            {{this.currentUser.user.organization?.name}}
           {{/if}}
         </td>
       </tr>
@@ -84,7 +84,7 @@
             @selectedValue={{this.selectedType}}
             @prompt='Select Account Type'
             @content={{this.accountTypes}}
-            @action={{action (mut this.selectedType)}}
+            @action={{this.setAccountType}}
             @cannotBeNull={{true}}
           />
         </td>
@@ -106,7 +106,7 @@
     <Ui::ErrorBox
       @error={{this.usernameError}}
       @showDismiss={{true}}
-      @resetError={{action (mut this.usernameError) null}}
+      @resetError={{fn this.resetError 'usernameError'}}
     />
   {{/if}}
 
@@ -114,7 +114,7 @@
     <Ui::ErrorBox
       @error={{this.emailError}}
       @showDismiss={{true}}
-      @resetError={{action (mut this.emailError) null}}
+      @resetError={{fn this.resetError 'emailError'}}
     />
   {{/if}}
 
@@ -122,7 +122,7 @@
     <Ui::ErrorBox
       @error={{this.passwordError}}
       @showDismiss={{true}}
-      @resetError={{action (mut this.passwordError) null}}
+      @resetError={{fn this.resetError 'passwordError'}}
     />
   {{/if}}
 
@@ -130,7 +130,7 @@
     <Ui::ErrorBox
       @error='Passwords cannot contain spaces'
       @showDismiss={{true}}
-      @resetError={{action (mut this.noSpacesError) null}}
+      @resetError={{fn this.resetError 'noSpacesError'}}
     />
   {{/if}}
 
@@ -138,7 +138,7 @@
     <Ui::ErrorBox
       @error='Missing account type'
       @showDismiss={{true}}
-      @resetError={{action (mut this.missingAccountType) null}}
+      @resetError={{fn this.resetError 'missingAccountType'}}
     />
   {{/if}}
 
@@ -146,7 +146,7 @@
     <Ui::ErrorBox
       @error='Missing required fields'
       @showDismiss={{true}}
-      @resetError={{action (mut this.errorMessage) null}}
+      @resetError={{fn this.resetError 'errorMessage'}}
     />
   {{/if}}
 
@@ -154,14 +154,14 @@
     <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
-      @resetError={{action 'removeErrorFromArray' 'createOrgErrors' error}}
+      @resetError={{fn this.removeErrorFromArray 'createOrgErrors' error}}
     />
   {{/each}}
   {{#each this.createUserErrors as |error|}}
     <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
-      @resetError={{action 'removeErrorFromArray' 'createUserErrors' error}}
+      @resetError={{fn this.removeErrorFromArray 'createUserErrors' error}}
     />
   {{/each}}
 
@@ -170,12 +170,12 @@
       class='action_button new-user'
       id='new-user-btn'
       type='button'
-      {{action 'confirmOrg'}}
+      {{on 'click' this.confirmOrg}}
     >Create New User</button>
     <button
       class='action_button new-user cancel-button'
       type='button'
-      {{action 'cancelNew'}}
+      {{on 'click' this.cancelNew}}
     >Cancel</button>
   </div>
 

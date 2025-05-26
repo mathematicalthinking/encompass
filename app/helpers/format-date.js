@@ -8,6 +8,7 @@ const FORMAT_ALIASES = {
   'MMMM Do, YYYY': 'MMMM do, yyyy',
   'YYYY-MM-DD': 'yyyy-MM-dd',
   'MM/DD/YY': 'MM/dd/yy',
+  'MM/DD/YYYY': 'MM/dd/yyyy',
   'h:mm A': 'hh:mm a',
   L: 'P',
   'Do MMM YYYY': 'do MMM yyyy',
