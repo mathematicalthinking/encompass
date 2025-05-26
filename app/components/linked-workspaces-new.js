@@ -9,7 +9,7 @@ import { inject as service } from '@ember/service';
 
 export default class LinkedWorkspacesNew extends Component {
   @service('loading-display') loading;
-  @tracked workspaceName = this.defaultName;
+  @tracked workspaceName = '';
   @tracked isCreating = true;
   @tracked groupWorkspacesToMake = [];
   @tracked studentWorkspacesToMake = [];
@@ -17,6 +17,11 @@ export default class LinkedWorkspacesNew extends Component {
   @tracked isRequestInProgress = false;
   @tracked doShowLoadingMessage = false;
   @tracked createWorkspaceError = null;
+
+  constructor() {
+    super(...arguments);
+    this.workspaceName = this.defaultName;
+  }
 
   get showAllSelected() {
     return this.args.allSelected || this.allSelected;

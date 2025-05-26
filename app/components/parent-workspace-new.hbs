@@ -18,13 +18,6 @@
         placeholder='Provide a name for your workspace'
       />
     </div>
-    {{#each this.workspaceNameErrors as |error|}}
-      <Ui::ErrorBox
-        @error={{error}}
-        @showDismiss={{true}}
-        @resetError={{action (mut this.workspaceNameErrors) null}}
-      />
-    {{/each}}
   </div>
 
   {{#unless @isDisplayOnly}}
@@ -33,7 +26,7 @@
         <Ui::ErrorBox
           @error={{createWorkspaceError}}
           @showDismiss={{true}}
-          @resetError={{action (mut this.createWorkspaceError) null}}
+          @resetError={{this.resetCreateWorkspaceError}}
         />
       {{/if}}
     </div>
@@ -49,13 +42,13 @@
           class='primary-button'
           data-test='add-parent-ws-create'
           type='button'
-          {{action 'create'}}
+          {{on 'click' this.create}}
         >Create Workspace</button>
         <button
           class='primary-button cancel-button'
           data-test='add-parent-ws-cancel'
           type='button'
-          {{action 'cancel'}}
+          {{on 'click' this.cancel}}
         >Cancel</button>
       </div>
     {{/unless}}
