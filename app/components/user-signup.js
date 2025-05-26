@@ -1,8 +1,8 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class UserSignupComponent extends ErrorHandlingComponent {
+export default class UserSignupComponent extends Component {
   emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   usernameRegEx = /^[a-z0-9_]{3,30}$/;
   passwordMinLength = 10;
@@ -98,7 +98,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
   }
 
   @action passwordValidate(password) {
-    console.log('validate', password)
     function hasWhiteSpace(string) {
       return /\s/g.test(string);
     }
@@ -120,7 +119,6 @@ export default class UserSignupComponent extends ErrorHandlingComponent {
       this.noSpacesError = false;
       this.password = password;
     }
-    console.log('this.password', this.password)
   }
   @action emailValidate(event) {
     const email = event.target.value;
