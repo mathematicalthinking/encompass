@@ -1,10 +1,14 @@
 import Component from '@ember/component';
 import { computed, observer } from '@ember/object';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
 
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend( {
   utils: service('utility-methods'),
+  currentUserService: service('current-user'),
+
+  currentUser: function () {
+    return this.currentUserService.user
+  },
 
   // didReceiveAttrs: function () {
   //   this.filterAssignments();

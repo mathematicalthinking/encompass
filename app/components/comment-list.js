@@ -20,9 +20,8 @@ import moment from 'moment';
 import isArray from 'lodash-es/isArray';
 import isNaN from 'lodash-es/isNaN';
 import random from 'lodash-es/random';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
 
-export default Component.extend(ErrorHandlingMixin, {
+export default Component.extend( {
   currentUser: service('current-user'),
   elementId: 'comment-list',
   alert: service('sweet-alert'),
@@ -46,9 +45,9 @@ export default Component.extend(ErrorHandlingMixin, {
   newComment: '',
   newCommentLabel: 'notice',
   newCommentParent: null,
-  queryErrors: [],
-  createRecordErrors: [],
-  uploadRecordErrors: [],
+  queryErrors: function () {return this.errorHandling.getErrors('queryErrors')},
+  createRecordErrors: function () {return this.errorHandling.getErrors('createRecordErrors')},
+  uploadRecordErrors:  function () {return this.errorHandling.getErrors('uploadRecordErrors')},
   showFilter: true,
   scrollBottom: true,
 
@@ -481,7 +480,7 @@ export default Component.extend(ErrorHandlingMixin, {
           comp.get('comments').pushObject(record);
         })
         .catch((err) => {
-          this.handleErrors(err, 'createRecordErrors');
+          this.errorHandling.handleErrors(err, 'createRecordErrors');
         });
     },
 
@@ -527,7 +526,7 @@ export default Component.extend(ErrorHandlingMixin, {
                   // this.set('commentDeleteSuccess', true);
                 })
                 .catch((err) => {
-                  this.handleErrors(err, 'updateRecordErrors');
+                  this.errorHandling.handleErrors(err, 'updateRecordErrors');
                 });
             });
           }
@@ -625,7 +624,7 @@ export default Component.extend(ErrorHandlingMixin, {
             'isLoadingSearchResults',
             'doShowLoadingMessage'
           );
-          this.handleErrors(err, 'queryErrors');
+          this.errorHandling.handleErrors(err, 'queryErrors');
         });
     },
     initiatePageChange(page) {

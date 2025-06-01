@@ -1,8 +1,7 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-export default Component.extend(CurrentUserMixin, {
+export default Component.extend({
   classNames: ['response-submission-thread'],
   utils: service('utility-methods'),
 

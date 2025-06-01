@@ -1,14 +1,14 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class DashboardWorkspacesListComponent extends Component {
   @service('utility-method') utils;
   @service('sweet-alert') alert;
+  @service errorHandling;
   isHidden = false;
   openMenu = false;
-  toggleRoleErrors = [];
   isToggleError = false;
   @tracked sortCriterion = {
     name: 'A-Z',
@@ -149,6 +149,10 @@ export default class DashboardWorkspacesListComponent extends Component {
       },
     ],
   };
+
+  get toggleRoleErrors () {
+    return this.errorHandling.getErrors('toggleRoleErrors');
+  }
   get sortedWorkspaces() {
     let sortValue = this.sortCriterion.sortParam.param || 'lastModifiedDate';
     let sortDirection = this.sortCriterion.sortParam.direction || 'asc';
@@ -213,8 +217,7 @@ export default class DashboardWorkspacesListComponent extends Component {
       })
       .catch(() => {
         // handle error
-        //TODO FIX errorHandlingMixin
-        // this.handleErrors(err, 'toggleRoleErrors', currentUser);
+        this.errorHandling.handleErrors(err, 'toggleRoleErrors', currentUser);
         this.isToggleError = true;
         // send error up to application level to handle?
       });

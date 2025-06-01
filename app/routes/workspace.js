@@ -23,7 +23,7 @@ export default class WorkspaceRoute extends Route {
   }
 
   @action tour() {
-    //this could be factored out to a mixin if we have other tours
+    //this could be factored out to a service if we have other tours
     var user = this.modelFor('application');
     user.set('seenTour', null);
     this.send('startTour', 'workspace');

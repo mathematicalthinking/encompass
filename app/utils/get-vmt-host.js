@@ -1,7 +1,4 @@
-import Mixin from '@ember/object/mixin';
-
-export default Mixin.create({
-  getVmtHost() {
+export default function getVmtHost() {
     let hostname = window.location.hostname;
     let vmtUrl;
 
@@ -15,5 +12,4 @@ export default Mixin.create({
       return;
     }
     return vmtUrl;
-  },
-});
+  }

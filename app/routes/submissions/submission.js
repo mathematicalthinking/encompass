@@ -12,13 +12,16 @@ import { service } from '@ember/service';
 import $ from 'jquery';
 import { resolve } from 'rsvp';
 import keys from 'lodash-es/keys';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-import VmtHostMixin from '../mixins/vmt-host';
 
-export default Route.extend(CurrentUserMixin, VmtHostMixin, {
+export default Route.extend({
   alert: service('sweet-alert'),
   utils: service('utility-methods'),
   router: service(),
+  currentUserService: service('current-user'),
+
+  currentUser: function () {
+    return this.currentUserService.user
+  },
 
   queryParams: 'vmtRoomId',
 

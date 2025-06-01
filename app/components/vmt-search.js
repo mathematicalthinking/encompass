@@ -1,13 +1,11 @@
 import $ from 'jquery';
 import Component from '@ember/component';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-import VmtHostMixin from '../mixins/vmt-host';
+import getVmtHost from '../utils/get-vmt-host';
+import {inject as service} from '@ember/service';
 
 export default Component.extend(
-  CurrentUserMixin,
-  VmtHostMixin,
-  ErrorHandlingMixin,
   {
+    errorHandling: service('error-handling'),
     classNames: ['vmt-search'],
 
     searchConstraints: {
@@ -18,7 +16,9 @@ export default Component.extend(
         },
       },
     },
-    searchErrors: [],
+    searchErrors: function () {
+      return this.errorHandling.getErrors('searchErrors')
+    },
 
     actions: {
       submitSearch() {
@@ -29,7 +29,7 @@ export default Component.extend(
         if (trimmed.length === 0) {
           return;
         }
-        let vmtHost = this.getVmtHost();
+        let vmtHost = getVmtHost();
 
         let url = `${vmtHost}/enc/search?resourceName=${trimmed}`;
 
@@ -58,6 +58,9 @@ export default Component.extend(
       clearSearchResults() {
         return;
       },
+      resetSearchErrors() {
+        this.errorHandling.removeMessages('searchErrors')
+      }
     },
   }
 );
