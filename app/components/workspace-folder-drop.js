@@ -7,7 +7,6 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import CurrentUserMixin from '../mixins/current_user_mixin';
-import './Droppable';
 
 export default Component.extend(CurrentUserMixin, {
   classNames: ['dropTarget'],
