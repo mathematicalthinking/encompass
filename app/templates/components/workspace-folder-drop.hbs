@@ -1,1 +1,7 @@
-{{yield}}
+<div
+  class='dropTarget {{this.dragAction}}'
+  {{on 'drop' this.handleDrop}}
+  {{on 'dragover' this.allowDrop}}
+>
+  {{yield}}
+</div>

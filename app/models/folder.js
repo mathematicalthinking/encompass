@@ -37,15 +37,19 @@ export default class FolderModel extends AuditableModel {
   }
 
   get childSelections() {
-    let selections = [...this.cleanSelections];
-    if (this.hasChildren) {
-      this.cleanChildren.forEach((child) => {
-        selections.push(...child._selections);
-      });
-    }
-    return Array.from(new Set(selections.map((selection) => selection.id))).map(
-      (id) => selections.find((selection) => selection.id === id)
-    );
+    const allSelections = this.hasChildren
+      ? this.cleanChildren.reduce(
+          (acc, child) => acc.concat(child._selections),
+          [...this.cleanSelections]
+        )
+      : [...this.cleanSelections];
+
+    const seen = new Set();
+    return allSelections.filter((sel) => {
+      if (seen.has(sel.id)) return false;
+      seen.add(sel.id);
+      return true;
+    });
   }
 
   get _selections() {
@@ -54,7 +58,7 @@ export default class FolderModel extends AuditableModel {
 
   get submissions() {
     let submissions = this.cleanSelections
-      .map((selection) => selection.submission)
+      .map((selection) => selection.get('submission'))
       .filter(Boolean);
     return Array.from(
       new Set(submissions.map((submission) => submission.id))
@@ -62,13 +66,17 @@ export default class FolderModel extends AuditableModel {
   }
 
   get _submissions() {
-    let submissions = [...this.submissions];
-    this.cleanChildren.forEach((child) => {
-      submissions.push(...child._submissions);
+    const all = this.cleanChildren.reduce(
+      (acc, child) => acc.concat(child._submissions),
+      [...this.submissions]
+    );
+
+    const seen = new Set();
+    return all.filter((sub) => {
+      if (seen.has(sub.id)) return false;
+      seen.add(sub.id);
+      return true;
     });
-    return Array.from(
-      new Set(submissions.map((submission) => submission.id))
-    ).map((id) => submissions.find((submission) => submission.id === id));
   }
 
   hasSelection(selectionId) {

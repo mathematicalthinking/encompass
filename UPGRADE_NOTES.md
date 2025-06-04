@@ -351,3 +351,7 @@ This package has been removed from the system in favor of a simpler, custom comp
 ## lodash-es
 
 loadash-es is now loaded. I did this because some of the regular lodash subpackages (e.g., lodash/isEqual) are being deprecated. Thus, the correct thing to do now is to use lodash-es/isEqual, for example. Eventually, I should change all uses of lodash to lodash-es.
+
+# dropzone.js
+
+(6/4/2025) Removed from the vendor folder. It barely appeared in the codebase and nowadays is handled natively in Javascript.

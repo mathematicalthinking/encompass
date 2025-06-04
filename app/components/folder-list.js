@@ -1,335 +1,269 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/**
- * Passed in from parent:
- * - folders
- * - workspace (the current workspace)
- * - currentUser
- * - fileSelection (action)
- * - store: The data store for adding new folders.
- *
- * TODO:
- * - putInFolder (needs drag n drop)
- * - putInWorkspace (is this really used?)
- * - openModal action to add a new folder
- */
-import { equal, sort } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
 
-export default Component.extend({
-  currentUser: service('current-user'),
-  elementId: 'folder-list',
-  classNames: ['workspace-flex-item', 'folders'],
-  classNameBindings: [
-    'isHidden:hidden',
-    'isBipaneled:bi-paneled',
-    'isTripaneled:tri-paneled',
-    'editFolderMode:is-editing',
-  ],
-  alert: service('sweet-alert'),
-  errorHandling: service('error-handling'),
-  utils: service('utility-methods'),
-  weighting: 1,
-  editFolderMode: false,
-  sortProperties: ['weight', 'name'],
-  createRecordErrors: [],
-  updateRecordErrors: [],
-  permissions: service('workspace-permissions'),
+export default class FolderListComponent extends Component {
+  @service currentUser;
+  @service('sweet-alert') alert;
+  @service errorHandling;
+  @service('utility-methods') utils;
+  @service('workspace-permissions') permissions;
+  @service store;
 
-  isBipaneled: equal('containerLayoutClass', 'fsh'),
-  isTripaneled: equal('containerLayoutClass', 'fsc'),
+  @tracked editFolderMode = false;
+  @tracked weighting = 1;
+  @tracked didHideComments = false;
 
-  canManageFolders: computed('canCreate', 'canDelete', 'canEdit', function () {
+  get createRecordErrors() {
+    return this.errorHandling.getErrors('createRecordErrors');
+  }
+
+  get updateRecordErrors() {
+    return this.errorHandling.getErrors('updateRecordErrors');
+  }
+
+  get canCreate() {
+    return this.permissions.canEdit(this.args.workspace, 'folders', 2);
+  }
+
+  get canEdit() {
+    return this.permissions.canEdit(this.args.workspace, 'folders', 3);
+  }
+
+  get canDelete() {
+    return this.permissions.canEdit(this.args.workspace, 'folders', 3);
+  }
+
+  get canManageFolders() {
     return this.canCreate || this.canEdit || this.canDelete;
-  }),
+  }
 
-  canCreate: computed('workspace.id', 'currentUser.user.id', function () {
-    let ws = this.workspace;
-    return this.permissions.canEdit(ws, 'folders', 2);
-  }),
+  get isBipaneled() {
+    return this.args.containerLayoutClass === 'fsh';
+  }
 
-  canEdit: computed('workspace.id', 'currentUser.user.id', function () {
-    let ws = this.workspace;
-    return this.permissions.canEdit(ws, 'folders', 3);
-  }),
+  get isTripaneled() {
+    return this.args.containerLayoutClass === 'fsc';
+  }
 
-  canDelete: computed('workspace.id', 'currentUser.user.id', function () {
-    let ws = this.workspace;
-    return this.permissions.canEdit(ws, 'folders', 3);
-  }),
-
-  topLevelFolders: computed('folders.@each.parent', function () {
-    return this.folders.filter((folder) => {
+  get topLevelFolders() {
+    return this.args.folders.filter((folder) => {
       let parentId = this.utils.getBelongsToId(folder, 'parent');
-
       return this.utils.isNullOrUndefined(parentId);
     });
-  }),
+  }
 
-  sortedFolders: sort('topLevelFolders', 'sortProperties'),
+  get sortedFolders() {
+    return [...this.topLevelFolders].sort((a, b) => {
+      return a.weight - b.weight || a.name.localeCompare(b.name);
+    });
+  }
 
-  siblings: function (folder, above) {
+  get toggleDisplayText() {
+    return this.args.isHidden ? 'Show Folders' : 'Hide Folders';
+  }
+
+  get editFolderText() {
+    return this.editFolderMode ? 'Done' : 'Edit';
+  }
+
+  get editFolderIcon() {
+    return this.editFolderMode ? 'fas fa-check' : 'fas fa-pencil-alt';
+  }
+
+  get toggleEditAlt() {
+    return this.editFolderMode ? 'Save Changes' : 'Edit Folders';
+  }
+
+  siblings(folder, above = true) {
     let parentId = this.utils.getBelongsToId(folder, 'parent');
 
-    let siblings = this.folders.filter((folder) => {
-      let id = this.utils.getBelongsToId(folder, 'parent');
-      return id === parentId;
+    let siblings = this.args.folders.filter((f) => {
+      return this.utils.getBelongsToId(f, 'parent') === parentId;
     });
-    let sortedSiblings = siblings.sortBy('weight', 'name');
 
-    let pos = sortedSiblings.indexOf(folder);
-    let siblingsAbove = sortedSiblings.slice(0, pos);
-    let siblingsBelow = sortedSiblings.slice(pos + 1, sortedSiblings.length);
+    let sortedSiblings = [...siblings].sort((a, b) => {
+      return a.weight - b.weight || a.name.localeCompare(b.name);
+    });
 
-    return above ? siblingsAbove : siblingsBelow;
-  },
+    let index = sortedSiblings.indexOf(folder);
+    return above
+      ? sortedSiblings.slice(0, index)
+      : sortedSiblings.slice(index + 1);
+  }
 
-  toggleDisplayText: computed('isHidden', function () {
-    if (this.isHidden) {
-      return 'Show Folders';
+  @action
+  openModal() {
+    this.alert
+      .showPrompt('text', 'Create New Folder', null, 'Save')
+      .then((result) => {
+        if (result.value) {
+          this.createFolder(result.value);
+        }
+      });
+  }
+
+  @action
+  createFolder(folderName) {
+    const folder = this.store.createRecord('folder', {
+      name: folderName,
+      workspace: this.args.workspace,
+      weight: 0,
+      createdBy: this.currentUser.user,
+    });
+
+    folder
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          `${folderName} created`,
+          'bottom-end',
+          3000
+        );
+      })
+      .catch((err) => {
+        this.errorHandling.handleErrors(err, 'createRecordErrors', folder);
+        this.alert.showToast('error', err.errors[0].detail, 'bottom-end', 4000);
+        folder.deleteRecord();
+      });
+  }
+
+  @action
+  askToDelete(folder) {
+    this.alert
+      .showModal(
+        'warning',
+        `Are you sure you want to delete ${folder.name}`,
+        null,
+        'Yes, delete it'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.confirmDelete(folder);
+        }
+      });
+  }
+
+  @action
+  confirmDelete(folder) {
+    folder.isTrashed = true;
+    folder
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          `${folder.name} deleted`,
+          'bottom-end',
+          3000
+        );
+      })
+      .catch((err) => {
+        this.alert.showToast('error', err.errors[0].detail, 'bottom-end', 3000);
+        this.errorHandling.handleErrors(err, 'updateRecordErrors', folder);
+      });
+  }
+
+  @action
+  fileSelectionInFolder(objId, folder) {
+    this.args.fileSelection?.(objId, folder);
+  }
+
+  @action
+  activateEditFolderMode() {
+    this.editFolderMode = true;
+  }
+
+  @action
+  cancelEditFolderMode() {
+    this.editFolderMode = false;
+  }
+
+  @action
+  toggleEditMode(currentMode) {
+    this.hideComments(currentMode);
+    this.editFolderMode = !this.editFolderMode;
+  }
+
+  @action
+  moveOut(folder) {
+    const parent = folder.parent;
+    const newParent = parent?.parent;
+
+    if (!parent) return;
+
+    parent.children?.removeObject(folder);
+    folder.parent = newParent || null;
+
+    folder.save().catch((err) => {
+      this.errorHandling.handleErrors(err, 'updateRecordErrors', folder);
+    });
+  }
+
+  @action
+  moveUp(folder) {
+    const siblings = this.siblings(folder, true);
+    if (!siblings.length) return;
+
+    const min = siblings.at(-1).weight;
+    if (folder.weight !== min) {
+      [folder.weight, siblings.at(-1).weight] = [min, folder.weight];
+      folder.save();
+      siblings.at(-1).save();
+    } else {
+      folder.weight -= this.weighting;
+      folder.save();
+      siblings.forEach((sib, idx) => {
+        if (idx !== 0) {
+          sib.weight += this.weighting;
+          sib.save();
+        }
+      });
     }
-    return 'Hide Folders';
-  }),
+  }
 
-  editFolderText: computed('editFolderMode', function () {
-    return this.editFolderMode ? 'Done' : 'Edit';
-  }),
-  editFolderIcon: computed('editFolderMode', function () {
-    return this.editFolderMode ? 'fas fa-check' : 'fas fa-pencil-alt';
-  }),
-  toggleEditAlt: computed('editFolderMode', function () {
-    return this.editFolderMode ? 'Save Changes' : 'Edit Folders';
-  }),
+  @action
+  moveDown(folder) {
+    const siblings = this.siblings(folder, false);
+    if (!siblings.length) return;
 
-  actions: {
-    openModal: function () {
-      this.alert
-        .showPrompt('text', 'Create New Folder', null, 'Save')
-        .then((result) => {
-          if (result.value) {
-            this.send('createFolder', result.value);
-          }
-        });
-    },
-
-    createFolder: function (folderName) {
-      var ws = this.workspace;
-      var currentUser = this.currentUser.user;
-
-      if (folderName) {
-        var folder = this.store.createRecord('folder', {
-          name: folderName,
-          workspace: ws,
-          weight: 0,
-          createdBy: currentUser,
-        });
-
-        folder
-          .save()
-          .then(() => {
-            this.alert.showToast(
-              'success',
-              `${folderName} created`,
-              'bottom-end',
-              3000,
-              false,
-              null
-            );
-          })
-          .catch((err) => {
-            let message = err.errors[0].detail;
-            this.errorHandling.handleErrors(err, 'createRecordErrors', folder);
-            this.alert.showToast(
-              'error',
-              `${message}`,
-              'bottom-end',
-              4000,
-              false,
-              null
-            );
-            folder.deleteRecord();
-          });
-      }
-    },
-
-    askToDelete: function (folder) {
-      let folderName = folder.get('name');
-      this.alert
-        .showModal(
-          'warning',
-          `Are you sure you want to delete ${folderName}`,
-          null,
-          'Yes, delete it'
-        )
-        .then((result) => {
-          if (result.value) {
-            this.send('confirmDelete', folder);
-          }
-        });
-    },
-
-    confirmDelete: function (folder) {
-      let folderName = folder.get('name');
-      folder.set('isTrashed', true);
-      folder
-        .save()
-        .then((folder) => {
-          this.alert.showToast(
-            'success',
-            `${folderName} deleted`,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        })
-        .catch((err) => {
-          let message = err.errors[0].detail;
-          this.alert.showToast(
-            'error',
-            `${message}`,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.errorHandling.handleErrors(err, 'updateRecordErrors', folder);
-        });
-    },
-
-    fileSelectionInFolder: function (objId, folder) {
-      this.sendAction('fileSelection', objId, folder);
-    },
-
-    activateEditFolderMode: function () {
-      this.set('editFolderMode', true);
-    },
-
-    cancelEditFolderMode: function () {
-      this.set('editFolderMode', false);
-    },
-    toggleEditMode: function (currentMode) {
-      this.send('hideComments', currentMode);
-      this.toggleProperty('editFolderMode');
-    },
-
-    moveOut: function (folder) {
-      var parent = folder.get('parent');
-      var newParent = parent.get('parent');
-      // var weight = parent.get('weight');
-      // var anchor = this.weighting;
-      // var copy;
-
-      //controller.propertyWillChange('content');
-      //
-      if (parent) {
-        // move out only if this is a nested folder
-        parent.get('children').removeObject(folder);
-
-        if (newParent.get('isTruthy') === false) {
-          folder.set('isTopLevel', true);
-        } else {
-          folder.set('isTopLevel', false);
-          newParent.get('children').addObject(folder);
+    const max = siblings[0].weight;
+    if (folder.weight !== max) {
+      [folder.weight, siblings[0].weight] = [max, folder.weight];
+      folder.save();
+      siblings[0].save();
+    } else {
+      folder.weight += this.weighting;
+      folder.save();
+      siblings.forEach((sib, idx) => {
+        if (idx !== 0) {
+          sib.weight += this.weighting;
+          sib.save();
         }
+      });
+    }
+  }
 
-        folder
-          .save()
-          .then((res) => {
-            // handle success
-          })
-          .catch((err) => {
-            this.errorHandling.handleErrors(err, 'updateRecordErrors', folder);
-          });
+  @action
+  hideFolders() {
+    this.args.hideFolders?.();
+  }
+
+  @action
+  hideComments(currentMode) {
+    if (currentMode === false) {
+      // entering edit mode
+      if (!this.args.areCommentsHidden) {
+        this.didHideComments = true;
+        this.args.hideComments?.();
       }
-    },
-
-    moveUp: function (folder) {
-      var weight = folder.get('weight');
-      var siblings = this.siblings(folder, true);
-      var anchor = this.weighting;
-      var min = siblings.get('lastObject.weight');
-
-      //console.debug(siblings.length);
-
-      if (siblings.length > 0) {
-        //re-order only if there are siblings above
-        if (weight !== min) {
-          // swap the two folders' weights if they are different
-          folder.set('weight', min);
-          siblings.get('lastObject').set('weight', weight);
-          folder.save();
-
-          siblings.get('lastObject').save();
-        } else {
-          folder.set('weight', weight - anchor);
-          folder.save();
-
-          // need to also increment the siblings below the one
-          // this folder is switching with, so they stay below it
-          siblings.forEach(function (sibling, index) {
-            if (index !== 0) {
-              var w = sibling.get('weight');
-              sibling.set('weight', w + anchor);
-              sibling.save();
-            }
-          });
-        }
+    } else {
+      // exiting edit mode
+      if (this.didHideComments && this.args.areCommentsHidden) {
+        this.didHideComments = false;
+        this.args.hideComments?.();
       }
-    },
-
-    moveDown: function (folder) {
-      var weight = folder.get('weight');
-      var siblings = this.siblings(folder, false);
-      var anchor = this.weighting;
-      var max = siblings.get('firstObject.weight');
-
-      if (siblings.length > 0) {
-        //re-order only if there are siblings below
-        if (weight !== max) {
-          // swap the two folders' weights if they are different
-          folder.set('weight', max);
-          folder.save();
-
-          siblings.get('firstObject').set('weight', weight);
-          siblings.get('firstObject').save();
-        } else {
-          folder.set('weight', weight + anchor);
-          folder.save();
-
-          // need to also increment the siblings below the one
-          // this folder is switching with, so they stay below it
-          siblings.forEach(function (sibling, index) {
-            if (index !== 0) {
-              var w = sibling.get('weight');
-              sibling.set('weight', w + anchor);
-              sibling.save();
-            }
-          });
-        }
-      }
-    },
-    hideFolders() {
-      this.hideFolders();
-    },
-    hideComments(currentMode) {
-      if (currentMode === false) {
-        // switching not editing to editing
-        if (!this.areCommentsHidden) {
-          this.set('didHideComments', true);
-          this.hideComments();
-        }
-        return;
-      }
-      // switching from editing to not editing
-      if (this.didHideComments) {
-        this.set('didHideComments', false);
-
-        if (this.areCommentsHidden) {
-          // only toggle if comments are still hidden
-          this.hideComments();
-        }
-      }
-    },
-  },
-});
+    }
+  }
+}

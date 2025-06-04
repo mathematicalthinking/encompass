@@ -1,101 +1,104 @@
-{{! TODO: restore drag an drop, see original ../folder.hbs}}
-<div draggable='true' class='folder draggable'>
-  {{#if this.editFolderMode}}
-    {{#if this.canEditFolders}}
+<div
+  class='folder draggable'
+  draggable='true'
+  {{on 'dragstart' this.dragStart}}
+  {{on 'dragenter' this.dragEnter}}
+  {{on 'dragleave' this.dragLeave}}
+  {{on 'drop' this.drop}}
+>
+  {{#if @editFolderMode}}
+    {{#if this.canEditFolder}}
       <div class='move-folder'>
-        {{#if this.model.parent}}
+        {{#if @model.parent}}
           <span
-            {{action 'moveOut' this.model target=this.folderList}}
             class='al_wtf move_left'
+            {{on 'click' (fn @moveOut @model)}}
           ></span>
         {{/if}}
+        <span class='al_wtf move_up' {{on 'click' (fn @moveUp @model)}}></span>
         <span
-          {{action 'moveUp' this.model target=this.folderList}}
-          class='al_wtf move_up'
-        ></span>
-        <span
-          {{action 'moveDown' this.model target=this.folderList}}
           class='al_wtf move_down'
+          {{on 'click' (fn @moveDown @model)}}
         ></span>
       </div>
     {{/if}}
+
     {{#if this.canDeleteFolder}}
       <div class='delete-folder'>
-        <span
-          {{action 'confirmDelete'}}
-          data-test='trash-{{this.model.name}}'
-        ><i class='fas fa-trash'></i></span>
+        <span {{on 'click' this.confirmDelete}}><i
+            class='fas fa-trash'
+          ></i></span>
       </div>
     {{/if}}
+
     {{#if this.canEditFolder}}
       <div class='edit-folder-name'>
-
-        <Input
-          @value={{this.model.name}} {{on "focusout" (action 'editFolderName')}}
-        />
-
+        <Input @value={{@model.name}} {{on 'focusout' this.editFolderName}} />
       </div>
     {{/if}}
+
     {{#each this.updateRecordErrors as |error|}}
       <p class='error-message'>{{error}}</p>
     {{/each}}
   {{else}}
     <span
-      class='toggle-icon
-        {{if this.model.sortedChildren.length "branch" "leaf"}}'
-      {{action 'toggle'}}
+      class='toggle-icon {{if @model.sortedChildren.length "branch" "leaf"}}'
+      {{on 'click' this.toggle}}
     >
-      {{#if this.model.isExpanded}}
+      {{#if @model.isExpanded}}
         <span class='folder-expanded'><i class='far fa-folder-open'></i></span>
       {{else}}
         <span class='folder-closed'><i class='far fa-folder'></i></span>
       {{/if}}
-      <span
-        title={{this.model.name}}
-        class='folder-name {{if this.containsCurrentSubmission "bolder"}}'
-      >{{this.model.name}}</span>
+      <span class='folder-name {{if this.containsCurrentSubmission "bolder"}}'>
+        {{@model.name}}
+      </span>
     </span>
+
     <aside>
       <button
         style='display:none'
-        id='updateTaggings{{this.model.id}}' type="button" {{action 'updateTaggings'}}
+        id='updateTaggings{{@model.id}}'
+        type='button'
+        {{on 'click' this.updateTaggings}}
       ></button>
       {{#each this.queryErrors as |error|}}
         <p class='error-message'>{{error}}</p>
       {{/each}}
 
       <div
-        class='show-folder'
-        {{action 'openLink'}}
-        class='{{if
-            this.containsCurrentSubmission
-            "contains-current-submission"
-          }}
+        class='show-folder
+          {{if this.containsCurrentSubmission "contains-current-submission"}}
           {{if this.hasManyTaggings "many-taggings"}}
           {{if this.containsCurrentSelection "contains-current-selection"}}'
         title={{this.selectionsTitle}}
+        {{on 'click' this.openLink}}
       >
-        {{this.model.childSelections.length}}
+        {{@model.childSelections.length}}
       </div>
     </aside>
   {{/if}}
 </div>
-{{#if this.model.isExpanded}}
+
+{{#if @model.isExpanded}}
   <ul class='subfolders'>
-    {{#each this.model.sortedChildren as |folder|}}
+    {{#each @model.sortedChildren as |folder|}}
       <FolderElem
-        @store={{this.store}}
+        @store={{@store}}
         @model={{folder}}
-        @currentWorkspace={{this.currentWorkspace}}
-        @folderList={{this.folderList}}
-        @editFolderMode={{this.editFolderMode}}
-        @putInFolder={{this.putInFolder}}
-        @dropped={{this.dropped}}
-        @canEditFolders={{this.canEditFolders}}
-        @canDeleteFolders={{this.canDeleteFolders}}
-        @wsTaggings={{this.wsTaggings}}
-        @currentSubmission={{this.currentSubmission}}
-        @currentSelection={{this.currentSelection}}
+        @currentWorkspace={{@currentWorkspace}}
+        @folderList={{@folderList}}
+        @editFolderMode={{@editFolderMode}}
+        @putInFolder={{@putInFolder}}
+        @dropped={{@dropped}}
+        @canEditFolders={{@canEditFolders}}
+        @canDeleteFolders={{@canDeleteFolders}}
+        @wsTaggings={{@wsTaggings}}
+        @currentSubmission={{@currentSubmission}}
+        @currentSelection={{@currentSelection}}
+        @moveOut={{@moveOut}}
+        @moveUp={{@moveUp}}
+        @moveDown={{@moveDown}}
       />
     {{/each}}
   </ul>
