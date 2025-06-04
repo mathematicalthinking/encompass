@@ -1,28 +1,56 @@
-{{! TODO: restore the functionlaity of the view WorkspaceFolderDropTarget stuff, see the old ../folders.hbs}}
-<header>
-  <h2>Folders</h2>
-  <span {{action "hideFolders"}}><i title="Hide Folders"class="far fa-eye-slash"></i></span>
-</header>
-<WorkspaceFolderDrop @folders={{this.folders}}>
-  <div class="dropZone" style="height:10px;"></div>
-  <ul id="al_folders">
-    {{#each this.sortedFolders as |folder|}}
-      <FolderElem @store={{this.store}} @model={{folder}} @currentWorkspace={{this.workspace}} @folderList={{this}} @editFolderMode={{this.editFolderMode}} @dropped={{action "fileSelectionInFolder"}} @confirm="askToDelete" @currentSubmission={{this.currentSubmission}} @currentSelection={{this.currentSelection}} @canEditFolders={{this.canEdit}} @canDeleteFolders={{this.canDelete}} @wsTaggings={{this.taggings}} />
-    {{/each}}
-  </ul>
-  <div class="dropZone" style="height:10px;"></div>
-</WorkspaceFolderDrop>
-{{#if this.canManageFolders}}
-<div class="folders-modify">
-  <div class= "folders-modify-item add">
-    <span {{action "openModal" "folderNew" }}>Add
-      <i class="fas fa-plus"></i>
+<div
+  id='folder-list'
+  class='workspace-flex-item folders
+    {{if @isHidden "hidden"}}
+    {{if this.isBipaneled "bi-paneled"}}
+    {{if this.isTripaneled "tri-paneled"}}
+    {{if this.editFolderMode "is-editing"}}'
+>
+  <header>
+    <h2>Folders</h2>
+    <span {{on 'click' this.hideFolders}}>
+      <i title='Hide Folders' class='far fa-eye-slash'></i>
     </span>
-  </div>
-  <div class= "folders-modify-item edit">
-    <span {{action "toggleEditMode" this.editFolderMode}}>{{this.editFolderText}}
-      <i class={{this.editFolderIcon}}></i>
-    </span>
-  </div>
+  </header>
+
+  <WorkspaceFolderDrop @folders={{@folders}}>
+    <ul id='al_folders'>
+      {{#each this.sortedFolders as |folder|}}
+        <FolderElem
+          @store={{this.store}}
+          @model={{folder}}
+          @currentWorkspace={{@workspace}}
+          @folderList={{@folders}}
+          @editFolderMode={{this.editFolderMode}}
+          @dropped={{this.fileSelectionInFolder}}
+          @confirm={{this.askToDelete}}
+          @currentSubmission={{@currentSubmission}}
+          @currentSelection={{@currentSelection}}
+          @canEditFolders={{this.canEdit}}
+          @canDeleteFolders={{this.canDelete}}
+          @wsTaggings={{@taggings}}
+          @moveOut={{this.moveOut}}
+          @moveUp={{this.moveUp}}
+          @moveDown={{this.moveDown}}
+        />
+      {{/each}}
+    </ul>
+  </WorkspaceFolderDrop>
+
+  {{#if this.canManageFolders}}
+    <div class='folders-modify'>
+      <div class='folders-modify-item add'>
+        <span {{on 'click' this.openModal}}>
+          Add
+          <i class='fas fa-plus'></i>
+        </span>
+      </div>
+      <div class='folders-modify-item edit'>
+        <span {{on 'click' this.toggleEditMode}} title={{this.toggleEditAlt}}>
+          {{this.editFolderText}}
+          <i class={{this.editFolderIcon}}></i>
+        </span>
+      </div>
+    </div>
+  {{/if}}
 </div>
-{{/if}}

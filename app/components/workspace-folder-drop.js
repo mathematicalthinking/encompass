@@ -4,75 +4,63 @@
  * Passed in to this component:
  * - folders: The list of folders for the current workspace
  */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-import './Droppable';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
-export default Component.extend(CurrentUserMixin, {
-  classNames: ['dropTarget'],
-  classNameBindings: ['dragAction'],
-  folderSaveErrors: [],
+export default class WorkspaceFolderDropComponent extends Component {
+  @service errorHandling;
 
-  // This will determine which class (if any) you should add to
-  // the view when you are in the process of dragging an item.
-  dragAction: computed('dragContext', {
-    get: function () {
-      return null;
-    },
-    set: function () {
-      return null;
-    },
-  }),
+  @tracked dragAction = null;
+  @tracked folderSaveErrors = [];
 
-  drop: function (event) {
-    var dataTransfer = event.originalEvent.dataTransfer;
-    var dropType = dataTransfer.getData('Text');
-    var dropObject = dataTransfer.getData('application/json');
-    var comp = this;
+  get folders() {
+    return this.args.folders;
+  }
 
-    // Set view properties
-    // Must be within `Ember.run.next` to always work
+  @action
+  handleDrop(event) {
+    const dataTransfer = event.dataTransfer || event.originalEvent.dataTransfer;
+    const dropType = dataTransfer.getData('Text');
+    const dropObject = dataTransfer.getData('application/json');
+
     if (dropType === 'folder') {
-      // next(comp, function () {
-      //   comp.putFolderInWorkspace(dropObject);
-      // });
+      this.putFolderInWorkspace(dropObject);
     }
 
-    return comp._super(event);
-  },
+    event.preventDefault();
+  }
 
-  putFolderInWorkspace: function (folderToAdd) {
-    var folderModel = false;
-    var parentFolder = false;
+  @action
+  allowDrop(event) {
+    event.preventDefault();
+  }
 
-    folderToAdd = JSON.parse(folderToAdd);
-    folderModel = this.folders
-      .filterBy('id', folderToAdd.id)
-      .get('firstObject');
+  putFolderInWorkspace(folderToAdd) {
+    let folderModel = null;
+    const parsed = JSON.parse(folderToAdd);
+
+    folderModel = this.folders.find((f) => f.id === parsed.id);
 
     if (!folderModel) {
       console.info("Could not retrieve the folder's model...");
       return;
     }
 
-    parentFolder = folderModel.get('parent');
+    const parentFolder = folderModel.parent;
 
-    // this folder is already at the top level. leave it alone
+    // already top-level
     if (!parentFolder) {
       return;
     }
 
-    parentFolder.get('children').removeObject(folderModel);
-    folderModel.set('parent', null);
-    folderModel.set('isTopLevel', true);
-    folderModel
-      .save()
-      .then((res) => {
-        // handle success
-      })
-      .catch((err) => {
-        this.errorHandling.handleErrors(err, 'folderSaveErrors', folderModel);
-      });
-  },
-});
+    parentFolder.get('children')?.removeObject(folderModel);
+    folderModel.parent = null;
+    folderModel.isTopLevel = true;
+
+    folderModel.save().catch((err) => {
+      this.errorHandling.handleErrors(err, 'folderSaveErrors', folderModel);
+    });
+  }
+}

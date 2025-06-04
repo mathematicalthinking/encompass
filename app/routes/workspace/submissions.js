@@ -5,17 +5,14 @@
  * @since 1.0.1
  */
 
-// Is this route necessary?
-// workspace submissions are being sideloaded when workspace is fetched
+// app/routes/workspace/submissions.js
 import Route from '@ember/routing/route';
 
-export default class WorkspaceSubmissionRoute extends Route {
+export default class WorkspaceSubmissionsRoute extends Route {
   async model() {
-    let workspace = await this.modelFor('workspace');
-    let submissions = await workspace.hasMany('submissions').value();
-    if (submissions !== null) {
-      return submissions;
-    }
-    return workspace.get('submissions');
+    const workspace = await this.modelFor('workspace');
+    const submissions = await workspace.submissions;
+
+    return submissions;
   }
 }
