@@ -13,7 +13,6 @@ export default class ApplicationController extends Controller {
   showCategoryList = false;
   isHidden = false;
   selectedCategories = [];
-  isTouchScreen = false;
   get currentUser() {
     return this.model;
   }
@@ -21,9 +20,5 @@ export default class ApplicationController extends Controller {
   @action
   toHome() {
     window.location.href = '/';
-  }
-  @action
-  handleFirstTouch() {
-    this.isTouchScreen = true;
   }
 }

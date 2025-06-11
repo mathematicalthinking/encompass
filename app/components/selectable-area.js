@@ -5,10 +5,12 @@
  * - showingSelections
  */
 import Component from '@ember/component';
+import { service } from '@ember/service';
 import $ from 'jquery';
 
 export default Component.extend({
   elementId: 'selectable-area',
+  device: service('device'),
 
   init: function () {
     this._super(...arguments);
@@ -36,7 +38,7 @@ export default Component.extend({
     // set up the SelectionHighlighting object
     this.selectionHighlighting = new SelectionHighlighting({
       selectableContainerId: containerId,
-      automaticEvent: !this.isTouchScreen,
+      automaticEvent: !this.device.isTouchScreen,
     });
     // this.selectionHighlighting.init((id) => {
     //   let selection = this.selectionHighlighting.getSelection(id);

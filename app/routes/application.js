@@ -17,17 +17,6 @@ export default class Application extends Route {
   @service store;
   @service router;
   @service currentUser;
-  beforeModel() {
-    let that = this;
-    window.addEventListener(
-      'touchstart',
-      function onFirstTouch() {
-        that.controller.set('isTouchScreen', true);
-        window.removeEventListener('touchstart', onFirstTouch, false);
-      },
-      false
-    );
-  }
 
   async model() {
     let user = await this.store.queryRecord('user', { alias: 'current' });
