@@ -1,8 +1,10 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
 import $ from 'jquery';
 
 export default class ConfirmEmailComponent extends ErrorHandlingComponent {
+  @service errorHandling;
   @tracked confirmTokenErrors = [];
   @tracked isAlreadyConfirmed = false;
   @tracked invalidTokenError = null;
@@ -15,7 +17,7 @@ export default class ConfirmEmailComponent extends ErrorHandlingComponent {
       $.get({
         url: `/auth/confirm/${token}`,
       })
-        .then((res) => {
+        .then((res) => {π
           if (res.isValid) {
             this.isTokenValid = true;
           } else {
@@ -29,9 +31,13 @@ export default class ConfirmEmailComponent extends ErrorHandlingComponent {
           }
         })
         .catch((err) => {
-          this[err] = 'confirmTokenErrors';
+          this.errorHandling.handleErrors(err, 'confirmTokenErrors');
         });
     }
+  }
+
+  get confirmTokenErrors () {
+    return this.errorHandling.getErrors('confirmTokenErrors');
   }
 
   get loginMessage() {
