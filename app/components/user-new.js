@@ -29,14 +29,13 @@ export default class UserNewComponent extends UserSignupComponent {
       ? ['Teacher', 'Student', 'Pd Admin', 'Admin']
       : ['Teacher', 'Student'];
   }
-  
 
   get createOrgErrors() {
-    return this.errorHandling.getErrors('createOrgErrors')
+    return this.errorHandling.getErrors('createOrgErrors');
   }
 
   get createUserErrors() {
-    return this.errorHandling.getErrors('createUserErrors')
+    return this.errorHandling.getErrors('createUserErrors');
   }
 
   async createNewUser(data) {
@@ -44,24 +43,20 @@ export default class UserNewComponent extends UserSignupComponent {
       throw new Error('Invalid data');
     }
 
-    try {
-      let response = await fetch('/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+    let response = await fetch('/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
 
-      if (!response.ok) {
-        let error = await response.text(); // or `await response.json()` if JSON
-        throw new Error(error);
-      }
-
-      return await response.json(); // adjust based on actual response type
-    } catch (err) {
-      throw err;
+    if (!response.ok) {
+      let error = await response.text(); // or `await response.json()` if JSON
+      throw new Error(error);
     }
+
+    return await response.json(); // adjust based on actual response type
   }
 
   handleOrg(org) {
@@ -143,8 +138,7 @@ export default class UserNewComponent extends UserSignupComponent {
     var firstName = this.firstName;
     var lastName = this.lastName;
     var email = this.email;
-    var organization =
-      this.org || (await this.currentUser.user.organization);
+    var organization = this.org || (await this.currentUser.user.organization);
     var location = this.location;
     var accountType = this.selectedType || 'student';
     var accountTypeLetter;
@@ -237,7 +231,11 @@ export default class UserNewComponent extends UserSignupComponent {
             }
           })
           .catch((err) => {
-            this.errorHandling.handleErrors(err, 'createUserErrors', newUserData);
+            this.errorHandling.handleErrors(
+              err,
+              'createUserErrors',
+              newUserData
+            );
           });
       })
       .catch(() => {
@@ -258,18 +256,17 @@ export default class UserNewComponent extends UserSignupComponent {
   }
 
   @action
-  setAccountType (type) {
+  setAccountType(type) {
     this.selectedType = type;
   }
 
   @action
   resetError(errorType) {
-    this.errorHandling.removeMessages(errorType)
+    this.errorHandling.removeMessages(errorType);
   }
 
   @action
   removeErrorFromArray(type, error) {
     this.errorHandling.removeErrorFromArray(type, error);
   }
-
 }

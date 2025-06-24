@@ -1,29 +1,33 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
 
-export default class AddCreateStudentComponent extends ErrorHandlingComponent {
+export default class AddCreateStudentComponent extends Component {
+  @service('sweet-alert') alert;
+  @service errorHandling;
+  @service currentUser;
+  @service store;
+
+  @tracked username = null;
+  @tracked firstName = null;
+  @tracked lastName = null;
+  @tracked password = null;
   @tracked isUsingDefaultPassword = false;
   @tracked showingPassword = false;
   @tracked isShowingClassPassword = true;
-  @tracked createUserErrors = [];
-  @tracked findUserErrors = [];
-  @tracked updateSectionErrors = [];
   @tracked usernameAlreadyExists = false;
   @tracked userAlreadyInSection = false;
   @tracked isMissingCredentials = false;
   @tracked incorrectUsername = false;
-  @service('sweet-alert') alert;
-  @service store;
 
   clearCreateInputs() {
-    let fields = ['username', 'firstName', 'lastName', 'password'];
-    for (let field of fields) {
-      this[field] = null;
-    }
+    this.username = null;
+    this.firstName = null;
+    this.lastName = null;
+    this.password = null;
   }
 
   clearAddExistingUser() {
@@ -31,6 +35,18 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
     for (let field of fields) {
       this[field] = null;
     }
+  }
+
+  get createUserErrors() {
+    return this.errorHandling.getErrors('createUserErrors') || [];
+  }
+
+  get findUserErrors() {
+    return this.errorHandling.getErrors('findUserErrors') || [];
+  }
+
+  get updateSectionErrors() {
+    return this.errorHandling.getErrors('updateSectionErrors') || [];
   }
 
   get initialStudentOptions() {
@@ -42,22 +58,22 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       filtered = peeked.removeObjects(currentStudents);
       return filtered.map((obj) => {
         return {
-          id: obj.get('id'),
-          username: obj.get('username'),
+          id: obj.id,
+          username: obj.username,
         };
       });
     }
     return filtered;
   }
 
-  createStudent(info) {
+  async createStudent(info) {
     // info is object with username, password, name?
     let { username, password, firstName, lastName } = info;
 
     let organization = this.organization;
     let sectionId = this.args.section.id;
     let sectionRole = 'student';
-    let currentUser = this.args.currentUser;
+    let currentUserId = this.currentUser.id;
 
     let createUserData = {
       firstName,
@@ -66,10 +82,10 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       password,
       sectionId,
       sectionRole,
-      createdBy: currentUser.id,
+      createdBy: currentUserId,
       isAuthorized: true,
       accountType: 'S',
-      authorizedBy: currentUser.id,
+      authorizedBy: currentUserId,
       isFromSectionPage: true,
     };
 
@@ -77,22 +93,22 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       createUserData.organization = organization.id;
     } else {
       createUserData.organization =
-        this.args.currentUser.get('organization.id');
+        (await this.currentUser.user.organization?.id) ?? '';
     }
 
     return $.post({
       url: '/auth/signup',
       data: createUserData,
     })
-      .then((res) => {
-        this.removeMessages('createUserErrors');
+      .then(async (res) => {
+        this.errorHandling.removeMessages('createUserErrors');
         if (res.message) {
           if (
             res.message === 'There already exists a user with that username'
           ) {
             this.usernameAlreadyExists = true;
           } else {
-            this.createUserErrors = [res.message];
+            this.errorHandling.handleErrors(res.message, 'createUserErrors');
           }
         } else if (res.user && res.canAddExistingUser === true) {
           this.canAddExistingUser = true;
@@ -100,7 +116,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
         } else {
           let userId = res._id;
           let section = this.args.section;
-          let students = section.get('students');
+          let students = await section.students;
           return this.store
             .findRecord('user', userId)
             .then((user) => {
@@ -119,16 +135,24 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
                   );
                 })
                 .catch((err) => {
-                  this.handleErrors(err, 'updateSectionErrors', section);
+                  this.errorHandling.handleErrors(
+                    err,
+                    'updateSectionErrors',
+                    section
+                  );
                 });
             })
             .catch((err) => {
-              this.handleErrors(err, 'findUserErrors');
+              this.errorHandling.handleErrors(err, 'findUserErrors');
             });
         }
       })
       .catch((err) => {
-        this.handleErrors(err, 'createUserErrors', createUserData);
+        this.errorHandling.handleErrors(
+          err,
+          'createUserErrors',
+          createUserData
+        );
       });
   }
 
@@ -156,7 +180,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
     this.store
       .findRecord('user', student._id)
       .then((user) => {
-        this.removeMessages('findUserErrors');
+        this.errorHandling.removeMessages('findUserErrors');
         if (!students.includes(user)) {
           students.pushObject(user);
 
@@ -177,7 +201,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
         }
       })
       .catch((err) => {
-        this.handleErrors(err, 'findUserErrors');
+        this.errorHandling.handleErrors(err, 'findUserErrors');
       });
   }
 
@@ -262,7 +286,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   @action updateSectionPassword() {
     this.isEditingSectionPassword = false;
     let section = this.args.section;
-    if (section.get('hasDirtyAttributes')) {
+    if (section.hasDirtyAttributes) {
       section
         .save()
         .then(() => {
@@ -274,10 +298,10 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
             false,
             null
           );
-          this.removeMessages('updateSectionErrors');
+          this.errorHandling.removeMessages('updateSectionErrors');
         })
         .catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors');
+          this.errorHandling.handleErrors(err, 'updateSectionErrors');
         });
     }
   }
@@ -315,7 +339,17 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
         this.clearSelectizeInput('select-add-student');
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors');
+        this.errorHandling.handleErrors(err, 'updateSectionErrors');
       });
+  }
+
+  @action
+  setIsEditingSectionPassword(val) {
+    this.isEditingSectionPassword = val;
+  }
+
+  @action
+  setIsShowingClassPassword(val) {
+    this.isShowingClassPassword = val;
   }
 }
