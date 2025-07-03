@@ -61,7 +61,9 @@ export default class DraggableSelectionComponent extends Component {
 
   get titleText() {
     if (!this.isVmtClip) {
-      const createDate = new Date(this.args.selection.createDate);
+      const createDate = new Date(
+        this.args.selection?.createDate ?? Date.now()
+      );
       const formatter = new Intl.DateTimeFormat(undefined, {
         dateStyle: 'short',
         timeStyle: 'short',
