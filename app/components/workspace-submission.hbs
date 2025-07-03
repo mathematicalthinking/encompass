@@ -31,27 +31,27 @@
     </div>
 
     <div
-      title={{this.currentSubmission.puzzle.title}}
+      title={{@currentSubmission.puzzle.title}}
       class='submission-row-item problem-link'
     >
-      {{#if this.currentSubmission.answer}}
+      {{#if @currentSubmission.answer}}
         <span>Assignment Name:</span>
         <a {{on 'click' this.openProblem}} class='problem-link'>
           <span
             class='problem-link-text'
-          >{{this.currentSubmission.puzzle.title}}</span>
+          >{{@currentSubmission.puzzle.title}}</span>
           <i class='fas fa-external-link-alt'></i>
         </a>
       {{else}}
         <a
           class='puzzle'
           target='_blank'
-          href={{this.currentSubmission.puzzleUrl}}
+          href={{@currentSubmission.puzzleUrl}}
           rel='noopener noreferrer'
         >
           <span
             class='problem-link-text'
-          >{{this.currentSubmission.puzzle.title}}</span>
+          >{{@currentSubmission.puzzle.title}}</span>
           <i class='fas fa-external-link-alt'></i>
         </a>
       {{/if}}
@@ -64,9 +64,7 @@
           type='button'
           {{on
             'click'
-            (fn
-              @toNewResponse this.currentSubmission.id this.currentWorkspace.id
-            )
+            (fn @toNewResponse @currentSubmission.id this.currentWorkspace.id)
           }}
         >Respond</button>
         {{#if this.submissionResponses.length}}
@@ -105,7 +103,7 @@
       <h3 id='sel-view-header' class='selectable-view-header'>Selectable View!</h3>
 
       <SelectableArea
-        @model={{this.currentSubmission}}
+        @model={{@currentSubmission}}
         @makingSelection={{this.makingSelection}}
         @showingSelections={{this.showingSelections}}
         @addSelection={{this.addSelection}}
@@ -118,7 +116,7 @@
         <div id='submission_container'>
           <div class='submission-short {{if this.isVmt "vmt-summary"}}'>
             {{#if this.isVmt}}
-              {{#let this.currentSubmission.vmtRoomInfo as |room|}}
+              {{#let @currentSubmission.vmtRoomInfo as |room|}}
                 <p>Room Name: {{this.room.roomName}}</p>
                 <p>Activity Name:
                   {{#if this.room.activityName}}
@@ -144,19 +142,19 @@
                   {{/each}}
                 </ul>
               {{/let}}
-            {{else if this.currentSubmission.answer.answer}}
-              {{make-html-safe this.currentSubmission.answer.answer}}
+            {{else if @currentSubmission.answer.answer}}
+              {{make-html-safe @currentSubmission.answer.answer}}
             {{else}}
-              {{make-html-safe this.currentSubmission.shortAnswer}}
+              {{make-html-safe @currentSubmission.shortAnswer}}
             {{/if}}
           </div>
           <div class='submission-long'>
             {{#if this.vmtScreenshot}}
               <img src={{this.vmtScreenshot}} alt='vmt screenshot' />
-            {{else if this.currentSubmission.answer.explanation}}
-              {{make-html-safe this.currentSubmission.answer.explanation}}
-            {{else if this.currentSubmission.longAnswer}}
-              {{make-html-safe this.currentSubmission.longAnswer}}
+            {{else if @currentSubmission.answer.explanation}}
+              {{make-html-safe @currentSubmission.answer.explanation}}
+            {{else if @currentSubmission.longAnswer}}
+              {{make-html-safe @currentSubmission.longAnswer}}
             {{/if}}
           </div>
         </div>
@@ -166,7 +164,7 @@
         <h5 class='submission-header summary'>Brief Summary</h5>
         <div class='submission short {{if this.isVmt "vmt-summary"}}'>
           {{#if this.isVmt}}
-            {{#let this.currentSubmission.vmtRoomInfo as |room|}}
+            {{#let @currentSubmission.vmtRoomInfo as |room|}}
 
               <p>Room Name: {{room.roomName}}</p>
               <p>Activity Name:
@@ -193,36 +191,36 @@
                 {{/each}}
               </ul>
             {{/let}}
-          {{else if this.currentSubmission.answer.answer}}
+          {{else if @currentSubmission.answer.answer}}
 
-            {{make-html-safe this.currentSubmission.answer.answer}}
+            {{make-html-safe @currentSubmission.answer.answer}}
           {{else}}
-            {{make-html-safe this.currentSubmission.shortAnswer}}
+            {{make-html-safe @currentSubmission.shortAnswer}}
           {{/if}}
         </div>
         <h5 class='submission-header explanation'>Explanation</h5>
         <div class='submission long'>
           {{#if this.isVmt}}
             <VmtReplayer />
-          {{else if this.currentSubmission.answer.explanation}}
-            {{make-html-safe this.currentSubmission.answer.explanation}}
-          {{else if this.currentSubmission.longAnswer}}
-            {{make-html-safe this.currentSubmission.longAnswer}}
+          {{else if @currentSubmission.answer.explanation}}
+            {{make-html-safe @currentSubmission.answer.explanation}}
+          {{else if @currentSubmission.longAnswer}}
+            {{make-html-safe @currentSubmission.longAnswer}}
           {{/if}}
         </div>
       </div>
 
     {{/if}}
 
-    {{#if this.currentSubmission.uploadedFile.savedFileName}}
+    {{#if @currentSubmission.uploadedFile.savedFileName}}
       <div id='submission_images'>
         <a
           target='_blank'
-          href={{this.currentSubmission.imageUrl}}
+          href={{@currentSubmission.imageUrl}}
           rel='noopener noreferrer'
         >
           <img
-            src='{{this.currentSubmission.imageUrl}}'
+            src='{{@currentSubmission.imageUrl}}'
             alt='Login to the PoWs to see image'
           />
         </a>

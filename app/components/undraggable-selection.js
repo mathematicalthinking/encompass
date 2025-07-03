@@ -1,86 +1,86 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { alias, equal, not } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
-import moment from 'moment';
-import CurrentUserMixin from '../mixins/current_user_mixin';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend(CurrentUserMixin, {
-  utils: service('utility-methods'),
+export default class UndraggableSelectionComponent extends Component {
+  @service('utility-methods') utils;
 
-  classNames: ['undraggable-selection'],
-  isExpanded: false,
+  @tracked isExpanded = false;
 
-  workspaceType: alias('selection.workspace.workspaceType'),
-
-  isParentWorkspace: equal('workspaceType', 'parent'),
-
-  isImage: computed('selection.imageTagLink', function () {
-    return this.get('selection.imageTagLink.length') > 0;
-  }),
-
-  isText: not('isImage'),
-
-  isVmtClip: computed('selection.vmtInfo.{startTime,endTime}', function () {
+  get modelIdsReady() {
     return (
-      this.get('selection.vmtInfo.startTime') >= 0 &&
-      this.get('selection.vmtInfo.endTime') >= 0
+      this.args.selection &&
+      this.args.selection.workspace &&
+      this.args.selection.submission
     );
-  }),
+  }
 
-  linkToClassName: computed('isImage', function () {
-    if (this.isImage) {
-      return 'selection-image';
+  get selectionModelIds() {
+    return [
+      this.args.selection.workspace?.id,
+      this.args.selection.submission?.id,
+      this.args.selection?.id,
+    ];
+  }
+
+  get workspaceType() {
+    return this.args.selection.workspace.get('workspaceType');
+  }
+
+  get isParentWorkspace() {
+    return this.workspaceType === 'parent';
+  }
+
+  get isImage() {
+    const imageTagLink = this.args.selection.imageTagLink;
+    return imageTagLink ? imageTagLink.length > 0 : false;
+  }
+
+  get isText() {
+    return !this.isImage;
+  }
+
+  get isVmtClip() {
+    const vmtInfo = this.args.selection.vmtInfo || {};
+    return vmtInfo.startTime >= 0 && vmtInfo.endTime >= 0;
+  }
+
+  get linkToClassName() {
+    return this.isImage ? 'selection-image' : 'selection_text';
+  }
+
+  get isSelected() {
+    return this.args.selection?.id === this.args.currentSelection?.id;
+  }
+
+  get titleText() {
+    if (!this.isVmtClip) {
+      const createDate = new Date(this.args.selection.createDate);
+      const formatter = new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
+      const displayDate = formatter.format(createDate);
+      return `Created ${displayDate}`;
     }
-    return 'selection_text';
-  }),
+    const { startTime, endTime } = this.args.selection.vmtInfo;
+    return `${this.utils.getTimeStringFromMs(
+      startTime
+    )} - ${this.utils.getTimeStringFromMs(endTime)}`;
+  }
 
-  isSelected: computed('currentSelection.id', 'selection.id', function () {
-    return this.get('selection.id') === this.get('currentSelection.id');
-  }),
-  titleText: computed(
-    'isParentWorkspace',
-    'isVmtClip',
-    'selection.createDate',
-    'selection.originalSelection.createDate',
-    'selection.vmtInfo.{endTime,startTime}',
-    function () {
-      if (!this.isVmtClip) {
-        let createDate;
-        if (this.isParentWorkspace) {
-          createDate = this.get('selection.originalSelection.createDate');
-        } else {
-          createDate = this.get('selection.createDate');
-        }
-        let displayDate;
-        displayDate = moment(createDate).format('l h:mm');
-        return `Created ${displayDate}`;
-      }
-      let startTime = this.get('selection.vmtInfo.startTime');
-      let endTime = this.get('selection.vmtInfo.endTime');
-
-      return `${this.utils.getTimeStringFromMs(startTime)} -
-              ${this.utils.getTimeStringFromMs(endTime)}`;
-    }
-  ),
-
-  overlayIcon: computed('isImage', 'isVmtClip', 'isVmtClip}', function () {
+  get overlayIcon() {
     if (!this.isImage) {
       return '';
     }
+    return this.isVmtClip ? 'fas fa-play' : 'fas fa-expand';
+  }
 
-    if (this.isVmtClip) {
-      return 'fas fa-play';
+  @action
+  expandImage() {
+    if (!this.isVmtClip) {
+      this.isExpanded = !this.isExpanded;
     }
-    return 'fas fa-expand';
-  }),
-
-  actions: {
-    expandImage() {
-      if (this.isVmtClip) {
-        return;
-      }
-      this.set('isExpanded', !this.isExpanded);
-    },
-  },
-});
+  }
+}

@@ -1,13 +1,12 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import moment from 'moment';
+import { service } from '@ember/service';
 
 export default class DraggableSelectionComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
-  @service('current-user') currentUser;
+  @service currentUser;
 
   @tracked isExpanded = false;
   @tracked isDragging = false;
@@ -62,8 +61,12 @@ export default class DraggableSelectionComponent extends Component {
 
   get titleText() {
     if (!this.isVmtClip) {
-      const createDate = this.args.selection.createDate;
-      const displayDate = moment(createDate).format('l h:mm');
+      const createDate = new Date(this.args.selection.createDate);
+      const formatter = new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
+      const displayDate = formatter.format(createDate);
       return `Created ${displayDate}`;
     }
     const { startTime, endTime } = this.args.selection.vmtInfo;

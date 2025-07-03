@@ -1,17 +1,14 @@
-<div class='unundraggable-selection'>
+<div class='draggable-selection'>
   <div
     class='selectionLink
       {{if this.isImage "image-tag"}}
-      {{if this.isSelected "is-selected"}}
-      {{if this.isText "selection_text"}}'
+      {{if this.isSelected "is-selected"}}'
     title='{{this.titleText}} {{if this.isParentWorkspace " by "}} {{if
       this.isParentWorkspace
-      @selection.originalSelection.createdBy.username
-    }} {{if this.isParentWorkspace " in "}} {{if
-      this.isParentWorkspace
-      @selection.originalSelection.workspace.name
+      @selection.createdBy.username
     }}'
   >
+
     {{#if this.modelIdsReady}}
       <LinkTo
         @route='workspace.submissions.submission.selections.selection'
@@ -25,7 +22,7 @@
             alt={{@selection.text}}
           />
           <div class='overlay'>
-            <button type='button' {{action 'expandImage'}}><i
+            <button type='button' {{on 'click' this.expandImage}}><i
                 class={{this.overlayIcon}}
               ></i></button>
           </div>
@@ -34,11 +31,24 @@
         {{/if}}
       </LinkTo>
     {{/if}}
+    {{#unless this.isImage}}
+      <span {{on 'click' (fn this.deleteSelection @selection)}}><i
+          class='fas fa-minus-circle'
+        ></i></span>
+    {{/unless}}
   </div>
-
+  {{#if this.isImage}}
+    <div class='selection-actions'>
+      {{#if this.canDelete}}
+        <span {{on 'click' (fn this.deleteSelection @selection)}}><i
+            class='fas fa-minus-circle'
+          ></i></span>
+      {{/if}}
+    </div>
+  {{/if}}
   {{#if this.isExpanded}}
     <div class='full-image'>
-      <i class='fas fa-times' {{action 'expandImage'}}></i>
+      <i class='fas fa-times' {{on 'click' this.expandImage}}></i>
       <img src={{@selection.imageTagLink}} alt={{@selection.text}} />
     </div>
   {{/if}}
