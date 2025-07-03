@@ -113,12 +113,6 @@ export default class WorkspaceSubmissionCompComponent extends Component {
     return !this.areNoSelections && !this.areSelectionsHidden;
   }
 
-  setOwnHeight() {
-    let revisionsNavHeight = $('#submission-nav').height();
-    this.element.style.height = '100%';
-    this.element.style.height = `calc(100% - ${revisionsNavHeight}px)`;
-  }
-
   @action
   setupResizeHandler() {
     let doneResizing;
@@ -260,6 +254,11 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   @action
+  toNewResponse(subId, wsId) {
+    this.args.toNewResponse?.(subId, wsId);
+  }
+
+  @action
   deleteSelection(selection) {
     this.isDirty = true;
     this.args.deleteSelection(selection);
@@ -332,9 +331,6 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
   willDestroy() {
     super.willDestroy(...arguments);
-    if (this.vmtListener) {
-      window.removeEventListener('message', this.vmtListener);
-    }
 
     let workspace = this.args.currentWorkspace;
     let doOnlyUpdateLastViewed = true;

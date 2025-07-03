@@ -1,4 +1,11 @@
-<div id='workspace-submission-comp'>
+<div
+  id='workspace-submission-comp'
+  class='{{if this.areNoSelections "no-selections"}}
+    {{if this.isSelectionsBoxExpanded "expanded-selections"}}
+    {{if this.areSelectionsHidden "selections-hidden"}}
+    {{if this.isMakingVmtSelection "vmt-selection"}}
+    {{if this.makingSelection "is-selecting"}}'
+>
   <aside class='submission-row selection-controls'>
     <div class='submission-row-item selection-toggles'>
       <div class='submission-row-item toggle-show'>
