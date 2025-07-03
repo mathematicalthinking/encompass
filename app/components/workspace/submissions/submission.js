@@ -334,6 +334,9 @@ export default class WorkspaceSubmissionComponent extends Component {
 
   willDestroy() {
     super.willDestroy(...arguments);
+
+    $(window).off('resize.selectableArea');
+
     if (this.vmtListener) {
       window.removeEventListener('message', this.vmtListener);
     }

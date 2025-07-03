@@ -5,7 +5,7 @@ import { service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
 
-export default class WorkspaceSubmissionCompComponent extends Component {
+export default class WorkspaceSubmissionComponent extends Component {
   @service currentUser;
   @service('utility-methods') utils;
   @service('workspace-permissions') permissions;
@@ -17,6 +17,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   @tracked wasShowingBeforeResizing = false;
   @tracked isSelectionsBoxExpanded = false;
   @tracked isMessageListenerAttached = false;
+  vmtReplayerInfo = null;
 
   get shouldCheck() {
     return this.makingSelection;
@@ -48,7 +49,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get submissionResponses() {
-    return this.responses.filter((response) => {
+    return this.args.responses.filter((response) => {
       let subId = this.utils.getBelongsToId(response, 'submission');
       return subId === this.args.currentSubmission.id;
     });
@@ -332,6 +333,8 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   willDestroy() {
     super.willDestroy(...arguments);
 
+    $(window).off('resize.selectableArea');
+
     let workspace = this.args.currentWorkspace;
     let doOnlyUpdateLastViewed = true;
 
@@ -354,12 +357,12 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get currentReplayerTime() {
-    let ms = this.vmtReplayerInfo.timeElapsed;
+    let ms = this.vmtReplayerInfo?.timeElapsed ?? 0;
     return this.utils.getTimeStringFromMs(ms);
   }
 
   get maxReplayerTime() {
-    let ms = this.vmtReplayerInfo.totalDuration;
+    let ms = this.vmtReplayerInfo?.totalDuration ?? 0;
     return ms > 0 ? ms : 0;
   }
 
@@ -427,18 +430,13 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get isOnVmtSelection() {
+    if (!this.isVmt || !this.args.currentSelection?.vmtInfo) {
+      return false;
+    }
     return (
       this.args.currentSelection.vmtInfo.startTime >= 0 &&
       this.args.currentSelection.vmtInfo.endTime >= 0
     );
-  }
-
-  get currentClipStartTime() {
-    return this.args.currentSelection.vmtInfo.startTime;
-  }
-
-  get currentClipEndTime() {
-    return this.args.currentSelection.vmtInfo.endTime;
   }
 
   get isMakingVMTSelection() {
