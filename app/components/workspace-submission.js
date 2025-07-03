@@ -34,7 +34,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get trashedSelections() {
-    return this.workspaceSelections.filterBy('isTrashed');
+    return this.workspaceSelections.filter((selection) => selection.isTrashed);
   }
 
   get canSelect() {
@@ -166,9 +166,9 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   @action
   onSelectionSelect() {
     if (this.isVmt) {
-      let vmtStartTime = this.currentSelection.vmtInfo?.startTime;
+      let vmtStartTime = this.args.currentSelection.vmtInfo?.startTime;
       if (vmtStartTime >= 0) {
-        let endTime = this.currentSelection.vmtInfo.endTime;
+        let endTime = this.args.currentSelection.vmtInfo.endTime;
         this.setVmtReplayerTime(vmtStartTime, true, endTime);
         this.makingSelection = false;
       }
@@ -417,7 +417,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
     if (messageType === 'VMT_ON_REPLAYER_LOAD') {
       // set replayer to current selection start time if applicable
-      let vmtStartTime = this.currentSelection.vmtInfo.startTime;
+      let vmtStartTime = this.args.currentSelection.vmtInfo.startTime;
       if (vmtStartTime >= 0 && canSet) {
         this.vmtReplayerInfo = vmtReplayerInfo;
         // set replayer to start point but do not auto play
@@ -432,16 +432,20 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
   get isOnVmtSelection() {
     return (
-      this.currentSelection.vmtInfo.startTime >= 0 &&
-      this.currentSelection.vmtInfo.endTime >= 0
+      this.args.currentSelection.vmtInfo.startTime >= 0 &&
+      this.args.currentSelection.vmtInfo.endTime >= 0
     );
   }
 
   get currentClipStartTime() {
-    return this.currentSelection.vmtInfo.startTime;
+    return this.args.currentSelection.vmtInfo.startTime;
   }
 
   get currentClipEndTime() {
-    return this.currentSelection.vmtInfo.endTime;
+    return this.args.currentSelection.vmtInfo.endTime;
+  }
+
+  get isMakingVMTSelection() {
+    return this.isVmt && this.makingSelection;
   }
 }
