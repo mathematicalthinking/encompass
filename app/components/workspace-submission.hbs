@@ -18,10 +18,10 @@
       {{#if this.canSelect}}
         <div class='submission-row-item toggle-selecting'>
           <label class='makingSelection'>
-            <Input
+            <input
               name='is-selecting'
-              @type='checkbox'
-              @checked={{this.shouldCheck}}
+              type='checkbox'
+              checked={{this.shouldCheck}}
               {{on 'click' this.toggleSelecting}}
             />
             Selecting
