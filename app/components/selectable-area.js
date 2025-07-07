@@ -12,6 +12,7 @@ export default class SelectableAreaComponent extends Component {
   @tracked currSubId = this.args.model?.id || null;
   @tracked selecting = this.args.makingSelection || false;
   @tracked showing = this.args.showingSelections || false;
+  @tracked selections = [];
   currentSelections = null;
   imageTagging = null;
   selectionHighlighting = null;
@@ -26,12 +27,14 @@ export default class SelectableAreaComponent extends Component {
 
   @action
   initializeSelectionTools() {
+    console.log('Initializing selection tools...');
     if (this._toolsInitialized) return;
     this._toolsInitialized = true;
 
     const containerId = 'submission_container';
     const scrollableContainer = 'al_submission';
     const container = document.getElementById(containerId);
+    console.log('Container:', container);
 
     if (!container) return;
 
@@ -44,7 +47,10 @@ export default class SelectableAreaComponent extends Component {
       automaticEvent: !this.isTouchScreen,
     });
 
+    console.log('SelectionHighlighting:', this.selectionHighlighting);
+
     this.selectionHighlighting.init((id) => {
+      console.log('Selection created with ID:', id);
       const selection = this.selectionHighlighting.getSelection(id);
       selection.selectionType = 'selection';
       this.args.addSelection(selection);
@@ -66,6 +72,8 @@ export default class SelectableAreaComponent extends Component {
 
     this.imageTagging.loadTags(this.imgTags);
     this.imageTagging.enable();
+
+    console.log('about to load selections:', this.selections);
 
     this.selectionHighlighting.loadSelections(this.selections);
 

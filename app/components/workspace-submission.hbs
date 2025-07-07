@@ -58,7 +58,7 @@
           class='action_button new-response'
           {{on
             'click'
-            (fn @toNewResponse @currentSubmission.id @currentWorkspace.id)
+            (fn this.toNewResponse @currentSubmission.id @currentWorkspace.id)
           }}
         >Respond</button>
         {{#if this.submissionResponses.length}}
