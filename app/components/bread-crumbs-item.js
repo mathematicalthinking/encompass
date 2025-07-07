@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import moment from 'moment';
+import formatDate from 'encompass/helpers/format-date';
 import isEqual from 'lodash-es/isEqual';
 import isString from 'lodash-es/isString';
 import isObject from 'lodash-es/isObject';
@@ -18,8 +18,9 @@ export default class BreadCumbsItemComponent extends Component {
     if (isString(this.args.itemTitleText)) {
       return this.args.itemTitleText;
     }
-    if (this.args.item && this.args.item.createDate) {
-      return moment(this.args.item.createDate).format('MMM Do YYYY h:mm A');
+    if (this.args.item?.createDate) {
+      const date = new Date(this.args.item.createDate);
+      return formatDate(date, 'MMM Do YYYY h:mm A');
     }
     if (isString(this.args.titleTextPath) && isObject(this.args.item)) {
       return this.args.item[this.args.titleTextPath];

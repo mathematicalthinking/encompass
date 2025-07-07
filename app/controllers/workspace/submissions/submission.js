@@ -1,27 +1,44 @@
-import Controller, { inject as controller } from '@ember/controller';
+import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+import { getOwner } from '@ember/application';
 
 export default class WorkspaceSubmissionController extends Controller {
-  @controller workspace;
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
+  @service currentUser;
   @service store;
   @tracked queryParams = ['vmtRoomId'];
   @service('assignment-permissions') permissions;
   // Tracked properties
-  @tracked currentWorkspace = this.workspace.model;
-  @tracked currentSelection = this.workspace.currentSelection;
-  @tracked workspaceOwner = this.currentWorkspace.owner;
   @tracked guider = this.guider;
 
   @tracked showOptions = true;
+  @tracked _currentSelection = null;
   @tracked areFoldersHidden = false;
   @tracked areCommentsHidden = false;
   @tracked itemsToDisplay = 'all';
   @tracked isParentWorkspace = this.currentWorkspace.workspaceType === 'parent';
 
+  get currentWorkspace() {
+    return this.workspaceController.model;
+  }
+
+  get currentSelection() {
+    return this._currentSelection || this.workspaceController.currentSelection;
+  }
+
+  set currentSelection(selection) {
+    this._currentSelection = selection;
+  }
+
+  get workspaceOwner() {
+    return this.currentWorkspace.owner;
+  }
+  get workspaceController() {
+    return getOwner(this).lookup('controller:workspace');
+  }
   get canSelect() {
     let cws = this.currentWorkspace;
     return this.permissions.canEdit(cws, 'selections', 2);
@@ -69,6 +86,7 @@ export default class WorkspaceSubmissionController extends Controller {
         return false;
       });
     }
+    return []; // Default return value to ensure the getter always returns a value
   }
 
   get nonTrashedTaggings() {
@@ -107,7 +125,7 @@ export default class WorkspaceSubmissionController extends Controller {
         return false;
       });
     }
-    return '';
+    return [];
   }
 
   get nonTrashedResponses() {
@@ -452,7 +470,7 @@ export default class WorkspaceSubmissionController extends Controller {
         workspace.get('selections').then(function (s) {
           s.addObject(record);
         });
-        controller.set('currentSelection', record);
+        controller.currentSelection = record;
 
         controller.alert.showToast(
           'success',
@@ -461,13 +479,6 @@ export default class WorkspaceSubmissionController extends Controller {
           3000,
           false,
           null
-        );
-
-        controller.transitionToRoute(
-          'workspace.submissions.submission.selections.selection',
-          workspace.id,
-          submission.id,
-          newSelection.id
         );
 
         window.guiders.hideAll();

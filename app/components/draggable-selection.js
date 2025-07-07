@@ -1,16 +1,31 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import moment from 'moment';
+import { service } from '@ember/service';
 
 export default class DraggableSelectionComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
-  @service('current-user') currentUser;
+  @service currentUser;
 
   @tracked isExpanded = false;
   @tracked isDragging = false;
+
+  get modelIdsReady() {
+    return (
+      this.args.selection &&
+      this.args.selection.workspace &&
+      this.args.selection.submission
+    );
+  }
+
+  get selectionModelIds() {
+    return [
+      this.args.selection.workspace?.id,
+      this.args.selection.submission?.id,
+      this.args.selection?.id,
+    ];
+  }
 
   get workspaceType() {
     return this.args.selection.workspace.get('workspaceType');
@@ -21,7 +36,7 @@ export default class DraggableSelectionComponent extends Component {
   }
 
   get canDelete() {
-    const currentUserId = this.currentUser.user.id;
+    const currentUserId = this.currentUser.id;
     const creatorId = this.args.selection.createdBy.id;
     return currentUserId === creatorId || this.args.canDeleteSelections;
   }
@@ -46,8 +61,14 @@ export default class DraggableSelectionComponent extends Component {
 
   get titleText() {
     if (!this.isVmtClip) {
-      const createDate = this.args.selection.createDate;
-      const displayDate = moment(createDate).format('l h:mm');
+      const createDate = new Date(
+        this.args.selection?.createDate ?? Date.now()
+      );
+      const formatter = new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
+      const displayDate = formatter.format(createDate);
       return `Created ${displayDate}`;
     }
     const { startTime, endTime } = this.args.selection.vmtInfo;

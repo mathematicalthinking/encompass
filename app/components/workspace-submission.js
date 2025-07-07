@@ -5,7 +5,7 @@ import { service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import $ from 'jquery';
 
-export default class WorkspaceSubmissionCompComponent extends Component {
+export default class WorkspaceSubmissionComponent extends Component {
   @service currentUser;
   @service('utility-methods') utils;
   @service('workspace-permissions') permissions;
@@ -17,6 +17,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   @tracked wasShowingBeforeResizing = false;
   @tracked isSelectionsBoxExpanded = false;
   @tracked isMessageListenerAttached = false;
+  vmtReplayerInfo = null;
 
   get shouldCheck() {
     return this.makingSelection;
@@ -34,7 +35,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get trashedSelections() {
-    return this.workspaceSelections.filterBy('isTrashed');
+    return this.workspaceSelections.filter((selection) => selection.isTrashed);
   }
 
   get canSelect() {
@@ -48,7 +49,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get submissionResponses() {
-    return this.responses.filter((response) => {
+    return this.args.responses.filter((response) => {
       let subId = this.utils.getBelongsToId(response, 'submission');
       return subId === this.args.currentSubmission.id;
     });
@@ -113,12 +114,6 @@ export default class WorkspaceSubmissionCompComponent extends Component {
     return !this.areNoSelections && !this.areSelectionsHidden;
   }
 
-  setOwnHeight() {
-    let revisionsNavHeight = $('#submission-nav').height();
-    this.element.style.height = '100%';
-    this.element.style.height = `calc(100% - ${revisionsNavHeight}px)`;
-  }
-
   @action
   setupResizeHandler() {
     let doneResizing;
@@ -166,9 +161,9 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   @action
   onSelectionSelect() {
     if (this.isVmt) {
-      let vmtStartTime = this.currentSelection.vmtInfo?.startTime;
+      let vmtStartTime = this.args.currentSelection.vmtInfo?.startTime;
       if (vmtStartTime >= 0) {
-        let endTime = this.currentSelection.vmtInfo.endTime;
+        let endTime = this.args.currentSelection.vmtInfo.endTime;
         this.setVmtReplayerTime(vmtStartTime, true, endTime);
         this.makingSelection = false;
       }
@@ -260,6 +255,11 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   @action
+  toNewResponse(subId, wsId) {
+    this.args.toNewResponse?.(subId, wsId);
+  }
+
+  @action
   deleteSelection(selection) {
     this.isDirty = true;
     this.args.deleteSelection(selection);
@@ -332,9 +332,8 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
   willDestroy() {
     super.willDestroy(...arguments);
-    if (this.vmtListener) {
-      window.removeEventListener('message', this.vmtListener);
-    }
+
+    $(window).off('resize.selectableArea');
 
     let workspace = this.args.currentWorkspace;
     let doOnlyUpdateLastViewed = true;
@@ -358,12 +357,12 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get currentReplayerTime() {
-    let ms = this.vmtReplayerInfo.timeElapsed;
+    let ms = this.vmtReplayerInfo?.timeElapsed ?? 0;
     return this.utils.getTimeStringFromMs(ms);
   }
 
   get maxReplayerTime() {
-    let ms = this.vmtReplayerInfo.totalDuration;
+    let ms = this.vmtReplayerInfo?.totalDuration ?? 0;
     return ms > 0 ? ms : 0;
   }
 
@@ -417,7 +416,7 @@ export default class WorkspaceSubmissionCompComponent extends Component {
 
     if (messageType === 'VMT_ON_REPLAYER_LOAD') {
       // set replayer to current selection start time if applicable
-      let vmtStartTime = this.currentSelection.vmtInfo.startTime;
+      let vmtStartTime = this.args.currentSelection.vmtInfo.startTime;
       if (vmtStartTime >= 0 && canSet) {
         this.vmtReplayerInfo = vmtReplayerInfo;
         // set replayer to start point but do not auto play
@@ -431,17 +430,16 @@ export default class WorkspaceSubmissionCompComponent extends Component {
   }
 
   get isOnVmtSelection() {
+    if (!this.isVmt || !this.args.currentSelection?.vmtInfo) {
+      return false;
+    }
     return (
-      this.currentSelection.vmtInfo.startTime >= 0 &&
-      this.currentSelection.vmtInfo.endTime >= 0
+      this.args.currentSelection.vmtInfo.startTime >= 0 &&
+      this.args.currentSelection.vmtInfo.endTime >= 0
     );
   }
 
-  get currentClipStartTime() {
-    return this.currentSelection.vmtInfo.startTime;
-  }
-
-  get currentClipEndTime() {
-    return this.currentSelection.vmtInfo.endTime;
+  get isMakingVMTSelection() {
+    return this.isVmt && this.makingSelection;
   }
 }

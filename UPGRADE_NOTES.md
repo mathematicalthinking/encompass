@@ -211,6 +211,12 @@ Overview: (from ChatGPT)
 
 There are several README.md files scattered through the /test folder.
 
+# Incomplete functionality
+
+- **error handling**: Although there is an error-handling service (and previously a mixin and a superclass), error handling is generally incompletely and inconsistently implemented throughout the codebase. Sometimes UI::Errorbox is used; sometimes just plain text. Sometimes errors are arrays of information text; sometimes flags. Sometimes they are distinctly named; sometimes different types of errors and lumped together. Often, a couple of errors are handled by the js file but never displayed in template. Rarely the reverse happens because I've been eliminating or implementing those cases. Overall, I think a more consistent approach is needed, perhaps something even more centralized and less dependent on the same code repeated across many components.
+- **imports and vmt**: At some point, all the components related to imports and vmt were switched off (i.e., the routes that would lead the user to those components were emptied out; see router.js). I did not upgrade these components because they weren't currently being used, but I did leave them in place for a future developer.
+- **workspace-new-XX**: These components seem like they were the beginning of a refactoring of the creation of new workspaces. However, they were never completed. I've left them in the codebase for futue developers.
+
 ## Other upgrades
 
 - **Routes** Many of the routes are in the classic style, so should be upgraded to JS classes, although they all seem to work fine in Ember 4.5.

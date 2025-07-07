@@ -1,7 +1,10 @@
-import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
-import { alias, equal, gte, or, sort } from '@ember/object/computed';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
+import { isEqual } from '@ember/utils';
+import moment from 'moment';
+
 /**
  * Passed in by template:
  * - submissions
@@ -10,349 +13,238 @@ import { inject as service } from '@ember/service';
  * - currentUser - only used to pass on to submissions
  * - currentWorkspace - only used to pass on to submissions
  */
-import { isEqual } from '@ember/utils';
-import $ from 'jquery';
-import moment from 'moment';
+export default class SubmissionGroupComponent extends Component {
+  @service('utility-methods') utils;
+  @service currentUrl;
 
-export default Component.extend({
-  elementId: 'submission-group',
-  utils: service('utility-methods'),
-  currentUrl: service(),
-  classNameBindings: [
-    'makingSelection:al_makeselect',
-    'isHidden:hidden',
-    'isFirstChild:is-first-child',
-    'isLastChild:is-last-child',
-    'isOnlyChild',
-    'isBipaneled:bi-paneled',
-    'isTripaneled:tri-paneled',
-    'isNavMultiLine:multi-line-nav',
-  ],
-  classNames: ['workspace-flex-item', 'submission'],
-  isHidden: false,
+  @tracked isHidden = false;
+  @tracked showStudents = false;
+  @tracked switching = false;
+  @tracked isNavMultiLine = false;
+  @tracked ownHeight;
 
-  currentStudent: alias('submission.student'),
-  currentStudentDisplayName: alias('submission.studentDisplayName'),
-  firstThread: alias('submissionThreadHeads.firstObject'),
-  lastThread: alias('submissionThreadHeads.lastObject'),
-  manyRevisions: gte('currentRevisions.length', 10),
-  showStudents: false,
-  switching: false,
+  constructor() {
+    super(...arguments);
+    this.onNavResize = this.handleNavHeight.bind(this);
+    this.currentUrl.setCurrentUrl(window.location.href);
+  }
 
-  init() {
-    this.set('onNavResize', this.handleNavHeight.bind(this));
-    this._super(...arguments);
-    const currentURL = window.location.href;
+  get currentStudent() {
+    return this.args.submission?.student;
+  }
 
-    // Set the current URL in the service, gets passed to current-url.js. State is stored for metrics component used to export data.
-    this.currentUrl.setCurrentUrl(currentURL);
-  },
+  get currentStudentDisplayName() {
+    return this.args.submission?.studentDisplayName;
+  }
 
-  didInsertElement() {
-    this._super(...arguments);
-    let revisionsNavHeight = $('#submission-nav').height();
-    this.set('isNavMultiLine', revisionsNavHeight > 52);
+  get studentWork() {
+    const submissions = this.args.submissions ?? [];
+    const threads = {};
 
-    $(window).on('resize', this.onNavResize);
-  },
-
-  didUpdateAttrs() {
-    this._super();
-    let studentSelectize = $('#student-select')[0];
-    if (studentSelectize) {
-      let currentValue = studentSelectize.selectize.getValue();
-
-      let currentSubmissionId = this.get('initialStudentItem.firstObject');
-      if (this.get('initialStudentItem.firstObject') !== currentValue) {
-        studentSelectize.selectize.setValue([currentSubmissionId], true);
-      }
-    }
-  },
-
-  willDestroyElement() {
-    this._super(...arguments);
-    $(window).off('resize', this.onNavResize);
-  },
-
-  currentRevision: computed(
-    'currentRevisions.[]',
-    'currentRevisionIndex',
-    function () {
-      if (!this.currentRevisions || !this.currentRevisionIndex) {
-        return null;
-      }
-      return this.currentRevisions.objectAt(this.currentRevisionIndex - 1);
-    }
-  ),
-
-  //TODO Use the new thread.threadId property on submissions
-  submissionThreads: computed('submissions.[]', function () {
-    let threads = {};
-    this.submissions
+    submissions
+      .slice()
       .sortBy('student')
-      .getEach('student')
+      .mapBy('student')
       .uniq()
       .forEach((student) => {
         if (!threads[student]) {
-          const answers = this.studentWork(student);
-          threads[student] = answers;
+          threads[student] = submissions
+            .filterBy('student', student)
+            .sortBy('createDate');
         }
       });
+
     return threads;
-  }),
+  }
 
-  studentWork: function (student) {
-    return this.submissions.filterBy('student', student).sortBy('createDate');
-  },
+  get submissionThreadHeads() {
+    return Object.values(this.studentWork).map((thread) => thread.at(-1));
+  }
 
-  submissionThreadHeads: computed('submissionThreads.[]', function () {
-    var pointers = [];
-    var threads = this.submissionThreads;
+  get firstThread() {
+    return this.submissionThreadHeads[0];
+  }
 
-    Object.keys(threads).forEach(function (student) {
-      pointers.pushObject(threads[student].get('lastObject'));
-    });
+  get lastThread() {
+    return this.submissionThreadHeads.at(-1);
+  }
 
-    return pointers;
-  }),
+  get currentThread() {
+    return this.studentWork[this.currentStudent];
+  }
 
-  currentRevisions: computed('currentThread', function () {
-    var dateTime = 'l h:mm';
-    var thread = this.currentThread;
-    var revisions = [];
-
-    if (thread) {
-      revisions = thread.map(function (submission, index, thread) {
-        return {
-          index: index + 1, // Because arrays are zero-indexed
-          label: moment(submission.get('createDate')).format(dateTime),
-          revision: submission,
-          thread: thread.get('lastObject'),
-        };
-      });
-    }
-    return revisions;
-  }),
-
-  currentThread: computed(
-    'currentStudent',
-    'submission',
-    'submissionThreads',
-    function () {
-      return this.submissionThreads[this.currentStudent];
-    }
-  ),
-
-  prevThread: computed(
-    'currentThread.lastObject',
-    'firstThread',
-    'lastThread',
-    'submission',
-    'submissionThreadHeads',
-    function () {
-      const currentThread = this.currentThread;
-      const ix = currentThread.indexOf(this.submission);
-      if (currentThread.length > 1) {
-        if (
-          !isEqual(this.submission, currentThread[currentThread.length - 1])
-        ) {
-          return currentThread[ix + 1];
-        }
-      }
-
-      var thread = this.get('currentThread.lastObject');
-      if (thread === this.firstThread) {
-        return this.lastThread;
-      }
-      var prevIndex = this.submissionThreadHeads.indexOf(thread) - 1;
-      var prev = this.submissionThreadHeads.objectAt(prevIndex);
-      return prev;
-    }
-  ),
-
-  nextThread: computed(
-    'currentThread.lastObject',
-    'firstThread',
-    'lastThread',
-    'submission',
-    'submissionThreadHeads',
-    function () {
-      const currentThread = this.currentThread;
-      const ix = currentThread.indexOf(this.submission);
-      if (currentThread.length > 1) {
-        if (!isEqual(this.submission, currentThread[0])) {
-          return currentThread[ix - 1];
-        }
-      }
-      var thread = this.get('currentThread.lastObject');
-
-      if (thread === this.lastThread) {
-        return this.firstThread;
-      }
-
-      var nextIndex = this.submissionThreadHeads.indexOf(thread) + 1;
-      var next = this.submissionThreadHeads.objectAt(nextIndex);
-
-      return next;
-    }
-  ),
-
-  currentRevisionIndex: computed(
-    'currentRevisions',
-    'submission.id',
-    function () {
-      const revisions = this.currentRevisions;
-      if (!revisions || revisions.get('length') === 0) {
-        return 0;
-      }
-      const currentSubmissionId = this.get('submission.id');
-      if (revisions.length === 1) {
-        return 1;
-      }
-
-      return revisions
-        .filter((rev) => {
-          return isEqual(rev.revision.id, currentSubmissionId);
-        })
-        .objectAt(0).index;
-    }
-  ),
-
-  sortCriteria: ['student', 'createDate:desc'],
-  sortedSubmissions: sort('submissions', 'sortCriteria'),
-
-  currentSubmissionIndex: computed(
-    'sortedSubmissions',
-    'submission',
-    'submissionThreads.[]',
-    function () {
-      return this.sortedSubmissions.indexOf(this.submission) + 1;
-    }
-  ),
-
-  modelChanged: observer('submission', function () {
-    this.set('switching', true);
-  }),
-
-  mentoredRevisions: computed(
-    'responses.[]',
-    'currentRevisions.@each.submission',
-    function () {
-      return this.currentRevisions.filter((revisionObj) => {
-        let sub = revisionObj.revision;
-
-        let responseIds = this.utils.getHasManyIds(sub, 'responses');
-
-        return this.responses.find((response) => {
-          return responseIds.includes(response.get('id'));
-        });
-      });
-    }
-  ),
-
-  revisionsToolTip:
-    'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
-
-  isFirstChild: computed('containerLayoutClass', function () {
-    let classname = this.containerLayoutClass;
-    return classname === 'hsc';
-  }),
-
-  isLastChild: computed('containerLayoutClass', function () {
-    let classname = this.containerLayoutClass;
-    return classname === 'fsh';
-  }),
-
-  isOnlyChild: computed('containerLayoutClass', function () {
-    let classname = this.containerLayoutClass;
-    return classname === 'hsh';
-  }),
-
-  isBipaneled: or('isFirstChild', 'isLastChild'),
-  isTripaneled: equal('containerLayoutClass', 'fsc'),
-
-  handleNavHeight() {
-    let height = $('#submission-nav').height();
-
-    let ownHeight = $().height();
-    this.set('ownHeight', ownHeight);
-
-    let isNowMultiLine = height > 52;
-    let wasMultiLine = this.isNavMultiLine;
-
-    if (isNowMultiLine !== wasMultiLine) {
-      this.set('isNavMultiLine', isNowMultiLine);
-    }
-  },
-  studentSelectOptions: computed('submissionThreadHeads', function () {
-    return this.submissionThreadHeads.map((sub) => {
+  get currentRevisions() {
+    const thread = this.currentThread ?? [];
+    return thread.map((submission, index, all) => {
       return {
-        name: sub.get('studentDisplayName'),
-        id: sub.get('id'),
+        index: index + 1,
+        label: moment(submission.createDate).format('l h:mm'),
+        revision: submission,
+        thread: all.at(-1),
       };
     });
-  }),
-  initialStudentItem: computed(
-    'submission.student',
-    'submissionThreadHeads.[]',
-    function () {
-      let currentStudent = this.get('submission.student');
-      let threadHead = this.submissionThreadHeads.findBy(
-        'student',
-        currentStudent
-      );
+  }
 
-      return [threadHead.get('id')];
+  get currentRevisionIndex() {
+    const revisions = this.currentRevisions;
+    const currentId = this.args.submission?.id;
+    const match = revisions.find((rev) => rev.revision.id === currentId);
+    return match?.index ?? 0;
+  }
+
+  get currentRevision() {
+    return this.currentRevisions[this.currentRevisionIndex - 1];
+  }
+
+  get sortedSubmissions() {
+    return (this.args.submissions ?? []).slice().sort((a, b) => {
+      if (a.student < b.student) return -1;
+      if (a.student > b.student) return 1;
+      return b.createDate - a.createDate;
+    });
+  }
+
+  get currentSubmissionIndex() {
+    return this.sortedSubmissions.indexOf(this.args.submission) + 1;
+  }
+
+  get mentoredRevisions() {
+    const responses = this.args.responses ?? [];
+    return this.currentRevisions.filter((rev) => {
+      const sub = rev.revision;
+      const responseIds = this.utils.getHasManyIds(sub, 'responses');
+      return responses.some((r) => responseIds.includes(r.id));
+    });
+  }
+
+  get studentSelectOptions() {
+    return this.submissionThreadHeads.map((sub) => ({
+      name: sub.studentDisplayName,
+      id: sub.id,
+    }));
+  }
+
+  get initialStudentItem() {
+    const student = this.args.submission?.student;
+    const head = this.submissionThreadHeads.find((s) => s.student === student);
+    return head ? [head.id] : [];
+  }
+
+  get prevThread() {
+    const currentThread = this.currentThread;
+    const index = currentThread.indexOf(this.args.submission);
+    if (
+      currentThread.length > 1 &&
+      !isEqual(this.args.submission, currentThread.at(-1))
+    ) {
+      return currentThread[index + 1];
     }
-  ),
+    const thread = currentThread.at(-1);
+    if (thread === this.firstThread) {
+      return this.lastThread;
+    }
+    const prevIndex = this.submissionThreadHeads.indexOf(thread) - 1;
+    return this.submissionThreadHeads[prevIndex];
+  }
 
-  actions: {
-    toggleStudentList: function () {
-      this.set('showStudents', !this.showStudents);
-    },
+  get nextThread() {
+    const currentThread = this.currentThread;
+    const index = currentThread.indexOf(this.args.submission);
+    if (
+      currentThread.length > 1 &&
+      !isEqual(this.args.submission, currentThread[0])
+    ) {
+      return currentThread[index - 1];
+    }
+    const thread = currentThread.at(-1);
+    if (thread === this.lastThread) {
+      return this.firstThread;
+    }
+    const nextIndex = this.submissionThreadHeads.indexOf(thread) + 1;
+    return this.submissionThreadHeads[nextIndex];
+  }
 
-    /**
-     * This action will be sent to this component from the workspace-submission component.
-     */
-    addSelection: function (selection, isUpdateOnly) {
-      this.sendAction('addSelection', selection, isUpdateOnly);
-    },
+  get isFirstChild() {
+    return this.args.containerLayoutClass === 'hsc';
+  }
 
-    /**
-     * This action will be sent to this component from the workspace-submission component.
-     */
-    deleteSelection: function (selection) {
-      this.sendAction('deleteSelection', selection);
-    },
-    toNewResponse(subId, wsId) {
-      this.toNewResponse(subId, wsId);
-    },
-    setCurrentSubmission(currentRevision) {
-      if (!currentRevision) {
-        return;
-      }
-      let submission = currentRevision.revision;
-      if (!submission) {
-        return;
-      }
-      this.toSubmission(submission.id);
-    },
-    onStudentSelect(submissionId) {
-      let submission = this.submissionThreadHeads.findBy('id', submissionId);
-      this.toSubmission(submission.id);
-    },
+  get isLastChild() {
+    return this.args.containerLayoutClass === 'fsh';
+  }
 
-    onStudentBlur() {
-      let studentSelectize = $('#student-select')[0];
+  get isOnlyChild() {
+    return this.args.containerLayoutClass === 'hsh';
+  }
 
-      if (studentSelectize) {
-        let currentValue = studentSelectize.selectize.getValue();
+  get isBipaneled() {
+    return this.isFirstChild || this.isLastChild;
+  }
 
-        let currentSubmissionId = this.get('initialStudentItem.firstObject');
-        if (this.get('initialStudentItem.firstObject') !== currentValue) {
-          studentSelectize.selectize.setValue([currentSubmissionId], true);
-        }
-      }
-    },
-  },
-});
+  get isTripaneled() {
+    return this.args.containerLayoutClass === 'fsc';
+  }
+
+  get revisionsToolTip() {
+    return 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)';
+  }
+
+  @action
+  toggleStudentList() {
+    this.showStudents = !this.showStudents;
+  }
+
+  @action
+  addSelection(selection, isUpdateOnly) {
+    this.args.addSelection?.(selection, isUpdateOnly);
+  }
+
+  @action
+  deleteSelection(selection) {
+    this.args.deleteSelection?.(selection);
+  }
+
+  @action
+  toNewResponse(subId, wsId) {
+    this.args.toNewResponse?.(subId, wsId);
+  }
+
+  @action
+  setCurrentSubmission(currentRevision) {
+    if (currentRevision?.revision) {
+      this.args.toSubmission?.(currentRevision.revision.id);
+    }
+  }
+
+  @action
+  onStudentSelect(submissionId) {
+    const match = this.submissionThreadHeads.find((s) => s.id === submissionId);
+    if (match) {
+      this.args.toSubmission?.(match.id);
+    }
+  }
+
+  @action
+  onStudentBlur() {
+    const select = document.getElementById('student-select');
+    if (!select || !select.selectize) return;
+
+    const currentValue = select.selectize.getValue();
+    const expectedValue = this.initialStudentItem[0];
+    if (currentValue !== expectedValue) {
+      select.selectize.setValue([expectedValue], true);
+    }
+  }
+
+  @action
+  handleNavHeight() {
+    const nav = document.getElementById('submission-nav');
+    const height = nav?.offsetHeight ?? 0;
+    const isNowMultiLine = height > 52;
+
+    if (isNowMultiLine !== this.isNavMultiLine) {
+      this.isNavMultiLine = isNowMultiLine;
+    }
+
+    this.ownHeight = document.body.offsetHeight; // or another specific element
+  }
+}

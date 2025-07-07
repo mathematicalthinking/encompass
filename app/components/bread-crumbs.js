@@ -43,7 +43,7 @@ export default class BreadCrumbsComponent extends Component {
     if (!item) {
       return;
     }
-    this.args.onSelect(item);
+    this.args.onSelect?.(item);
   }
   @action showAllItems() {
     this.doTruncate = false;

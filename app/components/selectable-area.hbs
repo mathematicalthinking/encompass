@@ -1,0 +1,11 @@
+<div
+  id='selectable-area'
+  {{did-insert this.initializeSelectionTools}}
+  {{did-update this.handleSubmissionChange @model.id}}
+  {{did-update this.updateSelections @sels}}
+  {{did-update this.updateShowingSelections @showingSelections}}
+  {{did-update this.updateMakingSelections @makingSelection}}
+  {{will-destroy this.cleanup}}
+>
+  {{yield}}
+</div>

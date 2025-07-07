@@ -1,6 +1,6 @@
 <li
-  class='bread-crumbs-item {{if this.isSelected 'active-crumb'}}'
-  {{action 'onSelect' @item}}
+  class='bread-crumbs-item {{if this.isSelected "active-crumb"}}'
+  {{on 'click' (fn this.onSelect @item)}}
 >
   <abbr title='{{unbound this.titleText}}'>
     {{@displayValue}}

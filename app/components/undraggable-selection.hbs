@@ -1,0 +1,45 @@
+<div class='unundraggable-selection'>
+  <div
+    class='selectionLink
+      {{if this.isImage "image-tag"}}
+      {{if this.isSelected "is-selected"}}
+      {{if this.isText "selection_text"}}'
+    title='{{this.titleText}} {{if this.isParentWorkspace " by "}} {{if
+      this.isParentWorkspace
+      @selection.originalSelection.createdBy.username
+    }} {{if this.isParentWorkspace " in "}} {{if
+      this.isParentWorkspace
+      @selection.originalSelection.workspace.name
+    }}'
+  >
+    {{#if this.modelIdsReady}}
+      <LinkTo
+        @route='workspace.submissions.submission.selections.selection'
+        @models={{this.selectionModelIds}}
+        class={{this.linkToClassName}}
+      >
+        {{#if this.isImage}}
+          <img
+            class='img-tag-thmb'
+            src={{@selection.imageTagLink}}
+            alt={{@selection.text}}
+          />
+          <div class='overlay'>
+            <button type='button' {{action 'expandImage'}}><i
+                class={{this.overlayIcon}}
+              ></i></button>
+          </div>
+        {{else}}
+          {{@selection.text}}
+        {{/if}}
+      </LinkTo>
+    {{/if}}
+  </div>
+
+  {{#if this.isExpanded}}
+    <div class='full-image'>
+      <i class='fas fa-times' {{action 'expandImage'}}></i>
+      <img src={{@selection.imageTagLink}} alt={{@selection.text}} />
+    </div>
+  {{/if}}
+</div>
