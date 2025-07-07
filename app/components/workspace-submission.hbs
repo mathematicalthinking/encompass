@@ -51,7 +51,7 @@
         </a>
       {{/if}}
     </div>
-    {{#if this.canRespond}}
+    {{#if @canRespond}}
       <div class='submission-row-item new-response'>
         <button
           disabled={{this.areNoSelections}}
@@ -71,7 +71,7 @@
         {{/if}}
       </div>
     {{else}}
-      {{#if this.isParentWorkspace}}
+      {{#if @isParentWorkspace}}
         {{#if this.submissionResponses.length}}
           <div class='submission-row-item new-response'>
             <button
@@ -254,12 +254,12 @@
                 @selection={{selection}}
                 @canDeleteSelections={{this.canDeleteSelection}}
                 @deleteSelection={{this.deleteSelection}}
-                @currentSelection={{this.currentSelection}}
+                @currentSelection={{@currentSelection}}
               />
             {{else}}
               <UndraggableSelection
                 @selection={{selection}}
-                @currentSelection={{this.currentSelection}}
+                @currentSelection={{@currentSelection}}
               />
             {{/if}}
           {{/unless}}
