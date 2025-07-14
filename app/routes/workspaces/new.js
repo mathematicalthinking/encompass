@@ -1,21 +1,19 @@
 import { hash } from 'rsvp';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 
 export default class WorkspacesNewRoute extends AuthenticatedRoute {
   @service store;
   @service router;
+  @service currentUser;
   beforeModel() {
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
-
-    if (isStudent) {
+    if (this.currentUser.isStudent) {
       this.router.transitionTo('/');
     }
   }
   model() {
-    const currentUser = this.modelFor('application');
+    const currentUser = this.currentUser.user;
     return hash({
       // pdSets: this.get('store').findAll('PdSet'),
       currentUser,

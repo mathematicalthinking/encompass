@@ -1,15 +1,13 @@
 import { hash } from 'rsvp';
 import AuthenticatedRoute from '../_authenticated_route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class SectionsNewRoute extends AuthenticatedRoute {
   @service store;
   @service router;
+  @service currentUser;
   beforeModel() {
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
-
-    if (isStudent) {
+    if (this.currentUser.isStudent) {
       this.router.transitionTo('sections');
     }
   }
@@ -20,9 +18,9 @@ export default class SectionsNewRoute extends AuthenticatedRoute {
     return hash({
       users,
       addableTeachers,
-      organizations: await this.store.findAll('organization'),
-      user: await this.modelFor('application'),
-      sections: await this.store.findAll('section'),
+      organizations: this.store.findAll('organization'),
+      user: this.currentUser.user,
+      sections: this.store.findAll('section'),
     });
   }
 }

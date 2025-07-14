@@ -1,13 +1,11 @@
 import Route from '@ember/routing/route';
 
 export default class FolderRoute extends Route {
-  model(params, transition) {
-    return this.store.find('folder', params.folder_id);
+  model({ folder_id }) {
+    return this.store.find('folder', folder_id);
   }
 
-  afterModel(model) {
-    // Your implementation here
-  }
+  // DECIDE IF THE BELOW IS NEEDED OR NEEDS REFACTORED
 
   renderTemplate() {
     this.render({

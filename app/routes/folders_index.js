@@ -4,7 +4,7 @@
  * @since 1.0.0
  */
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class FoldersIndexRoute extends Route {
   @service router;
@@ -12,7 +12,7 @@ export default class FoldersIndexRoute extends Route {
     return this.store.findAll('folder');
   }
 
-  afterModel(folders, transition) {
+  afterModel(folders) {
     if (folders.length === 1) {
       this.router.transitionTo('workspaceFolder', folders.firstObject);
     }

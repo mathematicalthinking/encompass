@@ -266,7 +266,7 @@ Today (Feb 10, 2025) I upgraded the currentUser service so that clients don't ha
 - **Helpers** - as document elsewhere in this document, all upgraded.
 - **Initializers** - only one and I believe it's not needed for production. I upgraded it, however.
 - **Mixins** - as documented elsewhere, I'm in the process of eliminating these and double-checking others' work on removing these from components, etc.
-- **Routes** - haven't upgraded these as yet (11/22/2024). They seem to work fine but should be upgraded to modern Ember.
+- **Routes** - haven't upgraded these as yet (11/22/2024). They seem to work fine but should be upgraded to modern Ember. (7/11/2025: Began upgrading them in earnest. Many seem fine. There's some use of modelFor, get/set, controllers, and window.location, all of which should be checked. Some have complicated logic and side effects [transitions] in beforeModel or afterModel).
 - **Serializers** - upgraded
 - **Services** - Some are upgraded; some were removed. Some still need to be upgraded.
 - **Styles** - everything seems to work, although they could be upgraded to more modern best practices. I'll leave that work for someone with more expertise in CSS and related technologies.

@@ -1,7 +1,6 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { scheduleOnce } from '@ember/runloop';
-import $ from 'jquery';
 
 export default class MyRoute extends Route {
   @service workspaceController;
