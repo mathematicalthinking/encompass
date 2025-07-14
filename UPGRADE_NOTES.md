@@ -112,6 +112,10 @@ The current code includes several subsystems of components that are tightly coup
 
 # Possible future upgrades
 
+## Use of window.location.href =
+
+This is a hard reset of the location. We should instead be using the router service to do a transition to a particular route as per router.js.
+
 ## Model definitions
 
 All hasMany and belongsTo relationships should specify inverse and async options explicitly. Not doing so is deprecated.

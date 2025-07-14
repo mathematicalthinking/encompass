@@ -6,24 +6,18 @@
  */
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class ApplicationController extends Controller {
-  @service store;
+  @service router;
+
   showCategoryList = false;
   isHidden = false;
   selectedCategories = [];
   isTouchScreen = false;
-  get currentUser() {
-    return this.model;
-  }
 
   @action
   toHome() {
-    window.location.href = '/';
-  }
-  @action
-  handleFirstTouch() {
-    this.isTouchScreen = true;
+    this.router.transitionTo('index');
   }
 }

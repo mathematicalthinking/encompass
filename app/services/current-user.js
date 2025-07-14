@@ -35,4 +35,13 @@ export default class CurrentUserService extends Service {
   get id() {
     return this.user.id;
   }
+
+  async toggleActingRole() {
+    const user = this.user;
+    if (user.accountType === 'S') return;
+
+    const newRole = user.actingRole === 'teacher' ? 'student' : 'teacher';
+    user.actingRole = newRole;
+    return await user.save();
+  }
 }

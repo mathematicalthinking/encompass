@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
@@ -73,18 +73,9 @@ export default class TopBarComponent extends Component {
   // Toggle between teacher and student roles
   @action
   async toggleActingRole() {
-    if (this.currentUser.accountType === 'S') {
-      return;
-    }
-
-    const currentUser = this.currentUser;
-    const newRole =
-      currentUser.actingRole === 'teacher' ? 'student' : 'teacher';
-
     try {
       this.errorHandling.removeMessages('toggleRoleErrors');
-      currentUser.actingRole = newRole;
-      await currentUser.save();
+      await this.currentUserService.toggleActingRole();
 
       this.store.unloadAll('assignment');
       if (this.args.toHome) this.args.toHome();
@@ -98,7 +89,11 @@ export default class TopBarComponent extends Component {
         null
       );
     } catch (err) {
-      this.errorHandling.handleErrors(err, 'toggleRoleErrors', currentUser);
+      this.errorHandling.handleErrors(
+        err,
+        'toggleRoleErrors',
+        this.currentUser
+      );
       this.isToggleError = true;
     }
   }
