@@ -1,5 +1,5 @@
-/*global io:false */
-import Service, { inject as service } from '@ember/service';
+import Service, { service } from '@ember/service';
+import io from 'socket.io-client';
 import each from 'lodash-es/each';
 import isEqual from 'lodash-es/isEqual';
 
