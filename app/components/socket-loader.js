@@ -1,29 +1,19 @@
-import Component from '@ember/component';
-import { observer } from '@ember/object';
-import { alias } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
 
-export default Component.extend({
-  socketIo: service('socket-io'),
-  didReceiveAttrs() {
-    if (this.currentUser && !this.get('currentUser.isGuest')) {
-      this.socketIo.setupSocket(this.currentUser);
+export default class SocketLoaderComponent extends Component {
+  @service currentUser;
+  @service socketIo;
+
+  constructor() {
+    super(...arguments);
+    this.setup();
+  }
+
+  async setup() {
+    const user = this.currentUser.user;
+    if (user && !user.isGuest) {
+      this.socketIo.setupSocket(user);
     }
-    this._super(...arguments);
-  },
-
-  checkUserSocketId: observer('socketId', 'currentUser.socketId', function () {
-    let user = this.currentUser;
-    if (!user) {
-      return;
-    }
-    let socketId = this.socketId;
-
-    if (socketId !== user.get('socketId')) {
-      user.set('socketId', socketId);
-      user.save();
-    }
-  }),
-
-  socketId: alias('socketIo.socket.id'),
-});
+  }
+}

@@ -3,7 +3,25 @@
   {{!outlet header}}
 
   <TopBar @toHome={{action 'toHome'}} />
-  <SocketLoader />
+  {{! <SocketLoader /> }}
+  {{! We are not using sockets; this is a placeholder for future use }}
+
+  {{!start al_body}}
+  {{#if this.isLoading}}
+    <div class='loading-indicator'>
+      <LoadingIndicator />
+    </div>
+  {{/if}}
+
+  {{#if this.errorMessage}}
+    <div class='error-message'>
+      <p>{{this.errorMessage}}</p>
+    </div>
+  {{/if}}
+
+  {{#if this.isAuthenticated}}
+    <NavBar @toHome={{action 'toHome'}} />
+  {{/if}}
   <section id='al_body'>
     {{outlet}}
   </section>

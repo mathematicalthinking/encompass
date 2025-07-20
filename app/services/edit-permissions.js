@@ -1,4 +1,4 @@
-import Service, { inject as service } from '@ember/service';
+import Service, { service } from '@ember/service';
 export default class EditPermissionsService extends Service {
   @service('utility-methods') utils;
   @service currentUser;
@@ -7,15 +7,12 @@ export default class EditPermissionsService extends Service {
     if (!user || !record) {
       return;
     }
-    return (
-      this.utils.getBelongsToId(record, 'createdBy') ===
-      this.currentUser.user.id
-    );
+    return this.utils.getBelongsToId(record, 'createdBy') === user.id;
   }
 
   doesRecordBelongToOrg(
     record,
-    orgId = this.utils.getBelongsToId(this.user, 'organization')
+    orgId = this.utils.getBelongsToId(this.currentUser.user, 'organization')
   ) {
     if (!record || !orgId) {
       return;
@@ -24,6 +21,8 @@ export default class EditPermissionsService extends Service {
   }
 
   isRecordInPdDomain(record) {
-    return this.isActingPdAdmin && this.doesRecordBelongToOrg(record);
+    return (
+      this.currentUser.isActingPdAdmin && this.doesRecordBelongToOrg(record)
+    );
   }
 }
