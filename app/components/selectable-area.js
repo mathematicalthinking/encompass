@@ -70,6 +70,8 @@ export default class SelectableAreaComponent extends Component {
       this.args.addSelection(tag, isUpdateOnly);
     });
 
+    this.setupTagging();
+
     this.imageTagging.loadTags(this.imgTags);
     this.imageTagging.enable();
 

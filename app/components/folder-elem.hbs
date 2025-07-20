@@ -84,7 +84,6 @@
   <ul class='subfolders'>
     {{#each @model.sortedChildren as |folder|}}
       <FolderElem
-        @store={{@store}}
         @model={{folder}}
         @currentWorkspace={{@currentWorkspace}}
         @folderList={{@folderList}}

@@ -2,11 +2,11 @@
   <div id='folder_header'>
     <div id='menubar'>
 
-      <h1> Assignment Name: {{model.name}} </h1>
+      <h1> Assignment Name: {{@model.name}} </h1>
     </div>
     <div id='statusbar'>
-      <div>Number of submissions: {{model._submissions.length}} </div>
-      <div>Number of selections: {{evidence.length}}</div>
+      <div>Number of submissions: {{@model._submissions.length}} </div>
+      <div>Number of selections: {{this.evidence.length}}</div>
     </div>
   </div>
 
@@ -17,8 +17,8 @@
         type='radio'
         name='browser2'
         value='0'
-        onclick={{action (mut browseOption) 0}}
-        checked={{is-equal browseOption 0}}
+        {{on 'click' this.makeBySubmission}}
+        checked={{this.bySubmission}}
       />By Student</label>
 
     <label id='showEvidence'>
@@ -26,35 +26,37 @@
         type='radio'
         name='browser2'
         value='1'
-        onclick={{action (mut browseOption) 1}}
-        checked={{is-equal browseOption 1}}
+        {{on 'click' this.makeBySelection}}
+        checked={{this.bySelection}}
       />By Evidence (selection)</label>
 
     <label id='showSubFolders'>
-      <Input @type='checkbox' @checked={{includeSubfolders}} />
+      <Input @type='checkbox' @checked={{this.includeSubfolders}} {{on 'click' this.toggleIncludeSubfolders}}/>
       Include Sub-Folders
     </label>
   </div>
   <div id='controls'>Show:
-    {{#if bySubmission}}
+    {{#if this.bySubmission}}
       <ul>
 
         <li><label id='showEvidence'>
             <Input
               @type='checkbox'
-              name={{showSubmissionSelections}}
-              @checked={{showSubmissionSelections}}
+              name={{this.showSubmissionSelections}}
+              @checked={{this.showSubmissionSelections}}
+              {{on 'click' this.toggleShowSubmissionSelections}}
             />
             Evidence
           </label></li>
 
-        {{#if showSubmissionSelections}}
+        {{#if this.showSubmissionSelections}}
           <li><ul>
               <li><label id='showSubmComments'>
                   <Input
                     @type='checkbox'
-                    name={{showSubmissionSelectionsComments}}
-                    @checked={{showSubmissionSelectionsComments}}
+                    name={{this.showSubmissionSelectionsComments}}
+                    @checked={{this.showSubmissionSelectionsComments}}
+                    {{on 'click' this.toggleShowSubmissionSelectionsComments}}
                   />
                   Comments
                 </label></li>
@@ -62,8 +64,9 @@
               <li><label id='showSubmFolders'>
                   <Input
                     @type='checkbox'
-                    name={{showSubmissionSelectionsFolders}}
-                    @checked={{showSubmissionSelectionsFolders}}
+                    name={{this.showSubmissionSelectionsFolders}}
+                    @checked={{this.showSubmissionSelectionsFolders}}
+                    {{on 'click' this.toggleShowSubmissionSelectionsFolders}}
                   />
                   Folders
                 </label></li>
@@ -72,55 +75,55 @@
         {{/if}}
       </ul>
     {{/if}}
-    {{#if bySelection}}
+    {{#if this.bySelection}}
       <label id='showSubmissions'>
-        <Input @type='checkbox' @checked={{showSelectionSubmission}} />
+        <Input @type='checkbox' {{on 'click' this.toggleShowSelectionSubmission}} @checked={{this.showSelectionSubmission}} />
         Student
       </label>
 
       <label id='showSelComments'>
-        <Input @type='checkbox' @checked={{showSelectionComments}} />
+        <Input @type='checkbox' {{on 'click' this.toggleShowSelectionComments}} @checked={{this.showSelectionComments}} />
         Comments
       </label>
 
       <label id='showSelFolders'>
-        <Input @type='checkbox' @checked={{showSelectionFolders}} />
+        <Input @type='checkbox' {{on 'click' this.toggleShowSelectionFolders}}  @checked={{this.showSelectionFolders}} />
         Folders
       </label>
     {{/if}}</div>
 </div>
 
 <div class='al_wtf'>
-  {{#if bySubmission}}
+  {{#if this.bySubmission}}
     <table align='right' id='folder_contents'>
       {{!-- <caption>Submissions</caption> --}}
       <thead>
         <tr class='header'>
           <th>Student</th>
 
-          {{#if showSubmissionComments}}
+          {{#if this.showSubmissionComments}}
             <th>Comments</th>
           {{/if}}
 
-          {{#if showSubmissionFolders}}
+          {{#if this.showSubmissionFolders}}
             <th>Folders</th>
           {{/if}}
 
-          {{#if showSubmissionSelections}}
+          {{#if this.showSubmissionSelections}}
             <th>Evidence</th>
           {{/if}}
 
         </tr>
       </thead>
       <tbody>
-        {{#each selectedSubmissions as |sub|}}
+        {{#each this.selectedSubmissions as |sub|}}
           <tr>
             <td>
               <a class='change-submission' {{action 'changeSubmission' sub}}>
                 {{sub.student}}
               </a>
             </td>
-            {{#if showSubmissionComments}}
+            {{#if this.showSubmissionComments}}
               <td>
                 <ul>
                   {{#each sub.comments as |com|}}
@@ -131,7 +134,7 @@
                 </ul>
               </td>
             {{/if}}
-            {{#if showSubmissionFolders}}
+            {{#if this.showSubmissionFolders}}
               <td style='white-space: nowrap;'>
                 <ul>
                   {{#each sub.folders as |folder|}}
@@ -140,32 +143,32 @@
                 </ul>
               </td>
             {{/if}}
-            {{#if showSubmissionSelections}}
+            {{#if this.showSubmissionSelections}}
               <td>
-                {{#if showSubmissionSelectionsStuff}}
+                {{#if this.showSubmissionSelectionsStuff}}
                   <table style='width: 100%'>
                     <thead>
                       <tr>
                         <th style='width: 30%'>Selection</th>
 
-                        {{#if showSubmissionSelectionsComments}}
+                        {{#if this.showSubmissionSelectionsComments}}
                           <th style='width: 30%'>Comments</th>
                         {{/if}}
 
-                        {{#if showSubmissionSelectionsFolders}}
+                        {{#if this.showSubmissionSelectionsFolders}}
                           <th style='width: 30%'>Folders</th>
                         {{/if}}
                       </tr>
                     </thead>
                     <tbody>
-                      {{#each evidence as |sel|}}
+                      {{#each this.evidence as |sel|}}
                         <tr>
                           <td>
                             <a
                               class='selection-text
                                 {{if sel.imageTagLink "selection-image"}}
                                 '
-                              {{action 'changeSelection' sel}}
+                              {{on 'click' (fn this.changeSelection sel)}}
                             >
                               {{#if sel.imageTagLink}}
                                 <img
@@ -180,7 +183,7 @@
                             <br />
                           </td>
 
-                          {{#if showSubmissionSelectionsComments}}
+                          {{#if this.showSubmissionSelectionsComments}}
                             <td>
                               <ul>
                                 {{#each sel.comments as |comment|}}
@@ -190,17 +193,17 @@
                             </td>
                           {{/if}}
 
-                          {{#if showSubmissionSelectionsFolders}}
+                          {{#if this.showSubmissionSelectionsFolders}}
                             <td>
                               <ul>
                                 {{#each sel.folders as |folder|}}
                                   <li>
                                     {{folder.name}}
-                                    {{#if canEdit}}
+                                    {{#if this.canEdit}}
                                       {{!ENC-574 Add a delete button per folder}}
                                       <span
                                         class='remove-sel'
-                                        {{action 'removeSelection' sel folder}}
+                                        {{on 'click' (fn this.removeSelection sel folder)}}
                                       ><i
                                           class='far fa-times-circle'
                                         ></i></span>
@@ -223,33 +226,33 @@
     </table>
   {{/if}}
 
-  {{#if bySelection}}
+  {{#if this.bySelection}}
     <table id='folder_contents' align='right'>
       {{!-- <caption>Evidence</caption> --}}
       <thead>
         <tr class='header'>
           <th style='width: 30%'>Selection</th>
 
-          {{#if showSelectionSubmission}}
+          {{#if this.showSelectionSubmission}}
             <th style='width: 20%'>Student</th>
           {{/if}}
 
-          {{#if showSelectionComments}}
+          {{#if this.showSelectionComments}}
             <th style='width: 30%'>Comments</th>
           {{/if}}
 
-          {{#if showSelectionFolders}}
+          {{#if this.showSelectionFolders}}
             <th style='width: 20%; white-space:nowrap;'>Folders</th>
           {{/if}}
         </tr>
       </thead>
       <tbody>
-        {{#each evidence as |sel|}}
+        {{#each this.evidence as |sel|}}
           <tr>
             <td>
               <a
                 class='selection-text {{if sel.imageTagLink "selection-image"}}'
-                {{action 'changeSelection' sel}}
+                {{on 'click' (fn this.changeSelection' sel)}}
               >
                 {{#if sel.imageTagLink}}
                   <img
@@ -262,18 +265,18 @@
                 {{/if}}
               </a>
             </td>
-            {{#if showSelectionSubmission}}
+            {{#if this.showSelectionSubmission}}
               <td>
                 <a
                   class='change-submission'
-                  {{action 'changeSubmission' sel.submission}}
+                  {{on 'click' (fn this.changeSubmission sel.submission)}}
                 >
                   {{sel.submission.student}}
                 </a>
               </td>
             {{/if}}
 
-            {{#if showSelectionComments}}
+            {{#if this.showSelectionComments}}
               <td>
                 <ul>
                   {{#each sel.comments as |comment|}}
@@ -283,17 +286,17 @@
               </td>
             {{/if}}
 
-            {{#if showSelectionFolders}}
+            {{#if this.showSelectionFolders}}
               <td style='white-space: nowrap;'>
                 <ul>
                   {{#each sel.folders as |folder|}}
                     <li>
                       {{folder.name}}
-                      {{#if canEdit}}
+                      {{#if this.canEdit}}
                         {{!ENC-574 Add a delete button per folder}}
                         <span
                           class='remove-sel'
-                          {{action 'removeSelection' sel folder}}
+                          {{on 'click' (fn this.removeSelection sel folder)}}
                         ><i class='far fa-times-circle'></i></span>
                       {{/if}}
                     </li>

@@ -3,7 +3,7 @@ import Controller, { inject as controller } from '@ember/controller';
 import EmberObject, { action } from '@ember/object';
 import { run } from '@ember/runloop';
 import { tracked } from '@glimmer/tracking';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class FolderController extends Controller {
   @controller workspace;
@@ -85,6 +85,53 @@ export default class FolderController extends Controller {
     });
 
     return result;
+  }
+
+  @action
+  makeBySubmission() {
+    this.browseOption = 0;
+  }
+
+  @action
+  makeBySelection() {
+    this.browseOption = 1;
+  }
+
+  @action
+  toggleIncludeSubfolders() {
+    this.includeSubfolders = !this.includeSubfolders;
+  }
+
+  @action
+  toggleShowSubmissionSelections() {
+    this.showSubmissionSelections = !this.showSubmissionSelections;
+  }
+
+  @action
+  toggleShowSubmissionSelectionsComments() {
+    this.showSubmissionSelectionsComments =
+      !this.showSubmissionSelectionsComments;
+  }
+
+  @action
+  toggleShowSubmissionSelectionsFolders() {
+    this.showSubmissionSelectionsFolders =
+      !this.showSubmissionSelectionsFolders;
+  }
+
+  @action
+  toggleShowSelectionSubmission() {
+    this.showSelectionSubmission = !this.showSelectionSubmission;
+  }
+
+  @action
+  toggleShowSelectionComments() {
+    this.showSelectionComments = !this.showSelectionComments;
+  }
+
+  @action
+  toggleShowSelectionFolders() {
+    this.showSelectionFolders = !this.showSelectionFolders;
   }
 
   @action
