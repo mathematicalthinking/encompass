@@ -31,7 +31,11 @@
       />By Evidence (selection)</label>
 
     <label id='showSubFolders'>
-      <Input @type='checkbox' @checked={{this.includeSubfolders}} {{on 'click' this.toggleIncludeSubfolders}}/>
+      <Input
+        @type='checkbox'
+        @checked={{this.includeSubfolders}}
+        {{on 'click' this.toggleIncludeSubfolders}}
+      />
       Include Sub-Folders
     </label>
   </div>
@@ -77,17 +81,29 @@
     {{/if}}
     {{#if this.bySelection}}
       <label id='showSubmissions'>
-        <Input @type='checkbox' {{on 'click' this.toggleShowSelectionSubmission}} @checked={{this.showSelectionSubmission}} />
+        <Input
+          @type='checkbox'
+          {{on 'click' this.toggleShowSelectionSubmission}}
+          @checked={{this.showSelectionSubmission}}
+        />
         Student
       </label>
 
       <label id='showSelComments'>
-        <Input @type='checkbox' {{on 'click' this.toggleShowSelectionComments}} @checked={{this.showSelectionComments}} />
+        <Input
+          @type='checkbox'
+          {{on 'click' this.toggleShowSelectionComments}}
+          @checked={{this.showSelectionComments}}
+        />
         Comments
       </label>
 
       <label id='showSelFolders'>
-        <Input @type='checkbox' {{on 'click' this.toggleShowSelectionFolders}}  @checked={{this.showSelectionFolders}} />
+        <Input
+          @type='checkbox'
+          {{on 'click' this.toggleShowSelectionFolders}}
+          @checked={{this.showSelectionFolders}}
+        />
         Folders
       </label>
     {{/if}}</div>
@@ -96,7 +112,7 @@
 <div class='al_wtf'>
   {{#if this.bySubmission}}
     <table align='right' id='folder_contents'>
-      {{!-- <caption>Submissions</caption> --}}
+      {{! <caption>Submissions</caption> }}
       <thead>
         <tr class='header'>
           <th>Student</th>
@@ -203,7 +219,10 @@
                                       {{!ENC-574 Add a delete button per folder}}
                                       <span
                                         class='remove-sel'
-                                        {{on 'click' (fn this.removeSelection sel folder)}}
+                                        {{on
+                                          'click'
+                                          (fn this.removeSelection sel folder)
+                                        }}
                                       ><i
                                           class='far fa-times-circle'
                                         ></i></span>
@@ -228,7 +247,7 @@
 
   {{#if this.bySelection}}
     <table id='folder_contents' align='right'>
-      {{!-- <caption>Evidence</caption> --}}
+      {{! <caption>Evidence</caption> }}
       <thead>
         <tr class='header'>
           <th style='width: 30%'>Selection</th>
@@ -252,7 +271,7 @@
             <td>
               <a
                 class='selection-text {{if sel.imageTagLink "selection-image"}}'
-                {{on 'click' (fn this.changeSelection' sel)}}
+                {{on 'click' (fn this.changeSelection sel)}}
               >
                 {{#if sel.imageTagLink}}
                   <img
