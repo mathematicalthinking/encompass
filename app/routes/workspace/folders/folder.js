@@ -11,20 +11,21 @@ import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 
 export default class FoldersFolderRoute extends Route {
-  renderTemplate(controller, model) {
-    var appController = this.controllerFor('application');
-    appController.set('isHidden', true);
+  renderTemplate(_controller, model) {
+    const appController = this.owner.lookup('controller:application');
+    const editFolderController = this.owner.lookup('controller:folders.edit');
 
-    var editFolder = this.controllerFor('folders.edit');
-    editFolder.set('model', model);
+    appController.isHidden = true;
+    editFolderController.model = model;
 
     this.render('folders/edit', {
-      controller: editFolder,
+      controller: editFolderController,
     });
   }
 
-  @action willTransition(_transition) {
-    var appController = this.controllerFor('application');
-    appController.set('isHidden', false);
+  @action
+  willTransition(/* transition */) {
+    const appController = this.owner.lookup('controller:application');
+    appController.isHidden = false;
   }
 }

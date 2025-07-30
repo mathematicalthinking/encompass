@@ -1,12 +1,11 @@
 import { A } from '@ember/array';
-import Controller, { inject as controller } from '@ember/controller';
+import Controller from '@ember/controller';
 import EmberObject, { action } from '@ember/object';
 import { run } from '@ember/runloop';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 export default class FolderController extends Controller {
-  @controller workspace;
   @service('workspace-permissions') permissions;
 
   @tracked browseOption = 1;
@@ -23,6 +22,10 @@ export default class FolderController extends Controller {
   @tracked showSelectionSubmission = true;
   @tracked showSelectionComments = true;
   @tracked showSelectionFolders = true;
+
+  get workspace() {
+    return this.owner.lookup('controller:workspace');
+  }
 
   get currentWorkspace() {
     return this.workspace.model;
