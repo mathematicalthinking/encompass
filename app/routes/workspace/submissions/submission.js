@@ -57,15 +57,7 @@ export default class WorkspaceSubmissionsSubmissionRoute extends Route {
     }
   }
 
-  activate() {
-    this.applicationController.isSmallHeader = true;
-  }
-
-  deactivate() {
-    this.applicationController.isSmallHeader = false;
-  }
-
-  renderTemplate(controller, model) {
+  renderTemplate(controller) {
     this.render('workspace/submission');
 
     const user = this.modelFor('application');
@@ -180,9 +172,5 @@ export default class WorkspaceSubmissionsSubmissionRoute extends Route {
     if (wasVmt && !willBeVmt) {
       window.postMessage({ messageType: 'DESTROY_REPLAYER' });
     }
-  }
-
-  get applicationController() {
-    return this.controllerFor('application');
   }
 }

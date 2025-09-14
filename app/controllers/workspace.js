@@ -17,6 +17,9 @@ export default class WorkspaceController extends Controller {
 
   @action
   popupMaskClicked() {
-    this.transitionToRoute('workspace.submission', this.currentSubmission);
+    this.transitionToRoute(
+      'workspace.submissions.submission',
+      this.currentSubmission
+    );
   }
 }
