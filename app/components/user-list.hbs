@@ -10,9 +10,9 @@
       <UserCollapsibleList
         @tag='your-account'
         @title='Your account'
-        @user={{@currentUser}}
+        @user={{this.currentUser}}
       />
-      {{#if @currentUser.isTeacher}}
+      {{#if this.currentUser.isTeacher}}
         <UserCollapsibleList
           @title='Students in your Classes'
           @users={{this.yourStudents}}
@@ -26,7 +26,7 @@
         />
         <UserCollapsibleList
           @tag='org-users'
-          @title='Users in {{@currentUser.organization.name}}'
+          @title='Users in {{this.organizationName}}'
           @users={{this.orgUsers}}
           @noInfo='There are no users in your organization'
         />
@@ -37,7 +37,7 @@
         @users={{this.unauthUsers}}
         @noInfo='There are no users waiting to be authorized'
       />
-      {{#if @currentUser.isAdmin}}
+      {{#if this.currentUser.isAdmin}}
         <UserCollapsibleList
           @tag='admin-users'
           @title='Administrators'
@@ -63,7 +63,7 @@
         @users={{this.studentUsers}}
         @noInfo='There are no students yet'
       />
-      {{#if @currentUser.isAdmin}}
+      {{#if this.currentUser.isAdmin}}
         <button
           class='toggle-button'
           type='button'

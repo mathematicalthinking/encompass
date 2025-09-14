@@ -7,24 +7,21 @@
  */
 import Route from '@ember/routing/route';
 import { hash } from 'rsvp';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class UsersRoute extends Route {
   @service store;
   @service router;
-  beforeModel() {
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
+  @service currentUser;
 
-    if (isStudent) {
-      this.router.transitionTo('/');
+  beforeModel() {
+    if (this.currentUser.isStudent) {
+      this.router.transitionTo('index');
     }
   }
   async model() {
-    const currentUser = this.modelFor('application');
     const users = await this.store.findAll('user');
     return hash({
-      currentUser,
       users,
       organizations: this.store.findAll('organization'),
       trashedUsers: users.filter((user) => user.isTrashed),

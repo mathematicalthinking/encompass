@@ -2,20 +2,14 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 export default class AuthIndex extends Component {
-  @tracked shouldShowLogin = null;
+  @tracked shouldShowLogin = true;
 
-  constructor() {
-    super(...arguments);
-    this.shouldShowLogin = null;
-    this.init();
+  get buttonText() {
+    return this.shouldShowLogin ? 'Log in' : 'Sign up';
   }
-
+  
   @action
-  changeComponent() {
-    if (this.shouldShowLogin) {
-      this.shouldShowLogin = false;
-    } else {
-      this.shouldShowLogin = true;
-    }
+  toggleLogin() {
+    this.shouldShowLogin = !this.shouldShowLogin;
   }
 }

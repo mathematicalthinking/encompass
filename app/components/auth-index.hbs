@@ -1,0 +1,13 @@
+<div class="auth-toggle">
+  <button type="button" {{on 'click' this.toggleLogin}}>
+    {{this.buttonText}}
+  </button>
+</div>
+  
+
+{{#if this.shouldShowLogin}}
+  <LogIn />
+{{else}}
+  <SignUp />
+{{/if}}
+{{outlet}}
