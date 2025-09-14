@@ -8,194 +8,181 @@
   */
 
 import Route from '@ember/routing/route';
+import { service } from '@ember/service';
 import { schedule } from '@ember/runloop';
-import { hash } from 'rsvp';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
-import { resolve } from 'rsvp';
-import VmtHostMixin from '../../../mixins/vmt-host';
+import { hash, resolve } from 'rsvp';
+import { action } from '@ember/object';
 
-export default Route.extend(VmtHostMixin, {
-  alert: service('sweet-alert'),
-  utils: service('utility-methods'),
-  currentUser: service('current-user'),
-  queryParams: 'vmtRoomId',
+export default class WorkspaceSubmissionsSubmissionRoute extends Route {
+  @service('sweet-alert') alert;
+  @service utils;
+  @service currentUser;
+
+  queryParams = {
+    vmtRoomId: {
+      refreshModel: false,
+    },
+  };
 
   async model({ submission_id }) {
-    let submissions = await this.modelFor('workspace.submissions');
-    let workspace = await this.modelFor('workspace');
-    let assignment = await workspace.get('linkedAssignment');
+    const submissions = await this.modelFor('workspace.submissions');
+    const workspace = await this.modelFor('workspace');
+    const assignment = await workspace.linkedAssignment;
+
     return hash({
       workspace,
       assignment,
       submission: submissions.findBy('id', submission_id),
     });
-  },
+  }
 
-  afterModel(submission, transition) {
-    return this.resolveVmtRoom(submission).then((room) => {
-      if (!room) {
-        return;
-      }
-      let vmtRoomId = room._id;
+  async afterModel(model, transition) {
+    const room = await this.resolveVmtRoom(model);
+    if (!room) return;
 
-      // so links to selections still work
-      if (transition.intent.name === 'workspace.submissions.submission') {
-        this.transitionTo('workspace.submissions.submission', submission, {
-          queryParams: { vmtRoomId },
-        });
-      }
-    });
-  },
-
-  setupController: function (controller, model) {
-    this._super(controller, model);
-  },
-  resetController(controller, isExiting, transition) {
-    if (isExiting && transition.targetName !== 'error') {
-      controller.set('itemsToDisplay', 'all');
+    if (transition.to.name === 'workspace.submissions.submission') {
+      this.transitionTo('workspace.submissions.submission', model, {
+        queryParams: { vmtRoomId: room._id },
+      });
     }
-  },
+  }
 
-  activate: function () {
-    this.controllerFor('application').set('isSmallHeader', true);
-  },
+  setupController(controller, model) {
+    super.setupController(controller, model);
+  }
 
-  deactivate: function () {
-    this.controllerFor('application').set('isSmallHeader', false);
-  },
+  resetController(controller, isExiting, transition) {
+    if (isExiting && transition.to.name !== 'error') {
+      controller.itemsToDisplay = 'all';
+    }
+  }
 
-  renderTemplate: function (controller, model) {
+  activate() {
+    this.applicationController.isSmallHeader = true;
+  }
+
+  deactivate() {
+    this.applicationController.isSmallHeader = false;
+  }
+
+  renderTemplate(controller, model) {
     this.render('workspace/submission');
 
-    let user = this.modelFor('application');
-
+    const user = this.modelFor('application');
     schedule('afterRender', () => {
-      if (!user.get('seenTour')) {
-        this.controller.send('startTour', 'workspace');
+      if (!user.seenTour) {
+        controller.send('startTour', 'workspace');
       }
     });
-  },
+  }
 
-  resolveVmtRoom(submission) {
-    let roomId;
-    if (submission.submission) {
-      roomId = submission.submission.get('vmtRoomInfo.roomId');
-    } else {
-      roomId = submission.get('vmtRoomInfo.roomId');
-    }
-    let utils = this.utils;
+  async resolveVmtRoom(submission) {
+    const roomId =
+      submission?.submission?.vmtRoomInfo?.roomId ||
+      submission?.vmtRoomInfo?.roomId;
 
-    if (!utils.isValidMongoId(roomId)) {
+    if (!this.utils.isValidMongoId(roomId)) {
       return resolve(null);
     }
 
-    let cachedRoom = this.extractVmtRoom(roomId);
+    const cachedRoom = this.extractVmtRoom(roomId);
+    if (cachedRoom) return resolve(cachedRoom);
 
-    if (cachedRoom) {
-      return resolve(cachedRoom);
-    }
-    let url = `api/vmt/rooms/${roomId}`;
-    return $.get({
-      url,
-    }).then((data) => {
-      if (!data || !data.room) {
-        return null;
-      }
-      // put result on window if necessary
+    try {
+      const response = await fetch(`api/vmt/rooms/${roomId}`);
+      if (!response.ok)
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+
+      const data = await response.json();
+      if (!data?.room) return null;
 
       this.handleRoomForVmt(data.room);
-
       return data.room;
-    });
-  },
-
-  handleRoomForVmt(room) {
-    let utils = this.utils;
-    if (!utils.isNonEmptyObject(window.vmtRooms)) {
-      window.vmtRooms = {};
-    }
-    if (window.vmtRooms[room._id]) {
-      // room is already on
-      return;
-    }
-    window.vmtRooms[room._id] = room;
-  },
-
-  extractVmtRoom(roomId) {
-    if (!this.utils.isNonEmptyObject(window.vmtRooms)) {
+    } catch (err) {
+      console.error('Error fetching VMT room:', err);
       return null;
     }
+  }
 
-    return window.vmtRooms[roomId];
-  },
+  handleRoomForVmt(room) {
+    if (!this.utils.isNonEmptyObject(window.vmtRooms)) {
+      window.vmtRooms = {};
+    }
+    if (!window.vmtRooms[room._id]) {
+      window.vmtRooms[room._id] = room;
+    }
+  }
 
-  actions: {
-    reload: function () {
-      this.refresh();
-    },
+  extractVmtRoom(roomId) {
+    return this.utils.isNonEmptyObject(window.vmtRooms)
+      ? window.vmtRooms[roomId]
+      : null;
+  }
 
-    addSelection: function (selection) {},
+  @action
+  reload() {
+    this.refresh();
+  }
 
-    tagSelection: function (selection, tags) {
-      var route = this;
-      var workspace = this.modelFor('workspace');
-      workspace.get('folders').then(function (folders) {
-        var lcFolders = {};
-        folders.forEach(function (f) {
-          lcFolders[f.get('name').toLowerCase().replace(/\s+/g, '')] = f;
-        });
-        tags.forEach(function (tag) {
-          if (_.keys(lcFolders).includes(tag)) {
-            route.send(
-              'fileSelectionInFolder',
-              selection.get('id'),
-              lcFolders[tag]
-            );
-          }
-        });
+  @action
+  tagSelection(selection, tags) {
+    const workspace = this.modelFor('workspace');
+    workspace.folders.then((folders) => {
+      const lcFolders = {};
+      folders.forEach((f) => {
+        lcFolders[f.name.toLowerCase().replace(/\s+/g, '')] = f;
       });
-    },
-    fileSelectionInFolder: function (selectionId, folder) {
-      let selection = this.store.peekRecord('selection', selectionId);
-      let workspace = this.modelFor('workspace');
 
-      if (!selection) {
-        return;
-      }
-      let tagging = this.store.createRecord('tagging', {
-        workspace,
-        selection,
-        folder,
-        createdBy: this.currentUser.user,
+      tags.forEach((tag) => {
+        if (Object.keys(lcFolders).includes(tag)) {
+          this.fileSelectionInFolder(selection.id, lcFolders[tag]);
+        }
       });
-      tagging
-        .save()
-        .then((savedTagging) => {
-          this.alert.showToast(
-            'success',
-            'Selection Filed',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        })
-        .catch((err) => {
-          console.log('err save tagging', err);
-        });
-    },
-    willTransition(transition) {
-      let currentUrl = window.location.hash;
-      let wasVmt = currentUrl.indexOf('?vmtRoomId=') !== -1;
-      let willBeVmt = this.utils.isValidMongoId(
-        transition.to.queryParams.vmtRoomId
-      );
-      if (wasVmt && !willBeVmt) {
-        window.postMessage({
-          messageType: 'DESTROY_REPLAYER',
-        });
-      }
-    },
-  },
-});
+    });
+  }
+
+  fileSelectionInFolder(selectionId, folder) {
+    const selection = this.store.peekRecord('selection', selectionId);
+    const workspace = this.modelFor('workspace');
+
+    if (!selection) return;
+
+    const tagging = this.store.createRecord('tagging', {
+      workspace,
+      selection,
+      folder,
+      createdBy: this.currentUser.user,
+    });
+
+    tagging
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          'Selection Filed',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
+        console.error('Error saving tagging:', err);
+      });
+  }
+
+  @action
+  willTransition(transition) {
+    const wasVmt = window.location.hash.includes('?vmtRoomId=');
+    const willBeVmt = this.utils.isValidMongoId(
+      transition.to.queryParams.vmtRoomId
+    );
+    if (wasVmt && !willBeVmt) {
+      window.postMessage({ messageType: 'DESTROY_REPLAYER' });
+    }
+  }
+
+  get applicationController() {
+    return this.controllerFor('application');
+  }
+}
