@@ -363,6 +363,62 @@ This package has been removed from the system in favor of a simpler, custom comp
 
 loadash-es is now loaded. I did this because some of the regular lodash subpackages (e.g., lodash/isEqual) are being deprecated. Thus, the correct thing to do now is to use lodash-es/isEqual, for example. Eventually, I should change all uses of lodash to lodash-es.
 
-# dropzone.js
+## dropzone.js
 
 (6/4/2025) Removed from the vendor folder. It barely appeared in the codebase and nowadays is handled natively in Javascript.
+
+# Upgrades notes from ChatGPT
+
+Customized list of items to consider as we upgrade from 4.5 -> 5.12 -> 6.x LTS (generated 18 August 2025)
+
+### Framework & App Code
+- **Enable/clear optional features in 5.x**  
+  - `no-implicit-route-model` (you’re handling this).  
+  - `EMBER_EXTEND_PROTOTYPES` set to false; no reliance on `Array.prototype` extensions anywhere (you’re migrating).  
+  - If you ever flipped `jquery-integration` back on, make sure it’s off; no `this.$()` calls lurking.
+- **Class/Decorator hygiene**  
+  - No legacy `EmberObject.extend` patterns where tracked state or native getters would be clearer.  
+  - Replace remaining CP macros (`@ember/object/computed`, `reads`, etc.) with native getters + `@tracked` or purpose-built libs (e.g., `tracked-built-ins`).
+- **Template surfaces**  
+  - Zero curly component invocation (`{{my-component}}`); all angle-bracket.  
+  - No `{{action}}`, `{{mut}}`, `{{link-to}}` in legacy forms; use `<LinkTo @route="...">`.  
+  - Avoid `{{component}}` for dynamic components; prefer data → branching or component helpers you own. If you *must* stay dynamic, keep usage minimal because strict mode removes it.
+- **Routing APIs**  
+  - No reliance on private router APIs or `this.controllerFor()` to pass state; prefer services or args.  
+  - Query params: ensure you’re on the modern patterns (`refreshModel`, route-driven data, tests not asserting controller internals).
+- **Testing stack**  
+  - All tests on `@ember/test-helpers` modern APIs (`setupRenderingTest`, `setupApplicationTest`), QUnit DOM, and `ember-cli-mirage` (or your alternative) updated. Kill legacy `ember-test-helpers` v1 idioms.  
+  - If you used `settled()` assumptions around async relationships (see ED notes below), make tests explicit with `await`.
+- **Addon readiness / build**  
+  - Any in-repo or third-party addons should be v2-addon or at least Embroider-compatible. If you have custom `app.import` shims, replace with `ember-auto-import` v2 (or native ESM).  
+  - Remove deprecated `outputPaths`/old broccoli hooks from `ember-cli-build.js` if present.  
+  - If you plan to adopt Vite/strict mode later, keep templates/components conventional and collocated (you already are).
+
+### Ember Data specifics
+- **Imports & primitives**  
+  - All models use `@ember-data/model` imports (`attr`, `hasMany`, `belongsTo`). No `DS.*` types, no `DS.PromiseArray/PromiseObject`.  
+  - No store private APIs; only `findRecord/peekRecord/query/queryRecord/push` etc.
+- **Relationships**  
+  - Be explicit where ambiguity exists: set `inverse` (or `null`) and `async` intentionally. In ED 5+, implicit inverses throw warnings and can become fails under stricter schema.  
+  - Eliminate patterns relying on sync access to unloaded relationships; prefer `await post.comments` (or `post.hasMany('comments').load()` if you keep that style).
+- **Serializers/Adapters**  
+  - If you use JSON:API (default), make sure any lingering RESTAdapter/RESTSerializer customizations are gone or isolated.  
+  - No custom key transform globals; use per-serializer `keyForAttribute/relationship` if needed, or migrate data on the server.
+- **Loading states**  
+  - Replace any UI checks of `record.isLoading`/`isReloading` that were covering async edges with explicit awaits; ED tightened timing around when data is “there”.
+
+### Linting & Codemods (quick wins)
+- **Run codemods and linters**  
+  - `ember-cli-update` to latest 4.x → 5.x blueprints incrementally; fix diffs.  
+  - `ember-template-lint` strict/recommended configs; turn on rules that catch legacy patterns (`no-implicit-this`, `no-curly-component-invocation`, etc.).  
+  - `eslint-plugin-ember` latest; clear deprecations early.  
+- **Deprecation triage**  
+  - Add `ember-cli-deprecation-workflow` temporarily; snapshot, burn down to zero in 4.12 → 5.12 before 6.x.
+
+### “Gotchas” I still see in 4.x→6.x upgrades
+- Hidden uses of prototype extensions inside **tests** and legacy helpers.  
+- Old **array-like EmberObjects** (e.g., `Ember.A()` collections) feeding templates—swap to native arrays or `tracked-built-ins`.  
+- Stray **observers** or `Evented` patterns causing ordering bugs with Glimmer reactivity; convert to derived state or tasks.  
+- **Dynamic require**/AMD assumptions in in-repo addons—breaks under modern ESM builds.
+
+If you want, point me at one feature area (routes with heavy QPs, one or two models with messy relationships, or an addon you suspect) and I’ll sketch exact diffs and tests to make it 6.x-safe.
