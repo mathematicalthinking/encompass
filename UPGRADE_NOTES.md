@@ -97,6 +97,8 @@ Controllers may be slated for deprecation. Best practice is to refactor the logi
 
 Route templates should refer to the model via @model rather than this.model as per the Ember Octane upgrade guide.
 
+Also several of the route templates and routes use toHome. Now (Aug 2025) there's a navigation service that centralizes toHome (i.e., transitioning to whatever is defined as the 'home', which right now is 'index').  We should eliminate all usage of toHome as a parameter and have components, routes, route templates, etc. use the new service.
+
 ## EmberTable
 
 There are other packages that are more aligned with Glimmer and Octane approaches to Ember. However, depending on the needs, perhaps the 5 uses of EmberTable could be replaced with vanilla JS.

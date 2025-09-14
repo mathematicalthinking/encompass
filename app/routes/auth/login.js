@@ -1,20 +1,12 @@
 import Route from '@ember/routing/route';
-import { action } from '@ember/object';
 
 export default class LoginRoute extends Route {
-  beforeModel(transition) {
-    if (transition.intent.queryParams) {
-      this.oauthError = transition.intent.queryParams.oauthError;
-    }
-  }
+  // Makes ?oauthError=... a first-class query param
+  queryParams = { oauthError: { refreshModel: true } };
 
-  model() {
+  model(_params, transition) {
     return {
-      oauthError: this.oauthError,
+      oauthError: transition?.to?.queryParams?.oauthError ?? null,
     };
-  }
-
-  @action toHome() {
-    window.location.href = '/';
   }
 }
