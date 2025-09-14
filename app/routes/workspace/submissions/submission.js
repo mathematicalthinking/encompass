@@ -15,7 +15,7 @@ import { action } from '@ember/object';
 
 export default class WorkspaceSubmissionsSubmissionRoute extends Route {
   @service('sweet-alert') alert;
-  @service utils;
+  @service('utility-methods') utils;
   @service currentUser;
 
   queryParams = {

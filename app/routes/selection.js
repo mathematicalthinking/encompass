@@ -1,59 +1,42 @@
+import { computed, observer } from '@ember/object';
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
-import { scheduleOnce } from '@ember/runloop';
+import { schedule } from '@ember/runloop';
 import $ from 'jquery';
 
-export default class MyRoute extends Route {
-  @service workspaceController;
-  @service encompass;
+export default Route.extend({
+  afterModel: function (model, transition) {
+    this.controllerFor('workspace').set('currentSelection', model);
+  },
 
-  async afterModel(model, transition) {
-    this.workspaceController.set('currentSelection', model);
-  }
+  deactivate: function () {
+    this.controllerFor('workspace').set('currentSelection', null);
+  },
 
-  deactivate() {
-    this.workspaceController.set('currentSelection', null);
-  }
+  doTour: observer('shouldDoTour', function () {
+    var user = this.modelFor('application');
 
-  get shouldDoTour() {
-    let user = this.modelFor('application');
-    let userSeenTour = user.seenTour;
-    let redoTour = this.encompass?.redoTour;
+    schedule('afterRender', function () {
+      if (!user.get('seenTour')) {
+        //customize for this part of the tour
+        window.guiders.hideAll();
+        //guiders.show('comments');
+      }
+    });
+  }),
+
+  shouldDoTour: computed('Encompass.redoTour', function () {
+    var user = this.modelFor('application');
+    var userSeenTour = user.get('seenTour');
+    var redoTour = this.get('Encompass.redoTour');
     return userSeenTour || redoTour;
-  }
+  }),
 
-  get doTourObserver() {
-    let user = this.modelFor('application');
-    if (!user.seenTour) {
-      scheduleOnce('afterRender', this, this.doTour);
-    }
-  }
-
-  doTour() {
-    // Customize for this part of the tour
-    window.guiders.hideAll();
-    // guiders.show('comments');
-  }
-
-  focusOnCommentTextarea() {
-    let commentTextarea = document.querySelector('#commentTextarea');
-    if (commentTextarea) {
-      commentTextarea.focus();
-    }
-  }
-
-  renderTemplate() {
+  renderTemplate: function () {
     this.render();
-
-    // Focus on an element after rendering the template
-    scheduleOnce('afterRender', this, this.focusOnCommentTextarea);
-
-    // Uncomment the following section if you want to trigger the tour conditionally
-    /*
-    let user = this.modelFor('application');
-    if (!user.seenTour) {
-      this.doTour();
-    }
-    */
-  }
-}
+    $('#commentTextarea').focus();
+    // var user = this.modelFor('application');
+    //    if (!user.get('seenTour')) {
+    //      this.doTour();
+    //    }
+  },
+});

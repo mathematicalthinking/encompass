@@ -1,197 +1,148 @@
+// app/controllers/workspace/submissions/submission.js
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
-import { getOwner } from '@ember/application';
 
 export default class WorkspaceSubmissionController extends Controller {
+  queryParams = ['vmtRoomId'];
+
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
   @service currentUser;
+  @service workspaceState;
   @service store;
-  @tracked queryParams = ['vmtRoomId'];
   @service('assignment-permissions') permissions;
-  // Tracked properties
-  @tracked guider = this.guider;
 
+  // local UI state
   @tracked showOptions = true;
   @tracked _currentSelection = null;
   @tracked areFoldersHidden = false;
   @tracked areCommentsHidden = false;
   @tracked itemsToDisplay = 'all';
-  @tracked isParentWorkspace = this.currentWorkspace.workspaceType === 'parent';
 
+  // —— Derivations from the route’s model ——
   get currentWorkspace() {
-    return this.workspaceController.model;
+    return this.model.workspace;
   }
 
   get currentSelection() {
-    return this._currentSelection || this.workspaceController.currentSelection;
+    return this._currentSelection || this.workspaceState.currentSelection;
   }
-
   set currentSelection(selection) {
     this._currentSelection = selection;
   }
 
+  get isParentWorkspace() {
+    return this.currentWorkspace?.workspaceType === 'parent';
+  }
+
   get workspaceOwner() {
-    return this.currentWorkspace.owner;
+    return this.currentWorkspace?.owner;
   }
-  get workspaceController() {
-    return getOwner(this).lookup('controller:workspace');
-  }
+
+  // Permissions
   get canSelect() {
-    let cws = this.currentWorkspace;
-    return this.permissions.canEdit(cws, 'selections', 2);
+    return this.permissions.canEdit(this.currentWorkspace, 'selections', 2);
   }
-
   get permittedToComment() {
-    let cws = this.currentWorkspace;
-    return this.permissions.canEdit(cws, 'comments', 2);
+    return this.permissions.canEdit(this.currentWorkspace, 'comments', 2);
   }
-
-  get isMyWorkspace() {
-    let ownerId = this.utils.getBelongsToId(this.currentWorkspace, 'owner');
-    return this.currentUser.id === ownerId;
-  }
-
   get canRespond() {
     return this.permissions.canEdit(this.currentWorkspace, 'feedback', 1);
   }
+  get isMyWorkspace() {
+    const ownerId = this.utils.getBelongsToId(this.currentWorkspace, 'owner');
+    return this.currentUser.id === ownerId;
+  }
 
+  // Visibility/ACL helpers
+  get canSeeFolders() {
+    return this.permissions.canEdit(this.currentWorkspace, 'folders', 1);
+  }
+  get cannotSeeFolders() {
+    return !this.canSeeFolders;
+  }
+  get canSeeComments() {
+    return this.permissions.canEdit(this.currentWorkspace, 'comments', 1);
+  }
+  get canSeeSelections() {
+    return this.permissions.canEdit(this.currentWorkspace, 'selections', 1);
+  }
+  get cannotSeeSelections() {
+    return !this.canSeeSelections;
+  }
+  get canSeeResponses() {
+    return this.permissions.canEdit(this.currentWorkspace, 'feedback', 1);
+  }
+  get cannotSeeResponses() {
+    return !this.canSeeResponses;
+  }
+
+  get showFoldersToggle() {
+    return this.areFoldersHidden && this.canSeeFolders;
+  }
+  get showCommentsToggle() {
+    return this.areCommentsHidden && this.canSeeComments;
+  }
+
+  // Layout class based on toggles
+  get containerLayoutClass() {
+    const foldersHidden = this.areFoldersHidden || this.cannotSeeFolders;
+    const commentsHidden =
+      this.areCommentsHidden || false; /* feature disabled */
+    if (foldersHidden && commentsHidden) return 'hsh';
+    if (foldersHidden) return 'hsc';
+    if (commentsHidden) return 'fsh';
+    return 'fsc';
+  }
+
+  // Collections (avoid `.content`; use the relationship directly)
   get nonTrashedSelections() {
-    const nonTrashed =
-      this.currentWorkspace.selections.content.rejectBy('isTrashed');
-    if (this.itemsToDisplay === 'all') {
-      return nonTrashed;
-    }
+    let list = this.currentWorkspace?.selections?.rejectBy('isTrashed') ?? [];
+    if (this.itemsToDisplay === 'all') return list;
+
     if (this.itemsToDisplay === 'individual') {
-      return nonTrashed.filter((selection) => {
-        const originalSelection = selection.get('originalSelection');
-        const workspace = originalSelection.get('workspace');
-        if (workspace) {
-          const group = workspace.get('group');
-          return !group;
-        }
-        return false;
+      return list.filter((selection) => {
+        const ws = selection.get('originalSelection')?.get('workspace');
+        return ws ? !ws.get('group') : false;
       });
     }
     if (this.itemsToDisplay === 'group') {
-      return nonTrashed.filter((selection) => {
-        const originalSelection = selection.get('originalSelection');
-        const workspace = originalSelection.get('workspace');
-        if (workspace) {
-          const group = workspace.get('group');
-          return !!group;
-        }
-        return false;
-      });
-    }
-    return []; // Default return value to ensure the getter always returns a value
-  }
-
-  get nonTrashedTaggings() {
-    return this.currentWorkspace.taggings.rejectBy('isTrashed');
-  }
-
-  get nonTrashedFolders() {
-    return this.currentWorkspace.folders.content.rejectBy('isTrashed');
-  }
-
-  get nonTrashedComments() {
-    const nonTrashed =
-      this.currentWorkspace.comments.content.rejectBy('isTrashed');
-    if (this.itemsToDisplay === 'all') {
-      return nonTrashed;
-    }
-    if (this.itemsToDisplay === 'individual') {
-      return nonTrashed.filter((comment) => {
-        const originalComment = comment.get('originalComment');
-        const workspace = originalComment.get('workspace');
-        if (workspace) {
-          const group = workspace.get('group');
-          return !group;
-        }
-        return false;
-      });
-    }
-    if (this.itemsToDisplay === 'group') {
-      return nonTrashed.filter((comment) => {
-        const originalComment = comment.get('originalComment');
-        const workspace = originalComment.get('workspace');
-        if (workspace) {
-          const group = workspace.get('group');
-          return !!group;
-        }
-        return false;
+      return list.filter((selection) => {
+        const ws = selection.get('originalSelection')?.get('workspace');
+        return ws ? !!ws.get('group') : false;
       });
     }
     return [];
   }
 
+  get nonTrashedTaggings() {
+    return this.currentWorkspace?.taggings?.rejectBy('isTrashed') ?? [];
+  }
+  get nonTrashedFolders() {
+    return this.currentWorkspace?.folders?.rejectBy('isTrashed') ?? [];
+  }
+  get nonTrashedComments() {
+    let list = this.currentWorkspace?.comments?.rejectBy('isTrashed') ?? [];
+    if (this.itemsToDisplay === 'all') return list;
+
+    if (this.itemsToDisplay === 'individual') {
+      return list.filter((comment) => {
+        const ws = comment.get('originalComment')?.get('workspace');
+        return ws ? !ws.get('group') : false;
+      });
+    }
+    if (this.itemsToDisplay === 'group') {
+      return list.filter((comment) => {
+        const ws = comment.get('originalComment')?.get('workspace');
+        return ws ? !!ws.get('group') : false;
+      });
+    }
+    return [];
+  }
   get nonTrashedResponses() {
-    return this.currentWorkspace.responses.content.rejectBy('isTrashed');
-  }
-
-  get containerLayoutClass() {
-    let areFoldersHidden = this.areFoldersHidden || this.cannotSeeFolders;
-    let areCommentsHidden = this.areCommentsHidden || this.cannotSeeComments;
-
-    if (areFoldersHidden && areCommentsHidden) {
-      return 'hsh';
-    }
-    if (areFoldersHidden) {
-      return 'hsc';
-    }
-    if (areCommentsHidden) {
-      return 'fsh';
-    }
-    return 'fsc';
-  }
-
-  get canSeeFolders() {
-    let cws = this.currentWorkspace;
-    return this.permissions.canEdit(cws, 'folders', 1);
-  }
-
-  get cannotSeeFolders() {
-    return !this.canSeeFolders;
-  }
-
-  get canSeeComments() {
-    let cws = this.currentWorkspace;
-    return this.permissions.canEdit(cws, 'comments', 1);
-  }
-
-  // Feature is disabled below - primarily used to disable viewing comments for students in parent workspaces.
-  // get cannotSeeComments() {
-  //   return !this.canSeeComments;
-  // }
-
-  get showFoldersToggle() {
-    return this.areFoldersHidden && this.canSeeFolders;
-  }
-
-  get showCommentsToggle() {
-    return this.areCommentsHidden && this.canSeeComments;
-  }
-
-  get canSeeSelections() {
-    let cws = this.currentWorkspace;
-
-    return this.permissions.canEdit(cws, 'selections', 1);
-  }
-
-  get cannotSeeSelections() {
-    return !this.canSeeSelections;
-  }
-
-  get canSeeResponses() {
-    let cws = this.currentWorkspace;
-    return this.permissions.canEdit(cws, 'feedback', 1);
-  }
-
-  get cannotSeeResponses() {
-    return !this.canSeeResponses;
+    return this.currentWorkspace?.responses?.rejectBy('isTrashed') ?? [];
   }
 
   // Actions

@@ -1,60 +1,69 @@
-<div class='comment-flex-item text'>
-  <p>
-    {{#if this.isForCurrentWorkspace}}
-      <LinkTo
-        @route='workspace.submissions.submission.selections.selection'
-        @models={{array
-          this.comment.selection.submission
-          this.comment.selection
-        }}
-        class='comment comment-text'
-      >
-        {{this.comment.text}}
-      </LinkTo>
-    {{else}}
-      <a
-        class='newWindow comment-text'
-        target='_blank'
-        href='{{this.comment.selection.link}}'
-        rel='noopener noreferrer'
-      >{{this.comment.text}}</a>
-    {{/if}}
-  </p>
-  <p class='meta'>
-    by
-    <span class='creator'>
-      {{#if this.isParentWorkspace}}
-        {{this.comment.originalComment.createdBy.username}}
+<li
+  class='ws-comment-comp
+    {{~@comment.label}}
+    {{~this.relevanceClass}}
+    {{~if @comment.inReuse @comment.inReuse}}
+    {{~if this.isFromCurrentSelection "is-for-cs"}}'
+>
+  <div class='comment-flex-item text'>
+    <p>
+      {{#if this.isForCurrentWorkspace}}
+        <LinkTo
+          @route='workspace.submissions.submission.selections.selection'
+          @models={{array @comment.selection.submission @comment.selection}}
+          class='comment comment-text'
+        >
+          {{@comment.text}}
+        </LinkTo>
       {{else}}
-        {{this.comment.createdBy.username}}
+        <a
+          class='newWindow comment-text'
+          target='_blank'
+          href={{@comment.selection.link}}
+          rel='noopener noreferrer'
+        >
+          {{@comment.text}}
+        </a>
       {{/if}}
-    </span>
-    in
-    <span class='workspace'>
-      {{#if this.isParentWorkspace}}
-        {{this.comment.originalComment.workspace.name}}
-      {{else}}
-        {{cthis.comment.workspace.name}}
-      {{/if}}
-    </span>
-    {{this.metaText}}
-  </p>
-</div>
-<div class='comment-flex-item actions'>
-  {{#if this.canDelete}}
-    <span {{action this.deleteComment this.comment}} class='delete_button'><i
-        class='fas fa-minus-circle'
-      ></i></span>
-  {{/if}}
-  {{#if this.permittedToComment}}
-    <a {{action this.reuseComment this.comment}} title='reuse this comment'>
-      {{#if this.childrenLength}}
-        {{this.childrenLength}}
-      {{else}}
-        <i class='fas fa-plus'></i>
-      {{/if}}
-    </a>
-  {{/if}}
-</div>
+    </p>
+    <p class='meta'>
+      by
+      <span class='creator'>
+        {{#if this.isParentWorkspace}}
+          {{@comment.originalComment.createdBy.username}}
+        {{else}}
+          {{@comment.createdBy.username}}
+        {{/if}}
+      </span>
+      in
+      <span class='workspace'>
+        {{#if this.isParentWorkspace}}
+          {{@comment.originalComment.workspace.name}}
+        {{else}}
+          {{@comment.workspace.name}}
+        {{/if}}
+      </span>
+      {{this.metaText}}
+    </p>
+  </div>
 
-<div class='clear'></div>
+  <div class='comment-flex-item actions'>
+    {{#if this.canDelete}}
+      <span class='delete_button' {{on 'click' (fn @deleteComment @comment)}}>
+        <i class='fas fa-minus-circle'></i>
+      </span>
+    {{/if}}
+
+    {{#if this.permittedToComment}}
+      <a {{on 'click' (fn @reuseComment @comment)}} title='reuse this comment'>
+        {{#if this.childrenLength}}
+          {{this.childrenLength}}
+        {{else}}
+          <i class='fas fa-plus'></i>
+        {{/if}}
+      </a>
+    {{/if}}
+  </div>
+
+  <div class='clear'></div>
+</li>
