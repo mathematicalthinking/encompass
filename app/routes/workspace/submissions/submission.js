@@ -9,20 +9,17 @@
 
 import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
-import { hash, resolve } from 'rsvp';
+import { hash } from 'rsvp';
 import { inject as service } from '@ember/service';
-import { action } from '@ember/object';
-export default class WorkspaceSubmissionRoute extends Route {
-  @service sweetAlert;
-  @service('utility-methods') utils;
-  @service currentUser;
-  @service router;
+import $ from 'jquery';
+import { resolve } from 'rsvp';
+import VmtHostMixin from '../../../mixins/vmt-host';
 
-  queryParams = {
-    vmtRoomId: {
-      refreshModel: true,
-    },
-  };
+export default Route.extend(VmtHostMixin, {
+  alert: service('sweet-alert'),
+  utils: service('utility-methods'),
+  currentUser: service('current-user'),
+  queryParams: 'vmtRoomId',
 
   async model({ submission_id }) {
     let submissions = await this.modelFor('workspace.submissions');
@@ -33,7 +30,7 @@ export default class WorkspaceSubmissionRoute extends Route {
       assignment,
       submission: submissions.findBy('id', submission_id),
     });
-  }
+  },
 
   afterModel(submission, transition) {
     return this.resolveVmtRoom(submission).then((room) => {
@@ -44,41 +41,41 @@ export default class WorkspaceSubmissionRoute extends Route {
 
       // so links to selections still work
       if (transition.intent.name === 'workspace.submissions.submission') {
-        this.router.transitionTo(
-          'workspace.submissions.submission',
-          submission,
-          {
-            queryParams: { vmtRoomId },
-          }
-        );
+        this.transitionTo('workspace.submissions.submission', submission, {
+          queryParams: { vmtRoomId },
+        });
       }
     });
-  }
+  },
 
-  setupController(controller, model) {
-    super.setupController(controller, model);
-
-    this.controllerFor('application').set('isSmallHeader', true);
-  }
-
+  setupController: function (controller, model) {
+    this._super(controller, model);
+  },
   resetController(controller, isExiting, transition) {
     if (isExiting && transition.targetName !== 'error') {
       controller.set('itemsToDisplay', 'all');
-      controller('application').set('isSmallHeader', false);
     }
-  }
+  },
 
-  renderTemplate(controller, model) {
+  activate: function () {
+    this.controllerFor('application').set('isSmallHeader', true);
+  },
+
+  deactivate: function () {
+    this.controllerFor('application').set('isSmallHeader', false);
+  },
+
+  renderTemplate: function (controller, model) {
     this.render('workspace/submission');
 
     let user = this.modelFor('application');
 
     schedule('afterRender', () => {
       if (!user.get('seenTour')) {
-        controller.send('startTour', 'workspace');
+        this.controller.send('startTour', 'workspace');
       }
     });
-  }
+  },
 
   resolveVmtRoom(submission) {
     let roomId;
@@ -99,7 +96,9 @@ export default class WorkspaceSubmissionRoute extends Route {
       return resolve(cachedRoom);
     }
     let url = `api/vmt/rooms/${roomId}`;
-    return fetch(url).then((data) => {
+    return $.get({
+      url,
+    }).then((data) => {
       if (!data || !data.room) {
         return null;
       }
@@ -109,7 +108,7 @@ export default class WorkspaceSubmissionRoute extends Route {
 
       return data.room;
     });
-  }
+  },
 
   handleRoomForVmt(room) {
     let utils = this.utils;
@@ -121,7 +120,7 @@ export default class WorkspaceSubmissionRoute extends Route {
       return;
     }
     window.vmtRooms[room._id] = room;
-  }
+  },
 
   extractVmtRoom(roomId) {
     if (!this.utils.isNonEmptyObject(window.vmtRooms)) {
@@ -129,78 +128,74 @@ export default class WorkspaceSubmissionRoute extends Route {
     }
 
     return window.vmtRooms[roomId];
-  }
+  },
 
-  @action
-  reload() {
-    this.refresh();
-  }
+  actions: {
+    reload: function () {
+      this.refresh();
+    },
 
-  @action
-  addSelection(selection) {}
+    addSelection: function (selection) {},
 
-  @action
-  tagSelection(selection, tags) {
-    let workspace = this.modelFor('workspace');
-    workspace.get('folders').then((folders) => {
-      let lcFolders = {};
-      folders.forEach((f) => {
-        lcFolders[f.get('name').toLowerCase().replace(/\s+/g, '')] = f;
+    tagSelection: function (selection, tags) {
+      var route = this;
+      var workspace = this.modelFor('workspace');
+      workspace.get('folders').then(function (folders) {
+        var lcFolders = {};
+        folders.forEach(function (f) {
+          lcFolders[f.get('name').toLowerCase().replace(/\s+/g, '')] = f;
+        });
+        tags.forEach(function (tag) {
+          if (_.keys(lcFolders).includes(tag)) {
+            route.send(
+              'fileSelectionInFolder',
+              selection.get('id'),
+              lcFolders[tag]
+            );
+          }
+        });
       });
-      tags.forEach((tag) => {
-        if (Object.keys(lcFolders).includes(tag)) {
-          this.send(
-            'fileSelectionInFolder',
-            selection.get('id'),
-            lcFolders[tag]
+    },
+    fileSelectionInFolder: function (selectionId, folder) {
+      let selection = this.store.peekRecord('selection', selectionId);
+      let workspace = this.modelFor('workspace');
+
+      if (!selection) {
+        return;
+      }
+      let tagging = this.store.createRecord('tagging', {
+        workspace,
+        selection,
+        folder,
+        createdBy: this.currentUser.user,
+      });
+      tagging
+        .save()
+        .then((savedTagging) => {
+          this.alert.showToast(
+            'success',
+            'Selection Filed',
+            'bottom-end',
+            3000,
+            false,
+            null
           );
-        }
-      });
-    });
-  }
-
-  @action
-  fileSelectionInFolder(selectionId, folder) {
-    let selection = this.store.peekRecord('selection', selectionId);
-    let workspace = this.modelFor('workspace');
-
-    if (!selection) {
-      return;
-    }
-    let tagging = this.store.createRecord('tagging', {
-      workspace,
-      selection,
-      folder,
-      createdBy: this.currentUser.user,
-    });
-    tagging
-      .save()
-      .then(() => {
-        this.alert.showToast(
-          'success',
-          'Selection Filed',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-      })
-      .catch((err) => {
-        console.log('err save tagging', err);
-      });
-  }
-
-  @action
-  willTransition(transition) {
-    let currentUrl = window.location.hash;
-    let wasVmt = currentUrl.indexOf('?vmtRoomId=') !== -1;
-    let willBeVmt = this.utils.isValidMongoId(
-      transition.to.queryParams.vmtRoomId
-    );
-    if (wasVmt && !willBeVmt) {
-      window.postMessage({
-        messageType: 'DESTROY_REPLAYER',
-      });
-    }
-  }
-}
+        })
+        .catch((err) => {
+          console.log('err save tagging', err);
+        });
+    },
+    willTransition(transition) {
+      let currentUrl = window.location.hash;
+      let wasVmt = currentUrl.indexOf('?vmtRoomId=') !== -1;
+      let willBeVmt = this.utils.isValidMongoId(
+        transition.to.queryParams.vmtRoomId
+      );
+      if (wasVmt && !willBeVmt) {
+        window.postMessage({
+          messageType: 'DESTROY_REPLAYER',
+        });
+      }
+    },
+  },
+});
