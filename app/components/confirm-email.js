@@ -1,43 +1,66 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import $ from 'jquery';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
 
-export default class ConfirmEmailComponent extends ErrorHandlingComponent {
-  @tracked confirmTokenErrors = [];
+export default class ConfirmEmailComponent extends Component {
+  @service errorHandling;
+
+  @tracked isTokenValid = false;
   @tracked isAlreadyConfirmed = false;
   @tracked invalidTokenError = null;
-  @tracked isTokenValid = false;
 
-  constructor() {
-    super(...arguments);
-    const token = this.args.token;
-    if (token) {
-      $.get({
-        url: `/auth/confirm/${token}`,
-      })
-        .then((res) => {
-          if (res.isValid) {
-            this.isTokenValid = true;
-          } else {
-            let isAlreadyConfirmed =
-              res.info === 'Email has already been confirmed';
-            if (isAlreadyConfirmed) {
-              this.isAlreadyConfirmed = true;
-              return;
-            }
-            this.invalidTokenError = res.info;
-          }
-        })
-        .catch((err) => {
-          this[err] = 'confirmTokenErrors';
-        });
-    }
+  get confirmTokenErrors() {
+    return this.errorHandling.getErrors('confirmTokenErrors') ?? [];
   }
 
   get loginMessage() {
-    if (this.isAlreadyConfirmed) {
-      return 'to get started using EnCoMPASS';
+    return this.isAlreadyConfirmed
+      ? 'to get started using EnCoMPASS'
+      : 'and you will be redirected a page where you can request a new confirmation email to be sent to your email address on file.';
+  }
+
+  @action
+  async validateToken() {
+    this.errorHandling.removeMessages('confirmTokenErrors');
+    this.isTokenValid = false;
+    this.isAlreadyConfirmed = false;
+    this.invalidTokenError = null;
+
+    const token = this.args.token;
+    if (!token) {
+      this.invalidTokenError = 'Missing confirmation token.';
+      return;
     }
-    return 'and you will be redirected a page where you can request a new confirmation email to be sent to your email address on file.';
+
+    try {
+      const res = await fetch(`/auth/confirm/${token}`, {
+        method: 'GET',
+        credentials: 'same-origin',
+      });
+
+      const contentType = res.headers.get('content-type');
+      const data = (contentType && contentType.includes('application/json'))
+         ? await res.json() 
+         : {}
+  
+      // Happy path
+      if (res.ok && data?.isValid) {
+        this.isTokenValid = true;
+        return;
+      }
+
+      // Not valid — distinguish “already confirmed” vs other errors
+      const info = data?.info || 'Invalid or expired confirmation link.';
+      if (info === 'Email has already been confirmed') {
+        this.isAlreadyConfirmed = true;
+        return;
+      }
+
+      this.invalidTokenError = info;
+    } catch (err) {
+      // Route all unexpected errors through the service
+      this.errorHandling.handleErrors(err, 'confirmTokenErrors');
+    }
   }
 }

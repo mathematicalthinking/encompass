@@ -1,18 +1,19 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 export default class UnconfirmedRoute extends Route {
   @service router;
+  @service currentUser;
   beforeModel() {
     // redirect to login if no user logged in
-    const user = this.modelFor('application');
+    const user = this.currentUser.user;
 
-    if (!user || !user.get('isAuthenticated')) {
-      return this.router.transitionTo('auth.login');
+    if (!user || !user.isAuthenticated) {
+      return this.router.replaceWith('auth.login');
     }
 
     // redirect to home page if email is already confirmed or user does not have an email
-    if (user.get('isEmailConfirmed') || !user.get('email')) {
-      this.router.transitionTo('/');
+    if (user.isEmailConfirmed || !user.email) {
+      this.router.replaceWith('index');
     }
   }
 }

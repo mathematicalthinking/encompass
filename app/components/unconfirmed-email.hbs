@@ -1,30 +1,28 @@
-<div id='uncomfirmed-page'>
-  <div class='info-container'>
-    <p class='info'>Hi,
-      {{this.displayName}}! Thank you for taking the time to create an EnCoMPASS
-      account.</p>
-
-    <p class='info'>
-      In order to start using the EnCoMPASS software, we need to confirm your
-      email address. Please check
-      {{this.email}}
-      for an email containing further instructions.
+<div id="uncomfirmed-page">
+  <div class="info-container">
+    <p class="info">
+      Hi, {{this.displayName}}! Thank you for taking the time to create an EnCoMPASS account.
     </p>
 
-    <p class='info'>
-      If for some reason the email is not delivered, please click the button
-      below to have a new email sent.
+    <p class="info">
+      In order to start using the EnCoMPASS software, we need to confirm your email address.
+      Please check {{this.email}} for an email containing further instructions.
     </p>
 
-    <button class='action_button' type='button' {{on 'click' this.sendEmail}}>
+    <p class="info">
+      If for some reason the email is not delivered, please click the button below to have a new email sent.
+    </p>
+
+    <button class="action_button" type="button" {{on "click" this.sendEmail}}>
       Send New Email
     </button>
 
     {{#if this.emailSuccess}}
-      <p id='resent-confirm' class='success-message'>Email sent!</p>
+      <p id="resent-confirm" class="success-message">Email sent!</p>
     {{/if}}
+
     {{#each this.emailErrors as |error|}}
-      <p class='error-message'>{{error}}</p>
+      <p class="error-message">{{error}}</p>
     {{/each}}
   </div>
 </div>
