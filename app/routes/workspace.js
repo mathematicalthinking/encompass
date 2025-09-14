@@ -1,31 +1,29 @@
 /** # Workspace Route
  * @description base route for the workspace
- * @author Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>, Tim Leonard <tleonard@21pstem.org>
+ * @author Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>, Tim Leonard <tleonard@21pstem.org>, Irv Katz <exidy80@gmail.com>
  * @since 1.0.0
  */
 import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+
 export default class WorkspaceRoute extends Route {
   @service store;
-  /*
-  using regular ajax request because sideloaded  data was not being pushed in to store soon enough
-  when using ember data, which was causing unnecessary api requests being made
-  */
-
+  @service currentUser;
+  
   async model(params) {
-    const workspace = await this.store.findRecord(
-      'workspace',
-      params.workspace_id
-    );
-
-    return workspace;
+    return this.store.findRecord('workspace', params.workspace_id);
   }
 
-  @action tour() {
-    //this could be factored out to a mixin if we have other tours
-    var user = this.modelFor('application');
-    user.set('seenTour', null);
+  // @TODO Refactor tour-handling to a service
+  @action
+  tour() {
+    const user = this.currentUser.user;
+    if (user) {
+      // local-only flag; no save. @TODO is this correct?
+      user.seenTour = null;
+    }
+    // Uses action bubbling because we handle `startTour` upstream
     this.send('startTour', 'workspace');
   }
 }
