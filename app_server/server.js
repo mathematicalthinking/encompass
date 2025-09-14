@@ -181,11 +181,6 @@ server.get('/api/vmt/rooms/:id', path.validateId(), api.get.vmtRoom);
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', path.validateId(), api.get.user);
 server.get('/api/workspaces', paginate.middleware(20, 100), api.get.workspaces);
-server.get(
-  { path: '/api/workspaces/:id', version: '0.0.1' },
-  path.validateId(),
-  fixed.workspace
-);
 server.get('/api/workspaces/:id', path.validateId(), api.get.workspace);
 server.get('/api/folders', api.get.folders);
 server.get('/api/folders/:id', path.validateId(), api.get.folder);
@@ -329,24 +324,43 @@ server.put('/api/groups/:id', api.put.groups);
 //ALL DELETE REQUESTS
 server.delete('/api/images/:id', path.validateId(), api.delete.image);
 
-let buildDir = 'build';
-if (process.env.BUILD_DIR) {
-  buildDir = process.env.BUILD_DIR;
-}
-console.log(`buildDir: ${buildDir}`);
-server.get(/.*/, express.static(buildDir));
-
-server.post(
-  {
-    name: 'newWorkspaces',
-    path: '/api/newWorkspaceRequests',
-  },
-  api.post.newWorkspaceRequest
-);
+server.post('/api/newWorkspaceRequests', api.post.newWorkspaceRequest);
 
 server.post('/api/import', api.post.import);
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
 server.post('/api/vmtImportRequests', api.post.vmtImportRequests);
+
+// --- Static files for Ember build ---
+// BUILD_DIR should be 'dist' (dev) or 'build' (prod), both at repo root.
+const buildDirName = process.env.BUILD_DIR || 'build';
+
+// Resolve to repo root, not app_server/
+const absBuild = expressPath.isAbsolute(buildDirName)
+  ? buildDirName
+  : expressPath.resolve(__dirname, '..', buildDirName);
+
+console.log(`Serving Ember app from: ${absBuild}`);
+
+server.use(express.static(absBuild, { fallthrough: true }));
+
+// --- SPA fallback: send Ember index.html for non-API GETs ---
+const SPA_EXCLUDES = [
+  /^\/api\//,
+  /^\/auth\//,
+  /^\/socket\.io/,
+  /^\/image$/,
+  /^\/pdf$/,
+  /^\/images\/file\//,
+  /^\/metrics/,
+  /^\/favicon\.ico$/,
+  /^\/robots\.txt$/,
+  /^\/sitemap\.xml$/
+];
+
+server.get('*', (req, res, next) => {
+  if (SPA_EXCLUDES.some((re) => re.test(req.path))) return next();
+  res.sendFile(expressPath.join(absBuild, 'index.html'));
+});
 
 // error handler
 server.use(function (err, req, res, next) {
