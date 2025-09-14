@@ -1,190 +1,198 @@
-<div class='signup-box'>
+<div class="signup-box">
   <img
-    src='../assets/images/logo-encompass.gif'
-    class='encompass-logo'
-    alt='encompass logo'
+    src="/assets/images/logo-encompass.gif"
+    class="encompass-logo"
+    alt="EnCoMPASS logo"
   />
 
-  <form class='form-signup'>
-    <div class='auth-form-input'>
-      <label for='first-name'>First Name:</label>
+  <form class="form-signup" {{on "submit" this.onSubmit}}>
+    <div class="auth-form-input">
+      <label for="first-name">First Name:</label>
       <Input
-        class='form-control'
-        @type='text'
-        name='first-name'
-        id='first-name'
+        class="form-control"
+        id="first-name"
+        name="first-name"
+        @type="text"
         @value={{this.firstName}}
-        {{on 'input' this.resetErrors}}
+        {{on "input" this.resetErrors}}
       />
     </div>
-    <div class='auth-form-input'>
-      <label for='last-name'>Last Name:</label>
+
+    <div class="auth-form-input">
+      <label for="last-name">Last Name:</label>
       <Input
-        class='form-control'
-        @type='text'
-        name='last-name'
-        id='last-name'
+        class="form-control"
+        id="last-name"
+        name="last-name"
+        @type="text"
         @value={{this.lastName}}
-        {{on 'input' this.resetErrors}}
+        {{on "input" this.resetErrors}}
       />
     </div>
-    <div class='auth-form-input'>
-      <label for='email'>Email:</label>
+
+    <div class="auth-form-input">
+      <label for="email">Email:</label>
       <Input
-        class='form-control'
-        @type='text'
-        name='email'
-        id='email'
+        class="form-control"
+        id="email"
+        name="email"
+        @type="text"
         @value={{this.email}}
-        {{on 'input' this.resetErrors}}
+        {{on "input" this.emailValidate}}
       />
       {{#if this.isEmailInvalid}}
-        <p class='error-message'>{{this.emailErrors.invalid}}</p>
+        <p class="error-message">{{this.emailErrors.invalid}}</p>
       {{/if}}
       {{#if this.emailError}}
-        <p class='error-message'>{{this.emailError}}</p>
+        <p class="error-message">{{this.emailError}}</p>
       {{/if}}
     </div>
-    {{#if this.isEmailValid}}
-      <div class='auth-form-input'>
-        <label for='confirmEmail'>Confirm Email:</label>
-        <Input
-          class='form-control'
-          @type='text'
-          name='confirmEmail'
-          id='confirmEmail'
-          @value={{this.confirmEmail}}
-        />
 
+    {{#if this.isEmailValid}}
+      <div class="auth-form-input">
+        <label for="confirmEmail">Confirm Email:</label>
+        <Input
+          class="form-control"
+          id="confirmEmail"
+          name="confirmEmail"
+          @type="text"
+          @value={{this.confirmEmail}}
+          {{on "input" this.resetErrors}}
+        />
         {{#unless this.doEmailsMatch}}
-          <p class='error-message'>{{this.emailErrors.mismatch}}</p>
+          <p class="error-message">{{this.emailErrors.mismatch}}</p>
         {{/unless}}
       </div>
     {{/if}}
-    <div class='auth-form-input'>
-      <label for='organization'>Institution, Organization, School or District
-        Name:</label>
+
+    <div class="auth-form-input">
+      <label for="organization">Institution, Organization, School or District Name:</label>
       <SelectizeInput
         @maxItems={{1}}
         @initialOptions={{this.orgOptions}}
-        @labelField='name'
-        @valueField='id'
-        @searchField='name'
-        @onItemAdd={{action 'setOrg'}}
-        @onItemRemove={{action 'setOrg'}}
-        @inputId='org-select'
-        @create={{action 'processOrgRequest'}}
+        @labelField="name"
+        @valueField="id"
+        @searchField="name"
+        @value={{this.orgId}}
+        @onItemAdd={{this.setOrg}}
+        @onItemRemove={{this.setOrg}}
+        @inputId="org-select"
+        @create={{this.processOrgRequest}}
         @persist={{false}}
         @createFilter={{this.orgRequestFilter}}
       />
     </div>
-    <div class='auth-form-input'>
-      <label for='location'>City and State:</label>
+
+    <div class="auth-form-input">
+      <label for="location">City and State:</label>
       <Input
-        class='form-control'
-        @type='text'
-        name='location'
-        id='location'
+        class="form-control"
+        id="location"
+        name="location"
+        @type="text"
         @value={{this.location}}
-        {{on 'input' this.resetErrors}}
+        {{on "input" this.resetErrors}}
       />
     </div>
-    <div class='auth-form-input'>
-      <label for='username'>Username:</label>
+
+    <div class="auth-form-input">
+      <label for="username">Username:</label>
       <Input
-        class='form-control'
-        @type='text'
-        name='username'
-        id='username'
+        class="form-control"
+        id="username"
+        name="username"
+        @type="text"
         @value={{this.username}}
-        {{on 'input' this.usernameValidate}}
+        {{on "input" this.usernameValidate}}
       />
       {{#if this.usernameError}}
-        <p class='error-message'>{{this.usernameError}}</p>
+        <p class="error-message">{{this.usernameError}}</p>
       {{/if}}
     </div>
-    <div class='auth-form-input'>
-      <label for='password'>Password:</label>
+
+    <div class="auth-form-input">
+      <label for="password">Password:</label>
       <Input
-        class='form-control'
-        @type='password'
-        name='password'
-        id='password'
+        class="form-control"
+        id="password"
+        name="password"
+        @type="password"
         @value={{this.password}}
-        {{on 'input' this.resetErrors}}
+        {{on "input" this.resetErrors}}
       />
-
       {{#if this.isPasswordInvalid}}
-        <p class='error-message'>{{this.passwordErrors.invalid}}</p>
+        <p class="error-message">{{this.passwordErrors.invalid}}</p>
       {{/if}}
     </div>
-    {{#if this.isPasswordValid}}
-      <div class='auth-form-input'>
-        <label for='confirmPassword'>Confirm Password:</label>
-        <Input
-          class='form-control'
-          @type='password'
-          name='confirmPassword'
-          id='confirmPassword'
-          @value={{this.confirmPassword}}
-          {{on 'input' this.resetErrors}}
-        />
 
+    {{#if this.isPasswordValid}}
+      <div class="auth-form-input">
+        <label for="confirmPassword">Confirm Password:</label>
+        <Input
+          class="form-control"
+          id="confirmPassword"
+          name="confirmPassword"
+          @type="password"
+          @value={{this.confirmPassword}}
+          {{on "input" this.resetErrors}}
+        />
         {{#unless this.doPasswordsMatch}}
-          <p class='error-message'>{{this.passwordErrors.mismatch}}</p>
+          <p class="error-message">{{this.passwordErrors.mismatch}}</p>
         {{/unless}}
       </div>
     {{/if}}
-    <div class='auth-form-input'>
-      <label for='requestReason'>Reason for Registering with EnCoMPASS:</label>
+
+    <div class="auth-form-input">
+      <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
       <Input
-        class='form-control'
-        @type='text'
-        name='requestReason'
-        id='requestReason'
+        class="form-control"
+        id="requestReason"
+        name="requestReason"
+        @type="text"
         @value={{this.requestReason}}
-        {{on 'keydown' (action 'resetErrors')}}
+        {{on "input" this.resetErrors}}
       />
       {{#if this.missingCredentials}}
-        <p class='error-message'>You must complete all of the fields in order to
-          signup.</p>
+        <p class="error-message">
+          You must complete all of the fields in order to signup.
+        </p>
       {{/if}}
     </div>
-    <div id='checkbox'>
-      <label for='terms'>Do you accept our
-        <LinkTo @route='terms'>
-          <span>Terms and conditions?</span>
-        </LinkTo></label>
+
+    <div id="checkbox">
+      <label for="terms">
+        Do you accept our
+        <LinkTo @route="terms"><span>Terms and conditions?</span></LinkTo>
+      </label>
       <Input
-        @type='checkbox'
-        id='terms'
-        name='terms'
+        id="terms"
+        name="terms"
+        @type="checkbox"
         @checked={{this.agreedToTerms}}
-        {{on 'input' this.resetErrors}}
+        {{on "input" this.resetErrors}}
       />
     </div>
 
-    <div class='terms-error'>
+    <div class="terms-error">
       {{#if this.noTermsAndConditions}}
-        <p class='error-message'>You must accept our Terms and Conditions.</p>
+        <p class="error-message">You must accept our Terms and Conditions.</p>
       {{/if}}
     </div>
 
-    {{#each this.postErrors as |error|}}
-      <div class='post-error'>
-        <p class='error-message post-error'>{{error}}</p>
+    {{#each (or (this.errorHandling.getErrors "signupErrors") []) as |error|}}
+      <div class="post-error">
+        <p class="error-message post-error">{{error}}</p>
       </div>
     {{/each}}
-    <button class='auth-button' type='submit' {{action 'signup'}}>Sign Up</button>
+
+    <button class="auth-button" type="submit">Sign Up</button>
   </form>
 
-  <div class='bottom-info'>
+  <div class="bottom-info">
     <SocialSignin />
-    <p class='login-link'>
+    <p class="login-link">
       Already have an account?
-      <LinkTo @route='auth.login' class='login-link'>Log in here
-      </LinkTo>
+      <LinkTo @route="auth.login" class="login-link">Log in here</LinkTo>
     </p>
   </div>
-
 </div>

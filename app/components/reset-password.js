@@ -1,82 +1,120 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  classNames: ['reset-page'],
-  getTokenErrors: [],
-  resetPasswordErrors: [],
-  alert: service('sweet-alert'),
-  errorHandling: service('error-handling'),
-  didReceiveAttrs: function () {
-    this._super();
-    const token = this.token;
-    const that = this;
-    if (token) {
-      $.get({
-        url: `/auth/reset/${token}`,
-      })
-        .then((res) => {
-          if (res.isValid) {
-            that.set('isTokenValid', true);
-          } else {
-            that.set('invalidTokenError', res.info);
-          }
-        })
-        .catch((err) => {
-          that.errorHandling.handleErrors(err, 'getTokenErrors');
-        });
-    }
-  },
+export default class ResetPasswordComponent extends Component {
+  @service('sweet-alert') alert;
+  @service errorHandling;
+  @service navigation;
 
-  doPasswordsMatch: computed('password', 'confirmPassword', function () {
+  @tracked isTokenValid = false;
+  @tracked invalidTokenError = '';
+  @tracked password = '';
+  @tracked confirmPassword = '';
+  @tracked matchError = false;
+  @tracked missingRequiredFields = false;
+
+  // expose service-backed arrays for template
+  get getTokenErrors() {
+    return this.errorHandling.getErrors('getTokenErrors') ?? [];
+  }
+  get resetPasswordErrors() {
+    return this.errorHandling.getErrors('resetPasswordErrors') ?? [];
+  }
+
+  get doPasswordsMatch() {
     return this.password === this.confirmPassword;
-  }),
+  }
 
-  actions: {
-    resetPassword: function () {
-      const password = this.password;
-      const confirmPassword = this.confirmPassword;
+  // ---- lifecycle-ish (validate token once the element exists)
+  @action
+  async validateToken() {
+    this.errorHandling.removeMessages('getTokenErrors');
 
-      if (!password || !confirmPassword) {
-        this.set('missingRequiredFields', true);
+    const token = this.args.token;
+    if (!token) {
+      this.isTokenValid = false;
+      this.invalidTokenError = 'Missing reset token.';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/auth/reset/${token}`, {
+        method: 'GET',
+        credentials: 'same-origin',
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data?.isValid) {
+        this.isTokenValid = true;
+        this.invalidTokenError = '';
+      } else {
+        this.isTokenValid = false;
+        this.invalidTokenError = data?.info || 'Invalid or expired reset token.';
+      }
+    } catch (err) {
+      this.isTokenValid = false;
+      this.errorHandling.handleErrors(err, 'getTokenErrors');
+    }
+  }
+
+  @action
+  resetErrors() {
+    this.matchError = false;
+    this.missingRequiredFields = false;
+    this.errorHandling.removeMessages('resetPasswordErrors');
+  }
+
+  @action
+  onSubmit(e) {
+    e.preventDefault();
+    this.resetPassword();
+  }
+
+  @action
+  async resetPassword() {
+    this.resetErrors();
+
+    if (!this.password || !this.confirmPassword) {
+      this.missingRequiredFields = true;
+      return;
+    }
+    if (!this.doPasswordsMatch) {
+      this.matchError = true;
+      return;
+    }
+
+    const token = this.args.token;
+    const body = new URLSearchParams({ password: this.password });
+
+    try {
+      const res = await fetch(`/auth/reset/${token}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        credentials: 'same-origin',
+        body,
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        this.errorHandling.handleErrors(
+          data || { message: `Reset failed (${res.status})` },
+          'resetPasswordErrors'
+        );
         return;
       }
-      if (!this.doPasswordsMatch) {
-        this.set('matchError', true);
-        return;
-      }
 
-      const resetPasswordData = { password };
-      const that = this;
-
-      return $.post({
-        url: `/auth/reset/${that.token}`,
-        data: resetPasswordData,
-      })
-        .then((res) => {
-          this.alert.showToast(
-            'success',
-            'Password Reset',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          that.sendAction('toHome');
-        })
-        .catch((err) => {
-          this.errorHandling.handleErrors(err, 'resetPasswordErrors');
-        });
-    },
-    resetErrors: function (e) {
-      const errors = ['matchError', 'missingCredentials'];
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
-        }
-      }
-    },
-  },
-});
+      this.alert.showToast('success', 'Password Reset', 'bottom-end', 3000, false, null);
+      this.navigation.goHome({ replace: true });
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'resetPasswordErrors');
+      this.errorHandling.displayErrorToast(err);
+    } finally {
+      this.password = '';
+      this.confirmPassword = '';
+    }
+  }
+}

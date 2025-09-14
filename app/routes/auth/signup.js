@@ -1,20 +1,11 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
-import { action } from '@ember/object';
+import { service } from '@ember/service';
 
 export default class SignupRoute extends Route {
   @service store;
-  model() {
-    return this.store
-      .query('organization', {
-        sortBy: 'members',
-      })
-      .then((orgs) => {
-        return orgs;
-      });
-  }
 
-  @action toHome() {
-    window.location.href = '/';
+  async model() {
+    // DS.ManyArray (or array-like) of organizations
+    return this.store.query('organization', { sortBy: 'members' });
   }
 }
