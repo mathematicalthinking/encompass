@@ -1,24 +1,23 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { inject as service } from '@ember/service';
-import { action, computed } from '@ember/object';
-import { alias, equal, gt } from '@ember/object/computed';
-import { set } from '@ember/object';
+import { service } from '@ember/service';
+
+// Lodash ok to keep; used for deep equality in thread lookup
 import isEqual from 'lodash-es/isEqual';
+
 export default class ResponseContainer extends Component {
-  @service('current-user') currentUser;
+  @service currentUser;
   @service('workspace-permissions') wsPermissions;
   @service store;
-  @service('error-handling') errorHandling;
+  @service errorHandling;
   @service('utility-methods') utils;
   @service notificationService;
-  @tracked submission = null;
+  @service navigation;
+
   @tracked subResponses = [];
   @tracked isCreatingNewMentorReply = false;
-
-  @alias('response.responseType') primaryResponseType;
-  @equal('workspace.workspaceType', 'parent') isParentWorkspace;
-  @gt('mentorReplies.length', 0) areMentorReplies;
+  @tracked reviewedResponse = null;
+  @tracked priorMentorRevision = null;
 
   iconFillOptions = {
     approved: '#35A853',
@@ -28,133 +27,149 @@ export default class ResponseContainer extends Component {
     draft: '#778899',
   };
 
+  // ===== Convenience getters for @args =====
+  get response()    { return this.args.response; }
+  get submission()  { return this.args.submission; }
+  get workspace()   { return this.args.workspace; }
+  get submissions() { return this.args.submissions ?? []; }
+  get storeResponses() { return this.args.storeResponses ?? []; }
+
+  // ===== Lifecycle-ish setup via constructor (no async) =====
   constructor() {
+    console.log('>>> ResponseContainer.constructor');
     super(...arguments);
-    set('subResponses', this.responses);
-    this.handleResponseViewAudit();
 
-    let relatedNtfs = this.notificationService.findRelatedNtfs(
-      'response',
-      this.response
-    );
+    // The local working set for current-submission responses
+    this.subResponses = [...(this.args.responses ?? [])];
 
-    relatedNtfs.forEach((ntf) => {
-      let isClean = !ntf.get('wasSeen') && !ntf.get('isTrashed');
+    this._auditResponseViewAndCleanNotifications();
 
-      if (isClean) {
-        ntf.set('wasSeen', true);
-        ntf.set('isTrashed', true);
-        ntf.save();
-      }
-    });
-
-    if (this.response.isNew) {
+    // New mentor reply flag
+    if (this.response?.isNew) {
       this.isCreatingNewMentorReply = true;
-      return;
     }
 
+    // Load related references without making the ctor async
     if (this.primaryResponseType === 'approver') {
-      this.response.reviewedResponse.then((response) => {
-        if (!this.isDestroying && !this.isDestroyed) {
-          set(this, 'reviewedResponse', response);
-        }
+      this.response?.reviewedResponse?.then((res) => {
+        if (!this.isDestroying && !this.isDestroyed) this.reviewedResponse = res ?? null;
       });
     }
 
     if (!this.isMentorRecipient && this.primaryResponseType === 'mentor') {
-      this.response.priorRevision.then((revision) => {
-        if (!this.isDestroying && !this.isDestroyed) {
-          this.priorMentorRevision = revision;
-        }
+      this.response?.priorRevision?.then((rev) => {
+        if (!this.isDestroying && !this.isDestroyed) this.priorMentorRevision = rev ?? null;
       });
     }
   }
 
-  @computed('storeResponses.@each.isTrashed')
-  get cleanStoreResponses() {
-    let responses = this.storeResponses || [];
-    return responses.rejectBy('isTrashed');
+  _auditResponseViewAndCleanNotifications() {
+    // keep prior behavior: mark related notifications seen/trashed
+    const related = this.notificationService?.findRelatedNtfs?.('response', this.response) ?? [];
+    for (const ntf of related) {
+      const wasSeen = ntf.get?.('wasSeen');
+      const isTrashed = ntf.get?.('isTrashed');
+      if (!wasSeen && !isTrashed) {
+        ntf.set?.('wasSeen', true);
+        ntf.set?.('isTrashed', true);
+        ntf.save?.();
+      }
+    }
   }
 
-  @computed('cleanStoreResponses.[]', 'nonTrashedResponses.[]', 'submission.id')
-  get newResponses() {
-    return this.cleanStoreResponses.filter((response) => {
-      let subId = this.utils.getBelongsToId(response, 'submission');
+  // ===== Derived state (formerly @computed / alias / equal / gt) =====
+  get primaryResponseType() {
+    return this.response?.responseType;
+  }
 
-      if (subId !== this.submission.id) {
-        return false;
-      }
-      return !this.nonTrashedResponses.includes(response);
+  get isParentWorkspace() {
+    return this.workspace?.workspaceType === 'parent';
+  }
+
+  get cleanStoreResponses() {
+    return this.storeResponses.filter((r) => !r.isTrashed);
+  }
+
+  get nonTrashedResponses() {
+    return this.subResponses.filter((r) => !r.isTrashed);
+  }
+
+  get newResponses() {
+    // storeResponses that belong to this submission but aren't in local subResponses yet
+    const currSubId = this.submission?.id;
+    const nonTrashedIds = new Set(this.nonTrashedResponses.map((r) => r.id));
+    return this.cleanStoreResponses.filter((r) => {
+      const subId = this.utils.getBelongsToId(r, 'submission');
+      return subId === currSubId && !nonTrashedIds.has(r.id);
     });
   }
 
-  @computed('newResponses.[]', 'nonTrashedResponses.[]')
   get combinedResponses() {
-    return this.nonTrashedResponses.addObjects(this.newResponses);
+    // Merge without duplicates
+    const byId = new Map();
+    for (const r of this.nonTrashedResponses) byId.set(r.id, r);
+    for (const r of this.newResponses) byId.set(r.id, r);
+    return [...byId.values()];
   }
 
-  @computed('submissions.[]')
   get sortedSubmissions() {
     return this.submissions
-      .rejectBy('isTrashed')
-      .sortBy('createDate')
-      .reverse();
+      .filter((s) => !s.isTrashed)
+      .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
   }
 
-  @computed('isOwnSubmission', 'submission.student')
   get studentName() {
-    return `${this.submission.student}`;
+    // maintain shape from original
+    return `${this.submission?.student ?? ''}`;
   }
 
-  @computed('submission.creator.studentId', 'currentUser.user.id')
   get isOwnSubmission() {
-    return this.submission.creator.studentId === this.currentUser.user.id;
+    return this.submission?.creator?.studentId === this.currentUser?.user?.id;
   }
 
-  @computed('subResponses.@each.isTrashed')
-  get nonTrashedResponses() {
-    return this.subResponses.rejectBy('isTrashed');
-  }
-
-  @computed(
-    'combinedResponses.[]',
-    'mentorReplyDisplayResponse.id',
-    'primaryApproverReply'
-  )
-  get approverReplies() {
-    let reviewedResponseId;
-
-    if (this.primaryApproverReply) {
-      reviewedResponseId = this.primaryApproverReply
-        .belongsTo('reviewedResponse')
-        .id();
-    } else {
-      if (this.mentorReplyDisplayResponse) {
-        reviewedResponseId = this.mentorReplyDisplayResponse.id;
-      }
-    }
-
-    if (!reviewedResponseId) {
-      return [];
-    }
-    return this.combinedResponses.filter((response) => {
-      let id = response.belongsTo('reviewedResponse').id();
-      return response.responseType === 'approver' && reviewedResponseId === id;
-    });
-  }
-
-  @computed('combinedResponses.[]')
   get mentorReplies() {
-    return this.combinedResponses.filterBy('responseType', 'mentor');
+    return this.combinedResponses.filter((r) => r.responseType === 'mentor');
   }
 
-  @computed(
-    'canApprove',
-    'isCreatingNewMentorReply',
-    'isPrimaryRecipient',
-    'primaryResponseType',
-    'response'
-  )
+  get areMentorReplies() {
+    return this.mentorReplies.length > 0;
+  }
+
+  get isPrimaryRecipient() {
+    return this.response?.recipient?.id === this.currentUser?.user?.id;
+  }
+
+  get isMentorRecipient() {
+    return this.isPrimaryRecipient && this.primaryResponseType === 'mentor';
+  }
+
+  get isOwnResponse() {
+    return this.response?.createdBy?.id === this.currentUser?.user?.id;
+  }
+
+  get isDisplayMentorReplyYours() {
+    const reply = this.mentorReplyDisplayResponse;
+    if (!reply) return false;
+    const creatorId = this.utils.getBelongsToId(reply, 'createdBy');
+    return creatorId === this.currentUser?.user?.id;
+  }
+
+  get isOwnMentorReply() {
+    return this.isDisplayMentorReplyYours;
+  }
+
+  get isOwnApproverReply() {
+    return this.isOwnResponse && this.primaryResponseType === 'approver';
+  }
+
+  get primaryApproverReply() {
+    return this.primaryResponseType === 'approver' ? this.response : null;
+  }
+
+  get menteeResponse() {
+    return this.isMentorRecipient ? this.response : null;
+  }
+
   get responseToApprove() {
     if (
       this.primaryResponseType === 'mentor' &&
@@ -166,215 +181,117 @@ export default class ResponseContainer extends Component {
     return null;
   }
 
-  @computed('response.recipient.id', 'currentUser.user.id')
-  get isPrimaryRecipient() {
-    return this.response.recipient.id === this.currentUser.user.id;
-  }
-
-  @computed('isPrimaryRecipient', 'primaryResponseType')
-  get isMentorRecipient() {
-    return this.isPrimaryRecipient && this.primaryResponseType === 'mentor';
-  }
-
-  @computed('response.createdBy.id', 'currentUser.user.id')
-  get isOwnResponse() {
-    return this.response.createdBy.id === this.currentUser.user.id;
-  }
-
-  @computed('currentUser.user.id', 'mentorReplyDisplayResponse')
-  get isDisplayMentorReplyYours() {
-    let reply = this.mentorReplyDisplayResponse;
-    if (!reply) {
-      return false;
-    }
-    let creatorId = this.utils.getBelongsToId(reply, 'createdBy');
-    return creatorId === this.currentUser.user.id;
-  }
-
-  @computed('isDisplayMentorReplyYours')
-  get isOwnMentorReply() {
-    return this.isDisplayMentorReplyYours;
-  }
-
-  @computed('isOwnResponse', 'primaryResponseType')
-  get isOwnApproverReply() {
-    return this.isOwnResponse && this.primaryResponseType === 'approver';
-  }
-
-  @computed('primaryResponseType', 'response')
-  get primaryApproverReply() {
-    if (this.primaryResponseType === 'approver') {
-      return this.response;
-    }
-    return null;
-  }
-
-  @computed('isMentorRecipient', 'response')
-  get menteeResponse() {
-    if (this.isMentorRecipient) {
-      return this.response;
-    }
-    return null;
-  }
-
-  @computed(
-    'menteeResponse',
-    'primaryResponseType',
-    'response',
-    'responseToApprove',
-    'reviewedResponse'
-  )
   get mentorReplyDisplayResponse() {
-    if (this.responseToApprove) {
-      return this.responseToApprove;
-    }
-    if (this.menteeResponse) {
-      return this.menteeResponse;
-    }
-    if (this.primaryResponseType === 'mentor') {
-      return this.response;
-    }
-    if (this.reviewedResponse) {
-      return this.reviewedResponse;
-    }
-
+    if (this.responseToApprove) return this.responseToApprove;
+    if (this.menteeResponse) return this.menteeResponse;
+    if (this.primaryResponseType === 'mentor') return this.response;
+    if (this.reviewedResponse) return this.reviewedResponse;
     return null;
   }
 
-  @computed('workspace', 'currentUser.user', 'workspace.feedbackAuthorizers.[]')
   get canApprove() {
-    return this.wsPermissions.canApproveFeedback(this.workspace);
+    return this.wsPermissions?.canApproveFeedback?.(this.workspace) ?? false;
   }
 
-  @computed(
-    'areMentorReplies',
-    'canApprove',
-    'canDirectSend',
-    'isCreatingNewMentorReply',
-    'isOwnMentorReply',
-    'isParentWorkspace',
-    'primaryResponseType'
-  )
-  get showApproverReply() {
-    if (this.isCreatingNewMentorReply) {
-      return false;
-    }
-
-    if (this.isParentWorkspace) {
-      return false;
-    }
-    if (this.primaryResponseType === 'approver') {
-      return true;
-    }
-    if (!this.areMentorReplies) {
-      return false;
-    }
-
-    if (this.isOwnMentorReply) {
-      return !this.canDirectSend;
-    }
-    return this.canApprove;
-  }
-
-  @computed('workspace', 'currentUser.user')
   get canDirectSend() {
-    return this.wsPermissions.canEdit(this.workspace, 'feedback', 2);
+    return this.wsPermissions?.canEdit?.(this.workspace, 'feedback', 2) ?? false;
   }
 
-  @computed('workspace', 'currentUser.user')
   get canSend() {
-    return this.wsPermissions.canEdit(this.workspace, 'feedback', 1);
+    return this.wsPermissions?.canEdit?.(this.workspace, 'feedback', 1) ?? false;
   }
 
-  @computed('workspace.feedbackAuthorizers.[]')
   get approvers() {
-    if (!this.workspace) {
-      return [];
-    }
-    return this.workspace.feedbackAuthorizers;
+    return this.workspace?.feedbackAuthorizers ?? [];
   }
 
-  @computed('mentorReplies.@each.createdBy')
   get existingSubmissionMentors() {
-    return this.mentorReplies.mapBy('createdBy.content').uniqBy('id');
+    // unique by id
+    const list = this.mentorReplies.map((r) => r?.createdBy?.content).filter(Boolean);
+    const seen = new Set();
+    const out = [];
+    for (const p of list) {
+      if (!seen.has(p.id)) {
+        seen.add(p.id);
+        out.push(p);
+      }
+    }
+    return out;
+  }
+
+  get approverReplies() {
+    let reviewedResponseId = null;
+
+    if (this.primaryApproverReply) {
+      reviewedResponseId = this.primaryApproverReply.belongsTo('reviewedResponse').id();
+    } else if (this.mentorReplyDisplayResponse) {
+      reviewedResponseId = this.mentorReplyDisplayResponse.id;
+    }
+
+    if (!reviewedResponseId) return [];
+    return this.combinedResponses.filter((r) => {
+      const id = r.belongsTo('reviewedResponse').id();
+      return r.responseType === 'approver' && id === reviewedResponseId;
+    });
+  }
+
+  get cleanWorkspaceResponses() {
+    const wsId = this.workspace?.id;
+    return this.cleanStoreResponses.filter(
+      (r) => this.utils.getBelongsToId(r, 'workspace') === wsId
+    );
   }
 
   findExistingResponseThread(threadType, threadId) {
-    let peekedResponseThreads = this.store.peekAll('response-thread').toArray();
-    if (!peekedResponseThreads) {
-      return;
+    const all = this.store.peekAll('response-thread')?.toArray?.() ?? [];
+    return all.find((t) => t.threadType === threadType && isEqual(t.id, threadId));
+  }
+
+  // ===== Mutations / handlers =====
+  toggleCreatingNewMentorReply = (val) => {
+    this.isCreatingNewMentorReply = (val === undefined) ? !this.isCreatingNewMentorReply : !!val;
+  };
+
+  removeResponse = (response) => {
+    if (!response) return;
+    this.subResponses = this.subResponses.filter((r) => r.id !== response.id);
+  };
+
+  updateResponse = (response) => {
+    if (!response) return;
+    const id = response.get?.('id') ?? response.id;
+    if (!id) return;
+    if (!this.subResponses.find((r) => r.id === id)) {
+      this.subResponses = [...this.subResponses, response];
     }
+  };
 
-    return peekedResponseThreads.find((thread) => {
-      return thread.threadType === threadType && isEqual(thread.id, threadId);
-    });
-  }
+  cancelMentorReply = () => {
+    this.response?.rollbackAttributes?.();
+  };
 
-  @computed('cleanStoreResponses.[]', 'workspace.id')
-  get cleanWorkspaceResponses() {
-    return this.cleanStoreResponses.filter((response) => {
-      return (
-        this.utils.getBelongsToId(response, 'workspace') === this.workspace.id
-      );
-    });
-  }
+  cancelApproverReply = () => {
+    this.primaryApproverReply?.rollbackAttributes?.();
+  };
 
-  @action
-  toggleCreatingNewMentorReply(val) {
-    if (val === undefined) {
-      val = !this.isCreatingNewMentorReply;
-    }
-    this.isCreatingNewMentorReply = val;
-  }
+  handleError = (err) => {
+    this.errorHandling.handleError(err, { throwError: true });
+  };
 
-  @action
-  removeResponse(response) {
-    if (!response) {
-      return;
-    }
-    let nonTrashed = this.subResponses.filter((res) => {
-      return res.id !== response.id;
-    });
-    this.subResponses = nonTrashed;
-  }
+  // ===== Navigation hooks (service-backed) =====
+  openSubmission = (_workspaceId, submissionId) => {
+    this.navigation.toResponseSubmission(submissionId);
+  };
 
-  @action
-  updateResponse(response) {
-    if (!response) {
-      return;
-    }
+  // If you have a specific "problem" route, call it here; otherwise no-op placeholder.
+  openProblem = () => {};
 
-    let resId = response.get('id');
-
-    if (!resId) {
-      return;
-    }
-
-    let isSubRes = this.subResponses.find((res) => {
-      return res.id === resId;
-    });
-
-    if (!isSubRes) {
-      this.subResponses.addObject(response);
-    }
-  }
-
-  @action
-  cancelMentorReply() {
-    this.response.rollbackAttributes();
-  }
-
-  @action
-  cancelApproverReply() {
-    if (this.primaryApproverReply) {
-      this.primaryApproverReply.rollbackAttributes();
-    }
-  }
-
-  @action
-  handleError(err) {
-    this.errorHandling.handleError(err, {
-      throwError: true,
-    });
-  }
+  // ===== Pass-throughs for child API (keep shape; no-ops if not provided downstream) =====
+  onSubmissionChange = (...args) => this.args.onSubChange?.(...args);
+  sendSubmissionRevisionNotices = (...args) => this.args.sendRevisionNotices?.(...args);
+  onSaveSuccess = (...args) => this.args.onSaveSuccess?.(...args);
+  onMentorReplySwitch = (...args) => this.args.onMentorReplySwitch?.(...args);
+  toResponses = () => this.navigation.toResponses();
+  toNewResponse = (submissionId, workspaceId) => this.navigation.toNewResponse(submissionId, workspaceId);
+  handleResponseThread = (...args) => this.args.handleResponseThread?.(...args);
 }

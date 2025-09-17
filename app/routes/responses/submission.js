@@ -82,29 +82,12 @@ export default class ResponsesRoute extends AuthenticatedRoute {
     if (!model) this.router.transitionTo('responses');
   }
 
-  // keep navigation helpers (to be moved to a service later)
-  @action toResponseSubmission(subId) {
-    this.router.transitionTo('responses.submission', subId);
-  }
-
-  @action toResponse(submissionId, responseId) {
-    this.router.transitionTo('responses.submission', submissionId, {
-      queryParams: { responseId },
-    });
-  }
-
-  @action toResponses() {
-    this.router.transitionTo('responses');
-  }
-
-  @action toNewResponse(submissionId, workspaceId) {
-    this.router.transitionTo('responses.new.submission', submissionId, {
-      queryParams: { workspaceId },
-    });
-  }
-
-  // route hook (not an action)
   renderTemplate() {
+    console.log('>>> ResponsesRoute.renderTemplate');
     this.render('responses/response');
   }
+  
+
+
+  
 }
