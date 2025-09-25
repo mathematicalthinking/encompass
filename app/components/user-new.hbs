@@ -24,19 +24,19 @@
           @type='password'
           class='user-password'
           @value={{this.password}}
-          {{on 'focusout' (fn this.passwordValidate this.password)}}
+          {{on 'focusout' (fn this.passwordValidate)}}
           {{on 'focusin' this.resetErrors}}
         />
       </td>
     </tr>
     <tr>
-      <td>First Name</td>
+      <td>First Name <span class='required-star'>*</span></td>
       <td>
         <Input @type='text' @value={{this.firstName}} class='user-first-name' />
       </td>
     </tr>
     <tr>
-      <td>Last Name</td>
+    <td>Last Name <span class='required-star'>*</span></td>
       <td>
         <Input @type='text' @value={{this.lastName}} class='user-last-name' />
       </td>
@@ -56,23 +56,23 @@
             {{on 'focusin' this.resetErrors}}
           />
         </td>
-      </tr>
-      <tr>
-        <td>Organization <span class='required-star'>*</span></td>
-        <td>
-          {{#if this.currentUser.isAdmin}}
-            <Ui::TwitterTypeahead
-              @dataList={{@organizations}}
-              @onSelect={{this.setOrg}}
-              @optionLabelPath='name'
-            />
-          {{else}}
-            {{this.currentUser.user.organization?.name}}
-          {{/if}}
-        </td>
-      </tr>
-      <tr>
-        <td>Location</td>
+        </tr>
+        <tr>
+          <td>Organization <span class='required-star'>*</span></td>
+          <td>
+            {{#if this.currentUser.isAdmin}}
+              <Ui::TwitterTypeahead
+                @dataList={{@organizations}}
+                @onSelect={{this.setOrg}}
+                @optionLabelPath='name'
+              />
+            {{else}}
+              {{this.currentUser.user.organization?.name}}
+            {{/if}}
+          </td>
+        </tr>
+        <tr>
+        <td>Location <span class='required-star'>*</span></td>
         <td>
           <Input @type='text' @value={{this.location}} class='user-location' />
         </td>
@@ -170,8 +170,15 @@
       class='action_button new-user'
       id='new-user-btn'
       type='button'
+      disabled={{this.isCreatingUser}}
       {{on 'click' this.confirmOrg}}
-    >Create New User</button>
+    >
+      {{#if this.isCreatingUser}}
+        Creating User...
+      {{else}}
+        Create New User
+      {{/if}}
+    </button>
     <button
       class='action_button new-user cancel-button'
       type='button'

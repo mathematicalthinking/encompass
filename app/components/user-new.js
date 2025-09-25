@@ -23,6 +23,7 @@ export default class UserNewComponent extends UserSignupComponent {
   @tracked actingRole = null;
   orgReq = null;
   @tracked missingAccountType = false;
+  @tracked isCreatingUser = false;
 
   get accountTypes() {
     return this.currentUser.isAdmin
@@ -105,10 +106,18 @@ export default class UserNewComponent extends UserSignupComponent {
     });
   }
 
-  //warn admin they are creating new org
+  // warn admin they are creating new org
   // When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
 
   @action confirmOrg() {
+    this.isCreatingUser = true;
+
+    // Get the typed value from the typeahead input if org is null
+    if (!this.org) {
+      const input = document.querySelector('.tt-input, .twitter-typeahead input');
+      this.org = input?.value || null;
+    }
+
     let org = this.org;
     if (typeof org === 'string') {
       let orgs = this.args.organizations;
@@ -128,6 +137,8 @@ export default class UserNewComponent extends UserSignupComponent {
           .then((result) => {
             if (result.value) {
               this.newUser();
+            }else{
+              this.isCreatingUser = false;
             }
           });
         this.orgReq = org;
@@ -159,13 +170,16 @@ export default class UserNewComponent extends UserSignupComponent {
 
     if (!username || !password) {
       this.errorMessage = true;
+      this.isCreatingUser = false;
       return;
     }
 
     if (accountTypeLetter !== 'S') {
       this.actingRole = 'teacher';
-      if (!email) {
+      // For non-students, SSO validation require all fields
+      if (!firstName || !lastName || !email || !location) {
         this.errorMessage = true;
+        this.isCreatingUser = false;
         return;
       }
     } else {
@@ -242,6 +256,9 @@ export default class UserNewComponent extends UserSignupComponent {
       })
       .catch(() => {
         // err should be handled within handleOrg function
+      })
+      .finally(() => {
+        this.isCreatingUser = false;
       });
   }
 
