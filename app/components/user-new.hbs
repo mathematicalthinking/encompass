@@ -24,7 +24,7 @@
           @type='password'
           class='user-password'
           @value={{this.password}}
-          {{on 'focusout' (fn this.passwordValidate)}}
+          {{on 'focusout' this.passwordValidate}}
           {{on 'focusin' this.resetErrors}}
         />
       </td>
@@ -65,6 +65,8 @@
                 @dataList={{@organizations}}
                 @onSelect={{this.setOrg}}
                 @optionLabelPath='name'
+                @setSelectedValueOnChange={{true}}
+
               />
             {{else}}
               {{this.currentUser.user.organization?.name}}

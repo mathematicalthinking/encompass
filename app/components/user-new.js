@@ -30,14 +30,13 @@ export default class UserNewComponent extends UserSignupComponent {
       ? ['Teacher', 'Student', 'Pd Admin', 'Admin']
       : ['Teacher', 'Student'];
   }
-  
 
   get createOrgErrors() {
-    return this.errorHandling.getErrors('createOrgErrors')
+    return this.errorHandling.getErrors('createOrgErrors');
   }
 
   get createUserErrors() {
-    return this.errorHandling.getErrors('createUserErrors')
+    return this.errorHandling.getErrors('createUserErrors');
   }
 
   async createNewUser(data) {
@@ -112,18 +111,10 @@ export default class UserNewComponent extends UserSignupComponent {
   @action confirmOrg() {
     this.isCreatingUser = true;
 
-    // Get the typed value from the typeahead input if org is null
-    if (!this.org) {
-      const input = document.querySelector('.tt-input, .twitter-typeahead input');
-      this.org = input?.value || null;
-    }
-
     let org = this.org;
     if (typeof org === 'string') {
       let orgs = this.args.organizations;
-      let [matchingOrg] = orgs.filter(
-        (organization) => organization.name === org
-      );
+      let matchingOrg = orgs.find((organization) => organization.name === org);
       if (matchingOrg) {
         this.newUser();
       } else {
@@ -137,7 +128,7 @@ export default class UserNewComponent extends UserSignupComponent {
           .then((result) => {
             if (result.value) {
               this.newUser();
-            }else{
+            } else {
               this.isCreatingUser = false;
             }
           });
@@ -154,8 +145,7 @@ export default class UserNewComponent extends UserSignupComponent {
     var firstName = this.firstName;
     var lastName = this.lastName;
     var email = this.email;
-    var organization =
-      this.org || (await this.currentUser.user.organization);
+    var organization = this.org || (await this.currentUser.user.organization);
     var location = this.location;
     var accountType = this.selectedType || 'student';
     var accountTypeLetter;
@@ -251,7 +241,11 @@ export default class UserNewComponent extends UserSignupComponent {
             }
           })
           .catch((err) => {
-            this.errorHandling.handleErrors(err, 'createUserErrors', newUserData);
+            this.errorHandling.handleErrors(
+              err,
+              'createUserErrors',
+              newUserData
+            );
           });
       })
       .catch(() => {
@@ -275,18 +269,17 @@ export default class UserNewComponent extends UserSignupComponent {
   }
 
   @action
-  setAccountType (type) {
+  setAccountType(type) {
     this.selectedType = type;
   }
 
   @action
   resetError(errorType) {
-    this.errorHandling.removeMessages(errorType)
+    this.errorHandling.removeMessages(errorType);
   }
 
   @action
   removeErrorFromArray(type, error) {
     this.errorHandling.removeErrorFromArray(type, error);
   }
-
 }
