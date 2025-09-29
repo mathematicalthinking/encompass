@@ -13,14 +13,17 @@ export default class SectionsNewRoute extends AuthenticatedRoute {
   }
 
   async model() {
+    const organizations = this.store.findAll('organization');
+    const sections = this.store.findAll('section');
     const users = await this.store.query('user', {});
     const addableTeachers = users.rejectBy('accountType', 'S');
     return hash({
+      // @TODO: pass along organization of current user bc used in component
       users,
       addableTeachers,
-      organizations: this.store.findAll('organization'),
-      user: this.currentUser.user,
-      sections: this.store.findAll('section'),
+      organizations,
+      user: this.currentUser.user, // @TODO: remove this and use service in component
+      sections,
     });
   }
 }

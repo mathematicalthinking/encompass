@@ -16,7 +16,7 @@ export default class WorkspacesNewRoute extends AuthenticatedRoute {
     const currentUser = this.currentUser.user;
     return hash({
       // pdSets: this.get('store').findAll('PdSet'),
-      currentUser,
+      currentUser, // @TODO: remove this and use service in component
       folderSets: this.store.findAll('folder-set'),
       sections: this.store.findAll('section'),
       assignments: this.store.findAll('assignment'),
@@ -24,7 +24,7 @@ export default class WorkspacesNewRoute extends AuthenticatedRoute {
       problems: this.store.findAll('problem'),
     });
   }
-  // Created workspaceId and is passed from component to redirect
+  // @TODO: Use navigation service in component instead of passing actions
   @action toWorkspaces(id) {
     this.router.transitionTo('workspace.work', id);
   }

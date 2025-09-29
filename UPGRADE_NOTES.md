@@ -21,6 +21,10 @@ Enc-test has been updated with the latest version of the work that I've done ove
 
 # Upgrades needed globally
 
+## Detail outlets
+
+There are several places where the visibility of outlets are explictly handled in the components via DOM manipulation (usually by added or removing the 'hidden' class). A better method is to show the detailed outlet only when the current route calls for it. This approach was implemented in the /problems route. The controllers/problems.js defines isDetailActive. The route template uses this to decide whether to show the outlet. A similar approach should be used for other list-detail structures (e.g., in the workspace, submission, and response subsystems)
+
 ## Use of this.model or @model
 
 There are several components (js or template) that reference the model. In standard Ember practice, only the route templates should access the model and pass along the specific bits of the model needed by each component. That way, there's a single source of model truth (from the route) and we don't have components knowing about what's in the model.

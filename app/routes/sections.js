@@ -8,7 +8,7 @@ export default class SectionsRoute extends AuthenticatedRoute {
   async model() {
     return hash({
       sections: this.store.findAll('section'),
-      currentUser: this.currentUser.user,
+      currentUser: this.currentUser.user, //@TODO: remove this and use service in component
     });
   }
 }
