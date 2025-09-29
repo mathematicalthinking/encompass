@@ -6,7 +6,7 @@ export default class AssignmentsNewRoute extends AuthenticatedRoute {
   @service currentUser;
   @service router;
   beforeModel() {
-    if (this.currentUser.isStudent) this.router.transitionTo('assignments');
+    if (this.currentUser.isStudent) this.router.replaceWith('assignments');
   }
   model() {
     return hash({

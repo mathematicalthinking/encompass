@@ -1,14 +1,15 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { hash } from 'rsvp';
 
 export default class ProblemsRoute extends Route {
   @service store;
+  @service currentUser;
 
   hideOutlet = true;
 
   async model() {
-    const user = this.modelFor('application');
+    const user = this.currentUser.user;
     const userOrg = await user.organization;
     const recommendedProblems = userOrg
       ? await userOrg.recommendedProblems
@@ -28,7 +29,6 @@ export default class ProblemsRoute extends Route {
       sections: this.store.findAll('section'),
       problems: this.store.query('problem', problemCriteria),
       hideOutlet: this.hideOutlet,
-      currentUser: user,
       recommendedProblems,
     });
   }

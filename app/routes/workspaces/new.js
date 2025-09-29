@@ -1,24 +1,22 @@
 import { hash } from 'rsvp';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 
 export default class WorkspacesNewRoute extends AuthenticatedRoute {
   @service store;
   @service router;
+  @service currentUser;
   beforeModel() {
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
-
-    if (isStudent) {
+    if (this.currentUser.isStudent) {
       this.router.transitionTo('/');
     }
   }
   model() {
-    const currentUser = this.modelFor('application');
+    const currentUser = this.currentUser.user;
     return hash({
       // pdSets: this.get('store').findAll('PdSet'),
-      currentUser,
+      currentUser, // @TODO: remove this and use service in component
       folderSets: this.store.findAll('folder-set'),
       sections: this.store.findAll('section'),
       assignments: this.store.findAll('assignment'),
@@ -26,7 +24,7 @@ export default class WorkspacesNewRoute extends AuthenticatedRoute {
       problems: this.store.findAll('problem'),
     });
   }
-  // Created workspaceId and is passed from component to redirect
+  // @TODO: Use navigation service in component instead of passing actions
   @action toWorkspaces(id) {
     this.router.transitionTo('workspace.work', id);
   }
