@@ -1,15 +1,16 @@
-import UserSignupComponent from './user-signup';
+import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { debounce } from '@ember/runloop';
 
-export default class UserNewComponent extends UserSignupComponent {
+export default class UserNewComponent extends Component {
   @service router;
   @service store;
   @service('sweet-alert') alert;
   @service currentUser;
   @service errorHandling;
-  @tracked errorMessage = null;
+  @service userValidation;
   @tracked username = '';
   @tracked password = '';
   @tracked firstName = '';
@@ -18,17 +19,44 @@ export default class UserNewComponent extends UserSignupComponent {
   @tracked org = null;
   @tracked location = '';
   @tracked isAuthorized = null;
-  @tracked authorizedBy = '';
-  newUserData = {};
-  @tracked actingRole = null;
-  orgReq = null;
-  @tracked missingAccountType = false;
+  @tracked selectedType = null;
   @tracked isCreatingUser = false;
+  @tracked showPasswords = false;
+  @tracked confirmPassword = '';
+
+  // Configuration object (composition data)
+  fieldConfig = {
+    username: { validator: 'validateUsername', errorKey: 'usernameError' },
+    password: { validator: 'validatePassword', errorKey: 'passwordError' },
+    email: { validator: 'validateEmail', errorKey: 'emailError' },
+    confirmPassword: {
+      validator: 'validateConfirmPassword',
+      errorKey: 'confirmPasswordError',
+      args: ['password', 'confirmPassword'],
+    },
+    firstName: {
+      validator: 'validateName',
+      errorKey: 'firstNameError',
+      fieldName: 'First name',
+    },
+    lastName: {
+      validator: 'validateName',
+      errorKey: 'lastNameError',
+      fieldName: 'Last name',
+    },
+  };
 
   get accountTypes() {
     return this.currentUser.isAdmin
       ? ['Teacher', 'Student', 'Pd Admin', 'Admin']
       : ['Teacher', 'Student'];
+  }
+
+  get isStudent() {
+    // Defaults to student if no type selected
+    return (
+      !this.selectedType || this.selectedType.charAt(0).toUpperCase() === 'S'
+    );
   }
 
   get createOrgErrors() {
@@ -39,89 +67,103 @@ export default class UserNewComponent extends UserSignupComponent {
     return this.errorHandling.getErrors('createUserErrors');
   }
 
+  // Adapter method: its in the service, but using this way for cleanliness
+  getError(errorKey) {
+    return this.errorHandling.getErrors(errorKey)?.[0];
+  }
+
+  get usernameError() {
+    return this.getError('usernameError');
+  }
+  get passwordError() {
+    return this.getError('passwordError');
+  }
+  get confirmPasswordError() {
+    return this.getError('confirmPasswordError');
+  }
+  get firstNameError() {
+    return this.getError('firstNameError');
+  }
+  get lastNameError() {
+    return this.getError('lastNameError');
+  }
+  get errorMessage() {
+    return this.getError('generalError');
+  }
+  get emailError() {
+    return this.getError('emailError');
+  }
+
   async createNewUser(data) {
-    if (!data) {
-      throw new Error('Invalid data');
+    const response = await fetch('/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error);
     }
 
-    try {
-      let response = await fetch('/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+    return response.json();
+  }
+
+  async handleOrg(org) {
+    if (!org) throw new Error('Invalid Data');
+
+    if (typeof org === 'string') {
+      const matchingOrg = this.args.organizations.findBy('name', org);
+      if (matchingOrg) {
+        this.org = matchingOrg;
+        return matchingOrg.id;
+      }
+
+      const rec = this.store.createRecord('organization', {
+        name: org,
+        createdBy: this.currentUser.user,
       });
 
-      if (!response.ok) {
-        let error = await response.text(); // or `await response.json()` if JSON
-        throw new Error(error);
+      try {
+        const newOrg = await rec.save();
+        return newOrg.id;
+      } catch (err) {
+        this.errorHandling.handleErrors(err, 'createOrgErrors', rec);
+        throw err;
       }
-
-      return await response.json(); // adjust based on actual response type
-    } catch (err) {
-      throw err;
     }
+
+    return org.id;
   }
 
-  handleOrg(org) {
-    var that = this;
-    return new Promise((resolve, reject) => {
-      if (!org) {
-        return reject('Invalid Data');
-      }
+  @action
+  confirmOrg() {
+    // Clear previous errors
+    this.errorHandling.removeMessages(
+      'usernameError',
+      'emailError',
+      'passwordError',
+      'generalError'
+    );
 
-      let orgReq;
-      // make sure user did not type in existing org
-      if (typeof org === 'string') {
-        let orgs = this.args.organizations;
-        let matchingOrg = orgs.findBy('name', org);
-        if (matchingOrg) {
-          this.org = matchingOrg;
-          org = matchingOrg;
-        } else {
-          orgReq = org;
-        }
-      }
+    // Validate form
+    if (!this.validateForm()) {
+      return;
+    }
 
-      if (orgReq) {
-        let rec = that.store.createRecord('organization', {
-          name: orgReq,
-          createdBy: that.currentUser.user,
-        });
-
-        rec
-          .save()
-          .then((newOrg) => {
-            return resolve(newOrg.id);
-          })
-          .catch((err) => {
-            this.errorHandling.handleErrors(err, 'createOrgErrors', rec);
-            return reject(err);
-          });
-      } else {
-        return resolve(org.id);
-      }
-    });
-  }
-
-  // warn admin they are creating new org
-  // When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
-
-  @action confirmOrg() {
     this.isCreatingUser = true;
 
-    let org = this.org;
-    if (typeof org === 'string') {
-      let orgs = this.args.organizations;
-      let matchingOrg = orgs.find((organization) => organization.name === org);
+    if (typeof this.org === 'string') {
+      const matchingOrg = this.args.organizations.find(
+        (org) => org.name === this.org
+      );
       if (matchingOrg) {
         this.newUser();
       } else {
         this.alert
           .showModal(
             'question',
-            `Are you sure you want to create ${org}`,
+            `Are you sure you want to create ${this.org}`,
             null,
             'Yes'
           )
@@ -132,7 +174,6 @@ export default class UserNewComponent extends UserSignupComponent {
               this.isCreatingUser = false;
             }
           });
-        this.orgReq = org;
       }
     } else {
       this.newUser();
@@ -140,137 +181,256 @@ export default class UserNewComponent extends UserSignupComponent {
   }
 
   async newUser() {
-    var username = this.username;
-    var password = this.password;
-    var firstName = this.firstName;
-    var lastName = this.lastName;
-    var email = this.email;
-    var organization = this.org || (await this.currentUser.user.organization);
-    var location = this.location;
-    var accountType = this.selectedType || 'student';
-    var accountTypeLetter;
-    if (accountType) {
-      accountTypeLetter = accountType.charAt(0).toUpperCase();
-    } else {
-      this.missingAccountType = true;
-      return;
-    }
-    var isAuthorized = this.isAuthorized;
-    var currentUserId = this.currentUser.id;
+    // Default to 'S' (Student) if no type selected
+    const accountTypeLetter = this.selectedType?.charAt(0).toUpperCase() || 'S';
 
-    if (!username || !password) {
-      this.errorMessage = true;
+    if (!this.username || !this.password) {
+      this.errorHandling.handleErrors(
+        { errors: [{ detail: 'Missing required fields' }] },
+        'generalError'
+      );
       this.isCreatingUser = false;
       return;
     }
 
-    if (accountTypeLetter !== 'S') {
-      this.actingRole = 'teacher';
-      // For non-students, SSO validation require all fields
-      if (!firstName || !lastName || !email || !location) {
-        this.errorMessage = true;
-        this.isCreatingUser = false;
-        return;
-      }
-    } else {
-      email = null;
-    }
-
-    if (isAuthorized) {
-      let userData = {
-        username,
-        password,
-        firstName,
-        lastName,
-        email,
-        location,
-        accountType: accountTypeLetter,
-        isAuthorized: true,
-        authorizedBy: currentUserId,
-        createdBy: currentUserId,
-      };
-      this.authorizedBy = currentUserId;
-      this.newUserData = userData;
-    } else {
-      let userData = {
-        username,
-        password,
-        firstName,
-        lastName,
-        email,
-        location,
-        accountType: accountTypeLetter,
-        isAuthorized: false,
-        createdBy: currentUserId,
-      };
-      this.newUserData = userData;
-    }
-
-    if (!username) {
+    // For non-students: all other fields required
+    if (
+      accountTypeLetter !== 'S' &&
+      (!this.firstName || !this.lastName || !this.email || !this.location)
+    ) {
+      this.errorHandling.handleErrors(
+        { errors: [{ detail: 'Missing required fields' }] },
+        'generalError'
+      );
+      this.isCreatingUser = false;
       return;
     }
 
-    return this.handleOrg(organization)
-      .then((org) => {
-        let newUserData = this.newUserData;
-        newUserData.organization = org;
-        return this.createNewUser(newUserData)
-          .then((res) => {
-            if (res.username) {
-              this.alert.showToast(
-                'success',
-                `${res.username} created`,
-                'bottom-end',
-                3000,
-                null,
-                false
-              );
-              return this.router.transitionTo('users.user', res.id);
-            }
-            if (
-              res.message === 'There already exists a user with that username'
-            ) {
-              this.usernameError = this.usernameErrors.taken;
-            } else if (
-              res.message ===
-              'There already exists a user with that email address'
-            ) {
-              this.emailError = this.emailErrors.taken;
-            } else {
-              this.errorHandling.handleErrors(res.message, 'createUserErrors');
-            }
-          })
-          .catch((err) => {
-            this.errorHandling.handleErrors(
-              err,
-              'createUserErrors',
-              newUserData
-            );
-          });
-      })
-      .catch(() => {
-        // err should be handled within handleOrg function
-      })
-      .finally(() => {
-        this.isCreatingUser = false;
-      });
+    const userData = {
+      username: this.username,
+      password: this.password,
+      accountType: accountTypeLetter,
+      isAuthorized: false, // Always defaults to false
+      createdBy: this.currentUser.id,
+    };
+
+    // Only add non-student fields if not a student
+    if (accountTypeLetter !== 'S') {
+      userData.firstName = this.firstName;
+      userData.lastName = this.lastName;
+      userData.email = this.email;
+      userData.location = this.location;
+      if (this.isAuthorized) {
+        userData.isAuthorized = true;
+        userData.authorizedBy = this.currentUser.id;
+      }
+    }
+
+    try {
+      let orgId;
+      if (accountTypeLetter === 'S') {
+        // Students: use selected org or default to creator's org
+        orgId = await this.handleOrg(
+          this.org || this.currentUser.user.organization
+        );
+      } else {
+        // Non-students: must have org selected
+        if (!this.org) {
+          this.errorHandling.handleErrors(
+            { errors: [{ detail: 'Organization is required' }] },
+            'generalError'
+          );
+          this.isCreatingUser = false;
+          return;
+        }
+        orgId = await this.handleOrg(this.org);
+      }
+
+      userData.organization = orgId;
+      const res = await this.createNewUser(userData);
+      if (res.username) {
+        this.alert.showToast(
+          'success',
+          `${res.username} created`,
+          'bottom-end',
+          3000,
+          null,
+          false
+        );
+        this.router.transitionTo('users.user', res.id);
+      } else if (res.message?.includes('username')) {
+        this.errorHandling.handleErrors(
+          { errors: [{ detail: this.userValidation.usernameErrors.taken }] },
+          'usernameError'
+        );
+      } else if (res.message?.includes('email')) {
+        this.errorHandling.handleErrors(
+          { errors: [{ detail: this.userValidation.emailErrors.taken }] },
+          'emailError'
+        );
+      } else {
+        this.errorHandling.handleErrors(
+          { errors: [{ detail: res.message }] },
+          'createUserErrors'
+        );
+      }
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'createUserErrors');
+    } finally {
+      this.isCreatingUser = false;
+    }
   }
 
-  @action cancelNew() {
+  // Generic validation method using composition
+  validateField(fieldName) {
+    const config = this.fieldConfig[fieldName];
+    if (!config) return;
+
+    let result;
+    if (config.fieldName) {
+      // For name validation with custom field name
+      result = this.userValidation[config.validator](
+        this[fieldName],
+        config.fieldName
+      );
+    } else if (config.args) {
+      // For methods that need multiple arguments
+      const args = config.args.map((arg) => this[arg]);
+      result = this.userValidation[config.validator](...args);
+    } else {
+      // For simple single-argument methods
+      result = this.userValidation[config.validator](this[fieldName]);
+    }
+    if (!result.isValid) {
+      this.errorHandling.handleErrors(
+        { errors: [{ detail: result.error }] },
+        config.errorKey
+      );
+    } else {
+      this.errorHandling.removeMessages(config.errorKey);
+    }
+  }
+
+  _validateUsername() {
+    this.validateField('username');
+  }
+
+  _validatePassword() {
+    this.validateField('password');
+  }
+
+  _validateConfirmPassword() {
+    this.validateField('confirmPassword');
+  }
+
+  _validateEmail() {
+    this.validateField('email');
+  }
+
+  _validateFirstName() {
+    this.validateField('firstName');
+  }
+
+  _validateLastName() {
+    this.validateField('lastName');
+  }
+
+  @action
+  usernameValidate() {
+    debounce(this, this._validateUsername, 150);
+  }
+
+  @action
+  passwordValidate() {
+    debounce(this, this._validatePassword, 150);
+  }
+
+  @action
+  confirmPasswordValidate() {
+    debounce(this, this._validateConfirmPassword, 150);
+  }
+
+  @action
+  emailValidate() {
+    if (this.email || !this.isStudent) {
+      debounce(this, this._validateEmail, 150);
+    } else {
+      this.errorHandling.removeMessages('emailError');
+    }
+  }
+
+  @action
+  firstNameValidate() {
+    if (this.firstName || !this.isStudent) {
+      debounce(this, this._validateFirstName, 150);
+    } else {
+      this.errorHandling.removeMessages('firstNameError');
+    }
+  }
+
+  @action
+  lastNameValidate() {
+    if (this.lastName || !this.isStudent) {
+      debounce(this, this._validateLastName, 150);
+    } else {
+      this.errorHandling.removeMessages('lastNameError');
+    }
+  }
+
+  validateForm() {
+    let isValid = true;
+    let missingFields = [];
+    const requiredFields = ['username', 'password', 'confirmPassword'];
+    if (!this.isStudent) {
+      requiredFields.push('firstName', 'lastName', 'email', 'location');
+    }
+
+    requiredFields.forEach((field) => {
+      if (!this[field]) {
+        missingFields.push(
+          field
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, (str) => str.toUpperCase())
+        );
+      } else if (this.fieldConfig[field]) {
+        this.validateField(field);
+        if (this.getError(this.fieldConfig[field].errorKey)) {
+          isValid = false;
+        }
+      }
+    });
+
+    if (!this.isStudent && !this.org) missingFields.push('Organization');
+
+    if (missingFields.length > 0) {
+      const message = `Missing required fields: ${missingFields.join(', ')}`;
+      this.errorHandling.handleErrors(
+        { errors: [{ detail: message }] },
+        'generalError'
+      );
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  @action
+  cancelNew() {
     this.router.transitionTo('users');
   }
 
-  @action setOrg(org) {
-    //  if (typeof org === 'string') {
-    //    this.set('orgReq', org);
-    //  } else {
+  @action
+  setOrg(org) {
     this.org = org;
-    //  }
   }
 
   @action
   setAccountType(type) {
     this.selectedType = type;
+    // Clear email error when switching to student
+    if (type === 'Student') {
+      this.errorHandling.removeMessages('emailError');
+    }
   }
 
   @action
@@ -281,5 +441,22 @@ export default class UserNewComponent extends UserSignupComponent {
   @action
   removeErrorFromArray(type, error) {
     this.errorHandling.removeErrorFromArray(type, error);
+  }
+
+  @action
+  resetErrors() {
+    this.errorHandling.removeMessages(
+      'usernameError',
+      'emailError',
+      'passwordError',
+      'confirmPasswordError',
+      'firstNameError',
+      'lastNameError'
+    );
+  }
+
+  @action
+  togglePasswordVisibility() {
+    this.showPasswords = !this.showPasswords;
   }
 }
