@@ -8,25 +8,24 @@ export default class ProblemUtilityService extends Service {
   @service('sweet-alert') alert;
 
   async fetchProblemData(problemId) {
+    const sectionList = this.store.findAll('section');
+    const orgList = this.store.findAll('organization');
     const problem = await this.store.findRecord('problem', problemId);
     const organization = await this.currentUser.user.organization;
     const recommendedProblems = organization
-      ? await organization.recommendedProblems
+      ? organization.recommendedProblems
       : [];
 
     let flaggedBy, flaggedDate;
     if (problem.flagReason?.flaggedBy) {
-      flaggedBy = await this.store.findRecord(
-        'user',
-        problem.flagReason.flaggedBy
-      );
+      flaggedBy = this.store.findRecord('user', problem.flagReason.flaggedBy);
       flaggedDate = new Date(problem.flagReason.flaggedDate);
     }
 
     return hash({
       problem,
-      sectionList: this.store.findAll('section'),
-      orgList: this.store.findAll('organization'),
+      sectionList,
+      orgList,
       recommendedProblems,
       flaggedBy,
       flaggedDate,
@@ -106,44 +105,24 @@ export default class ProblemUtilityService extends Service {
   }
 
   async deleteProblem(problem) {
-    const { value: shouldDelete } = await this.alert.showModal(
-      'warning',
-      'Are you sure you want to delete this problem?',
-      null,
-      'Yes, delete it'
-    );
-
-    if (!shouldDelete) {
-      return { wasDeleted: false, wasRestored: false };
+    try {
+      problem.isTrashed = true;
+      await problem.save();
+      return problem;
+    } catch (error) {
+      problem.rollbackAttributes();
+      throw error;
     }
+  }
 
-    problem.isTrashed = true;
-    const savedProblem = await problem.save();
-
-    const { value: shouldRestore } = await this.alert.showToast(
-      'success',
-      'Problem Deleted',
-      'bottom-end',
-      5000,
-      true,
-      'Undo'
-    );
-
-    if (!shouldRestore) {
-      return { wasDeleted: true, wasRestored: false };
+  async restoreProblem(problem) {
+    try {
+      problem.isTrashed = false;
+      await problem.save();
+      return problem;
+    } catch (error) {
+      problem.rollbackAttributes();
+      throw error;
     }
-
-    savedProblem.isTrashed = false;
-    savedProblem.save().then(() => {
-      this.alert.showToast(
-        'success',
-        'Problem Restored',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-      return { wasDeleted: false, wasRestored: true };
-    });
   }
 }

@@ -319,21 +319,37 @@ export default class ProblemInfoComponent extends Component {
 
   @action async deleteProblem() {
     try {
-      const { wasDeleted, wasRestored } = await this.problemUtils.deleteProblem(
-        this.args.problem
+      const { value: shouldDelete } = await this.alert.showModal(
+        'warning',
+        'Are you sure you want to delete this problem?',
+        null,
+        'Yes, delete it'
       );
-      if (wasDeleted) {
-        this.hideInfo();
+
+      if (!shouldDelete) return;
+
+      await this.problemUtils.deleteProblem(this.args.problem);
+
+      const { value: shouldRestore } = await this.alert.showToast(
+        'success',
+        'Problem Deleted',
+        'bottom-end',
+        5000,
+        true,
+        'Undo'
+      );
+
+      if (shouldRestore) {
+        await this.problemUtils.restoreProblem(this.args.problem);
         window.history.back();
         return;
       }
 
-      if (wasRestored) {
-        window.history.back();
-        return;
-      }
+      this.hideInfo();
+      window.history.back();
+      return;
     } catch (err) {
-      this.errorHandling.handleErrors(err, this.errorLabel, problem);
+      this.errorHandling.handleErrors(err, this.errorLabel, this.args.problem);
     }
   }
 
@@ -518,12 +534,11 @@ export default class ProblemInfoComponent extends Component {
 
   @action
   hideInfo() {
-    // transition back to list
+    // this should be handled by the parent, not by DOM manipulation
     const outletEl = document.getElementById('outlet');
     if (outletEl) {
       outletEl.classList.add('hidden');
     }
-    this.router.transitionTo('problems');
   }
 
   @action checkRecommend() {
