@@ -4,7 +4,9 @@
     @problems={{@model.problems}}
     @organizations={{@model.organizations}}
   />
-  <div class='list-outlet hidden' id='outlet'>
-    {{outlet}}
-  </div>
+  {{#if this.isDetailActive}}
+    <div class='list-outlet' id='outlet'>
+      {{outlet}}
+    </div>
+  {{/if}}
 </div>

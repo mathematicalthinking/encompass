@@ -317,7 +317,8 @@ export default class ProblemInfoComponent extends Component {
     this.problem = { ...this.problem, [property]: value };
   }
 
-  @action async deleteProblem() {
+  @action
+  async deleteProblem() {
     try {
       const { value: shouldDelete } = await this.alert.showModal(
         'warning',
@@ -341,12 +342,10 @@ export default class ProblemInfoComponent extends Component {
 
       if (shouldRestore) {
         await this.problemUtils.restoreProblem(this.args.problem);
-        window.history.back();
         return;
       }
 
       this.hideInfo();
-      window.history.back();
       return;
     } catch (err) {
       this.errorHandling.handleErrors(err, this.errorLabel, this.args.problem);
@@ -534,11 +533,7 @@ export default class ProblemInfoComponent extends Component {
 
   @action
   hideInfo() {
-    // this should be handled by the parent, not by DOM manipulation
-    const outletEl = document.getElementById('outlet');
-    if (outletEl) {
-      outletEl.classList.add('hidden');
-    }
+    this.router.replaceWith('problems');
   }
 
   @action checkRecommend() {
@@ -586,6 +581,7 @@ export default class ProblemInfoComponent extends Component {
     }
   }
 
+  // @TODO add to problem-utils service
   @action addToRecommend() {
     let problem = this.args.problem;
     let accountType = this.user.accountType;
@@ -640,6 +636,7 @@ export default class ProblemInfoComponent extends Component {
     }
   }
 
+  // @TODO add to problem-utils service
   @action removeRecommend() {
     let problem = this.args.problem;
     return this.user.get('organization').then((org) => {
@@ -658,30 +655,31 @@ export default class ProblemInfoComponent extends Component {
   }
 
   @action
-  restoreProblem() {
-    let problem = this.args.problem;
-    this.alert
-      .showModal(
+  async restoreProblem() {
+    const problem = this.args.problem;
+    try {
+      const { value: shouldRestore } = await this.alert.showModal(
         'warning',
         'Are you sure you want to restore this problem?',
         null,
         'Yes, restore'
-      )
-      .then((result) => {
-        if (result.value) {
-          problem.isTrashed = false;
-          problem.save().then(() => {
-            this.alert.showToast(
-              'success',
-              'Problem Restored',
-              'bottom-end',
-              3000,
-              false,
-              null
-            );
-          });
-        }
-      });
+      );
+
+      if (shouldRestore) {
+        await this.problemUtils.restoreProblem(problem);
+
+        this.alert.showToast(
+          'success',
+          'Problem Restored',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
+    } catch (err) {
+      this.errorHandling.handleErrors(err, this.errorLabel, problem);
+    }
   }
 
   @action
