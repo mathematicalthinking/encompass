@@ -5,7 +5,6 @@ import { hash } from 'rsvp';
 export default class ProblemUtilityService extends Service {
   @service store;
   @service currentUser;
-  @service('sweet-alert') alert;
 
   async fetchProblemData(problemId) {
     const sectionList = this.store.findAll('section');
