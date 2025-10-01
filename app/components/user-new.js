@@ -9,7 +9,6 @@ export default class UserNewComponent extends Component {
   @service store;
   @service('sweet-alert') alert;
   @service currentUser;
-  @service errorHandling;
   @service userValidation;
   @tracked username = '';
   @tracked password = '';
@@ -17,34 +16,13 @@ export default class UserNewComponent extends Component {
   @tracked lastName = '';
   @tracked email = '';
   @tracked org = null;
+  @tracked requiredErrors = {};
   @tracked location = '';
-  @tracked isAuthorized = null;
-  @tracked selectedType = null;
+  @tracked selectedType = 'Student';
+  @tracked isAuthorized = false;
   @tracked isCreatingUser = false;
   @tracked showPasswords = false;
   @tracked confirmPassword = '';
-
-  // Configuration object (composition data)
-  fieldConfig = {
-    username: { validator: 'validateUsername', errorKey: 'usernameError' },
-    password: { validator: 'validatePassword', errorKey: 'passwordError' },
-    email: { validator: 'validateEmail', errorKey: 'emailError' },
-    confirmPassword: {
-      validator: 'validateConfirmPassword',
-      errorKey: 'confirmPasswordError',
-      args: ['password', 'confirmPassword'],
-    },
-    firstName: {
-      validator: 'validateName',
-      errorKey: 'firstNameError',
-      fieldName: 'First name',
-    },
-    lastName: {
-      validator: 'validateName',
-      errorKey: 'lastNameError',
-      fieldName: 'Last name',
-    },
-  };
 
   get accountTypes() {
     return this.currentUser.isAdmin
@@ -53,45 +31,249 @@ export default class UserNewComponent extends Component {
   }
 
   get isStudent() {
-    // Defaults to student if no type selected
-    return (
-      !this.selectedType || this.selectedType.charAt(0).toUpperCase() === 'S'
-    );
+    return this.selectedType === 'Student';
   }
 
   get createOrgErrors() {
-    return this.errorHandling.getErrors('createOrgErrors');
+    return this.userValidation.getArrayErrors('createOrgErrors');
   }
 
   get createUserErrors() {
-    return this.errorHandling.getErrors('createUserErrors');
+    return this.userValidation.getArrayErrors('createUserErrors');
   }
 
-  // Adapter method: its in the service, but using this way for cleanliness
-  getError(errorKey) {
-    return this.errorHandling.getErrors(errorKey)?.[0];
+  get generalError() {
+    return this.userValidation.getArrayErrors('generalError')?.[0] || null;
+  }
+
+  getFieldError(fieldName) {
+    return (this.requiredErrors[fieldName] || this.userValidation.getError(fieldName)
+    );
   }
 
   get usernameError() {
-    return this.getError('usernameError');
+    return this.getFieldError('username');
   }
+
   get passwordError() {
-    return this.getError('passwordError');
+    return this.getFieldError('password');
   }
+
   get confirmPasswordError() {
-    return this.getError('confirmPasswordError');
+    return this.getFieldError('confirmPassword');
   }
+
   get firstNameError() {
-    return this.getError('firstNameError');
+    return this.getFieldError('firstName');
   }
+
   get lastNameError() {
-    return this.getError('lastNameError');
+    return this.getFieldError('lastName');
   }
-  get errorMessage() {
-    return this.getError('generalError');
-  }
+
   get emailError() {
-    return this.getError('emailError');
+    return this.getFieldError('email');
+  }
+
+  get locationError() {
+    return this.getFieldError('location');
+  }
+
+  get organizationError() {
+    return this.getFieldError('organization');
+  }
+
+  _validateUsername() {
+    this.userValidation.validate('username', this.username);
+  }
+
+  _validatePassword() {
+    this.userValidation.validate('password', this.password);
+  }
+
+  _validateConfirmPassword() {
+    this.userValidation.validate(
+      'confirmPassword',
+      null,
+      this.password,
+      this.confirmPassword
+    );
+  }
+
+  _validateEmail() {
+    this.userValidation.validate('email', this.email);
+  }
+
+  _validateFirstName() {
+    this.userValidation.validate('firstName', this.firstName);
+  }
+
+  _validateLastName() {
+    this.userValidation.validate('lastName', this.lastName);
+  }
+
+  _validateLocation() {
+    this.userValidation.validate('location', this.location);
+  }
+
+  _validateOrganization() {
+    this.userValidation.validate('organization', this.org);
+  }
+
+  validateField(fieldName, value, isRequired, validatorMethod, customMessage) {
+    const requiredMessage =
+      customMessage ||
+      `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required`;
+
+    if (isRequired && !value?.trim()) {
+      this.requiredErrors = {
+        ...this.requiredErrors,
+        [fieldName]: requiredMessage,
+      };
+    } else {
+      const { [fieldName]: removed, ...rest } = this.requiredErrors;
+      this.requiredErrors = rest;
+    }
+    debounce(this, validatorMethod, 150);
+  }
+
+  @action
+  usernameValidate() {
+    this.validateField(
+      'username',
+      this.username,
+      true,
+      this._validateUsername,
+    );
+  }
+
+  @action
+  passwordValidate() {
+    this.validateField(
+      'password',
+      this.password,
+      true,
+      this._validatePassword,
+    );
+  }
+
+  @action
+  emailValidate() {
+    this.validateField(
+      'email',
+      this.email,
+      !this.isStudent,
+      this._validateEmail,
+    );
+  }
+
+  @action
+  firstNameValidate() {
+    this.validateField(
+      'firstName',
+      this.firstName,
+      !this.isStudent,
+      this._validateFirstName
+    );
+  }
+
+  @action
+  lastNameValidate() {
+    this.validateField(
+      'lastName',
+      this.lastName,
+      !this.isStudent,
+      this._validateLastName
+    );
+  }
+
+  @action
+  locationValidate() {
+    this.validateField(
+      'location',
+      this.location,
+      !this.isStudent,
+      this._validateLocation
+    );
+  }
+
+  @action
+  confirmPasswordValidate() {
+    this.validateField(
+      'confirmPassword',
+      this.confirmPassword,
+      true,
+      this._validateConfirmPassword,
+      'Please confirm your password'
+    );
+  }
+
+  // keep as is for organization since it's a special case
+  @action
+  organizationValidate() {
+    if (!this.isStudent && !this.org) {
+      this.requiredErrors = {
+        ...this.requiredErrors,
+        organization: 'Organization is required',
+      };
+    } else {
+      // eslint-disable-next-line no-unused-vars
+      const { organization, ...rest } = this.requiredErrors;
+      this.requiredErrors = rest;
+      if (this.isStudent) {
+        this.userValidation.resetError('organization');
+      }
+    }
+    if (this.org && this.org !== '') {
+      debounce(this, this._validateOrganization, 150);
+    }
+  }
+
+  // UI actions
+  @action
+  togglePasswordVisibility() {
+    this.showPasswords = !this.showPasswords;
+  }
+
+  @action
+  setOrg(org) {
+    this.org = org;
+    this.organizationValidate();
+  }
+
+  @action
+  setAccountType(type) {
+    this.selectedType = type;
+  }
+
+  @action
+  setAuthorized(value) {
+    this.isAuthorized = value === 'true';
+  }
+
+  @action
+  cancelNew() {
+    this.router.transitionTo('users');
+  }
+
+  setRequiredErrors() {
+    const errors = {};
+
+    if (!this.username?.trim()) errors.username = 'Username is required';
+    if (!this.password?.trim()) errors.password = 'Password is required';
+    if (!this.confirmPassword?.trim()) {
+      errors.confirmPassword = 'Please confirm your password';
+    }
+
+    if (!this.isStudent) {
+      if (!this.firstName?.trim()) errors.firstName = 'First name is required';
+      if (!this.lastName?.trim()) errors.lastName = 'Last name is required';
+      if (!this.email?.trim()) errors.email = 'Email is required';
+      if (!this.location?.trim()) errors.location = 'Location is required';
+      if (!this.org) errors.organization = 'Organization is required';
+    }
+
+    this.requiredErrors = errors;
   }
 
   async createNewUser(data) {
@@ -102,8 +284,14 @@ export default class UserNewComponent extends Component {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error);
+      let errorMessage;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || JSON.stringify(errorData);
+      } catch {
+        errorMessage = await response.text();
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -128,7 +316,10 @@ export default class UserNewComponent extends Component {
         const newOrg = await rec.save();
         return newOrg.id;
       } catch (err) {
-        this.errorHandling.handleErrors(err, 'createOrgErrors', rec);
+        this.userValidation.setServerError(
+          'createOrgErrors',
+          err.message || 'Failed to create organization'
+        );
         throw err;
       }
     }
@@ -136,327 +327,126 @@ export default class UserNewComponent extends Component {
     return org.id;
   }
 
-  @action
-  confirmOrg() {
-    // Clear previous errors
-    this.errorHandling.removeMessages(
-      'usernameError',
-      'emailError',
-      'passwordError',
-      'generalError'
-    );
+  validateForm() {
+    const errors = [
+      this.usernameError,
+      this.passwordError,
+      this.confirmPasswordError,
+      this.emailError,
+      this.firstNameError,
+      this.lastNameError,
+      this.locationError,
+      this.organizationError,
+    ];
+    return { isValid: !errors.some(Boolean) };
+  }
 
-    // Validate form
-    if (!this.validateForm()) {
+  @action
+  async confirmOrg() {
+    this.setRequiredErrors();
+    const validation = this.validateForm();
+
+    if (!validation.isValid) {
       return;
     }
 
     this.isCreatingUser = true;
 
-    if (typeof this.org === 'string') {
-      const matchingOrg = this.args.organizations.find(
-        (org) => org.name === this.org
-      );
-      if (matchingOrg) {
-        this.newUser();
-      } else {
-        this.alert
-          .showModal(
+    try {
+      if (typeof this.org === 'string') {
+        const matchingOrg = this.args.organizations.find(
+          (org) => org.name === this.org
+        );
+        if (matchingOrg) {
+          this.org = matchingOrg;
+        } else {
+          const confirmed = await this.alert.showModal(
             'question',
             `Are you sure you want to create ${this.org}`,
             null,
             'Yes'
-          )
-          .then((result) => {
-            if (result.value) {
-              this.newUser();
-            } else {
-              this.isCreatingUser = false;
-            }
-          });
+          );
+          if (confirmed.value) {
+            await this.handleOrg(this.org);
+          } else {
+            this.isCreatingUser = false;
+            return;
+          }
+        }
       }
-    } else {
       this.newUser();
+    } catch (err) {
+      this.isCreatingUser = false;
     }
   }
 
-  async newUser() {
-    // Default to 'S' (Student) if no type selected
-    const accountTypeLetter = this.selectedType?.charAt(0).toUpperCase() || 'S';
-
-    if (!this.username || !this.password) {
-      this.errorHandling.handleErrors(
-        { errors: [{ detail: 'Missing required fields' }] },
-        'generalError'
-      );
-      this.isCreatingUser = false;
-      return;
-    }
-
-    // For non-students: all other fields required
-    if (
-      accountTypeLetter !== 'S' &&
-      (!this.firstName || !this.lastName || !this.email || !this.location)
-    ) {
-      this.errorHandling.handleErrors(
-        { errors: [{ detail: 'Missing required fields' }] },
-        'generalError'
-      );
-      this.isCreatingUser = false;
-      return;
-    }
-
+  buildUserData() {
     const userData = {
       username: this.username,
       password: this.password,
-      accountType: accountTypeLetter,
-      isAuthorized: false, // Always defaults to false
+      accountType: this.selectedType?.charAt(0).toUpperCase() || 'S',
+      isAuthorized: this.isAuthorized,
       createdBy: this.currentUser.id,
     };
 
-    // Only add non-student fields if not a student
-    if (accountTypeLetter !== 'S') {
+    if (this.isAuthorized) {
+      userData.authorizedBy = this.currentUser.id;
+    }
+
+    if (userData.accountType !== 'S') {
       userData.firstName = this.firstName;
       userData.lastName = this.lastName;
       userData.email = this.email;
       userData.location = this.location;
-      if (this.isAuthorized) {
-        userData.isAuthorized = true;
-        userData.authorizedBy = this.currentUser.id;
-      }
     }
 
-    try {
-      let orgId;
-      if (accountTypeLetter === 'S') {
-        // Students: use selected org or default to creator's org
-        orgId = await this.handleOrg(
-          this.org || this.currentUser.user.organization
-        );
-      } else {
-        // Non-students: must have org selected
-        if (!this.org) {
-          this.errorHandling.handleErrors(
-            { errors: [{ detail: 'Organization is required' }] },
-            'generalError'
-          );
-          this.isCreatingUser = false;
-          return;
-        }
-        orgId = await this.handleOrg(this.org);
-      }
+    return userData;
+  }
 
-      userData.organization = orgId;
+  assignOrganization(userData) {
+    if (this.org?.id) {
+      userData.organization = this.org.id;
+    } else if (this.currentUser.user?.organization?.id) {
+      userData.organization = this.currentUser.user.organization.id;
+    } else if (this.args.organizations?.[0]?.id) {
+      userData.organization = this.args.organizations[0].id;
+    } else {
+      userData.organizationRequest = 'Default Organization';
+    }
+  }
+
+  async newUser() {
+    const userData = this.buildUserData();
+    this.assignOrganization(userData);
+
+    try {
       const res = await this.createNewUser(userData);
+      if (res.message) {
+        this.userValidation.setServerError('createUserErrors', res.message);
+        return;
+      }
       if (res.username) {
-        this.alert.showToast(
-          'success',
-          `${res.username} created`,
-          'bottom-end',
-          3000,
-          null,
-          false
-        );
-        this.router.transitionTo('users.user', res.id);
-      } else if (res.message?.includes('username')) {
-        this.errorHandling.handleErrors(
-          { errors: [{ detail: this.userValidation.usernameErrors.taken }] },
-          'usernameError'
-        );
-      } else if (res.message?.includes('email')) {
-        this.errorHandling.handleErrors(
-          { errors: [{ detail: this.userValidation.emailErrors.taken }] },
-          'emailError'
-        );
-      } else {
-        this.errorHandling.handleErrors(
-          { errors: [{ detail: res.message }] },
-          'createUserErrors'
-        );
+        this.handleUserCreationSuccess(res);
       }
     } catch (err) {
-      this.errorHandling.handleErrors(err, 'createUserErrors');
+      this.userValidation.setServerError('createUserErrors', err.message);
     } finally {
       this.isCreatingUser = false;
     }
   }
 
-  // Generic validation method using composition
-  validateField(fieldName) {
-    const config = this.fieldConfig[fieldName];
-    if (!config) return;
-
-    let result;
-    if (config.fieldName) {
-      // For name validation with custom field name
-      result = this.userValidation[config.validator](
-        this[fieldName],
-        config.fieldName
-      );
-    } else if (config.args) {
-      // For methods that need multiple arguments
-      const args = config.args.map((arg) => this[arg]);
-      result = this.userValidation[config.validator](...args);
-    } else {
-      // For simple single-argument methods
-      result = this.userValidation[config.validator](this[fieldName]);
-    }
-    if (!result.isValid) {
-      this.errorHandling.handleErrors(
-        { errors: [{ detail: result.error }] },
-        config.errorKey
-      );
-    } else {
-      this.errorHandling.removeMessages(config.errorKey);
-    }
-  }
-
-  _validateUsername() {
-    this.validateField('username');
-  }
-
-  _validatePassword() {
-    this.validateField('password');
-  }
-
-  _validateConfirmPassword() {
-    this.validateField('confirmPassword');
-  }
-
-  _validateEmail() {
-    this.validateField('email');
-  }
-
-  _validateFirstName() {
-    this.validateField('firstName');
-  }
-
-  _validateLastName() {
-    this.validateField('lastName');
-  }
-
-  @action
-  usernameValidate() {
-    debounce(this, this._validateUsername, 150);
-  }
-
-  @action
-  passwordValidate() {
-    debounce(this, this._validatePassword, 150);
-  }
-
-  @action
-  confirmPasswordValidate() {
-    debounce(this, this._validateConfirmPassword, 150);
-  }
-
-  @action
-  emailValidate() {
-    if (this.email || !this.isStudent) {
-      debounce(this, this._validateEmail, 150);
-    } else {
-      this.errorHandling.removeMessages('emailError');
-    }
-  }
-
-  @action
-  firstNameValidate() {
-    if (this.firstName || !this.isStudent) {
-      debounce(this, this._validateFirstName, 150);
-    } else {
-      this.errorHandling.removeMessages('firstNameError');
-    }
-  }
-
-  @action
-  lastNameValidate() {
-    if (this.lastName || !this.isStudent) {
-      debounce(this, this._validateLastName, 150);
-    } else {
-      this.errorHandling.removeMessages('lastNameError');
-    }
-  }
-
-  validateForm() {
-    let isValid = true;
-    let missingFields = [];
-    const requiredFields = ['username', 'password', 'confirmPassword'];
-    if (!this.isStudent) {
-      requiredFields.push('firstName', 'lastName', 'email', 'location');
-    }
-
-    requiredFields.forEach((field) => {
-      if (!this[field]) {
-        missingFields.push(
-          field
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, (str) => str.toUpperCase())
-        );
-      } else if (this.fieldConfig[field]) {
-        this.validateField(field);
-        if (this.getError(this.fieldConfig[field].errorKey)) {
-          isValid = false;
-        }
-      }
-    });
-
-    if (!this.isStudent && !this.org) missingFields.push('Organization');
-
-    if (missingFields.length > 0) {
-      const message = `Missing required fields: ${missingFields.join(', ')}`;
-      this.errorHandling.handleErrors(
-        { errors: [{ detail: message }] },
-        'generalError'
-      );
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
-  @action
-  cancelNew() {
-    this.router.transitionTo('users');
-  }
-
-  @action
-  setOrg(org) {
-    this.org = org;
-  }
-
-  @action
-  setAccountType(type) {
-    this.selectedType = type;
-    // Clear email error when switching to student
-    if (type === 'Student') {
-      this.errorHandling.removeMessages('emailError');
-    }
-  }
-
-  @action
-  resetError(errorType) {
-    this.errorHandling.removeMessages(errorType);
-  }
-
-  @action
-  removeErrorFromArray(type, error) {
-    this.errorHandling.removeErrorFromArray(type, error);
-  }
-
-  @action
-  resetErrors() {
-    this.errorHandling.removeMessages(
-      'usernameError',
-      'emailError',
-      'passwordError',
-      'confirmPasswordError',
-      'firstNameError',
-      'lastNameError'
+  handleUserCreationSuccess(res) {
+    this.userValidation.clearFormErrors();
+    this.alert.showToast(
+      'success',
+      `${res.username} created`,
+      'bottom-end',
+      3000,
+      null,
+      false
     );
-  }
-
-  @action
-  togglePasswordVisibility() {
-    this.showPasswords = !this.showPasswords;
+    setTimeout(() => {
+      this.router.transitionTo('users.user', res.id);
+    }, 100);
   }
 }
