@@ -5,178 +5,212 @@
       <th>Label</th>
       <th>Value</th>
     </tr>
-    <tr>
-      <td>Username <span class='required-star'>*</span></td>
-      <td>
-        <Input
-          @type='text'
-          class='user-username'
-          @value={{this.username}}
-          {{on 'focusout' this.usernameValidate}}
-          {{on 'focusin' this.resetErrors}}
-        />
-      </td>
-    </tr>
-    <tr>
-      <td>Password <span class='required-star'>*</span></td>
-      <td>
-        <Input
-          @type='password'
-          class='user-password'
-          @value={{this.password}}
-          {{on 'focusout' (fn this.passwordValidate this.password)}}
-          {{on 'focusin' this.resetErrors}}
-        />
-      </td>
-    </tr>
-    <tr>
-      <td>First Name</td>
-      <td>
-        <Input @type='text' @value={{this.firstName}} class='user-first-name' />
-      </td>
-    </tr>
-    <tr>
-      <td>Last Name</td>
-      <td>
-        <Input @type='text' @value={{this.lastName}} class='user-last-name' />
-      </td>
-    </tr>
-    {{#unless this.currentUser.isTeacher}}
+    {{#if this.isAdminUser}}
       <tr>
-        <td>Email
-          {{#if this.isEmailRequired}}
-            <span class='required-star'>*</span>
-          {{/if}}
-        </td>
-        <td>
-          <Input
-            @type='text'
-            class='user-email'
-            {{on 'focusout' this.emailValidate}}
-            {{on 'focusin' this.resetErrors}}
-          />
-        </td>
-      </tr>
-      <tr>
-        <td>Organization <span class='required-star'>*</span></td>
-        <td>
-          {{#if this.currentUser.isAdmin}}
-            <Ui::TwitterTypeahead
-              @dataList={{@organizations}}
-              @onSelect={{this.setOrg}}
-              @optionLabelPath='name'
-            />
-          {{else}}
-            {{this.currentUser.user.organization?.name}}
-          {{/if}}
-        </td>
-      </tr>
-      <tr>
-        <td>Location</td>
-        <td>
-          <Input @type='text' @value={{this.location}} class='user-location' />
-        </td>
-      </tr>
-      <tr>
-        <td>Account Type <span class='required-star'>*</span></td>
+        <td>Account Type</td>
         <td>
           <Ui::MySelect
             @selectedValue={{this.selectedType}}
-            @prompt='Select Account Type'
             @content={{this.accountTypes}}
             @action={{this.setAccountType}}
             @cannotBeNull={{true}}
           />
         </td>
       </tr>
+    {{/if}}
+    <tr>
+      <td>Username <span class="required-star">*</span></td>
+      <td>
+        <Input
+          @type="text"
+          class="user-username {{if this.usernameError 'input-error'}}"
+          @value={{this.username}}
+          {{on "input" this.usernameValidate}}
+          {{on "focusout" this.usernameValidate}}
+        />
+        {{#if this.usernameError}}
+          <div class="validation-error">
+            {{this.usernameError}}
+          </div>
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Password <span class='required-star'>*</span></td>
+      <td class="relative-cell">
+        <Input
+          @type={{if this.showPasswords 'text' 'password'}}
+          class='user-password {{if this.passwordError 'input-error'}}'
+          @value={{this.password}}
+          {{on 'input' this.passwordValidate}}
+          {{on 'focusout' this.passwordValidate}}
+        />
+        {{#if this.passwordError}}
+          <div class="validation-error">
+            {{this.passwordError}}
+          </div>
+       {{/if}}
+        {{#if this.password}}
+          <button
+            type="button"
+            class="password-toggle-button"
+            {{on 'click' this.togglePasswordVisibility}}
+          >
+            <img
+              src={{if this.showPasswords '/assets/images/eye-closed.svg' '/assets/images/eye-open.svg'}}
+              alt={{if this.showPasswords 'Hide password' 'Show password'}}
+              class="password-toggle-icon"
+            />
+          </button>
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Confirm Password <span class='required-star'>*</span></td>
+      <td>
+        <Input
+          @type={{if this.showPasswords 'text' 'password'}}
+          class='user-password {{if this.confirmPasswordError 'input-error'}}'
+          @value={{this.confirmPassword}}
+          {{on 'input' this.confirmPasswordValidate}}
+          {{on 'focusout' this.confirmPasswordValidate}}
+        />
+        {{#if this.confirmPasswordError}}
+          <div class="validation-error">{{this.confirmPasswordError}}</div>
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>First Name {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+      <td>
+        <Input
+          @type='text'
+          @value={{this.firstName}}
+          class='user-first-name {{if this.firstNameError 'input-error'}}'
+          {{on 'input' this.firstNameValidate}}
+          {{on 'focusout' this.firstNameValidate}}
+        />
+        {{#if this.firstNameError}}
+          <div class="validation-error">{{this.firstNameError}}</div>
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Last Name {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+      <td>
+        <Input
+          @type='text'
+          @value={{this.lastName}}
+          class='user-last-name {{if this.lastNameError 'input-error'}}'
+          {{on 'input' this.lastNameValidate}}
+          {{on 'focusout' this.lastNameValidate}}
+        />
+        {{#if this.lastNameError}}
+          <div class="validation-error">{{this.lastNameError}}</div>
+        {{/if}}
+      </td>
+    </tr>
+    {{#if this.isAdminUser}}
       <tr>
-        <td>Authorized <span class='required-star'>*</span></td>
+        <td>Email {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
         <td>
           <Input
-            @type='checkbox'
-            @checked={{this.isAuthorized}}
-            class='user-isAuth'
+            @type='email'
+            @value={{this.email}}
+            class='user-email {{if this.emailError 'input-error'}}'
+            {{on 'input' this.emailValidate}}
+            {{on 'focusout' this.emailValidate}}
           />
+          {{#if this.emailError}}
+            <div class="validation-error">{{this.emailError}}</div>
+          {{/if}}
         </td>
       </tr>
-    {{/unless}}
+      <tr>
+        <td>Organization {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+        <td>
+          {{#if this.currentUser.isAdmin}}
+            <div class="{{if this.organizationError 'twitter-typeahead input-error' 'twitter-typeahead'}}">
+              <Ui::TwitterTypeahead
+                @dataList={{@organizations}}
+                @onSelect={{this.setOrg}}
+                @onBlur={{this.organizationValidate}}
+                @optionLabelPath='name'
+                @setSelectedValueOnChange={{true}}
+              />
+            </div>
+            {{#if this.organizationError}}
+              <div class="validation-error">{{this.organizationError}}</div>
+            {{/if}}
+          {{else}}
+            {{#if this.currentUser.user.organization}}
+              {{this.currentUser.user.organization.name}}
+            {{else}}
+              <div class="validation-error">Organization is required</div>
+            {{/if}}
+          {{/if}}
+        </td>
+      </tr>
+      <tr>
+        <td>Location {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+        <td>
+          <Input
+            @type='text'
+            @value={{this.location}}
+            class='user-location {{if this.locationError 'input-error'}}'
+            {{on 'input' this.locationValidate}}
+            {{on 'focusout' this.locationValidate}}
+          />
+          {{#if this.locationError}}
+            <div class="validation-error">{{this.locationError}}</div>
+          {{/if}}
+        </td>
+      </tr>
+      <tr>
+        <td>Authorized</td>
+        <td>
+        <label>
+          <input 
+            type='radio'
+            name='authorized'
+            value='false'
+            checked={{not this.isAuthorized}}
+            {{on 'change' this.setAuthorized}}
+          />
+          No
+        </label>
+        <label class='radio-label-margin'>
+          <input 
+            type='radio' 
+            name='authorized'
+            value='true'
+            checked={{this.isAuthorized}}
+            {{on 'change' this.setAuthorized}}
+          />
+          Yes
+        </label>
+        </td>
+      </tr>
+    {{/if}}
   </table>
-
-  {{#if this.usernameError}}
-    <Ui::ErrorBox
-      @error={{this.usernameError}}
-      @showDismiss={{true}}
-      @resetError={{fn this.resetError 'usernameError'}}
-    />
-  {{/if}}
-
-  {{#if this.emailError}}
-    <Ui::ErrorBox
-      @error={{this.emailError}}
-      @showDismiss={{true}}
-      @resetError={{fn this.resetError 'emailError'}}
-    />
-  {{/if}}
-
-  {{#if this.passwordError}}
-    <Ui::ErrorBox
-      @error={{this.passwordError}}
-      @showDismiss={{true}}
-      @resetError={{fn this.resetError 'passwordError'}}
-    />
-  {{/if}}
-
-  {{#if this.noSpacesError}}
-    <Ui::ErrorBox
-      @error='Passwords cannot contain spaces'
-      @showDismiss={{true}}
-      @resetError={{fn this.resetError 'noSpacesError'}}
-    />
-  {{/if}}
-
-  {{#if this.missingAccountType}}
-    <Ui::ErrorBox
-      @error='Missing account type'
-      @showDismiss={{true}}
-      @resetError={{fn this.resetError 'missingAccountType'}}
-    />
-  {{/if}}
-
-  {{#if this.errorMessage}}
-    <Ui::ErrorBox
-      @error='Missing required fields'
-      @showDismiss={{true}}
-      @resetError={{fn this.resetError 'errorMessage'}}
-    />
-  {{/if}}
-
-  {{#each this.createOrgErrors as |error|}}
-    <Ui::ErrorBox
-      @error={{error}}
-      @showDismiss={{true}}
-      @resetError={{fn this.removeErrorFromArray 'createOrgErrors' error}}
-    />
-  {{/each}}
-  {{#each this.createUserErrors as |error|}}
-    <Ui::ErrorBox
-      @error={{error}}
-      @showDismiss={{true}}
-      @resetError={{fn this.removeErrorFromArray 'createUserErrors' error}}
-    />
-  {{/each}}
-
   <div class='button-row'>
     <button
       class='action_button new-user'
       id='new-user-btn'
       type='button'
+      disabled={{this.isCreatingUser}}
       {{on 'click' this.confirmOrg}}
-    >Create New User</button>
+    >
+      {{#if this.isCreatingUser}}
+        Creating User...
+      {{else}}
+        Create New User
+      {{/if}}
+    </button>
     <button
       class='action_button new-user cancel-button'
       type='button'
       {{on 'click' this.cancelNew}}
     >Cancel</button>
   </div>
-
 </article>

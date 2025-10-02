@@ -97,7 +97,9 @@ export default class UserSignupComponent extends Component {
     }
   }
 
-  @action passwordValidate(password) {
+  @action passwordValidate(event) {
+    const password = event?.target?.value || event || this.password; 
+    
     function hasWhiteSpace(string) {
       return /\s/g.test(string);
     }
@@ -121,7 +123,7 @@ export default class UserSignupComponent extends Component {
     }
   }
   @action emailValidate(event) {
-    const email = event.target.value;
+    const email = event?.target?.value || event;
     let isValid = this.validateEmail(email);
     if (isValid) {
       this.emailError = null;
