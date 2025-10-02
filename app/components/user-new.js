@@ -157,7 +157,7 @@ export default class UserNewComponent extends Component {
     this.validateField(
       'email',
       this.email,
-      !this.isStudent,
+      !this.isCreatingStudent,
       this._validateEmail
     );
   }
@@ -167,7 +167,7 @@ export default class UserNewComponent extends Component {
     this.validateField(
       'firstName',
       this.firstName,
-      !this.isStudent,
+      !this.isCreatingStudent,
       this._validateFirstName
     );
   }
@@ -177,7 +177,7 @@ export default class UserNewComponent extends Component {
     this.validateField(
       'lastName',
       this.lastName,
-      !this.isStudent,
+      !this.isCreatingStudent,
       this._validateLastName
     );
   }
@@ -187,7 +187,7 @@ export default class UserNewComponent extends Component {
     this.validateField(
       'location',
       this.location,
-      !this.isStudent,
+      !this.isCreatingStudent,
       this._validateLocation
     );
   }
@@ -206,7 +206,7 @@ export default class UserNewComponent extends Component {
   // keep as is for organization since it's a special case
   @action
   organizationValidate() {
-    if (!this.isStudent && !this.org) {
+    if (!this.isCreatingStudent && !this.org) {
       this.requiredErrors = {
         ...this.requiredErrors,
         organization: 'Organization is required',
@@ -215,7 +215,7 @@ export default class UserNewComponent extends Component {
       // eslint-disable-next-line no-unused-vars
       const { organization, ...rest } = this.requiredErrors;
       this.requiredErrors = rest;
-      if (this.isStudent) {
+      if (this.isCreatingStudent) {
         this.userValidation.resetError('organization');
       }
     }
@@ -260,7 +260,7 @@ export default class UserNewComponent extends Component {
       errors.confirmPassword = 'Please confirm your password';
     }
 
-    if (!this.isStudent) {
+    if (!this.isCreatingStudent) {
       if (!this.firstName?.trim()) errors.firstName = 'First name is required';
       if (!this.lastName?.trim()) errors.lastName = 'Last name is required';
       if (!this.email?.trim()) errors.email = 'Email is required';
