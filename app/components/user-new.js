@@ -30,7 +30,11 @@ export default class UserNewComponent extends Component {
       : ['Teacher', 'Student'];
   }
 
-  get isStudent() {
+  get isAdminUser() {
+    return this.currentUser.isAdmin || this.currentUser.isPdAdmin;
+  }
+
+  get isCreatingStudent() {
     return this.selectedType === 'Student';
   }
 
@@ -47,7 +51,8 @@ export default class UserNewComponent extends Component {
   }
 
   getFieldError(fieldName) {
-    return (this.requiredErrors[fieldName] || this.userValidation.getError(fieldName)
+    return (
+      this.requiredErrors[fieldName] || this.userValidation.getError(fieldName)
     );
   }
 
@@ -139,22 +144,12 @@ export default class UserNewComponent extends Component {
 
   @action
   usernameValidate() {
-    this.validateField(
-      'username',
-      this.username,
-      true,
-      this._validateUsername,
-    );
+    this.validateField('username', this.username, true, this._validateUsername);
   }
 
   @action
   passwordValidate() {
-    this.validateField(
-      'password',
-      this.password,
-      true,
-      this._validatePassword,
-    );
+    this.validateField('password', this.password, true, this._validatePassword);
   }
 
   @action
@@ -163,7 +158,7 @@ export default class UserNewComponent extends Component {
       'email',
       this.email,
       !this.isStudent,
-      this._validateEmail,
+      this._validateEmail
     );
   }
 
@@ -247,13 +242,13 @@ export default class UserNewComponent extends Component {
   }
 
   @action
-  setAuthorized(value) {
-    this.isAuthorized = value === 'true';
+  setAuthorized(event) {
+    this.isAuthorized = event.target.value === 'true';
   }
 
   @action
   cancelNew() {
-    this.router.transitionTo('users');
+    this.router.replaceWith('users');
   }
 
   setRequiredErrors() {

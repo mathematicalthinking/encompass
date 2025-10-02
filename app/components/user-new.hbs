@@ -5,7 +5,7 @@
       <th>Label</th>
       <th>Value</th>
     </tr>
-    {{#unless this.currentUser.isTeacher}}
+    {{#if this.isAdminUser}}
       <tr>
         <td>Account Type</td>
         <td>
@@ -17,7 +17,7 @@
           />
         </td>
       </tr>
-    {{/unless}}
+    {{/if}}
     <tr>
       <td>Username <span class="required-star">*</span></td>
       <td>
@@ -81,7 +81,7 @@
       </td>
     </tr>
     <tr>
-      <td>First Name {{#unless this.isStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+      <td>First Name {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
       <td>
         <Input
           @type='text'
@@ -96,7 +96,7 @@
       </td>
     </tr>
     <tr>
-      <td>Last Name {{#unless this.isStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+      <td>Last Name {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
       <td>
         <Input
           @type='text'
@@ -110,9 +110,9 @@
         {{/if}}
       </td>
     </tr>
-    {{#unless this.currentUser.isTeacher}}
+    {{#if this.isAdminUser}}
       <tr>
-        <td>Email {{#unless this.isStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+        <td>Email {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
         <td>
           <Input
             @type='email'
@@ -127,7 +127,7 @@
         </td>
       </tr>
       <tr>
-        <td>Organization {{#unless this.isStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+        <td>Organization {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
         <td>
           {{#if this.currentUser.isAdmin}}
             <div class="{{if this.organizationError 'twitter-typeahead input-error' 'twitter-typeahead'}}">
@@ -152,7 +152,7 @@
         </td>
       </tr>
       <tr>
-        <td>Location {{#unless this.isStudent}}<span class='required-star'>*</span>{{/unless}}</td>
+        <td>Location {{#unless this.isCreatingStudent}}<span class='required-star'>*</span>{{/unless}}</td>
         <td>
           <Input
             @type='text'
@@ -171,11 +171,11 @@
         <td>
         <label>
           <input 
-            type='radio' 
+            type='radio'
             name='authorized'
-            value='false' 
-            checked={{unless this.isAuthorized true false}}
-            {{on 'change' (fn this.setAuthorized 'false')}}
+            value='false'
+            checked={{not this.isAuthorized}}
+            {{on 'change' this.setAuthorized}}
           />
           No
         </label>
@@ -183,15 +183,15 @@
           <input 
             type='radio' 
             name='authorized'
-            value='true' 
-            checked={{if this.isAuthorized true false}}
-            {{on 'change' (fn this.setAuthorized 'true')}}
+            value='true'
+            checked={{this.isAuthorized}}
+            {{on 'change' this.setAuthorized}}
           />
           Yes
         </label>
         </td>
       </tr>
-    {{/unless}}
+    {{/if}}
   </table>
   <div class='button-row'>
     <button
