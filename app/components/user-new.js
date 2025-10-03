@@ -309,6 +309,7 @@ export default class UserNewComponent extends Component {
 
       try {
         const newOrg = await rec.save();
+        this.org = newOrg;
         return newOrg.id;
       } catch (err) {
         this.userValidation.setServerError(

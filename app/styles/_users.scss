@@ -135,7 +135,9 @@
 
   .error-message, .success-message, .warning-message {
     text-align: center;
-    padding: 10px 0;
+    padding: 0;
+    color: #dc3545;
+    font-weight: 500;
   }
 
   a {
