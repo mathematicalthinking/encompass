@@ -193,6 +193,16 @@
       </tr>
     {{/if}}
   </table>
+  {{#if this.createUserErrors}}
+    {{#each this.createUserErrors as |error|}}
+      <div class="error-message">{{error}}</div>
+    {{/each}}
+  {{/if}}
+  {{#if this.createOrgErrors}}
+    {{#each this.createOrgErrors as |error|}}
+      <div class="error-message">{{error}}</div>
+    {{/each}}
+  {{/if}}
   <div class='button-row'>
     <button
       class='action_button new-user'
