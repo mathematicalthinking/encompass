@@ -1,236 +1,258 @@
 //TODO: find out how Use Only Own Markup is expected to work
 
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { and, not } from '@ember/object/computed';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { hash } from 'rsvp';
+export default class ResponseNewComponent extends Component {
+  @service('current-user') currentUser;
+  @service('utility-methods') utils;
+  @service('loading-display') loading;
+  @service('error-handling') errorHandling;
+  @service('sweet-alert') alert;
+  @service store;
 
-export default Component.extend({
-  currentUser: service('current-user'),
-  utils: service('utility-methods'),
-  loading: service('loading-display'),
-  errorHandling: service('error-handling'),
-  isEditing: false,
-  isCreating: false,
-  anonymous: false,
-  showExisting: false,
-  subResponses: [],
-  selections: [],
-  comments: [],
-  submission: null,
-  showSelections: false,
-  showComments: false,
-  notEditing: not('isEditing'),
-  notPersisted: not('persisted'),
-  notDirty: not('dirty'),
-  cantRespond: not('canRespond'),
-  confirmLeaving: and('isEditing', 'dirty'),
-  alert: service('sweet-alert'),
-  todaysDate: new Date(),
-  doUseOnlyOwnMarkup: true,
+  @tracked isEditing = false;
+  @tracked isCreating = false;
+  @tracked anonymous = false;
+  @tracked showExisting = false;
+  @tracked subResponses = [];
+  @tracked selections = [];
+  @tracked comments = [];
+  @tracked submission = null;
+  @tracked showSelections = false;
+  @tracked showComments = false;
+  @tracked quillText = '';
+  @tracked isQuillEmpty = false;
+  @tracked isQuillTooLong = false;
+  @tracked originalText = '';
 
-  quillEditorId: 'response-new-editor',
-  quillText: '',
-  maxResponseLength: 14680064,
-  errorPropsToRemove: [
+  doUseOnlyOwnMarkup = true;
+  quillEditorId = 'response-new-editor';
+  maxResponseLength = 14680064;
+
+  errorPropsToRemove = [
     'recordSaveErrors',
     'emptyReplyError',
     'quillTooLongError',
-  ],
-  commentFilter: [
-    { label: 'Notice', value: 'notice', isChecked: true },
-    { label: 'Wonder', value: 'wonder', isChecked: true },
-    { label: 'Feedback', value: 'feedback', isChecked: true },
-  ],
+  ];
 
-  didReceiveAttrs() {
-    if (this.isCreating && !this.isEditing) {
-      // preformat text and set on model;
-      this.preFormatText();
+  get initializedText() {
+    if (this.args.isCreating && !this.isEditing && !this.originalText) {
+      return this.preFormatText();
+    }
+    return this.originalText;
+  }
+
+  get todaysDate() {
+    return new Date();
+  }
+
+  get commentFilter() {
+    return [
+      { label: 'Notice', value: 'notice', isChecked: true },
+      { label: 'Wonder', value: 'wonder', isChecked: true },
+      { label: 'Feedback', value: 'feedback', isChecked: true },
+    ];
+  }
+
+  // Converted all computed properties to getters
+  get notEditing() {
+    return !this.isEditing;
+  }
+
+  get notPersisted() {
+    return !this.args.model?.persisted;
+  }
+
+  get notDirty() {
+    return !this.dirty;
+  }
+
+  get cantRespond() {
+    return !this.canRespond;
+  }
+
+  get confirmLeaving() {
+    return this.isEditing && this.dirty;
+  }
+
+  get replyNote() {
+    return this.args.replyNote;
+  }
+
+  get filteredSelections() {
+    if (!this.args.model?.selections) return [];
+
+    if (this.doUseOnlyOwnMarkup) {
+      return this.args.model.selections.filter((selection) => {
+        if (selection.isTrashed) {
+          return false;
+        }
+        let creatorId = this.utils.getBelongsToId(selection, 'createdBy');
+        return creatorId === this.currentUser.user.id;
+      });
+    }
+    return this.args.model.selections.filter(
+      (selection) => !selection.isTrashed
+    );
+  }
+
+  get filteredComments() {
+    if (!this.args.model?.comments) return [];
+
+    const chosenFilter = this.commentFilter
+      .filter((item) => item.isChecked)
+      .map((item) => item.value);
+
+    if (this.doUseOnlyOwnMarkup) {
+      return this.args.model.comments.filter((comment) => {
+        if (comment.isTrashed) {
+          return false;
+        }
+        let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
+        return (
+          creatorId === this.currentUser.user.id &&
+          chosenFilter.includes(comment.label)
+        );
+      });
     }
 
-    this._super(...arguments);
-  },
+    return this.args.model.comments.filter(
+      (comment) => !comment.isTrashed && chosenFilter.includes(comment.label)
+    );
+  }
 
-  filteredSelections: computed(
-    'currentUser.user.id',
-    'doUseOnlyOwnMarkup',
-    'model.selections.@each.isTrashed',
-    function () {
-      // filter out trashed selections
-      // if a user deletes a selection and then immediately after
-      // goes to make a response, the trashed selection may still
-      // be associated with the workspace
-
-      if (this.doUseOnlyOwnMarkup) {
-        return this.get('model.selections').filter((selection) => {
-          if (selection.get('isTrashed')) {
-            return false;
-          }
-          let creatorId = this.utils.getBelongsToId(selection, 'createdBy');
-          return creatorId === this.get('currentUser.user.id');
-        });
-      }
-      return this.get('model.selections').rejectBy('isTrashed');
-    }
-  ),
-
-  filteredComments: computed(
-    'commentFilter.@each.isChecked',
-    'currentUser.user.id',
-    'doUseOnlyOwnMarkup',
-    'model.comments.@each.isTrashed',
-    function () {
-      // get array of strings of comment types to include
-      const chosenFilter = this.commentFilter
-        .filter((item) => item.isChecked)
-        .map((item) => item.value);
-      // include only users personal comments
-      if (this.doUseOnlyOwnMarkup) {
-        return this.get('model.comments').filter((comment) => {
-          if (comment.get('isTrashed')) {
-            return false;
-          }
-          let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
-          return (
-            creatorId === this.get('currentUser.user.id') &&
-            chosenFilter.includes(comment.label)
-          );
-        });
-      }
-      // use any comment created in workspace
-      return this.get('model.comments').filter(
-        (comment) =>
-          !comment.get('isTrashed') && chosenFilter.includes(comment.label)
-      );
-    }
-  ),
-
-  willDestroyElement() {
-    if (!this.get('model.persisted')) {
-      this.model.unloadRecord();
-    }
-    this._super(...arguments);
-  },
-
-  submitButtonText: computed('canDirectSend', function () {
-    if (this.canDirectSend) {
+  get submitButtonText() {
+    if (this.args.canDirectSend) {
       return 'Send';
     }
     return 'Submit for Approval';
-  }),
+  }
 
-  headingText: computed('isEditing', 'isCreating', 'isRevising', function () {
+  get headingText() {
     if (this.isEditing) {
       return 'Editing Response';
     }
     if (this.isCreating) {
       return 'Creating New Response';
     }
-    if (this.isRevising) {
-      ('New Revised Response');
+    if (this.args.isRevising) {
+      return 'New Revised Response';
     }
-  }),
+    return '';
+  }
 
-  showNoteField: computed('newReplyStatus', 'newReplyType', function () {
-    return this.newReplyType === 'mentor' && this.newReplyStatus !== 'approved';
-  }),
+  get showNoteField() {
+    return (
+      this.args.newReplyType === 'mentor' &&
+      this.args.newReplyStatus !== 'approved'
+    );
+  }
 
-  showEdit: computed('newReplyStatus', 'isEditing', function () {
-    return !this.isEditing && this.newReplyStatus !== 'approved';
-  }),
+  get showEdit() {
+    return !this.isEditing && this.args.newReplyStatus !== 'approved';
+  }
 
-  canRevise: computed(
-    'creator.id',
-    'currentUser.user.id',
-    'model.persisted',
-    function () {
-      return (
-        this.get('creator.id') === this.get('currentUser.user.id') &&
-        this.get('model.persisted')
-      );
+  get canRevise() {
+    return (
+      this.args.creator?.id === this.currentUser.user.id &&
+      this.args.model?.persisted
+    );
+  }
+
+  get showRevise() {
+    return this.canRevise && !this.args.isRevising;
+  }
+
+  get existingResponses() {
+    if (!this.args.submissionResponses || !this.args.model?.id) return [];
+    return this.args.submissionResponses.filter(
+      (response) => response.id !== this.args.model.id
+    );
+  }
+
+  get dirty() {
+    if (this.args.data?.text) {
+      return this.args.text !== this.args.data.text;
     }
-  ),
-  showRevise: computed('canRevise', 'isRevising', function () {
-    return this.canRevise && !this.isRevising;
-  }),
+    return this.args.model?.text !== this.quillText;
+  }
 
-  existingResponses: computed(
-    'model.id',
-    'submissionResponses.[]',
-    function () {
-      let modelId = this.get('model.id');
-      return this.submissionResponses.rejectBy('id', modelId);
+  get canRespond() {
+    return !this.args.isStatic;
+  }
+
+  get explainEmptiness() {
+    return (
+      this.filteredSelections.length === 0 &&
+      !this.isEditing &&
+      !this.args.isRevising &&
+      !this.args.model?.text
+    );
+  }
+
+  get isToStudent() {
+    return this.args.to === this.args.student;
+  }
+
+  get who() {
+    if (this.anonymous) {
+      return 'Someone';
     }
-  ),
-
-  dirty: computed('data.text', 'model.text', 'response', 'text', function () {
-    if (this.get('data.text')) {
-      return this.text !== this.get('data.text');
+    if (this.isToStudent) {
+      return 'You';
     }
-    return this.get('model.text') !== this.response;
-  }),
+    return this.args.model?.student;
+  }
 
-  canRespond: computed('isStatic', function () {
-    return !this.isStatic;
-  }),
-
-  explainEmptiness: computed(
-    'isEditing',
-    'filteredSelections.[]',
-    'model.text',
-    'isRevising',
-    function () {
-      return (
-        this.get('filteredSelections.length') === 0 &&
-        !this.isEditing &&
-        !this.isRevising &&
-        !this.get('model.text')
-      );
-    }
-  ),
-
-  isToStudent: computed('student', 'to', function () {
-    return this.to === this.student;
-  }),
-
-  who: computed(
-    'anonymous',
-    'isToStudent',
-    'model.student',
-    'student',
-    'to',
-    function () {
-      if (this.anonymous) {
-        return 'Someone';
-      }
-      if (this.isToStudent) {
-        return 'You';
-      }
-
-      return this.get('model.student');
-    }
-  ),
-
-  greeting: computed('model.student', function () {
-    let brk = this.get('model.student').indexOf(' ');
+  get greeting() {
+    if (!this.args.model?.student) return 'Hello,';
+    let brk = this.args.model.student.indexOf(' ');
     let firstname =
       brk === -1
-        ? this.get('model.student')
-        : this.get('model.student').substr(0, brk);
+        ? this.args.model.student
+        : this.args.model.student.slice(0, brk);
     return `Hello ${firstname},`;
-  }),
+  }
 
-  quote: function (string, opts, isImageTag) {
-    string = string.replace(/(\r\n|\n|\r)/gm, ' '); //normalize the string: remove new lines
+  get replyText() {
+    return this.preFormatText();
+  }
+
+  get shortText() {
+    if (typeof this.args.model?.text !== 'string') {
+      return '';
+    }
+    return this.args.model.text.slice(0, 150);
+  }
+
+  get moreDetailsLinkText() {
+    if (this.args.showDetails) {
+      return 'Hide Details';
+    }
+    return 'More Details';
+  }
+
+  get quillTooLongErrorMsg() {
+    let len = this.quillText.length;
+    let maxLength = this.maxResponseLength;
+    let maxSizeDisplay = this.returnSizeDisplay(maxLength);
+    let actualSizeDisplay = this.returnSizeDisplay(len);
+
+    return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
+  }
+
+  quote(string, opts, isImageTag) {
+    string = string.replace(/(\r\n|\n|\r)/gm, ' ');
     let defaultPrefix = '         ';
     let prefix = defaultPrefix;
     let str = '';
 
     let doWrapStringInBlockQuote = true;
 
-    if (opts && opts.hasOwnProperty('type')) {
+    if (opts && Object.prototype.hasOwnProperty.call(opts, 'type')) {
       doWrapStringInBlockQuote = false;
       if (opts.usePrefix) {
         switch (opts.type) {
@@ -264,20 +286,43 @@ export default Component.extend({
       }
     }
     return str;
-  },
+  }
 
-  preFormatText: function () {
+  getQuillErrors() {
+    let errors = [];
+    if (this.isQuillEmpty) {
+      errors.push('emptyReplyError');
+    }
+    if (this.isQuillTooLong) {
+      errors.push('quillTooLongError');
+    }
+    return errors;
+  }
+
+  clearErrorProps() {
+    this.args.removeMessages?.(this.errorPropsToRemove);
+  }
+
+  returnSizeDisplay(bytes) {
+    if (bytes < 1024) {
+      return bytes + ' bytes';
+    } else if (bytes >= 1024 && bytes < 1048576) {
+      return (bytes / 1024).toFixed(1) + 'KB';
+    } else if (bytes >= 1048576) {
+      return (bytes / 1048576).toFixed(1) + 'MB';
+    }
+  }
+
+  preFormatText() {
     let greeting = this.greeting;
     let text = `<p>${greeting}</p><br>`;
 
-    if (this.get('filteredSelections.length') > 0) {
+    if (this.filteredSelections.length > 0) {
       this.filteredSelections.forEach((s) => {
         let who = this.who;
-
         let quoteInput;
-
-        let selText = s.get('text');
-        let imageTagLink = s.get('imageTagLink');
+        let selText = s.text;
+        let imageTagLink = s.imageTagLink;
         let isImageTag = false;
 
         if (imageTagLink) {
@@ -288,59 +333,50 @@ export default Component.extend({
         }
 
         let quoteText = this.quote(quoteInput, null, isImageTag);
-
         text += `<p>${who} wrote:</p><br>`;
         text += quoteText;
 
         this.filteredComments.forEach((comment) => {
           let selId = this.utils.getBelongsToId(comment, 'selection');
-          if (selId === s.get('id')) {
+          if (selId === s.id) {
             let opts = {
-              type: comment.get('label'),
+              type: comment.label,
               usePrefix: true,
             };
-
-            text += this.quote(comment.get('text'), opts);
+            text += this.quote(comment.text, opts);
           }
         });
       });
 
-      this.set('originalText', text);
+      // Only set originalText if it's not already set (avoid reactivity issues)
+      if (!this.originalText) {
+        this.originalText = text;
+      }
       return text;
     }
-  },
-
-  replyText: computed('filteredComments', 'doUseOnlyOwnMarkup', function () {
-    return this.preFormatText();
-  }),
-
-  shortText: computed('model.text', function () {
-    if (typeof this.get('model.text') !== 'string') {
-      return '';
-    }
-    return this.get('model.text').slice(0, 150);
-  }),
+    // Return text even if no selections
+    return text;
+  }
 
   createRevision() {
     let record = this.store.createRecord('response', {
-      recipient: this.recipient,
+      recipient: this.args.recipient,
       createdBy: this.currentUser.user,
-      submission: this.get('submission.content'),
-      workspace: this.workspace,
-      selections: this.get('model.selections.content'),
-      comments: this.get('model.comments.content'),
-      status: this.newReplyStatus,
-      responseType: this.newReplyType,
+      submission: this.args.submission?.content,
+      workspace: this.args.workspace,
+      selections: this.args.model?.selections?.content,
+      comments: this.args.model?.comments?.content,
+      status: this.args.newReplyStatus,
+      responseType: this.args.newReplyType,
       source: 'submission',
     });
 
-    this.set('model.status', 'superceded');
+    this.args.model.status = 'superceded';
     return hash({
       revision: record.save(),
-      original: this.model.save(),
+      original: this.args.model.save(),
     }).then((hash) => {
-      this.set('isRevising', false);
-      // handle success
+      this.args.isRevising = false;
       this.alert.showToast(
         'success',
         'Revision Created',
@@ -350,138 +386,110 @@ export default Component.extend({
         null
       );
     });
-  },
-  moreDetailsLinkText: computed('showDetails', function () {
-    if (this.showDetails) {
-      return 'Hide Details';
+  }
+
+  // Actions converted to @action methods
+  @action
+  toggleProperty(p) {
+    this[p] = !this[p];
+  }
+
+  validateQuillContent() {
+    const errors = this.getQuillErrors();
+    if (errors.length > 0) {
+      errors.forEach((errorProp) => {
+        this[errorProp] = true;
+      });
+      return false;
     }
-    return 'More Details';
-  }),
+    return true;
+  }
 
-  getQuillErrors() {
-    let errors = [];
-    if (this.isQuillEmpty) {
-      errors.addObject('emptyReplyError');
-    }
-    if (this.isQuillTooLong) {
-      errors.addObject('quillTooLongError');
-    }
-    return errors;
-  },
-
-  returnSizeDisplay(bytes) {
-    if (bytes < 1024) {
-      return bytes + ' bytes';
-    } else if (bytes >= 1024 && bytes < 1048576) {
-      return (bytes / 1024).toFixed(1) + 'KB';
-    } else if (bytes >= 1048576) {
-      return (bytes / 1048576).toFixed(1) + 'MB';
-    }
-  },
-
-  quillTooLongErrorMsg: computed(
-    'quillText.length',
-    'maxResponseLength',
-    function () {
-      let len = this.get('quillText.length');
-      let maxLength = this.maxResponseLength;
-      let maxSizeDisplay = this.returnSizeDisplay(maxLength);
-      let actualSizeDisplay = this.returnSizeDisplay(len);
-
-      return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
-    }
-  ),
-
-  clearErrorProps() {
-    this.removeMessages(this.errorPropsToRemove);
-  },
-
-  actions: {
-    toggleProperty: function (p) {
-      this.toggleProperty(p);
-    },
-    saveResponse(isDraft) {
-      let quillErrors = this.getQuillErrors();
-
-      if (quillErrors.length > 0) {
-        quillErrors.forEach((errorProp) => {
-          this.set(errorProp, true);
-        });
-        return;
+ cleanupTrashedItems(response) {
+    response.selections?.forEach((selection) => {
+      if (selection.isTrashed) {
+        response.selections.removeObject(selection);
       }
+    });
 
-      let response = this.model;
+    response.comments?.forEach((comment) => {
+      if (comment.isTrashed) {
+        response.comments.removeObject(comment);
+      }
+    });
+  }
 
-      // need to remove any trashed selections or comments
+  prepareResponseData(response, isDraft) {
+    const status = isDraft ? 'draft' : this.args.newReplyStatus;
 
-      response.get('selections').forEach((selection) => {
-        if (selection.get('isTrashed')) {
-          response.get('selections').removeObject(selection);
-        }
-      });
+    response.setProperties({
+      original: this.originalText,
+      createdBy: this.currentUser.user,
+      status,
+      responseType: this.args.newReplyType,
+      text: this.quillText,
+      note: this.args.replyNote,
+    });
+  }
 
-      response.get('comments').forEach((comment) => {
-        if (comment.get('isTrashed')) {
-          response.get('comments').removeObject(comment);
-        }
-      });
+  handleSaveSuccess(savedResponse, toastMessage) {
+    this.loading.handleLoadingMessage(
+      this,
+      'end',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+    this.alert.showToast(
+      'success',
+      toastMessage,
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+    this.args.handleResponseThread?.(savedResponse, 'mentor');
+    this.args.onSaveSuccess?.(this.args.submission, savedResponse);
+  }
 
-      let toastMessage = isDraft ? 'Draft Saved' : 'Response Sent';
-      let newStatus = isDraft ? 'draft' : this.newReplyStatus;
+  handleSaveError(err, response) {
+    this.loading.handleLoadingMessage(
+      this,
+      'end',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+    this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
+  }
 
-      response.setProperties({
-        original: this.originalText,
-        createdBy: this.currentUser.user,
-        status: newStatus,
-        responseType: this.newReplyType,
-        text: this.quillText,
-        note: this.replyNote,
-      });
+  @action
+  saveResponse(isDraft) {
+    if (!this.validateQuillContent()) return;
 
-      this.loading.handleLoadingMessage(
-        this,
-        'start',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
+    const response = this.args.model;
+    const toastMessage = isDraft ? 'Draft Saved' : 'Response Sent';
 
-      response
-        .save()
-        .then((savedResponse) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
+    this.cleanupTrashedItems(response);
+    this.prepareResponseData(response, isDraft);
 
-          this.alert.showToast(
-            'success',
-            toastMessage,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.handleResponseThread(savedResponse, 'mentor');
-          this.onSaveSuccess(this.submission, savedResponse);
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
 
-          this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
-        });
-    },
+    response
+      .save()
+      .then((savedResponse) =>
+        this.handleSaveSuccess(savedResponse, toastMessage)
+      )
+      .catch((err) => this.handleSaveError(err, response));
+  }
 
-    updateQuillText(content, isEmpty, isOverLengthLimit) {
-      this.set('quillText', content);
-      this.set('isQuillEmpty', isEmpty);
-      this.set('isQuillTooLong', isOverLengthLimit);
-    },
-  },
-});
+  @action
+  updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.quillText = content;
+    this.isQuillEmpty = isEmpty;
+    this.isQuillTooLong = isOverLengthLimit;
+  }
+}
