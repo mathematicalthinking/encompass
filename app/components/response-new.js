@@ -3,14 +3,13 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import { hash } from 'rsvp';
+import { service } from '@ember/service';
 export default class ResponseNewComponent extends Component {
-  @service('current-user') currentUser;
-  @service('utility-methods') utils;
-  @service('loading-display') loading;
-  @service('error-handling') errorHandling;
-  @service('sweet-alert') alert;
+  @service currentUser;
+  @service utils;
+  @service('loading-display') loading; // for this line either use this way or we would have to change the service name
+  @service errorHandling;
+  @service alert;
   @service store;
 
   @tracked isEditing = false;
@@ -28,15 +27,12 @@ export default class ResponseNewComponent extends Component {
   @tracked isQuillTooLong = false;
   @tracked originalText = '';
 
+  @tracked doShowLoadingMessage = false;
+
   doUseOnlyOwnMarkup = true;
-  quillEditorId = 'response-new-editor';
   maxResponseLength = 14680064;
 
-  errorPropsToRemove = [
-    'recordSaveErrors',
-    'emptyReplyError',
-    'quillTooLongError',
-  ];
+  errorPropsToRemove = ['recordSaveErrors'];
 
   get initializedText() {
     if (this.args.isCreating && !this.isEditing && !this.originalText) {
@@ -63,7 +59,7 @@ export default class ResponseNewComponent extends Component {
   }
 
   get notPersisted() {
-    return !this.args.model?.persisted;
+    return !this.args.responseData?.persisted;
   }
 
   get notDirty() {
@@ -83,43 +79,43 @@ export default class ResponseNewComponent extends Component {
   }
 
   get filteredSelections() {
-    if (!this.args.model?.selections) return [];
+    if (!this.args.responseData?.selections) return [];
 
     if (this.doUseOnlyOwnMarkup) {
-      return this.args.model.selections.filter((selection) => {
+      return this.args.responseData.selections.filter((selection) => {
         if (selection.isTrashed) {
           return false;
         }
         let creatorId = this.utils.getBelongsToId(selection, 'createdBy');
-        return creatorId === this.currentUser.user.id;
+        return creatorId === this.currentUser.id;
       });
     }
-    return this.args.model.selections.filter(
+    return this.args.responseData.selections.filter(
       (selection) => !selection.isTrashed
     );
   }
 
   get filteredComments() {
-    if (!this.args.model?.comments) return [];
+    if (!this.args.responseData?.comments) return [];
 
     const chosenFilter = this.commentFilter
       .filter((item) => item.isChecked)
       .map((item) => item.value);
 
     if (this.doUseOnlyOwnMarkup) {
-      return this.args.model.comments.filter((comment) => {
+      return this.args.responseData.comments.filter((comment) => {
         if (comment.isTrashed) {
           return false;
         }
         let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
         return (
-          creatorId === this.currentUser.user.id &&
+          creatorId === this.currentUser.id &&
           chosenFilter.includes(comment.label)
         );
       });
     }
 
-    return this.args.model.comments.filter(
+    return this.args.responseData.comments.filter(
       (comment) => !comment.isTrashed && chosenFilter.includes(comment.label)
     );
   }
@@ -157,8 +153,8 @@ export default class ResponseNewComponent extends Component {
 
   get canRevise() {
     return (
-      this.args.creator?.id === this.currentUser.user.id &&
-      this.args.model?.persisted
+      this.args.creator?.id === this.currentUser.id &&
+      this.args.responseData?.persisted
     );
   }
 
@@ -167,9 +163,10 @@ export default class ResponseNewComponent extends Component {
   }
 
   get existingResponses() {
-    if (!this.args.submissionResponses || !this.args.model?.id) return [];
+    if (!this.args.submissionResponses || !this.args.responseData?.id)
+      return [];
     return this.args.submissionResponses.filter(
-      (response) => response.id !== this.args.model.id
+      (response) => response.id !== this.args.responseData.id
     );
   }
 
@@ -177,7 +174,7 @@ export default class ResponseNewComponent extends Component {
     if (this.args.data?.text) {
       return this.args.text !== this.args.data.text;
     }
-    return this.args.model?.text !== this.quillText;
+    return this.args.responseData?.text !== this.quillText;
   }
 
   get canRespond() {
@@ -189,7 +186,7 @@ export default class ResponseNewComponent extends Component {
       this.filteredSelections.length === 0 &&
       !this.isEditing &&
       !this.args.isRevising &&
-      !this.args.model?.text
+      !this.args.responseData?.text
     );
   }
 
@@ -204,16 +201,16 @@ export default class ResponseNewComponent extends Component {
     if (this.isToStudent) {
       return 'You';
     }
-    return this.args.model?.student;
+    return this.args.responseData?.student;
   }
 
   get greeting() {
-    if (!this.args.model?.student) return 'Hello,';
-    let brk = this.args.model.student.indexOf(' ');
+    if (!this.args.responseData?.student) return 'Hello,';
+    let brk = this.args.responseData.student.indexOf(' ');
     let firstname =
       brk === -1
-        ? this.args.model.student
-        : this.args.model.student.slice(0, brk);
+        ? this.args.responseData.student
+        : this.args.responseData.student.slice(0, brk);
     return `Hello ${firstname},`;
   }
 
@@ -222,10 +219,10 @@ export default class ResponseNewComponent extends Component {
   }
 
   get shortText() {
-    if (typeof this.args.model?.text !== 'string') {
+    if (typeof this.args.responseData?.text !== 'string') {
       return '';
     }
-    return this.args.model.text.slice(0, 150);
+    return this.args.responseData.text.slice(0, 150);
   }
 
   get moreDetailsLinkText() {
@@ -233,15 +230,6 @@ export default class ResponseNewComponent extends Component {
       return 'Hide Details';
     }
     return 'More Details';
-  }
-
-  get quillTooLongErrorMsg() {
-    let len = this.quillText.length;
-    let maxLength = this.maxResponseLength;
-    let maxSizeDisplay = this.returnSizeDisplay(maxLength);
-    let actualSizeDisplay = this.returnSizeDisplay(len);
-
-    return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
   }
 
   quote(string, opts, isImageTag) {
@@ -288,29 +276,8 @@ export default class ResponseNewComponent extends Component {
     return str;
   }
 
-  getQuillErrors() {
-    let errors = [];
-    if (this.isQuillEmpty) {
-      errors.push('emptyReplyError');
-    }
-    if (this.isQuillTooLong) {
-      errors.push('quillTooLongError');
-    }
-    return errors;
-  }
-
   clearErrorProps() {
     this.args.removeMessages?.(this.errorPropsToRemove);
-  }
-
-  returnSizeDisplay(bytes) {
-    if (bytes < 1024) {
-      return bytes + ' bytes';
-    } else if (bytes >= 1024 && bytes < 1048576) {
-      return (bytes / 1024).toFixed(1) + 'KB';
-    } else if (bytes >= 1048576) {
-      return (bytes / 1048576).toFixed(1) + 'MB';
-    }
   }
 
   preFormatText() {
@@ -358,34 +325,39 @@ export default class ResponseNewComponent extends Component {
     return text;
   }
 
-  createRevision() {
+  async createRevision() {
     let record = this.store.createRecord('response', {
       recipient: this.args.recipient,
       createdBy: this.currentUser.user,
       submission: this.args.submission?.content,
       workspace: this.args.workspace,
-      selections: this.args.model?.selections?.content,
-      comments: this.args.model?.comments?.content,
+      selections: this.args.responseData?.selections?.content,
+      comments: this.args.responseData?.comments?.content,
       status: this.args.newReplyStatus,
       responseType: this.args.newReplyType,
       source: 'submission',
     });
 
-    this.args.model.status = 'superceded';
-    return hash({
-      revision: record.save(),
-      original: this.args.model.save(),
-    }).then((hash) => {
-      this.args.isRevising = false;
-      this.alert.showToast(
-        'success',
-        'Revision Created',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-    });
+    if (this.args.responseData) {
+      this.args.responseData.status = 'superceded';
+    }
+
+    const [revision, original] = await Promise.all([
+      record.save(),
+      this.args.responseData?.save(),
+    ]);
+
+    this.args.isRevising = false;
+    this.alert.showToast(
+      'success',
+      'Revision Created',
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+
+    return { revision, original };
   }
 
   // Actions converted to @action methods
@@ -395,17 +367,10 @@ export default class ResponseNewComponent extends Component {
   }
 
   validateQuillContent() {
-    const errors = this.getQuillErrors();
-    if (errors.length > 0) {
-      errors.forEach((errorProp) => {
-        this[errorProp] = true;
-      });
-      return false;
-    }
-    return true;
+    return !this.isQuillEmpty && !this.isQuillTooLong;
   }
 
- cleanupTrashedItems(response) {
+  cleanupTrashedItems(response) {
     response.selections?.forEach((selection) => {
       if (selection.isTrashed) {
         response.selections.removeObject(selection);
@@ -465,7 +430,7 @@ export default class ResponseNewComponent extends Component {
   saveResponse(isDraft) {
     if (!this.validateQuillContent()) return;
 
-    const response = this.args.model;
+    const response = this.args.responseData;
     const toastMessage = isDraft ? 'Draft Saved' : 'Response Sent';
 
     this.cleanupTrashedItems(response);

@@ -12,6 +12,8 @@ export default class QuillContainerComponent extends Component {
   @tracked quillInstance = null;
   @tracked isEmpty = true;
   @tracked isOverLengthLimit = false;
+  @tracked showEmptyError = false;
+  @tracked showTooLongError = false;
 
   defaultOptions = {
     debug: 'false',
@@ -38,6 +40,13 @@ export default class QuillContainerComponent extends Component {
 
   get lengthLimit() {
     return this.args.maxLength || this.defaultMaxLength;
+  }
+
+  get tooLongErrorMsg() {
+    const len = this.quillInstance?.root.innerHTML.length || 0;
+    const maxSizeDisplay = this.returnSizeDisplay(this.lengthLimit);
+    const actualSizeDisplay = this.returnSizeDisplay(len);
+    return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
   }
 
   @action
@@ -80,6 +89,10 @@ export default class QuillContainerComponent extends Component {
     this.isEmpty = !isEmpty;
     this.isOverLengthLimit = isOverLengthLimit;
 
+    // Show errors if validation enabled
+    this.showEmptyError = this.args.showErrors && !isEmpty;
+    this.showTooLongError = this.args.showErrors && isOverLengthLimit;
+
     if (this.args.onEditorChange) {
       this.args.onEditorChange(replaced, !isEmpty, isOverLengthLimit);
     }
@@ -91,5 +104,21 @@ export default class QuillContainerComponent extends Component {
     if (text.length > 0) return true;
     const content = this.quillInstance.root.innerHTML;
     return content.includes('<img');
+  }
+
+  returnSizeDisplay(bytes) {
+    if (bytes < 1024) return bytes + ' bytes';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + 'KB';
+    return (bytes / 1048576).toFixed(1) + 'MB';
+  }
+
+  @action
+  resetEmptyError() {
+    this.showEmptyError = false;
+  }
+
+  @action
+  resetTooLongError() {
+    this.showTooLongError = false;
   }
 }
