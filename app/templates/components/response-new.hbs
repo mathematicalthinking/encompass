@@ -63,8 +63,8 @@
           Comments
           <i
             class='fas
-              {{if showComments "fa-chevron-down"}}
-              {{unless showComments "fa-chevron-left"}}'
+              {{if this.showComments "fa-chevron-down"}}
+              {{unless this.showComments "fa-chevron-left"}}'
           ></i>
         </p>
         {{#if this.showComments}}
@@ -123,7 +123,7 @@
           <Textarea
             class='approver-note'
             id='response-note'
-            @value={{replyNote}}
+            @value={{this.replyNote}}
           />
         </div>
       {{/if}}

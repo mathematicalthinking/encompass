@@ -35,10 +35,10 @@ export default class ResponseNewComponent extends Component {
   errorPropsToRemove = ['recordSaveErrors'];
 
   get initializedText() {
-    if (this.args.isCreating && !this.isEditing && !this.originalText) {
+    if (this.args.isCreating && !this.isEditing) {
       return this.preFormatText();
     }
-    return this.originalText;
+    return this.originalText || this.preFormatText();
   }
 
   get todaysDate() {
@@ -314,14 +314,7 @@ export default class ResponseNewComponent extends Component {
           }
         });
       });
-
-      // Only set originalText if it's not already set (avoid reactivity issues)
-      if (!this.originalText) {
-        this.originalText = text;
-      }
-      return text;
     }
-    // Return text even if no selections
     return text;
   }
 
