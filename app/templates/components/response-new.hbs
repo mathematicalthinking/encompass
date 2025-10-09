@@ -28,8 +28,7 @@
           Selections
           <i
             class='fas
-              {{if this.showSelections "fa-chevron-down"}}
-              {{unless this.showSelections "fa fa-expand"}}'
+              {{if this.showSelections "fa-chevron-down" "fa fa-expand"}}'
           ></i>
         </p>
         {{#if this.showSelections}}
@@ -63,8 +62,7 @@
           Comments
           <i
             class='fas
-              {{if this.showComments "fa-chevron-down"}}
-              {{unless this.showComments "fa-chevron-left"}}'
+              {{if this.showComments "fa-chevron-down" "fa-chevron-left"}}'
           ></i>
         </p>
         {{#if this.showComments}}
@@ -141,7 +139,7 @@
       <button
         class='primary-button save-draft'
         type='button'
-        {{on 'click' (fn this.saveResponse true)}}
+        {{on 'click' this.saveDraftResponse}}
       >Save as Draft</button>
     </div>
   </section>

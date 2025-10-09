@@ -232,6 +232,10 @@ export default class ResponseNewComponent extends Component {
     return 'More Details';
   }
 
+  get isValidQuillContent() {
+    return !this.isQuillEmpty && !this.isQuillTooLong;
+  }
+
   quote(string, opts, isImageTag) {
     string = string.replace(/(\r\n|\n|\r)/gm, ' ');
     let defaultPrefix = '         ';
@@ -359,10 +363,6 @@ export default class ResponseNewComponent extends Component {
     this[p] = !this[p];
   }
 
-  validateQuillContent() {
-    return !this.isQuillEmpty && !this.isQuillTooLong;
-  }
-
   cleanupTrashedItems(response) {
     response.selections?.forEach((selection) => {
       if (selection.isTrashed) {
@@ -420,8 +420,13 @@ export default class ResponseNewComponent extends Component {
   }
 
   @action
+  saveDraftResponse() {
+    this.saveResponse(true);
+  }
+
+  @action
   saveResponse(isDraft) {
-    if (!this.validateQuillContent()) return;
+    if (!this.isValidQuillContent) return;
 
     const response = this.args.responseData;
     const toastMessage = isDraft ? 'Draft Saved' : 'Response Sent';
