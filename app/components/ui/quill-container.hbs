@@ -5,4 +5,20 @@
     {{will-destroy this.teardownQuill}}
     id={{this.sectionId}}
   ></section>
+  
+  {{#if this.showEmptyError}}
+    <Ui::ErrorBox
+      @error={{@emptyErrorMessage}}
+      @showDismiss={{true}}
+      @resetError={{this.resetEmptyError}}
+    />
+  {{/if}}
+  
+  {{#if this.showTooLongError}}
+    <Ui::ErrorBox
+      @error={{this.tooLongErrorMsg}}
+      @showDismiss={{true}}
+      @resetError={{this.resetTooLongError}}
+    />
+  {{/if}}
 </div>

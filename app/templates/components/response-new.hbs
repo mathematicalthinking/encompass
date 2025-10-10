@@ -10,100 +10,30 @@
   {{! Header for container }}
   <div class='new-response-header'>
     <p>Craft Response</p>
-    <p class='response-date'>{{format-date todaysDate 'MMMM Do YYYY'}}</p>
+    <p class='response-date'>{{format-date this.todaysDate 'MMMM Do YYYY'}}</p>
   </div>
   {{! Info in header }}
   <div class='new-response-header-info'>
-    <p>To: {{model.student}}</p>
+    <p>To: {{@responseData.student}}</p>
     <p>From:
-      {{currentUser.user.username}}
+      {{this.currentUser.username}}
     </p>
   </div>
   {{! Main content }}
   <section class='new-response-content'>
-    {{! will show existing responses - but may not be needed as entire page will have all mentor responses now. }}
-    {{!-- {{#if existingResponses.length}}
-      <div class='response-existing-container'>
-        <p class='response-existing'>
-          There
-          {{pluralize existingResponses.length 'is' 'are'}}
-          {{#unless model.persisted}}already{{/unless}}
-          {{existingResponses.length}}
-          other
-          {{pluralize existingResponses.length 'response' 'responses'}}
-          for this
-          {{model.source}}.
-          <span class='response-link' {{action toggleProperty 'showExisting'}}>
-            {{#if showExisting}}
-              Hide
-            {{else}}
-              Show
-            {{/if}}
-          </span>
-        </p>
-        {{#if showExisting}}
-          <ul class='response-listing'>
-            {{#each existingResponses as |response|}}
-              <li>
-                <span class='create-date'>{{format-date
-                    response.createDate
-                    'l h:mm a'
-                  }}</span>
-                {{{response.shortText}}}...
-                <LinkTo
-                  @route='responses.submission'
-                  @model={{submission.id}}
-                  @query={{hash responseId=response.id}}
-                > View</LinkTo>
-              </li>
-            {{/each}}
-          </ul>
-        {{/if}}
-      </div>
-    {{/if}} --}}
-    {{! A comments filter - is it necessary? }}
-    {{!-- <div class='markup-filter'>
-      <span class='filter-label'>Comments Filter</span><i
-        class='fas fa-filter'
-      ></i>
-      <span class='hover-menu checkbox'>
-        <ul>
-          <li>
-            <label>
-              <Input
-                @type='checkbox'
-                class='my-work'
-                name='ownMarkUpOnly'
-                @checked={{this.doUseOnlyOwnMarkup}}
-              />
-              My Comments and Selections Only
-            </label>
-          </li>
-          {{#each this.commentFilter as |item|}}
-            <li>
-              <label>
-                <Input @type='checkbox' @checked={{item.isChecked}} />
-                {{item.label}}
-              </label>
-            </li>
-          {{/each}}
-        </ul>
-      </span>
-    </div> --}}
-    {{#if filteredSelections.length}}
+    {{#if this.filteredSelections.length}}
 
       <section class='selections'>
-        <p class='response-header' {{action 'toggleProperty' 'showSelections'}}>
+        <p class='response-header' {{on 'click' (fn this.toggleProperty 'showSelections')}}>
           Selections
           <i
             class='fas
-              {{if showSelections "fa-chevron-down"}}
-              {{unless showSelections "fa fa-expand"}}'
+              {{if this.showSelections "fa-chevron-down" "fa fa-expand"}}'
           ></i>
         </p>
-        {{#if showSelections}}
+        {{#if this.showSelections}}
           <ul class='selections-list'>
-            {{#each filteredSelections as |selection|}}
+            {{#each this.filteredSelections as |selection|}}
               <li class='selections-list-item'>
                 <LinkTo
                   @route='workspace.submissions.submission.selections.selection'
@@ -128,17 +58,16 @@
         {{/if}}
       </section>
       <section class='comments'>
-        <p class='response-header' {{action 'toggleProperty' 'showComments'}}>
+        <p class='response-header' {{on 'click' (fn this.toggleProperty 'showComments')}}>
           Comments
           <i
             class='fas
-              {{if showComments "fa-chevron-down"}}
-              {{unless showComments "fa-chevron-left"}}'
+              {{if this.showComments "fa-chevron-down" "fa-chevron-left"}}'
           ></i>
         </p>
-        {{#if showComments}}
+        {{#if this.showComments}}
           <ul class='comments-list'>
-            {{#each filteredComments as |comment|}}
+            {{#each this.filteredComments as |comment|}}
               <li class='comments-list-item'>
                 <LinkTo
                   @route='workspace.submissions.submission.selections.selection'
@@ -155,18 +84,12 @@
         {{/if}}
       </section>
     {{/if}}
-    {{!-- <div class="comment-filter">
-        <p>Comments to include:</p>
-        {{#each this.commentFilter as |item|}}
-          <label><Input @type="checkbox" @checked={{item.isChecked}} />{{item.label}}</label>
-        {{/each}}
-      </div> --}}
 
     <div class='response-info'>
-      {{#if explainEmptiness}}
+      {{#if this.explainEmptiness}}
         <p class='response-prefill'>
           It looks like
-          {{#if doUseOnlyOwnMarkup}}
+          {{#if this.doUseOnlyOwnMarkup}} 
             you haven't made
           {{else}}
             there aren't
@@ -174,7 +97,7 @@
           any selections or comments for this submission. You can go back to the
           <LinkTo
             @route='workspace.submissions.submission'
-            @models={{array model.workspace model.submission}}
+            @models={{array @responseData.workspace @responseData.submission}}
           >submission</LinkTo>
           and create some selections and comments.
         </p>
@@ -184,49 +107,39 @@
       <p class='response-header'>Message</p>
 
       <Ui::QuillContainer
-        @onEditorChange={{action 'updateQuillText'}}
-        @attrSectionId={{quillEditorId}}
-        @startingText={{replyText}}
+        @onEditorChange={{this.updateQuillText}}
+        @attrSectionId='response-new-editor'
+        @startingText={{this.replyText}}
+        @maxLength={{this.maxResponseLength}}
+        @showErrors={{true}}
+        @emptyErrorMessage='Message body cannot be blank'
       />
 
-      {{#if showNoteField}}
+      {{#if this.showNoteField}}
         <div class='approve-note'>
           <p class='response-header'>Note to Approver</p>
           <Textarea
             class='approver-note'
             id='response-note'
-            @value={{replyNote}}
+            @value={{this.replyNote}}
           />
         </div>
       {{/if}}
     </div>
-    {{#if emptyReplyError}}
-      <Ui::ErrorBox
-        @error='Message body cannot be blank'
-        @showDismiss={{true}}
-        @resetError={{action (mut emptyReplyError) null}}
-      />
-    {{/if}}
-    {{#if quillTooLongError}}
-      <Ui::ErrorBox
-        @error={{quillTooLongErrorMsg}}
-        @showDismiss={{true}}
-        @resetError={{action (mut quillTooLongError) null}}
-      />
-    {{/if}}
-    {{#if doShowLoadingMessage}}
+
+    {{#if this.doShowLoadingMessage}}
       <LoadingElem />
     {{/if}}
     <div class='submit-buttons button-row'>
       <button
         class='primary-button save-response'
         type='button'
-        {{action 'saveResponse'}}
-      >{{submitButtonText}}</button>
+        {{on 'click' this.saveResponse}}
+      >{{this.submitButtonText}}</button>
       <button
         class='primary-button save-draft'
         type='button'
-        {{action 'saveResponse' true}}
+        {{on 'click' this.saveDraftResponse}}
       >Save as Draft</button>
     </div>
   </section>
