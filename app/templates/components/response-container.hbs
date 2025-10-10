@@ -20,31 +20,28 @@
         <p>
           Crafting a new response for
           <a
-            {{action 'openSubmission' this.workspace.id this.submission.id}}
+            {{on 'click' (fn @openSubmission this.workspace.id this.submission.id)}}
             class='link'
           >{{this.workspace.name}}</a>, problem:
-          <a {{action 'openProblem'}} class='problem-link'>
+          <a {{on 'click' @openProblem}} class='problem-link'>
             {{this.submission.puzzle.title}}
-
-          </a></p>
+          </a>
+        </p>
       </div>
     {{else}}
       {{! I would like it to be: Displaying feedback re: “problem_name” from “”workspace_name” }}
       <div class='problem-link-container'>
-
         <p>Displaying feedback re:
-          <a {{action 'openProblem'}} class='problem-link'>
+          <a {{on 'click' @openProblem}} class='problem-link'>
             {{this.submission.puzzle.title}}
-
-          </a></p>
+          </a>
+        </p>
         from:
         <a
-          {{action 'openSubmission' this.workspace.id this.submission.id}}
+          {{on 'click' (fn @openSubmission this.workspace.id this.submission.id)}}
           class='link'
         >{{this.workspace.name}}</a>
-
       </div>
-
     {{/if}}
   </div>
   {{#each this.sortedSubmissions as |submission|}}
@@ -54,8 +51,8 @@
       @workspace={{this.workspace}}
       @wsResponses={{this.cleanWorkspaceResponses}}
       @studentSubmissions={{this.submissions}}
-      @onSubChange={{action 'onSubmissionChange'}}
-      @sendRevisionNotices={{action 'sendSubmissionRevisionNotices'}}
+      @onSubChange={{@onSubmissionChange}}
+      @sendRevisionNotices={{@sendSubmissionRevisionNotices}}
       @isParentWorkspace={{this.isParentWorkspace}}
       @isCreating={{this.isCreatingNewMentorReply}}
       @mentorReplies={{submission.responses}}
@@ -64,18 +61,18 @@
       @canDirectSend={{this.canDirectSend}}
       @canApprove={{this.canApprove}}
       @isOwnMentorReply={{this.isOwnMentorReply}}
-      @onSaveSuccess={{action 'onSaveSuccess'}}
-      @onMentorReplySwitch={{action 'onMentorReplySwitch'}}
-      @toResponses={{action 'toResponses'}}
+      @onSaveSuccess={{@onSaveSuccess}}
+      @onMentorReplySwitch={{@onMentorReplySwitch}}
+      @toResponses={{@toResponses}}
       @submissionResponses={{this.nonTrashedResponses}}
       @canSend={{this.canSend}}
       @isMentorRecipient={{this.isMentorRecipient}}
       @isOwnSubmission={{this.isOwnSubmission}}
-      @toNewResponse={{action 'toNewResponse'}}
+      @toNewResponse={{@toNewResponse}}
       @priorMentorRevision={{this.priorMentorRevision}}
       @iconFillOptions={{this.iconFillOptions}}
-      @toSubmission={{action 'onSubmissionChange'}}
-      @handleResponseThread={{action 'handleResponseThread'}}
+      @toSubmission={{@onSubmissionChange}}
+      @handleResponseThread={{@handleResponseThread}}
     />
   {{/each}}
 </div>
