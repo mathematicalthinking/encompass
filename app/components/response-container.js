@@ -164,15 +164,11 @@ export default class ResponseContainer extends Component {
     return null;
   }
 
-  get isDisplayMentorReplyYours() {
+  get isOwnMentorReply() {
     const reply = this.mentorReplyDisplayResponse;
     if (!reply) return false;
     const creatorId = this.utils.getBelongsToId(reply, 'createdBy');
     return creatorId === this.currentUser.user?.id;
-  }
-
-  get isOwnMentorReply() {
-    return this.isDisplayMentorReplyYours;
   }
 
   get isOwnApproverReply() {
@@ -228,11 +224,10 @@ export default class ResponseContainer extends Component {
   }
 
   get cleanWorkspaceResponses() {
-    return this.cleanStoreResponses.filter((response) => {
-      return (
+    return this.cleanStoreResponses.filter(
+      (response) =>
         this.utils.getBelongsToId(response, 'workspace') === this.workspace?.id
-      );
-    });
+    );
   }
 
   __cleanupNotifications() {
@@ -252,14 +247,51 @@ export default class ResponseContainer extends Component {
   }
 
   findExistingResponseThread(threadType, threadId) {
-    const peekedResponseThreads = this.store
+    return this.store
       .peekAll('response-thread')
-      .toArray();
-    if (!peekedResponseThreads) return;
+      .find(
+        (thread) => thread.threadType === threadType && thread.id === threadId
+      );
+  }
 
-    return peekedResponseThreads.find((thread) => {
-      return thread.threadType === threadType && thread.id === threadId;
-    });
+  __getBaseUrl() {
+    const { protocol, host, pathname } = window.location;
+    return `${protocol}//${host}/${pathname.split('/')[1]}`;
+  }
+
+  __generateThreadId(threadType, response, workspaceId) {
+    if (threadType === 'submitter') {
+      return 'srt' + workspaceId;
+    }
+
+    if (threadType === 'mentor') {
+      const studentId = this.utils.getBelongsToId(response, 'recipient');
+      return workspaceId + studentId;
+    }
+
+    if (threadType === 'approver') {
+      const mentorId = this.utils.getBelongsToId(response, 'recipient');
+      const reviewedResponseId = this.utils.getBelongsToId(
+        response,
+        'reviewedResponse'
+      );
+
+      if (reviewedResponseId) {
+        const reviewedResponse = this.store.peekRecord(
+          'response',
+          reviewedResponseId
+        );
+        if (reviewedResponse) {
+          const studentId = this.utils.getBelongsToId(
+            reviewedResponse,
+            'recipient'
+          );
+          return { threadId: workspaceId + studentId + mentorId, mentorId };
+        }
+      }
+    }
+
+    return null;
   }
 
   @action
@@ -301,5 +333,153 @@ export default class ResponseContainer extends Component {
   @action
   handleError(err) {
     this.errorHandling.handleError(err, { throwError: true });
+  }
+
+  @action
+  openProblem() {
+    const problemId = this.submission?.answer?.problem?.id;
+    if (!problemId) return;
+
+    window.open(
+      `${this.__getBaseUrl()}#/problems/${problemId}`,
+      'newwindow',
+      'width=1200, height=700'
+    );
+  }
+
+  @action
+  openSubmission(workspaceId, submissionId) {
+    if (!workspaceId || !submissionId) return;
+
+    window.open(
+      `${this.__getBaseUrl()}#/workspaces/${workspaceId}/submissions/${submissionId}`,
+      'newwindow',
+      'width=1200, height=700'
+    );
+  }
+
+  @action
+  onSaveSuccess(submission, response) {
+    const responseId = response?.id || null;
+    this.args.toResponse?.(submission.id, responseId);
+  }
+
+  @action
+  onMentorReplySwitch(response) {
+    const subId = response.belongsTo('submission').id();
+    this.args.toResponse?.(subId, response.id);
+  }
+
+  @action
+  onSubmissionChange(sub) {
+    this.args.toResponseSubmission?.(sub.id);
+  }
+
+  /**
+   * Notifies mentors when a student submits a revised answer.
+   *
+   * Note: Marked as "broken" in response-submission-view.js.
+   * FIX: Old code accepted oldSub but never used it, relying on component state instead.
+   * Fixed to query mentor responses from oldSub parameter.
+   * TODO: Needs UI verification - test via student account at /#/assignments, submit revision
+   *
+   * @param {Object} oldSub - The old submission being revised
+   * @param {Object} newSub - The newly created submission revision
+   */
+  @action
+  async sendSubmissionRevisionNotices(oldSub, newSub) {
+    if (!oldSub || !newSub) return;
+
+    this.handleResponseThread(null, 'submitter', newSub);
+
+    // Query for all mentor responses on the old submission
+    const oldSubResponseIds = this.utils.getHasManyIds(oldSub, 'responses');
+    if (!oldSubResponseIds?.length) return;
+
+    const mentorResponses = this.store
+      .peekAll('response')
+      .filter(
+        (r) =>
+          oldSubResponseIds.includes(r.id) &&
+          r.responseType === 'mentor' &&
+          !r.isTrashed
+      );
+
+    // Get unique mentors who gave feedback
+    const mentors = [
+      ...new Set(
+        mentorResponses.map((r) => r.createdBy?.content).filter(Boolean)
+      ),
+    ];
+
+    if (!mentors.length) return;
+
+    // Create notifications for each mentor
+    mentors.forEach((user) => {
+      const notification = this.store.createRecord('notification', {
+        createdBy: this.currentUser.user,
+        recipient: user,
+        notificationType: 'newWorkToMentor',
+        primaryRecordType: 'response',
+        submission: newSub,
+        createDate: new Date(),
+        text: 'There is a new revision for you to mentor.',
+        workspace: this.workspace,
+      });
+      notification.save();
+    });
+  }
+
+  @action
+  handleResponseThread(response, threadType, submission) {
+    const workspaceId = this.workspace?.id;
+    const threadIdResult = this.__generateThreadId(
+      threadType,
+      response,
+      workspaceId
+    );
+
+    const threadId =
+      typeof threadIdResult === 'object'
+        ? threadIdResult.threadId
+        : threadIdResult;
+    const mentorId =
+      typeof threadIdResult === 'object' ? threadIdResult.mentorId : null;
+
+    if (!threadId) return;
+
+    const existingThread = this.findExistingResponseThread(
+      threadType,
+      threadId
+    );
+
+    if (existingThread) {
+      const target = threadType === 'submitter' ? 'submissions' : 'responses';
+      const item = threadType === 'submitter' ? submission : response;
+      existingThread[target].addObject(item);
+      return;
+    }
+
+    const submissionId =
+      threadType === 'submitter'
+        ? submission?.id
+        : this.utils.getBelongsToId(response, 'submission');
+    const sub =
+      threadType === 'submitter'
+        ? submission
+        : this.store.peekRecord('submission', submissionId);
+
+    const newThread = this.store.createRecord('response-thread', {
+      threadType,
+      id: threadId,
+      workspaceName: this.workspace?.name,
+      problemTitle: sub?.publication?.puzzle?.title,
+      studentDisplay: sub?.creator?.username,
+      isNewThread: true,
+    });
+
+    if (mentorId) newThread.set('mentors', [mentorId]);
+    if (sub) newThread.submissions.addObject(sub);
+    if (response) newThread.responses.addObject(response);
   }
 }
