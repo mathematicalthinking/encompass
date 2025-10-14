@@ -14,24 +14,15 @@ module('Integration | Component | response-container', function (hooks) {
         user: { id: 'user1', username: 'testuser' },
       })
     );
-    
+
     this.owner.register(
-      'service:ws-permissions',
+      'service:workspace-permissions',
       Service.extend({
         canApproveFeedback() {
           return false;
         },
         canEdit() {
           return false;
-        },
-      })
-    );
-
-    this.owner.register(
-      'service:utils',
-      Service.extend({
-        getBelongsToId(obj, field) {
-          return obj[field]?.id || obj[field];
         },
       })
     );
@@ -81,7 +72,7 @@ module('Integration | Component | response-container', function (hooks) {
   });
 
   // --- Setup & Mocks ---
-  
+
   const mockSubmission = {
     id: 'sub1',
     student: 'Test Student',
@@ -130,7 +121,7 @@ module('Integration | Component | response-container', function (hooks) {
       toResponseSubmission: () => {},
       ...props,
     });
-    
+
     await render(hbs`<ResponseContainer
       @response={{this.response}}
       @workspace={{this.workspace}}
@@ -167,7 +158,7 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.problem-link').hasText('Test Problem');
+    assert.dom('.problem-link').hasText(mockSubmission.puzzle.title);
   });
 
   test('displays workspace name in header', async function (assert) {
@@ -178,7 +169,7 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.problem-link-container a.link').hasText('Test Workspace');
+    assert.dom('.problem-link-container a.link').hasText(mockWorkspace.name);
   });
 
   test('shows "Displaying feedback re:" text', async function (assert) {
@@ -189,7 +180,9 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.problem-link-container').containsText('Displaying feedback re:');
+    assert
+      .dom('.problem-link-container')
+      .containsText('Displaying feedback re:');
   });
 
   // --- Response Type Handling ---
@@ -202,7 +195,9 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders successfully with mentor response type');
+    assert
+      .dom('.response-container')
+      .exists('Component renders successfully with mentor response type');
   });
 
   test('renders with parent workspace type', async function (assert) {
@@ -213,13 +208,19 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders successfully with parent workspace type');
+    assert
+      .dom('.response-container')
+      .exists('Component renders successfully with parent workspace type');
   });
 
   // --- Data Filtering & Sorting ---
 
   test('filters out trashed responses', async function (assert) {
-    const trashedResponse = { ...mockMentorResponse, id: 'resp2', isTrashed: true };
+    const trashedResponse = {
+      ...mockMentorResponse,
+      id: 'resp2',
+      isTrashed: true,
+    };
     await renderResponseContainer(this, {
       response: mockMentorResponse,
       workspace: mockWorkspace,
@@ -227,7 +228,11 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [mockMentorResponse, trashedResponse],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when filtering trashed responses');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when filtering trashed responses'
+      );
   });
 
   test('filters out trashed submissions', async function (assert) {
@@ -246,7 +251,11 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when filtering trashed submissions');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when filtering trashed submissions'
+      );
   });
 
   test('sorts submissions newest first', async function (assert) {
@@ -265,7 +274,11 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when sorting submissions by date');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when sorting submissions by date'
+      );
   });
 
   test('handles multiple submissions', async function (assert) {
@@ -284,7 +297,9 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors with multiple submissions');
+    assert
+      .dom('.response-container')
+      .exists('Component renders without errors with multiple submissions');
   });
 
   // --- Edge Cases ---
@@ -297,7 +312,7 @@ module('Integration | Component | response-container', function (hooks) {
       toResponse: () => {},
       toResponseSubmission: () => {},
     });
-    
+
     await render(hbs`<ResponseContainer
       @submissions={{this.submissions}}
       @toResponses={{this.toResponses}}
@@ -317,13 +332,19 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [mockMentorResponse],
     });
 
-    assert.dom('.response-container').exists('Component initializes successfully with responses array');
+    assert
+      .dom('.response-container')
+      .exists('Component initializes successfully with responses array');
   });
 
   // --- Response Filtering ---
 
   test('filters mentor replies from mixed response types', async function (assert) {
-    const approverResponse = { ...mockMentorResponse, id: 'resp2', responseType: 'approver' };
+    const approverResponse = {
+      ...mockMentorResponse,
+      id: 'resp2',
+      responseType: 'approver',
+    };
     await renderResponseContainer(this, {
       response: mockMentorResponse,
       workspace: mockWorkspace,
@@ -331,11 +352,19 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [mockMentorResponse, approverResponse],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when filtering mentor vs approver responses');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when filtering mentor vs approver responses'
+      );
   });
 
   test('combines responses from responses and storeResponses', async function (assert) {
-    const storeResponse = { ...mockMentorResponse, id: 'resp3', isTrashed: false };
+    const storeResponse = {
+      ...mockMentorResponse,
+      id: 'resp3',
+      isTrashed: false,
+    };
     await renderResponseContainer(this, {
       response: mockMentorResponse,
       workspace: mockWorkspace,
@@ -344,11 +373,19 @@ module('Integration | Component | response-container', function (hooks) {
       storeResponses: [storeResponse],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when combining responses and storeResponses');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when combining responses and storeResponses'
+      );
   });
 
   test('excludes trashed responses from storeResponses', async function (assert) {
-    const trashedStoreResponse = { ...mockMentorResponse, id: 'resp3', isTrashed: true };
+    const trashedStoreResponse = {
+      ...mockMentorResponse,
+      id: 'resp3',
+      isTrashed: true,
+    };
     await renderResponseContainer(this, {
       response: mockMentorResponse,
       workspace: mockWorkspace,
@@ -357,12 +394,19 @@ module('Integration | Component | response-container', function (hooks) {
       storeResponses: [trashedStoreResponse],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when excluding trashed storeResponses');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when excluding trashed storeResponses'
+      );
   });
 
   test('extracts unique mentors from responses', async function (assert) {
     const mentor1 = { id: 'mentor1', username: 'mentor1' };
-    const response1 = { ...mockMentorResponse, createdBy: { content: mentor1 } };
+    const response1 = {
+      ...mockMentorResponse,
+      createdBy: { content: mentor1 },
+    };
     await renderResponseContainer(this, {
       response: mockMentorResponse,
       workspace: mockWorkspace,
@@ -370,7 +414,11 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [response1],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when extracting mentor information');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when extracting mentor information'
+      );
   });
 
   test('identifies when user is submission creator', async function (assert) {
@@ -381,7 +429,11 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when user is submission creator');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when user is submission creator'
+      );
   });
 
   test('identifies when user is response recipient', async function (assert) {
@@ -396,7 +448,11 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders without errors when user is response recipient');
+    assert
+      .dom('.response-container')
+      .exists(
+        'Component renders without errors when user is response recipient'
+      );
   });
 
   test('handles approver response type', async function (assert) {
@@ -413,7 +469,9 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.response-container').exists('Component renders with approver response type');
+    assert
+      .dom('.response-container')
+      .exists('Component renders with approver response type');
   });
 
   // Note: New response creation mode (isNew: true) renders ResponseNew component
@@ -427,7 +485,9 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.problem-link-container').containsText('Displaying feedback', 'Initially not in creation mode');
+    assert
+      .dom('.problem-link-container')
+      .containsText('Displaying feedback', 'Initially not in creation mode');
   });
 
   test('sendSubmissionRevisionNotices creates notifications for mentors', async function (assert) {
@@ -470,14 +530,23 @@ module('Integration | Component | response-container', function (hooks) {
       const utils = this.owner.lookup('service:utility-methods');
       const oldSubResponseIds = utils.getHasManyIds(oldSub, 'responses');
       if (!oldSubResponseIds?.length) return;
-      
-      const mentorResponses = store.peekAll('response').filter(
-        (r) => oldSubResponseIds.includes(r.id) && r.responseType === 'mentor' && !r.isTrashed
-      );
-      
-      const mentors = [...new Set(mentorResponses.map((r) => r.createdBy?.content).filter(Boolean))];
+
+      const mentorResponses = store
+        .peekAll('response')
+        .filter(
+          (r) =>
+            oldSubResponseIds.includes(r.id) &&
+            r.responseType === 'mentor' &&
+            !r.isTrashed
+        );
+
+      const mentors = [
+        ...new Set(
+          mentorResponses.map((r) => r.createdBy?.content).filter(Boolean)
+        ),
+      ];
       if (!mentors.length) return;
-      
+
       mentors.forEach(() => {
         store.createRecord('notification', {}).save();
       });
@@ -507,7 +576,10 @@ module('Integration | Component | response-container', function (hooks) {
 
     await this.sendRevisionNotices(oldSubmission, newSubmission);
 
-    assert.ok(true, 'Function completes without error when no mentor responses exist');
+    assert.ok(
+      true,
+      'Function completes without error when no mentor responses exist'
+    );
   });
 
   test('openProblem action exists and handles problem opening', async function (assert) {
@@ -523,7 +595,11 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.problem-link').exists('Problem link is rendered, indicating openProblem action is available');
+    assert
+      .dom('.problem-link')
+      .exists(
+        'Problem link is rendered, indicating openProblem action is available'
+      );
   });
 
   test('openSubmission action exists and handles submission opening', async function (assert) {
@@ -534,6 +610,10 @@ module('Integration | Component | response-container', function (hooks) {
       responses: [],
     });
 
-    assert.dom('.problem-link-container a.link').exists('Workspace link is rendered, indicating openSubmission action is available');
+    assert
+      .dom('.problem-link-container a.link')
+      .exists(
+        'Workspace link is rendered, indicating openSubmission action is available'
+      );
   });
 });
