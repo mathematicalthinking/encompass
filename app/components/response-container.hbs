@@ -20,7 +20,7 @@
         <p>
           Crafting a new response for
           <a
-            {{on 'click' (fn this.openSubmission @workspace.id @submission.id)}}
+            {{on 'click' this.openSubmission}}
             class='link'
           >{{@workspace.name}}</a>, problem:
           <a {{on 'click' this.openProblem}} class='problem-link'>
@@ -38,7 +38,7 @@
         </p>
         from:
         <a
-          {{on 'click' (fn this.openSubmission @workspace.id @submission.id)}}
+          {{on 'click' this.openSubmission}}
           class='link'
         >{{@workspace.name}}</a>
       </div>

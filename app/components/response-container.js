@@ -326,8 +326,11 @@ export default class ResponseContainer extends Component {
   }
 
   @action
-  openSubmission(workspaceId, submissionId) {
-    this.navigation.openSubmission(workspaceId, submissionId);
+  openSubmission() {
+    this.navigation.openSubmission(
+      this.args.workspace?.id,
+      this.args.submission?.id
+    );
   }
 
   @action
