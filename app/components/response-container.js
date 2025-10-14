@@ -230,14 +230,13 @@ export default class ResponseContainer extends Component {
       this.args.response
     );
 
-    relatedNtfs.forEach((ntf) => {
-      const isClean = !ntf.wasSeen && !ntf.isTrashed;
-      if (isClean) {
+    relatedNtfs
+      .filter((ntf) => !ntf.wasSeen && !ntf.isTrashed)
+      .forEach((ntf) => {
         ntf.wasSeen = true;
         ntf.isTrashed = true;
         ntf.save();
-      }
-    });
+      });
   }
 
   findExistingResponseThread(threadType, threadId) {
@@ -249,13 +248,11 @@ export default class ResponseContainer extends Component {
   }
 
   _generateThreadId(threadType, response, workspaceId) {
-    if (threadType === 'submitter') {
-      return 'srt' + workspaceId;
-    }
+    if (threadType === 'submitter') return `srt${workspaceId}`;
 
     if (threadType === 'mentor') {
       const studentId = this.utils.getBelongsToId(response, 'recipient');
-      return workspaceId + studentId;
+      return `${workspaceId}${studentId}`;
     }
 
     if (threadType === 'approver') {
@@ -265,19 +262,19 @@ export default class ResponseContainer extends Component {
         'reviewedResponse'
       );
 
-      if (reviewedResponseId) {
-        const reviewedResponse = this.store.peekRecord(
-          'response',
-          reviewedResponseId
-        );
-        if (reviewedResponse) {
-          const studentId = this.utils.getBelongsToId(
-            reviewedResponse,
-            'recipient'
-          );
-          return { threadId: workspaceId + studentId + mentorId, mentorId };
-        }
-      }
+      if (!reviewedResponseId) return null;
+
+      const reviewedResponse = this.store.peekRecord(
+        'response',
+        reviewedResponseId
+      );
+      if (!reviewedResponse) return null;
+
+      const studentId = this.utils.getBelongsToId(
+        reviewedResponse,
+        'recipient'
+      );
+      return { threadId: `${workspaceId}${studentId}${mentorId}`, mentorId };
     }
 
     return null;
@@ -298,12 +295,9 @@ export default class ResponseContainer extends Component {
 
   @action
   updateResponse(response) {
-    if (!response) return;
+    if (!response?.id) return;
 
-    const resId = response.id;
-    if (!resId) return;
-
-    const exists = this.subResponses.find((res) => res.id === resId);
+    const exists = this.subResponses.find((res) => res.id === response.id);
     if (!exists) {
       this.subResponses = [...this.subResponses, response];
     }
@@ -453,7 +447,7 @@ export default class ResponseContainer extends Component {
       isNewThread: true,
     });
 
-    if (mentorId) newThread.set('mentors', [mentorId]);
+    if (mentorId) newThread.mentors = [mentorId];
     if (sub) newThread.submissions.addObject(sub);
     if (response) newThread.responses.addObject(response);
   }
