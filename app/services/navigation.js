@@ -72,4 +72,31 @@ export default class NavigationService extends Service {
       queryParams: { workspaceId },
     });
   }
+
+  /** Opens a problem in a new window */
+  openProblem(problemId) {
+    if (!problemId) return;
+    window.open(
+      `${window.location.origin}/#${this.router.urlFor(
+        'problems.problem',
+        problemId
+      )}`,
+      'newwindow',
+      'width=1200, height=700'
+    );
+  }
+
+  /** Opens a workspace submission in a new window */
+  openSubmission(workspaceId, submissionId) {
+    if (!workspaceId || !submissionId) return;
+    window.open(
+      `${window.location.origin}/#${this.router.urlFor(
+        'workspace.submissions.submission',
+        workspaceId,
+        submissionId
+      )}`,
+      'newwindow',
+      'width=1200, height=700'
+    );
+  }
 }
