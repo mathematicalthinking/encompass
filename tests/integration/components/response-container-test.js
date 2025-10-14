@@ -4,71 +4,73 @@ import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 
+const createServiceMock = () => class extends Service {};
+
 module('Integration | Component | response-container', function (hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function () {
-    this.owner.register(
-      'service:current-user',
-      Service.extend({
-        user: { id: 'user1', username: 'testuser' },
-      })
-    );
+    class CurrentUserService extends Service {
+      user = null;
 
+      constructor() {
+        super(...arguments);
+        this.user = { id: 'user1', username: 'testuser' };
+      }
+    }
+    this.owner.register('service:current-user', CurrentUserService);
+
+    class UtilityMethodsService extends Service {
+      getBelongsToId(obj, field) {
+        return obj[field]?.id || obj[field];
+      }
+      getHasManyIds(obj, field) {
+        return obj[field] || [];
+      }
+      isNonEmptyObject(obj) {
+        return obj && typeof obj === 'object' && Object.keys(obj).length > 0;
+      }
+      isNonEmptyArray(arr) {
+        return Array.isArray(arr) && arr.length > 0;
+      }
+    }
+    this.owner.register('service:utility-methods', UtilityMethodsService);
+
+    class WorkspacePermissionsService extends Service {
+      canApproveFeedback() {
+        return false;
+      }
+      canEdit() {
+        return false;
+      }
+    }
     this.owner.register(
       'service:workspace-permissions',
-      Service.extend({
-        canApproveFeedback() {
-          return false;
-        },
-        canEdit() {
-          return false;
-        },
-      })
+      WorkspacePermissionsService
     );
+    class NotificationService extends Service {
+      findRelatedNtfs() {
+        return [];
+      }
+    }
+    this.owner.register('service:notification-service', NotificationService);
 
-    this.owner.register(
-      'service:notification-service',
-      Service.extend({
-        findRelatedNtfs() {
-          return [];
-        },
-      })
-    );
-
-    this.owner.register(
-      'service:error-handling',
-      Service.extend({
-        handleError() {},
-      })
-    );
-
-    this.owner.register(
-      'service:store',
-      Service.extend({
-        peekAll() {
-          return [];
-        },
-        createRecord() {
-          return { save: () => Promise.resolve() };
-        },
-        peekRecord() {
-          return null;
-        },
-      })
-    );
-
-    this.owner.register(
-      'service:utility-methods',
-      Service.extend({
-        getBelongsToId(obj, field) {
-          return obj[field]?.id || obj[field];
-        },
-        getHasManyIds(obj, field) {
-          return obj[field] || [];
-        },
-      })
-    );
+    class StoreService extends Service {
+      peekAll() {
+        return [];
+      }
+      createRecord() {
+        return { save: () => Promise.resolve() };
+      }
+      peekRecord() {
+        return null;
+      }
+    }
+    this.owner.register('service:store', StoreService);
+    this.owner.register('service:navigation', createServiceMock());
+    this.owner.register('service:error-handling', createServiceMock());
+    this.owner.register('service:sweet-alert', createServiceMock());
+    this.owner.register('service:loading-display', createServiceMock());
   });
 
   // --- Setup & Mocks ---
@@ -113,8 +115,10 @@ module('Integration | Component | response-container', function (hooks) {
   };
 
   async function renderResponseContainer(context, props) {
+    const submissions =
+      props.submissions || (props.submission ? [props.submission] : []);
     context.setProperties({
-      submissions: props.submission ? [props.submission] : [],
+      submissions,
       toResponses: () => {},
       toNewResponse: () => {},
       toResponse: () => {},
@@ -507,23 +511,21 @@ module('Integration | Component | response-container', function (hooks) {
     };
 
     let notificationCreated = false;
-    this.owner.register(
-      'service:store',
-      Service.extend({
-        peekAll() {
-          return [mentorResponse];
-        },
-        createRecord(type) {
-          if (type === 'notification') {
-            notificationCreated = true;
-          }
-          return { save: () => Promise.resolve() };
-        },
-        peekRecord() {
-          return null;
-        },
-      })
-    );
+    class StoreServiceWithNotification extends Service {
+      peekAll() {
+        return [mentorResponse];
+      }
+      createRecord(type) {
+        if (type === 'notification') {
+          notificationCreated = true;
+        }
+        return { save: () => Promise.resolve() };
+      }
+      peekRecord() {
+        return null;
+      }
+    }
+    this.owner.register('service:store', StoreServiceWithNotification);
 
     this.set('sendRevisionNotices', async (oldSub, newSub) => {
       const store = this.owner.lookup('service:store');

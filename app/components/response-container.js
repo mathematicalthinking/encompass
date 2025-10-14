@@ -5,11 +5,12 @@ import { action } from '@ember/object';
 
 export default class ResponseContainer extends Component {
   @service currentUser;
-  @service wsPermissions;
+  @service('workspace-permissions') wsPermissions;
   @service store;
   @service errorHandling;
-  @service utils;
+  @service('utility-methods') utils;
   @service notificationService;
+  @service navigation;
 
   @tracked subResponses = [];
   @tracked isCreatingNewMentorReply = false;
@@ -27,40 +28,30 @@ export default class ResponseContainer extends Component {
   constructor() {
     super(...arguments);
     this.subResponses = this.args.responses || [];
-    this.__cleanupNotifications();
+    this._cleanupNotifications();
 
     if (this.args.response?.isNew) {
       this.isCreatingNewMentorReply = true;
       return;
     }
 
+    this._loadAsyncRelationships();
+  }
+
+  async _loadAsyncRelationships() {
     if (this.primaryResponseType === 'approver') {
-      this.args.response.reviewedResponse.then((response) => {
-        if (!this.isDestroying && !this.isDestroyed) {
-          this.reviewedResponse = response;
-        }
-      });
+      const response = await this.args.response.reviewedResponse;
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.reviewedResponse = response;
+      }
     }
 
     if (!this.isMentorRecipient && this.primaryResponseType === 'mentor') {
-      this.args.response.priorRevision.then((revision) => {
-        if (!this.isDestroying && !this.isDestroyed) {
-          this.priorMentorRevision = revision;
-        }
-      });
+      const revision = await this.args.response.priorRevision;
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.priorMentorRevision = revision;
+      }
     }
-  }
-
-  get response() {
-    return this.args.response;
-  }
-
-  get workspace() {
-    return this.args.workspace;
-  }
-
-  get submission() {
-    return this.args.submission;
   }
 
   get submissions() {
@@ -72,11 +63,11 @@ export default class ResponseContainer extends Component {
   }
 
   get primaryResponseType() {
-    return this.response?.responseType;
+    return this.args.response?.responseType;
   }
 
   get isParentWorkspace() {
-    return this.workspace?.workspaceType === 'parent';
+    return this.args.workspace?.workspaceType === 'parent';
   }
 
   get cleanStoreResponses() {
@@ -90,7 +81,7 @@ export default class ResponseContainer extends Component {
   get newResponses() {
     return this.cleanStoreResponses.filter((response) => {
       const subId = this.utils.getBelongsToId(response, 'submission');
-      if (subId !== this.submission?.id) return false;
+      if (subId !== this.args.submission?.id) return false;
       return !this.nonTrashedResponses.includes(response);
     });
   }
@@ -106,11 +97,13 @@ export default class ResponseContainer extends Component {
   }
 
   get isOwnSubmission() {
-    return this.submission?.creator?.studentId === this.currentUser.user?.id;
+    return (
+      this.args.submission?.creator?.studentId === this.currentUser.user?.id
+    );
   }
 
   get studentName() {
-    return `${this.submission?.student || ''}`;
+    return `${this.args.submission?.student || ''}`;
   }
 
   get mentorReplies() {
@@ -122,7 +115,7 @@ export default class ResponseContainer extends Component {
   }
 
   get isPrimaryRecipient() {
-    return this.response?.recipient?.id === this.currentUser.user?.id;
+    return this.args.response?.recipient?.id === this.currentUser.user?.id;
   }
 
   get isMentorRecipient() {
@@ -130,19 +123,19 @@ export default class ResponseContainer extends Component {
   }
 
   get isOwnResponse() {
-    return this.response?.createdBy?.id === this.currentUser.user?.id;
+    return this.args.response?.createdBy?.id === this.currentUser.user?.id;
   }
 
   get primaryApproverReply() {
-    return this.primaryResponseType === 'approver' ? this.response : null;
+    return this.primaryResponseType === 'approver' ? this.args.response : null;
   }
 
   get menteeResponse() {
-    return this.isMentorRecipient ? this.response : null;
+    return this.isMentorRecipient ? this.args.response : null;
   }
 
   get canApprove() {
-    return this.wsPermissions.canApproveFeedback(this.workspace);
+    return this.wsPermissions.canApproveFeedback(this.args.workspace);
   }
 
   get responseToApprove() {
@@ -151,7 +144,7 @@ export default class ResponseContainer extends Component {
       this.canApprove &&
       !this.isCreatingNewMentorReply
     ) {
-      return this.response;
+      return this.args.response;
     }
     return null;
   }
@@ -159,7 +152,7 @@ export default class ResponseContainer extends Component {
   get mentorReplyDisplayResponse() {
     if (this.responseToApprove) return this.responseToApprove;
     if (this.menteeResponse) return this.menteeResponse;
-    if (this.primaryResponseType === 'mentor') return this.response;
+    if (this.primaryResponseType === 'mentor') return this.args.response;
     if (this.reviewedResponse) return this.reviewedResponse;
     return null;
   }
@@ -195,11 +188,11 @@ export default class ResponseContainer extends Component {
   }
 
   get canDirectSend() {
-    return this.wsPermissions.canEdit(this.workspace, 'feedback', 2);
+    return this.wsPermissions.canEdit(this.args.workspace, 'feedback', 2);
   }
 
   get canSend() {
-    return this.wsPermissions.canEdit(this.workspace, 'feedback', 1);
+    return this.wsPermissions.canEdit(this.args.workspace, 'feedback', 1);
   }
 
   get showApproverReply() {
@@ -212,7 +205,7 @@ export default class ResponseContainer extends Component {
   }
 
   get approvers() {
-    return this.workspace?.feedbackAuthorizers || [];
+    return this.args.workspace?.feedbackAuthorizers || [];
   }
 
   get existingSubmissionMentors() {
@@ -226,11 +219,12 @@ export default class ResponseContainer extends Component {
   get cleanWorkspaceResponses() {
     return this.cleanStoreResponses.filter(
       (response) =>
-        this.utils.getBelongsToId(response, 'workspace') === this.workspace?.id
+        this.utils.getBelongsToId(response, 'workspace') ===
+        this.args.workspace?.id
     );
   }
 
-  __cleanupNotifications() {
+  _cleanupNotifications() {
     const relatedNtfs = this.notificationService.findRelatedNtfs(
       'response',
       this.args.response
@@ -254,12 +248,7 @@ export default class ResponseContainer extends Component {
       );
   }
 
-  __getBaseUrl() {
-    const { protocol, host, pathname } = window.location;
-    return `${protocol}//${host}/${pathname.split('/')[1]}`;
-  }
-
-  __generateThreadId(threadType, response, workspaceId) {
+  _generateThreadId(threadType, response, workspaceId) {
     if (threadType === 'submitter') {
       return 'srt' + workspaceId;
     }
@@ -322,7 +311,7 @@ export default class ResponseContainer extends Component {
 
   @action
   cancelMentorReply() {
-    this.response?.rollbackAttributes();
+    this.args.response?.rollbackAttributes();
   }
 
   @action
@@ -331,31 +320,14 @@ export default class ResponseContainer extends Component {
   }
 
   @action
-  handleError(err) {
-    this.errorHandling.handleError(err, { throwError: true });
-  }
-
-  @action
   openProblem() {
-    const problemId = this.submission?.answer?.problem?.id;
-    if (!problemId) return;
-
-    window.open(
-      `${this.__getBaseUrl()}#/problems/${problemId}`,
-      'newwindow',
-      'width=1200, height=700'
-    );
+    const problemId = this.args.submission?.answer?.problem?.id;
+    this.navigation.openProblem(problemId);
   }
 
   @action
   openSubmission(workspaceId, submissionId) {
-    if (!workspaceId || !submissionId) return;
-
-    window.open(
-      `${this.__getBaseUrl()}#/workspaces/${workspaceId}/submissions/${submissionId}`,
-      'newwindow',
-      'width=1200, height=700'
-    );
+    this.navigation.openSubmission(workspaceId, submissionId);
   }
 
   @action
@@ -424,7 +396,7 @@ export default class ResponseContainer extends Component {
         submission: newSub,
         createDate: new Date(),
         text: 'There is a new revision for you to mentor.',
-        workspace: this.workspace,
+        workspace: this.args.workspace,
       });
       notification.save();
     });
@@ -432,8 +404,8 @@ export default class ResponseContainer extends Component {
 
   @action
   handleResponseThread(response, threadType, submission) {
-    const workspaceId = this.workspace?.id;
-    const threadIdResult = this.__generateThreadId(
+    const workspaceId = this.args.workspace?.id;
+    const threadIdResult = this._generateThreadId(
       threadType,
       response,
       workspaceId
@@ -472,7 +444,7 @@ export default class ResponseContainer extends Component {
     const newThread = this.store.createRecord('response-thread', {
       threadType,
       id: threadId,
-      workspaceName: this.workspace?.name,
+      workspaceName: this.args.workspace?.name,
       problemTitle: sub?.publication?.puzzle?.title,
       studentDisplay: sub?.creator?.username,
       isNewThread: true,

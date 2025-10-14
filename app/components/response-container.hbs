@@ -20,11 +20,11 @@
         <p>
           Crafting a new response for
           <a
-            {{on 'click' (fn this.openSubmission this.workspace.id this.submission.id)}}
+            {{on 'click' (fn this.openSubmission @workspace.id @submission.id)}}
             class='link'
-          >{{this.workspace.name}}</a>, problem:
+          >{{@workspace.name}}</a>, problem:
           <a {{on 'click' this.openProblem}} class='problem-link'>
-            {{this.submission.puzzle.title}}
+            {{@submission.puzzle.title}}
           </a>
         </p>
       </div>
@@ -33,22 +33,22 @@
       <div class='problem-link-container'>
         <p>Displaying feedback re:
           <a {{on 'click' this.openProblem}} class='problem-link'>
-            {{this.submission.puzzle.title}}
+            {{@submission.puzzle.title}}
           </a>
         </p>
         from:
         <a
-          {{on 'click' (fn this.openSubmission this.workspace.id this.submission.id)}}
+          {{on 'click' (fn this.openSubmission @workspace.id @submission.id)}}
           class='link'
-        >{{this.workspace.name}}</a>
+        >{{@workspace.name}}</a>
       </div>
     {{/if}}
   </div>
   {{#each this.sortedSubmissions as |submission|}}
     <ResponseMentorThread
-      @response={{this.response}}
+      @response={{@response}}
       @submission={{submission}}
-      @workspace={{this.workspace}}
+      @workspace={{@workspace}}
       @wsResponses={{this.cleanWorkspaceResponses}}
       @studentSubmissions={{this.submissions}}
       @onSubChange={{this.onSubmissionChange}}
