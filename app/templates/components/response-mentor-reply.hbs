@@ -1,16 +1,16 @@
-{{#if this.isCreating}}
+{{#if @isCreating}}
   <ResponseNew
     @store={{this.store}}
-    @isCreating={{isCreating}}
-    @submission={{submission}}
-    @model={{responseNewModel}}
-    @recipient={{recipient}}
-    @newReplyStatus={{newReplyStatus}}
+    @isCreating={{@isCreating}}
+    @submission={{@submission}}
+    @responseData={{this.responseNewModel}}
+    @recipient={{@response.recipient}}
+    @newReplyStatus={{this.newReplyStatus}}
     @newReplyType='mentor'
-    @onSaveSuccess={{action 'onSaveSuccess'}}
-    @canDirectSend={{canDirectSend}}
-    @submissionResponses={{mentorReplies}}
-    @handleResponseThread={{action 'handleNewMentorReply'}}
+    @onSaveSuccess={{this.onSaveSuccess}}
+    @canDirectSend={{@canDirectSend}}
+    @submissionResponses={{@submissionResponses}}
+    @handleResponseThread={{this.handleNewMentorReply}}
   />
 {{else}}
 
@@ -18,15 +18,15 @@
     {{#each this.sortedMentorReplies as |listOfMentorReplies|}}
       <div class='response-mentor-container'>
         <div class='response-mentor-info'>
-          {{#if this.displayResponse}}
+          {{#if @displayResponse}}
             <p class='response-date'>
-              {{#if this.isParentWorkspace}}
+              {{#if @isParentWorkspace}}
                 <div class='response-users'>
                   <p>
                     <span class='response-label'>To:</span>
                     <span
                       class='response-value recipient'
-                    >{{this.listOfMentorReplies.recipient.username}}
+                    >{{listOfMentorReplies.recipient.username}}
                     </span>
                     {{#if this.showRecipientReadUnread}}
                       <span class='response-read-unread'><i
@@ -38,10 +38,10 @@
                   <p>
                     <span class='response-label'>Mentor:</span>
                     <span class='response-value'>
-                      {{#if this.isParentWorkspace}}
-                        {{this.listOfMentorReplies.originalResponse.createdBy.username}}
+                      {{#if @isParentWorkspace}}
+                        {{listOfMentorReplies.originalResponse.createdBy.username}}
                       {{else}}
-                        {{this.listOfMentorReplies.createdBy.username}}
+                        {{listOfMentorReplies.createdBy.username}}
                       {{/if}}
                     </span>
                   </p>
@@ -83,9 +83,9 @@
                     <div class='response-text-container'>
                       {{#if this.isComposing}}
                         <Ui::QuillContainer
-                          @onEditorChange={{action 'updateQuillText'}}
-                          @attrSectionId={{quillEditorId}}
-                          @startingText={{editRevisionText}}
+                          @onEditorChange={{this.updateQuillText}}
+                          @attrSectionId={{this.quillEditorId}}
+                          @startingText={{this.editRevisionText}}
                         />
                       {{else}}
                         <div
@@ -108,7 +108,7 @@
                           <Textarea
                             class='edit-note'
                             name='mentor-approver-note'
-                            @value={{editRevisionNote}}
+                            @value={{this.editRevisionNote}}
                           />
                         {{/if}}
                         {{#if this.showDisplayNote}}
@@ -132,14 +132,14 @@
       <Ui::ErrorBox
         @error='Message body cannot be empty.'
         @showDismiss={{true}}
-        @resetError={{action (mut this.emptyReplyError) null}}
+        @resetError={{fn (mut this.emptyReplyError) null}}
       />
     {{/if}}
     {{#if this.quillTooLongError}}
       <Ui::ErrorBox
         @error={{this.quillTooLongErrorMsg}}
         @showDismiss={{true}}
-        @resetError={{action (mut this.quillTooLongError) null}}
+        @resetError={{fn (mut this.quillTooLongError) null}}
       />
     {{/if}}
     {{! for draft option when mentor saves draft. tech debt }}
@@ -160,51 +160,51 @@
     {{/if}}
     {{#if this.isComposing}}
       <div class='submit-buttons button-row'>
-        {{#if isEditing}}
+        {{#if this.isEditing}}
           <button
             class='primary-button cancel-button'
             type='button'
-            {{action 'handleComposeAction' 'isEditing' false true}}
+            {{on 'click' (fn this.handleComposeAction 'isEditing' false true)}}
           >Cancel</button>
           <button
             class='primary-button'
             type='button'
-            {{action 'saveEdit'}}
+            {{on 'click' this.saveEdit}}
           >Save</button>
         {{/if}}
-        {{#if isRevising}}
+        {{#if this.isRevising}}
           <button
             class='primary-button cancel-button'
             type='button'
-            {{action 'handleComposeAction' 'isRevising' false true}}
+            {{on 'click' (fn this.handleComposeAction 'isRevising' false true)}}
           >Cancel</button>
           <button
             class='primary-button'
             type='button'
-            {{action 'saveRevision' true}}
+            {{on 'click' (fn this.saveRevision true)}}
           >Save as Draft</button>
           <button
             class='primary-button'
             type='button'
-            {{action 'saveRevision'}}
-          >{{sendButtonText}}</button>
+            {{on 'click' this.saveRevision}}
+          >{{this.sendButtonText}}</button>
         {{/if}}
-        {{#if isFinishingDraft}}
+        {{#if this.isFinishingDraft}}
           <button
             class='primary-button cancel-button'
             type='button'
-            {{action 'handleComposeAction' 'isFinishingDraft' false true}}
+            {{on 'click' (fn this.handleComposeAction 'isFinishingDraft' false true)}}
           >Cancel</button>
           <button
             class='primary-button'
             type='button'
-            {{action 'saveDraft' true}}
+            {{on 'click' (fn this.saveDraft true)}}
           >Save as Draft</button>
           <button
             class='primary-button'
             type='button'
-            {{action 'saveDraft'}}
-          >{{sendButtonText}}</button>
+            {{on 'click' this.saveDraft}}
+          >{{this.sendButtonText}}</button>
         {{/if}}
       </div>
     {{/if}}
@@ -217,7 +217,7 @@
         <button
           class='primary-button'
           type='button'
-          {{action 'toNewResponse'}}
+          {{on 'click' this.toNewResponse}}
         >New Response</button>
       </div>
 
