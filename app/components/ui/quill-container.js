@@ -8,6 +8,7 @@ import Quill from 'quill';
 
 export default class QuillContainerComponent extends Component {
   @service('utility-methods') utils;
+  @service quillUtils;
 
   @tracked quillInstance = null;
   @tracked isEmpty = true;
@@ -32,21 +33,17 @@ export default class QuillContainerComponent extends Component {
       'Type a detailed explanation here. This box will expand as you type.',
   };
 
-  defaultMaxLength = 14680064; // 14MB
-
   get sectionId() {
     return this.args.attrSectionId || 'editor';
   }
 
   get lengthLimit() {
-    return this.args.maxLength || this.defaultMaxLength;
+    return this.args.maxLength || this.quillUtils.defaultMaxLength;
   }
 
   get tooLongErrorMsg() {
     const len = this.quillInstance?.root.innerHTML.length || 0;
-    const maxSizeDisplay = this.returnSizeDisplay(this.lengthLimit);
-    const actualSizeDisplay = this.returnSizeDisplay(len);
-    return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
+    return this.quillUtils.formatTooLongErrorMsg(len, this.lengthLimit);
   }
 
   @action
@@ -99,17 +96,7 @@ export default class QuillContainerComponent extends Component {
   }
 
   isQuillNonEmpty() {
-    if (!this.quillInstance) return false;
-    const text = this.quillInstance.getText().trim();
-    if (text.length > 0) return true;
-    const content = this.quillInstance.root.innerHTML;
-    return content.includes('<img');
-  }
-
-  returnSizeDisplay(bytes) {
-    if (bytes < 1024) return bytes + ' bytes';
-    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + 'KB';
-    return (bytes / 1048576).toFixed(1) + 'MB';
+    return !this.quillUtils.isQuillContentEmpty(this.quillInstance);
   }
 
   @action
