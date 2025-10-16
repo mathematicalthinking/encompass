@@ -11,6 +11,7 @@ export default class ResponseMentorReplyComponent extends Component {
   @service navigation;
   @service currentUser;
   @service store;
+  @service quillUtils;
 
   @tracked isRevising = false;
   @tracked isEditing = false;
@@ -25,7 +26,6 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked currentDisplayResponseId = null;
 
   quillEditorId = 'mentor-editor';
-  maxResponseLength = 14680064;
   errorPropsToRemove = [
     'saveRecordErrors',
     'emptyReplyError',
@@ -115,7 +115,7 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   get sortedMentorReplies() {
-    if (!this.args.mentorReplies) return [];
+    if (!this.args.submissionResponses) return [];
     const currentStudent = this.args.submission?.student;
     return (
       this.args.submissionResponses
@@ -167,19 +167,14 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   get quillTooLongErrorMsg() {
-    const len = this.quillText.length;
-    const maxSizeDisplay = this._returnSizeDisplay(this.maxResponseLength);
-    const actualSizeDisplay = this._returnSizeDisplay(len);
-    return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
+    return this.quillUtils.formatTooLongErrorMsg(
+      this.quillText.length,
+      this.quillUtils.defaultMaxLength
+    );
   }
 
   get isOldFormatDisplayResponse() {
-    const text = this.args.displayResponse?.text;
-    if (!text) return false;
-    const parsed = new DOMParser().parseFromString(text, 'text/html');
-    return !Array.from(parsed.body.childNodes).some(
-      (node) => node.nodeType === 1
-    );
+    return this.quillUtils.isOldFormatText(this.args.displayResponse?.text);
   }
 
   get recipientReadUnreadIcon() {
@@ -202,21 +197,92 @@ export default class ResponseMentorReplyComponent extends Component {
     );
   }
 
-  _getQuillErrors() {
-    const errors = [];
-    if (this.isQuillEmpty) errors.push('emptyReplyError');
-    if (this.isQuillTooLong) errors.push('quillTooLongError');
-    return errors;
+  _validateQuillContent() {
+    const { isEmpty, isOverLimit } = this.quillUtils.validateQuillContent(
+      this.quillText,
+      this.quillUtils.defaultMaxLength
+    );
+
+    if (isEmpty) {
+      this.errorHandling.handleErrors(
+        { errors: [{ detail: 'Please enter a response' }] },
+        'emptyReplyError'
+      );
+    }
+    if (isOverLimit) {
+      this.errorHandling.handleErrors(
+        { errors: [{ detail: this.quillTooLongErrorMsg }] },
+        'quillTooLongError'
+      );
+    }
+
+    return !isEmpty && !isOverLimit;
   }
 
-  _returnSizeDisplay(bytes) {
-    if (bytes < 1024) return `${bytes} bytes`;
-    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)}KB`;
-    return `${(bytes / 1048576).toFixed(1)}MB`;
+  _hasContentChanged(oldText, newText, oldNote, newNote) {
+    return oldText !== newText || oldNote !== newNote;
+  }
+
+  _startLoading() {
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+  }
+
+  _endLoading() {
+    this.loading.handleLoadingMessage(
+      this,
+      'end',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+  }
+
+  _showSuccessToast(message) {
+    this.alert.showToast('success', message, 'bottom-end', 3000, false, null);
+  }
+
+  _resetEditState() {
+    this.editRevisionText = '';
   }
 
   _clearErrorProps() {
     this.errorHandling.removeMessages(...this.errorPropsToRemove);
+  }
+
+  _shouldSupersede(status) {
+    return status === 'pendingApproval' || status === 'needsRevisions';
+  }
+
+  _createRevisionCopy() {
+    const copy = this.args.displayResponse.toJSON({ includeId: false });
+    delete copy.approvedBy;
+    delete copy.lastModifiedDate;
+    delete copy.lastModifiedBy;
+    delete copy.comments;
+    delete copy.selections;
+    delete copy.wasReadByRecipient;
+    delete copy.wasReadByApprover;
+    return copy;
+  }
+
+  _buildRevisionRecord(copy, newText, newNote, status) {
+    copy.text = newText;
+    copy.note = newNote;
+    copy.createDate = new Date();
+
+    const revision = this.store.createRecord('response', copy);
+    revision.createdBy = this.currentUser.user;
+    revision.submission = this.args.submission;
+    revision.workspace = this.args.workspace;
+    revision.priorRevision = this.args.displayResponse;
+    revision.recipient = this.args.displayResponse?.recipient?.content;
+    revision.status = status;
+
+    return revision;
   }
 
   @action
@@ -241,40 +307,24 @@ export default class ResponseMentorReplyComponent extends Component {
   async saveDraft(isDraft) {
     this._clearErrorProps();
 
-    const quillErrors = this._getQuillErrors();
-    if (quillErrors.length > 0) {
-      quillErrors.forEach((errorProp) =>
-        this.errorHandling.handleErrors(
-          { errors: [{ detail: 'Please enter a response' }] },
-          errorProp
-        )
-      );
-      return;
-    }
+    if (!this._validateQuillContent()) return;
 
     this.args.displayResponse.text = this.quillText;
     this.args.displayResponse.note = this.editRevisionNote;
 
-    let doSetSuperceded = false;
     const priorRevisionStatus = this.args.priorMentorRevision?.status;
-    if (
-      priorRevisionStatus === 'pendingApproval' ||
-      priorRevisionStatus === 'needsRevisions'
-    ) {
-      doSetSuperceded = true;
+    const doSetSuperceded = this._shouldSupersede(priorRevisionStatus);
+
+    if (doSetSuperceded) {
       this.args.priorMentorRevision.status = 'superceded';
     }
 
-    let newStatus = this.newReplyStatus;
-    let toastMessage = 'Response Sent';
-
-    if (newStatus === 'pendingApproval') {
-      toastMessage = 'Response Sent for Approval';
-    }
-    if (isDraft) {
-      newStatus = 'draft';
-      toastMessage = 'Draft Saved';
-    }
+    const newStatus = isDraft ? 'draft' : this.newReplyStatus;
+    const toastMessage = isDraft
+      ? 'Draft Saved'
+      : newStatus === 'pendingApproval'
+      ? 'Response Sent for Approval'
+      : 'Response Sent';
 
     this.args.displayResponse.status = newStatus;
 
@@ -283,38 +333,16 @@ export default class ResponseMentorReplyComponent extends Component {
       promises.push(this.args.priorMentorRevision.save());
     }
 
-    this.loading.handleLoadingMessage(
-      this,
-      'start',
-      'isReplySending',
-      'doShowLoadingMessage'
-    );
+    this._startLoading();
 
     try {
       await Promise.all(promises);
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
-      this.alert.showToast(
-        'success',
-        toastMessage,
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
+      this._endLoading();
+      this._showSuccessToast(toastMessage);
       this.isFinishingDraft = false;
-      this.editRevisionText = '';
+      this._resetEditState();
     } catch (err) {
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
+      this._endLoading();
       this.errorHandling.handleErrors(
         err,
         'saveRecordErrors',
@@ -327,62 +355,36 @@ export default class ResponseMentorReplyComponent extends Component {
   async saveEdit() {
     this._clearErrorProps();
 
-    const quillErrors = this._getQuillErrors();
-    if (quillErrors.length > 0) {
-      quillErrors.forEach((errorProp) =>
-        this.errorHandling.handleErrors(
-          { errors: [{ detail: 'Please enter a response' }] },
-          errorProp
-        )
-      );
-      return;
-    }
+    if (!this._validateQuillContent()) return;
 
     const oldText = this.args.displayResponse?.text;
-    const newText = this.quillText;
     const oldNote = this.args.displayResponse?.note;
-    const newNote = this.editRevisionNote;
 
-    if (oldText === newText && oldNote === newNote) {
+    if (
+      !this._hasContentChanged(
+        oldText,
+        this.quillText,
+        oldNote,
+        this.editRevisionNote
+      )
+    ) {
       this.isEditing = false;
       return;
     }
 
-    this.args.displayResponse.text = newText;
-    this.args.displayResponse.note = newNote;
+    this.args.displayResponse.text = this.quillText;
+    this.args.displayResponse.note = this.editRevisionNote;
 
-    this.loading.handleLoadingMessage(
-      this,
-      'start',
-      'isReplySending',
-      'doShowLoadingMessage'
-    );
+    this._startLoading();
 
     try {
       await this.args.displayResponse.save();
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
-      this.alert.showToast(
-        'success',
-        'Response Updated',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
+      this._endLoading();
+      this._showSuccessToast('Response Updated');
       this.isEditing = false;
-      this.editRevisionText = '';
+      this._resetEditState();
     } catch (err) {
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
+      this._endLoading();
       this.errorHandling.handleErrors(err, 'saveRecordErrors');
     }
   }
@@ -391,55 +393,35 @@ export default class ResponseMentorReplyComponent extends Component {
   async saveRevision(isDraft) {
     this._clearErrorProps();
 
-    const quillErrors = this._getQuillErrors();
-    if (quillErrors.length > 0) {
-      quillErrors.forEach((errorProp) =>
-        this.errorHandling.handleErrors(
-          { errors: [{ detail: 'Please enter a response' }] },
-          errorProp
-        )
-      );
-      return;
-    }
+    if (!this._validateQuillContent()) return;
 
     const oldText = this.args.displayResponse?.text;
-    const newText = this.quillText;
     const oldNote = this.args.displayResponse?.note;
-    const newNote = this.editRevisionNote;
 
-    if (!isDraft && oldText === newText && oldNote === newNote) {
+    if (
+      !isDraft &&
+      !this._hasContentChanged(
+        oldText,
+        this.quillText,
+        oldNote,
+        this.editRevisionNote
+      )
+    ) {
       this.isRevising = false;
       return;
     }
 
     const oldStatus = this.args.displayResponse?.status;
-    const doSetSuperceded =
-      !isDraft &&
-      (oldStatus === 'pendingApproval' || oldStatus === 'needsRevisions');
+    const doSetSuperceded = !isDraft && this._shouldSupersede(oldStatus);
 
-    const copy = this.args.displayResponse.toJSON({ includeId: false });
-    delete copy.approvedBy;
-    delete copy.lastModifiedDate;
-    delete copy.lastModifiedBy;
-    delete copy.comments;
-    delete copy.selections;
-    delete copy.wasReadByRecipient;
-    delete copy.wasReadByApprover;
-
-    copy.text = newText;
-    copy.note = newNote;
-    copy.createDate = new Date();
-
-    let newReplyStatus = this.newReplyStatus;
-    if (isDraft) newReplyStatus = 'draft';
-
-    const revision = this.store.createRecord('response', copy);
-    revision.createdBy = this.currentUser.user;
-    revision.submission = this.args.submission;
-    revision.workspace = this.args.workspace;
-    revision.priorRevision = this.args.displayResponse;
-    revision.recipient = this.args.displayResponse?.recipient?.content;
-    revision.status = newReplyStatus;
+    const copy = this._createRevisionCopy();
+    const newReplyStatus = isDraft ? 'draft' : this.newReplyStatus;
+    const revision = this._buildRevisionRecord(
+      copy,
+      this.quillText,
+      this.editRevisionNote,
+      newReplyStatus
+    );
 
     const toastMessage = isDraft ? 'Draft Saved' : 'Revision Sent';
 
@@ -447,12 +429,7 @@ export default class ResponseMentorReplyComponent extends Component {
       this.args.displayResponse.status = 'superceded';
     }
 
-    this.loading.handleLoadingMessage(
-      this,
-      'start',
-      'isReplySending',
-      'doShowLoadingMessage'
-    );
+    this._startLoading();
 
     try {
       const promises = [revision.save()];
@@ -460,31 +437,14 @@ export default class ResponseMentorReplyComponent extends Component {
         promises.push(this.args.displayResponse.save());
       }
       const [savedRevision] = await Promise.all(promises);
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
-      this.alert.showToast(
-        'success',
-        toastMessage,
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
+      this._endLoading();
+      this._showSuccessToast(toastMessage);
       this.isRevising = false;
-      this.editRevisionText = '';
+      this._resetEditState();
       this.setDisplayMentorReply(savedRevision);
       this.args.handleResponseThread?.(savedRevision, 'mentor');
     } catch (err) {
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
+      this._endLoading();
       this.errorHandling.handleErrors(err, 'saveRecordErrors', null, [
         revision,
         this.args.displayResponse,
