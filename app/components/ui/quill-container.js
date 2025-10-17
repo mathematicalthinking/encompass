@@ -33,6 +33,7 @@ export default class QuillContainerComponent extends Component {
   };
 
   defaultMaxLength = 14680064; // 14MB
+  defaultEmptyErrorMessage = 'Please enter a response before submitting.';
 
   get sectionId() {
     return this.args.attrSectionId || 'editor';
@@ -40,6 +41,10 @@ export default class QuillContainerComponent extends Component {
 
   get lengthLimit() {
     return this.args.maxLength || this.defaultMaxLength;
+  }
+
+  get emptyErrorMsg() {
+    return this.args.emptyErrorMessage || this.defaultEmptyErrorMessage;
   }
 
   get tooLongErrorMsg() {
@@ -72,9 +77,25 @@ export default class QuillContainerComponent extends Component {
   }
 
   handleStartingText() {
-    if (this.quillInstance && typeof this.args.startingText === 'string') {
-      this.quillInstance.root.innerHTML = this.args.startingText;
+    if (!this.quillInstance) return;
+
+    const startingText = this.args.startingText;
+    if (!startingText) return;
+
+    // Convert old format (plain text) to Quill format if needed
+    if (this.isOldFormatText(startingText)) {
+      this.quillInstance.setText(startingText);
+    } else if (typeof startingText === 'string') {
+      this.quillInstance.root.innerHTML = startingText;
     }
+  }
+
+  isOldFormatText(text) {
+    if (!text) return false;
+    const parsed = new DOMParser().parseFromString(text, 'text/html');
+    return !Array.from(parsed.body.childNodes).some(
+      (node) => node.nodeType === 1
+    );
   }
 
   handleQuillChange() {
