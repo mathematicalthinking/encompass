@@ -83,13 +83,12 @@
                       {{#if this.isComposing}}
                         <Ui::QuillContainer
                           @onEditorChange={{this.updateQuillText}}
-                          @attrSectionId={{this.quillEditorId}}
+                          @attrSectionId='mentor-editor'
                           @startingText={{this.editRevisionText}}
                         />
                       {{else}}
                         <div
-                          class='response-text
-                            {{if this.isOldFormatDisplayResponse "old-format"}}'
+                          class='response-text'
                         >
                           {{{listOfMentorReplies.text}}}
                         </div>
@@ -127,20 +126,6 @@
         </div>
       </div>
     {{/each}}
-    {{#if this.emptyReplyError}}
-      <Ui::ErrorBox
-        @error='Message body cannot be empty.'
-        @showDismiss={{true}}
-        @resetError={{fn (mut this.emptyReplyError) null}}
-      />
-    {{/if}}
-    {{#if this.quillTooLongError}}
-      <Ui::ErrorBox
-        @error={{this.quillTooLongErrorMsg}}
-        @showDismiss={{true}}
-        @resetError={{fn (mut this.quillTooLongError) null}}
-      />
-    {{/if}}
     {{! for draft option when mentor saves draft. tech debt }}
     {{!-- <div class="mentor-reply-actions button-row">
     {{#if showRevise}}

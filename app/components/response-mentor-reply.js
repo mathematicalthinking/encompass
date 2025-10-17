@@ -11,26 +11,19 @@ export default class ResponseMentorReplyComponent extends Component {
   @service navigation;
   @service currentUser;
   @service store;
-  @service quillUtils;
 
   @tracked isRevising = false;
   @tracked isEditing = false;
   @tracked isFinishingDraft = false;
   @tracked quillText = '';
-  @tracked isQuillEmpty = false;
-  @tracked isQuillTooLong = false;
+  @tracked isValidQuillContent = true;
   @tracked editRevisionText = '';
   @tracked editRevisionNote = '';
   @tracked isReplySending = false;
   @tracked doShowLoadingMessage = false;
   @tracked currentDisplayResponseId = null;
 
-  quillEditorId = 'mentor-editor';
-  errorPropsToRemove = [
-    'saveRecordErrors',
-    'emptyReplyError',
-    'quillTooLongError',
-  ];
+  errorPropsToRemove = ['saveRecordErrors'];
   revisionsToolTip = 'Replies are sorted from oldest to newest, left to right.';
 
   constructor() {
@@ -166,17 +159,6 @@ export default class ResponseMentorReplyComponent extends Component {
     return this.args.canDirectSend ? 'Send' : 'Submit for Approval';
   }
 
-  get quillTooLongErrorMsg() {
-    return this.quillUtils.formatTooLongErrorMsg(
-      this.quillText.length,
-      this.quillUtils.defaultMaxLength
-    );
-  }
-
-  get isOldFormatDisplayResponse() {
-    return this.quillUtils.isOldFormatText(this.args.displayResponse?.text);
-  }
-
   get recipientReadUnreadIcon() {
     if (this.args.displayResponse?.wasReadByRecipient) {
       return {
@@ -195,28 +177,6 @@ export default class ResponseMentorReplyComponent extends Component {
       this.args.displayResponse?.status === 'approved' &&
       !this.args.isMentorRecipient
     );
-  }
-
-  _validateQuillContent() {
-    const { isEmpty, isOverLimit } = this.quillUtils.validateQuillContent(
-      this.quillText,
-      this.quillUtils.defaultMaxLength
-    );
-
-    if (isEmpty) {
-      this.errorHandling.handleErrors(
-        { errors: [{ detail: 'Please enter a response' }] },
-        'emptyReplyError'
-      );
-    }
-    if (isOverLimit) {
-      this.errorHandling.handleErrors(
-        { errors: [{ detail: this.quillTooLongErrorMsg }] },
-        'quillTooLongError'
-      );
-    }
-
-    return !isEmpty && !isOverLimit;
   }
 
   _hasContentChanged(oldText, newText, oldNote, newNote) {
@@ -307,7 +267,7 @@ export default class ResponseMentorReplyComponent extends Component {
   async saveDraft(isDraft) {
     this._clearErrorProps();
 
-    if (!this._validateQuillContent()) return;
+    if (!this.isValidQuillContent) return;
 
     this.args.displayResponse.text = this.quillText;
     this.args.displayResponse.note = this.editRevisionNote;
@@ -355,7 +315,7 @@ export default class ResponseMentorReplyComponent extends Component {
   async saveEdit() {
     this._clearErrorProps();
 
-    if (!this._validateQuillContent()) return;
+    if (!this.isValidQuillContent) return;
 
     const oldText = this.args.displayResponse?.text;
     const oldNote = this.args.displayResponse?.note;
@@ -393,7 +353,7 @@ export default class ResponseMentorReplyComponent extends Component {
   async saveRevision(isDraft) {
     this._clearErrorProps();
 
-    if (!this._validateQuillContent()) return;
+    if (!this.isValidQuillContent) return;
 
     const oldText = this.args.displayResponse?.text;
     const oldNote = this.args.displayResponse?.note;
@@ -492,7 +452,10 @@ export default class ResponseMentorReplyComponent extends Component {
 
   @action
   toNewResponse() {
-    this.args.toNewResponse?.();
+    this.navigation.toNewResponse(
+      this.args.submission.id,
+      this.args.workspace.id
+    );
   }
 
   @action
@@ -503,7 +466,6 @@ export default class ResponseMentorReplyComponent extends Component {
   @action
   updateQuillText(content, isEmpty, isOverLengthLimit) {
     this.quillText = content;
-    this.isQuillEmpty = isEmpty;
-    this.isQuillTooLong = isOverLengthLimit;
+    this.isValidQuillContent = !isEmpty && !isOverLengthLimit;
   }
 }
