@@ -14,7 +14,7 @@
 {{else}}
 
   {{#if this.sortedMentorReplies}}
-    {{#each this.sortedMentorReplies as |listOfMentorReplies|}}
+    {{#each this.sortedMentorReplies as |reply|}}
       <div class='response-mentor-container'>
         <div class='response-mentor-info'>
           {{#if @displayResponse}}
@@ -25,7 +25,7 @@
                     <span class='response-label'>To:</span>
                     <span
                       class='response-value recipient'
-                    >{{listOfMentorReplies.recipient.username}}
+                    >{{reply.recipient.username}}
                     </span>
                     {{#if this.showRecipientReadUnread}}
                       <span class='response-read-unread'><i
@@ -38,18 +38,18 @@
                     <span class='response-label'>Mentor:</span>
                     <span class='response-value'>
                       {{#if @isParentWorkspace}}
-                        {{listOfMentorReplies.originalResponse.createdBy.username}}
+                        {{reply.originalResponse.createdBy.username}}
                       {{else}}
-                        {{listOfMentorReplies.createdBy.username}}
+                        {{reply.createdBy.username}}
                       {{/if}}
                     </span>
                   </p>
                   <span class='response-time'>{{format-date
-                      listOfMentorReplies.originalResponse.createDate
+                      reply.originalResponse.createDate
                       'MMMM Do YYYY'
                     }}
                     {{format-date
-                      listOfMentorReplies.originalResponse.createDate
+                      reply.originalResponse.createDate
                       'h:mm a'
                     }}</span>
                 </div>
@@ -58,19 +58,19 @@
                 <div class='response-users'>
                   <div class='mentor-thread-container'>
                     <div class='mentor-header-thread'>
-                      <p>Mentor: {{listOfMentorReplies.createdBy.username}}</p>
+                      <p>Mentor: {{reply.createdBy.username}}</p>
                       <p class='response-time'>{{format-date
-                          listOfMentorReplies.createDate
+                          reply.createDate
                           'MMMM Do, YYYY'
                         }}
                         {{format-date
-                          listOfMentorReplies.createDate
+                          reply.createDate
                           'h:mm a'
                         }}</p></div>
 
                     <p>
                       To:
-                      {{listOfMentorReplies.recipient.username}}
+                      {{reply.recipient.username}}
                       {{#if this.showRecipientReadUnread}}
                         <i
                           title={{this.recipientReadUnreadIcon.title}}
@@ -91,7 +91,7 @@
                         <div
                           class='response-text'
                         >
-                          {{{listOfMentorReplies.text}}}
+                          {{{reply.text}}}
                         </div>
                       {{/if}}
                     </div>
@@ -112,7 +112,7 @@
                         {{/if}}
                         {{#if this.showDisplayNote}}
                           <div class='response-note'>
-                            {{listOfMentorReplies.note}}
+                            {{reply.note}}
                           </div>
                         {{/if}}
                       </div>
