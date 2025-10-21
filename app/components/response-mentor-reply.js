@@ -159,6 +159,14 @@ export default class ResponseMentorReplyComponent extends Component {
     return this.args.canDirectSend ? 'Send' : 'Submit for Approval';
   }
 
+  get saveButtonText() {
+    return this.isEditing ? 'Save' : this.sendButtonText;
+  }
+
+  get showSaveDraftButton() {
+    return this.isRevising || this.isFinishingDraft;
+  }
+
   get recipientReadUnreadIcon() {
     if (this.args.displayResponse?.wasReadByRecipient) {
       return {
@@ -467,5 +475,25 @@ export default class ResponseMentorReplyComponent extends Component {
   updateQuillText(content, isEmpty, isOverLengthLimit) {
     this.quillText = content;
     this.isValidQuillContent = !isEmpty && !isOverLengthLimit;
+  }
+
+  @action
+  cancelCompose() {
+    this.editRevisionText = '';
+    this.editRevisionNote = '';
+    this.isEditing = false;
+    this.isRevising = false;
+    this.isFinishingDraft = false;
+  }
+
+  @action
+  async saveResponse(isDraft = false) {
+    if (this.isEditing) {
+      return this.saveEdit();
+    } else if (this.isRevising) {
+      return this.saveRevision(isDraft);
+    } else if (this.isFinishingDraft) {
+      return this.saveDraft(isDraft);
+    }
   }
 }

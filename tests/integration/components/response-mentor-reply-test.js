@@ -135,8 +135,8 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       isParentWorkspace: false,
     });
 
-    assert.dom('button.primary-button').exists();
-    assert.dom('button.primary-button').hasText('New Response');
+    assert.dom('a.primary-button').exists();
+    assert.dom('a.primary-button').hasText('New Response');
   });
 
   test('hides new response button when canSendNew is false', async function (assert) {
@@ -146,7 +146,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       canSend: false,
     });
 
-    assert.dom('button.primary-button').doesNotExist();
+    assert.dom('a.primary-button').doesNotExist();
   });
 
   test('renders without errors when submission is null', async function (assert) {
@@ -191,7 +191,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       isParentWorkspace: true,
     });
 
-    assert.dom('button.primary-button').doesNotExist();
+    assert.dom('a.primary-button').doesNotExist();
   });
 
   // --- Multiple Responses Tests ---

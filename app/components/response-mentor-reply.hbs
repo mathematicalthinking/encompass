@@ -145,68 +145,42 @@
     {{/if}}
     {{#if this.isComposing}}
       <div class='submit-buttons button-row'>
-        {{#if this.isEditing}}
-          <button
-            class='primary-button cancel-button'
-            type='button'
-            {{on 'click' (fn this.handleComposeAction 'isEditing' false true)}}
-          >Cancel</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{on 'click' this.saveEdit}}
-          >Save</button>
-        {{/if}}
-        {{#if this.isRevising}}
-          <button
-            class='primary-button cancel-button'
-            type='button'
-            {{on 'click' (fn this.handleComposeAction 'isRevising' false true)}}
-          >Cancel</button>
+        <button
+          class='primary-button cancel-button'
+          type='button'
+          {{on 'click' this.cancelCompose}}
+        >Cancel</button>
+        
+        {{#if this.showSaveDraftButton}}
           <button
             class='primary-button'
             type='button'
-            {{on 'click' (fn this.saveRevision true)}}
+            {{on 'click' (fn this.saveResponse true)}}
           >Save as Draft</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{on 'click' this.saveRevision}}
-          >{{this.sendButtonText}}</button>
         {{/if}}
-        {{#if this.isFinishingDraft}}
-          <button
-            class='primary-button cancel-button'
-            type='button'
-            {{on 'click' (fn this.handleComposeAction 'isFinishingDraft' false true)}}
-          >Cancel</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{on 'click' (fn this.saveDraft true)}}
-          >Save as Draft</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{on 'click' this.saveDraft}}
-          >{{this.sendButtonText}}</button>
-        {{/if}}
+        
+        <button
+          class='primary-button'
+          type='button'
+          {{on 'click' this.saveResponse}}
+        >{{this.saveButtonText}}</button>
       </div>
     {{/if}}
   {{else}}
     <p class='info'>No Mentor Feedback for this revision yet.</p>
     <img src='../assets/images/no-message.svg' alt='No Replies' />
-    {{#if this.canSendNew}}
-      Click 'New Response' to begin composing a new Mentor Reply.
-      <div class='submit-buttons button-row'>
-        <button
-          class='primary-button'
-          type='button'
-          {{on 'click' this.toNewResponse}}
-        >New Response</button>
-      </div>
-
-    {{/if}}
+  {{#if this.canSendNew}}
+  Click 'New Response' to begin composing a new Mentor Reply.
+  <div class="submit-buttons button-row">
+    <LinkTo
+      @route="responses.new.submission"
+      @model={{@submission}}
+      class="primary-button"
+    >
+      New Response
+    </LinkTo>
+  </div>
+{{/if}}
   {{/if}}
   {{! page pagination for mentor replies }}
   {{!-- <div class="mentor-replies">
