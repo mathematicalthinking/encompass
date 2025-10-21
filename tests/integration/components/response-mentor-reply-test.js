@@ -3,7 +3,6 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
-import { A } from '@ember/array';
 
 const createServiceMock = () => class extends Service {};
 
@@ -62,7 +61,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     });
 
     if (context.submissionResponses && !context.submissionResponses.sortBy) {
-      context.set('submissionResponses', A(context.submissionResponses));
+      context.set('submissionResponses', [context.submissionResponses]);
     }
 
     await render(hbs`<ResponseMentorReply
@@ -119,7 +118,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
     });
 
     assert.dom('.response-mentor-container').exists();
@@ -176,7 +175,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
       canDirectSend: true,
     });
 
@@ -228,7 +227,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response1,
-      submissionResponses: A([response1, response2]),
+      submissionResponses: [response1, response2],
     });
 
     assert.dom('.response-mentor-container').exists();
@@ -252,7 +251,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
       canApprove: true,
     });
 
@@ -277,7 +276,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
       isParentWorkspace: true,
     });
 
@@ -303,7 +302,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
       isOwnMentorReply: true,
     });
 
@@ -327,7 +326,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
     });
 
     assert.dom('.response-mentor-container').exists();
@@ -350,7 +349,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
     });
 
     assert.dom('.response-mentor-container').exists();
@@ -375,7 +374,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
     });
 
     assert.dom('.response-mentor-container').exists();
@@ -399,7 +398,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response,
-      submissionResponses: A([response]),
+      submissionResponses: [response],
       workspace: null,
     });
 
@@ -446,7 +445,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: response1,
-      submissionResponses: A([response1, response2]),
+      submissionResponses: [response1, response2],
     });
 
     assert.dom('.response-mentor-container').exists();
@@ -482,7 +481,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: draftResponse,
-      submissionResponses: A([draftResponse]),
+      submissionResponses: [draftResponse],
       isOwnMentorReply: true,
       canDirectSend: false, // Mentor needs approval
     });
@@ -514,7 +513,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: draftResponse,
-      submissionResponses: A([draftResponse]),
+      submissionResponses: [draftResponse],
       isOwnMentorReply: true,
       canDirectSend: true, // Senior mentor can send directly
     });
@@ -564,7 +563,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: newDraft,
-      submissionResponses: A([priorResponse, newDraft]),
+      submissionResponses: [priorResponse, newDraft],
       priorMentorRevision: priorResponse,
       isOwnMentorReply: true,
     });
@@ -596,7 +595,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: originalResponse,
-      submissionResponses: A([originalResponse]),
+      submissionResponses: [originalResponse],
       isOwnMentorReply: true,
     });
 
@@ -634,7 +633,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: originalResponse,
-      submissionResponses: A([originalResponse]),
+      submissionResponses: [originalResponse],
       isOwnMentorReply: true,
       canDirectSend: true,
     });
@@ -667,7 +666,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: draftResponse,
-      submissionResponses: A([draftResponse]),
+      submissionResponses: [draftResponse],
       isOwnMentorReply: true,
     });
 
@@ -705,7 +704,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: draftResponse,
-      submissionResponses: A([draftResponse]),
+      submissionResponses: [draftResponse],
       isOwnMentorReply: true,
     });
 
@@ -751,7 +750,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: draft2,
-      submissionResponses: A([draft1, draft2]),
+      submissionResponses: [draft1, draft2],
       isOwnMentorReply: true,
     });
 
@@ -784,7 +783,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: draftResponse,
-      submissionResponses: A([draftResponse]),
+      submissionResponses: [draftResponse],
       isOwnMentorReply: true,
       canDirectSend: true,
     });
@@ -821,7 +820,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: draftResponse,
-      submissionResponses: A([draftResponse]),
+      submissionResponses: [draftResponse],
       isOwnMentorReply: true,
     });
 
@@ -874,7 +873,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     await renderMentorReply(this, {
       displayResponse: revisedDraft,
-      submissionResponses: A([needsRevisionResponse, revisedDraft]),
+      submissionResponses: [needsRevisionResponse, revisedDraft],
       priorMentorRevision: needsRevisionResponse,
       isOwnMentorReply: true,
     });
