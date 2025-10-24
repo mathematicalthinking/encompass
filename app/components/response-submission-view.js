@@ -13,12 +13,10 @@ export default class ResponseSubmissionViewComponent extends Component {
   @tracked isImageExpanded = false;
   @tracked isUploadExpanded = false;
   @tracked isRevising = false;
-  @tracked submissionList = [];
   @tracked primaryResponse = null;
   @tracked currentSubmissionId = null;
   @tracked revisedBriefSummary = '';
   @tracked revisedExplanation = '';
-  @tracked contributors = [];
 
   revisionsToolTip =
     'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)';
@@ -26,7 +24,6 @@ export default class ResponseSubmissionViewComponent extends Component {
   constructor() {
     super(...arguments);
     this._initializeSubmission();
-    this._initializeSubmissionList();
     this._initializePrimaryResponse();
   }
 
@@ -34,12 +31,6 @@ export default class ResponseSubmissionViewComponent extends Component {
     if (this.args.submission?.id !== this.currentSubmissionId) {
       this.currentSubmissionId = this.args.submission?.id;
       this.isRevising = false;
-    }
-  }
-
-  _initializeSubmissionList() {
-    if (this.args.studentSubmissions) {
-      this.submissionList = this.args.studentSubmissions;
     }
   }
 
@@ -69,8 +60,28 @@ export default class ResponseSubmissionViewComponent extends Component {
     return this.args.submission;
   }
 
+  get answerAssignment() {
+    return this.args.submission?.answer?.assignment;
+  }
+
+  get answerContent() {
+    return this.args.submission?.answer;
+  }
+
+  get answerSection() {
+    return this.args.submission?.answer?.section;
+  }
+
+  get answerProblem() {
+    return this.args.submission?.answer?.problem;
+  }
+
+  get quillStartingText() {
+    return this.args.submission?.answer?.explanation || '';
+  }
+
   get sortedStudentSubmissions() {
-    return this.submissionList.sortBy('createDate');
+    return this.args.studentSubmissions?.sortBy('createDate') || [];
   }
 
   get workspacesToUpdateIds() {
@@ -78,10 +89,11 @@ export default class ResponseSubmissionViewComponent extends Component {
   }
 
   get mentoredRevisions() {
-    return this.submissionList.filter((sub) => {
+    const studentSubmissions = this.args.studentSubmissions || [];
+    return studentSubmissions.filter((sub) => {
       let responseIds = this.utils.getHasManyIds(sub, 'responses');
       return this.args.wsResponses?.find((response) => {
-        return responseIds.includes(response.get('id'));
+        return responseIds.includes(response.id);
       });
     });
   }
@@ -105,23 +117,6 @@ export default class ResponseSubmissionViewComponent extends Component {
       this.isRevising = false;
       this.revisedBriefSummary = '';
       this.revisedExplanation = '';
-    }
-  }
-
-  @action
-  insertQuillContent(selector, options) {
-    if (!this.isRevising) {
-      return;
-    }
-    const quill = new window.Quill(selector, options);
-
-    let explanation = this.args.submission?.answer?.explanation;
-    let students = this.args.submission?.answer?.students;
-    this.contributors = students?.map((s) => s);
-
-    if (explanation) {
-      // Use the Quill instance properly instead of manually manipulating the DOM
-      quill.root.innerHTML = explanation;
     }
   }
 

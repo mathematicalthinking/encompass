@@ -22,11 +22,11 @@
 
     {{#if this.isRevising}}
       <AnswerNew
-        @assignment={{this.displaySubmission.answer.assignment.content}}
+        @assignment={{this.answerAssignment}}
         @isRevision={{true}}
-        @priorAnswer={{this.displaySubmission.answer.content}}
-        @section={{this.displaySubmission.answer.section.content}}
-        @problem={{this.displaySubmission.answer.problem.content}}
+        @priorAnswer={{this.answerContent}}
+        @section={{this.answerSection}}
+        @problem={{this.answerProblem}}
         @cancelResponse={{this.cancelRevising}}
         @createButtonText='Submit Revision'
         @mainHeaderText='Create New Revision'

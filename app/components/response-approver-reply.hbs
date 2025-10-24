@@ -1,0 +1,252 @@
+<h1 class='heading'>Approver Panel</h1>
+{{#if this.showApproverActions}}
+  <div class='action-container'>
+    <h2 class='sub-heading'>Manage Mentor Reply</h2>
+
+    <div class='approver-actions button-row'>
+      {{#if this.showNoActionsMessage}}
+        <p class='info'>
+          This Mentor Reply has already been approved by
+          {{@responseToApprove.approvedBy.username}}
+          and sent to
+          {{@responseToApprove.recipient.username}}. There are no further
+          approval actions to take at this time.
+        </p>
+      {{else}}
+        {{#if this.showApprove}}
+          <button
+            class='approve-button'
+            type='button'
+            {{on 'click' this.confirmApproval}}
+          >Approve <i class='fas fa-check'></i></button>
+        {{/if}}
+        {{#if this.showUndoApproval}}
+          <button
+            class='primary-button undo-approval'
+            type='button'
+            {{on 'click' this.undoApproval}}
+          >Undo Approval</button>
+        {{/if}}
+        {{#if this.showCompose}}
+          <button
+            class='primary-button'
+            type='button'
+            {{on 'click' this.composeReply}}
+          >Reply <i class='fas fa-reply'></i></button>
+        {{/if}}
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{#if this.showReplyInput}}
+  {{#unless this.isEditingApproverReply}}
+    <div class='compose-reply-container'>
+      <p class='info'>{{this.replyHeadingText}}</p>
+      <div class='compose-approver-reply'>
+        <Ui::QuillContainer
+          @onEditorChange={{this.updateQuillText}}
+          @attrSectionId='approver-editor'
+          @startingText={{this.editRevisionText}}
+          @showErrors={{true}}
+        />
+        {{#each @saveRecordErrors as |err|}}
+          <Ui::ErrorBox
+            @error={{err}}
+            @showDismiss={{true}}
+          />
+        {{/each}}
+        <div class='submit-buttons button-row'>
+          {{#if this.isRevisingApproverReply}}
+            <button
+              class='primary-button cancel-button'
+              type='button'
+              {{on 'click' this.stopRevising}}
+            >Cancel</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' (fn this.saveReply null true)}}
+            >Save as Draft</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' this.saveRevision}}
+            >Send Revision</button>
+          {{/if}}
+          {{#if this.isComposingReply}}
+            <button
+              class='primary-button cancel-button'
+              type='button'
+              {{on 'click' this.stopComposing}}
+            >Cancel</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' (fn this.saveReply null true)}}
+            >Save as Draft</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' (fn this.saveReply 'needsRevisions')}}
+            >Needs Revisions</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' (fn this.saveReply 'approved')}}
+            >Approve</button>
+          {{/if}}
+          {{#if this.isFinishingDraft}}
+            <button
+              class='primary-button cancel-button'
+              type='button'
+              {{on 'click' this.stopDraft}}
+            >Cancel</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' (fn this.saveDraft 'draft')}}
+            >Save as Draft</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' (fn this.saveDraft 'needsRevisions')}}
+            >Needs Revisions</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' (fn this.saveDraft 'approved')}}
+            >Approve</button>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  {{/unless}}
+{{/if}}
+
+<div class='approver-replies'>
+  <h2 class='sub-heading'>Existing Approver Replies</h2>
+  {{#if this.showNoPreviousRepliesMsg}}
+    <p class='info'>It looks like there are no existing approver replies for
+      this Mentor Reply.</p>
+    <img src='../assets/images/no-message.svg' alt='No Replies' />
+  {{/if}}
+  {{#if this.doShowLoadingMessage}}
+    <LoadingElem />
+  {{/if}}
+  {{#if this.displayReply}}
+    <div class='display-approver-reply'>
+      <div class='top-row'>
+        <p class='reply-date'>{{format-date
+            this.displayReply.createDate
+            'Do MMM YYYY'
+          }}
+          <span class='reply-time'>{{format-date
+              this.displayReply.createDate
+              'h:mm a'
+            }}</span>
+        </p>
+        {{#if this.sortedApproverReplies}}
+          <BreadCrumbs
+            @items={{this.sortedApproverReplies}}
+            @onSelect={{this.setReplyToView}}
+            @titleTextPath='shortText'
+            @selectedItem={{this.displayReply}}
+            @infoToolTipText={{this.revisionsToolTip}}
+          />
+        {{/if}}
+      </div>
+      <div class='reply-users'>
+        <p>
+          <span class='reply-label'>From:</span>
+          <span class='reply-value'>{{this.displayReply.createdBy.username}}</span>
+        </p>
+        <p>
+          <span class='reply-label'>To:</span>
+          <span
+            class='reply-value recipient'
+          >{{this.displayReply.recipient.username}}</span>
+          {{#if this.showRecipientReadUnread}}
+            <span class='reply-read-unread'><i
+                title={{this.recipientReadUnreadIcon.title}}
+                class={{this.recipientReadUnreadIcon.className}}
+              ></i></span>
+          {{/if}}
+
+        </p>
+      </div>
+      {{#if this.isDraft}}
+        <p class='response-status'>
+          <svg height='20' width='20'>
+            <circle cx='10' cy='15' r='5' fill={{this.statusIconFill}} />
+          </svg>
+          <span class='status-text'>
+            {{response-status this.displayReply.status}}
+          </span>
+        </p>
+      {{/if}}
+      <p class='reply-header'>
+        Message
+        {{#if this.showApproverEdit}}
+          <i {{on 'click' this.startEditing}} class='far fa-edit'></i>
+        {{/if}}
+      </p>
+
+      {{#if this.isEditingApproverReply}}
+        <div class='reply-revise'>
+          <Ui::QuillContainer
+            @onEditorChange={{this.updateQuillText}}
+            @attrSectionId='approver-editor'
+            @startingText={{this.editRevisionText}}
+            @showErrors={{true}}
+          />
+        </div>
+        {{#each @saveRecordErrors as |err|}}
+          <Ui::ErrorBox
+            @error={{err}}
+            @showDismiss={{true}}
+          />
+        {{/each}}
+      {{else}}
+        <div class='reply-content'>
+          {{{this.displayReply.text}}}
+        </div>
+      {{/if}}
+    </div>
+    {{#if this.showDisplayReplyActions}}
+      <div class='display-reply-actions'>
+        {{#if this.showApproverRevise}}
+          <button
+            class='primary-button'
+            type='button'
+            {{on 'click' this.startRevising}}
+          >Revise</button>
+        {{/if}}
+        {{#if this.showResumeDraft}}
+          <button
+            class='primary-button'
+            type='button'
+            {{on 'click' this.resumeDraft}}
+          >Resume Draft</button>
+        {{/if}}
+        {{#if this.showTrash}}
+          <i {{on 'click' (fn this.confirmTrash this.displayReply)}} class='fas fa-trash'></i>
+        {{/if}}
+      </div>
+    {{/if}}
+    {{#if this.isEditingApproverReply}}
+      <div class='submit-buttons button-row'>
+        <button
+          class='primary-button cancel-button'
+          type='button'
+          {{on 'click' this.stopEditing}}
+        >Cancel</button>
+        <button
+          class='primary-button'
+          type='button'
+          {{on 'click' this.saveEdit}}
+        >Save</button>
+      </div>
+    {{/if}}
+  {{/if}}
+</div>
