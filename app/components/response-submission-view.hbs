@@ -1,0 +1,161 @@
+{{! /**
+ * #
+ * @description 
+ Response-submission-view is a subcomponent of response-mentor-thread.hbs.
+ Its sibling component is response-mentor-reply.hbs.
+ This components purporse is to display information about the students submissions. 
+ See response-mentor-thread.hbs and response-container.hbs for structure.
+ 
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */ }}
+{{#if this.displaySubmission}}
+  <div class='submission-container'>
+    <div class='subimission-header-info'>
+      <p>{{this.displaySubmission.student}}</p>
+      <p class='submission-date'>{{format-date
+          this.displaySubmission.createDate
+          'MMMM Do, YYYY'
+        }},
+        {{format-date this.displaySubmission.createDate 'h:mm a'}}</p>
+    </div>
+
+    {{#if this.isRevising}}
+      <AnswerNew
+        @assignment={{this.displaySubmission.answer.assignment.content}}
+        @isRevision={{true}}
+        @priorAnswer={{this.displaySubmission.answer.content}}
+        @section={{this.displaySubmission.answer.section.content}}
+        @problem={{this.displaySubmission.answer.problem.content}}
+        @cancelResponse={{this.cancelRevising}}
+        @createButtonText='Submit Revision'
+        @mainHeaderText='Create New Revision'
+        @handleCreatedAnswer={{this.toSubmissionFromAnswer}}
+        @workspacesToUpdateIds={{this.workspacesToUpdateIds}}
+      />
+    {{else}}
+      <div class='submission-content-container short'>
+        <div
+          class='submission-content-header'
+          {{on 'click' (fn this.toggleProperty 'isShortExpanded')}}
+        >
+          <span>Brief Summary</span>
+          <i class='fas {{if this.isShortExpanded "fa-chevron-down" "fa-chevron-left"}}'></i>
+        </div>
+
+        {{#if this.isShortExpanded}}
+          <div class='submission-content-short'>
+            {{#if this.displaySubmission.answer.answer}}
+              {{{this.displaySubmission.answer.answer}}}
+            {{else}}
+              {{{this.displaySubmission.shortAnswer}}}
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+      <div class='submission-content-container'>
+        <div
+          class='submission-header'
+          {{on 'click' (fn this.toggleProperty 'isLongExpanded')}}
+        >
+          <span>Explanation</span>
+          <i class='fas {{if this.isLongExpanded "fa-chevron-down" "fa-chevron-left"}}'></i>
+        </div>
+        {{#if this.isLongExpanded}}
+          <div class='submission-content-container submission-content-long'>
+            {{#if this.displaySubmission.answer.explanation}}
+              {{{this.displaySubmission.answer.explanation}}}
+            {{/if}}
+            {{#if this.displaySubmission.longAnswer}}
+              {{{this.displaySubmission.longAnswer}}}
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+
+      {{#if this.displaySubmission.answer.explanationImage}}
+        <div class='submission-content-container images'>
+          <div
+            class='submission-header'
+            {{on 'click' (fn this.toggleProperty 'isImageExpanded')}}
+          >
+            <span>Additional Image</span>
+            <i class='fas {{if this.isImageExpanded "fa-chevron-down" "fa-chevron-left"}}'></i>
+          </div>
+          {{#if this.isImageExpanded}}
+            <div class='submission-content response-submission-images'>
+              <img
+                src='{{this.displaySubmission.answer.explanationImage.imageData}}'
+                alt=''
+              />
+            </div>
+          {{/if}}
+        </div>
+      {{/if}}
+
+      {{#if this.displaySubmission.uploadedFile.savedFileName}}
+        <div class='submission-content-container images'>
+          <div
+            class='submission-header'
+            {{on 'click' (fn this.toggleProperty 'isUploadExpanded')}}
+          >
+            <span>Uploaded Image</span>
+            <i class='fas {{if this.isUploadExpanded "fa-chevron-down" "fa-chevron-left"}}'></i>
+          </div>
+          {{#if this.isUploadExpanded}}
+            <div
+              class='submission-content-container response-submission-images'
+            >
+              <div id='submission_images'>
+                <a
+                  target='_blank'
+                  href='{{this.displaySubmission.imageUrl}}'
+                  rel='noopener noreferrer'
+                >
+                  <img
+                    src='{{this.displaySubmission.imageUrl}}'
+                    alt='Login to the PoWs to see image'
+                  />
+                </a>
+              </div>
+            </div>
+          {{/if}}
+        </div>
+      {{/if}}
+
+      {{#if this.canRevise}}
+        <div class='mentor-reply-actions button-row'>
+          {{#if this.isRevising}}
+            <button
+              class='primary-button cancel-button'
+              type='button'
+              {{on 'click' this.cancelRevising}}
+            >Cancel</button>
+            <button
+              class='primary-button'
+              type='button'
+              {{on 'click' this.submitRevision}}
+            >Submit Revision</button>
+          {{else}}
+            <button
+              data-test='submitter-revise'
+              class='edit-assignment-button'
+              type='button'
+              {{on 'click' this.startRevising}}
+            >Revise <i class='fas fa-edit'></i></button>
+          {{/if}}
+        </div>
+      {{/if}}
+    {{/if}}
+  </div>
+  {{! Page paginiation }}
+  {{!-- <div class='student-submissions'>
+    <BreadCrumbs
+      @items={{this.sortedStudentSubmissions}}
+      @onSelect={{this.setDisplaySubmission}}
+      @selectedItem={{this.displaySubmission}}
+      @starredItems={{this.mentoredRevisions}}
+      @infoToolTipText={{this.revisionsToolTip}}
+    />
+    </div> --}}
+{{/if}}
