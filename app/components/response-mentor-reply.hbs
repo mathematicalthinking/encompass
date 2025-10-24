@@ -1,32 +1,31 @@
-{{#if this.isCreating}}
+{{#if @isCreating}}
   <ResponseNew
-    @store={{this.store}}
-    @isCreating={{isCreating}}
-    @submission={{submission}}
-    @model={{responseNewModel}}
-    @recipient={{recipient}}
-    @newReplyStatus={{newReplyStatus}}
+    @isCreating={{@isCreating}}
+    @submission={{@submission}}
+    @responseData={{this.responseNewModel}}
+    @recipient={{@response.recipient}}
+    @newReplyStatus={{this.newReplyStatus}}
     @newReplyType='mentor'
-    @onSaveSuccess={{action 'onSaveSuccess'}}
-    @canDirectSend={{canDirectSend}}
-    @submissionResponses={{mentorReplies}}
-    @handleResponseThread={{action 'handleNewMentorReply'}}
+    @onSaveSuccess={{this.onSaveSuccess}}
+    @canDirectSend={{@canDirectSend}}
+    @submissionResponses={{@submissionResponses}}
+    @handleResponseThread={{this.handleNewMentorReply}}
   />
 {{else}}
 
   {{#if this.sortedMentorReplies}}
-    {{#each this.sortedMentorReplies as |listOfMentorReplies|}}
+    {{#each this.sortedMentorReplies as |reply|}}
       <div class='response-mentor-container'>
         <div class='response-mentor-info'>
-          {{#if this.displayResponse}}
+          {{#if @displayResponse}}
             <p class='response-date'>
-              {{#if this.isParentWorkspace}}
+              {{#if @isParentWorkspace}}
                 <div class='response-users'>
                   <p>
                     <span class='response-label'>To:</span>
                     <span
                       class='response-value recipient'
-                    >{{this.listOfMentorReplies.recipient.username}}
+                    >{{reply.recipient.username}}
                     </span>
                     {{#if this.showRecipientReadUnread}}
                       <span class='response-read-unread'><i
@@ -38,19 +37,19 @@
                   <p>
                     <span class='response-label'>Mentor:</span>
                     <span class='response-value'>
-                      {{#if this.isParentWorkspace}}
-                        {{this.listOfMentorReplies.originalResponse.createdBy.username}}
+                      {{#if @isParentWorkspace}}
+                        {{reply.originalResponse.createdBy.username}}
                       {{else}}
-                        {{this.listOfMentorReplies.createdBy.username}}
+                        {{reply.createdBy.username}}
                       {{/if}}
                     </span>
                   </p>
                   <span class='response-time'>{{format-date
-                      listOfMentorReplies.originalResponse.createDate
+                      reply.originalResponse.createDate
                       'MMMM Do YYYY'
                     }}
                     {{format-date
-                      listOfMentorReplies.originalResponse.createDate
+                      reply.originalResponse.createDate
                       'h:mm a'
                     }}</span>
                 </div>
@@ -59,19 +58,19 @@
                 <div class='response-users'>
                   <div class='mentor-thread-container'>
                     <div class='mentor-header-thread'>
-                      <p>Mentor: {{listOfMentorReplies.createdBy.username}}</p>
+                      <p>Mentor: {{reply.createdBy.username}}</p>
                       <p class='response-time'>{{format-date
-                          listOfMentorReplies.createDate
+                          reply.createDate
                           'MMMM Do, YYYY'
                         }}
                         {{format-date
-                          listOfMentorReplies.createDate
+                          reply.createDate
                           'h:mm a'
                         }}</p></div>
 
                     <p>
                       To:
-                      {{listOfMentorReplies.recipient.username}}
+                      {{reply.recipient.username}}
                       {{#if this.showRecipientReadUnread}}
                         <i
                           title={{this.recipientReadUnreadIcon.title}}
@@ -83,16 +82,16 @@
                     <div class='response-text-container'>
                       {{#if this.isComposing}}
                         <Ui::QuillContainer
-                          @onEditorChange={{action 'updateQuillText'}}
-                          @attrSectionId={{quillEditorId}}
-                          @startingText={{editRevisionText}}
+                          @onEditorChange={{this.updateQuillText}}
+                          @attrSectionId='mentor-editor'
+                          @startingText={{this.editRevisionText}}
+                          @showErrors={{true}}
                         />
                       {{else}}
                         <div
-                          class='response-text
-                            {{if this.isOldFormatDisplayResponse "old-format"}}'
+                          class='response-text'
                         >
-                          {{{listOfMentorReplies.text}}}
+                          {{{reply.text}}}
                         </div>
                       {{/if}}
                     </div>
@@ -108,12 +107,12 @@
                           <Textarea
                             class='edit-note'
                             name='mentor-approver-note'
-                            @value={{editRevisionNote}}
+                            @value={{this.editRevisionNote}}
                           />
                         {{/if}}
                         {{#if this.showDisplayNote}}
                           <div class='response-note'>
-                            {{listOfMentorReplies.note}}
+                            {{reply.note}}
                           </div>
                         {{/if}}
                       </div>
@@ -128,20 +127,6 @@
         </div>
       </div>
     {{/each}}
-    {{#if this.emptyReplyError}}
-      <Ui::ErrorBox
-        @error='Message body cannot be empty.'
-        @showDismiss={{true}}
-        @resetError={{action (mut this.emptyReplyError) null}}
-      />
-    {{/if}}
-    {{#if this.quillTooLongError}}
-      <Ui::ErrorBox
-        @error={{this.quillTooLongErrorMsg}}
-        @showDismiss={{true}}
-        @resetError={{action (mut this.quillTooLongError) null}}
-      />
-    {{/if}}
     {{! for draft option when mentor saves draft. tech debt }}
     {{!-- <div class="mentor-reply-actions button-row">
     {{#if showRevise}}
@@ -160,68 +145,42 @@
     {{/if}}
     {{#if this.isComposing}}
       <div class='submit-buttons button-row'>
-        {{#if isEditing}}
-          <button
-            class='primary-button cancel-button'
-            type='button'
-            {{action 'handleComposeAction' 'isEditing' false true}}
-          >Cancel</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{action 'saveEdit'}}
-          >Save</button>
-        {{/if}}
-        {{#if isRevising}}
-          <button
-            class='primary-button cancel-button'
-            type='button'
-            {{action 'handleComposeAction' 'isRevising' false true}}
-          >Cancel</button>
+        <button
+          class='primary-button cancel-button'
+          type='button'
+          {{on 'click' this.cancelCompose}}
+        >Cancel</button>
+        
+        {{#if this.showSaveDraftButton}}
           <button
             class='primary-button'
             type='button'
-            {{action 'saveRevision' true}}
+            {{on 'click' (fn this.saveResponse true)}}
           >Save as Draft</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{action 'saveRevision'}}
-          >{{sendButtonText}}</button>
         {{/if}}
-        {{#if isFinishingDraft}}
-          <button
-            class='primary-button cancel-button'
-            type='button'
-            {{action 'handleComposeAction' 'isFinishingDraft' false true}}
-          >Cancel</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{action 'saveDraft' true}}
-          >Save as Draft</button>
-          <button
-            class='primary-button'
-            type='button'
-            {{action 'saveDraft'}}
-          >{{sendButtonText}}</button>
-        {{/if}}
+        
+        <button
+          class='primary-button'
+          type='button'
+          {{on 'click' this.saveResponse}}
+        >{{this.saveButtonText}}</button>
       </div>
     {{/if}}
   {{else}}
     <p class='info'>No Mentor Feedback for this revision yet.</p>
     <img src='../assets/images/no-message.svg' alt='No Replies' />
-    {{#if this.canSendNew}}
-      Click 'New Response' to begin composing a new Mentor Reply.
-      <div class='submit-buttons button-row'>
-        <button
-          class='primary-button'
-          type='button'
-          {{action 'toNewResponse'}}
-        >New Response</button>
-      </div>
-
-    {{/if}}
+  {{#if this.canSendNew}}
+  Click 'New Response' to begin composing a new Mentor Reply.
+  <div class="submit-buttons button-row">
+    <LinkTo
+      @route="responses.new.submission"
+      @model={{@submission}}
+      class="primary-button"
+    >
+      New Response
+    </LinkTo>
+  </div>
+{{/if}}
   {{/if}}
   {{! page pagination for mentor replies }}
   {{!-- <div class="mentor-replies">

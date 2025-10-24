@@ -1,639 +1,499 @@
-/* eslint-disable */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  alert: service('sweet-alert'),
-  utils: service('utility-methods'),
-  loading: service('loading-display'),
-  errorHandling: service('error-handling'),
-  currentUser: service('current-user'),
-  isRevising: false,
-  isFinishingDraft: false,
-  currentDisplayResponseId: null,
-  quillEditorId: 'mentor-editor',
-  quillText: '',
-  maxResponseLength: 14680064,
-  errorPropsToRemove: [
-    'saveRecordErrors',
-    'emptyReplyError',
-    'quillTooLongError',
-  ],
+export default class ResponseMentorReplyComponent extends Component {
+  @service('sweet-alert') alert;
+  @service('utility-methods') utils;
+  @service('loading-display') loading;
+  @service errorHandling;
+  @service navigation;
+  @service currentUser;
+  @service store;
 
-  didReceiveAttrs() {
-    if (this.get('displayResponse.id') !== this.currentDisplayResponseId) {
-      this.set('currentDisplayResponseId', this.get('displayResponse.id'));
+  @tracked isRevising = false;
+  @tracked isEditing = false;
+  @tracked isFinishingDraft = false;
+  @tracked quillText = '';
+  @tracked isValidQuillContent = true;
+  @tracked editRevisionText = '';
+  @tracked editRevisionNote = '';
+  @tracked isReplySending = false;
+  @tracked doShowLoadingMessage = false;
+  @tracked currentDisplayResponseId = null;
 
-      ['isEditing', 'isRevising', 'isFinishingDraft'].forEach((prop) => {
-        if (this.get(prop)) {
-          this.set(prop, false);
-        }
-      });
+  errorPropsToRemove = ['saveRecordErrors'];
+  revisionsToolTip = 'Replies are sorted from oldest to newest, left to right.';
+
+  constructor() {
+    super(...arguments);
+    this.currentDisplayResponseId = this.args.displayResponse?.id;
+  }
+
+  // NOTE: The following properties/getters are unused because they reference parent @args that are not being passed:
+  // - revisionsToolTip, showEdit, showRevise, showResumeDraft, showTrash, replyHeadingText, statusIconFill, showStatus
+  // Keeping implementation for now because there is commented-out template code that needs further discussion.
+  // See commented sections in response-mentor-reply.hbs
+
+  get statusIconFill() {
+    return this.args.iconFillOptions?.[this.args.displayResponse?.status];
+  }
+
+  _checkResponseChange() {
+    const responseId = this.args.displayResponse?.id;
+    if (responseId !== this.currentDisplayResponseId) {
+      this.currentDisplayResponseId = responseId;
+      this.isEditing = false;
+      this.isRevising = false;
+      this.isFinishingDraft = false;
     }
-    this._super(...arguments);
-  },
+  }
 
-  statusIconFill: computed('displayResponse.status', function () {
-    let status = this.get('displayResponse.status');
-    return this.iconFillOptions[status];
-  }),
+  get showStatus() {
+    return this.args.canApprove || this.args.isOwnMentorReply;
+  }
 
-  showStatus: computed('canApprove', 'isOwnMentorReply', function () {
-    return this.canApprove || this.isOwnMentorReply;
-  }),
+  get newReplyStatus() {
+    return this.args.canDirectSend ? 'approved' : 'pendingApproval';
+  }
 
-  newReplyStatus: computed('canDirectSend', function () {
-    if (this.canDirectSend) {
-      return 'approved';
-    }
-    // TODO: update approver relationships for current encompass use cases
-    return 'pendingApproval';
-  }),
+  get canRevise() {
+    return !this.args.isParentWorkspace && this.args.isOwnMentorReply;
+  }
 
-  canRevise: computed('isOwnMentorReply', 'isParentWorkspace', function () {
-    return !this.isParentWorkspace && this.isOwnMentorReply;
-  }),
-
-  canEdit: computed(
-    'canApprove',
-    'displayResponse.status',
-    'isOwnMentorReply',
-    'isParentWorkspace',
-    function () {
-      return (
-        !this.isParentWorkspace &&
-        this.get('displayResponse.status') === 'pendingApproval' &&
-        (this.canApprove || this.isOwnMentorReply)
-      );
-    }
-  ),
-
-  isComposing: computed(
-    'isEditing',
-    'isRevising',
-    'isFinishingDraft',
-    function () {
-      return this.isEditing || this.isRevising || this.isFinishingDraft;
-    }
-  ),
-
-  showEdit: computed('canEdit', 'isComposing', function () {
-    return this.canEdit && !this.isComposing;
-  }),
-
-  isDraft: computed('displayResponse.status', function () {
-    return this.get('displayResponse.status') === 'draft';
-  }),
-
-  showRevise: computed('canRevise', 'isComposing', 'isDraft', function () {
-    return this.canRevise && !this.isDraft && !this.isComposing;
-  }),
-
-  showResumeDraft: computed(
-    'isOwnMentorReply',
-    'isDraft',
-    'isComposing',
-    function () {
-      return this.isOwnMentorReply && this.isDraft && !this.isComposing;
-    }
-  ),
-
-  responseNewModel: computed(
-    'isCreating',
-    'response',
-    'displayResponse',
-    function () {
-      if (this.isCreating) {
-        return this.response;
-      }
-      return this.displayResponse;
-    }
-  ),
-
-  replyHeadingText: computed('isEditing', 'isRevising', function () {
-    if (this.isEditing) {
-      return 'Editing Mentor Reply';
-    }
-    if (this.isRevising) {
-      return 'New Revision';
-    }
-  }),
-
-  showApproverNoteInput: computed('newReplyStatus', 'isComposing', function () {
-    return this.isComposing && this.newReplyStatus !== 'approved';
-  }),
-  // here lies the problem, with all mentor replies
-  sortedMentorReplies: computed('mentorReplies.[]', 'currentUser', function () {
-    if (!this.mentorReplies) {
-      return [];
-    }
-    let currentStudent = this.submission.student;
-
-    // Filters the mentor repleis to that student only.
-    let filteredReplies = this.submissionResponses
-      .filter((reply) => currentStudent === reply.get('submission.student'))
-      .sortBy('createDate')
-      .reverse();
-
-    return filteredReplies;
-  }),
-
-  showNoteHeader: computed(
-    'showApproverNoteInput',
-    'showDisplayNote',
-    function () {
-      return this.showApproverNoteInput || this.showDisplayNote;
-    }
-  ),
-
-  showDisplayNote: computed(
-    'displayResponse.note',
-    'isOwnMentorReply',
-    'canApprove',
-    'isComposing',
-    function () {
-      if (this.isComposing) {
-        return false;
-      }
-
-      if (!this.isOwnMentorReply && !this.canApprove) {
-        return false;
-      }
-
-      let note = this.get('displayResponse.note');
-      return typeof note === 'string' && note.length > 0;
-    }
-  ),
-
-  canTrash: computed(
-    'isOwnMentorReply',
-    'canApprove',
-    'displayResponse.status',
-    'isParentWorkspace',
-    function () {
-      let status = this.get('displayResponse.status');
-
-      if (this.isParentWorkspace) {
-        return false;
-      }
-      return (
-        status === 'draft' ||
-        (status === 'pendingApproval' &&
-          (this.isOwnMentorReply || this.canApprove))
-      );
-    }
-  ),
-  showTrash: computed('canTrash', 'isComposing', function () {
-    return this.canTrash && !this.isComposing;
-  }),
-  canSendNew: computed(
-    'canSend',
-    'isOwnSubmission',
-    'isParentWorkspace',
-    function () {
-      return !this.isParentWorkspace && this.canSend && !this.isOwnSubmission;
-    }
-  ),
-
-  sendButtonText: computed('canDirectSend', function () {
-    if (this.canDirectSend) {
-      return 'Send';
-    }
-    return 'Submit for Approval';
-  }),
-
-  getQuillErrors() {
-    let errors = [];
-    if (this.isQuillEmpty) {
-      errors.addObject('emptyReplyError');
-    }
-    if (this.isQuillTooLong) {
-      errors.addObject('quillTooLongError');
-    }
-    return errors;
-  },
-
-  returnSizeDisplay(bytes) {
-    if (bytes < 1024) {
-      return bytes + ' bytes';
-    } else if (bytes >= 1024 && bytes < 1048576) {
-      return (bytes / 1024).toFixed(1) + 'KB';
-    } else if (bytes >= 1048576) {
-      return (bytes / 1048576).toFixed(1) + 'MB';
-    }
-  },
-
-  quillTooLongErrorMsg: computed(
-    'quillText.length',
-    'maxResponseLength',
-    function () {
-      let len = this.get('quillText.length');
-      let maxLength = this.maxResponseLength;
-      let maxSizeDisplay = this.returnSizeDisplay(maxLength);
-      let actualSizeDisplay = this.returnSizeDisplay(len);
-
-      return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
-    }
-  ),
-
-  clearErrorProps() {
-    this.removeMessages(this.errorPropsToRemove);
-  },
-
-  isOldFormatDisplayResponse: computed('displayResponse.text', function () {
-    let text = this.get('displayResponse.text');
-    let parsed = new DOMParser().parseFromString(text, 'text/html');
-    return !Array.from(parsed.body.childNodes).some(
-      (node) => node.nodeType === 1
+  get canEdit() {
+    return (
+      !this.args.isParentWorkspace &&
+      this.args.displayResponse?.status === 'pendingApproval' &&
+      (this.args.canApprove || this.args.isOwnMentorReply)
     );
-  }),
+  }
 
-  recipientReadUnreadIcon: computed(
-    'displayResponse.wasReadByRecipient',
-    function () {
-      let results = {};
-      if (this.get('displayResponse.wasReadByRecipient')) {
-        results.className = 'far fa-envelope-open';
-        results.title = 'Recipient has seen message';
-      } else {
-        results.className = 'far fa-envelope';
-        results.title = 'Recipient has not seen message';
-      }
-      return results;
+  get isComposing() {
+    this._checkResponseChange();
+    return this.isEditing || this.isRevising || this.isFinishingDraft;
+  }
+
+  get showEdit() {
+    return this.canEdit && !this.isComposing;
+  }
+
+  get isDraft() {
+    return this.args.displayResponse?.status === 'draft';
+  }
+
+  get showRevise() {
+    return this.canRevise && !this.isDraft && !this.isComposing;
+  }
+
+  get showResumeDraft() {
+    return this.args.isOwnMentorReply && this.isDraft && !this.isComposing;
+  }
+
+  get responseNewModel() {
+    return this.args.isCreating
+      ? this.args.response
+      : this.args.displayResponse;
+  }
+
+  get replyHeadingText() {
+    if (this.isEditing) return 'Editing Mentor Reply';
+    if (this.isRevising) return 'New Revision';
+    return '';
+  }
+
+  get showApproverNoteInput() {
+    return this.isComposing && this.newReplyStatus !== 'approved';
+  }
+
+  get sortedMentorReplies() {
+    if (!this.args.submissionResponses) return [];
+    const currentStudent = this.args.submission?.student;
+    return (
+      this.args.submissionResponses
+        ?.filter((reply) => currentStudent === reply.get('submission.student')) // used .get to avoid async issues
+        .sortBy('createDate')
+        .reverse() || []
+    );
+  }
+
+  get showNoteHeader() {
+    return this.showApproverNoteInput || this.showDisplayNote;
+  }
+
+  get showDisplayNote() {
+    if (
+      this.isComposing ||
+      (!this.args.isOwnMentorReply && !this.args.canApprove)
+    ) {
+      return false;
     }
-  ),
+    const note = this.args.displayResponse?.note;
+    return typeof note === 'string' && note.length > 0;
+  }
 
-  showRecipientReadUnread: computed(
-    'isMentorRecipient',
-    'displayResponse.status',
-    function () {
-      let status = this.get('displayResponse.status');
+  get canTrash() {
+    const status = this.args.displayResponse?.status;
+    if (this.args.isParentWorkspace) return false;
+    return (
+      status === 'draft' ||
+      (status === 'pendingApproval' &&
+        (this.args.isOwnMentorReply || this.args.canApprove))
+    );
+  }
 
-      return status === 'approved' && !this.isMentorRecipient;
-    }
-  ),
+  get showTrash() {
+    return this.canTrash && !this.isComposing;
+  }
 
-  revisionsToolTip: 'Replies are sorted from oldest to newest, left to right.',
+  get canSendNew() {
+    return (
+      !this.args.isParentWorkspace &&
+      this.args.canSend &&
+      !this.args.isOwnSubmission
+    );
+  }
 
-  actions: {
-    onSaveSuccess(submission, response) {
-      this.onSaveSuccess(submission, response);
-    },
+  get sendButtonText() {
+    return this.args.canDirectSend ? 'Send' : 'Submit for Approval';
+  }
 
-    // value true or false
-    handleComposeAction(propName, value, doClearErrors) {
-      if (value) {
-        this.set('editRevisionText', this.get('displayResponse.text'));
-        this.set('editRevisionNote', this.get('displayResponse.note'));
-      } else {
-        this.set('editRevisionText', '');
-        this.set('editRevisionNote', '');
-      }
+  get saveButtonText() {
+    return this.isEditing ? 'Save' : this.sendButtonText;
+  }
 
-      this.set(propName, value);
+  get showSaveDraftButton() {
+    return this.isRevising || this.isFinishingDraft;
+  }
 
-      if (doClearErrors) {
-        this.clearErrorProps();
-      }
-    },
-
-    saveDraft(isDraft) {
-      this.clearErrorProps();
-
-      let quillErrors = this.getQuillErrors();
-
-      if (quillErrors.length > 0) {
-        quillErrors.forEach((errorProp) => {
-          this.set(errorProp, true);
-        });
-        return;
-      }
-      let messageBody = this.quillText;
-
-      let approverNote = this.editRevisionNote;
-
-      this.displayResponse.set('text', messageBody);
-      this.displayResponse.set('note', approverNote);
-
-      let doSetSuperceded = false;
-
-      let priorRevisionStatus = this.get('priorMentorRevision.status');
-      if (
-        priorRevisionStatus === 'pendingApproval' ||
-        priorRevisionStatus === 'needsRevisions'
-      ) {
-        doSetSuperceded = true;
-        this.priorMentorRevision.set('status', 'superceded');
-      }
-
-      let newStatus = this.newReplyStatus;
-      let toastMessage = 'Response Sent';
-
-      if (newStatus === 'pendingApproval') {
-        toastMessage = 'Response Sent for Approval';
-      }
-      if (isDraft) {
-        newStatus = 'draft';
-        toastMessage = 'Draft Saved';
-      }
-
-      this.displayResponse.set('status', newStatus);
-
-      let hash = {
-        newResponse: this.displayResponse.save(),
+  get recipientReadUnreadIcon() {
+    if (this.args.displayResponse?.wasReadByRecipient) {
+      return {
+        className: 'far fa-envelope-open',
+        title: 'Recipient has seen message',
       };
+    }
+    return {
+      className: 'far fa-envelope',
+      title: 'Recipient has not seen message',
+    };
+  }
+
+  get showRecipientReadUnread() {
+    return (
+      this.args.displayResponse?.status === 'approved' &&
+      !this.args.isMentorRecipient
+    );
+  }
+
+  _hasContentChanged(oldText, newText, oldNote, newNote) {
+    return oldText !== newText || oldNote !== newNote;
+  }
+
+  _startLoading() {
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+  }
+
+  _endLoading() {
+    this.loading.handleLoadingMessage(
+      this,
+      'end',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+  }
+
+  _showSuccessToast(message) {
+    this.alert.showToast('success', message, 'bottom-end', 3000, false, null);
+  }
+
+  _resetEditState() {
+    this.editRevisionText = '';
+  }
+
+  _clearErrorProps() {
+    this.errorHandling.removeMessages(...this.errorPropsToRemove);
+  }
+
+  _shouldSupersede(status) {
+    return status === 'pendingApproval' || status === 'needsRevisions';
+  }
+
+  _createRevisionCopy() {
+    const copy = this.args.displayResponse.toJSON({ includeId: false });
+    delete copy.approvedBy;
+    delete copy.lastModifiedDate;
+    delete copy.lastModifiedBy;
+    delete copy.comments;
+    delete copy.selections;
+    delete copy.wasReadByRecipient;
+    delete copy.wasReadByApprover;
+    return copy;
+  }
+
+  _buildRevisionRecord(copy, newText, newNote, status) {
+    copy.text = newText;
+    copy.note = newNote;
+    copy.createDate = new Date();
+
+    const revision = this.store.createRecord('response', copy);
+    revision.createdBy = this.currentUser.user;
+    revision.submission = this.args.submission;
+    revision.workspace = this.args.workspace;
+    revision.priorRevision = this.args.displayResponse;
+    revision.recipient = this.args.displayResponse?.recipient?.content;
+    revision.status = status;
+
+    return revision;
+  }
+
+  @action
+  onSaveSuccess(submission, response) {
+    this.args.onSaveSuccess?.(submission, response);
+  }
+
+  @action
+  handleComposeAction(propName, value, doClearErrors) {
+    if (value) {
+      this.editRevisionText = this.args.displayResponse?.text || '';
+      this.editRevisionNote = this.args.displayResponse?.note || '';
+    } else {
+      this.editRevisionText = '';
+      this.editRevisionNote = '';
+    }
+    this[propName] = value;
+    if (doClearErrors) this._clearErrorProps();
+  }
+
+  @action
+  async saveDraft(isDraft) {
+    this._clearErrorProps();
+
+    if (!this.isValidQuillContent) return;
+
+    this.args.displayResponse.text = this.quillText;
+    this.args.displayResponse.note = this.editRevisionNote;
+
+    const priorRevisionStatus = this.args.priorMentorRevision?.status;
+    const doSetSuperceded = this._shouldSupersede(priorRevisionStatus);
+
+    if (doSetSuperceded) {
+      this.args.priorMentorRevision.status = 'superceded';
+    }
+
+    const newStatus = isDraft ? 'draft' : this.newReplyStatus;
+    const toastMessage = isDraft
+      ? 'Draft Saved'
+      : newStatus === 'pendingApproval'
+      ? 'Response Sent for Approval'
+      : 'Response Sent';
+
+    this.args.displayResponse.status = newStatus;
+
+    const promises = [this.args.displayResponse.save()];
+    if (doSetSuperceded) {
+      promises.push(this.args.priorMentorRevision.save());
+    }
+
+    this._startLoading();
+
+    try {
+      await Promise.all(promises);
+      this._endLoading();
+      this._showSuccessToast(toastMessage);
+      this.isFinishingDraft = false;
+      this._resetEditState();
+    } catch (err) {
+      this._endLoading();
+      this.errorHandling.handleErrors(
+        err,
+        'saveRecordErrors',
+        this.args.displayResponse
+      );
+    }
+  }
+
+  @action
+  async saveEdit() {
+    this._clearErrorProps();
+
+    if (!this.isValidQuillContent) return;
+
+    const oldText = this.args.displayResponse?.text;
+    const oldNote = this.args.displayResponse?.note;
+
+    if (
+      !this._hasContentChanged(
+        oldText,
+        this.quillText,
+        oldNote,
+        this.editRevisionNote
+      )
+    ) {
+      this.isEditing = false;
+      return;
+    }
+
+    this.args.displayResponse.text = this.quillText;
+    this.args.displayResponse.note = this.editRevisionNote;
+
+    this._startLoading();
+
+    try {
+      await this.args.displayResponse.save();
+      this._endLoading();
+      this._showSuccessToast('Response Updated');
+      this.isEditing = false;
+      this._resetEditState();
+    } catch (err) {
+      this._endLoading();
+      this.errorHandling.handleErrors(err, 'saveRecordErrors');
+    }
+  }
+
+  @action
+  async saveRevision(isDraft) {
+    this._clearErrorProps();
+
+    if (!this.isValidQuillContent) return;
+
+    const oldText = this.args.displayResponse?.text;
+    const oldNote = this.args.displayResponse?.note;
+
+    if (
+      !isDraft &&
+      !this._hasContentChanged(
+        oldText,
+        this.quillText,
+        oldNote,
+        this.editRevisionNote
+      )
+    ) {
+      this.isRevising = false;
+      return;
+    }
+
+    const oldStatus = this.args.displayResponse?.status;
+    const doSetSuperceded = !isDraft && this._shouldSupersede(oldStatus);
+
+    const copy = this._createRevisionCopy();
+    const newReplyStatus = isDraft ? 'draft' : this.newReplyStatus;
+    const revision = this._buildRevisionRecord(
+      copy,
+      this.quillText,
+      this.editRevisionNote,
+      newReplyStatus
+    );
+
+    const toastMessage = isDraft ? 'Draft Saved' : 'Revision Sent';
+
+    if (doSetSuperceded) {
+      this.args.displayResponse.status = 'superceded';
+    }
+
+    this._startLoading();
+
+    try {
+      const promises = [revision.save()];
       if (doSetSuperceded) {
-        hash.priorRevision = this.priorMentorRevision.save();
+        promises.push(this.args.displayResponse.save());
       }
-      this.loading.handleLoadingMessage(
-        this,
-        'start',
-        'isReplySending',
-        'doShowLoadingMessage'
+      const [savedRevision] = await Promise.all(promises);
+      this._endLoading();
+      this._showSuccessToast(toastMessage);
+      this.isRevising = false;
+      this._resetEditState();
+      this.setDisplayMentorReply(savedRevision);
+      this.args.handleResponseThread?.(savedRevision, 'mentor');
+    } catch (err) {
+      this._endLoading();
+      this.errorHandling.handleErrors(err, 'saveRecordErrors', null, [
+        revision,
+        this.args.displayResponse,
+      ]);
+    }
+  }
+
+  @action
+  setDisplayMentorReply(response) {
+    if (!response) return;
+    this.args.onMentorReplySwitch?.(response);
+  }
+
+  @action
+  async confirmTrash(response) {
+    if (!response) return;
+
+    const result = await this.alert.showModal(
+      'warning',
+      'Are you sure you want to delete this response?',
+      '',
+      'Delete'
+    );
+
+    if (!result.value) return;
+
+    try {
+      response.isTrashed = true;
+      await response.save();
+      this.alert.showToast(
+        'success',
+        'Response Deleted',
+        'bottom-end',
+        3000,
+        false,
+        null
       );
+      const prevResponse =
+        this.sortedMentorReplies[this.sortedMentorReplies.length - 1] || null;
+      this.args.onSaveSuccess?.(this.args.submission, prevResponse);
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
+    }
+  }
 
-      hash(hash)
-        .then((hash) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
+  @action
+  toNewResponse() {
+    this.navigation.toNewResponse(
+      this.args.submission.id,
+      this.args.workspace.id
+    );
+  }
 
-          this.alert.showToast(
-            'success',
-            toastMessage,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.set('isFinishingDraft', false);
-          this.set('editRevisionText', '');
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
+  @action
+  handleNewMentorReply(response, threadType) {
+    this.args.handleResponseThread?.(response, threadType);
+  }
 
-          this.errorHandling.handleErrors(
-            err,
-            'saveRecordErrors',
-            this.displayResponse
-          );
-        });
-    },
+  @action
+  updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.quillText = content;
+    this.isValidQuillContent = !isEmpty && !isOverLengthLimit;
+  }
 
-    saveEdit() {
-      this.clearErrorProps();
+  @action
+  cancelCompose() {
+    this.editRevisionText = '';
+    this.editRevisionNote = '';
+    this.isEditing = false;
+    this.isRevising = false;
+    this.isFinishingDraft = false;
+  }
 
-      let quillErrors = this.getQuillErrors();
-
-      if (quillErrors.length > 0) {
-        quillErrors.forEach((errorProp) => {
-          this.set(errorProp, true);
-        });
-        return;
-      }
-
-      let oldText = this.get('displayResponse.text');
-      let newText = this.quillText;
-
-      let oldNote = this.get('displayResponse.note');
-      let newNote = this.editRevisionNote;
-
-      if (oldText === newText && oldNote === newNote) {
-        this.set('isEditing', false);
-        return;
-      }
-
-      this.displayResponse.set('text', newText);
-      this.displayResponse.set('note', newNote);
-
-      this.loading.handleLoadingMessage(
-        this,
-        'start',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
-
-      this.displayResponse
-        .save()
-        .then((saved) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
-
-          this.alert.showToast(
-            'success',
-            'Response Updated',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.set('isEditing', false);
-          this.set('editRevisionText', '');
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
-
-          this.errorHandling.handleErrors(err, 'saveRecordErrors');
-        });
-    },
-
-    saveRevision(isDraft) {
-      this.clearErrorProps();
-
-      let quillErrors = this.getQuillErrors();
-
-      if (quillErrors.length > 0) {
-        quillErrors.forEach((errorProp) => {
-          this.set(errorProp, true);
-        });
-        return;
-      }
-
-      let oldText = this.get('displayResponse.text');
-      let newText = this.quillText;
-
-      let oldNote = this.get('displayResponse.note');
-      let newNote = this.editRevisionNote;
-
-      if (!isDraft) {
-        if (oldText === newText && oldNote === newNote) {
-          this.set('isRevising', false);
-          return;
-        }
-      }
-
-      let oldStatus = this.get('displayResponse.status');
-      let doSetSuperceded =
-        !isDraft &&
-        (oldStatus === 'pendingApproval' || oldStatus === 'needsRevisions');
-
-      let copy = this.displayResponse.toJSON({ includeId: false });
-      delete copy.approvedBy;
-      delete copy.lastModifiedDate;
-      delete copy.lastModifiedBy;
-      delete copy.comments;
-      delete copy.selections;
-      delete copy.wasReadByRecipient;
-      delete copy.wasReadByApprover;
-
-      copy.text = newText;
-      copy.note = newNote;
-
-      copy.createDate = new Date();
-
-      let newReplyStatus = this.newReplyStatus;
-
-      if (isDraft) {
-        newReplyStatus = 'draft';
-      }
-
-      let revision = this.store.createRecord('response', copy);
-      revision.set('createdBy', this.currentUser.user);
-      revision.set('submission', this.submission);
-      revision.set('workspace', this.workspace);
-      revision.set('priorRevision', this.displayResponse);
-      revision.set('recipient', this.get('displayResponse.recipient.content'));
-      revision.set('status', newReplyStatus);
-
-      let hash;
-      let toastMessage = 'Revision Sent';
-
-      if (isDraft) {
-        toastMessage = 'Draft Saved';
-      }
-
-      if (doSetSuperceded) {
-        this.displayResponse.set('status', 'superceded');
-
-        hash = {
-          revision: revision.save(),
-          original: this.displayResponse.save(),
-        };
-      } else {
-        hash = {
-          revision: revision.save(),
-        };
-      }
-
-      this.loading.handleLoadingMessage(
-        this,
-        'start',
-        'isReplySending',
-        'doShowLoadingMessage'
-      );
-
-      hash(hash)
-        .then((hash) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
-
-          this.alert.showToast(
-            'success',
-            toastMessage,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.set('isRevising', false);
-          this.set('editRevisionText', '');
-          this.send('setDisplayMentorReply', hash.revision);
-
-          // look for responseThread to add response to
-          this.handleResponseThread(hash.revision, 'mentor');
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
-
-          this.errorHandling.handleErrors(err, 'saveRecordErrors', null, [
-            revision,
-            this.displayResponse,
-          ]);
-        });
-    },
-    setDisplayMentorReply(response) {
-      if (!response) {
-        return;
-      }
-
-      this.onMentorReplySwitch(response);
-    },
-
-    confirmTrash(response) {
-      if (!response) {
-        return;
-      }
-
-      return this.alert
-        .showModal(
-          'warning',
-          'Are you sure you want to delete this response?',
-          '',
-          'Delete'
-        )
-        .then((result) => {
-          if (result.value) {
-            response.set('isTrashed', true);
-            return response.save();
-          }
-        })
-        .then((saved) => {
-          if (saved) {
-            this.alert.showToast(
-              'success',
-              'Response Deleted',
-              'bottom-end',
-              3000,
-              false,
-              null
-            );
-
-            let prevResponse =
-              this.get('sortedMentorReplies.lastObject') || null;
-            this.onSaveSuccess(this.submission, prevResponse);
-          }
-        })
-        .catch((err) => {
-          this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
-        });
-    },
-    toNewResponse: function () {
-      this.toNewResponse();
-    },
-    handleNewMentorReply(response, threadType) {
-      this.handleResponseThread(response, threadType);
-    },
-    updateQuillText(content, isEmpty, isOverLengthLimit) {
-      this.set('quillText', content);
-      this.set('isQuillEmpty', isEmpty);
-      this.set('isQuillTooLong', isOverLengthLimit);
-    },
-  },
-});
+  @action
+  async saveResponse(isDraft = false) {
+    if (this.isEditing) {
+      return this.saveEdit();
+    } else if (this.isRevising) {
+      return this.saveRevision(isDraft);
+    } else if (this.isFinishingDraft) {
+      return this.saveDraft(isDraft);
+    }
+  }
+}
