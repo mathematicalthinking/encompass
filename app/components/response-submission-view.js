@@ -13,51 +13,18 @@ export default class ResponseSubmissionViewComponent extends Component {
   @tracked isImageExpanded = false;
   @tracked isUploadExpanded = false;
   @tracked isRevising = false;
-  @tracked primaryResponse = null;
-  @tracked currentSubmissionId = null;
   @tracked revisedBriefSummary = '';
   @tracked revisedExplanation = '';
 
   revisionsToolTip =
     'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)';
 
-  constructor() {
-    super(...arguments);
-    this._initializeSubmission();
-    this._initializePrimaryResponse();
-  }
-
-  _initializeSubmission() {
-    if (this.args.submission?.id !== this.currentSubmissionId) {
-      this.currentSubmissionId = this.args.submission?.id;
-      this.isRevising = false;
-    }
-  }
-
-  _initializePrimaryResponse() {
-    if (this.args.response) {
-      if (this.primaryResponse?.id !== this.args.response.id) {
-        this.primaryResponse = this.args.response;
-      }
-    }
-  }
-
   get isOwnSubmission() {
-    return (
-      this.args.submission?.creator?.studentId === this.currentUser.user?.id
-    );
+    return this.args.submission?.creator?.studentId === this.currentUser.id;
   }
 
   get canRevise() {
     return !this.args.isParentWorkspace && this.isOwnSubmission;
-  }
-
-  get showButton() {
-    return this.canRevise;
-  }
-
-  get displaySubmission() {
-    return this.args.submission;
   }
 
   get answerAssignment() {
@@ -65,7 +32,7 @@ export default class ResponseSubmissionViewComponent extends Component {
   }
 
   get answerContent() {
-    return this.args.submission?.answer;
+    return this.args.submission?.answer || {};
   }
 
   get answerSection() {
@@ -96,6 +63,14 @@ export default class ResponseSubmissionViewComponent extends Component {
         return responseIds.includes(response.id);
       });
     });
+  }
+
+  get imageData() {
+    return this.args.submission?.answer?.explanationImage?.imageData;
+  }
+
+  get savedFileName() {
+    return this.args.submission?.uploadedFile?.savedFileName;
   }
 
   @action

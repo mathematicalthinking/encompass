@@ -9,22 +9,22 @@
  * @author Yousof Wakili
  * @since 3.6.2
  */ }}
-{{#if this.displaySubmission}}
+{{#if @submission}}
   <div class='submission-container'>
     <div class='subimission-header-info'>
-      <p>{{this.displaySubmission.student}}</p>
+      <p>{{@submission.student}}</p>
       <p class='submission-date'>{{format-date
-          this.displaySubmission.createDate
+          @submission.createDate
           'MMMM Do, YYYY'
         }},
-        {{format-date this.displaySubmission.createDate 'h:mm a'}}</p>
+        {{format-date @submission.createDate 'h:mm a'}}</p>
     </div>
 
     {{#if this.isRevising}}
       <AnswerNew
         @assignment={{this.answerAssignment}}
         @isRevision={{true}}
-        @priorAnswer={{this.answerContent}}
+        @priorAnswer={{@submission.answer}}
         @section={{this.answerSection}}
         @problem={{this.answerProblem}}
         @cancelResponse={{this.cancelRevising}}
@@ -45,10 +45,10 @@
 
         {{#if this.isShortExpanded}}
           <div class='submission-content-short'>
-            {{#if this.displaySubmission.answer.answer}}
-              {{{this.displaySubmission.answer.answer}}}
+            {{#if this.answerContent.answer}}
+              {{{this.answerContent.answer}}}
             {{else}}
-              {{{this.displaySubmission.shortAnswer}}}
+              {{{@submission.shortAnswer}}}
             {{/if}}
           </div>
         {{/if}}
@@ -63,17 +63,17 @@
         </div>
         {{#if this.isLongExpanded}}
           <div class='submission-content-container submission-content-long'>
-            {{#if this.displaySubmission.answer.explanation}}
-              {{{this.displaySubmission.answer.explanation}}}
+            {{#if this.answerContent.explanation}}
+              {{{this.answerContent.explanation}}}
             {{/if}}
-            {{#if this.displaySubmission.longAnswer}}
-              {{{this.displaySubmission.longAnswer}}}
+            {{#if @submission.longAnswer}}
+              {{{@submission.longAnswer}}}
             {{/if}}
           </div>
         {{/if}}
       </div>
 
-      {{#if this.displaySubmission.answer.explanationImage}}
+      {{#if this.answerContent.explanationImage}}
         <div class='submission-content-container images'>
           <div
             class='submission-header'
@@ -85,7 +85,7 @@
           {{#if this.isImageExpanded}}
             <div class='submission-content response-submission-images'>
               <img
-                src='{{this.displaySubmission.answer.explanationImage.imageData}}'
+                src='{{this.imageData}}'
                 alt=''
               />
             </div>
@@ -93,7 +93,7 @@
         </div>
       {{/if}}
 
-      {{#if this.displaySubmission.uploadedFile.savedFileName}}
+      {{#if this.savedFileName}}
         <div class='submission-content-container images'>
           <div
             class='submission-header'
@@ -109,11 +109,11 @@
               <div id='submission_images'>
                 <a
                   target='_blank'
-                  href='{{this.displaySubmission.imageUrl}}'
+                  href='{{@submission.imageUrl}}'
                   rel='noopener noreferrer'
                 >
                   <img
-                    src='{{this.displaySubmission.imageUrl}}'
+                    src='{{@submission.imageUrl}}'
                     alt='Login to the PoWs to see image'
                   />
                 </a>
@@ -153,7 +153,7 @@
     <BreadCrumbs
       @items={{this.sortedStudentSubmissions}}
       @onSelect={{this.setDisplaySubmission}}
-      @selectedItem={{this.displaySubmission}}
+      @selectedItem={{@submission}}
       @starredItems={{this.mentoredRevisions}}
       @infoToolTipText={{this.revisionsToolTip}}
     />
