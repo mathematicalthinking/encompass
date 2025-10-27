@@ -351,8 +351,8 @@ module('Integration | Component | response-submission-view', function (hooks) {
   test('formats date correctly', async function (assert) {
     await renderSubmissionView(this, {});
 
-    assert.dom('.submission-date').includesText('January');
-    assert.dom('.submission-date').includesText('2024');
+    assert.dom('.submission-date').includesText('October');
+    assert.dom('.submission-date').includesText('2025');
   });
 
   test('chevron icon changes on expansion', async function (assert) {
