@@ -1,218 +1,222 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { equal, gt } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
-import moment from 'moment';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+export default class ResponsesListComponent extends Component {
+  @service currentUser;
+  @service('utility-methods') utils;
+  @service router;
+  @service store;
 
-export default Component.extend({
-  elementId: 'responses-list',
-  currentUser: service('current-user'),
-  utils: service('utility-methods'),
-  router: service(),
-  isShowAll: equal('currentFilter', 'all'),
+  @tracked threads = [];
+  @tracked meta = {};
+  @tracked isLoadingNewPage = false;
+  @tracked currentFilter = 'submitter';
 
-  showAllFilter: false,
+  noResponsesMessage = 'No responses found';
+  threadsPerPage = 50;
 
-  isShowSubmitter: equal('currentFilter', 'submitter'),
-  isShowMentoring: equal('currentFilter', 'mentoring'),
-  isShowApproving: equal('currentFilter', 'approving'),
+  get isShowAll() {
+    return this.currentFilter === 'all';
+  }
 
-  showSubmitterTab: gt('submitterThreads.length', 0),
-  showMentoringTab: gt('mentoringThreads.length', 0),
-  showApprovingTab: gt('approvingThreads.length', 0),
+  get isShowSubmitter() {
+    return this.currentFilter === 'submitter';
+  }
 
-  currentFilter: 'submitter',
-  sortParam: 'newest',
+  get isShowMentoring() {
+    return this.currentFilter === 'mentoring';
+  }
 
-  noResponsesMessage: 'No responses found',
+  get isShowApproving() {
+    return this.currentFilter === 'approving';
+  }
 
-  showStudentColumn: equal('isShowMentoring', true),
+  get currentMetadata() {
+    const filter = this.currentFilter;
+    if (filter === 'submitter') return this.meta.submitter;
+    if (filter === 'mentoring') return this.meta.mentoring;
+    if (filter === 'approving') return this.meta.approving;
+    return null;
+  }
 
-  statusMap: {
-    approved: 'APPROVED',
-    pendingApproval: 'PENDING APPROVAL',
-    needsRevisions: 'NEEDS REVISIONS',
-    superceded: 'SUPERCEDED',
-  },
+  get allThreads() {
+    const newThreads =
+      this.threads.filter((thread) => thread.isNewThread) || [];
+    const threadSet = new Set([...this.threads, ...newThreads]);
+    return Array.from(threadSet).filter((thread) => !thread.isTrashed);
+  }
 
-  threadsPerPage: 50,
+  get mentoringThreads() {
+    return this.allThreads.filter((thread) => thread.threadType === 'mentor');
+  }
 
-  didReceiveAttrs() {
-    let list = [
-      {
-        name: 'submitterResponses',
-        actionCount: this.get('actionSubmitterThreads.length'),
-        allCount: this.get('submitterThreads.length'),
-        currentFilter: 'submitter',
-      },
-      {
-        name: 'mentoringResponses',
-        actionCount: this.get('actionMentoringThreads.length'),
-        allCount: this.get('mentoringThreads.length'),
-        currentFilter: 'mentoring',
-      },
-      {
-        name: 'approvingResponses',
-        actionCount: this.get('actionApprovingThreads.length'),
-        allCount: this.get('approvingThreads.length'),
-        currentFilter: 'approving',
-      },
-    ];
+  get approvingThreads() {
+    return this.allThreads.filter((thread) => thread.threadType === 'approver');
+  }
 
-    // ascending
-    let sorted = list.sortBy('actionCount', 'allCount');
-
-    this.set('currentFilter', sorted[2].currentFilter);
-
-    this._super(...arguments);
-  },
-
-  currentMetadata: computed(
-    'currentFilter',
-    'meta.{submitter,mentoring,approving}',
-    function () {
-      let filter = this.currentFilter;
-      if (filter === 'submitter') {
-        return this.get('meta.submitter');
-      }
-      if (filter === 'mentoring') {
-        return this.get('meta.mentoring');
-      }
-      if (filter === 'approving') {
-        return this.get('meta.approving');
-      }
-    }
-  ),
-
-  newThreads: computed('threads', function () {
-    return this.threads.filterBy('isNewThread');
-  }),
-
-  allThreads: computed(
-    'threads.@each.isTrashed',
-    'newThreads.@each.isTrashed',
-    function () {
-      let newThreads = this.newThreads || [];
-      let threads = this.threads;
-      newThreads.forEach((thread) => {
-        threads.addObject(thread);
-      });
-      return threads.rejectBy('isTrashed');
-    }
-  ),
-
-  mentoringThreads: computed('allThreads.[]', function () {
-    return this.allThreads.filterBy('threadType', 'mentor');
-  }),
-
-  approvingThreads: computed('allThreads.[]', function () {
-    return this.allThreads.filterBy('threadType', 'approver');
-  }),
-
-  submitterThreads: computed('allThreads.[]', function () {
-    return this.allThreads.filterBy('threadType', 'submitter');
-  }),
-
-  actionSubmitterThreads: computed(
-    'submitterThreads.@each.isActionNeeded',
-    function () {
-      return this.submitterThreads.filterBy('isActionNeeded');
-    }
-  ),
-
-  actionMentoringThreads: computed(
-    'mentoringThreads.@each.isActionNeeded',
-    function () {
-      return this.mentoringThreads.filterBy('isActionNeeded');
-    }
-  ),
-
-  actionApprovingThreads: computed(
-    'approvingThreads.@each.isActionNeeded',
-    function () {
-      return this.approvingThreads.filterBy('isActionNeeded');
-    }
-  ),
-
-  sortedApprovingThreads: computed(
-    'approvingThreads.@each.{sortPriority,latestReply}',
-    function () {
-      return this.approvingThreads.sort((a, b) => {
-        let aPriority = a.get('sortPriority');
-        let bPriority = b.get('sortPriority');
-
-        if (aPriority === bPriority) {
-          let aDate = moment(a.get('latestReply.createDate'));
-          let bDate = moment(b.get('latestReply.createDate'));
-
-          return bDate - aDate;
-        }
-
-        return bPriority - aPriority;
-      });
-    }
-  ),
-
-  sortedSubmitterThreads: computed(
-    'submitterThreads.@each.{sortPriority,latestReply,latestRevision}',
-    function () {
-      return this.submitterThreads.sort((a, b) => {
-        let aPriority = a.get('sortPriority');
-        let bPriority = b.get('sortPriority');
-
-        if (aPriority === bPriority) {
-          let aDate = moment(a.get('latestReply.createDate'));
-          let bDate = moment(b.get('latestReply.createDate'));
-
-          if (aDate === bDate) {
-            aDate = moment(a.get('latestRevision.createDate'));
-            bDate = moment(b.get('latestRevision.createDate'));
-          }
-          return bDate - aDate;
-        }
-
-        return bPriority - aPriority;
-      });
-    }
-  ),
-
-  sortedMentoringThreads: computed(
-    'mentoringThreads.@each.{sortPriority,latestReply,latestRevision}',
-    function () {
-      return this.mentoringThreads.sort((a, b) => {
-        let aPriority = a.get('sortPriority');
-        let bPriority = b.get('sortPriority');
-        if (aPriority === bPriority) {
-          let aDate = moment(a.get('latestReply.createDate'));
-          let bDate = moment(b.get('latestReply.createDate'));
-          if ((!aDate && !bDate) || aDate === bDate) {
-            aDate = moment(a.get('latestRevision.createDate'));
-            bDate = moment(b.get('latestRevision.createDate'));
-          }
-          return bDate - aDate;
-        }
-
-        return bPriority - aPriority;
-      });
-    }
-  ),
-
-  areThreads: gt('allThreads.length', 0),
-
-  isAdmin: function () {
-    return (
-      this.get('currentUser.user.isAdmin') &&
-      !this.get('currentUser.user.isStudent')
+  get submitterThreads() {
+    return this.allThreads.filter(
+      (thread) => thread.threadType === 'submitter'
     );
-  },
+  }
 
-  showMentorHeader: computed('currentFilter', function () {
+  get showSubmitterTab() {
+    return this.submitterThreads.length > 0;
+  }
+
+  get showMentoringTab() {
+    return this.mentoringThreads.length > 0;
+  }
+
+  get showApprovingTab() {
+    return this.approvingThreads.length > 0;
+  }
+
+  showAllFilter = false;
+
+  _sortThreads(threads, options = {}) {
+    const { useRevisionFallback = false, validateDates = false } = options;
+    return [...threads].sort((a, b) => {
+      if (a.sortPriority !== b.sortPriority) {
+        return b.sortPriority - a.sortPriority;
+      }
+      const aReplyDate = new Date(a.latestReply?.createDate);
+      const bReplyDate = new Date(b.latestReply?.createDate);
+
+      if (validateDates) {
+        const aValid = !isNaN(aReplyDate.getTime());
+        const bValid = !isNaN(bReplyDate.getTime());
+        if (!aValid && !bValid) {
+          const aRevDate = new Date(a.latestRevision?.createDate);
+          const bRevDate = new Date(b.latestRevision?.createDate);
+          return bRevDate - aRevDate;
+        }
+      }
+
+      if (
+        useRevisionFallback &&
+        aReplyDate.getTime() === bReplyDate.getTime()
+      ) {
+        const aRevDate = new Date(a.latestRevision?.createDate);
+        const bRevDate = new Date(b.latestRevision?.createDate);
+        return bRevDate - aRevDate;
+      }
+
+      return bReplyDate - aReplyDate;
+    });
+  }
+
+  get sortedApprovingThreads() {
+    return this._sortThreads(this.approvingThreads);
+  }
+
+  get sortedSubmitterThreads() {
+    return this._sortThreads(this.submitterThreads, {
+      useRevisionFallback: true,
+    });
+  }
+
+  get sortedMentoringThreads() {
+    return this._sortThreads(this.mentoringThreads, {
+      useRevisionFallback: true,
+      validateDates: true,
+    });
+  }
+
+  get showMentorHeader() {
     return this.currentFilter !== 'mentoring';
-  }),
+  }
 
-  showStudentHeader: computed('currentFilter', function () {
+  get showStudentHeader() {
     return this.currentFilter !== 'submitter';
-  }),
+  }
+
+  _getThreadCounts() {
+    return {
+      submitter: this.submitterThreads.length,
+      mentoring: this.mentoringThreads.length,
+      approving: this.approvingThreads.length,
+    };
+  }
+
+  _getSortedThreadsMap() {
+    return {
+      submitter: this.sortedSubmitterThreads,
+      mentoring: this.sortedMentoringThreads,
+      approving: this.sortedApprovingThreads,
+    };
+  }
+
+  _hasThreadsForFilter(filterType) {
+    const counts = this._getThreadCounts();
+    return counts[filterType] > 0;
+  }
+
+  _getPrimaryThreadsForFilter(filterType) {
+    const sortedThreads = this._getSortedThreadsMap();
+    return sortedThreads[filterType];
+  }
+
+  _getSubmitterFallbackThreads() {
+    const counts = this._getThreadCounts();
+    return counts.mentoring >= counts.approving
+      ? this.sortedMentoringThreads
+      : this.sortedApprovingThreads;
+  }
+
+  _getMentoringFallbackThreads() {
+    const counts = this._getThreadCounts();
+    return counts.approving >= counts.submitter
+      ? this.sortedApprovingThreads
+      : this.sortedSubmitterThreads;
+  }
+
+  _getApprovingFallbackThreads() {
+    const counts = this._getThreadCounts();
+    return counts.mentoring >= counts.submitter
+      ? this.sortedMentoringThreads
+      : this.sortedSubmitterThreads;
+  }
+
+  _getFallbackThreadsForFilter(filterType) {
+    const fallbackMap = {
+      submitter: () => this._getSubmitterFallbackThreads(),
+      mentoring: () => this._getMentoringFallbackThreads(),
+      approving: () => this._getApprovingFallbackThreads(),
+    };
+    return fallbackMap[filterType]?.() || [];
+  }
+
+  _getFilteredThreads(filterType) {
+    if (this._hasThreadsForFilter(filterType)) {
+      return this._getPrimaryThreadsForFilter(filterType);
+    }
+    return this._getFallbackThreadsForFilter(filterType);
+  }
+
+  get displayThreads() {
+    if (this.allThreads.length === 0) return [];
+    if (this.currentFilter === 'all') return this.allThreads;
+    return this._getFilteredThreads(this.currentFilter);
+  }
+
+  _getCounter(threads) {
+    const count = threads.filter((thread) => thread.isActionNeeded).length;
+    return count > 0 ? `(${count})` : '';
+  }
+
+  get submitterCounter() {
+    return this._getCounter(this.submitterThreads);
+  }
+
+  get mentoringCounter() {
+    return this._getCounter(this.mentoringThreads);
+  }
+
+  get approvingCounter() {
+    return this._getCounter(this.approvingThreads);
+  }
 
   fetchThreads(threadType, page, limit = this.threadsPerPage) {
     return this.store
@@ -222,221 +226,65 @@ export default Component.extend({
         limit,
       })
       .then((results) => {
-        let meta = results.get('meta.meta');
-        this.set('threads', results.toArray());
-        this.set('meta', meta);
+        if (this.isDestroyed || this.isDestroying) return;
+        const resultMeta = results.meta.meta;
+        this.threads = results.toArray();
+        this.meta = resultMeta;
         if (this.isLoadingNewPage) {
-          this.set('isLoadingNewPage', false);
+          this.isLoadingNewPage = false;
         }
+      })
+      .catch(() => {
+        if (this.isDestroyed || this.isDestroying) return;
+        this.isLoadingNewPage = false;
       });
-  },
+  }
 
-  submitterThreadsCount: computed('submitterThreads.[]', function () {
-    return this.get('submitterThreads.length');
-  }),
+  @action
+  showSubmitterResponses() {
+    this.currentFilter = 'submitter';
+  }
 
-  mentoringThreadsCount: computed('mentoringThreads.[]', function () {
-    return this.get('mentoringThreads.length');
-  }),
+  @action
+  showApprovingResponses() {
+    this.currentFilter = 'approving';
+  }
 
-  approvingThreadsCount: computed('approvingThreads.[]', function () {
-    return this.get('approvingThreads.length');
-  }),
+  @action
+  showMentoringResponses() {
+    this.currentFilter = 'mentoring';
+  }
 
-  displayThreads: computed(
-    'currentFilter',
-    'allThreads.[]',
-    'sortedSubmitterThreads.[]',
-    'sortedMentoringThreads.[],',
-    'sortedApprovingThreads.[]',
-    function () {
-      let val = this.currentFilter;
+  @action
+  showAllResponses() {
+    this.currentFilter = 'all';
+  }
 
-      if (!this.areThreads) {
-        return [];
-      }
+  @action
+  toSubmissionResponse(sub) {
+    this.args.toSubmissionResponse?.(sub.id);
+  }
 
-      let submitterCount = this.submitterThreadsCount;
-      let mentoringCount = this.mentoringThreadsCount;
-      let approvingCount = this.approvingThreadsCount;
+  @action
+  toResponse(submissionId, responseId) {
+    this.args.toResponse?.(submissionId, responseId);
+  }
 
-      if (val === 'submitter') {
-        if (submitterCount > 0) {
-          return this.sortedSubmitterThreads;
-        }
+  @action
+  refreshList() {
+    this.fetchThreads('all', 1);
+  }
 
-        return mentoringCount >= approvingCount
-          ? this.sortedMentoringThreads
-          : this.sortedApprovingThreads;
-      }
-      if (val === 'mentoring') {
-        if (mentoringCount > 0) {
-          return this.sortedMentoringThreads;
-        }
+  @action
+  initiatePageChange(page) {
+    const filterMap = {
+      submitter: 'submitter',
+      mentoring: 'mentor',
+      approving: 'approver',
+    };
+    const threadType = filterMap[this.currentFilter];
 
-        return approvingCount >= submitterCount
-          ? this.sortedApprovingThreads
-          : this.sortedSubmitterThreads;
-      }
-
-      if (val === 'approving') {
-        if (approvingCount > 0) {
-          return this.sortedApprovingThreads;
-        }
-        return mentoringCount >= submitterCount
-          ? this.sortedMentoringThreads
-          : this.sortedSubmitterThreads;
-      }
-
-      if (val === 'all') {
-        return this.allThreads;
-      }
-    }
-  ),
-
-  submitterCounter: computed('actionSubmitterThreads.[]', function () {
-    let count = this.get('actionSubmitterThreads.length');
-
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }),
-
-  mentoringCounter: computed('actionMentoringThreads.[]', function () {
-    let count = this.get('actionMentoringThreads.length');
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }),
-
-  approvingCounter: computed('actionApprovingThreads.[]', function () {
-    let count = this.get('actionApprovingThreads.length');
-
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }),
-
-  showStatusColumn: computed('currentFilter', function () {
-    return (
-      this.currentFilter === 'mentoring' ||
-      this.currentFilter === 'approving' ||
-      this.currentFilter === 'all'
-    );
-  }),
-
-  doesHaveUnreadReply(responses) {
-    if (!responses) {
-      return false;
-    }
-    let unreadReply = responses.find((response) => {
-      let recipientId = this.utils.getBelongsToId(response, 'recipient');
-      return (
-        !response.get('wasReadByRecipient') &&
-        recipientId === this.get('currentUser.user.id')
-      );
-    });
-    return !this.utils.isNullOrUndefined(unreadReply);
-  },
-
-  areUnreadNotesOnly(responses) {
-    if (!responses) {
-      return false;
-    }
-    let unreadReplies = responses.filter((response) => {
-      let creatorId = this.utils.getBelongsToId(response, 'createdBy');
-      return (
-        !response.get('wasReadByRecipient') &&
-        creatorId === this.get('currentUser.user.id')
-      );
-    });
-
-    if (unreadReplies.get('length') === 0) {
-      return false;
-    }
-
-    let nonNotes = unreadReplies.rejectBy('isApproverNoteOnly');
-    return unreadReplies.length === nonNotes.get('length');
-  },
-
-  doesNeedRevisions(responses) {
-    if (!responses) {
-      return false;
-    }
-    let reply = responses.find((response) => {
-      return response.get('status') === 'needsRevisions';
-    });
-    return !this.utils.isNullOrUndefined(reply);
-  },
-
-  isWaitingForApproval(responses) {
-    if (!responses) {
-      return false;
-    }
-    let reply = responses.find((response) => {
-      return response.get('status') === 'pendingApproval';
-    });
-    return !this.utils.isNullOrUndefined(reply);
-  },
-
-  doesHaveDraft(responses) {
-    if (!responses) {
-      return false;
-    }
-    let reply = responses.find((response) => {
-      return response.get('status') === 'draft';
-    });
-    return !this.utils.isNullOrUndefined(reply);
-  },
-
-  actions: {
-    showSubmitterResponses() {
-      this.set('currentFilter', 'submitter');
-    },
-    showApprovingResponses() {
-      this.set('currentFilter', 'approving');
-    },
-    showMentoringResponses() {
-      this.set('currentFilter', 'mentoring');
-    },
-    showAllResponses() {
-      this.set('currentFilter', 'all');
-    },
-    toSubmissionResponse(sub) {
-      this.sendAction('toSubmissionResponse', sub.get('id'));
-    },
-    toResponse(submissionId, responseId) {
-      // Transition to the 'responses.submission' route with parameters
-      this.router.transitionTo('responses.submission', submissionId, {
-        queryParams: {
-          responseId: responseId,
-          submissionId: submissionId,
-        },
-      });
-    },
-    refreshList() {
-      this.fetchThreads('all', 1);
-    },
-
-    initiatePageChange(page) {
-      let currentFilter = this.currentFilter;
-      let threadType;
-
-      if (currentFilter === 'submitter') {
-        threadType = 'submitter';
-      }
-      if (currentFilter === 'mentoring') {
-        threadType = 'mentor';
-      }
-      if (currentFilter === 'approving') {
-        threadType = 'approver';
-      }
-
-      this.set('isLoadingNewPage', true);
-      this.fetchThreads(threadType, page);
-    },
-  },
-});
+    this.isLoadingNewPage = true;
+    this.fetchThreads(threadType, page);
+  }
+}

@@ -14,16 +14,16 @@
 
           {{#if this.showSubmitterTab}}
             <span
-              {{action 'showSubmitterResponses'}}
+              {{on 'click' this.showSubmitterResponses}}
               class='submitter {{if this.isShowSubmitter "active-filter"}}'
             >
               Solver
-              {{submitterCounter}}
+              {{this.submitterCounter}}
             </span>
           {{/if}}
           {{#if this.showMentoringTab}}
             <span
-              {{action 'showMentoringResponses'}}
+              {{on 'click' this.showMentoringResponses}}
               class='mentoring {{if this.isShowMentoring "active-filter"}}'
             >
               Mentoring
@@ -32,7 +32,7 @@
           {{/if}}
           {{#if this.showApprovingTab}}
             <span
-              {{action 'showApprovingResponses'}}
+              {{on 'click' this.showApprovingResponses}}
               class='approving {{if this.isShowApproving "active-filter"}}'
             >
               Approving
@@ -41,7 +41,7 @@
           {{/if}}
           {{#if this.showAllFilter}}
             <span
-              {{action 'showAllResponses'}}
+              {{on 'click' this.showAllResponses}}
               class='all {{if this.isShowAll "active-filter"}}'
             >
               All
@@ -51,7 +51,7 @@
         <div class='side-icons'>
           <i
             class='fas fa-redo-alt refresh-icon'
-            {{action 'refreshList'}}
+            {{on 'click' this.refreshList}}
             title='Refresh Responses list'
           ></i>
         </div>
@@ -91,12 +91,12 @@
         <div class='main-list'>
           {{#each this.displayThreads as |thread|}}
             <ResponseSubmissionThread
-              @toSubmissionResponse={{action 'toSubmissionResponse'}}
+              @toSubmissionResponse={{this.toSubmissionResponse}}
               @showStudent={{this.showStudentHeader}}
               @showMentor={{this.showMentorHeader}}
               @thread={{thread}}
               @store={{this.store}}
-              @toResponse={{action 'toResponse'}}
+              @toResponse={{this.toResponse}}
             />
           {{else}}
             <div class='no-results-container'>
@@ -106,7 +106,7 @@
           {{#if this.displayThreads}}
             <PaginationControl
               @details={{this.currentMetadata}}
-              @initiatePageChange={{action 'initiatePageChange'}}
+              @initiatePageChange={{this.initiatePageChange}}
             />
           {{/if}}
         </div>
