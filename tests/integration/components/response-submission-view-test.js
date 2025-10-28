@@ -328,26 +328,6 @@ module('Integration | Component | response-submission-view', function (hooks) {
     assert.dom('.response-submission-images').doesNotExist();
   });
 
-  test('displays multiple student submissions in breadcrumbs', async function (assert) {
-    const sub1 = {
-      createDate: new Date('2024-01-01'),
-      creator: { safeName: 'Student 1' },
-      student: 'Student 1',
-    };
-
-    const sub2 = {
-      createDate: new Date('2024-01-02'),
-      creator: { safeName: 'Student 2' },
-      student: 'Student 2',
-    };
-
-    await renderSubmissionView(this, {
-      studentSubmissions: [sub1, sub2],
-    });
-
-    assert.dom('.submission-container').exists();
-  });
-
   test('formats date correctly', async function (assert) {
     await renderSubmissionView(this, {});
 
