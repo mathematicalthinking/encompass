@@ -16,6 +16,16 @@ export default class ResponsesListComponent extends Component {
   noResponsesMessage = 'No responses found';
   threadsPerPage = 50;
 
+  constructor() {
+    super(...arguments);
+    if (this.args.threads) {
+      this.threads = this.args.threads;
+    }
+    if (this.args.meta) {
+      this.meta = this.args.meta;
+    }
+  }
+
   get isShowAll() {
     return this.currentFilter === 'all';
   }
@@ -75,35 +85,52 @@ export default class ResponsesListComponent extends Component {
 
   showAllFilter = false;
 
+  _compareByPriority(a, b) {
+    if (a.sortPriority !== b.sortPriority) {
+      return b.sortPriority - a.sortPriority;
+    }
+    return null;
+  }
+
+  _getRevisionDate(thread) {
+    return new Date(thread.latestRevision?.createDate);
+  }
+
+  _getReplyDate(thread) {
+    return new Date(thread.latestReply?.createDate);
+  }
+
+  _compareByRevisionDate(a, b) {
+    return this._getRevisionDate(b) - this._getRevisionDate(a);
+  }
+
+  _compareByReplyDate(a, b, options) {
+    const aReplyDate = this._getReplyDate(a);
+    const bReplyDate = this._getReplyDate(b);
+
+    if (options.validateDates) {
+      const aValid = !isNaN(aReplyDate.getTime());
+      const bValid = !isNaN(bReplyDate.getTime());
+      if (!aValid && !bValid) {
+        return this._compareByRevisionDate(a, b);
+      }
+    }
+
+    if (
+      options.useRevisionFallback &&
+      aReplyDate.getTime() === bReplyDate.getTime()
+    ) {
+      return this._compareByRevisionDate(a, b);
+    }
+
+    return bReplyDate - aReplyDate;
+  }
+
   _sortThreads(threads, options = {}) {
-    const { useRevisionFallback = false, validateDates = false } = options;
     return [...threads].sort((a, b) => {
-      if (a.sortPriority !== b.sortPriority) {
-        return b.sortPriority - a.sortPriority;
-      }
-      const aReplyDate = new Date(a.latestReply?.createDate);
-      const bReplyDate = new Date(b.latestReply?.createDate);
-
-      if (validateDates) {
-        const aValid = !isNaN(aReplyDate.getTime());
-        const bValid = !isNaN(bReplyDate.getTime());
-        if (!aValid && !bValid) {
-          const aRevDate = new Date(a.latestRevision?.createDate);
-          const bRevDate = new Date(b.latestRevision?.createDate);
-          return bRevDate - aRevDate;
-        }
-      }
-
-      if (
-        useRevisionFallback &&
-        aReplyDate.getTime() === bReplyDate.getTime()
-      ) {
-        const aRevDate = new Date(a.latestRevision?.createDate);
-        const bRevDate = new Date(b.latestRevision?.createDate);
-        return bRevDate - aRevDate;
-      }
-
-      return bReplyDate - aReplyDate;
+      return (
+        this._compareByPriority(a, b) ?? this._compareByReplyDate(a, b, options)
+      );
     });
   }
 
