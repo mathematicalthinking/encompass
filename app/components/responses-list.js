@@ -255,7 +255,7 @@ export default class ResponsesListComponent extends Component {
       .then((results) => {
         if (this.isDestroyed || this.isDestroying) return;
         const resultMeta = results.meta.meta;
-        this.threads = results.toArray();
+        this.threads = results.slice();
         this.meta = resultMeta;
         if (this.isLoadingNewPage) {
           this.isLoadingNewPage = false;
@@ -285,16 +285,6 @@ export default class ResponsesListComponent extends Component {
   @action
   showAllResponses() {
     this.currentFilter = 'all';
-  }
-
-  @action
-  toSubmissionResponse(sub) {
-    this.args.toSubmissionResponse?.(sub.id);
-  }
-
-  @action
-  toResponse(submissionId, responseId) {
-    this.args.toResponse?.(submissionId, responseId);
   }
 
   @action
