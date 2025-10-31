@@ -1,142 +1,123 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  // tagName set to :'';
-  // used to solve ember migration issues (instead of migrating to ember glimmer for now.)
-  tagName: '',
-  utils: service('utility-methods'),
-  currentUser: service('current-user'),
-  store: service(),
-  // elementId: 'response-submission-view',
-  isShortExpanded: true,
-  isLongExpanded: true,
-  isImageExpanded: false,
-  isUploadExpanded: false,
-  isRevising: false,
-  submissionList: [],
-  primaryResponse: null,
-  currentSubmissionId: null,
+export default class ResponseSubmissionViewComponent extends Component {
+  @service('utility-methods') utils;
+  @service currentUser;
+  @service store;
 
-  didReceiveAttrs() {
-    this._super(...arguments);
+  @tracked isShortExpanded = true;
+  @tracked isLongExpanded = true;
+  @tracked isImageExpanded = false;
+  @tracked isUploadExpanded = false;
+  @tracked isRevising = false;
+  @tracked revisedBriefSummary = '';
+  @tracked revisedExplanation = '';
 
-    if (this.get('submission.id') !== this.currentSubmissionId) {
-      this.set('currentSubmissionId', this.get('submission.id'));
-      this.set('isRevising', false);
-    }
-    if (this.studentSubmissions) {
-      this.set('submissionList', this.studentSubmissions);
-    }
+  revisionsToolTip =
+    'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)';
 
-    if (this.response) {
-      if (this.get('primaryResponse.id') !== this.get('response.id')) {
-        // response route changed, set submission to the responses submission
+  get isOwnSubmission() {
+    return this.args.submission?.creator?.studentId === this.currentUser.id;
+  }
 
-        this.set('submissionToView', this.submission);
-        this.set('primaryResponse', this.response);
-      }
-    }
-  },
+  get canRevise() {
+    return !this.args.isParentWorkspace && this.isOwnSubmission;
+  }
 
-  isOwnSubmission: computed('submission.creator.studentId', function () {
-    return (
-      this.get('submission.creator.studentId') ===
-      this.get('currentUser.user.id')
-    );
-  }),
+  get answerAssignment() {
+    return this.args.submission?.answer?.assignment;
+  }
 
-  canRevise: computed('isOwnSubmission', 'isParentWorkspace', function () {
-    return !this.isParentWorkspace && this.isOwnSubmission;
-  }),
+  get answerContent() {
+    return this.args.submission?.answer || {};
+  }
 
-  showButtonRow: computed('canRevise', function () {
-    return this.canRevise;
-  }),
+  get answerSection() {
+    return this.args.submission?.answer?.section;
+  }
 
-  displaySubmission: computed('submission', 'submissionToView', function () {
-    return this.submission;
-  }),
-  sortedStudentSubmissions: computed('submissionList.[]', function () {
-    return this.submissionList.sortBy('createDate');
-  }),
-  workspacesToUpdateIds: computed('workspaces', function () {
-    return [this.workspace.id];
-  }),
+  get answerProblem() {
+    return this.args.submission?.answer?.problem;
+  }
 
-  mentoredRevisions: computed(
-    'wsResponses.[]',
-    'submissionList.[]',
-    function () {
-      return this.submissionList.filter((sub) => {
-        let responseIds = this.utils.getHasManyIds(sub, 'responses');
+  get quillStartingText() {
+    return this.args.submission?.answer?.explanation || '';
+  }
 
-        return this.wsResponses.find((response) => {
-          return responseIds.includes(response.get('id'));
-        });
+  get sortedStudentSubmissions() {
+    return this.args.studentSubmissions?.sortBy('createDate') || [];
+  }
+
+  get workspacesToUpdateIds() {
+    return [this.args.workspace?.id];
+  }
+
+  get mentoredRevisions() {
+    const studentSubmissions = this.args.studentSubmissions || [];
+    return studentSubmissions.filter((sub) => {
+      let responseIds = this.utils.getHasManyIds(sub, 'responses');
+      return this.args.wsResponses?.find((response) => {
+        return responseIds.includes(response.id);
       });
+    });
+  }
+
+  get imageData() {
+    return this.args.submission?.answer?.explanationImage?.imageData;
+  }
+
+  get savedFileName() {
+    return this.args.submission?.uploadedFile?.savedFileName;
+  }
+
+  @action
+  toggleProperty(p) {
+    this[p] = !this[p];
+  }
+
+  @action
+  startRevising() {
+    if (!this.isRevising) {
+      this.revisedBriefSummary = this.args.submission?.answer?.answer;
+      this.isRevising = true;
     }
-  ),
+  }
 
-  revisionsToolTip:
-    'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
+  @action
+  cancelRevising() {
+    if (this.isRevising) {
+      this.isRevising = false;
+      this.revisedBriefSummary = '';
+      this.revisedExplanation = '';
+    }
+  }
 
-  actions: {
-    toggleProperty: function (p) {
-      this.toggleProperty(p);
-    },
-    startRevising() {
-      if (!this.isRevising) {
-        this.set('revisedBriefSummary', this.get('submission.answer.answer'));
-        this.set('isRevising', true);
-      }
-    },
-    cancelRevising() {
-      if (this.isRevising) {
-        this.set('isRevising', false);
-        this.set('revisedBriefSummary', '');
-        this.set('revisedExplanation', '');
-      }
-    },
-    insertQuillContent(selector, options) {
-      if (!this.isRevising) {
-        return;
-      }
-      // eslint-disable-next-line no-unused-vars
-      const quill = new window.Quill(selector, options);
+  @action
+  async toSubmissionFromAnswer(answer) {
+    try {
+      const sub = await this.store.queryRecord('submission', {
+        filterBy: {
+          answer: answer.id,
+        },
+      });
 
-      let explanation = this.get('submission.answer.explanation');
+      this.cancelRevising();
 
-      let students = this.get('submission.answer.students');
-      this.set(
-        'contributors',
-        students.map((s) => s)
-      );
+      // NOTE: sendRevisionNotices is broken (pre-existing comment from Classic Ember)
+      // TODO: This notification logic should be moved to backend. Leaving as-is for now in this migration.
+      this.args.sendRevisionNotices?.(this.args.submission, sub);
+      this.args.onSubChange?.(sub);
+    } catch (error) {
+      this.cancelRevising();
+      console.error('Failed to load submission from answer:', error);
+    }
+  }
 
-      $('.ql-editor').html(explanation);
-    },
-    toSubmissionFromAnswer(answer) {
-      this.store
-        .queryRecord('submission', {
-          filterBy: {
-            answer: answer.get('id'),
-          },
-        })
-        .then((sub) => {
-          if (!this.isDestroyed && !this.isDestroying) {
-            this.send('cancelRevising');
-            // sendRevisionNotices is broken. It's supposed to set up a notification for the mentor who gave feedback
-            this.sendRevisionNotices(this.submission, sub);
-            this.onSubChange(sub);
-          }
-        })
-        .catch(() => {
-          this.send('cancelRevising');
-        });
-    },
-    setDisplaySubmission(sub) {
-      this.onSubChange(sub);
-    },
-  },
-});
+  @action
+  setDisplaySubmission(sub) {
+    this.args.onSubChange?.(sub);
+  }
+}
