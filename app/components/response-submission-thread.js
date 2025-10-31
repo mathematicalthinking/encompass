@@ -4,6 +4,7 @@ import { service } from '@ember/service';
 
 export default class ResponseSubmissionThreadComponent extends Component {
   @service('utility-methods') utils;
+  @service navigation;
 
   statusMap = {
     upToDate: {
@@ -112,12 +113,12 @@ export default class ResponseSubmissionThreadComponent extends Component {
     if (response) {
       const responseId = response.id;
       const submissionId = this.utils.getBelongsToId(response, 'submission');
-      this.args.toResponse?.(submissionId, responseId);
+      this.navigation.toResponse(submissionId, responseId);
     } else {
       const submission =
         this.args.thread?.highestPrioritySubmission ||
         this.args.thread?.latestRevision;
-      this.args.toSubmissionResponse?.(submission);
+      this.navigation.toResponseSubmission(submission?.id);
     }
   }
 }
