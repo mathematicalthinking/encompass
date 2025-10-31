@@ -45,30 +45,15 @@ module('Integration | Component | responses-list', function (hooks) {
       meta = { submitter: {}, mentoring: {}, approving: {} },
     } = props;
 
-    // Register store mock for refresh functionality
-    class StoreServiceWithThreads extends Service {
-      query() {
-        return Promise.resolve({
-          toArray: () => threads,
-          meta: { meta },
-        });
-      }
-    }
-    context.owner.register('service:store', StoreServiceWithThreads);
-
     context.setProperties({
       threads,
       meta,
-      toSubmissionResponse: () => {},
-      toResponse: () => {},
       ...props,
     });
 
     await render(hbs`<ResponsesList
       @threads={{this.threads}}
       @meta={{this.meta}}
-      @toSubmissionResponse={{this.toSubmissionResponse}}
-      @toResponse={{this.toResponse}}
     />`);
   }
 
@@ -95,6 +80,31 @@ module('Integration | Component | responses-list', function (hooks) {
     assert.dom('.refresh-icon').hasAttribute('title', 'Refresh Responses list');
     await click('.refresh-icon');
     assert.ok(true, 'Refresh button clicked without error');
+  });
+
+  test('displays new threads after refresh', async function (assert) {
+    const newThread = createThread({ threadType: 'submitter' });
+    
+    class StoreService extends Service {
+      query() {
+        return Promise.resolve({
+          slice: () => [newThread],
+          meta: { meta: { submitter: {}, mentoring: {}, approving: {} } },
+        });
+      }
+    }
+    
+    this.owner.register('service:store', StoreService);
+    this.setProperties({ threads: [], meta: { submitter: {}, mentoring: {}, approving: {} } });
+    
+    await render(hbs`<ResponsesList @threads={{this.threads}} @meta={{this.meta}} />`);
+    
+    assert.dom('.no-results-container p.notice').hasText('No responses found');
+    
+    await click('.refresh-icon');
+    
+    assert.dom('.submitter').exists();
+    assert.dom('.no-results-container').doesNotExist();
   });
 
   // ---------- Filter Tabs ----------
