@@ -1,12 +1,11 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-export default Component.extend(CurrentUserMixin, {
-  classNames: ['response-submission-thread'],
-  utils: service('utility-methods'),
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
 
-  statusMap: {
+export default class ResponseSubmissionThreadComponent extends Component {
+  @service('utility-methods') utils;
+
+  statusMap = {
     upToDate: {
       display: 'Up To Date',
       statusFill: '#35A853',
@@ -46,154 +45,79 @@ export default Component.extend(CurrentUserMixin, {
       statusFill: '#3997EE',
       counterProp: 'newlyApprovedCounter',
     },
-  },
-  displayStatus: computed('thread.highestPriorityStatus', function () {
-    let status = this.get('thread.highestPriorityStatus');
-    return this.get('statusMap.' + status);
-  }),
+  };
 
-  displayStatusText: computed(
-    'currentCounterValue',
-    'displayStatus.display',
-    function () {
-      let text = this.get('displayStatus.display');
-      return text + ' ' + this.currentCounterValue;
-    }
-  ),
+  get displayStatus() {
+    const status = this.args.thread?.highestPriorityStatus;
+    return this.statusMap[status];
+  }
 
-  currentCounterValue: computed(
-    'displayStatus.counterProp',
-    'unreadCounter',
-    'unmentoredCounter',
-    'needsRevisionCounter',
-    'draftCounter',
-    'newlyApprovedCounter',
-    'pendingApprovalCounter',
-    'newRevisionCounter',
-    function () {
-      let prop = this.get('displayStatus.counterProp');
-      if (!prop) {
-        return '';
-      }
-      return this.get(prop) || '';
-    }
-  ),
+  get displayStatusText() {
+    const text = this.displayStatus?.display || '';
+    return text + ' ' + this.currentCounterValue;
+  }
 
-  newRevisionCounter: computed('thread.newRevisions.[]', function () {
-    let count = this.get('thread.newRevisions.length');
-
-    if (count > 1) {
-      return `(${count})`;
-    }
-    return '';
-  }),
-
-  unreadCounter: computed(
-    'thread.unreadResponses.length',
-    'unreadResponses.[]',
-    function () {
-      let count = this.get('thread.unreadResponses.length');
-
-      if (count > 1) {
-        return `(${count})`;
-      }
+  get currentCounterValue() {
+    const prop = this.displayStatus?.counterProp;
+    if (!prop) {
       return '';
     }
-  ),
+    return this[prop] || '';
+  }
 
-  draftCounter: computed(
-    'draftResponses.[]',
-    'thread.draftResponses.length',
-    function () {
-      let count = this.get('thread.draftResponses.length');
+  _getCounter(items) {
+    const count = items?.length || 0;
+    return count > 1 ? `(${count})` : '';
+  }
 
-      if (count > 1) {
-        return `(${count})`;
-      }
-      return '';
-    }
-  ),
+  get newRevisionCounter() {
+    return this._getCounter(this.args.thread?.newRevisions);
+  }
 
-  needsRevisionCounter: computed(
-    'thread.needsRevisionResponses.[]',
-    function () {
-      let count = this.get('thread.needsRevisionResponses.length');
+  get unreadCounter() {
+    return this._getCounter(this.args.thread?.unreadResponses);
+  }
 
-      if (count > 1) {
-        return `(${count})`;
-      }
-      return '';
-    }
-  ),
+  get draftCounter() {
+    return this._getCounter(this.args.thread?.draftResponses);
+  }
 
-  pendingApprovalCounter: computed(
-    'thread.pendingApprovalResponses.[]',
-    function () {
-      let count = this.get('thread.pendingApprovalResponses.length');
+  get needsRevisionCounter() {
+    return this._getCounter(this.args.thread?.needsRevisionResponses);
+  }
 
-      if (count > 1) {
-        return `(${count})`;
-      }
-      return '';
-    }
-  ),
+  get pendingApprovalCounter() {
+    return this._getCounter(this.args.thread?.pendingApprovalResponses);
+  }
 
-  newlyApprovedCounter: computed('thread.newlyApprovedReplies.[]', function () {
-    let count = this.get('thread.newlyApprovedReplies.length');
+  get newlyApprovedCounter() {
+    return this._getCounter(this.args.thread?.newlyApprovedReplies);
+  }
 
-    if (count > 1) {
-      return `(${count})`;
-    }
-    return '';
-  }),
+  get unmentoredCounter() {
+    return this._getCounter(this.args.thread?.unmentoredRevisions);
+  }
 
-  unmentoredCounter: computed('thread.unmentoredRevisions.[]', function () {
-    let count = this.get('thread.unmentoredRevisions.length');
-
-    if (count > 1) {
-      return `(${count})`;
-    }
-    return '';
-  }),
-
-  mentors: computed('store', 'thread.mentors.[]', function () {
-    let mentorIds = this.get('thread.mentors') || [];
-    return mentorIds
-      .map((id) => {
-        return this.store.peekRecord('user', id);
-      })
-      .compact()
-      .uniq();
-  }),
-
-  ntfTitleText: computed('thread.newNtfCount', function () {
-    let count = this.get('thread.newNtfCount');
+  get ntfTitleText() {
+    const count = this.args.thread?.newNtfCount;
     if (!count) {
       return '';
     }
+    return count === 1 ? '1 New Notification' : `${count} New Notifications`;
+  }
 
-    if (count === 1) {
-      return '1 New Notification';
+  @action
+  toSubmissionResponse() {
+    const response = this.args.thread?.highestPriorityResponse;
+    if (response) {
+      const responseId = response.id;
+      const submissionId = this.utils.getBelongsToId(response, 'submission');
+      this.args.toResponse?.(submissionId, responseId);
+    } else {
+      const submission =
+        this.args.thread?.highestPrioritySubmission ||
+        this.args.thread?.latestRevision;
+      this.args.toSubmissionResponse?.(submission);
     }
-    if (count > 1) {
-      return `${count} New Notifications`;
-    }
-  }),
-
-  actions: {
-    toSubmissionResponse: function () {
-      let response = this.get('thread.highestPriorityResponse');
-      if (response) {
-        let responseId = response.get('id');
-        let submissionId = this.utils.getBelongsToId(response, 'submission');
-        this.toResponse(submissionId, responseId);
-      } else {
-        let submission = this.get('thread.highestPrioritySubmission');
-        if (!submission) {
-          submission = this.latestRevision;
-        }
-        this.toSubmissionResponse(submission);
-      }
-    },
-  },
-});
+  }
+}

@@ -1,37 +1,38 @@
 <div
-  {{action 'toSubmissionResponse'}}
-  class='item-container {{if this.thread.hasUnreadReply "has-unread-reply"}}'
-  id='container'
+  {{on 'click' this.toSubmissionResponse}}
+  class='item-container {{if @thread.hasUnreadReply "has-unread-reply"}}'
+  role='button'
+  tabindex='0'
 >
-  {{#if this.showStudent}}
+  {{#if @showStudent}}
     <div class='item-section student'>
-      {{this.thread.studentDisplay}}
+      {{@thread.studentDisplay}}
     </div>
   {{/if}}
   <div class='item-section workspace'>
-    <span>{{this.thread.workspaceName}}</span>
+    <span>{{@thread.workspaceName}}</span>
   </div>
   <div class='item-section submission-date'>
-    <span>{{this.format-date
-        this.thread.latestRevision.createDate
+    <span>{{@format-date
+        @thread.latestRevision.createDate
         'L'
         true
       }}</span>
   </div>
   <div class='item-section problem'>
-    {{this.thread.problemTitle}}
+    {{@thread.problemTitle}}
   </div>
-  {{#if this.showMentor}}
+  {{#if @showMentor}}
     <div class='item-section mentor'>
-      {{#each this.thread.mentors as |mentor|}}
-        <span>{{this.mentor.displayName}}</span>
+      {{#each @thread.mentors as |mentor|}}
+        <span>{{mentor.displayName}}</span>
       {{/each}}
     </div>
   {{/if}}
   <div class='item-section reply-date'>
     <span>
-      {{#if this.thread.latestReply}}
-        {{format-date this.thread.latestReply.createDate 'L' true}}
+      {{#if @thread.latestReply}}
+        {{format-date @thread.latestReply.createDate 'L' true}}
       {{else}}
         N/A
       {{/if}}
@@ -47,14 +48,8 @@
       ></circle>
     </svg>
     <span class='status-text'>{{this.displayStatusText}}</span>
-    {{#if this.thread.newNtfCount}}
-      <i title={{ntfTitleText}} class='far fa-bell'></i>
+    {{#if @thread.newNtfCount}}
+      <i title={{this.ntfTitleText}} class='far fa-bell'></i>
     {{/if}}
   </div>
 </div>
-
-<script>
-  $('.item-container').click(function (e) { $('.click-menu').addClass('hidden');
-  }); $('.flex-item-full').click(function (e) {
-  $('.click-menu').addClass('hidden'); });
-</script>
