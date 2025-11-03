@@ -253,7 +253,6 @@ export default class ResponsesListComponent extends Component {
         limit,
       })
       .then((results) => {
-        if (this.isDestroyed || this.isDestroying) return;
         const resultMeta = results.meta.meta;
         this.threads = results.slice();
         this.meta = resultMeta;
@@ -262,7 +261,6 @@ export default class ResponsesListComponent extends Component {
         }
       })
       .catch(() => {
-        if (this.isDestroyed || this.isDestroying) return;
         this.isLoadingNewPage = false;
       });
   }
