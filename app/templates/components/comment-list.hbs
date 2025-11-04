@@ -1,181 +1,185 @@
-<div class='comments-group-1'>
+<div
+  id='comment-list'
+  class='workspace-flex-item comments
+    {{if this.canComment "can-comment"}}
+    {{if @isHidden "hidden"}}
+    {{if this.onSelection "on-selection"}}
+    {{if this.isBipaneled "bi-paneled"}}
+    {{if this.isTripaneled "tri-paneled"}}'
+>
+  <div class='comments-group-1'>
 
-  <header>
-    <h2>Comments</h2>
-    <span {{action 'hideComments'}}><i
-        title='Hide Comments'
-        class='far fa-eye-slash'
-      ></i></span>
-  </header>
-  {{#if this.canComment}}
-    <div class='label-select {{this.newCommentLabel}}'>
-      <Ui::MySelect
-        @content={{this.labelOptions}}
-        @cannotBeNull={{true}}
-        @selectedValue={{this.newCommentLabel}}
-        @action={{action (mut this.newCommentLabel)}}
-      />
-    </div>
-  {{/if}}
-  <div class='compose-comment'>
+    <header>
+      <h2>Comments</h2>
+      <span {{on "click" this.hideComments}}><i
+          title='Hide Comments'
+          class='far fa-eye-slash'
+        ></i></span>
+    </header>
     {{#if this.canComment}}
-      <Textarea
-        tabindex={{1}}
-        id='commentTextarea'
-        @classBinding='onSelection'
-        placeholder={{this.newCommentPlaceholder}}
-        @value={{this.newComment}}
-        autofocus='autofocus'
-      />
-    {{else}}
-      {{#if this.isParentWorkspace}}
-        <p class='info'>Parent / Combined Workspaces do not support the creation
-          of new comments.
-        </p>
-      {{else}}
-        <p class='error-message'>You do not have permisssion to make comments
-          for this workspace</p>
-      {{/if}}
-
-    {{/if}}
-    {{#if this.showComposeButtons}}
-      <div class='submit-buttons'>
-        <button
-          class='primary-button cancel-button'
-          type='button'
-          {{action 'cancelComment'}}
-        >Cancel</button>
-        <button
-          class='primary-button save'
-          type='button'
-          {{action 'madeSelection'}}
-        >Save</button>
+      <div class='label-select {{this.newCommentLabel}}'>
+        <Ui::MySelect
+          @content={{this.labelOptions}}
+          @cannotBeNull={{true}}
+          @selectedValue={{this.newCommentLabel}}
+          @action={{fn (mut this.newCommentLabel)}}
+        />
       </div>
     {{/if}}
-  </div>
+    <div class='compose-comment'>
+      {{#if this.canComment}}
+        <Textarea
+          tabindex={{1}}
+          id='commentTextarea'
+          class='onSelection'
+          placeholder={{this.newCommentPlaceholder}}
+          @value={{this.newComment}}
+          autofocus='autofocus'
+        />
+      {{else}}
+        {{#if @isParentWorkspace}}
+          <p class='info'>Parent / Combined Workspaces do not support the creation
+            of new comments.
+          </p>
+        {{else}}
+          <p class='error-message'>You do not have permisssion to make comments
+            for this workspace</p>
+        {{/if}}
 
-  <div class='comment-flex-row'>
-    <div class='comment-flex-item filter'>
-      <span class='filter-label'>Filter</span><i class='fas fa-filter'></i>
-      <span class='hover-menu checkbox'>
-        <ul>
-          {{#each-in this.filterOptions as |option values|}}
+      {{/if}}
+      {{#if this.showComposeButtons}}
+        <div class='submit-buttons'>
+          <button
+            class='primary-button cancel-button'
+            type='button'
+            {{on "click" this.cancelComment}}
+          >Cancel</button>
+          <button
+            class='primary-button save'
+            type='button'
+            {{on "click" this.madeSelection}}
+          >Save</button>
+        </div>
+      {{/if}}
+    </div>
+
+    <div class='comment-flex-row'>
+      <div class='comment-flex-item filter'>
+        <span class='filter-label'>Filter</span><i class='fas fa-filter'></i>
+        <span class='hover-menu checkbox'>
+          <ul>
+            {{#each-in this.filterOptions as |option values|}}
+              <li>
+                <label>
+                  <input
+                    type='checkbox'
+                    checked={{values.isChecked}}
+                    name={{option}}
+                    {{on "click" (fn this.updateFilter option)}}
+                    disabled={{values.isDisabled}}
+                  />
+                  <span>
+                    <span class='radio-text'>{{values.label}}</span>
+                  </span>
+                </label>
+              </li>
+            {{/each-in}}
             <li>
               <label>
                 <input
                   type='checkbox'
-                  checked={{values.isChecked}}
-                  name={{option}}
-                  onclick={{action 'updateFilter' option}}
-                  disabled={{values.isDisabled}}
+                  checked={{this.doUseSinceDate}}
+                  name='doUseSinceDate'
+                  {{on "click" (fn this.updateFilter 'doUseSinceDate')}}
                 />
                 <span>
-                  <span class='radio-text'>{{values.label}}</span>
+                  <span class='radio-text'>Since</span>
+                  <Input
+                    @type='text'
+                    placeholder='mm/dd/yyyy'
+                    @value={{this.sinceDate}}
+                  />
+                  {{#if this.showApplyDate}}
+                    <button
+                      type='button'
+                      {{on "click" this.applySinceDate}}
+                    >Apply</button>
+                  {{/if}}
                 </span>
               </label>
             </li>
-          {{/each-in}}
-          <li>
-            <label>
-              <input
-                type='checkbox'
-                checked={{this.doUseSinceDate}}
-                name='doUseSinceDate'
-                onclick={{action 'updateFilter' 'doUseSinceDate'}}
-              />
-              <span>
-                <span class='radio-text'>Since</span>
-                <Input
-                  @type='text'
-                  placeholder='mm/dd/yyyy'
-                  @value={{this.sinceDate}}
-                />
-                {{#if this.showApplyDate}}
-                  <button
-                    type='button'
-                    {{action 'applySinceDate'}}
-                  >Apply</button>
-                {{/if}}
-              </span>
-            </label>
-          </li>
-        </ul>
-      </span>
-    </div>
-    <div class='comment-flex-item search'>
-      <SearchBar
-        @onSearch={{action 'searchComments'}}
-        @basePlaceholder='Search for comments'
-        @inputValue={{this.commentFilterText}}
-        @doSearchOnInputChange={{true}}
-        @doDebounce={{true}}
-        @constraints={{this.searchConstraints}}
-        @clearSearchResults={{action 'clearSearchResults'}}
-      />
-    </div>
-  </div>
-
-  {{#each this.createRecordErrors as |error|}}
-    <p class='error-message'>{{error}}</p>
-  {{/each}}
-  <div class='clear'></div>
-  {{#if this.showResultsDescription}}
-    <div class='results-message'>
-      {{resultsDescription}}
-    </div>
-  {{/if}}
-</div>
-<div id='al_feedback_display' class='display-list'>
-  {{#each this.queryErrors as |error|}}
-    <p class='error-message'>{{error}}</p>
-  {{/each}}
-  {{#each this.updateRecordErrors as |error|}}
-    <p class='error-message'>{{error}}</p>
-  {{/each}}
-  {{#if this.invalidDateError}}
-    <Ui::ErrorBox
-      @error={{this.invalidDateError}}
-      @showDismiss={{true}}
-      @resetError={{action (mut this.invalidDateError) null}}
-    />
-  {{/if}}
-  {{#if this.showLoadingMessage}}
-    Searching for comments. Thank you for your patience.
-  {{else}}
-    <ul>
-      {{#each this.sortedDisplayList as |comment|}}
-
-        <WorkspaceComment
-          @wsComments={{this.comments}}
-          @comment={{comment}}
-          @currentWorkspace={{this.currentWorkspace}}
-          @reuseComment={{action 'reuseComment'}}
-          @deleteComment={{action 'deleteComment'}}
-          @currentSelection={{this.currentSelection}}
-          @isParentWorkspace={{this.isParentWorkspace}}
+          </ul>
+        </span>
+      </div>
+      <div class='comment-flex-item search'>
+        <SearchBar
+          @onSearch={{this.searchComments}}
+          @basePlaceholder='Search for comments'
+          @inputValue={{this.commentFilterText}}
+          @doSearchOnInputChange={{true}}
+          @doDebounce={{true}}
+          @constraints={{this.searchConstraints}}
+          @clearSearchResults={{this.clearSearchResults}}
         />
-      {{else}}
-        <p class='info'>{{this.emptyResultsMessage}}</p>
-      {{/each}}
-    </ul>
-    {{#if this.showPaginationControl}}
-      <PaginationControl
-        @details={{this.commentsMetadata}}
-        @initiatePageChange={{action 'initiatePageChange'}}
+      </div>
+    </div>
+
+    {{#each this.createRecordErrors as |error|}}
+      <p class='error-message'>{{error}}</p>
+    {{/each}}
+    <div class='clear'></div>
+    {{#if this.showResultsDescription}}
+      <div class='results-message'>
+        {{this.resultsDescription}}
+      </div>
+    {{/if}}
+  </div>
+  <div id='al_feedback_display' class='display-list'>
+    {{#each this.queryErrors as |error|}}
+      <p class='error-message'>{{error}}</p>
+    {{/each}}
+    {{#each this.updateRecordErrors as |error|}}
+      <p class='error-message'>{{error}}</p>
+    {{/each}}
+    {{#if this.invalidDateError}}
+      <Ui::ErrorBox
+        @error={{this.invalidDateError}}
+        @showDismiss={{true}}
+        @resetError={{fn (mut this.invalidDateError) null}}
       />
     {{/if}}
-  {{/if}}
+    {{#if this.doShowLoadingMessage}}
+      Searching for comments. Thank you for your patience.
+    {{else}}
+      <ul>
+        {{#each this.sortedDisplayList as |comment|}}
+
+          <WorkspaceComment
+            @wsComments={{@comments}}
+            @comment={{comment}}
+            @currentWorkspace={{@currentWorkspace}}
+            @reuseComment={{this.reuseComment}}
+            @deleteComment={{this.deleteComment}}
+            @currentSelection={{@currentSelection}}
+            @isParentWorkspace={{@isParentWorkspace}}
+          />
+        {{else}}
+          <p class='info'>{{this.emptyResultsMessage}}</p>
+        {{/each}}
+      </ul>
+      {{#if this.showPaginationControl}}
+        <PaginationControl
+          @details={{this.commentsMetadata}}
+          @initiatePageChange={{this.initiatePageChange}}
+        />
+      {{/if}}
+    {{/if}}
+  </div>
+  <div class='scroll-icon'>
+    {{#if this.scrollBottom}}
+      <i class='fas fa-chevron-circle-down' {{on "click" this.superScroll}}></i>
+    {{else}}
+      <i class='fas fa-chevron-circle-up' {{on "click" this.superScroll}}></i>
+    {{/if}}
+  </div>
 </div>
-<div class='scroll-icon'>
-  {{#if this.scrollBottom}}
-    <i class='fas fa-chevron-circle-down' {{action 'superScroll'}}></i>
-  {{else}}
-    <i class='fas fa-chevron-circle-up' {{action 'superScroll'}}></i>
-  {{/if}}
-</div>
-<script>
-  $('.display-list').scroll(function () { let y = $(this).scrollTop(); let max =
-  this.scrollHeight; let height = $(this).height(); let threshold =
-  Math.floor(0.75 * height); if (y > threshold) { $('.scroll-icon').fadeIn(); }
-  else { $('.scroll-icon').fadeOut(); } });
-</script>

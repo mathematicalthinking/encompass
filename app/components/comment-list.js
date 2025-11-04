@@ -1,6 +1,4 @@
-/* eslint-disable */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
 /**
  * Passed in by template:
  * - comments
@@ -13,46 +11,38 @@ import { computed } from '@ember/object';
  *   TODO:
  *   - Test the hashtag stuff to see if that is still working.
  */
-import { and, equal } from '@ember/object/computed';
 import { service } from '@ember/service';
-import $ from 'jquery';
-import moment from 'moment';
-import isArray from 'lodash-es/isArray';
-import isNaN from 'lodash-es/isNaN';
-import random from 'lodash-es/random';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend(ErrorHandlingMixin, {
-  currentUser: service('current-user'),
-  elementId: 'comment-list',
-  alert: service('sweet-alert'),
-  utils: service('utility-methods'),
-  loading: service('loading-display'),
+export default class CommentListComponent extends Component {
+  @service('sweet-alert') alert;
+  @service('utility-methods') utils;
+  @service('loading-display') loading;
+  @service('workspace-permissions') permissions;
+  @service currentUser;
+  @service store;
+  @service errorHandling;
 
-  classNames: ['workspace-flex-item', 'comments'],
-  classNameBindings: [
-    'canComment:can-comment',
-    'isHidden:hidden',
-    'onSelection:on-selection',
-    'isBipaneled:bi-paneled',
-    'isTripaneled:tri-paneled',
-  ],
+  @tracked thisSubmissionOnly = true;
+  @tracked thisWorkspaceOnly = true;
+  @tracked commentFilterText = '';
+  @tracked newComment = '';
+  @tracked newCommentLabel = 'notice';
+  @tracked newCommentParent = null;
+  @tracked showFilter = true;
+  @tracked scrollBottom = true;
+  @tracked sinceDate;
+  @tracked isSearching = false;
+  @tracked searchResults = [];
+  @tracked commentsMetadata = null;
+  @tracked doUseSinceDate = false;
+  @tracked invalidDateError = null;
+  @tracked isLoadingSearchResults = false;
+  @tracked doShowLoadingMessage = false;
+  @tracked isChangingPage = false;
 
-  permissions: service('workspace-permissions'),
-  thisSubmissionOnly: true,
-  thisWorkspaceOnly: true,
-  commentFilterText: '',
-  filterComments: false,
-  newComment: '',
-  newCommentLabel: 'notice',
-  newCommentParent: null,
-  queryErrors: [],
-  createRecordErrors: [],
-  uploadRecordErrors: [],
-  showFilter: true,
-  scrollBottom: true,
-
-  labels: {
+  labels = {
     notice: {
       placeholder: 'I notice...',
     },
@@ -73,185 +63,129 @@ export default Component.extend(ErrorHandlingMixin, {
       ],
       useForResponse: true,
     },
-  },
-  labelOptions: ['notice', 'wonder', 'feedback'],
+  };
 
-  isBipaneled: equal('containerLayoutClass', 'hsc'),
-  isTripaneled: equal('containerLayoutClass', 'fsc'),
+  labelOptions = ['notice', 'wonder', 'feedback'];
 
-  searchConstraints: {
-    query: {
-      length: {
-        minimum: 0,
-        maximum: 500,
-      },
-    },
-  },
+  constructor() {
+    super(...arguments);
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    this.sinceDate = this.formatDate(oneYearAgo);
+  }
 
-  showComposeButtons: and('canComment', 'onSelection'),
+  get createRecordErrors() {
+    return this.errorHandling.getErrors('createRecordErrors');
+  }
 
-  myCommentsOnly: computed('isParentWorkspace', function () {
-    return !this.isParentWorkspace;
-  }),
+  get queryErrors() {
+    return this.errorHandling.getErrors('queryErrors');
+  }
 
-  init: function () {
-    this._super(...arguments);
-    let oneYearAgo = moment().subtract(365, 'days').calendar();
-    let oneYearAgoDate = new Date(oneYearAgo);
-    let htmlDate = moment(oneYearAgoDate).format('L');
+  get updateRecordErrors() {
+    return this.errorHandling.getErrors('updateRecordErrors');
+  }
 
-    this.set('sinceDate', htmlDate);
-  },
+  get isBipaneled() {
+    return this.args.containerLayoutClass === 'hsc';
+  }
 
-  didInsertElement() {
-    $(window).on('resize.commentScroll', function () {
-      $('.scroll-icon:visible').hide();
-    });
+  get isTripaneled() {
+    return this.args.containerLayoutClass === 'fsc';
+  }
 
-    this._super(...arguments);
-  },
+  get showComposeButtons() {
+    return this.canComment && this.onSelection;
+  }
 
-  willDestroyElement() {
-    $(window).off('resize.commentScroll');
-    this._super(...arguments);
-  },
+  get myCommentsOnly() {
+    return !this.args.isParentWorkspace;
+  }
 
-  newCommentPlaceholder: computed('newCommentLabel', 'labels', function () {
-    let newCommentLabel = this.newCommentLabel;
-    let path = `labels.${newCommentLabel}.placeholder`;
-    let placeholder = this.get(path);
-
-    if (isArray(placeholder)) {
-      placeholder = placeholder[random(0, placeholder.length - 1)];
+  get newCommentPlaceholder() {
+    const placeholder = this.labels[this.newCommentLabel].placeholder;
+    if (Array.isArray(placeholder)) {
+      return placeholder[Math.floor(Math.random() * placeholder.length)];
     }
     return placeholder;
-  }),
+  }
 
-  filteredComments: computed(
-    'comments.[]',
-    'thisSubmissionOnly',
-    'myCommentsOnly',
-    'commentFilterText',
-    'currentSubmission.id',
-    'thisWorkspaceOnly',
-    'currentWorkspace.id',
-    'searchResults.[]',
-    'currentSelection',
-    function () {
-      let results;
-      let isOwnOnly = this.myCommentsOnly;
-      let isSubOnly = this.thisSubmissionOnly;
-      let isWsOnly = this.thisWorkspaceOnly;
+  get filteredComments() {
+    const isOwnOnly = this.myCommentsOnly;
+    const isSubOnly = this.thisSubmissionOnly;
+    const isWsOnly = this.thisWorkspaceOnly;
+    const isSearchQuery = this.commentFilterText.length > 0;
+    const doFilter = isSubOnly || isWsOnly;
 
-      let isSearchQuery = this.get('commentFilterText.length') > 0;
+    if (doFilter) {
+      const results = this.args.comments.filter((comment) => {
+        const creatorId = this.utils.getBelongsToId(comment, 'createdBy');
+        const isYours = creatorId === this.currentUser.id;
+        const subId = this.utils.getBelongsToId(comment, 'submission');
+        const doesBelongToSub = subId === this.args.currentSubmission?.id;
+        const workspaceId = this.utils.getBelongsToId(comment, 'workspace');
+        const doesBelongToWs = workspaceId === this.args.currentWorkspace?.id;
 
-      let doFilter = isSubOnly || isWsOnly;
-      if (doFilter) {
-        results = this.comments.filter((comment) => {
-          let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
+        if (isWsOnly && !doesBelongToWs) return false;
+        if (isOwnOnly && !isYours) return false;
+        if (isSubOnly && !doesBelongToSub) return false;
 
-          let isYours = creatorId === this.get('currentUser.user.id');
-
-          let subId = this.utils.getBelongsToId(comment, 'submission');
-
-          let doesBelongToSub = subId === this.get('currentSubmission.id');
-
-          let workspaceId = this.utils.getBelongsToId(comment, 'workspace');
-
-          let doesBelongToWs = workspaceId === this.get('currentWorkspace.id');
-
-          if (isWsOnly) {
-            if (!doesBelongToWs) {
-              return false;
-            }
-          }
-
-          if (isOwnOnly) {
-            if (!isYours) {
-              return false;
-            }
-          }
-          if (isSubOnly) {
-            if (!doesBelongToSub) {
-              return false;
-            }
-          }
-
-          if (isSearchQuery) {
-            let text = this.commentFilterText;
-            return (
-              comment.get('label').includes(text) ||
-              comment.get('text').includes(text)
-            );
-          }
-          return true;
-        });
-      } else {
-        // check store to see if comments related to current selection are available
-        let currentSelectionComments = this.store
-          .peekAll('comment')
-          .filter((comment) => {
-            let selId = this.utils.getBelongsToId(comment, 'selection');
-
-            return selId === this.get('currentSelection.id');
-          });
-        let searchResults = this.searchResults || [];
-
-        return searchResults.concat(currentSelectionComments);
-      }
-      return results.sortBy('createDate').reverse();
+        if (isSearchQuery) {
+          return (
+            comment.label?.includes(this.commentFilterText) ||
+            comment.text?.includes(this.commentFilterText)
+          );
+        }
+        return true;
+      });
+      return results.sort(
+        (a, b) => new Date(b.createDate) - new Date(a.createDate)
+      );
     }
-  ),
 
-  displayList: computed('filteredComments.@each.isTrashed', function () {
-    return this.filteredComments.rejectBy('isTrashed');
-  }),
+    const currentSelectionComments = this.store
+      .peekAll('comment')
+      .filter((comment) => {
+        const selId = this.utils.getBelongsToId(comment, 'selection');
+        return selId === this.args.currentSelection?.id;
+      });
+    return [...this.searchResults, ...currentSelectionComments];
+  }
 
-  clearCommentParent: function () {
-    if (this.newCommentParent) {
-      this.set('newCommentParent.inReuse', false);
-      this.set('newCommentParent', null);
-    }
-  },
+  get displayList() {
+    return this.filteredComments.filter((c) => !c.isTrashed);
+  }
 
-  textContainsTag: computed('tags', function () {
-    return !!this.get('tags.length');
-  }),
+  get textContainsTag() {
+    return this.tags.length > 0;
+  }
 
-  tags: computed('newComment', function () {
-    var text = this.newComment;
-    var tags = [];
-    text.split(/\s+/).forEach(function (word) {
-      if (word.match(/^#\S+/)) {
-        tags.push(word.substring(1).toLowerCase());
-      }
-    });
-    return tags;
-  }),
+  get tags() {
+    return this.newComment
+      .split(/\s+/)
+      .filter((word) => word.match(/^#\S+/))
+      .map((word) => word.substring(1).toLowerCase());
+  }
 
-  onSelection: computed('currentSelection', function () {
-    return this.utils.isNonEmptyObject(this.currentSelection);
-  }),
+  get onSelection() {
+    return this.utils.isNonEmptyObject(this.args.currentSelection);
+  }
 
-  canComment: computed('onSelection', 'allowedToComment', function () {
-    let ws = this.currentWorkspace;
-    return this.permissions.canEdit(ws, 'comments', 2);
-  }),
+  get canComment() {
+    return this.permissions.canEdit(this.args.currentWorkspace, 'comments', 2);
+  }
 
-  toggleDisplayText: computed('isHidden', function () {
-    if (this.isHidden) {
-      return 'Show Comments';
-    }
-    return 'Hide Comments';
-  }),
+  get toggleDisplayText() {
+    return this.args.isHidden ? 'Show Comments' : 'Hide Comments';
+  }
 
-  filterOptions: computed('isParentWorkspace', function () {
+  get filterOptions() {
     return {
       thisWorkspaceOnly: {
         label: 'This Workspace Only',
         relatedProp: 'thisWorkspaceOnly',
         isChecked: true,
-        isDisabled: this.isParentWorkspace,
+        isDisabled: this.args.isParentWorkspace,
       },
       thisSubmissionOnly: {
         label: 'This Submission Only',
@@ -262,396 +196,344 @@ export default Component.extend(ErrorHandlingMixin, {
       myCommentsOnly: {
         label: 'My Comments Only',
         relatedProp: 'myCommentsOnly',
-        isChecked: !this.isParentWorkspace,
+        isChecked: !this.args.isParentWorkspace,
         isDisabled: false,
       },
     };
-  }),
+  }
 
-  emptyResultsMessage: computed('commentFilterText', function () {
-    if (this.commentFilterText) {
-      return `No results found for "${this.commentFilterText}" `;
-    }
-    return 'No comments to display';
-  }),
+  get emptyResultsMessage() {
+    return this.commentFilterText
+      ? `No results found for "${this.commentFilterText}"`
+      : 'No comments to display';
+  }
 
-  resultsDescription: computed(
-    'commentFilterText',
-    'thisWorkspaceOnly',
-    'thisSubmissionOnly',
-    'myCommentsOnly',
-    'commentsMetadata',
-    function () {
-      let query = this.commentFilterText;
+  get resultsDescription() {
+    const query = this.commentFilterText;
+    const displayCount = this.displayList.length;
+    const resultsModifier = displayCount > 1 ? 'comments' : 'comment';
+    const isWsOnly = this.thisWorkspaceOnly;
+    const isSubOnly = this.thisSubmissionOnly;
 
-      let displayCount = this.get('displayList.length');
-
-      let resultsModifier = displayCount > 1 ? 'comments' : 'comment';
-
-      let isWsOnly = this.thisWorkspaceOnly;
-      let isSubOnly = this.thisSubmissionOnly;
-
-      if (!isWsOnly && !isSubOnly && this.commentsMetadata) {
-        let { total } = this.commentsMetadata;
-
-        let base = `Found ${total} ${resultsModifier}`;
-
-        if (this.myCommentsOnly) {
-          base += ' created by you';
-        }
-
-        if (query) {
-          base += ` for "${query}"`;
-        }
-        return base;
-      }
-
-      let base = 'Displaying';
-
-      if (this.myCommentsOnly) {
-        base += ' only your';
-      }
-
-      if (this.thisSubmissionOnly) {
-        return base + ` comments for current submission`;
-      }
-
-      if (this.thisWorkspaceOnly) {
-        return base + ` comments for current workspace`;
-      }
-    }
-  ),
-
-  showResultsDescription: computed(
-    'displayList.[]',
-    'doShowLoadingMessage',
-    function () {
-      return !this.doShowLoadingMessage && this.get('displayList.length') > 0;
-    }
-  ),
-
-  isSinceDateValid: computed('sinceDate', function () {
-    let input = this.sinceDate;
-    if (typeof input !== 'string' || !input.length > 0) {
-      return false;
-    }
-    let split = input.split('/');
-
-    if (split.length !== 3) {
-      return false;
-    }
-    let month = split[0];
-    let monthInt = parseInt(month, 10);
-    if (isNaN(monthInt) || monthInt > 12 || monthInt < 1) {
-      return false;
-    }
-    let day = split[1];
-    let dayInt = parseInt(day, 10);
-
-    if (isNaN(dayInt) || dayInt < 1 || dayInt > 31) {
-      return false;
+    if (!isWsOnly && !isSubOnly && this.commentsMetadata) {
+      const { total } = this.commentsMetadata;
+      let base = `Found ${total} ${resultsModifier}`;
+      if (this.myCommentsOnly) base += ' created by you';
+      if (query) base += ` for "${query}"`;
+      return base;
     }
 
-    let year = split[2];
-    let yearInt = parseInt(year, 10);
+    let base = 'Displaying';
+    if (this.myCommentsOnly) base += ' only your';
+    if (this.thisSubmissionOnly)
+      return base + ` comments for current submission`;
+    if (this.thisWorkspaceOnly) return base + ` comments for current workspace`;
+    return base;
+  }
 
-    if (isNaN(yearInt) || yearInt < 1000 || yearInt > 9999) {
-      return false;
-    }
+  get showResultsDescription() {
+    return !this.doShowLoadingMessage && this.displayList.length > 0;
+  }
+
+  get isSinceDateValid() {
+    const input = this.sinceDate;
+    if (typeof input !== 'string' || input.length === 0) return false;
+
+    const split = input.split('/');
+    if (split.length !== 3) return false;
+
+    const monthInt = parseInt(split[0], 10);
+    if (Number.isNaN(monthInt) || monthInt > 12 || monthInt < 1) return false;
+
+    const dayInt = parseInt(split[1], 10);
+    if (Number.isNaN(dayInt) || dayInt < 1 || dayInt > 31) return false;
+
+    const yearInt = parseInt(split[2], 10);
+    if (Number.isNaN(yearInt) || yearInt < 1000 || yearInt > 9999) return false;
+
     return true;
-  }),
+  }
 
-  showApplyDate: computed('isSinceDateValid', 'doUseSinceDate', function () {
+  get showApplyDate() {
     return this.doUseSinceDate && this.isSinceDateValid;
-  }),
+  }
 
-  sortedDisplayList: computed(
-    'displayList.[]',
-    'currentSelection',
-    function () {
-      return this.displayList.sort((a, b) => {
-        let currentSelectionId = this.get('currentSelection.id');
+  get sortedDisplayList() {
+    return [...this.displayList].sort((a, b) => {
+      const currentSelectionId = this.args.currentSelection?.id;
+      const aSelectionId = this.utils.getBelongsToId(a, 'selection');
+      const bSelectionId = this.utils.getBelongsToId(b, 'selection');
+      const isAForCurrentSelection = aSelectionId === currentSelectionId;
+      const isBForCurrentSelection = bSelectionId === currentSelectionId;
 
-        let aSelectionId = this.utils.getBelongsToId(a, 'selection');
-        let bSelectionId = this.utils.getBelongsToId(b, 'selection');
+      if (isAForCurrentSelection && !isBForCurrentSelection) return -1;
+      if (isBForCurrentSelection && !isAForCurrentSelection) return 1;
+      return 0;
+    });
+  }
 
-        let isAForCurrentSelection = aSelectionId === currentSelectionId;
-        let isBForCurrentSelection = bSelectionId === currentSelectionId;
+  get showPaginationControl() {
+    return !this.thisWorkspaceOnly && !this.thisSubmissionOnly;
+  }
 
-        if (isAForCurrentSelection && !isBForCurrentSelection) {
-          return -1;
-        }
-        if (isBForCurrentSelection && !isAForCurrentSelection) {
-          return 1;
-        }
-        return 0;
-      });
+  formatDate(date) {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
+
+  clearCommentParent() {
+    if (this.newCommentParent) {
+      this.newCommentParent.inReuse = false;
+      this.newCommentParent = null;
     }
-  ),
+  }
 
-  showPaginationControl: computed(
-    'thisWorkspaceOnly',
-    'thisSubmissionOnly',
-    function () {
-      return !this.thisWorkspaceOnly && !this.thisSubmissionOnly;
+  @action
+  cancelComment() {
+    this.clearCommentParent();
+    this.newComment = '';
+    this.args.resetComment?.();
+  }
+
+  @action
+  madeSelection() {
+    if (this.onSelection) {
+      this.createComment();
+    } else {
+      this.alert.showToast(
+        'error',
+        'Please choose a selection first',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
     }
-  ),
+  }
 
-  actions: {
-    cancelComment: function () {
+  @action
+  async createComment() {
+    const currentUser = this.currentUser;
+    const label = this.newCommentLabel;
+    const text = this.newComment;
+    const useForResponse = this.labels[label].useForResponse;
+
+    if (!text?.trim()) return;
+
+    const selection = this.args.currentSelection;
+    const currentSubmission = this.args.currentSubmission;
+
+    const data = {
+      text,
+      label,
+      selection,
+      submission: currentSubmission,
+      workspace: this.args.currentWorkspace,
+      parent: this.newCommentParent,
+      useForResponse: !!useForResponse,
+      createdBy: this.currentUser.user, // actual db record so this.currentUser won't work
+    };
+
+    const comment = this.store.createRecord('comment', data);
+
+    if (this.textContainsTag) {
+      this.args.tagSelection?.(selection, this.tags);
+    }
+
+    const newCommentParent = this.newCommentParent;
+
+    try {
+      const record = await comment.save();
+      this.alert.showToast(
+        'success',
+        'Comment Created',
+        'bottom-end',
+        2000,
+        false,
+        null
+      );
+
+      const selectionComments = await selection.comments;
+      selectionComments.addObject(record);
+
+      const submissionComments = await currentSubmission.comments;
+      submissionComments.addObject(record);
+
+      if (newCommentParent) {
+        const parentChildren = await newCommentParent.children;
+        parentChildren.addObject(record);
+      }
+
+      this.newComment = '';
       this.clearCommentParent();
-      this.set('newComment', '');
-      this.sendAction('resetComment');
-    },
+      this.args.comments.pushObject(record);
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'createRecordErrors');
+    }
+  }
 
-    madeSelection: function () {
-      if (this.onSelection) {
-        this.send('createComment');
-      } else {
-        this.alert.showToast(
-          'error',
-          'Please choose a selection first',
+  @action
+  async deleteComment(comment) {
+    const result = await this.alert.showModal(
+      'warning',
+      'Are you sure you want to delete this comment?',
+      null,
+      'Yes, delete it'
+    );
+
+    if (result.value) {
+      await comment.submission;
+      comment.isTrashed = true;
+
+      try {
+        await comment.save();
+        const undoResult = await this.alert.showToast(
+          'success',
+          'Comment Deleted',
           'bottom-end',
           3000,
-          false,
-          null
+          true,
+          'Undo'
         );
-      }
-    },
 
-    createComment: function () {
-      let currentUser = this.currentUser.user;
-      let label = this.newCommentLabel;
-      let text = this.newComment;
-      let useForResponse = this.labels[label].useForResponse;
-      if (!text || !text.trim()) {
-        return;
-      }
-
-      let selection = this.currentSelection;
-      let currentSubmission = this.currentSubmission;
-
-      let data = {
-        text: text,
-        label: label,
-        selection: selection,
-        submission: currentSubmission,
-        workspace: this.currentWorkspace,
-        parent: this.newCommentParent,
-        useForResponse: !!useForResponse,
-        createdBy: currentUser,
-      };
-      let comment = this.store.createRecord('comment', data);
-
-      //TODO push comment onto origin's derivatives
-
-      if (this.textContainsTag) {
-        this.send('tagSelection', selection, this.tags);
-      }
-
-      var newCommentParent = this.newCommentParent;
-      var comp = this;
-      this.set('alerts', this.alert);
-
-      comment
-        .save()
-        .then((record) => {
-          this.alerts.showToast(
+        if (undoResult.value) {
+          comment.isTrashed = false;
+          await comment.save();
+          this.alert.showToast(
             'success',
-            'Comment Created',
+            'Comment Restored',
             'bottom-end',
             2000,
             false,
             null
           );
-          //controller.get('currentSelection.comments').addObject(record);
-          selection.get('comments').then(function (comments) {
-            comments.addObject(record);
-          });
-          currentSubmission.get('comments').then(function (comments) {
-            comments.addObject(record);
-          });
-          if (newCommentParent) {
-            newCommentParent.get('children').then(function (comments) {
-              comments.addObject(record);
-            });
-          }
-          comp.set('newComment', ''); //clear out the comment
-          comp.clearCommentParent();
-          comp.get('comments').pushObject(record);
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'createRecordErrors');
-        });
-    },
-
-    deleteComment: function (comment) {
-      return this.alert
-        .showModal(
-          'warning',
-          'Are you sure you want to delete this comment?',
-          null,
-          'Yes, delete it'
-        )
-        .then((result) => {
-          if (result.value) {
-            comment.get('submission').then((submission) => {
-              comment.set('isTrashed', true);
-              comment
-                .save()
-                .then(() => {
-                  this.alert
-                    .showToast(
-                      'success',
-                      'Comment Deleted',
-                      'bottom-end',
-                      3000,
-                      true,
-                      'Undo'
-                    )
-                    .then((result) => {
-                      if (result.value) {
-                        comment.set('isTrashed', false);
-                        comment.save().then(() => {
-                          this.alert.showToast(
-                            'success',
-                            'Comment Restored',
-                            'bottom-end',
-                            2000,
-                            false,
-                            null
-                          );
-                        });
-                      }
-                    });
-                  // this.set('commentDeleteSuccess', true);
-                })
-                .catch((err) => {
-                  this.handleErrors(err, 'updateRecordErrors');
-                });
-            });
-          }
-        });
-    },
-
-    reuseComment: function (comment) {
-      //copy the comment text to the input
-      this.set('newComment', this.newComment + ' ' + comment.get('text'));
-      //set the comment label to match, right?
-      this.set('newCommentLabel', comment.get('label'));
-      //record that the comment is being reused
-      this.clearCommentParent();
-      this.set('newCommentParent', comment);
-      comment.set('inReuse', true);
-
-      $('#commentTextarea').focus();
-    },
-
-    setCommentLabel: function (label) {
-      this.set('newCommentLabel', label);
-    },
-
-    toggleFilter: function () {
-      this.toggleProperty('showFilter');
-      if (this.showFilter && this.isSearching) {
-        this.set('isSearching', false);
+        }
+      } catch (err) {
+        this.errorHandling.handleErrors(err, 'updateRecordErrors');
       }
-    },
+    }
+  }
 
-    toggleSearch: function () {
-      this.toggleProperty('isSearching');
+  @action
+  reuseComment(comment) {
+    this.newComment = this.newComment + ' ' + comment.text;
+    this.newCommentLabel = comment.label;
+    this.clearCommentParent();
+    this.newCommentParent = comment;
+    comment.inReuse = true;
+    document.getElementById('commentTextarea')?.focus();
+  }
 
-      if (this.isSearching && this.showFilter) {
-        this.set('showFilter', false);
-      }
-    },
-    hideComments() {
-      this.hideComments();
-    },
-    updateFilter(prop) {
-      this.toggleProperty(prop);
-      this.send('searchComments');
-    },
-    searchComments(query, page) {
-      // no need to fetch
-      if (this.thisSubmissionOnly || this.thisWorkspaceOnly) {
+  @action
+  setCommentLabel(label) {
+    this.newCommentLabel = label;
+  }
+
+  @action
+  toggleFilter() {
+    this.showFilter = !this.showFilter;
+    if (this.showFilter && this.isSearching) {
+      this.isSearching = false;
+    }
+  }
+
+  @action
+  toggleSearch() {
+    this.isSearching = !this.isSearching;
+    if (this.isSearching && this.showFilter) {
+      this.showFilter = false;
+    }
+  }
+
+  @action
+  hideComments() {
+    this.args.hideComments?.();
+  }
+
+  @action
+  updateFilter(prop) {
+    this[prop] = !this[prop];
+    this.searchComments();
+  }
+
+  @action
+  async searchComments(query, page) {
+    if (this.thisSubmissionOnly || this.thisWorkspaceOnly) return;
+
+    this.cancelComment();
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isLoadingSearchResults',
+      'doShowLoadingMessage'
+    );
+
+    const options = {
+      text: query || '',
+      page: page || 1,
+    };
+
+    if (this.myCommentsOnly) {
+      options.createdBy = this.currentUser.id;
+    }
+
+    if (this.doUseSinceDate) {
+      const parsedDate = Date.parse(this.sinceDate);
+      if (Number.isNaN(parsedDate)) {
+        this.invalidDateError = 'Please enter a valid date';
         return;
       }
-      // clear current selection
-      this.send('cancelComment');
+      options.sinceDate = this.sinceDate;
+    }
 
+    try {
+      const comments = await this.store.query('comment', options);
+      this.searchResults = comments.slice();
+      this.commentsMetadata = comments.meta;
       this.loading.handleLoadingMessage(
         this,
-        'start',
+        'end',
         'isLoadingSearchResults',
         'doShowLoadingMessage'
       );
+    } catch (err) {
+      this.loading.handleLoadingMessage(
+        this,
+        'end',
+        'isLoadingSearchResults',
+        'doShowLoadingMessage'
+      );
+      this.errorHandling.handleErrors(err, 'queryErrors');
+    }
+  }
 
-      let options = {
-        text: query || '',
-      };
+  @action
+  initiatePageChange(page) {
+    this.isChangingPage = true;
+    this.searchComments(this.commentFilterText, page);
+  }
 
-      if (this.myCommentsOnly) {
-        options.createdBy = this.get('currentUser.user.id');
-      }
+  @action
+  applySinceDate() {
+    this.searchComments(this.commentFilterText);
+  }
 
-      options.page = page || 1;
+  @action
+  superScroll() {
+    const displayList = document.querySelector('.display-list');
+    if (!displayList) return;
 
-      if (this.doUseSinceDate) {
-        let dateInput = this.sinceDate;
-        let parsedDate = Date.parse(dateInput);
+    const maxScroll = displayList.scrollHeight;
+    const targetScroll = this.scrollBottom ? maxScroll : 0;
 
-        if (isNaN(parsedDate)) {
-          return this.set('invalidDateError', 'Please enter a valid date');
-        }
-        options.sinceDate = dateInput;
-      }
-      return this.store
-        .query('comment', options)
-        .then((comments) => {
-          this.set('searchResults', comments.toArray());
-          this.set('commentsMetadata', comments.get('meta'));
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isLoadingSearchResults',
-            'doShowLoadingMessage'
-          );
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isLoadingSearchResults',
-            'doShowLoadingMessage'
-          );
-          this.handleErrors(err, 'queryErrors');
-        });
-    },
-    initiatePageChange(page) {
-      this.set('isChangingPage', true);
-      this.send('searchComments', this.commentFilterText, page);
-    },
-    applySinceDate() {
-      this.send('searchComments', this.commentFilterText);
-    },
-    superScroll: function (direction) {
-      //should only show scroll option after the user scrolls a little
-      let maxScroll = $('.display-list')[0].scrollHeight;
+    displayList.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    this.scrollBottom = !this.scrollBottom;
+  }
 
-      if (!this.scrollBottom) {
-        $('.display-list').animate({
-          scrollTop: 0,
-        });
-      } else {
-        $('.display-list').animate({
-          scrollTop: maxScroll,
-        });
-      }
-      this.set('scrollBottom', !this.scrollBottom);
-    },
-    clearSearchResults() {
-      this.send('searchComments');
-    },
-  },
-});
+  @action
+  clearSearchResults() {
+    this.searchComments();
+  }
+}
