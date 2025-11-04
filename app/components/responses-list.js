@@ -13,8 +13,8 @@ export default class ResponsesListComponent extends Component {
   @tracked isLoadingNewPage = false;
   @tracked currentFilter = 'submitter';
 
-  noResponsesMessage = 'No responses found';
-  threadsPerPage = 50;
+  NO_RESPONSES_MESSAGE = 'No responses found';
+  THREADS_PER_PAGE = 50;
 
   constructor() {
     super(...arguments);
@@ -245,7 +245,7 @@ export default class ResponsesListComponent extends Component {
     return this._getCounter(this.approvingThreads);
   }
 
-  fetchThreads(threadType, page, limit = this.threadsPerPage) {
+  fetchThreads(threadType, page, limit = this.THREADS_PER_PAGE) {
     return this.store
       .query('responseThread', {
         threadType,
