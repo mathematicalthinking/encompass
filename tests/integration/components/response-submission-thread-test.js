@@ -219,6 +219,34 @@ module(
       assert.dom('.item-container').doesNotHaveClass('has-unread-reply');
     });
 
+    // ---------- Date Formatting ----------
+
+    test('it formats dates using format-date helper', async function (assert) {
+      const testDate = new Date('2025-10-31T10:30:00');
+      this.set(
+        'thread',
+        createThread({
+          latestRevision: { createDate: testDate },
+          latestReply: { createDate: testDate },
+        })
+      );
+
+      await render(hbs`<ResponseSubmissionThread @thread={{this.thread}} />`);
+
+      // format-date helper with relative time (true) should show "X days/months ago"
+      const submissionText = this.element
+        .querySelector('.submission-date span')
+        .textContent.trim();
+
+      // If @format-date was used instead of format-date, it would show undefined or empty
+      const hasRelativeTime =
+        submissionText.includes('ago') || submissionText.includes('day');
+      assert.ok(
+        hasRelativeTime,
+        `Date should be formatted with relative time using format-date helper. Got: "${submissionText}"`
+      );
+    });
+
     // ---------- Navigation ----------
 
     test('it calls navigation action when clicked', async function (assert) {
