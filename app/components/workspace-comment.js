@@ -1,101 +1,88 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
-/* eslint-disable */
-export default Component.extend({
-  currentUser: service('current-user'),
-  tagName: 'li',
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { action } from '@ember/object';
 
-  permissions: service('workspace-permissions'),
-  utils: service('utility-methods'),
+export default class WorkspaceCommentComponent extends Component {
+  @service('current-user') currentUser;
+  @service('workspace-permissions') permissions;
+  @service('utility-methods') utils;
 
-  currentWorkspace: null,
-  classNames: ['ws-comment-comp'],
-  classNameBindings: [
-    'comment.label',
-    'relevanceClass',
-    'comment.inReuse',
-    'isFromCurrentSelection:is-for-cs',
-  ],
+  get originalWorkspace() {
+    return this.args.comment?.originalComment?.workspace;
+  }
 
-  originalWorkspace: alias('comment.originalComment.workspace'),
+  get isForCurrentWorkspace() {
+    const workspaceId = this.utils.getBelongsToId(
+      this.args.comment,
+      'workspace'
+    );
+    return workspaceId === this.args.currentWorkspace?.id;
+  }
 
-  isForCurrentWorkspace: computed(
-    'currentWorkspace.id',
-    'comment',
-    function () {
-      let workspaceId = this.utils.getBelongsToId(this.comment, 'workspace');
-      return workspaceId === this.get('currentWorkspace.id');
-    }
-  ),
+  get childrenLength() {
+    const childrenIds = this.utils.getHasManyIds(this.args.comment, 'children');
+    return childrenIds?.length || 0;
+  }
 
-  childrenLength: computed('comment.children.[]', function () {
-    let childrenIds = this.utils.getHasManyIds(this.comment, 'children');
-    return childrenIds.get('length');
-  }),
+  get isOwnComment() {
+    const creatorId = this.utils.getBelongsToId(this.args.comment, 'createdBy');
+    return creatorId === this.currentUser.user?.id;
+  }
 
-  isOwnComment: computed('comment', 'currentUser.user.id', function () {
-    let creatorId = this.utils.getBelongsToId(this.comment, 'createdBy');
-    return creatorId === this.get('currentUser.user.id');
-  }),
+  get canDelete() {
+    if (!this.args.currentWorkspace) return false;
+    return this.permissions.canEdit(this.args.currentWorkspace, 'comments', 4);
+  }
 
-  canDelete: computed(
-    'currentWorkspace.permissions.@each.{global,comments}',
-    function () {
-      let ws = this.currentWorkspace;
-      return this.permissions.canEdit(ws, 'comments', 4);
-    }
-  ),
+  get permittedToComment() {
+    if (!this.args.currentWorkspace) return false;
+    return this.permissions.canEdit(this.args.currentWorkspace, 'comments', 2);
+  }
 
-  permittedToComment: computed(
-    'currentWorkspace.permissions.@each.{global,comments}',
-    function () {
-      let ws = this.currentWorkspace;
-      return this.permissions.canEdit(ws, 'comments', 2);
-    }
-  ),
+  get relevanceClass() {
+    return `relevance-${this.args.comment?.relevance || ''}`;
+  }
 
-  relevanceClass: computed('comment.relevance', function () {
-    return 'relevance-' + this.get('comment.relevance');
-  }),
-
-  isFromCurrentSelection: computed(
-    'currentSelection',
-    'comment.selection',
-    // TO DO:
-    // Original function had the selection from the comment model.
-    // Last two digits of ID were mutating - need to investiage further.
-
-    // Checks below if workspace type is parent to avoid issues with css
-    // If its a group workspace, will make the selection/comment display together.
-
-    // Another problem - certain workspaces that are "group" workspaces do not order the comment to the top of the list.
-
-    function () {
-      if (this.currentWorkspace.workspaceType !== 'parent') {
-        if (this.currentSelection) {
-          const groupSelection = this.currentSelection.originalSelection;
-
-          if (groupSelection.get('id')) {
-            return (
-              this.utils.getBelongsToId(this.comment, 'selection') ===
-              groupSelection.get('id')
-            );
-          }
+  // TODO: Known issues with selection matching:
+  // 1. Selection IDs from comment model had last two digits mutating - needs investigation
+  // 2. For group workspaces: matches against originalSelection.id to display comment with selection
+  // 3. For parent workspaces: skips group selection logic to avoid CSS issues
+  // 4. Some group workspaces don't order matching comments to top of list
+  get isFromCurrentSelection() {
+    if (!this.args.comment) return false;
+    if (this.args.currentWorkspace?.workspaceType !== 'parent') {
+      if (this.args.currentSelection) {
+        const groupSelection = this.args.currentSelection.originalSelection;
+        if (groupSelection?.id) {
+          return (
+            this.utils.getBelongsToId(this.args.comment, 'selection') ===
+            groupSelection.id
+          );
         }
       }
-
-      return (
-        this.utils.getBelongsToId(this.comment, 'selection') ===
-        this.get('currentSelection.id')
-      );
     }
-  ),
+    return (
+      this.utils.getBelongsToId(this.args.comment, 'selection') ===
+      this.args.currentSelection?.id
+    );
+  }
 
-  actions: {
-    deleteComment: function (comment) {
-      this.sendAction('action', comment);
-    },
-  },
-});
+  get commentClasses() {
+    const classes = ['ws-comment-comp'];
+    if (this.args.comment?.label) classes.push(this.args.comment.label);
+    if (this.relevanceClass) classes.push(this.relevanceClass);
+    if (this.args.comment?.inReuse) classes.push('inReuse');
+    if (this.isFromCurrentSelection) classes.push('is-for-cs');
+    return classes.join(' ');
+  }
+
+  @action
+  deleteComment(comment) {
+    this.args.deleteComment?.(comment);
+  }
+
+  @action
+  reuseComment(comment) {
+    this.args.reuseComment?.(comment);
+  }
+}
