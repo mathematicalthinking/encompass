@@ -95,9 +95,9 @@
                 <span>
                   <span class='radio-text'>Since</span>
                   <Input
-                    @type='text'
-                    placeholder='mm/dd/yyyy'
+                    @type='date'
                     @value={{this.sinceDate}}
+                    {{on "input" this.updateSinceDate}}
                   />
                   {{#if this.showApplyDate}}
                     <button
@@ -141,13 +141,7 @@
     {{#each this.updateRecordErrors as |error|}}
       <p class='error-message'>{{error}}</p>
     {{/each}}
-    {{#if this.invalidDateError}}
-      <Ui::ErrorBox
-        @error={{this.invalidDateError}}
-        @showDismiss={{true}}
-        @resetError={{fn (mut this.invalidDateError) null}}
-      />
-    {{/if}}
+
     {{#if this.doShowLoadingMessage}}
       Searching for comments. Thank you for your patience.
     {{else}}

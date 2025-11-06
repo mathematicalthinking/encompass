@@ -14,6 +14,7 @@ import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { subYears, format, parseISO } from 'date-fns';
 
 export default class CommentListComponent extends Component {
   @service('sweet-alert') alert;
@@ -31,11 +32,10 @@ export default class CommentListComponent extends Component {
   @tracked newCommentLabel = 'notice';
   @tracked newCommentParent = null;
   @tracked scrollBottom = true;
-  @tracked sinceDate;
+  @tracked sinceDate = format(subYears(new Date(), 1), 'yyyy-MM-dd');
   @tracked searchResults = [];
   @tracked commentsMetadata = null;
   @tracked doUseSinceDate = false;
-  @tracked invalidDateError = null;
   @tracked isLoadingSearchResults = false;
   @tracked doShowLoadingMessage = false;
 
@@ -63,13 +63,6 @@ export default class CommentListComponent extends Component {
   };
 
   labelOptions = ['notice', 'wonder', 'feedback'];
-
-  constructor() {
-    super(...arguments);
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    this.sinceDate = this.formatDate(oneYearAgo);
-  }
 
   get createRecordErrors() {
     return this.errorHandling.getErrors('createRecordErrors');
@@ -180,11 +173,16 @@ export default class CommentListComponent extends Component {
   }
 
   get isSinceDateValid() {
-    return this.validateDateString(this.sinceDate);
+    return this.sinceDate && this.sinceDate.length > 0;
   }
 
   get showApplyDate() {
     return this.doUseSinceDate && this.isSinceDateValid;
+  }
+
+  get sinceDateFormatted() {
+    if (!this.sinceDate) return '';
+    return format(parseISO(this.sinceDate), 'MM/dd/yyyy');
   }
 
   get sortedDisplayList() {
@@ -203,28 +201,6 @@ export default class CommentListComponent extends Component {
 
   get showPaginationControl() {
     return !this.thisWorkspaceOnly && !this.thisSubmissionOnly;
-  }
-
-  validateDateString(input) {
-    if (typeof input !== 'string' || input.length === 0) return false;
-
-    const split = input.split('/');
-    if (split.length !== 3) return false;
-
-    const [month, day, year] = split.map((num) => parseInt(num, 10));
-
-    if (Number.isNaN(month) || month > 12 || month < 1) return false;
-    if (Number.isNaN(day) || day < 1 || day > 31) return false;
-    if (Number.isNaN(year) || year < 1000 || year > 9999) return false;
-
-    return true;
-  }
-
-  formatDate(date) {
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
   }
 
   clearCommentParent() {
@@ -275,7 +251,7 @@ export default class CommentListComponent extends Component {
     }
 
     if (this.doUseSinceDate) {
-      options.sinceDate = this.sinceDate;
+      options.sinceDate = this.sinceDateFormatted;
     }
 
     return options;
@@ -516,11 +492,6 @@ export default class CommentListComponent extends Component {
     this.cancelComment();
     this._startLoadingSearch();
 
-    if (this.doUseSinceDate && !this.validateDateString(this.sinceDate)) {
-      this.invalidDateError = 'Please enter a valid date';
-      return;
-    }
-
     const options = this.buildSearchOptions(query, page);
 
     try {
@@ -532,6 +503,11 @@ export default class CommentListComponent extends Component {
     } finally {
       this._endLoadingSearch();
     }
+  }
+
+  @action
+  updateSinceDate(event) {
+    this.sinceDate = event.target.value;
   }
 
   @action
