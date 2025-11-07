@@ -1,136 +1,114 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import debounce from 'lodash-es/debounce';
 import validate from 'validate.js';
 
-export default Component.extend({
-  classNames: ['search-bar-comp'],
-  searchQuery: alias('parentView.searchQuery'),
-  searchInputValue: alias('parentView.searchInputValue'),
-  defaultConstraints: {
+export default class SearchBarComponent extends Component {
+  @tracked queryErrors = null;
+
+  defaultConstraints = {
     query: {
       length: {
         minimum: 1,
         maximum: 500,
       },
     },
-  },
+  };
 
-  init() {
-    this._super(...arguments);
+  constructor() {
+    super(...arguments);
 
-    let doDebounce = this.doDebounce || false;
-    let debounceTime = this.debounceTime || 300;
+    const doDebounce = this.args.doDebounce || false;
+    const debounceTime = this.args.debounceTime || 300;
     if (doDebounce) {
-      this.set('debouncedSearch', debounce(this.onChangeSearch, debounceTime));
+      this.debouncedSearch = debounce(
+        this.onChangeSearch.bind(this),
+        debounceTime
+      );
     }
-  },
+  }
 
-  showClear: computed(
-    'searchQuery',
-    'searchInputValue',
-    'doSearchOnInputChange',
-    'inputValue',
-    function () {
-      let hasSearchQuery = this.searchQuery;
-      let hasSearchInputValue = this.searchInputValue;
+  get showClear() {
+    return (
+      this.args.searchQuery ||
+      this.args.searchInputValue ||
+      (this.args.doSearchOnInputChange && this.args.inputValue)
+    );
+  }
 
-      if (
-        hasSearchQuery ||
-        hasSearchInputValue ||
-        (this.doSearchOnInputChange && this.inputValue)
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+  get placeholder() {
+    const base = this.args.basePlaceholder;
+    if (!this.args.showFilter) {
+      return base;
     }
-  ),
+    const criterion = this.args.selectedCriterion;
+    return `${base} by ${criterion}`;
+  }
 
-  placeholder: computed(
-    'basePlaceholder',
-    'selectedCriterion',
-    'showFilter',
-    function () {
-      let base = this.basePlaceholder;
-      if (!this.showFilter) {
-        return base;
-      }
-      let criterion = this.selectedCriterion;
-      let combined = `${base} by ${criterion}`;
-      return combined;
-    }
-  ),
-
-  inputStringValue: computed('inputValue', 'queryErrors', function () {
-    let val = this.inputValue;
+  get inputStringValue() {
+    const val = this.args.inputValue;
     if (!val) {
       return '';
     }
-    // handle escaping?
-    let trimmed = val.trim();
-    let lowercase = trimmed.toLowerCase();
+    const trimmed = val.trim();
+    return trimmed.toLowerCase();
+  }
+
+  get inputConstraints() {
+    return this.args.constraints || this.defaultConstraints;
+  }
+
+  initiateSearch(val) {
+    const criterion = this.args.selectedCriterion;
+    this.args.onSearch?.(val, criterion);
+  }
+
+  onChangeSearch() {
+    this.validate();
+  }
+
+  @action
+  clearResults() {
+    this.args.clearSearchResults?.();
+  }
+
+  @action
+  validate() {
+    const val = this.inputStringValue;
+    const values = { query: val };
+    const constraints = this.inputConstraints;
+
+    const errors = validate(values, constraints);
+    if (errors) {
+      for (let key of Object.keys(errors)) {
+        const errorProp = `${key}Errors`;
+        this[errorProp] = errors[key];
+      }
+      return;
+    }
+    this.initiateSearch(val);
+  }
+
+  @action
+  clearErrors() {
     if (this.queryErrors) {
-      this.set('queryErrors', null);
+      this.queryErrors = null;
     }
-    return lowercase;
-  }),
+  }
 
-  inputConstraints: computed('constraints', 'defaultConstraints', function () {
-    let constraints = this.constraints;
-    if (constraints) {
-      return constraints;
+  @action
+  searchAction() {
+    this.validate();
+  }
+
+  @action
+  onInputChange() {
+    if (this.args.doSearchOnInputChange) {
+      if (this.debouncedSearch) {
+        return this.debouncedSearch();
+      }
+      this.validate();
     }
-    return this.defaultConstraints;
-  }),
-
-  initiateSearch: function (val) {
-    let criterion = this.selectedCriterion;
-    this.onSearch(val, criterion);
-  },
-
-  onChangeSearch: function () {
-    this.send('validate');
-  },
-
-  actions: {
-    clearResults: function () {
-      this.set('inputValue', null);
-      this.clearSearchResults();
-    },
-
-    validate: function () {
-      let val = this.inputStringValue;
-      let values = { query: val };
-      let constraints = this.inputConstraints;
-
-      let errors = validate(values, constraints);
-      if (errors) {
-        for (let key of Object.keys(errors)) {
-          let errorProp = `${key}Errors`;
-          this.set(errorProp, errors[key]);
-        }
-        return;
-      }
-      // handle validation success
-      this.initiateSearch(val);
-    },
-    clearErrors: function () {
-      if (this.queryErrors) {
-        this.set('queryErrors', null);
-      }
-    },
-    searchAction: function () {
-      this.send('validate');
-    },
-    onInputChange() {
-      if (this.doSearchOnInputChange) {
-        if (this.debouncedSearch) {
-          return this.debouncedSearch();
-        }
-        this.send('validate');
-      }
-    },
-  },
-});
+  }
+}
