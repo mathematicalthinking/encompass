@@ -26,17 +26,15 @@ export default class WorkspaceCommentComponent extends Component {
 
   get isOwnComment() {
     const creatorId = this.utils.getBelongsToId(this.args.comment, 'createdBy');
-    return creatorId === this.currentUser.user?.id;
+    return creatorId === this.currentUser.id;
   }
 
   get canDelete() {
-    if (!this.args.currentWorkspace) return false;
-    return this.permissions.canEdit(this.args.currentWorkspace, 'comments', 4);
+    return this._canEditComments(4);
   }
 
   get permittedToComment() {
-    if (!this.args.currentWorkspace) return false;
-    return this.permissions.canEdit(this.args.currentWorkspace, 'comments', 2);
+    return this._canEditComments(2);
   }
 
   get relevanceClass() {
@@ -50,21 +48,23 @@ export default class WorkspaceCommentComponent extends Component {
   // 4. Some group workspaces don't order matching comments to top of list
   get isFromCurrentSelection() {
     if (!this.args.comment) return false;
+
+    const commentSelectionId = this.utils.getBelongsToId(
+      this.args.comment,
+      'selection'
+    );
+
+    // For non-parent workspaces, check against group's original selection
     if (this.args.currentWorkspace?.workspaceType !== 'parent') {
-      if (this.args.currentSelection) {
-        const groupSelection = this.args.currentSelection.originalSelection;
-        if (groupSelection?.id) {
-          return (
-            this.utils.getBelongsToId(this.args.comment, 'selection') ===
-            groupSelection.id
-          );
-        }
+      const groupSelectionId =
+        this.args.currentSelection?.originalSelection?.id;
+      if (groupSelectionId) {
+        return commentSelectionId === groupSelectionId;
       }
     }
-    return (
-      this.utils.getBelongsToId(this.args.comment, 'selection') ===
-      this.args.currentSelection?.id
-    );
+
+    // Default: check against current selection
+    return commentSelectionId === this.args.currentSelection?.id;
   }
 
   get commentClasses() {
@@ -74,6 +74,16 @@ export default class WorkspaceCommentComponent extends Component {
     if (this.args.comment?.inReuse) classes.push('inReuse');
     if (this.isFromCurrentSelection) classes.push('is-for-cs');
     return classes.join(' ');
+  }
+
+  // Helper method to check comment edit permissions
+  _canEditComments(level) {
+    if (!this.args.currentWorkspace) return false;
+    return this.permissions.canEdit(
+      this.args.currentWorkspace,
+      'comments',
+      level
+    );
   }
 
   @action
