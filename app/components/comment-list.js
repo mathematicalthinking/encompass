@@ -1,15 +1,16 @@
 import Component from '@glimmer/component';
 /**
- * Passed in by template:
- * - comments
- * - currentWorkspace
- * - currentUser
- * - currentSubmission
- * - currentSelection
- * - store
+ * Arguments passed from parent:
+ * - @comments
+ * - @currentWorkspace
+ * - @currentSubmission
+ * - @currentSelection
+ * - @isParentWorkspace
+ * - @containerLayoutClass
+ * - @isHidden
  *
- *   TODO:
- *   - Test the hashtag stuff to see if that is still working.
+ * TODO:
+ * - Test the hashtag stuff to see if that is still working.
  */
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
@@ -113,10 +114,6 @@ export default class CommentListComponent extends Component {
     return this.filteredComments.filter((c) => !c.isTrashed);
   }
 
-  get textContainsTag() {
-    return this.tags.length > 0;
-  }
-
   get tags() {
     return this.newComment
       .split(/\s+/)
@@ -136,19 +133,16 @@ export default class CommentListComponent extends Component {
     return {
       thisWorkspaceOnly: {
         label: 'This Workspace Only',
-        relatedProp: 'thisWorkspaceOnly',
         isChecked: true,
         isDisabled: this.args.isParentWorkspace,
       },
       thisSubmissionOnly: {
         label: 'This Submission Only',
-        relatedProp: 'thisSubmissionOnly',
         isChecked: true,
         isDisabled: false,
       },
       myCommentsOnly: {
         label: 'My Comments Only',
-        relatedProp: 'myCommentsOnly',
         isChecked: !this.args.isParentWorkspace,
         isDisabled: false,
       },
@@ -172,12 +166,8 @@ export default class CommentListComponent extends Component {
     return !this.doShowLoadingMessage && this.displayList.length > 0;
   }
 
-  get isSinceDateValid() {
-    return this.sinceDate && this.sinceDate.length > 0;
-  }
-
   get showApplyDate() {
-    return this.doUseSinceDate && this.isSinceDateValid;
+    return this.doUseSinceDate && this.sinceDate && this.sinceDate.length > 0;
   }
 
   get sinceDateFormatted() {
@@ -208,23 +198,6 @@ export default class CommentListComponent extends Component {
       this.newCommentParent.inReuse = false;
       this.newCommentParent = null;
     }
-  }
-
-  showToast(
-    type,
-    message,
-    duration = 2000,
-    showButton = false,
-    buttonText = null
-  ) {
-    return this.alert.showToast(
-      type,
-      message,
-      'bottom-end',
-      duration,
-      showButton,
-      buttonText
-    );
   }
 
   async updateCommentRelationships(record, selection, submission, parent) {
@@ -325,7 +298,7 @@ export default class CommentListComponent extends Component {
   }
 
   async _handleCommentCreated(record) {
-    this.showToast('success', 'Comment Created');
+    this.alert.showToast('success', 'Comment Created');
 
     await this.updateCommentRelationships(
       record,
@@ -400,9 +373,10 @@ export default class CommentListComponent extends Component {
   }
 
   async _handleUndoOption(comment) {
-    const undoResult = await this.showToast(
+    const undoResult = await this.alert.showToast(
       'success',
       'Comment Deleted',
+      'bottom-end',
       3000,
       true,
       'Undo'
@@ -411,7 +385,7 @@ export default class CommentListComponent extends Component {
     if (undoResult.value) {
       comment.isTrashed = false;
       await comment.save();
-      this.showToast('success', 'Comment Restored');
+      this.alert.showToast('success', 'Comment Restored');
     }
   }
 
@@ -427,7 +401,7 @@ export default class CommentListComponent extends Component {
     if (this.onSelection) {
       this.createComment();
     } else {
-      this.showToast('error', 'Please choose a selection first', 3000);
+      this.alert.showToast('error', 'Please choose a selection first');
     }
   }
 
@@ -438,7 +412,7 @@ export default class CommentListComponent extends Component {
     const commentData = this._buildCommentData();
     const comment = this.store.createRecord('comment', commentData);
 
-    if (this.textContainsTag) {
+    if (this.tags.length > 0) {
       this.args.tagSelection?.(this.args.currentSelection, this.tags);
     }
 
@@ -466,7 +440,7 @@ export default class CommentListComponent extends Component {
 
   @action
   reuseComment(comment) {
-    this.newComment = this.newComment + ' ' + comment.text;
+    this.newComment = `${this.newComment} ${comment.text}`;
     this.newCommentLabel = comment.label;
     this.clearCommentParent();
     this.newCommentParent = comment;
