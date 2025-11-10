@@ -11,6 +11,7 @@ export default Component.extend(ErrorHandlingMixin, {
   currentUser: service('current-user'),
   utils: service('utility-methods'),
   loading: service('loading-display'),
+  aiDraft: service('ai-draft'),
 
   isEditing: false,
   isCreating: false,
@@ -474,8 +475,6 @@ export default Component.extend(ErrorHandlingMixin, {
     },
 
     generateAIDraft() {
-      let submissionId = this.submission.get('id');
-
       this.loading.handleLoadingMessage(
         this,
         'start',
@@ -483,23 +482,8 @@ export default Component.extend(ErrorHandlingMixin, {
         'doShowLoadingMessage'
       );
 
-      const url = `/api/aiDraft?submissionId=${encodeURIComponent(
-        submissionId
-      )}`;
-
-      fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'same-origin', // Include cookies for authentication
-      })
-        .then((response) => {
-          if (!response.ok) {
-            return response.json().then((err) => Promise.reject(err));
-          }
-          return response.json();
-        })
+      this.aiDraft
+        .generateDraft(this.submission)
         .then((data) => {
           this.loading.handleLoadingMessage(
             this,
@@ -525,22 +509,11 @@ export default Component.extend(ErrorHandlingMixin, {
               this.send('updateQuillText', data.draft, isEmpty, isOverLimit);
             }
 
-            this.alert.showToast(
-              'success',
-              'AI draft generated successfully',
-              'bottom-end',
-              3000,
-              false,
-              null
-            );
+            this.alert.showToast('success', 'AI draft generated successfully');
           } else {
             this.alert.showToast(
               'error',
-              'Failed to generate AI draft - no content received',
-              'bottom-end',
-              3000,
-              false,
-              null
+              'Failed to generate AI draft - no content received'
             );
           }
         })
@@ -559,14 +532,7 @@ export default Component.extend(ErrorHandlingMixin, {
             errorMessage = error.message;
           }
 
-          this.alert.showToast(
-            'error',
-            errorMessage,
-            'bottom-end',
-            5000,
-            false,
-            null
-          );
+          this.alert.showToast('error', errorMessage);
         });
     },
   },
