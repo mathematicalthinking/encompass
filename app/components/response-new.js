@@ -31,6 +31,7 @@ export default Component.extend(ErrorHandlingMixin, {
   todaysDate: new Date(),
   doUseOnlyOwnMarkup: true,
   isAIDraftLoading: false,
+  aiGeneratedText: null,
 
   quillEditorId: 'response-new-editor',
   quillText: '',
@@ -299,9 +300,17 @@ export default Component.extend(ErrorHandlingMixin, {
     }
   },
 
-  replyText: computed('filteredComments', 'doUseOnlyOwnMarkup', function () {
-    return this.preFormatText();
-  }),
+  replyText: computed(
+    'filteredComments',
+    'doUseOnlyOwnMarkup',
+    'aiGeneratedText',
+    function () {
+      if (this.aiGeneratedText) {
+        return this.aiGeneratedText;
+      }
+      return this.preFormatText();
+    }
+  ),
 
   shortText: computed('model.text', function () {
     if (typeof this.get('model.text') !== 'string') {
@@ -509,8 +518,8 @@ export default Component.extend(ErrorHandlingMixin, {
           );
 
           if (data && data.draft) {
-            // Set the AI draft text in the quill editor
-            this.set('quillText', data.draft);
+            // Set the AI draft text which will trigger replyText to update
+            this.set('aiGeneratedText', data.draft);
 
             this.alert.showToast(
               'success',
