@@ -222,6 +222,12 @@
         class='primary-button save-response'
         {{action 'saveResponse'}}
       >{{submitButtonText}}</button>
+      {{#if submission}}
+        <button
+          class='primary-button ai-draft'
+          {{action 'generateAIDraft'}}
+        >Draft from AI</button>
+      {{/if}}
       <button
         class='primary-button save-draft'
         {{action 'saveResponse' true}}

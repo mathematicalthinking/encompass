@@ -219,6 +219,7 @@ server.get('/api/images/:id', path.validateId(), api.get.image);
 server.get('/api/images/file/:id', path.validateId(), api.get.imageFile);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
+server.get('/api/aiDraft', api.get.aiDraft);
 server.get('/api/notifications', api.get.notifications);
 server.get('/api/notifications/:id', path.validateId(), api.get.notification);
 server.get(

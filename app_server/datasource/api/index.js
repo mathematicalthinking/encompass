@@ -41,6 +41,7 @@ exports.delete = {};
   'vmtApi',
   'parentWorkspaceApi',
   'groupApi',
+  'aiApi',
 ].forEach(function (path) {
   var module = require('./' + path);
 
