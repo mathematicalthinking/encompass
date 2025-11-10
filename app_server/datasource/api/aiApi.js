@@ -1,11 +1,12 @@
 const utils = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
+const aiService = require('../../services/ai');
 
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
-function aiDraft(req, res, next) {
+async function aiDraft(req, res, next) {
   let user = userAuth.requireUser(req);
 
   if (!user) {
@@ -25,33 +26,38 @@ function aiDraft(req, res, next) {
     );
   }
 
-  // Parse context parameter - it could be a comma-separated string or array
-  let contextArray = [];
-  if (context) {
-    if (Array.isArray(context)) {
-      contextArray = context;
-    } else if (typeof context === 'string') {
-      contextArray = context
-        .split(',')
-        .map((id) => id.trim())
-        .filter((id) => id.length > 0);
+  try {
+    // Parse context parameter - it could be a comma-separated string or array
+    let contextArray = [];
+    if (context) {
+      if (Array.isArray(context)) {
+        contextArray = context;
+      } else if (typeof context === 'string') {
+        contextArray = context
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id.length > 0);
+      }
     }
+
+    // Generate AI draft using the AI service
+    const draft = await aiService.generateDraft(target, contextArray);
+
+    const response = {
+      target: target,
+      contextLength: contextArray.length,
+      message: `AI draft generated for target submission: ${target}`,
+      draft,
+    };
+
+    return utils.sendResponse(res, response);
+  } catch (error) {
+    console.error('AI draft generation error:', error);
+    return utils.sendError.InternalError(
+      error.message || 'Failed to generate AI draft',
+      res
+    );
   }
-
-  // For now, return the target submissionId and context length as a placeholder
-  const response = {
-    target: target,
-    contextLength: contextArray.length,
-    message: `AI draft requested for target submission: ${target} with ${contextArray.length} context submissions`,
-    // Placeholder for future AI integration
-    draft: `This is a placeholder AI-generated response for target submission ${target} with ${
-      contextArray.length
-    } context submissions. Context IDs: [${contextArray.join(
-      ', '
-    )}]. Future implementation will process the full response thread.`,
-  };
-
-  return utils.sendResponse(res, response);
 }
 
 module.exports.get.aiDraft = aiDraft;
