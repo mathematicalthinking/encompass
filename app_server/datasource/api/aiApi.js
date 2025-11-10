@@ -15,21 +15,40 @@ function aiDraft(req, res, next) {
     );
   }
 
-  const submissionId = req.query.submissionId;
+  const target = req.query.target;
+  const context = req.query.context;
 
-  if (!submissionId) {
+  if (!target) {
     return utils.sendError.InvalidArgumentError(
-      'submissionId query parameter is required.',
+      'target submission is required.',
       res
     );
   }
 
-  // For now, just return the submissionId as requested
+  // Parse context parameter - it could be a comma-separated string or array
+  let contextArray = [];
+  if (context) {
+    if (Array.isArray(context)) {
+      contextArray = context;
+    } else if (typeof context === 'string') {
+      contextArray = context
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
+    }
+  }
+
+  // For now, return the target submissionId and context length as a placeholder
   const response = {
-    submissionId: submissionId,
-    message: `AI draft requested for submission: ${submissionId}`,
+    target: target,
+    contextLength: contextArray.length,
+    message: `AI draft requested for target submission: ${target} with ${contextArray.length} context submissions`,
     // Placeholder for future AI integration
-    draft: `This is a placeholder AI-generated response for submission ${submissionId}. Future implementation will integrate with actual AI service.`,
+    draft: `This is a placeholder AI-generated response for target submission ${target} with ${
+      contextArray.length
+    } context submissions. Context IDs: [${contextArray.join(
+      ', '
+    )}]. Future implementation will process the full response thread.`,
   };
 
   return utils.sendResponse(res, response);
