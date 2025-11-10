@@ -31,7 +31,6 @@ export default Component.extend(ErrorHandlingMixin, {
   todaysDate: new Date(),
   doUseOnlyOwnMarkup: true,
   isAIDraftLoading: false,
-  aiGeneratedText: null,
 
   quillEditorId: 'response-new-editor',
   quillText: '',
@@ -300,17 +299,9 @@ export default Component.extend(ErrorHandlingMixin, {
     }
   },
 
-  replyText: computed(
-    'filteredComments',
-    'doUseOnlyOwnMarkup',
-    'aiGeneratedText',
-    function () {
-      if (this.aiGeneratedText) {
-        return this.aiGeneratedText;
-      }
-      return this.preFormatText();
-    }
-  ),
+  replyText: computed('filteredComments', 'doUseOnlyOwnMarkup', function () {
+    return this.preFormatText();
+  }),
 
   shortText: computed('model.text', function () {
     if (typeof this.get('model.text') !== 'string') {
@@ -517,9 +508,22 @@ export default Component.extend(ErrorHandlingMixin, {
             'doShowLoadingMessage'
           );
 
+          // BELOW NEEDS TO CHANGE: TEMPORARY ONLY.
           if (data && data.draft) {
-            // Set the AI draft text which will trigger replyText to update
-            this.set('aiGeneratedText', data.draft);
+            // Update the quill editor content directly.
+            let quillEditor = this.element.querySelector(
+              '.quill-container .ql-editor'
+            );
+
+            if (quillEditor) {
+              quillEditor.innerHTML = data.draft;
+
+              let isEmpty =
+                data.draft.trim() === '' || data.draft === '<p><br></p>';
+              let isOverLimit = data.draft.length > this.maxResponseLength;
+
+              this.send('updateQuillText', data.draft, isEmpty, isOverLimit);
+            }
 
             this.alert.showToast(
               'success',
