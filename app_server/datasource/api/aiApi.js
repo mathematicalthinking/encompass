@@ -1,10 +1,12 @@
 const utils = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
-const aiService = require('../../services/ai');
+const AIService = require('../../services/ai');
 
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
+
+const aiService = new AIService();
 
 async function aiDraft(req, res, next) {
   let user = userAuth.requireUser(req);

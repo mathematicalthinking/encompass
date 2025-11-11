@@ -10,7 +10,7 @@ class AIService {
   constructor() {
     this.apiEndpoint = 'aidraftserver.com';
     this.apiPath = '/api/generate-draft';
-    this.isDevelopment = true;
+    this.isDevelopment = false;
   }
 
   /**
@@ -51,6 +51,7 @@ class AIService {
 
       // Prepare the request body
       const requestBody = {
+        targetSubmissionId,
         shortAnswer: targetSubmission.shortAnswer || '',
         longAnswer: targetSubmission.longAnswer || '',
         mentorResponses,
@@ -72,17 +73,40 @@ class AIService {
   }
 
   /**
-   * Makes an HTTP POST request to the AI service
+   * Makes an HTTP POST rerence-tracker>quest to the AI service
    * @param {Object} requestBody - The request body to send
    * @returns {Promise<Object>} The response from the AI service
    */
-  _makeAIRequest(requestBody) {
-    return new Promise((resolve, reject) => {
-      const postData = JSON.stringify(requestBody);
+
+  // TODO: Current implementation uses simplified format for initial integration.
+  // RAG service may require full conversation thread format with rubrics/metadata.
+  async _makeAIRequest(requestBody) {
+    try {
+      // Get assignment/problem text for the submission
+      const targetSubmission = await models.Submission.findById(
+        requestBody.targetSubmissionId
+      )
+        .populate('assignment')
+        .lean()
+        .exec();
+
+      const problemStatement =
+        targetSubmission?.assignment?.text ||
+        targetSubmission?.assignment?.description ||
+        'No problem statement available';
+
+      const ragRequestBody = {
+        problem_statement: problemStatement,
+        student_solution: `Short Answer: ${requestBody.shortAnswer}\n\nLong Answer: ${requestBody.longAnswer}`,
+        noticing_wondering: requestBody.mentorResponses || '',
+      };
+
+      const postData = JSON.stringify(ragRequestBody);
 
       const options = {
-        hostname: this.apiEndpoint,
-        path: this.apiPath,
+        hostname: process.env.RAG_HOST || 'localhost' || this.apiEndpoint,
+        port: process.env.RAG_PORT || 8001,
+        path: process.env.RAG_PATH || this.apiPath,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,44 +114,50 @@ class AIService {
         },
       };
 
-      const req = https.request(options, (res) => {
-        let data = '';
+      return new Promise((resolve, reject) => {
+        // Use https for secure connections, http for localhost
+        const protocol = options.hostname === 'localhost' ? http : https;
+        const req = protocol.request(options, (res) => {
+          let data = '';
 
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
 
-        res.on('end', () => {
-          try {
-            const response = JSON.parse(data);
-            if (res.statusCode >= 200 && res.statusCode < 300) {
-              resolve(response);
-            } else {
+          res.on('end', () => {
+            try {
+              const response = JSON.parse(data);
+              if (res.statusCode >= 200 && res.statusCode < 300) {
+                resolve({ draft: response.draft_response });
+              } else {
+                reject(
+                  new Error(
+                    `AI service returned status ${res.statusCode}: ${
+                      response.message || 'Unknown error'
+                    }`
+                  )
+                );
+              }
+            } catch (parseError) {
               reject(
                 new Error(
-                  `AI service returned status ${res.statusCode}: ${
-                    response.message || 'Unknown error'
-                  }`
+                  `Failed to parse AI service response: ${parseError.message}`
                 )
               );
             }
-          } catch (parseError) {
-            reject(
-              new Error(
-                `Failed to parse AI service response: ${parseError.message}`
-              )
-            );
-          }
+          });
         });
-      });
 
-      req.on('error', (error) => {
-        reject(new Error(`AI service request failed: ${error.message}`));
-      });
+        req.on('error', (error) => {
+          reject(new Error(`AI service request failed: ${error.message}`));
+        });
 
-      req.write(postData);
-      req.end();
-    });
+        req.write(postData);
+        req.end();
+      });
+    } catch (error) {
+      throw new Error(`Failed to prepare AI request: ${error.message}`);
+    }
   }
 
   /**
@@ -210,4 +240,4 @@ class AIService {
   }
 }
 
-module.exports = new AIService();
+module.exports = AIService;
