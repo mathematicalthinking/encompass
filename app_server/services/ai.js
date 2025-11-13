@@ -8,6 +8,9 @@ const models = require('../datasource/schemas');
  */
 
 const isDevelopment = true;
+const DEFAULT_HOST = 'localhost';
+const DEFAULT_PORT = 8081;
+const DEFAULT_PATH = '/api/generate-draft';
 
 /**
  * Generate an AI draft response based on submission and context
@@ -90,18 +93,18 @@ const makeAIRequest = async (requestBody) => {
       targetSubmission?.assignment?.description ||
       'No problem statement available';
 
-    const ragRequestBody = {
+    const requestBody = {
       problem_statement: problemStatement,
       student_solution: `Short Answer: ${requestBody.shortAnswer}\n\nLong Answer: ${requestBody.longAnswer}`,
       noticing_wondering: requestBody.mentorResponses || '',
     };
 
-    const postData = JSON.stringify(ragRequestBody);
+    const postData = JSON.stringify(requestBody);
 
     const options = {
-      hostname: process.env.RAG_HOST || 'localhost',
-      port: process.env.RAG_PORT || 8001,
-      path: process.env.RAG_PATH || '',
+      hostname: process.env.AI_DRAFT_HOST || DEFAULT_HOST,
+      port: process.env.AI_DRAFT_PORT || DEFAULT_PORT,
+      path: process.env.AI_DRAFT_PATH || DEFAULT_PATH,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
