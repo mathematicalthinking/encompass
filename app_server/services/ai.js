@@ -7,7 +7,7 @@ const models = require('../datasource/schemas');
  * Communicates with external AI service to generate response drafts
  */
 
-const isDevelopment = true;
+const isDevelopment = false;
 const DEFAULT_HOST = 'localhost';
 const DEFAULT_PORT = 8081;
 const DEFAULT_PATH = '/api/generate-draft';
