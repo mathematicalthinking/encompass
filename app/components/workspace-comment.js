@@ -3,7 +3,7 @@ import { service } from '@ember/service';
 import { action } from '@ember/object';
 
 export default class WorkspaceCommentComponent extends Component {
-  @service('current-user') currentUser;
+  @service currentUser;
   @service('workspace-permissions') permissions;
   @service('utility-methods') utils;
 
@@ -76,6 +76,26 @@ export default class WorkspaceCommentComponent extends Component {
     return classes.join(' ');
   }
 
+  get commentSelection() {
+    return this.args.comment?.selection;
+  }
+
+  get commentText() {
+    return this.args.comment?.text;
+  }
+
+  get commentCreator() {
+    return this.args.isParentWorkspace
+      ? this.args.comment?.originalComment?.createdBy
+      : this.args.comment?.createdBy;
+  }
+
+  get commentWorkspace() {
+    return this.args.isParentWorkspace
+      ? this.args.comment?.originalComment?.workspace
+      : this.args.comment?.workspace;
+  }
+
   // Helper method to check comment edit permissions
   _canEditComments(level) {
     if (!this.args.currentWorkspace) return false;
@@ -87,12 +107,12 @@ export default class WorkspaceCommentComponent extends Component {
   }
 
   @action
-  deleteComment(comment) {
-    this.args.deleteComment?.(comment);
+  deleteComment() {
+    this.args.deleteComment?.(this.args.comment);
   }
 
   @action
-  reuseComment(comment) {
-    this.args.reuseComment?.(comment);
+  reuseComment() {
+    this.args.reuseComment?.(this.args.comment);
   }
 }

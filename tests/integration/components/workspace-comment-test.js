@@ -24,6 +24,7 @@ module('Integration | Component | workspace-comment', function (hooks) {
     }
 
     class CurrentUserService extends Service {
+      id = 'u1';
       user = { id: 'u1', username: 'testuser' };
     }
 
@@ -32,7 +33,7 @@ module('Integration | Component | workspace-comment', function (hooks) {
       'service:workspace-permissions',
       WorkspacePermissionsService
     );
-    this.owner.register('service:current-user', CurrentUserService);
+    this.owner.register('service:currentUser', CurrentUserService);
   });
 
   function createComment(overrides = {}) {
@@ -42,7 +43,11 @@ module('Integration | Component | workspace-comment', function (hooks) {
       label: 'notice',
       relevance: 'high',
       inReuse: false,
-      selection: { id: 's1', link: 'http://example.com' },
+      selection: { 
+        id: 's1', 
+        link: 'http://example.com',
+        submission: { id: 'sub1' }
+      },
       workspace: { id: 'w1', name: 'Test Workspace' },
       createdBy: { id: 'u1', username: 'testuser' },
       children: [],
@@ -137,6 +142,7 @@ module('Integration | Component | workspace-comment', function (hooks) {
   });
 
   test('hides delete button when user cannot delete', async function (assert) {
+    this.owner.unregister('service:workspace-permissions');
     this.owner.register(
       'service:workspace-permissions',
       class extends Service {
@@ -155,6 +161,7 @@ module('Integration | Component | workspace-comment', function (hooks) {
   });
 
   test('hides reuse button when user cannot comment', async function (assert) {
+    this.owner.unregister('service:workspace-permissions');
     this.owner.register(
       'service:workspace-permissions',
       class extends Service {
@@ -234,7 +241,12 @@ module('Integration | Component | workspace-comment', function (hooks) {
 
   test('handles group workspace with original selection', async function (assert) {
     await renderWorkspaceComment(this, {
-      comment: createComment({ selection: { id: 's2' } }),
+      comment: createComment({ 
+        selection: { 
+          id: 's2',
+          submission: { id: 'sub1' }
+        } 
+      }),
       currentSelection: {
         id: 's1',
         originalSelection: { id: 's2' },
@@ -246,7 +258,12 @@ module('Integration | Component | workspace-comment', function (hooks) {
 
   test('does not add is-for-cs class in parent workspace when selections do not match', async function (assert) {
     await renderWorkspaceComment(this, {
-      comment: createComment({ selection: { id: 's2' } }),
+      comment: createComment({ 
+        selection: { 
+          id: 's2',
+          submission: { id: 'sub1' }
+        } 
+      }),
       currentSelection: { id: 's1' },
       currentWorkspace: { id: 'w1', workspaceType: 'parent' },
     });
