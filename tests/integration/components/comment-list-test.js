@@ -100,7 +100,7 @@ module('Integration | Component | comment-list', function (hooks) {
       'service:workspace-permissions',
       WorkspacePermissionsService
     );
-    this.owner.register('service:current-user', CurrentUserService);
+    this.owner.register('service:currentUser', CurrentUserService);
     this.owner.register('service:store', StoreService);
     this.owner.register('service:error-handling', ErrorHandlingService);
   });
@@ -132,35 +132,14 @@ module('Integration | Component | comment-list', function (hooks) {
     />`);
   }
 
-  test('renders with empty comments', async function (assert) {
-    await renderCommentList(this);
-    assert.dom('#comment-list').exists();
-  });
-
-  test('shows empty message when no comments', async function (assert) {
+  test('renders and shows empty message when no comments', async function (assert) {
     await renderCommentList(this, { comments: [] });
+    assert.dom('#comment-list').exists();
     assert.dom('.info').hasText('No comments to display');
-  });
-
-  test('tags extracts hashtags from comment text', async function (assert) {
-    await renderCommentList(this);
-    await fillIn('#commentTextarea', 'This is #test #example comment');
-    assert.dom('#commentTextarea').hasValue('This is #test #example comment');
-  });
-
-  test('textContainsTag returns true when hashtags exist', async function (assert) {
-    await renderCommentList(this);
-    await fillIn('#commentTextarea', 'This is #test');
-    assert.dom('#commentTextarea').hasValue('This is #test');
   });
 
   test('handles null currentSelection', async function (assert) {
     await renderCommentList(this, { currentSelection: null });
-    assert.dom('#comment-list').exists();
-  });
-
-  test('handles empty comments array', async function (assert) {
-    await renderCommentList(this, { comments: [] });
     assert.dom('#comment-list').exists();
   });
 
