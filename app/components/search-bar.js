@@ -1,12 +1,8 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import debounce from 'lodash-es/debounce';
-import validate from 'validate.js';
 
 export default class SearchBarComponent extends Component {
-  @tracked queryErrors = null;
-
   defaultConstraints = {
     query: {
       length: {
@@ -29,12 +25,12 @@ export default class SearchBarComponent extends Component {
     }
   }
 
+  get queryErrors() {
+    return this.args.queryErrors || [];
+  }
+
   get showClear() {
-    return (
-      this.args.searchQuery ||
-      this.args.searchInputValue ||
-      (this.args.doSearchOnInputChange && this.args.inputValue)
-    );
+    return this.args.inputValue;
   }
 
   get placeholder() {
@@ -65,7 +61,7 @@ export default class SearchBarComponent extends Component {
   }
 
   onChangeSearch() {
-    this.validate();
+    this.initiateSearch(this.inputStringValue);
   }
 
   @action
@@ -74,32 +70,13 @@ export default class SearchBarComponent extends Component {
   }
 
   @action
-  validate() {
-    const val = this.inputStringValue;
-    const values = { query: val };
-    const constraints = this.inputConstraints;
-
-    const errors = validate(values, constraints);
-    if (errors) {
-      for (let key of Object.keys(errors)) {
-        const errorProp = `${key}Errors`;
-        this[errorProp] = errors[key];
-      }
-      return;
-    }
-    this.initiateSearch(val);
-  }
-
-  @action
   clearErrors() {
-    if (this.queryErrors) {
-      this.queryErrors = null;
-    }
+    this.args.clearErrors?.();
   }
 
   @action
   searchAction() {
-    this.validate();
+    this.initiateSearch(this.inputStringValue);
   }
 
   @action
@@ -108,7 +85,7 @@ export default class SearchBarComponent extends Component {
       if (this.debouncedSearch) {
         return this.debouncedSearch();
       }
-      this.validate();
+      this.onChangeSearch();
     }
   }
 }
