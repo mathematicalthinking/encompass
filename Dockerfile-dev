@@ -1,4 +1,4 @@
-FROM node:20-bullseye
+FROM node:20@sha256:c11ae157cdd9f8b522d5a65e7f3f5f5c34cf45a8bd883c15e8f2028a2673dec7
 RUN apt update -y && apt upgrade -y && apt install -y curl wget bash iputils-ping net-tools dnsutils
 
 # install ember
