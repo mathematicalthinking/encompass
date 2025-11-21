@@ -8,6 +8,7 @@ module('Integration | Component | search-bar', function (hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function () {
+    // Mock child components to isolate search-bar testing
     this.owner.register(
       'component:ui/my-select',
       class extends Component {
@@ -47,16 +48,22 @@ module('Integration | Component | search-bar', function (hooks) {
     />`);
   }
 
+  // ---------- Basic Rendering ----------
+
   test('renders search input field with correct structure', async function (assert) {
     await renderSearchBar(this);
     assert.dom('.search-field').exists('search input field is rendered');
     assert.dom('.clear-field').exists('clear field container is present');
   });
 
+  // ---------- Placeholder Text ----------
+
   test('displays custom placeholder text when provided', async function (assert) {
     await renderSearchBar(this, { basePlaceholder: 'Search items' });
     assert.dom('.search-field').hasAttribute('placeholder', 'Search items', 'placeholder matches provided text');
   });
+
+  // ---------- Search Icon Visibility ----------
 
   test('shows search icon for manual search mode', async function (assert) {
     await renderSearchBar(this, { doSearchOnInputChange: false });
@@ -68,6 +75,8 @@ module('Integration | Component | search-bar', function (hooks) {
     assert.dom('.fa-search').doesNotExist('search icon is hidden when automatic search is enabled');
   });
 
+  // ---------- Clear Button Visibility ----------
+
   test('displays clear button when input contains text', async function (assert) {
     await renderSearchBar(this, { inputValue: 'test' });
     assert.dom('.clear').exists('clear button is visible when input has value');
@@ -77,6 +86,8 @@ module('Integration | Component | search-bar', function (hooks) {
     await renderSearchBar(this, { inputValue: '' });
     assert.dom('.clear').doesNotExist('clear button is hidden when input is empty');
   });
+
+  // ---------- Clear Button Interaction ----------
 
   test('invokes clearSearchResults callback when clear button is clicked', async function (assert) {
     assert.expect(1);
@@ -88,6 +99,8 @@ module('Integration | Component | search-bar', function (hooks) {
     });
     await click('.clear');
   });
+
+  // ---------- Search Icon Interaction ----------
 
   test('triggers search with trimmed and lowercased query when search icon is clicked', async function (assert) {
     assert.expect(2);
@@ -101,6 +114,8 @@ module('Integration | Component | search-bar', function (hooks) {
     });
     await click('.fa-search');
   });
+
+  // ---------- Automatic Search Mode ----------
 
   test('automatically triggers search on input change when enabled', async function (assert) {
     assert.expect(1);
@@ -129,6 +144,8 @@ module('Integration | Component | search-bar', function (hooks) {
     assert.false(searchCalled, 'onSearch is not called when automatic search is disabled');
   });
 
+  // ---------- Filter Dropdown Visibility ----------
+
   test('displays filter dropdown when showFilter is enabled', async function (assert) {
     await renderSearchBar(this, { showFilter: true });
     assert.dom('.select-bar').exists('filter dropdown is visible when showFilter is true');
@@ -139,6 +156,8 @@ module('Integration | Component | search-bar', function (hooks) {
     assert.dom('.select-bar').doesNotExist('filter dropdown is hidden when showFilter is false');
   });
 
+  // ---------- Filter Integration ----------
+
   test('appends selected criterion to placeholder text when filter is shown', async function (assert) {
     await renderSearchBar(this, {
       basePlaceholder: 'Search',
@@ -147,6 +166,8 @@ module('Integration | Component | search-bar', function (hooks) {
     });
     assert.dom('.search-field').hasAttribute('placeholder', 'Search by name', 'placeholder includes selected criterion');
   });
+
+  // ---------- Input Normalization ----------
 
   test('normalizes input by trimming whitespace and converting to lowercase', async function (assert) {
     assert.expect(1);
@@ -160,6 +181,8 @@ module('Integration | Component | search-bar', function (hooks) {
     await click('.fa-search');
   });
 
+  // ---------- Callback Parameters ----------
+
   test('passes selected criterion to onSearch callback', async function (assert) {
     assert.expect(1);
     await renderSearchBar(this, {
@@ -172,6 +195,8 @@ module('Integration | Component | search-bar', function (hooks) {
     });
     await click('.fa-search');
   });
+
+  // ---------- Edge Cases ----------
 
   test('handles missing onSearch callback without throwing error', async function (assert) {
     await renderSearchBar(this, {
@@ -191,6 +216,8 @@ module('Integration | Component | search-bar', function (hooks) {
     await click('.clear');
     assert.ok(true, 'component handles missing clearSearchResults callback gracefully');
   });
+
+  // ---------- Error Display ----------
 
   test('renders error messages container', async function (assert) {
     await renderSearchBar(this);
