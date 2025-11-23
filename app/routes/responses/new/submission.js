@@ -1,15 +1,15 @@
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { hash, resolve } from 'rsvp';
-import ConfirmLeavingRoute from '../../_confirm_leaving_route';
+import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 
-export default class ResponsesNewSubmissionRoute extends ConfirmLeavingRoute {
+export default class ResponsesNewSubmissionRoute extends Route {
   @service('utility-methods') utils;
   @service store;
   @service router;
-  renderTemplate() {
-    this.render('responses/response');
-  }
+  @service currentUser;
+
+  templateName = 'responses/response';
 
   beforeModel(transition) {
     let workspaceId;
@@ -26,6 +26,9 @@ export default class ResponsesNewSubmissionRoute extends ConfirmLeavingRoute {
     }
     let wsIds = submission.hasMany('workspaces').ids();
     let wsId = wsIds.get('firstObject');
+    if (!this.utils.isValidMongoId(wsId)) {
+      return resolve(null);
+    }
     return this.store.findRecord('workspace', wsId);
 
     // in current structure do submissions ever have multiple workspaces?
@@ -54,7 +57,7 @@ export default class ResponsesNewSubmissionRoute extends ConfirmLeavingRoute {
     let draftId = null;
 
     let allResponses = this.store.peekAll('response');
-    let user = this.modelFor('application');
+    let user = this.currentUser.user;
 
     return this.store
       .findRecord('submission', params.submission_id)
@@ -70,19 +73,19 @@ export default class ResponsesNewSubmissionRoute extends ConfirmLeavingRoute {
 
           if (
             status === 'draft' &&
-            subId === submission.get('id') &&
-            creatorId === user.get('id')
+            subId === submission.id &&
+            creatorId === user.id
           ) {
             isDraft = true;
-            draftId = response.get('id');
+            draftId = response.id;
           }
-          return subId === submission.get('id');
+          return subId === submission.id;
         });
 
         if (isDraft) {
           return hash({
             isDraft: true,
-            submissionId: submission.get('id'),
+            submissionId: submission.id,
             responseId: draftId,
           });
         }
@@ -101,11 +104,9 @@ export default class ResponsesNewSubmissionRoute extends ConfirmLeavingRoute {
         if (hash.isDraft) {
           return hash;
         }
-        let studentSubmissions = hash.submissions.filterBy(
-          'student',
-          hash.submission.get('student')
+        let studentSubmissions = hash.submissions.filter(
+          (submission) => submission.student === hash.submission.student
         );
-
         let response = this.store.createRecord('response', {
           submission: hash.submission,
           workspace: hash.workspace,

@@ -9,6 +9,7 @@ export default class WorkspaceSubmissionComponent extends Component {
   @service currentUser;
   @service('utility-methods') utils;
   @service('workspace-permissions') permissions;
+  @service navigation;
 
   @tracked makingSelection = true;
   @tracked showingSelections = false;
@@ -255,8 +256,11 @@ export default class WorkspaceSubmissionComponent extends Component {
   }
 
   @action
-  toNewResponse(subId, wsId) {
-    this.args.toNewResponse?.(subId, wsId);
+  toNewResponse() {
+    this.navigation.toNewResponse(
+      this.args.currentSubmission.id,
+      this.args.currentWorkspace.id
+    );
   }
 
   @action

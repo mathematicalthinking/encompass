@@ -10,7 +10,7 @@
 import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
 import { hash, resolve } from 'rsvp';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { action } from '@ember/object';
 export default class WorkspaceSubmissionRoute extends Route {
   @service sweetAlert;
@@ -55,16 +55,9 @@ export default class WorkspaceSubmissionRoute extends Route {
     });
   }
 
-  setupController(controller, model) {
-    super.setupController(controller, model);
-
-    this.controllerFor('application').set('isSmallHeader', true);
-  }
-
   resetController(controller, isExiting, transition) {
     if (isExiting && transition.targetName !== 'error') {
       controller.set('itemsToDisplay', 'all');
-      controller('application').set('isSmallHeader', false);
     }
   }
 
@@ -74,7 +67,7 @@ export default class WorkspaceSubmissionRoute extends Route {
     let user = this.modelFor('application');
 
     schedule('afterRender', () => {
-      if (!user.get('seenTour')) {
+      if (!this.currentUser.user.seenTour) {
         controller.send('startTour', 'workspace');
       }
     });
