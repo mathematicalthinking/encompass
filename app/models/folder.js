@@ -7,9 +7,11 @@ export default class FolderModel extends AuditableModel {
   @hasMany('tagging', { inverse: 'folder', async: true }) taggings;
   @belongsTo('folder', { inverse: 'children', async: true }) parent;
   @hasMany('folder', { inverse: 'parent', async: true }) children;
-  @belongsTo('workspace', { async: true }) workspace;
+  @belongsTo('workspace', { inverse: 'folders', async: true }) workspace;
   @attr('boolean') isTopLevel;
   @attr('boolean', { defaultValue: false }) isExpanded;
+  @belongsTo('folder', { inverse: null, async: false }) originalFolder;
+
   sortProperties = ['weight', 'name'];
 
   get cleanTaggings() {
@@ -92,6 +94,4 @@ export default class FolderModel extends AuditableModel {
       return 0;
     });
   }
-
-  @belongsTo('folder', { inverse: null }) originalFolder;
 }

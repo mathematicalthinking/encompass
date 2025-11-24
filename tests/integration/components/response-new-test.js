@@ -8,57 +8,45 @@ module('Integration | Component | response-new', function (hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function () {
-    this.owner.register(
-      'service:current-user',
-      Service.extend({
-        id: 'user1',
-        username: 'testuser',
-        user: { id: 'user1', username: 'testuser' },
-      })
-    );
+    class CurrentUserStub extends Service {
+      id = 'user1';
+      username = 'testuser';
+      user = { id: 'user1', username: 'testuser' };
+    }
+    this.owner.register('service:current-user', CurrentUserStub);
 
-    this.owner.register(
-      'service:utils',
-      Service.extend({
-        getBelongsToId(obj, field) {
-          return obj[field] || obj.createdBy;
-        },
-      })
-    );
+    class UtilityMethodsStub extends Service {
+      getBelongsToId(obj, field) {
+        return obj[field] || obj.createdBy;
+      }
+    }
+    this.owner.register('service:utility-methods', UtilityMethodsStub);
 
-    this.owner.register(
-      'service:loading-display',
-      Service.extend({
-        handleLoadingMessage() {},
-      })
-    );
+    class LoadingDisplayStub extends Service {
+      handleLoadingMessage() {}
+    }
+    this.owner.register('service:loading-display', LoadingDisplayStub);
 
-    this.owner.register(
-      'service:errorHandling',
-      Service.extend({
-        handleErrors() {},
-      })
-    );
+    class ErrorHandlingStub extends Service {
+      handleErrors() {}
+    }
+    this.owner.register('service:error-handling', ErrorHandlingStub);
 
-    this.owner.register(
-      'service:alert',
-      Service.extend({
-        showToast() {},
-      })
-    );
+    class AlertStub extends Service {
+      showToast() {}
+    }
+    this.owner.register('service:alert', AlertStub);
 
-    this.owner.register(
-      'service:store',
-      Service.extend({
-        createRecord() {
-          return {
-            save() {
-              return Promise.resolve({});
-            },
-          };
-        },
-      })
-    );
+    class StoreStub extends Service {
+      createRecord() {
+        return {
+          save() {
+            return Promise.resolve({});
+          },
+        };
+      }
+    }
+    this.owner.register('service:store', StoreStub);
 
     this.owner.register('helper:format-date', function () {
       return 'January 1st 2024';

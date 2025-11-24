@@ -6,7 +6,7 @@ import { action } from '@ember/object';
 import { service } from '@ember/service';
 export default class ResponseNewComponent extends Component {
   @service currentUser;
-  @service utils;
+  @service('utility-methods') utils;
   @service('loading-display') loading; // for this line either use this way or we would have to change the service name
   @service errorHandling;
   @service alert;
