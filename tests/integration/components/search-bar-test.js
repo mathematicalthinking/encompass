@@ -28,6 +28,7 @@ module('Integration | Component | search-bar', function (hooks) {
       onSearch: () => {},
       clearSearchResults: () => {},
       clearErrors: () => {},
+      onCriterionChange: () => {},
       inputValue: '',
       queryErrors: [],
       ...props,
@@ -37,6 +38,7 @@ module('Integration | Component | search-bar', function (hooks) {
       @onSearch={{this.onSearch}}
       @clearSearchResults={{this.clearSearchResults}}
       @clearErrors={{this.clearErrors}}
+      @onCriterionChange={{this.onCriterionChange}}
       @inputValue={{this.inputValue}}
       @basePlaceholder={{this.basePlaceholder}}
       @doSearchOnInputChange={{this.doSearchOnInputChange}}

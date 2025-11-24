@@ -88,4 +88,9 @@ export default class SearchBarComponent extends Component {
       this.onChangeSearch();
     }
   }
+
+  @action
+  updateCriterion(value) {
+    this.args.onCriterionChange?.(value);
+  }
 }

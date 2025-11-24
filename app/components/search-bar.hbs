@@ -4,15 +4,15 @@
       @content={{@searchOptions}}
       @cannotBeNull={{true}}
       @selectedValue={{@selectedCriterion}}
-      @action={{fn (mut @selectedCriterion)}}
+      @action={{this.updateCriterion}}
     />
   </div>
 {{/if}}
 <span class='clear-field'>
-  <input
+  <Input
     class='search-field'
-    type='text'
-    value={{@inputValue}}
+    @type='text'
+    @value={{@inputValue}}
     placeholder={{this.placeholder}}
     {{on 'input' this.onInputChange}}
   />
