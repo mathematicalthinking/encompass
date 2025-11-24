@@ -92,16 +92,21 @@ export default class WorkspaceSubmissionRoute extends Route {
       return resolve(cachedRoom);
     }
     let url = `api/vmt/rooms/${roomId}`;
-    return fetch(url).then((data) => {
-      if (!data || !data.room) {
-        return null;
-      }
-      // put result on window if necessary
+    return fetch(url)
+      .then((data) => {
+        if (!data || !data.room) {
+          return null;
+        }
+        // put result on window if necessary
 
-      this.handleRoomForVmt(data.room);
+        this.handleRoomForVmt(data.room);
 
-      return data.room;
-    });
+        return data.room;
+      })
+      .catch((err) => {
+        console.log('err fetch vmt room', err);
+        throw err;
+      });
   }
 
   handleRoomForVmt(room) {

@@ -311,9 +311,10 @@ export default class WorkspaceSubmissionComponent extends Component {
 
   @action
   async openProblem() {
-    let answer = this.args.currentSubmission.answer;
-    let problem = await answer.problem;
-    let problemId = await problem.id;
+    const problemId = await this.args.currentSubmission?.answer?.problem?.id;
+    if (!problemId) {
+      return;
+    }
 
     let getUrl = window.location;
     let baseUrl = getUrl.protocol + '//' + getUrl.host;
