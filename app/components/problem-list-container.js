@@ -356,6 +356,15 @@ export default class ProblemListContainerComponent extends Component {
     );
   }
 
+  buildSearchBy() {
+    let criterion = this.searchCriterion;
+    let query = this.searchQuery;
+    return {
+      criterion,
+      query,
+    };
+  }
+
   configureCategoryFilter() {
     this.inputState.createStates(this.categoryFilterName, [
       {
@@ -488,6 +497,9 @@ export default class ProblemListContainerComponent extends Component {
     if (!this.showOnlyTrashed) {
       queryParams.filterBy = this.buildFilterBy();
       queryParams.sortBy = this.buildSortBy();
+      if (this.isDisplayingSearchResults) {
+        queryParams.searchBy = this.buildSearchBy();
+      }
     } else {
       queryParams.isTrashedOnly = true;
     }
