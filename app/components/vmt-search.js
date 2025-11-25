@@ -58,6 +58,9 @@ export default Component.extend(
       clearSearchResults() {
         return;
       },
+      onCriterionChange(newCriterion){
+        this.set('searchCriterion', newCriterion)
+      }
     },
   }
 );
