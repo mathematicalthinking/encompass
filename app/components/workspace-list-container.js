@@ -817,4 +817,9 @@ export default class WorkspaceListContainerComponent extends Component {
         }
       });
   }
+
+  @action
+  onCriterionChange(newCriterion) {
+    this.searchCriterion = newCriterion;
+  }
 }
