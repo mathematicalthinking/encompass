@@ -65,6 +65,7 @@ export default class CommentListComponent extends Component {
 
   labelOptions = ['notice', 'wonder', 'feedback'];
   searchOptions = ['general', 'text', 'label'];
+  @tracked searchCriterion = 'general';
 
   get createRecordErrors() {
     return this.errorHandling.getErrors('createRecordErrors');
@@ -251,9 +252,21 @@ export default class CommentListComponent extends Component {
 
   _matchesSearchQuery(comment) {
     if (!this.commentFilterText) return true;
+
+    const query = this.commentFilterText.toLowerCase();
+    const criterion = this.searchCriterion || 'general';
+
+    // Search based on selected criterion
+    if (criterion === 'text') {
+      return comment.text?.toLowerCase().includes(query);
+    }
+    if (criterion === 'label') {
+      return comment.label?.toLowerCase().includes(query);
+    }
+    // 'general' - search both fields
     return (
-      comment.label?.includes(this.commentFilterText) ||
-      comment.text?.includes(this.commentFilterText)
+      comment.label?.toLowerCase().includes(query) ||
+      comment.text?.toLowerCase().includes(query)
     );
   }
 
