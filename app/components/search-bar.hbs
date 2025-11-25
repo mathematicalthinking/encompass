@@ -1,10 +1,10 @@
-{{#if this.showFilter}}
+{{#if @showFilter}}
   <div class='select-bar'>
     <Ui::MySelect
-      @content={{this.searchOptions}}
+      @content={{@searchOptions}}
       @cannotBeNull={{true}}
-      @selectedValue={{this.selectedCriterion}}
-      @action={{action (mut this.criterion)}}
+      @selectedValue={{@selectedCriterion}}
+      @action={{this.updateCriterion}}
     />
   </div>
 {{/if}}
@@ -12,11 +12,9 @@
   <Input
     class='search-field'
     @type='text'
-    @insert-newline={{action 'searchAction'}}
-    @value={{this.inputValue}}
+    @value={{@inputValue}}
     placeholder={{this.placeholder}}
-    {{on 'keypress' (action 'clearErrors')}}
-    {{on 'keyup' (action 'onInputChange')}}
+    {{on 'input' this.onInputChange}}
   />
 
   {{#if this.showClear}}
@@ -26,7 +24,7 @@
       height='96'
       viewBox='0 0 96 96'
       class='clear'
-      {{action 'clearResults'}}
+      {{on 'click' this.clearResults}}
     >
       <switch>
         <foreignObject
@@ -41,9 +39,9 @@
     </svg>
   {{/if}}
 </span>
-{{#unless this.doSearchOnInputChange}}
+{{#unless @doSearchOnInputChange}}
   <div class='submit'>
-    <i class='fa fa-search' aria-hidden='true' {{action 'validate'}}></i>
+    <i class='fa fa-search' aria-hidden='true' {{on 'click' this.searchAction}}></i>
   </div>
 {{/unless}}
 
