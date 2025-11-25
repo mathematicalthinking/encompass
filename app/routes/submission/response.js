@@ -1,7 +1,7 @@
-import { inject as service } from '@ember/service';
-import ConfirmLeavingRoute from '../_confirm_leaving_route';
+import Route from '@ember/routing/route';
+import { service } from '@ember/service';
 import { action } from '@ember/object';
-export default class ResponsesRoute extends ConfirmLeavingRoute {
+export default class ResponsesRoute extends Route {
   @service('utility-methods') utils;
   @service store;
   @service router;
