@@ -534,4 +534,9 @@ export default class ProblemListContainerComponent extends Component {
     const org = await this.user.organization;
     return org?.name || 'undefined';
   }
+
+  @action
+  onCriterionChange(newCriterion) {
+    this.searchCriterion = newCriterion;
+  }
 }
