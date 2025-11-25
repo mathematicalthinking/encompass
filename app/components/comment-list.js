@@ -64,6 +64,7 @@ export default class CommentListComponent extends Component {
   };
 
   labelOptions = ['notice', 'wonder', 'feedback'];
+  searchOptions = ['general', 'text', 'label'];
 
   get createRecordErrors() {
     return this.errorHandling.getErrors('createRecordErrors');
@@ -509,5 +510,10 @@ export default class CommentListComponent extends Component {
   @action
   clearSearchResults() {
     this.searchComments();
+  }
+
+  @action
+  onCriterionChange(newCriterion) {
+    this.searchCriterion = newCriterion;
   }
 }

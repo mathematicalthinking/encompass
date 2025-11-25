@@ -118,8 +118,12 @@
           @inputValue={{this.commentFilterText}}
           @doSearchOnInputChange={{true}}
           @doDebounce={{true}}
+          @showFilter={{true}}
+          @selectedCriterion={{this.searchCriterion}}
           @constraints={{this.searchConstraints}}
           @clearSearchResults={{this.clearSearchResults}}
+          @onCriterionChange={{this.onCriterionChange}}
+          @searchOptions={{this.searchOptions}}
         />
       </div>
     </div>
