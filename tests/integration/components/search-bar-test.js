@@ -8,13 +8,7 @@ module('Integration | Component | search-bar', function (hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function () {
-    // Mock child components to isolate search-bar testing
-    this.owner.register(
-      'component:ui/my-select',
-      class extends Component {
-        static template = hbs`<div class="my-select-comp"></div>`;
-      }
-    );
+    // Mock only error-box, UI::MySelect is NOT mocked for integration testing
     this.owner.register(
       'component:ui/error-box',
       class extends Component {
@@ -224,5 +218,41 @@ module('Integration | Component | search-bar', function (hooks) {
   test('renders error messages container', async function (assert) {
     await renderSearchBar(this);
     assert.dom('.error-messages').exists('error messages container is rendered');
+  });
+
+  // ---------- UI::MySelect Integration ----------
+
+  test('UI::MySelect criterion change triggers onCriterionChange callback', async function (assert) {
+    assert.expect(2);
+    
+    let capturedValue = null;
+    
+    this.set('onCriterionChange', (value) => {
+      capturedValue = value;
+    });
+    
+    this.set('selectedCriterion', 'all');
+    this.set('searchOptions', ['all', 'name', 'owner']);
+
+    await render(hbs`
+      <SearchBar
+        @selectedCriterion={{this.selectedCriterion}}
+        @onCriterionChange={{this.onCriterionChange}}
+        @searchOptions={{this.searchOptions}}
+        @showFilter={{true}}
+        @basePlaceholder="Search"
+      />
+    `);
+
+    // Verify real UI::MySelect is rendered (not mocked)
+    assert.dom('.select-bar .mySelect select').exists('UI::MySelect dropdown is rendered');
+
+    // Simulate changing the select value
+    const selectElement = document.querySelector('.select-bar .mySelect select');
+    selectElement.value = 'name';
+    selectElement.dispatchEvent(new Event('change', { bubbles: true }));
+
+    // Verify updateCriterion was called with the new value
+    assert.strictEqual(capturedValue, 'name', 'onCriterionChange receives new criterion from UI::MySelect');
   });
 });
