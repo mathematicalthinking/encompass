@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
-import { action } from '@ember/object';
+
 export default class ResponsesRoute extends Route {
   @service('utility-methods') utils;
   @service store;
@@ -9,7 +9,7 @@ export default class ResponsesRoute extends Route {
     return this.store.findRecord('response', params.response_id);
   }
 
-  redirect(model, transition) {
+  redirect(model) {
     if (!model) {
       this.router.transitionTo('responses');
     } else {
@@ -22,17 +22,5 @@ export default class ResponsesRoute extends Route {
         this.router.transitionTo('responses');
       }
     }
-  }
-
-  @action toResponseInfo(response) {
-    this.router.transitionTo('response', response.get('id'));
-  }
-  @action toResponses() {
-    this.router.transitionTo('responses');
-  }
-  @action toNewResponse(submissionId, workspaceId) {
-    this.router.transitionTo('responses.new.submission', submissionId, {
-      queryParams: { workspaceId: workspaceId },
-    });
   }
 }
