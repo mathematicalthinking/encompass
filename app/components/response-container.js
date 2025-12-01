@@ -330,18 +330,18 @@ export default class ResponseContainer extends Component {
   @action
   onSaveSuccess(submission, response) {
     const responseId = response?.id || null;
-    this.args.toResponse?.(submission.id, responseId);
+    this.navigation.toResponse(submission.id, responseId);
   }
 
   @action
   onMentorReplySwitch(response) {
     const subId = response.belongsTo('submission').id();
-    this.args.toResponse?.(subId, response.id);
+    this.navigation.toResponse(subId, response.id);
   }
 
   @action
   onSubmissionChange(sub) {
-    this.args.toResponseSubmission?.(sub.id);
+    this.navigation.toResponseSubmission(sub.id);
   }
 
   /**

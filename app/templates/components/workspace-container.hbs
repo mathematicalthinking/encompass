@@ -33,15 +33,12 @@
   {{!section class="submissions"}}
   {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}}"> --}}
   <SubmissionGroup
-    @store={{this.store}}
     @canRespond={{canRespond}}
     @submissions={{currentWorkspace.submissions.content}}
     @submission={{this.model.submission}}
-    @addSelection={{action 'addSelection'}}
-    @deleteSelection={{action 'deleteSelection'}}
+    @addSelection={{@addSelection}}
+    @deleteSelection={{@deleteSelection}}
     @currentWorkspace={{currentWorkspace}}
-    @toNewResponse={{action 'toNewResponse'}}
-    @toSubmission={{action 'toSubmission'}}
     @selections={{nonTrashedSelections}}
     @responses={{nonTrashedResponses}}
   />
@@ -52,13 +49,12 @@
   {{! <div id="al_right"> }}
 
   <CommentList
-    @store={{this.store}}
     @comments={{this.nonTrashedComments}}
     @currentWorkspace={{currentWorkspace}}
     @currentSelection={{currentSelection}}
     @currentSubmission={{currentSubmission}}
     @allowedToComment={{permittedToComment}}
-    @resetComment={{action 'cancelComment'}}
+    @resetComment={{@cancelComment}}
   />
   {{! </div> }}
   {{!/section}}
