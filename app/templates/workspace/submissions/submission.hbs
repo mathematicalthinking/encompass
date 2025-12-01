@@ -67,10 +67,10 @@
       @taggings={{this.nonTrashedTaggings}}
       @workspaceSubmissions={{this.currentWorkspace.submissions.content}}
       @workspaceSelections={{this.nonTrashedSelections}}
-      @hideFolders={{action 'toggleFolderDisplay'}}
+      @hideFolders={{this.toggleFolderDisplay}}
       @isHidden={{this.areFoldersHidden}}
       @containerLayoutClass={{this.containerLayoutClass}}
-      @hideComments={{action 'toggleCommentDisplay'}}
+      @hideComments={{this.toggleCommentDisplay}}
       @areCommentsHidden={{this.areCommentsHidden}}
     />
     {{! </div> }}
@@ -82,11 +82,9 @@
       @canRespond={{this.canRespond}}
       @submissions={{this.currentWorkspace.submissions.content}}
       @submission={{this.model.submission}}
-      @addSelection={{action 'addSelection'}}
-      @deleteSelection={{action 'deleteSelection'}}
+      @addSelection={{this.addSelection}}
+      @deleteSelection={{this.deleteSelection}}
       @currentWorkspace={{this.currentWorkspace}}
-      @toNewResponse={{action 'toNewResponse'}}
-      @toSubmission={{action 'toSubmission'}}
       @selections={{this.nonTrashedSelections}}
       @responses={{this.nonTrashedResponses}}
       @containerLayoutClass={{this.containerLayoutClass}}
@@ -108,9 +106,9 @@
       @currentSelection={{this.currentSelection}}
       @currentSubmission={{this.model.submission}}
       @allowedToComment={{this.permittedToComment}}
-      @resetComment={{action 'cancelComment'}}
+      @resetComment={{this.cancelComment}}
       @isHidden={{this.areCommentsHidden}}
-      @hideComments={{action 'toggleCommentDisplay'}}
+      @hideComments={{this.toggleCommentDisplay}}
       @containerLayoutClass={{this.containerLayoutClass}}
       @isParentWorkspace={{this.isParentWorkspace}}
     />
