@@ -205,11 +205,6 @@ export default class SubmissionGroupComponent extends Component {
   }
 
   @action
-  toNewResponse(subId, wsId) {
-    this.navigation.toNewResponse(subId, wsId);
-  }
-
-  @action
   setCurrentSubmission(currentRevision) {
     if (currentRevision?.revision) {
       this.navigation.toSubmission(currentRevision.revision.id);
