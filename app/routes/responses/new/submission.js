@@ -7,8 +7,6 @@ export default class ResponsesNewSubmissionRoute extends Route {
   @service router;
   @service currentUser;
 
-  templateName = 'responses/response';
-
   beforeModel(transition) {
     const workspaceId = transition.intent?.queryParams?.workspaceId;
     if (this.utils.isValidMongoId(workspaceId)) {
@@ -21,7 +19,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
       return Promise.resolve(workspace);
     }
     const wsIds = submission.hasMany('workspaces').ids();
-    const wsId = wsIds.get('firstObject');
+    const wsId = wsIds.get('firstObject'); // maybe use [0] instead?
 
     if (!this.utils.isValidMongoId(wsId)) {
       return Promise.resolve(null);
@@ -41,12 +39,12 @@ export default class ResponsesNewSubmissionRoute extends Route {
       return this.store.findRecord('user', firstApproverId);
     }
 
-    return workspace.get('owner');
+    return workspace.get('owner'); // in other cases, returns a promise, but a value here
   }
 
   _findDraftResponse(responses, submissionId, userId) {
     return responses.find((response) => {
-      const creatorId = response.belongsTo('createdBy').id();
+      const creatorId = response.belongsTo('createdBy').id(); // shouldn't these be utils.getBelongsToId()?
       const status = response.get('status');
       const subId = response.belongsTo('submission').id();
 
@@ -107,6 +105,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
       };
     }
 
+    // what if workspace is null?
     const workspace = await this.resolveWorkspace(this.workspace, submission);
 
     // Load all async data in parallel
@@ -117,6 +116,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
       submission.get('comments'),
     ]);
 
+    // should we check the student ids rather than the objects?
     const studentSubmissions = submissions.filter(
       (sub) => sub.student === submission.student
     );
