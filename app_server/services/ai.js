@@ -4,11 +4,9 @@ const models = require('../datasource/schemas');
 
 /**
  * AI Service for generating draft responses
+ * Enhanced version with structured student/teacher context separation
  * Communicates with external AI service to generate response drafts
  */
-
-// Toggle between mock responses (true) and real AI service calls (false)
-const isDevelopment = false;
 
 // Default configuration for AI service connection
 const DEFAULT_HOST = 'localhost';
@@ -16,7 +14,7 @@ const DEFAULT_PORT = 8001;
 const DEFAULT_PATH = '/api/generate-draft';
 
 /**
- * Strip HTML tags from text
+ * Strip HTML tags and entities from text
  * @param {string} html - HTML string to strip
  * @returns {string} Plain text without HTML tags
  */
@@ -37,16 +35,29 @@ const stripHtml = (html) => {
 
 /**
  * Generate an AI draft response based on submission and context
+ * Enhanced version that structures data by student work vs mentor/teacher observations
  * @param {string} targetSubmissionId - The ID of the target submission
+ * @param {string} responseMode - Mode for AI response: 'student_only', 'teacher_only', or 'all' (default: 'student_only')
  * @returns {Promise<string>} The generated AI draft text
  */
-const generateDraft = async (targetSubmissionId) => {
+const generateDraft = async (targetSubmissionId, responseMode = 'all') => {
   try {
-    // Step 1: Get the student's basic submission (their answers to the problem)
+    // Step 1: Fetch submission with all related data (problem, student answers, etc.)
     const targetSubmission = await models.Submission.findById(
       targetSubmissionId
     )
-      .select('shortAnswer longAnswer')
+      .populate({
+        path: 'answer',
+        populate: {
+          path: 'assignment',
+          populate: {
+            path: 'problem',
+            select: 'text title',
+          },
+        },
+      })
+      .populate('creator', 'username')
+      .select('shortAnswer longAnswer creator clazz publication')
       .lean()
       .exec();
 
@@ -56,10 +67,43 @@ const generateDraft = async (targetSubmissionId) => {
       );
     }
 
-    // Step 2: Get mentor's highlighted text selections and their observations
-    // These represent what mentors "noticed" and "wondered" about in the student's work
-    console.log('Fetching selections for submission:', targetSubmissionId);
+    // Step 2: Extract problem statement from different possible locations
+    // System has evolved over time, so we check multiple places:
+    // - New system: answer.assignment.problem.text (full problem text)
+    // - Old PoWs with title: publication.puzzle.title (denormalized title from import)
+    // - Old PoWs with problemId only: fetch full problem from publication.puzzle.problemId
+    // - Reflections or broken imports: generic fallback message
+    let problemStatement =
+      targetSubmission?.answer?.assignment?.problem?.text ||
+      targetSubmission?.publication?.puzzle?.title;
 
+    // If we have a problemId but no text, try to fetch the problem
+    if (!problemStatement && targetSubmission?.publication?.puzzle?.problemId) {
+      try {
+        const problem = await models.Problem.findById(
+          targetSubmission.publication.puzzle.problemId
+        )
+          .select('text title')
+          .lean()
+          .exec();
+
+        if (problem) {
+          problemStatement = problem.text || problem.title;
+        }
+      } catch (err) {
+        console.error('Error fetching problem from problemId:', err);
+      }
+    }
+
+    // Final fallback for reflections or incomplete data
+    if (!problemStatement) {
+      problemStatement =
+        'The student is sharing their mathematical thinking and work.';
+    }
+
+    // Step 3: Get mentor/teacher selections with their associated comments
+    // Selections = text portions that mentors highlighted in the student's work
+    // Comments = mentor observations attached to those selections (labeled as notice/wonder/feedback)
     const selections = await models.Selection.find({
       submission: targetSubmissionId,
       isTrashed: { $ne: true },
@@ -67,81 +111,104 @@ const generateDraft = async (targetSubmissionId) => {
       .populate({
         path: 'comments',
         match: { isTrashed: { $ne: true } },
-        select: 'text label',
+        populate: {
+          path: 'createdBy',
+          select: 'username',
+        },
+        select: 'text label createdBy createDate',
       })
-      .select('text comments')
+      .populate('createdBy', 'username')
+      .select('text comments createdBy createDate')
       .lean()
       .exec();
 
-    console.log(`Found ${selections.length} selections`);
+    // Step 4: Format selections with their associated comments for AI service
+    // Structure: Each selection (highlighted text) + its comments (notice/wonder/feedback observations)
+    const formattedSelections = selections.map((selection) => {
+      const comments = (selection.comments || []).map((comment) => ({
+        type: comment.label, // notice, wonder, or feedback
+        text: stripHtml(comment.text),
+        author: comment.createdBy?.username || 'Unknown',
+        date: comment.createDate,
+      }));
 
-    // Step 3: Format the mentor selections and comments into readable text
-    // This becomes the "noticing and wondering" context from previous mentor analysis
-    const noticingWondering = selections
-      .map((selection) => {
-        const selectionText = selection.text || '';
-        if (!selectionText.trim()) return '';
+      return {
+        selected_text: stripHtml(selection.text),
+        mentor_teacher: selection.createdBy?.username || 'Unknown',
+        comments: comments,
+      };
+    });
 
-        const comments = selection.comments || [];
-        if (comments.length === 0) {
-          return `[Selection: ${selectionText}]`;
-        }
-
-        return comments
-          .map((comment) => {
-            const commentText = comment.text || '';
-            if (!commentText.trim()) return '';
-            return `[Selection: ${selectionText}] ${comment.label}: ${commentText}`;
-          })
-          .filter((text) => text.length > 0)
-          .join('\n');
-      })
-      .filter((text) => text.length > 0)
-      .join('\n');
-
-    console.log(
-      'Formatted noticing_wondering length:',
-      noticingWondering.length
-    );
-
-    // Step 4: Get any previous mentor feedback on this submission
+    // Step 5: Get any previous mentor responses on this submission
     // This helps the AI avoid repeating what's already been said
     const responses = await models.Response.find({
       submission: targetSubmissionId,
-      isTrashed: { $ne: true }, // Only get active responses
+      isTrashed: { $ne: true },
     })
-      .select('text')
+      .populate('createdBy', 'username')
+      .select('text createdBy createDate')
+      .sort({ createDate: 1 })
       .lean()
       .exec();
 
-    // Combine all previous mentor responses into one text block
-    const mentorResponses = responses
-      .map((response) => response.text || '')
-      .filter((text) => text.trim()) // Remove empty responses
-      .join('\n\n'); // Separate responses with double line breaks
+    const formattedResponses = responses.map((response) => ({
+      text: stripHtml(response.text),
+      author: response.createdBy?.username || 'Unknown',
+      date: response.createDate,
+    }));
 
-    console.log('Found', responses.length, 'previous mentor responses');
+    // Step 6: Build structured request with clear separation of student vs mentor/teacher content
+    // This format helps AI distinguish between:
+    // - What the student was asked to do (problem)
+    // - What the student wrote (student_work)
+    // - What mentors/teachers observed and previously said (mentor_teacher_context)
+    // - How AI should respond (response_mode)
 
-    // Step 5: Package all the raw data together
-    // This is our internal format with all the context we've gathered
-    const requestBody = {
-      targetSubmissionId,
-      shortAnswer: targetSubmission.shortAnswer || '',
-      longAnswer: targetSubmission.longAnswer || '',
-      noticingWondering,
-      mentorResponses,
+    // Check if we have student work or teacher observations
+    const shortAnswer = stripHtml(targetSubmission.shortAnswer || '');
+    const longAnswer = stripHtml(targetSubmission.longAnswer || '');
+    const hasStudentWork = shortAnswer || longAnswer;
+    const hasTeacherObservations = formattedSelections.length > 0;
+
+    const aiRequestBody = {
+      problem: {
+        statement: stripHtml(problemStatement),
+      },
+      student_work: {
+        short_answer:
+          shortAnswer ||
+          (hasTeacherObservations
+            ? '[Student has not yet provided a written response]'
+            : ''),
+        long_answer:
+          longAnswer ||
+          (hasTeacherObservations
+            ? '[Student has not yet provided a detailed explanation]'
+            : ''),
+        student_name: targetSubmission.creator?.username || 'Student',
+      },
+      mentor_teacher_context: {
+        selections_and_observations: formattedSelections,
+        previous_responses: formattedResponses,
+      },
+      response_mode: responseMode,
     };
 
-    // Step 6: Either generate a mock response or call the real AI service
-    if (isDevelopment) {
-      // Return fake data for testing without hitting external AI service
-      return generateMockDraft(requestBody, targetSubmissionId);
+    // If no student work and no teacher observations, we need to discuss on what to do in this case
+    if (!hasStudentWork && !hasTeacherObservations) {
+      throw new Error(
+        'No student work or teacher observations available. Please add content before generating AI draft.'
+      );
     }
 
-    // Call the external AI service with our collected data
-    const aiResponse = await makeAIRequest(requestBody, targetSubmission);
+    // Call the external AI service with our structured data
+    const aiResponse = await makeAIRequest(aiRequestBody);
 
-    return aiResponse.draft || 'AI draft generation failed';
+    if (!aiResponse.draft) {
+      throw new Error('AI service returned empty response');
+    }
+
+    return aiResponse.draft;
   } catch (error) {
     console.error('Error generating AI draft:', error);
     throw error;
@@ -150,226 +217,68 @@ const generateDraft = async (targetSubmissionId) => {
 
 /**
  * Makes an HTTP POST request to the AI service
- * @param {Object} requestBody - The request body to send
- * @param {string} targetSubmissionId - The ID of the target submission
+ * @param {Object} requestBody - The structured request body with problem, student_work, and mentor_teacher_context
  * @returns {Promise<Object>} The response from the AI service
  */
-// TODO: Current implementation uses simplified format for initial integration.
-// AI service may require full conversation thread format with rubrics/metadata.
-const makeAIRequest = async (requestBody, targetSubmission) => {
-  try {
-    // Step 1: Get the original problem/assignment text that the student was working on
-    // We need this so the AI understands what the student was supposed to do
-    let submissionWithProblem = targetSubmission;
+const makeAIRequest = async (requestBody) => {
+  const postData = JSON.stringify(requestBody);
 
-    // If we don't already have the problem text, fetch it from the database
-    if (!targetSubmission.answer?.assignment?.problem) {
-      submissionWithProblem = await models.Submission.findById(
-        requestBody.targetSubmissionId
-      )
-        .populate({
-          path: 'answer', // Get the student's answer
-          populate: {
-            path: 'assignment', // Get the assignment details
-            populate: {
-              path: 'problem', // Get the actual problem text
-              select: 'text title',
-            },
-          },
-        })
-        .lean()
-        .exec();
-    }
+  const options = {
+    hostname: process.env.AI_DRAFT_HOST || DEFAULT_HOST,
+    port: process.env.AI_DRAFT_PORT || DEFAULT_PORT,
+    path: process.env.AI_DRAFT_PATH || DEFAULT_PATH,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData),
+    },
+  };
 
-    // Step 2: Extract the problem statement from different possible locations
-    // Our system has evolved over time, so we check multiple places:
-    // - New system: problem is stored in assignment.problem.text
-    // - Old PoWs system: problem is in publication.puzzle.title
-    // - Legacy: some submissions don't have clear problem statements
-    let problemStatement =
-      submissionWithProblem?.answer?.assignment?.problem?.text || // Try new system first
-      submissionWithProblem?.publication?.puzzle?.title; // Try old system
+  return new Promise((resolve, reject) => {
+    // Choose http for local development, https for production
+    const protocol = options.hostname === 'localhost' ? http : https;
+    const req = protocol.request(options, (res) => {
+      let data = '';
 
-    if (!problemStatement) {
-      // If we can't find the original problem, create a generic context
-      problemStatement = `This is a reflection or response submission. The student has provided their thoughts and observations.`;
-      console.log('Using generic problem statement for legacy submission');
-    }
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
 
-    // Step 3: Clean up all text by removing HTML tags and entities
-    // The database might contain HTML formatting that the AI doesn't need
-    problemStatement = stripHtml(problemStatement);
-
-    console.log('Problem statement (HTML stripped):', problemStatement);
-    console.log(
-      'Noticing/wondering to send:',
-      requestBody.noticingWondering.substring(0, 200)
-    );
-
-    // Clean all the text fields to remove HTML formatting
-    const cleanShortAnswer = stripHtml(requestBody.shortAnswer);
-    const cleanLongAnswer = stripHtml(requestBody.longAnswer);
-    const cleanNoticingWondering = stripHtml(requestBody.noticingWondering);
-    const cleanMentorResponses = stripHtml(requestBody.mentorResponses);
-
-    // Step 4: Format the data in the structure the AI service expects
-    // This is different from our internal format - it's optimized for the AI
-    const aiRequestBody = {
-      problem_statement: problemStatement, // What the student was asked to do
-      student_solution: `Short Answer: ${cleanShortAnswer}\n\nLong Answer: ${cleanLongAnswer}`, // What they wrote
-      noticing_wondering: cleanNoticingWondering, // What mentors previously observed/questioned
-      mentor_responses: cleanMentorResponses, // Previous feedback they received
-    };
-
-    const postData = JSON.stringify(aiRequestBody);
-
-    const options = {
-      hostname: process.env.AI_DRAFT_HOST || DEFAULT_HOST,
-      port: process.env.AI_DRAFT_PORT || DEFAULT_PORT,
-      path: process.env.AI_DRAFT_PATH || DEFAULT_PATH,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(postData),
-      },
-    };
-
-    // Step 5: Send the request to the AI service and handle the response
-    return new Promise((resolve, reject) => {
-      // Choose http for local development, https for production
-      const protocol = options.hostname === 'localhost' ? http : https;
-      const req = protocol.request(options, (res) => {
-        let data = '';
-
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        res.on('end', () => {
-          try {
-            const response = JSON.parse(data);
-            if (res.statusCode >= 200 && res.statusCode < 300) {
-              resolve({ draft: response.draft_response });
-            } else {
-              reject(
-                new Error(
-                  `AI service returned status ${res.statusCode}: ${
-                    response.message || 'Unknown error'
-                  }`
-                )
-              );
-            }
-          } catch (parseError) {
+      res.on('end', () => {
+        try {
+          const response = JSON.parse(data);
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            // AI service returns draft_response field
+            resolve({ draft: response.draft_response });
+          } else {
             reject(
               new Error(
-                `Failed to parse AI service response: ${parseError.message}`
+                `AI service error (${res.statusCode}): ${
+                  response.error || response.message || 'Unknown error'
+                }`
               )
             );
           }
-        });
+        } catch (parseError) {
+          reject(
+            new Error(`Invalid AI service response: ${parseError.message}`)
+          );
+        }
       });
-
-      req.on('error', (error) => {
-        reject(new Error(`AI service request failed: ${error.message}`));
-      });
-
-      req.write(postData);
-      req.end();
     });
-  } catch (error) {
-    throw new Error(`Failed to prepare AI request: ${error.message}`);
-  }
-};
 
-/**
- * Generate a mock AI draft for development/testing purposes
- * @param {Object} requestBody - The request body that would be sent to AI service
- * @param {string} targetSubmissionId - The target submission ID
- * @returns {string} Mock AI draft text
- */
-const generateMockDraft = (requestBody) => {
-  // Extract all the context we've gathered about the student's work
-  const { shortAnswer, longAnswer, noticingWondering, mentorResponses } =
-    requestBody;
+    req.on('error', (error) => {
+      reject(new Error(`Cannot connect to AI service: ${error.message}`));
+    });
 
-  // Start building a realistic-looking mentor response
-  let mockDraft =
-    "Thank you for your thoughtful submission. Here's my feedback:\n\n";
+    req.setTimeout(30000, () => {
+      req.destroy();
+      reject(new Error('AI service request timed out after 30 seconds'));
+    });
 
-  // Give feedback on the student's short answer if they provided one
-  if (shortAnswer && shortAnswer.trim()) {
-    const shortText = shortAnswer.trim();
-    mockDraft += `Regarding your short answer: "${shortText.substring(0, 150)}${
-      shortText.length > 150 ? '...' : ''
-    }"\n\n`;
-
-    // Add some contextual feedback based on content
-    if (
-      shortText.toLowerCase().includes('because') ||
-      shortText.toLowerCase().includes('since')
-    ) {
-      mockDraft +=
-        "I appreciate that you're providing reasoning for your thinking. ";
-    }
-    if (shortText.includes('?')) {
-      mockDraft +=
-        'I notice you have some questions - that shows good mathematical curiosity. ';
-    }
-    mockDraft += 'Let me build on this idea.\n\n';
-  }
-
-  // Give more detailed feedback on their longer explanation
-  if (longAnswer && longAnswer.trim()) {
-    const longText = longAnswer.trim();
-    mockDraft += `Looking at your detailed explanation, I can see you've put thought into this problem. `;
-
-    if (longText.length > 200) {
-      mockDraft += `Your thorough explanation shows deep engagement with the problem. `;
-    }
-
-    // Look for mathematical language
-    if (
-      longText.toLowerCase().includes('pattern') ||
-      longText.toLowerCase().includes('relationship')
-    ) {
-      mockDraft += `I'm glad to see you're thinking about patterns and relationships. `;
-    }
-
-    mockDraft += `Here's what I want to highlight from your work: "${longText.substring(
-      0,
-      200
-    )}${longText.length > 200 ? '...' : ''}"\n\n`;
-  }
-
-  // Reference their observations and questions (noticing/wondering)
-  if (noticingWondering && noticingWondering.trim()) {
-    const noticingText = noticingWondering.trim();
-    mockDraft += `I see you noticed/wondered: "${noticingText.substring(
-      0,
-      100
-    )}${noticingText.length > 100 ? '...' : ''}"\n\n`;
-    mockDraft += `Let me build on your observations. `;
-  }
-
-  // Acknowledge previous mentor feedback to avoid repetition
-  if (mentorResponses && mentorResponses.trim()) {
-    const responseText = mentorResponses.trim();
-    mockDraft += `Building on the previous mentor feedback: "${responseText.substring(
-      0,
-      100
-    )}${responseText.length > 100 ? '...' : ''}"\n\n`;
-    mockDraft += `I'd like to add to what was already shared. `;
-  }
-
-  // End with some generic but helpful prompting questions
-  mockDraft += `Here are some additional thoughts to consider:\n\n`;
-  mockDraft += `• What mathematical strategies did you use to approach this problem?\n`;
-  mockDraft += `• Can you think of other ways to represent or solve this?\n`;
-  mockDraft += `• How might you check if your solution makes sense?\n\n`;
-
-  mockDraft += `Keep up the good mathematical thinking!`;
-
-  return mockDraft;
+    req.write(postData);
+    req.end();
+  });
 };
 
 module.exports.generateDraft = generateDraft;
