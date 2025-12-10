@@ -13,7 +13,6 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   currentUser: service('current-user'),
   wsPermissions: service('workspace-permissions'),
   store: service(),
-  aiDraft: service('ai-draft'),
   submission: null,
   subResponses: [],
   primaryResponseType: alias('response.responseType'),
@@ -27,10 +26,6 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   didReceiveAttrs() {
     this.set('subResponses', this.responses);
     this.handleResponseViewAudit();
-
-    if (this.submissions) {
-      this.aiDraft.setContext(this.submissions);
-    }
 
     let relatedNtfs = this.findRelatedNtfs('response', this.response);
 
@@ -381,7 +376,6 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
   }),
 
   willDestroyElement() {
-    this.aiDraft.clearContext();
     this._super(...arguments);
   },
 
