@@ -27,6 +27,7 @@ export default class ResponseNewComponent extends Component {
   @tracked isQuillEmpty = false;
   @tracked isQuillTooLong = false;
   @tracked originalText = '';
+  @tracked aiGeneratedText = null;
 
   @tracked doShowLoadingMessage = false;
 
@@ -216,6 +217,9 @@ export default class ResponseNewComponent extends Component {
   }
 
   get replyText() {
+    if (this.aiGeneratedText) {
+      return this.aiGeneratedText;
+    }
     return this.preFormatText();
   }
 
@@ -483,5 +487,84 @@ export default class ResponseNewComponent extends Component {
     this.quillText = content;
     this.isQuillEmpty = isEmpty;
     this.isQuillTooLong = isOverLengthLimit;
+  }
+
+  @action
+  async generateAIDraft() {
+    const submissionId = this.args.responseData.submission.get('id');
+    const url = `/api/aiDraft?target=${encodeURIComponent(submissionId)}`;
+
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isAIDraftLoading',
+      'doShowLoadingMessage'
+    );
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || 'Failed to generate AI draft');
+      }
+
+      const data = await response.json();
+
+      this.loading.handleLoadingMessage(
+        this,
+        'end',
+        'isAIDraftLoading',
+        'doShowLoadingMessage'
+      );
+
+      if (data && data.draft) {
+        this.aiGeneratedText = data.draft;
+
+        let isEmpty = data.draft.trim() === '' || data.draft === '<p><br></p>';
+        let isOverLimit = data.draft.length > this.maxResponseLength;
+        this.updateQuillText(data.draft, isEmpty, isOverLimit);
+
+        this.alert.showToast(
+          'success',
+          'AI draft generated successfully',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      } else {
+        this.alert.showToast(
+          'error',
+          'Failed to generate AI draft - no content received',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      }
+    } catch (error) {
+      this.loading.handleLoadingMessage(
+        this,
+        'end',
+        'isAIDraftLoading',
+        'doShowLoadingMessage'
+      );
+
+      console.error('AI Draft Error:', error);
+
+      this.alert.showToast(
+        'error',
+        error.message || 'Failed to generate AI draft',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
+    }
   }
 }
