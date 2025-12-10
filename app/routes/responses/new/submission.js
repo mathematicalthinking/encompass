@@ -19,7 +19,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
       return Promise.resolve(workspace);
     }
     const wsIds = submission.hasMany('workspaces').ids();
-    const wsId = wsIds.get('firstObject'); // maybe use [0] instead?
+    const wsId = wsIds[0];
 
     if (!this.utils.isValidMongoId(wsId)) {
       return Promise.resolve(null);
@@ -34,19 +34,19 @@ export default class ResponsesNewSubmissionRoute extends Route {
       return this.store.findRecord('user', encUserId);
     }
 
-    const firstApproverId = workspace.get('feedbackAuthorizers.firstObject');
+    const firstApproverId = workspace.get('feedbackAuthorizers')[0];
     if (this.utils.isValidMongoId(firstApproverId)) {
       return this.store.findRecord('user', firstApproverId);
     }
 
-    return workspace.get('owner'); // in other cases, returns a promise, but a value here
+    return await workspace.get('owner');
   }
 
   _findDraftResponse(responses, submissionId, userId) {
     return responses.find((response) => {
-      const creatorId = response.belongsTo('createdBy').id(); // shouldn't these be utils.getBelongsToId()?
+      const creatorId = this.utils.getBelongsToId(response, 'createdBy');
       const status = response.get('status');
-      const subId = response.belongsTo('submission').id();
+      const subId = this.utils.getBelongsToId(response, 'submission');
 
       return (
         status === 'draft' && subId === submissionId && creatorId === userId
@@ -108,6 +108,11 @@ export default class ResponsesNewSubmissionRoute extends Route {
     // what if workspace is null?
     const workspace = await this.resolveWorkspace(this.workspace, submission);
 
+    if (!workspace) {
+      this.router.transitionTo('error');
+      return;
+    }
+
     // Load all async data in parallel
     const [submissions, recipient, selections, comments] = await Promise.all([
       workspace.get('submissions'),
@@ -118,7 +123,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
 
     // should we check the student ids rather than the objects?
     const studentSubmissions = submissions.filter(
-      (sub) => sub.student === submission.student
+      (sub) => sub.uniqueIdentifier === submission.uniqueIdentifier
     );
 
     const associatedResponses = this._filterResponsesBySubmission(
