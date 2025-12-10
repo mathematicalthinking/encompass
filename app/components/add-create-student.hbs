@@ -11,7 +11,7 @@
       @inputId='select-add-student'
       @maxItems={{1}}
       @initialOptions={{this.initialStudentOptions}}
-      @onItemAdd={{action 'updateStudents'}}
+      @onItemAdd={{this.updateStudents}}
       @model='user'
       @isAsync={{true}}
       @labelField='username'
@@ -41,13 +41,13 @@
               {{#if this.isEditingSectionPassword}}
                 <i
                   title='Done'
-                  {{action 'updateSectionPassword'}}
+                  {{on 'click' this.updateSectionPassword}}
                   class='far fa-check-square'
                 ></i>
               {{else}}
                 <i
                   title='Edit'
-                  {{action (mut this.isEditingSectionPassword) true}}
+                  {{on 'click' (fn this.setIsEditingSectionPassword true)}}
                   class='far fa-edit'
                 ></i>
               {{/if}}
@@ -63,7 +63,7 @@
               <button
                 id='show-password-btn'
                 type='button'
-                {{action 'showPassword'}}
+                {{on 'click' this.showPassword}}
               >
                 {{#if this.showingPassword}}
                   <i class='fas fa-eye-slash'></i>
@@ -78,7 +78,7 @@
                     <button
                       id='show-password-btn'
                       type='submit'
-                      {{action (mut this.isShowingClassPassword) false}}
+                      {{on 'click' (fn this.setIsShowingClassPassword false)}}
                     >
                       <i class='fas fa-eye-slash'></i>
                     </button>
@@ -93,7 +93,7 @@
                   <button
                     id='show-password-btn'
                     type='submit'
-                    {{action (mut this.isShowingClassPassword) true}}
+                    {{on 'click' (fn this.setIsShowingClassPassword true)}}
                   ><i class='fas fa-eye'></i></button>
                 {{/if}}
               {{else}}
@@ -154,7 +154,7 @@
               <button
                 id='show-password-btn'
                 type='submit'
-                {{action 'showPassword'}}
+                {{on 'click' this.showPassword}}
               >
                 {{#if this.showingPassword}}
                   <i class='fas fa-eye-slash'></i>
@@ -168,7 +168,7 @@
             <button
               class='action_button'
               type='submit'
-              {{action 'validateCreateStudent'}}
+              {{on 'click' this.validateCreateStudent}}
             >Create and Add </button>
           </div>
         </div>
@@ -197,12 +197,12 @@
           <button
             class='action_button'
             type='submit'
-            {{action 'addExistingStudent'}}
+            {{on 'click' this.addExistingStudent}}
           > yes </button>
           <button
             class='action_button'
             type='submit'
-            {{action 'exitAddExistingUsername'}}
+            {{on 'click' this.exitAddExistingUsername}}
           > no </button>
         </p>
       {{/if}}

@@ -1,15 +1,16 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import $ from 'jquery';
 
-export default class LogInComponent extends ErrorHandlingComponent {
+export default class LogInComponent extends Component {
+  @service errorHandling;
   @tracked incorrectPassword = false;
   @tracked incorrectUsername = false;
   @tracked missingCredentials = false;
   @tracked username = '';
   @tracked password = '';
-  @tracked postErrors = [];
   @tracked oauthError = '';
 
   get oauthErrorMsg() {
@@ -17,6 +18,10 @@ export default class LogInComponent extends ErrorHandlingComponent {
       return 'The provided email address is already associated with an existing account';
     }
     return '';
+  }
+
+  get postErrors () {
+    return this.errorHandling.getErrors('postErrors');
   }
 
   @action
@@ -59,7 +64,7 @@ export default class LogInComponent extends ErrorHandlingComponent {
         }
       })
       .catch((err) => {
-        this.handleErrors(err, 'postErrors');
+        this.errorHandling.handleErrors(err, 'postErrors');
       });
   }
 }
