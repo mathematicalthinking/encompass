@@ -17,7 +17,8 @@ async function aiDraft(req, res, next) {
   }
 
   const target = req.query.target;
-  const context = req.query.context;
+  const workspace = req.query.workspace;
+  const responseMode = req.query.responseMode || 'all';
 
   if (!target) {
     return utils.sendError.InvalidArgumentError(
@@ -26,26 +27,26 @@ async function aiDraft(req, res, next) {
     );
   }
 
-  try {
-    // Parse context parameter - it could be a comma-separated string or array
-    let contextArray = [];
-    if (context) {
-      if (Array.isArray(context)) {
-        contextArray = context;
-      } else if (typeof context === 'string') {
-        contextArray = context
-          .split(',')
-          .map((id) => id.trim())
-          .filter((id) => id.length > 0);
-      }
-    }
+  // Validate response_mode
+  const validModes = ['student_only', 'teacher_only', 'all'];
+  if (!validModes.includes(responseMode)) {
+    return utils.sendError.InvalidArgumentError(
+      `Invalid response_mode. Must be one of: ${validModes.join(', ')}`,
+      res
+    );
+  }
 
-    // Generate AI draft using the AI service
-    const draft = await aiService.generateDraft(target, contextArray);
+  try {
+    // Generate AI draft using the AI service with response mode
+    const draft = await aiService.generateDraft(
+      target,
+      responseMode,
+      workspace
+    );
 
     const response = {
       target: target,
-      contextLength: contextArray.length,
+      responseMode: responseMode,
       message: `AI draft generated for target submission: ${target}`,
       draft,
     };

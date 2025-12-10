@@ -11,7 +11,6 @@ export default Component.extend(ErrorHandlingMixin, {
   currentUser: service('current-user'),
   utils: service('utility-methods'),
   loading: service('loading-display'),
-  aiDraft: service('ai-draft'),
 
   isEditing: false,
   isCreating: false,
