@@ -14,38 +14,40 @@ export default class ResponsesNewSubmissionRoute extends Route {
     }
   }
 
-  resolveWorkspace(workspace, submission) {
+  async resolveWorkspace(workspace, submission) {
     if (workspace) {
-      return Promise.resolve(workspace);
+      return workspace;
     }
     const wsIds = submission.hasMany('workspaces').ids();
     const wsId = wsIds[0];
 
     if (!this.utils.isValidMongoId(wsId)) {
-      return Promise.resolve(null);
+      return null;
     }
-    return this.store.findRecord('workspace', wsId);
+    return await this.store.findRecord('workspace', wsId);
   }
 
   async resolveRecipient(submission, workspace) {
-    const encUserId = submission.get('creator.studentId');
+    const creator = await submission.creator;
+    const encUserId = this.utils.getBelongsToId(creator, 'studentId');
 
     if (this.utils.isValidMongoId(encUserId)) {
       return this.store.findRecord('user', encUserId);
     }
 
-    const firstApproverId = workspace.get('feedbackAuthorizers')[0];
+    const feedbackAuthorizers = await workspace.feedbackAuthorizers;
+    const firstApproverId = feedbackAuthorizers?.[0]?.id;
     if (this.utils.isValidMongoId(firstApproverId)) {
       return this.store.findRecord('user', firstApproverId);
     }
 
-    return await workspace.get('owner');
+    return await workspace.owner;
   }
 
   _findDraftResponse(responses, submissionId, userId) {
     return responses.find((response) => {
       const creatorId = this.utils.getBelongsToId(response, 'createdBy');
-      const status = response.get('status');
+      const status = response.status;
       const subId = this.utils.getBelongsToId(response, 'submission');
 
       return (
@@ -56,7 +58,8 @@ export default class ResponsesNewSubmissionRoute extends Route {
 
   _filterResponsesBySubmission(responses, submissionId) {
     return responses.filter(
-      (response) => response.belongsTo('submission').id() === submissionId
+      (response) =>
+        this.utils.getBelongsToId(response, 'submission') === submissionId
     );
   }
 
@@ -75,8 +78,8 @@ export default class ResponsesNewSubmissionRoute extends Route {
       source: 'submission',
     });
 
-    response.get('selections').addObjects(selections);
-    response.get('comments').addObjects(comments);
+    response.selections.addObjects(selections);
+    response.comments.addObjects(comments);
 
     return response;
   }
@@ -115,10 +118,10 @@ export default class ResponsesNewSubmissionRoute extends Route {
 
     // Load all async data in parallel
     const [submissions, recipient, selections, comments] = await Promise.all([
-      workspace.get('submissions'),
+      workspace.submissions,
       this.resolveRecipient(submission, workspace),
-      submission.get('selections'),
-      submission.get('comments'),
+      submission.selections,
+      submission.comments,
     ]);
 
     // should we check the student ids rather than the objects?
