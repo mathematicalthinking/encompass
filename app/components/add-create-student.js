@@ -2,8 +2,6 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
-import { isEmpty } from '@ember/utils';
-import $ from 'jquery';
 
 export default class AddCreateStudentComponent extends Component {
   @service('sweet-alert') alert;
@@ -22,6 +20,7 @@ export default class AddCreateStudentComponent extends Component {
   @tracked userAlreadyInSection = false;
   @tracked isMissingCredentials = false;
   @tracked incorrectUsername = false;
+  @tracked selectizeResetKey = 0;
 
   clearCreateInputs() {
     this.username = null;
@@ -96,10 +95,14 @@ export default class AddCreateStudentComponent extends Component {
         (await this.currentUser.user.organization?.id) ?? '';
     }
 
-    return $.post({
-      url: '/auth/signup',
-      data: createUserData,
+    return fetch('/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(createUserData),
     })
+      .then((response) => response.json())
       .then(async (res) => {
         this.errorHandling.removeMessages('createUserErrors');
         if (res.message) {
@@ -156,15 +159,8 @@ export default class AddCreateStudentComponent extends Component {
       });
   }
 
-  clearSelectizeInput(id) {
-    if (!id) {
-      return;
-    }
-    let selectize = $(`#${id}`)[0].selectize;
-    if (!selectize) {
-      return;
-    }
-    selectize.clear();
+  clearSelectizeInput() {
+    this.selectizeResetKey++;
   }
 
   @action showPassword() {
@@ -229,7 +225,7 @@ export default class AddCreateStudentComponent extends Component {
 
     const students = this.args.students;
 
-    if (!isEmpty(students.findBy('username', username))) {
+    if (students.find((student) => student.username === username)) {
       this.userAlreadyInSection = true;
       return;
     }
@@ -319,7 +315,7 @@ export default class AddCreateStudentComponent extends Component {
     // adding
     if (students.includes(user)) {
       this.userAlreadyInSection = true;
-      this.clearSelectizeInput('select-add-student');
+      this.clearSelectizeInput();
       return;
     }
     students.addObject(user);
@@ -336,7 +332,7 @@ export default class AddCreateStudentComponent extends Component {
           null
         );
         // clear selectize
-        this.clearSelectizeInput('select-add-student');
+        this.clearSelectizeInput();
       })
       .catch((err) => {
         this.errorHandling.handleErrors(err, 'updateSectionErrors');

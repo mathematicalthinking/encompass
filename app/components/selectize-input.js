@@ -43,8 +43,8 @@ export default class SelectizeInputComponent extends Component {
     }
 
     const optionsHash = this.configureOptionsHash();
-    const selectizeInstance = $(element).selectize(optionsHash);
-    this.selectizeInstance = selectizeInstance[0].selectize;
+    const selectizeInstanceWrapped = $(element).selectize(optionsHash);
+    this.selectizeInstance = selectizeInstanceWrapped[0].selectize;
 
     if (this.args.isDisabled) {
       this.selectizeInstance.disable();
@@ -57,6 +57,13 @@ export default class SelectizeInputComponent extends Component {
       this.selectizeInstance.destroy();
     }
     this.initializeSelectize(element);
+  }
+
+  @action
+  resetSelectize() {
+    if (this.selectizeInstance) {
+      this.selectizeInstance.clear();
+    }
   }
 
   configureOptionsHash() {
