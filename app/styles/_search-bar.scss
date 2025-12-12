@@ -46,8 +46,8 @@
   }
   .clear-field {
     @include flex-item(2, center, 0.6 0 auto);
+    position: relative;
     font-size: 0.8em;
-    cursor: pointer;
     .search-field {
       height: 35px;
       width: 100%;
@@ -57,14 +57,29 @@
       text-indent: 10px;
       font-size: 1em;
       font-weight: $light-font-weight;
+      padding-right: 30px; // Make room for custom X button
+      
+      // Hide native browser clear buttons
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration {
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      &::-ms-clear {
+        display: none;
+      }
     }
     .clear {
       position: absolute;
-      top: 12px;
+      top: 50%;
       right: 5px;
-      width: 15px;
-      height: 15px;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      padding: 8px;
       fill: $filter-list-border-color;
+      cursor: pointer;
+      
       &:hover {
         fill: $primary-font-color;
       }

@@ -532,28 +532,32 @@
       }
       .list-container {
         height: 60px;
-        @include flex-container(auto, hidden, row, wrap, center, center, stretch);
+        @include flex-container(auto, hidden, row, nowrap, space-between, center, stretch);
         h1 {
-          @include flex-item(1, auto, 1 0 auto);
+          @include flex-item(1, auto, 0 0 auto);
           font-size: 2em;
           color: $dark-font-color;
           font-weight: $main-font-weight;
           width: fit-content;
           height: fit-content;
           margin-top: 12px;
+          margin-right: 20px;
         }
         .searchbar {
-          @include flex-item(2, auto, 4 1 auto);
+          @include flex-item(2, auto, 1 1 auto);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          
           #problem-new-link, #workspace-new-link {
             color: white;
             background: $accent-color;
-            float: right;
             border-radius: 50%;
             text-align: center;
-            margin-top: -46px;
-            line-height: 42px;
+            line-height: 40px;
             height: 40px;
             width: 40px;
+            flex-shrink: 0;
             &:hover {
               cursor: pointer;
               background: darken($accent-color, 10%);
