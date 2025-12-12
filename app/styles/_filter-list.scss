@@ -544,20 +544,17 @@
           margin-right: 20px;
         }
         .searchbar {
-          @include flex-item(2, auto, 1 1 auto);
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          
+          @include flex-item(2, auto, 4 1 auto);
           #problem-new-link, #workspace-new-link {
             color: white;
             background: $accent-color;
+            float: right;
             border-radius: 50%;
             text-align: center;
-            line-height: 40px;
+            margin-top: -46px;
+            line-height: 42px;
             height: 40px;
             width: 40px;
-            flex-shrink: 0;
             &:hover {
               cursor: pointer;
               background: darken($accent-color, 10%);
