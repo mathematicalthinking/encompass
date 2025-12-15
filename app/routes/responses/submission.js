@@ -1,4 +1,4 @@
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 import { action } from '@ember/object';
 
@@ -89,26 +89,6 @@ export default class ResponsesRoute extends AuthenticatedRoute {
     if (!model) {
       this.router.transitionTo('responses');
     }
-  }
-
-  @action toResponseSubmission(subId) {
-    this.router.transitionTo('responses.submission', subId);
-  }
-
-  @action toResponse(submissionId, responseId) {
-    this.router.transitionTo('responses.submission', submissionId, {
-      queryParams: { responseId: responseId },
-    });
-  }
-
-  @action toResponses() {
-    this.router.transitionTo('responses');
-  }
-
-  @action toNewResponse(submissionId, workspaceId) {
-    this.router.transitionTo('responses.new.submission', submissionId, {
-      queryParams: { workspaceId: workspaceId },
-    });
   }
 
   @action renderTemplate() {

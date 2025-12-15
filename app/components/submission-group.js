@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { isEqual } from '@ember/utils';
 import moment from 'moment';
 
@@ -16,6 +16,7 @@ import moment from 'moment';
 export default class SubmissionGroupComponent extends Component {
   @service('utility-methods') utils;
   @service currentUrl;
+  @service navigation;
 
   @tracked isHidden = false;
   @tracked showStudents = false;
@@ -204,14 +205,9 @@ export default class SubmissionGroupComponent extends Component {
   }
 
   @action
-  toNewResponse(subId, wsId) {
-    this.args.toNewResponse?.(subId, wsId);
-  }
-
-  @action
   setCurrentSubmission(currentRevision) {
     if (currentRevision?.revision) {
-      this.args.toSubmission?.(currentRevision.revision.id);
+      this.navigation.toSubmission(currentRevision.revision.id);
     }
   }
 
@@ -219,7 +215,7 @@ export default class SubmissionGroupComponent extends Component {
   onStudentSelect(submissionId) {
     const match = this.submissionThreadHeads.find((s) => s.id === submissionId);
     if (match) {
-      this.args.toSubmission?.(match.id);
+      this.navigation.toSubmission(match.id);
     }
   }
 

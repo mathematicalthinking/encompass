@@ -12,7 +12,6 @@
 <div class='response-thread-container'>
   <div class='response-submission-container thread-child'>
     <ResponseSubmissionView
-      @response={{@response}}
       @submission={{@submission}}
       @workspace={{@workspace}}
       @wsResponses={{@cleanWorkspaceResponses}}
@@ -50,15 +49,12 @@
         @isOwnMentorReply={{@isOwnMentorReply}}
         @onSaveSuccess={{@onSaveSuccess}}
         @onMentorReplySwitch={{@onMentorReplySwitch}}
-        @toResponses={{@toResponses}}
         @submissionResponses={{@submissionResponses}}
         @canSend={{@canSend}}
         @isMentorRecipient={{@isMentorRecipient}}
         @isOwnSubmission={{@isOwnSubmission}}
-        @toNewResponse={{@toNewResponse}}
         @priorMentorRevision={{@priorMentorRevision}}
         @iconFillOptions={{@iconFillOptions}}
-        @toSubmission={{@toSubmission}}
         @handleResponseThread={{@handleResponseThread}}
         @isParentWorkspace={{@isParentWorkspace}}
       />

@@ -1,7 +1,5 @@
 import { service } from '@ember/service';
-import { hash, resolve } from 'rsvp';
 import Route from '@ember/routing/route';
-import { action } from '@ember/object';
 
 export default class ResponsesNewSubmissionRoute extends Route {
   @service('utility-methods') utils;
@@ -9,122 +7,148 @@ export default class ResponsesNewSubmissionRoute extends Route {
   @service router;
   @service currentUser;
 
-  templateName = 'responses/response';
-
   beforeModel(transition) {
-    let workspaceId;
-    if (transition.intent.queryParams) {
-      workspaceId = transition.intent.queryParams.workspaceId;
-    }
+    const workspaceId = transition.intent?.queryParams?.workspaceId;
     if (this.utils.isValidMongoId(workspaceId)) {
       this.workspace = this.store.peekRecord('workspace', workspaceId);
     }
   }
-  resolveWorkspace(workspace, submission) {
+
+  async resolveWorkspace(workspace, submission) {
     if (workspace) {
-      return resolve(workspace);
+      return workspace;
     }
-    let wsIds = submission.hasMany('workspaces').ids();
-    let wsId = wsIds.get('firstObject');
+    const wsIds = submission.hasMany('workspaces').ids();
+    const wsId = wsIds[0];
+
     if (!this.utils.isValidMongoId(wsId)) {
-      return resolve(null);
+      return null;
     }
     return this.store.findRecord('workspace', wsId);
-
-    // in current structure do submissions ever have multiple workspaces?
   }
-  resolveRecipient(submission, workspace) {
-    // if creator of submission is enc user, they should always be in store
-    // since to get here you have to click respond from that user's submission
-    let encUserId = submission.get('creator.studentId');
+
+  async resolveRecipient(submission, workspace) {
+    const creator = await submission.creator;
+    const encUserId = this.utils.getBelongsToId(creator, 'studentId');
+
     if (this.utils.isValidMongoId(encUserId)) {
       return this.store.findRecord('user', encUserId);
     }
-    // if creator of submission is not enc user (i.e. old PoWs user)
-    // set recipient as either the first feedbackAuthorizer or the owner of workspace
-    let firstApproverId = workspace.get('feedbackAuthorizers.firstObject');
 
+    const feedbackAuthorizers = await workspace.feedbackAuthorizers;
+    const firstApproverId = feedbackAuthorizers?.[0]?.id;
     if (this.utils.isValidMongoId(firstApproverId)) {
       return this.store.findRecord('user', firstApproverId);
     }
-    return workspace.get('owner');
+
+    return workspace.owner;
   }
 
-  model(params) {
-    let submission;
+  _findDraftResponse(responses, submissionId, userId) {
+    return responses.find((response) => {
+      const creatorId = this.utils.getBelongsToId(response, 'createdBy');
+      const status = response.status;
+      const subId = this.utils.getBelongsToId(response, 'submission');
 
-    let isDraft = false;
-    let draftId = null;
+      return (
+        status === 'draft' && subId === submissionId && creatorId === userId
+      );
+    });
+  }
 
-    let allResponses = this.store.peekAll('response');
-    let user = this.currentUser.user;
+  _filterResponsesBySubmission(responses, submissionId) {
+    return responses.filter(
+      (response) =>
+        this.utils.getBelongsToId(response, 'submission') === submissionId
+    );
+  }
 
-    return this.store
-      .findRecord('submission', params.submission_id)
-      .then((sub) => {
-        submission = sub;
-        return this.resolveWorkspace(this.workspace, submission);
-      })
-      .then((workspace) => {
-        let associatedResponses = allResponses.filter((response) => {
-          let creatorId = response.belongsTo('createdBy').id();
-          let status = response.get('status');
-          let subId = response.belongsTo('submission').id();
+  _createResponseRecord(
+    submission,
+    workspace,
+    recipient,
+    selections,
+    comments
+  ) {
+    const response = this.store.createRecord('response', {
+      submission,
+      workspace,
+      recipient,
+      responseType: 'mentor',
+      source: 'submission',
+    });
 
-          if (
-            status === 'draft' &&
-            subId === submission.id &&
-            creatorId === user.id
-          ) {
-            isDraft = true;
-            draftId = response.id;
-          }
-          return subId === submission.id;
-        });
+    response.selections.addObjects(selections);
+    response.comments.addObjects(comments);
 
-        if (isDraft) {
-          return hash({
-            isDraft: true,
-            submissionId: submission.id,
-            responseId: draftId,
-          });
-        }
+    return response;
+  }
 
-        return hash({
-          submission,
-          workspace,
-          submissions: workspace.get('submissions'),
-          recipient: this.resolveRecipient(submission, workspace),
-          selections: submission.get('selections'),
-          comments: submission.get('comments'),
-          responses: associatedResponses,
-        });
-      })
-      .then((hash) => {
-        if (hash.isDraft) {
-          return hash;
-        }
-        let studentSubmissions = hash.submissions.filter(
-          (submission) => submission.student === hash.submission.student
-        );
-        let response = this.store.createRecord('response', {
-          submission: hash.submission,
-          workspace: hash.workspace,
-          recipient: hash.recipient,
-          responseType: 'mentor',
-          source: 'submission',
-        });
+  async model(params) {
+    const allResponses = this.store.peekAll('response');
+    const user = this.currentUser.user;
 
-        response.get('selections').addObjects(hash.selections);
-        response.get('comments').addObjects(hash.comments);
-        return {
-          response,
-          submission: hash.submission,
-          workspace: hash.workspace,
-          responses: hash.responses,
-          submissions: studentSubmissions,
-        };
-      });
+    const submission = await this.store.findRecord(
+      'submission',
+      params.submission_id
+    );
+
+    // Early return if draft exists
+    const draftResponse = this._findDraftResponse(
+      allResponses,
+      submission.id,
+      user.id
+    );
+
+    if (draftResponse) {
+      return {
+        isDraft: true,
+        submissionId: submission.id,
+        responseId: draftResponse.id,
+      };
+    }
+
+    // what if workspace is null?
+    const workspace = await this.resolveWorkspace(this.workspace, submission);
+
+    if (!workspace) {
+      this.router.transitionTo('error');
+      return;
+    }
+
+    // Load all async data in parallel
+    const [submissions, recipient, selections, comments] = await Promise.all([
+      workspace.submissions,
+      this.resolveRecipient(submission, workspace),
+      submission.selections,
+      submission.comments,
+    ]);
+
+    // should we check the student ids rather than the objects?
+    const studentSubmissions = submissions.filter(
+      (sub) => sub.uniqueIdentifier === submission.uniqueIdentifier
+    );
+
+    const associatedResponses = this._filterResponsesBySubmission(
+      allResponses,
+      submission.id
+    );
+
+    const response = this._createResponseRecord(
+      submission,
+      workspace,
+      recipient,
+      selections,
+      comments
+    );
+
+    return {
+      response,
+      submission,
+      workspace,
+      responses: associatedResponses,
+      submissions: studentSubmissions,
+    };
   }
 
   afterModel(model) {
@@ -133,14 +157,5 @@ export default class ResponsesNewSubmissionRoute extends Route {
         queryParams: { responseId: model.responseId },
       });
     }
-  }
-
-  @action toResponse(submissionId, responseId) {
-    this.router.transitionTo('responses.submission', submissionId, {
-      queryParams: { responseId: responseId },
-    });
-  }
-  @action toResponseSubmission(subId) {
-    this.router.transitionTo('responses.submission', subId);
   }
 }

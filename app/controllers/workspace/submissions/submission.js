@@ -532,18 +532,6 @@ export default class WorkspaceSubmissionController extends Controller {
   }
 
   @action
-  toNewResponse(submission, workspace) {
-    this.transitionToRoute('responses.new.submission', submission, {
-      queryParams: { workspaceId: workspace },
-    });
-  }
-
-  @action
-  toSubmission(submission) {
-    this.transitionToRoute('workspace.submissions.submission', submission);
-  }
-
-  @action
   toggleFolderDisplay() {
     this.areFoldersHidden = !this.areFoldersHidden;
   }
