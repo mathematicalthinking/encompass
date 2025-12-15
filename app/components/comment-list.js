@@ -522,6 +522,7 @@ export default class CommentListComponent extends Component {
 
   @action
   clearSearchResults() {
+    this.commentFilterText = '';
     this.searchComments();
   }
 
