@@ -24,7 +24,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
     if (!this.utils.isValidMongoId(wsId)) {
       return null;
     }
-    return await this.store.findRecord('workspace', wsId);
+    return this.store.findRecord('workspace', wsId);
   }
 
   async resolveRecipient(submission, workspace) {
@@ -41,7 +41,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
       return this.store.findRecord('user', firstApproverId);
     }
 
-    return await workspace.owner;
+    return workspace.owner;
   }
 
   _findDraftResponse(responses, submissionId, userId) {
