@@ -134,12 +134,12 @@
       <button
         class='primary-button save-response'
         type='button'
-        {{on 'click' this.saveResponse}}
+        {{on 'click' (fn this.saveResponse false)}}
       >{{this.submitButtonText}}</button>
       <button
         class='primary-button save-draft'
         type='button'
-        {{on 'click' this.saveDraftResponse}}
+        {{on 'click' (fn this.saveResponse true)}}
       >Save as Draft</button>
     </div>
   </section>
