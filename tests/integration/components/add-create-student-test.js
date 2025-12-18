@@ -1,12 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import {
-  render,
-  click,
-  fillIn,
-  settled,
-  triggerEvent,
-} from '@ember/test-helpers';
+import { render, click, fillIn, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Component from '@glimmer/component';
 import { setComponentTemplate } from '@ember/component';

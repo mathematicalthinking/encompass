@@ -5,7 +5,6 @@ import { service } from '@ember/service';
 export default class SectionsNewRoute extends AuthenticatedRoute {
   @service store;
   @service router;
-  @service currentUser;
   beforeModel() {
     if (this.currentUser.isStudent) {
       this.router.transitionTo('sections');
@@ -15,14 +14,12 @@ export default class SectionsNewRoute extends AuthenticatedRoute {
   async model() {
     const organizations = this.store.findAll('organization');
     const sections = this.store.findAll('section');
-    const users = await this.store.query('user', {});
-    const addableTeachers = users.rejectBy('accountType', 'S');
+    const addableTeachers = await this.store.query('user', {
+      filterBy: { accountType: ['T', 'P', 'A'] },
+    });
     return hash({
-      // @TODO: pass along organization of current user bc used in component
-      users,
       addableTeachers,
       organizations,
-      user: this.currentUser.user, // @TODO: remove this and use service in component
       sections,
     });
   }

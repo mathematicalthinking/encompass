@@ -10,6 +10,7 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   @service store;
   @service router;
   @service('sweet-alert') alert;
+  @service currentUser;
   @tracked createRecordErrors = [];
   @tracked leader = null;
   @tracked teachers = [];
@@ -17,7 +18,7 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   @tracked missingFieldsError = false;
   @tracked userOrg = null;
   @tracked newSectionName = '';
-  @tracked teacher = null;
+  @tracked teacher = this.currentUser.isTeacher ? this.currentUser.user : null;
   @tracked teacherFormErrors = null;
   @tracked organization = null;
   @tracked organizationFormErrors = null;
@@ -40,39 +41,38 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
     organization: "The organization of this class is the same as the leader's",
   };
 
-  //Non admin User creating section
-  //set user as teacher
-  constructor() {
-    super(...arguments);
-    if (this.args.user.isTeacher) {
-      this.teacher = this.args.user;
-      this.organization = this.teacher.get('organization');
-    }
-    if (this.args.user.isPdAdmin) {
-      this.organization = this.args.user.get('organization');
-    }
+  get isAdmin() {
+    return this.currentUser.isAdmin;
+  }
+
+  get isTeacher() {
+    return this.currentUser.isTeacher;
+  }
+
+  get organization() {
+    return this.currentUser.get('organization');
   }
 
   get validTeacher() {
     return this.teacher && !this.invalidTeacherUsername;
   }
 
-  @action async createSection() {
+  @action createSection() {
     let newSectionName = this.newSectionName;
     let teacher = this.teacher;
     if (typeof teacher === 'string') {
-      teacher = await this.args.users.findBy('username', teacher);
+      teacher = this.args.addableTeachers.findBy('username', teacher);
     }
     let organization =
       teacher && teacher.get('organization')
         ? teacher.get('organization')
-        : this.args.user.get('organization');
+        : this.organization;
 
     let constraints = this.constraints;
     let values = {
       name: newSectionName,
-      teacher: teacher,
-      organization: organization,
+      teacher,
+      organization,
     };
     let validation = validate(values, constraints);
     if (validation) {
@@ -86,8 +86,7 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
     }
 
     if (typeof teacher === 'string') {
-      let users = this.args.users;
-      let user = users.findBy('username', teacher);
+      let user = this.args.addableTeachers.findBy('username', teacher);
       if (!user) {
         this.invalidTeacherUsername = true;
         return;

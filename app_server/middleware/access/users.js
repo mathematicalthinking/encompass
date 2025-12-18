@@ -63,10 +63,22 @@ const accessibleUsersQuery = async function (
 
     if (isNonEmptyObject(filterBy)) {
       let { accountType } = filterBy;
-      if (_.contains(['S', 'T', 'P', 'A'], accountType)) {
+      const validTypes = ['S', 'T', 'P', 'A'];
+      if (_.isArray(accountType)) {
+        // Support multiple types: { accountType: ['T', 'P', 'A'] }
+        // Validate all elements are valid account types
+        const allValid = accountType.every((type) =>
+          _.contains(validTypes, type)
+        );
+        if (allValid && accountType.length > 0) {
+          filter.accountType = { $in: accountType };
+        }
+      } else if (_.contains(validTypes, accountType)) {
+        // Support single type (existing behavior)
         filter.accountType = accountType;
       }
     }
+
     // Admins not in acting student role can access all users
     if (accountType === 'A' && !isStudent) {
       return filter;
