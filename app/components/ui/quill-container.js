@@ -66,6 +66,16 @@ export default class QuillContainerComponent extends Component {
 
     this.handleStartingText();
     this.handleQuillChange();
+    this.previousStartingText = this.args.startingText;
+  }
+
+  @action
+  updateStartingText() {
+    if (this.args.startingText !== this.previousStartingText) {
+      this.previousStartingText = this.args.startingText;
+      this.handleStartingText();
+      this.handleQuillChange();
+    }
   }
 
   @action
