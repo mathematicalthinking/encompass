@@ -48,11 +48,6 @@ module('Integration | Component | selectize-input', function (hooks) {
     // Stub jQuery selectize plugin
     originalSelectizeFn = $.fn.selectize;
     $.fn.selectize = function (options) {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Stub selectize initialized with options keys',
-        Object.keys(options || {})
-      );
       // For each element in the jQuery collection, attach a minimal selectize instance
       this.each(function () {
         const selectEl = this;
@@ -86,11 +81,6 @@ module('Integration | Component | selectize-input', function (hooks) {
             if (typeof options.load === 'function') {
               await new Promise((resolve) => {
                 options.load(query, (results) => {
-                  // eslint-disable-next-line no-console
-                  console.log(
-                    'Stub selectize search results',
-                    (results || []).length
-                  );
                   const $content = $control.find('.selectize-dropdown-content');
                   $content.empty();
                   (results || []).forEach((item) => {

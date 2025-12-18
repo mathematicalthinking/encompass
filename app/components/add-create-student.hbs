@@ -32,6 +32,7 @@
             @type='checkbox'
             @checked={{this.isUsingDefaultPassword}}
             name='usingDefaultPassword'
+            {{on 'change' this.toggleUsingDefaultPassword}}
           />
         </div>
         {{#if this.isUsingDefaultPassword}}
@@ -49,7 +50,7 @@
                 <i
                   title='Edit'
                   {{on 'click' (fn this.setIsEditingSectionPassword true)}}
-                  class='far fa-edit'
+                  type='button'
                 ></i>
               {{/if}}
             </label>
@@ -93,7 +94,7 @@
                   />
                   <button
                     id='show-password-btn'
-                    type='submit'
+                    type='button'
                     {{on 'click' (fn this.setIsShowingClassPassword true)}}
                   ><i class='fas fa-eye'></i></button>
                 {{/if}}
@@ -154,7 +155,7 @@
               />
               <button
                 id='show-password-btn'
-                type='submit'
+                type='button'
                 {{on 'click' this.showPassword}}
               >
                 {{#if this.showingPassword}}
@@ -167,8 +168,9 @@
           {{/unless}}
           <div class='submit'>
             <button
+              id="create-and-add"
               class='action_button'
-              type='submit'
+              type='button'
               {{on 'click' this.validateCreateStudent}}
             >Create and Add </button>
           </div>
@@ -196,13 +198,15 @@
           {{this.username}}
           to this section?
           <button
+            id="add-existing-yes"
             class='action_button'
-            type='submit'
+            type='button'
             {{on 'click' this.addExistingStudent}}
           > yes </button>
           <button
+            id="add-existing-no"
             class='action_button'
-            type='submit'
+            type='button'
             {{on 'click' this.exitAddExistingUsername}}
           > no </button>
         </p>

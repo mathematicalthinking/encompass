@@ -21,6 +21,9 @@ export default class AddCreateStudentComponent extends Component {
   @tracked isMissingCredentials = false;
   @tracked incorrectUsername = false;
   @tracked selectizeResetKey = 0;
+  @tracked canAddExistingUser = false;
+  @tracked existingUser = null;
+  @tracked isEditingSectionPassword = false;
 
   clearCreateInputs() {
     this.username = null;
@@ -161,6 +164,12 @@ export default class AddCreateStudentComponent extends Component {
 
   clearSelectizeInput() {
     this.selectizeResetKey++;
+  }
+
+  @action toggleUsingDefaultPassword(event) {
+    this.isUsingDefaultPassword = event.target.checked;
+    // Clear any transient error flags when toggling the mode
+    this.checkError();
   }
 
   @action showPassword() {

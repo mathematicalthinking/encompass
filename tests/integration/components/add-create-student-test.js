@@ -1,11 +1,18 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click } from '@ember/test-helpers';
+import {
+  render,
+  click,
+  fillIn,
+  settled,
+  triggerEvent,
+} from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Component from '@glimmer/component';
 import { setComponentTemplate } from '@ember/component';
 import Service from '@ember/service';
 import EmberObject from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import { A } from '@ember/array';
 
 module('Integration | Component | add-create-student', function (hooks) {
@@ -23,19 +30,26 @@ module('Integration | Component | add-create-student', function (hooks) {
     this.owner.register('component:selectize-input', MockSelectizeWithTemplate);
 
     // Stub required services
-    const ErrorHandlingStub = Service.extend({
-      errors: {},
+    class ErrorHandlingStub extends Service {
+      @tracked errors = {};
+
       getErrors(key) {
         return this.errors[key] || [];
-      },
+      }
+
       handleErrors(err, key) {
         const msg = typeof err === 'string' ? err : err?.message || String(err);
-        this.errors[key] = [msg];
-      },
+        this.errors = { ...this.errors, [key]: [msg] };
+      }
+
       removeMessages(key) {
-        delete this.errors[key];
-      },
-    });
+        if (!this.errors[key]) {
+          return;
+        }
+        let { [key]: _removed, ...rest } = this.errors;
+        this.errors = rest;
+      }
+    }
 
     const SweetAlertStub = Service.extend({
       showToast() {},
@@ -64,6 +78,19 @@ module('Integration | Component | add-create-student', function (hooks) {
     this.owner.register('service:sweet-alert', SweetAlertStub);
     this.owner.register('service:currentUser', CurrentUserStub);
     this.owner.register('service:store', StoreStub);
+
+    // Mock fetch to prevent real network requests during tests
+    // Return a rejected promise to avoid any success path that might trigger reloads
+    this.originalFetch = window.fetch;
+    window.fetch = () =>
+      Promise.reject(new Error('Network request blocked in test'));
+  });
+
+  hooks.afterEach(function () {
+    // Restore original fetch
+    if (this.originalFetch) {
+      window.fetch = this.originalFetch;
+    }
   });
 
   // Helper to build section object
@@ -116,18 +143,12 @@ module('Integration | Component | add-create-student', function (hooks) {
     assert.dom('#first-name').exists('first name input exists');
     assert.dom('#last-name').exists('last name input exists');
     assert
-      .dom('button.action_button')
+      .dom('#create-and-add')
       .hasText('Create and Add', 'submit button exists');
   });
 
   test('renders selectize search for existing students', async function (assert) {
     await renderAddCreateStudent(this);
-
-    // Debug: log the entire rendered HTML
-    console.log('Rendered HTML:', this.element.innerHTML);
-
-    // Debug: check what selects exist
-    console.log('All selects:', this.element.querySelectorAll('select'));
 
     assert
       .dom('#select-add-student')
@@ -247,5 +268,150 @@ module('Integration | Component | add-create-student', function (hooks) {
     const section = buildSection({ name: 'Math 101' });
     await renderAddCreateStudent(this, { section });
     assert.dom('#add-create-student').exists('component renders with section');
+  });
+
+  // ---------- Error Handling ----------
+
+  test('shows error when missing credentials on submit', async function (assert) {
+    await renderAddCreateStudent(this);
+    await click('#create-and-add');
+    await settled();
+    assert
+      .dom('.error-message')
+      .includesText('Please fill in all required fields');
+  });
+
+  test('shows error for invalid username pattern', async function (assert) {
+    await renderAddCreateStudent(this);
+    // Input twice so the action reads the previously-updated value
+    await fillIn('#username', 'aa');
+    await settled();
+    await fillIn('#username', 'aa');
+    await settled();
+    assert.dom('.error-message').includesText('Username must be all lowercase');
+  });
+
+  test('shows duplicate user error when username already in section', async function (assert) {
+    const students = A([EmberObject.create({ id: 's1', username: 'alice' })]);
+    await renderAddCreateStudent(this, { students });
+    await fillIn('#username', 'alice');
+    await fillIn('#password', 'pass123');
+    await click('#create-and-add');
+    assert
+      .dom('.error-message')
+      .includesText('User already registered in this section.');
+  });
+
+  test('shows username already exists message from server', async function (assert) {
+    await renderAddCreateStudent(this);
+
+    const originalFetch = window.fetch;
+    window.fetch = () =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            message: 'There already exists a user with that username',
+          }),
+      });
+
+    try {
+      await fillIn('#username', 'newuser');
+      await fillIn('#password', 'pass123');
+      await click('#create-and-add');
+      await settled();
+      assert.dom('.error-message').includesText('Username is unavailable.');
+    } finally {
+      window.fetch = originalFetch;
+    }
+  });
+
+  test('shows prompt when server indicates existing org user (canAddExistingUser)', async function (assert) {
+    await renderAddCreateStudent(this);
+
+    const originalFetch = window.fetch;
+    window.fetch = () =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            user: { _id: 'u3', username: 'existing' },
+            canAddExistingUser: true,
+          }),
+      });
+
+    try {
+      await fillIn('#username', 'existing');
+      await fillIn('#password', 'pass123');
+      await click('#create-and-add');
+      await settled();
+      assert
+        .dom('.error-message')
+        .includesText('is an existing member of your organization');
+      assert.dom('.error-message button').exists({ count: 2 }, 'yes/no shown');
+    } finally {
+      window.fetch = originalFetch;
+    }
+  });
+
+  test('renders createUserErrors when signup request fails', async function (assert) {
+    await renderAddCreateStudent(this);
+
+    const originalFetch = window.fetch;
+    window.fetch = () => Promise.reject(new Error('signup failed'));
+
+    try {
+      await fillIn('#username', 'newuser');
+      await fillIn('#password', 'pass123');
+      await click('#create-and-add');
+      await settled();
+      assert.dom('.error-message').includesText('signup failed');
+    } finally {
+      window.fetch = originalFetch;
+    }
+  });
+
+  test('renders updateSectionErrors when updating section password fails', async function (assert) {
+    const section = buildSection();
+    await renderAddCreateStudent(this, { section, sectionPassword: 'abc' });
+
+    const errorHandling = this.owner.lookup('service:errorHandling');
+    errorHandling.handleErrors(
+      new Error('update section failed'),
+      'updateSectionErrors'
+    );
+    await settled();
+    assert.dom('.error-message').includesText('update section failed');
+  });
+
+  test('renders findUserErrors when adding existing student fails', async function (assert) {
+    await renderAddCreateStudent(this);
+
+    const originalFetch = window.fetch;
+    window.fetch = () =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            user: { _id: 'u3', username: 'existing' },
+            canAddExistingUser: true,
+          }),
+      });
+
+    const store = this.owner.lookup('service:store');
+    const originalFind = store.findRecord;
+    store.findRecord = () => Promise.reject(new Error('find user failed'));
+
+    try {
+      await fillIn('#username', 'existing');
+      await fillIn('#password', 'pass123');
+      await click('#create-and-add');
+      await settled();
+      await click('#add-existing-yes');
+      await settled();
+      assert
+        .dom('.error-message:last-of-type')
+        .includesText('find user failed');
+    } finally {
+      window.fetch = originalFetch;
+      store.findRecord = originalFind;
+    }
   });
 });
