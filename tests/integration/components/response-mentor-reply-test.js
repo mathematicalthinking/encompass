@@ -15,10 +15,20 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     }
     this.owner.register('service:current-user', CurrentUserService);
 
+    class UtilityMethodsStub extends Service {
+      getBelongsToId(obj, field) {
+        if (!obj) return null;
+        if (field === 'createdBy') return obj.createdBy?.id || obj.createdBy;
+        if (field === 'recipient') return obj.recipient?.id || obj.recipient;
+        if (field === 'submission') return obj.submission?.id || obj.submission;
+        return obj[field]?.id || obj[field];
+      }
+    }
+
     this.owner.register('service:sweet-alert', createServiceMock());
     this.owner.register('service:loading-display', createServiceMock());
     this.owner.register('service:error-handling', createServiceMock());
-    this.owner.register('service:utility-methods', createServiceMock());
+    this.owner.register('service:utility-methods', UtilityMethodsStub);
     this.owner.register('service:navigation', createServiceMock());
   });
 
@@ -27,6 +37,21 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       if (key === 'submission.student') return studentName;
       return this[key];
     };
+  }
+
+  // Helper to set up response with required properties for new component structure
+  function setupResponse(response, submission) {
+    if (!response.responseType) response.responseType = 'mentor';
+    if (response.isTrashed === undefined) response.isTrashed = false;
+    if (submission) {
+      // Handle Ember proxy objects - use get() if available
+      const responses = submission.get ? submission.get('responses') : submission.responses;
+      if (!responses) {
+        submission.responses = [response];
+      } else if (!responses.includes(response)) {
+        responses.push(response);
+      }
+    }
   }
 
   async function renderMentorReply(context, props) {
@@ -63,6 +88,14 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     if (context.submissionResponses && !context.submissionResponses.sortBy) {
       context.set('submissionResponses', [context.submissionResponses]);
     }
+
+    // Auto-setup all responses with required properties
+    const responses = context.submissionResponses || [];
+    responses.forEach(r => {
+      if (r && r.submission) {
+        setupResponse(r, r.submission);
+      }
+    });
 
     await render(hbs`<ResponseMentorReply
       @displayResponse={{this.displayResponse}}
@@ -113,6 +146,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     response.recipient = recipient;
     response.submission = submission;
     mockResponseGet(response);
+    setupResponse(response, submission);
 
     this.setProperties({ user, recipient, submission });
 
@@ -161,6 +195,9 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('newReplyStatus returns approved when canDirectSend is true', async function (assert) {
     const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const response = store.createRecord('response', {
       text: 'Test',
       status: 'approved',
@@ -168,10 +205,9 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     });
     response.createdBy = store.createRecord('user', { username: 'mentor' });
     response.recipient = store.createRecord('user', { username: 'student' });
-    response.submission = store.createRecord('submission', {
-      creator: { username: 'student' },
-    });
+    response.submission = submission;
     mockResponseGet(response);
+    setupResponse(response, submission);
 
     await renderMentorReply(this, {
       displayResponse: response,
@@ -212,6 +248,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     response1.recipient = recipient;
     response1.submission = submission;
     mockResponseGet(response1);
+    setupResponse(response1, submission);
 
     const response2 = store.createRecord('response', {
       text: 'Second reply',
@@ -222,6 +259,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     response2.recipient = recipient;
     response2.submission = submission;
     mockResponseGet(response2);
+    setupResponse(response2, submission);
 
     this.setProperties({ user, recipient, submission });
 
@@ -237,6 +275,9 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('renders pending approval response', async function (assert) {
     const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const response = store.createRecord('response', {
       text: 'Pending',
       status: 'pendingApproval',
@@ -244,10 +285,9 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     });
     response.createdBy = store.createRecord('user', { username: 'mentor' });
     response.recipient = store.createRecord('user', { username: 'student' });
-    response.submission = store.createRecord('submission', {
-      creator: { username: 'student' },
-    });
+    response.submission = submission;
     mockResponseGet(response);
+    setupResponse(response, submission);
 
     await renderMentorReply(this, {
       displayResponse: response,
@@ -881,5 +921,225 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     assert
       .dom('.response-mentor-container')
       .exists('Revised draft should render');
+  });
+
+  // --- Draft Edit/Delete UI Tests ---
+
+  test('shows Edit Draft button for own draft response', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const draft = store.createRecord('response', {
+      text: 'Draft text',
+      status: 'draft',
+      createDate: new Date(),
+    });
+    draft.createdBy = user;
+    draft.recipient = store.createRecord('user', { username: 'student' });
+    draft.submission = submission;
+    mockResponseGet(draft);
+    setupResponse(draft, submission);
+
+    this.setProperties({ user, submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [draft],
+    });
+
+    assert.dom('button.primary-button').includesText('Edit Draft');
+  });
+
+  test('shows Delete button for own draft response', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const draft = store.createRecord('response', {
+      text: 'Draft text',
+      status: 'draft',
+      createDate: new Date(),
+    });
+    draft.createdBy = user;
+    draft.recipient = store.createRecord('user', { username: 'student' });
+    draft.submission = submission;
+    mockResponseGet(draft);
+    setupResponse(draft, submission);
+
+    this.setProperties({ user, submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [draft],
+    });
+
+    assert.dom('button:has(.fa-trash)').exists();
+    assert.dom('button:has(.fa-trash)').includesText('Delete');
+  });
+
+  test('hides Edit Draft button for draft not owned by current user', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    // beforeEach sets currentUser.user = { id: 'user1', username: 'testuser' }
+    // Create draft owned by different user
+    const otherUser = store.createRecord('user', { id: 'otherUser456', username: 'other' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const draft = store.createRecord('response', {
+      text: 'Draft text',
+      status: 'draft',
+      createDate: new Date(),
+    });
+    draft.createdBy = otherUser;
+    draft.recipient = store.createRecord('user', { username: 'student' });
+    draft.submission = submission;
+    mockResponseGet(draft);
+    setupResponse(draft, submission);
+
+    // Don't set context.user - let renderMentorReply create default with id 'user1'
+    // This matches currentUser service id, but draft is owned by 'otherUser456'
+    this.setProperties({ submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [draft],
+    });
+
+    // Draft renders but buttons are hidden because currentUser.user.id ('user1') != draft.createdBy.id ('otherUser456')
+    assert.dom('.response-mentor-container').exists();
+    assert.dom('.mentor-reply-actions button').doesNotExist();
+  });
+
+  test('displays DRAFT badge for draft responses', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const draft = store.createRecord('response', {
+      text: 'Draft text',
+      status: 'draft',
+      createDate: new Date(),
+    });
+    draft.createdBy = user;
+    draft.recipient = store.createRecord('user', { username: 'student' });
+    draft.submission = submission;
+    mockResponseGet(draft);
+    setupResponse(draft, submission);
+
+    this.setProperties({ user, submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [draft],
+    });
+
+    assert.dom('.mentor-header-thread').includesText('DRAFT');
+  });
+
+  test('does not show DRAFT badge for approved responses', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const approved = store.createRecord('response', {
+      text: 'Approved text',
+      status: 'approved',
+      createDate: new Date(),
+    });
+    approved.createdBy = user;
+    approved.recipient = store.createRecord('user', { username: 'student' });
+    approved.submission = submission;
+    mockResponseGet(approved);
+    setupResponse(approved, submission);
+
+    this.setProperties({ user, submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [approved],
+    });
+
+    assert.dom('.mentor-header-thread').doesNotIncludeText('DRAFT');
+  });
+
+  test('shows Delete button for pendingApproval response when user can approve', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const pending = store.createRecord('response', {
+      text: 'Pending text',
+      status: 'pendingApproval',
+      createDate: new Date(),
+    });
+    pending.createdBy = user;
+    pending.recipient = store.createRecord('user', { username: 'student' });
+    pending.submission = submission;
+    mockResponseGet(pending);
+    setupResponse(pending, submission);
+
+    this.setProperties({ user, submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [pending],
+      canApprove: true,
+    });
+
+    assert.dom('button:has(.fa-trash)').exists();
+  });
+
+  test('hides action buttons in parent workspace', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const draft = store.createRecord('response', {
+      text: 'Draft text',
+      status: 'draft',
+      createDate: new Date(),
+    });
+    draft.createdBy = user;
+    draft.recipient = store.createRecord('user', { username: 'student' });
+    draft.submission = submission;
+    mockResponseGet(draft);
+    setupResponse(draft, submission);
+
+    this.setProperties({ user, submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [draft],
+      isParentWorkspace: true,
+    });
+
+    // canTrashReply returns false when isParentWorkspace=true
+    assert.dom('.response-mentor-container').exists();
+    assert.dom('.mentor-reply-actions button').doesNotExist();
+  });
+
+  test('filters out trashed responses from display', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
+    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    
+    const visibleDraft = store.createRecord('response', {
+      text: 'Visible draft',
+      status: 'draft',
+      createDate: new Date('2024-01-01'),
+    });
+    visibleDraft.createdBy = user;
+    visibleDraft.recipient = store.createRecord('user', { username: 'student' });
+    visibleDraft.submission = submission;
+    mockResponseGet(visibleDraft);
+    setupResponse(visibleDraft, submission);
+
+    const trashedDraft = store.createRecord('response', {
+      text: 'Trashed draft',
+      status: 'draft',
+      isTrashed: true,
+      createDate: new Date('2024-01-02'),
+    });
+    trashedDraft.createdBy = user;
+    trashedDraft.recipient = store.createRecord('user', { username: 'student' });
+    trashedDraft.submission = submission;
+    mockResponseGet(trashedDraft);
+    setupResponse(trashedDraft, submission);
+
+    this.setProperties({ user, submission });
+
+    await renderMentorReply(this, {
+      submissionResponses: [visibleDraft, trashedDraft],
+    });
+
+    assert.dom('.response-mentor-container').exists({ count: 1 });
+    assert.dom('.response-text-container').includesText('Visible draft');
+    assert.dom('.response-text-container').doesNotIncludeText('Trashed draft');
   });
 });

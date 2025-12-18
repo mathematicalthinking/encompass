@@ -89,6 +89,7 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   showResumeDraftForReply = (reply) => {
+    if (this.args.isParentWorkspace) return false;
     const createdById = this.utils.getBelongsToId(reply, 'createdBy');
     const currentUserId = this.currentUser.user?.id;
     const isOwnReply = createdById === currentUserId;
@@ -173,7 +174,7 @@ export default class ResponseMentorReplyComponent extends Component {
     const isBeingEdited =
       this.isFinishingDraft && this.editingReplyId === reply.id;
     return (
-      (status === 'draft' ||
+      ((status === 'draft' && isOwnReply) ||
         (status === 'pendingApproval' &&
           (isOwnReply || this.args.canApprove))) &&
       !isBeingEdited
