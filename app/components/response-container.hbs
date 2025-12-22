@@ -44,7 +44,7 @@
       </div>
     {{/if}}
   </div>
-  {{#each this.sortedSubmissions as |submission|}}
+  {{#each this.sortedSubmissions as |submission index|}}
     <ResponseMentorThread
       @response={{@response}}
       @submission={{submission}}
@@ -70,6 +70,7 @@
       @priorMentorRevision={{this.priorMentorRevision}}
       @iconFillOptions={{this.iconFillOptions}}
       @handleResponseThread={{this.handleResponseThread}}
+      @isOlderRevision={{if index true false}}
     />
   {{/each}}
 </div>

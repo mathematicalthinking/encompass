@@ -1,23 +1,27 @@
 <div id="response-mentor-reply">
-{{#if @isCreating}}
-  <ResponseNew
-    @isCreating={{@isCreating}}
-    @submission={{@submission}}
-    @responseData={{this.responseNewModel}}
-    @recipient={{@response.recipient}}
-    @newReplyStatus={{this.newReplyStatus}}
-    @newReplyType='mentor'
-    @onSaveSuccess={{this.onSaveSuccess}}
-    @canDirectSend={{@canDirectSend}}
-    @submissionResponses={{@submissionResponses}}
-    @handleResponseThread={{this.handleNewMentorReply}}
-  />
-{{/if}}
+{{#unless @isOlderRevision}}
+  {{#if @isCreating}}
+    <ResponseNew
+      @isCreating={{@isCreating}}
+      @submission={{@submission}}
+      @responseData={{this.responseNewModel}}
+      @recipient={{@response.recipient}}
+      @newReplyStatus={{this.newReplyStatus}}
+      @newReplyType='mentor'
+      @onSaveSuccess={{this.onSaveSuccess}}
+      @canDirectSend={{@canDirectSend}}
+      @submissionResponses={{@submissionResponses}}
+      @handleResponseThread={{this.handleNewMentorReply}}
+    />
+  {{/if}}
+{{/unless}}
 
   {{#if this.sortedMentorReplies}}
-    {{#if @isCreating}}
-      <h3 class='previous-responses-header'>Previous Conversation</h3>
-    {{/if}}
+    {{#unless @isOlderRevision}}
+      {{#if @isCreating}}
+        <h3 class='previous-responses-header'>Previous Conversation</h3>
+      {{/if}}
+    {{/unless}}
     {{#each this.sortedMentorReplies as |reply|}}
       {{#if reply.createdBy.username}}
       <div class='response-mentor-container'>
@@ -150,20 +154,22 @@
 
 
   {{else}}
-    <p class='info'>No Mentor Feedback for this revision yet.</p>
-    <img src='/assets/images/no-message.svg' alt='No Replies' />
-    {{#if this.canSendNew}}
-      Click 'New Response' to begin composing a new Mentor Reply.
-      <div class="submit-buttons button-row">
-        <LinkTo
-          @route="responses.new.submission"
-          @model={{@submission.id}}
-          class="primary-button"
-        >
-          New Response
-        </LinkTo>
-      </div>
-    {{/if}}
+    {{#unless @isOlderRevision}}
+      <p class='info'>No Mentor Feedback for this revision yet.</p>
+      <img src='/assets/images/no-message.svg' alt='No Replies' />
+      {{#if this.canSendNew}}
+        Click 'New Response' to begin composing a new Mentor Reply.
+        <div class="submit-buttons button-row">
+          <LinkTo
+            @route="responses.new.submission"
+            @model={{@submission.id}}
+            class="primary-button"
+          >
+            New Response
+          </LinkTo>
+        </div>
+      {{/if}}
+    {{/unless}}
   {{/if}}
   {{! page pagination for mentor replies }}
   {{!-- <div class="mentor-replies">

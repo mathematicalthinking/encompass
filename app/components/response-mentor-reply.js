@@ -185,7 +185,8 @@ export default class ResponseMentorReplyComponent extends Component {
     return (
       !this.args.isParentWorkspace &&
       this.args.canSend &&
-      !this.args.isOwnSubmission
+      !this.args.isOwnSubmission &&
+      !this.args.isOlderRevision
     );
   }
 
