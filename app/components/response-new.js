@@ -7,10 +7,11 @@ import { service } from '@ember/service';
 export default class ResponseNewComponent extends Component {
   @service currentUser;
   @service('utility-methods') utils;
-  @service('loading-display') loading; // for this line either use this way or we would have to change the service name
+  @service('loading-display') loading;
   @service errorHandling;
-  @service alert;
+  @service('sweet-alert') alert;
   @service store;
+  @service router;
 
   @tracked isEditing = false;
   @tracked isCreating = false;
@@ -380,17 +381,20 @@ export default class ResponseNewComponent extends Component {
   prepareResponseData(response, isDraft) {
     const status = isDraft ? 'draft' : this.args.newReplyStatus;
 
-    response.setProperties({
-      original: this.originalText,
-      createdBy: this.currentUser.user,
-      status,
-      responseType: this.args.newReplyType,
-      text: this.quillText,
-      note: this.args.replyNote,
-    });
+    response.set('original', this.originalText);
+    response.set('status', status);
+    response.set('text', this.quillText);
+    response.set('note', this.args.replyNote);
+
+    if (!response.get('createdBy.content')) {
+      response.set('createdBy', this.currentUser.user);
+    }
+    if (!response.get('responseType')) {
+      response.set('responseType', this.args.newReplyType);
+    }
   }
 
-  handleSaveSuccess(savedResponse, toastMessage) {
+  handleSaveSuccess(savedResponse, toastMessage, isDraft) {
     this.loading.handleLoadingMessage(
       this,
       'end',
@@ -405,8 +409,20 @@ export default class ResponseNewComponent extends Component {
       false,
       null
     );
-    this.args.handleResponseThread?.(savedResponse, 'mentor');
-    this.args.onSaveSuccess?.(this.args.submission, savedResponse);
+
+    if (isDraft) {
+      // Navigate to responses.submission to view the draft with Edit Draft button
+      this.router.transitionTo(
+        'responses.submission',
+        this.args.submission.id,
+        {
+          queryParams: { responseId: savedResponse.id },
+        }
+      );
+    } else {
+      this.args.handleResponseThread?.(savedResponse, 'mentor');
+      this.args.onSaveSuccess?.(this.args.submission, savedResponse);
+    }
   }
 
   handleSaveError(err, response) {
@@ -425,7 +441,13 @@ export default class ResponseNewComponent extends Component {
   }
 
   @action
-  saveResponse(isDraft) {
+  saveResponse(isDraft = false) {
+    console.log(
+      'ResponseNew saveResponse - isDraft:',
+      isDraft,
+      'newReplyStatus:',
+      this.args.newReplyStatus
+    );
     if (!this.isValidQuillContent) return;
 
     const response = this.args.responseData;
@@ -433,6 +455,13 @@ export default class ResponseNewComponent extends Component {
 
     this.cleanupTrashedItems(response);
     this.prepareResponseData(response, isDraft);
+
+    if (this.args.workspace) {
+      this.args.workspace.rollbackAttributes();
+    }
+    if (this.args.submission) {
+      this.args.submission.rollbackAttributes();
+    }
 
     this.loading.handleLoadingMessage(
       this,
@@ -444,7 +473,7 @@ export default class ResponseNewComponent extends Component {
     response
       .save()
       .then((savedResponse) =>
-        this.handleSaveSuccess(savedResponse, toastMessage)
+        this.handleSaveSuccess(savedResponse, toastMessage, isDraft)
       )
       .catch((err) => this.handleSaveError(err, response));
   }

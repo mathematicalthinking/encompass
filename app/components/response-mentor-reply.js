@@ -22,6 +22,7 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked isReplySending = false;
   @tracked doShowLoadingMessage = false;
   @tracked currentDisplayResponseId = null;
+  @tracked editingReplyId = null;
 
   errorPropsToRemove = ['saveRecordErrors'];
   revisionsToolTip = 'Replies are sorted from oldest to newest, left to right.';
@@ -87,9 +88,38 @@ export default class ResponseMentorReplyComponent extends Component {
     return this.canRevise && !this.isDraft && !this.isComposing;
   }
 
-  get showResumeDraft() {
-    return this.args.isOwnMentorReply && this.isDraft && !this.isComposing;
-  }
+  showResumeDraftForReply = (reply) => {
+    if (this.args.isParentWorkspace) return false;
+    const createdById = this.utils.getBelongsToId(reply, 'createdBy');
+    const currentUserId = this.currentUser.user?.id;
+    const isOwnReply = createdById === currentUserId;
+    const isDraft = reply.status === 'draft';
+    const isBeingEdited =
+      this.isFinishingDraft && this.editingReplyId === reply.id;
+    return isOwnReply && isDraft && !isBeingEdited;
+  };
+
+  isEditingThisDraft = (reply) => {
+    return this.isFinishingDraft && this.editingReplyId === reply.id;
+  };
+
+  canReviseReply = (reply) => {
+    if (this.args.isParentWorkspace) return false;
+    const isOwnReply =
+      this.utils.getBelongsToId(reply, 'createdBy') ===
+      this.currentUser.user?.id;
+    const isDraft = reply.status === 'draft';
+    const isBeingEdited = this.isRevising && this.editingReplyId === reply.id;
+    return isOwnReply && !isDraft && !isBeingEdited;
+  };
+
+  isRevisingThisReply = (reply) => {
+    return this.isRevising && this.editingReplyId === reply.id;
+  };
+
+  isDraftReply = (reply) => {
+    return reply.status === 'draft';
+  };
 
   get responseNewModel() {
     return this.args.isCreating
@@ -108,13 +138,15 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   get sortedMentorReplies() {
-    if (!this.args.submissionResponses) return [];
-    const currentStudent = this.args.submission?.student;
+    const responses =
+      this.args.submissionResponses || this.args.submission?.responses;
+    if (!responses) {
+      return [];
+    }
     return (
-      this.args.submissionResponses
-        ?.filter((reply) => currentStudent === reply.get('submission.student')) // used .get to avoid async issues
-        .sortBy('createDate')
-        .reverse() || []
+      responses
+        ?.filter((reply) => reply.responseType === 'mentor' && !reply.isTrashed)
+        .sortBy('createDate') || []
     );
   }
 
@@ -133,25 +165,28 @@ export default class ResponseMentorReplyComponent extends Component {
     return typeof note === 'string' && note.length > 0;
   }
 
-  get canTrash() {
-    const status = this.args.displayResponse?.status;
+  canTrashReply = (reply) => {
     if (this.args.isParentWorkspace) return false;
+    const isOwnReply =
+      this.utils.getBelongsToId(reply, 'createdBy') ===
+      this.currentUser.user?.id;
+    const status = reply.status;
+    const isBeingEdited =
+      this.isFinishingDraft && this.editingReplyId === reply.id;
     return (
-      status === 'draft' ||
-      (status === 'pendingApproval' &&
-        (this.args.isOwnMentorReply || this.args.canApprove))
+      ((status === 'draft' && isOwnReply) ||
+        (status === 'pendingApproval' &&
+          (isOwnReply || this.args.canApprove))) &&
+      !isBeingEdited
     );
-  }
-
-  get showTrash() {
-    return this.canTrash && !this.isComposing;
-  }
+  };
 
   get canSendNew() {
     return (
       !this.args.isParentWorkspace &&
       this.args.canSend &&
-      !this.args.isOwnSubmission
+      !this.args.isOwnSubmission &&
+      !this.args.isOlderRevision
     );
   }
 
@@ -164,7 +199,7 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   get showSaveDraftButton() {
-    return this.isRevising || this.isFinishingDraft;
+    return this.isRevising;
   }
 
   get recipientReadUnreadIcon() {
@@ -259,13 +294,15 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   @action
-  handleComposeAction(propName, value, doClearErrors) {
+  handleComposeAction(reply, propName, value, doClearErrors) {
     if (value) {
-      this.editRevisionText = this.args.displayResponse?.text || '';
-      this.editRevisionNote = this.args.displayResponse?.note || '';
+      this.editRevisionText = reply?.text || '';
+      this.editRevisionNote = reply?.note || '';
+      this.editingReplyId = reply?.id;
     } else {
       this.editRevisionText = '';
       this.editRevisionNote = '';
+      this.editingReplyId = null;
     }
     this[propName] = value;
     if (doClearErrors) this._clearErrorProps();
@@ -277,8 +314,14 @@ export default class ResponseMentorReplyComponent extends Component {
 
     if (!this.isValidQuillContent) return;
 
-    this.args.displayResponse.text = this.quillText;
-    this.args.displayResponse.note = this.editRevisionNote;
+    const editingReply = this.editingReplyId
+      ? this.store.peekRecord('response', this.editingReplyId)
+      : this.args.displayResponse;
+
+    if (!editingReply) return;
+
+    editingReply.text = this.quillText;
+    editingReply.note = this.editRevisionNote;
 
     const priorRevisionStatus = this.args.priorMentorRevision?.status;
     const doSetSuperceded = this._shouldSupersede(priorRevisionStatus);
@@ -294,9 +337,9 @@ export default class ResponseMentorReplyComponent extends Component {
       ? 'Response Sent for Approval'
       : 'Response Sent';
 
-    this.args.displayResponse.status = newStatus;
+    editingReply.status = newStatus;
 
-    const promises = [this.args.displayResponse.save()];
+    const promises = [editingReply.save()];
     if (doSetSuperceded) {
       promises.push(this.args.priorMentorRevision.save());
     }
@@ -304,18 +347,19 @@ export default class ResponseMentorReplyComponent extends Component {
     this._startLoading();
 
     try {
-      await Promise.all(promises);
+      const [savedResponse] = await Promise.all(promises);
       this._endLoading();
       this._showSuccessToast(toastMessage);
       this.isFinishingDraft = false;
+      this.editingReplyId = null;
       this._resetEditState();
+
+      if (!isDraft) {
+        this.args.onSaveSuccess?.(this.args.submission, savedResponse);
+      }
     } catch (err) {
       this._endLoading();
-      this.errorHandling.handleErrors(
-        err,
-        'saveRecordErrors',
-        this.args.displayResponse
-      );
+      this.errorHandling.handleErrors(err, 'saveRecordErrors', editingReply);
     }
   }
 
@@ -450,9 +494,8 @@ export default class ResponseMentorReplyComponent extends Component {
         false,
         null
       );
-      const prevResponse =
-        this.sortedMentorReplies[this.sortedMentorReplies.length - 1] || null;
-      this.args.onSaveSuccess?.(this.args.submission, prevResponse);
+      // Draft will be filtered out by sortedMentorReplies getter since it's now trashed
+      // No navigation needed - the UI will update reactively
     } catch (err) {
       this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
     }
@@ -464,6 +507,22 @@ export default class ResponseMentorReplyComponent extends Component {
       this.args.submission.id,
       this.args.workspace.id
     );
+  }
+
+  @action
+  editDraft(reply) {
+    this.editRevisionText = reply.text || '';
+    this.editRevisionNote = reply.note || '';
+    this.editingReplyId = reply.id;
+    this.isFinishingDraft = true;
+  }
+
+  @action
+  reviseReply(reply) {
+    this.editRevisionText = reply.text || '';
+    this.editRevisionNote = reply.note || '';
+    this.editingReplyId = reply.id;
+    this.isRevising = true;
   }
 
   @action
@@ -484,10 +543,21 @@ export default class ResponseMentorReplyComponent extends Component {
     this.isEditing = false;
     this.isRevising = false;
     this.isFinishingDraft = false;
+    this.editingReplyId = null;
   }
 
   @action
   async saveResponse(isDraft = false) {
+    console.log(
+      'saveResponse called - isDraft:',
+      isDraft,
+      'isEditing:',
+      this.isEditing,
+      'isRevising:',
+      this.isRevising,
+      'isFinishingDraft:',
+      this.isFinishingDraft
+    );
     if (this.isEditing) {
       return this.saveEdit();
     } else if (this.isRevising) {

@@ -49,8 +49,6 @@ export default class ResponsesRoute extends AuthenticatedRoute {
       return null;
     }
 
-    let allResponses = await this.store.peekAll('response');
-
     let submission = await this.resolveSubmission(params.submission_id);
     let wsIds = submission.hasMany('workspaces').ids();
     let wsId = wsIds.get('firstObject');
@@ -61,18 +59,30 @@ export default class ResponsesRoute extends AuthenticatedRoute {
       workspace.get('responses'),
     ]);
 
-    let response = this.response;
-    if (!this.response) {
+    let response = null;
+    if (params.responseId) {
+      try {
+        response = await this.store.findRecord('response', params.responseId);
+      } catch (e) {
+        console.error('Failed to load response:', e);
+      }
+    }
+
+    if (!response && this.response) {
+      response = this.response;
+    }
+
+    if (!response) {
       response = associatedResponses
         .filterBy('responseType', 'mentor')
+        .filterBy('isTrashed', false)
         .sortBy('createDate')
         .get('lastObject');
     }
-    if (params.responseId) {
-      response = this.store.findRecord('response', params.responseId);
-    }
 
-    return {
+    let allResponses = this.store.peekAll('response');
+
+    const model = {
       submission,
       workspace,
       submissions: studentSubmissions.filterBy(
@@ -80,18 +90,15 @@ export default class ResponsesRoute extends AuthenticatedRoute {
         submission.get('student')
       ),
       responses: associatedResponses,
-      response,
+      response: response || null,
       allResponses,
     };
+    return model;
   }
 
   redirect(model, transition) {
     if (!model) {
       this.router.transitionTo('responses');
     }
-  }
-
-  @action renderTemplate() {
-    this.render('responses/response');
   }
 }

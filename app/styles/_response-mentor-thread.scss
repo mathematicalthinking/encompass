@@ -81,6 +81,14 @@
       gap: 1em;
     }
 
+    .mentor-reply-actions {
+      margin-left: 5em;
+    }
+
+    .edit-draft-compose {
+      margin-left: 5em;
+    }
+
     /* Add transition property to the container */
     .mentor-thread-container {
       margin-left: 5em;
@@ -173,4 +181,14 @@
     flex-direction: column;
     gap: 0.5em;
   }
+}
+
+
+.previous-responses-header {
+  margin: 2em 0 1em 0;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+  font-size: 1.1em;
+  font-weight: 500;
 }

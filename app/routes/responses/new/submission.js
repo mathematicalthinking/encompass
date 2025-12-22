@@ -51,7 +51,10 @@ export default class ResponsesNewSubmissionRoute extends Route {
       const subId = this.utils.getBelongsToId(response, 'submission');
 
       return (
-        status === 'draft' && subId === submissionId && creatorId === userId
+        status === 'draft' &&
+        subId === submissionId &&
+        creatorId === userId &&
+        !response.isTrashed
       );
     });
   }
@@ -152,8 +155,8 @@ export default class ResponsesNewSubmissionRoute extends Route {
   }
 
   afterModel(model) {
-    if (model.isDraft) {
-      this.router.transitionTo('responses.submission', model.submissionId, {
+    if (model?.isDraft) {
+      this.replaceWith('responses.submission', model.submissionId, {
         queryParams: { responseId: model.responseId },
       });
     }
