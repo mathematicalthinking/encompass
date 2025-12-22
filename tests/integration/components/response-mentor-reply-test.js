@@ -108,6 +108,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       @isOwnMentorReply={{this.isOwnMentorReply}}
       @isOwnSubmission={{this.isOwnSubmission}}
       @isParentWorkspace={{this.isParentWorkspace}}
+      @isOlderRevision={{this.isOlderRevision}}
       @toNewResponse={{this.toNewResponse}}
     />`);
   }
@@ -1141,5 +1142,33 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     assert.dom('.response-mentor-container').exists({ count: 1 });
     assert.dom('.response-text-container').includesText('Visible draft');
     assert.dom('.response-text-container').doesNotIncludeText('Trashed draft');
+  });
+
+  test('hides New Response button when isOlderRevision is true', async function (assert) {
+    await renderMentorReply(this, {
+      displayResponse: null,
+      submissionResponses: [],
+      canSend: true,
+      isOwnSubmission: false,
+      isParentWorkspace: false,
+      isOlderRevision: true,
+    });
+
+    assert.dom('a.primary-button').doesNotExist('New Response button should be hidden for older revisions');
+    assert.dom('.info').doesNotExist('No replies message should also be hidden');
+  });
+
+  test('shows New Response button when isOlderRevision is false', async function (assert) {
+    await renderMentorReply(this, {
+      displayResponse: null,
+      submissionResponses: [],
+      canSend: true,
+      isOwnSubmission: false,
+      isParentWorkspace: false,
+      isOlderRevision: false,
+    });
+
+    assert.dom('a.primary-button').exists('New Response button should appear for most recent submission');
+    assert.dom('a.primary-button').hasText('New Response');
   });
 });
