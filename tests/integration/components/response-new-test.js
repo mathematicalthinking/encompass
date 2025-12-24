@@ -660,4 +660,30 @@ module('Integration | Component | response-new', function (hooks) {
       .dom('.new-response-header-info')
       .containsText('From: testuser', 'Current user still displayed');
   });
+
+
+  // --------------AI Draft -------------------------
+  test('shows Generate AI Draft button when submission exists', async function (assert) {
+    await renderResponseNew(this, {
+      student: 'Test Student',
+      selections: [],
+      comments: [],
+      submission: { id: 'submission1' }
+    });
+
+    assert.dom('.ai-draft').exists();
+    assert.dom('.ai-draft').hasText('Generate AI Draft');
+  });
+
+  test('hides Generate AI Draft button when no submission', async function (assert) {
+    await renderResponseNew(this, {
+      student: 'Test Student',
+      selections: [],
+      comments: [],
+      submission: null
+    });
+
+    assert.dom('.ai-draft').doesNotExist();
+  });
+
 });

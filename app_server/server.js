@@ -258,6 +258,7 @@ server.get('/api/images/:id', pathMw.validateId(), api.get.image);
 server.get('/api/images/file/:id', pathMw.validateId(), api.get.imageFile);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
+server.get('/api/aiDraft', api.get.aiDraft);
 server.get('/api/notifications', api.get.notifications);
 server.get('/api/notifications/:id', pathMw.validateId(), api.get.notification);
 server.get('/api/responseThreads/', paginate.middleware(25, 100), api.get.responseThreads);
