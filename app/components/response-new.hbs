@@ -136,7 +136,7 @@
         type='button'
         {{on 'click' (fn this.saveResponse false)}}
       >{{this.submitButtonText}}</button>
-       {{#if @responseData.submission}}
+       {{#if this.showAIButton}}
           <button
             class='primary-button ai-draft'
             type='button'

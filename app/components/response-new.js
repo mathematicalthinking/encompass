@@ -97,6 +97,10 @@ export default class ResponseNewComponent extends Component {
     );
   }
 
+  get hasSubmission() {
+    return Boolean(this.args.submission);
+  }
+
   get filteredComments() {
     if (!this.args.responseData?.comments) return [];
 
@@ -237,6 +241,11 @@ export default class ResponseNewComponent extends Component {
     return 'More Details';
   }
 
+  get showAIButton() {
+    const result = this.hasSubmission && this.hasStudentWork;
+    return result;
+  }
+
   get isValidQuillContent() {
     return !this.isQuillEmpty && !this.isQuillTooLong;
   }
@@ -285,8 +294,43 @@ export default class ResponseNewComponent extends Component {
     return str;
   }
 
+  get actualSubmission() {
+    return this.args.responseData?._pendingSubmission ?? this.args.submission;
+  }
+
+  get hasStudentWork() {
+    const submission = this.actualSubmission;
+
+    if (!submission) {
+      return false;
+    }
+
+    // Check direct submission properties first
+    let shortAnswer = submission.shortAnswer?.trim();
+    let longAnswer = submission.longAnswer?.trim();
+
+    // If not found, check the answer relationship (for VMT submissions)
+    if (!shortAnswer && !longAnswer) {
+      const answerId = submission.belongsTo('answer').id();
+      if (answerId) {
+        // Use peekRecord to avoid triggering fetches
+        const answer = this.store.peekRecord('answer', answerId);
+        if (answer) {
+          shortAnswer = answer.answer?.trim();
+          longAnswer = answer.explanation?.trim();
+        }
+      }
+    }
+
+    return Boolean(shortAnswer || longAnswer);
+  }
+
   clearErrorProps() {
     this.args.removeMessages?.(this.errorPropsToRemove);
+  }
+
+  _getSubmissionId() {
+    return this.args.submission?.id ?? null;
   }
 
   preFormatText() {
@@ -491,7 +535,14 @@ export default class ResponseNewComponent extends Component {
 
   @action
   async generateAIDraft() {
-    const submissionId = this.args.responseData.submission.get('id');
+    const submissionId = this._getSubmissionId();
+    if (!submissionId) {
+      this.alert.showToast(
+        'error',
+        'Cannot generate AI draft: Submission not found'
+      );
+      return;
+    }
     const url = `/api/aiDraft?target=${encodeURIComponent(submissionId)}`;
 
     this.loading.handleLoadingMessage(
