@@ -55,7 +55,9 @@ export default class ResponseContainer extends Component {
   }
 
   get submissions() {
-    return this.args.submissions || [];
+    const subs = this.args.submissions || [];
+    // Filter out any response models that snuck in
+    return subs.filter((s) => s.constructor.modelName === 'submission');
   }
 
   get storeResponses() {
