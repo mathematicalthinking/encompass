@@ -74,12 +74,15 @@ export default class ResponsesNewSubmissionRoute extends Route {
     comments
   ) {
     const response = this.store.createRecord('response', {
-      submission,
+      // Don't assign submission here - it triggers the hasMany assertion
       workspace,
       recipient,
       responseType: 'mentor',
       source: 'submission',
     });
+
+    // Store submission reference temporarily outside Ember Data
+    response._pendingSubmission = submission;
 
     response.selections.addObjects(selections);
     response.comments.addObjects(comments);
@@ -93,7 +96,8 @@ export default class ResponsesNewSubmissionRoute extends Route {
 
     const submission = await this.store.findRecord(
       'submission',
-      params.submission_id
+      params.submission_id,
+      { reload: true }
     );
 
     // Early return if draft exists

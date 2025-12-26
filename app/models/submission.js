@@ -2,7 +2,7 @@ import { attr, belongsTo, hasMany } from '@ember-data/model';
 import moment from 'moment';
 import AuditableModel from './auditable';
 
-export default class ResponseModel extends AuditableModel {
+export default class SubmissionModel extends AuditableModel {
   // Alias
   get submissionId() {
     return this.id;
