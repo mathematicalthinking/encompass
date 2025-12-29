@@ -72,7 +72,8 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   get isComposing() {
-    this._checkResponseChange();
+    // Don't call _checkResponseChange during rendering - it causes reactivity issues
+    // The check will happen in actions instead
     return this.isEditing || this.isRevising || this.isFinishingDraft;
   }
 
@@ -136,22 +137,64 @@ export default class ResponseMentorReplyComponent extends Component {
   get showApproverNoteInput() {
     return this.isComposing && this.newReplyStatus !== 'approved';
   }
-
   get sortedMentorReplies() {
-    const responses =
-      this.args.submissionResponses || this.args.submission?.responses;
-    if (!responses) {
-      return [];
-    }
-    return (
-      responses
-        ?.filter((reply) => reply.responseType === 'mentor' && !reply.isTrashed)
-        .sortBy('createDate') || []
+    const mentorReplies = this.args.submissionResponses?.filter(
+      (reply) => reply.responseType === 'mentor' && !reply.isTrashed
     );
+
+    console.log('sortedMentorReplies:', {
+      total: this.args.submissionResponses?.length,
+      afterFilter: mentorReplies?.length,
+      replies: mentorReplies?.map((r) => ({
+        id: r.id,
+        status: r.status,
+        isTrashed: r.isTrashed,
+        text: r.text?.substring(0, 50),
+      })),
+    });
+    if (!mentorReplies || mentorReplies.length === 0) {
+      return null;
+    }
+
+    return mentorReplies.sortBy('createDate');
   }
 
   get showNoteHeader() {
     return this.showApproverNoteInput || this.showDisplayNote;
+  }
+
+  get hasDrafts() {
+    const responses = this.args.submissionResponses;
+
+    // Handle PromiseManyArray - convert to plain array
+    const responsesArray = Array.isArray(responses)
+      ? responses
+      : responses?.toArray?.() || [];
+
+    if (responsesArray.length === 0) {
+      console.log('hasDrafts: No responses loaded yet');
+      return true; // Assume drafts exist until data loads
+    }
+
+    const result = responsesArray.some(
+      (reply) =>
+        reply.responseType === 'mentor' &&
+        !reply.isTrashed &&
+        reply.status === 'draft'
+    );
+
+    console.log('hasDrafts check:', {
+      total: responsesArray.length,
+      hasDrafts: result,
+      drafts: responsesArray
+        .filter(
+          (r) =>
+            r.responseType === 'mentor' && !r.isTrashed && r.status === 'draft'
+        )
+        .map((d) => ({ id: d.id, status: d.status, isTrashed: d.isTrashed })),
+    });
+
+    return result;
   }
 
   get showDisplayNote() {
@@ -182,12 +225,20 @@ export default class ResponseMentorReplyComponent extends Component {
   };
 
   get canSendNew() {
-    return (
+    const result =
       !this.args.isParentWorkspace &&
       this.args.canSend &&
       !this.args.isOwnSubmission &&
-      !this.args.isOlderRevision
-    );
+      !this.args.isOlderRevision;
+    console.log('canSendNew check:', {
+      isParentWorkspace: this.args.isParentWorkspace,
+      canSend: this.args.canSend,
+      isOwnSubmission: this.args.isOwnSubmission,
+      isOlderRevision: this.args.isOlderRevision,
+      result,
+    });
+
+    return result;
   }
 
   get sendButtonText() {

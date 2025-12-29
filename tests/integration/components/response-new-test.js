@@ -99,9 +99,18 @@ module('Integration | Component | response-new', function (hooks) {
     submission: { id: 'submission1' },
   };
 
-  async function renderResponseNew(context, responseData) {
+  async function renderResponseNew(context, responseData, extraArgs = {}) {
     context.set('responseData', responseData);
-    await render(hbs`<ResponseNew @responseData={{this.responseData}} />`);
+    context.setProperties(extraArgs); // This sets submission, canDirectSend, etc.
+    
+    await render(hbs`<ResponseNew 
+      @responseData={{this.responseData}}
+      @submission={{this.submission}}
+      @canDirectSend={{this.canDirectSend}}
+      @newReplyType={{this.newReplyType}}
+      @newReplyStatus={{this.newReplyStatus}}
+      @replyNote={{this.replyNote}}
+    />`);
   }
 
   test('renders basic component structure', async function (assert) {
@@ -664,12 +673,29 @@ module('Integration | Component | response-new', function (hooks) {
 
   // --------------AI Draft -------------------------
   test('shows Generate AI Draft button when submission exists', async function (assert) {
-    await renderResponseNew(this, {
-      student: 'Test Student',
-      selections: [],
-      comments: [],
-      submission: { id: 'submission1' }
-    });
+    const mockSubmission = {
+      id: 'submission1',
+      shortAnswer: 'Student answer here',
+      longAnswer: 'Detailed explanation',
+      belongsTo(relationshipName) {
+        return {
+          id() {
+            return null;
+          }
+        };
+      }
+    };
+
+    await renderResponseNew(this, 
+      {
+        student: 'Test Student',
+        selections: [],
+        comments: [],
+      },
+      {
+        submission: mockSubmission  // Pass as separate argument
+      }
+    );
 
     assert.dom('.ai-draft').exists();
     assert.dom('.ai-draft').hasText('Generate AI Draft');
@@ -686,4 +712,17 @@ module('Integration | Component | response-new', function (hooks) {
     assert.dom('.ai-draft').doesNotExist();
   });
 
+  test('hides Generate AI Draft button when submission has no student work', async function (assert) {
+    await renderResponseNew(this, {
+      student: 'Test Student',
+      selections: [],
+      comments: [],
+      submission: { 
+        id: 'submission1',
+        // No shortAnswer or longAnswer
+      }
+    });
+
+    assert.dom('.ai-draft').doesNotExist('Button hidden when no student work');
+  });
 });

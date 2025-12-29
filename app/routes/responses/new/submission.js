@@ -74,7 +74,7 @@ export default class ResponsesNewSubmissionRoute extends Route {
     comments
   ) {
     const response = this.store.createRecord('response', {
-      submission,
+      // Don't assign submission here - it triggers the hasMany assertion
       workspace,
       recipient,
       responseType: 'mentor',
@@ -93,7 +93,8 @@ export default class ResponsesNewSubmissionRoute extends Route {
 
     const submission = await this.store.findRecord(
       'submission',
-      params.submission_id
+      params.submission_id,
+      { reload: true }
     );
 
     // Early return if draft exists

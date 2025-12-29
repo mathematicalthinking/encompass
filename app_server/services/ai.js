@@ -26,8 +26,12 @@ const stripHtml = (html) => {
  * @param {string} targetSubmissionId - The ID of the target submission
  * @returns {Promise<string>} The generated AI draft text
  */
-const generateDraft = async (targetSubmissionId) => {
-  // Step 1: Fetch submission with all related data (problem, student answers, etc.)
+const generateDraft = async (
+  targetSubmissionId,
+  responseMode = 'student_only',
+  workspaceId = null
+) => {
+  // Step 1: Fetch submission with all related data
   const targetSubmission = await models.Submission.findById(targetSubmissionId)
     .populate({
       path: 'answer',
@@ -37,7 +41,8 @@ const generateDraft = async (targetSubmissionId) => {
       },
     })
     .populate('creator', 'username')
-    .select('shortAnswer longAnswer creator publication')
+    .populate('clazz', 'name')
+    .select('shortAnswer longAnswer creator clazz publication')
     .lean()
     .exec();
 
@@ -45,17 +50,27 @@ const generateDraft = async (targetSubmissionId) => {
     throw new Error(`Submission ${targetSubmissionId} not found`);
   }
 
-  // Step 2: Extract problem statement from different possible locations
-  // System has evolved over time, so we check multiple places:
-  // - New system: answer.assignment.problem.text (full problem text)
-  // - Old PoWs with title: publication.puzzle.title (denormalized title from import)
-  // - Old PoWs with problemId only: fetch full problem from publication.puzzle.problemId
-  // - Reflections or broken imports: generic fallback message
+  // Step 2: Fetch teacher selections for this submission (mandatory)
+  const selectionsQuery = {
+    submission: targetSubmissionId,
+    isTrashed: { $ne: true },
+  };
+
+  if (workspaceId) {
+    selectionsQuery.workspace = workspaceId;
+  }
+
+  const selections = await models.Selection.find(selectionsQuery)
+    .populate('createdBy', 'username')
+    .select('text createdBy')
+    .lean()
+    .exec();
+
+  // Step 3: Extract problem statement
   let problemStatement =
     targetSubmission?.answer?.assignment?.problem?.text ||
     targetSubmission?.publication?.puzzle?.title;
 
-  // If we have a problemId but no text, try to fetch the problem
   if (!problemStatement && targetSubmission?.publication?.puzzle?.problemId) {
     const problem = await models.Problem.findById(
       targetSubmission.publication.puzzle.problemId
@@ -66,38 +81,60 @@ const generateDraft = async (targetSubmissionId) => {
     if (problem) problemStatement = problem.text || problem.title;
   }
 
-  // Final fallback for reflections or incomplete data
   if (!problemStatement) {
     problemStatement =
       'The student is sharing their mathematical thinking and work.';
   }
 
-  // Step 3: Extract and clean student work
-  const shortAnswer = stripHtml(targetSubmission.shortAnswer || '');
-  const longAnswer = stripHtml(targetSubmission.longAnswer || '');
-  const studentWork = [shortAnswer, longAnswer].filter(Boolean).join(' ');
+  // Step 4: Extract and clean student work
+  let shortAnswer = stripHtml(targetSubmission.shortAnswer || '');
+  let longAnswer = stripHtml(targetSubmission.longAnswer || '');
 
-  if (!studentWork) {
-    throw new Error('No student work available to generate AI draft.');
+  // If no direct student work, check the answer relationship (for VMT submissions)
+  if (
+    (!shortAnswer || shortAnswer.trim().length === 0) &&
+    (!longAnswer || longAnswer.trim().length === 0)
+  ) {
+    if (targetSubmission.answer) {
+      shortAnswer = stripHtml(targetSubmission.answer.answer || '');
+      longAnswer = stripHtml(targetSubmission.answer.explanation || '');
+    }
   }
 
-  // Step 4: Build request body with simplified structure for current AWS API
+  // If still no student work found, throw error
+  if (
+    (!shortAnswer || shortAnswer.trim().length === 0) &&
+    (!longAnswer || longAnswer.trim().length === 0)
+  ) {
+    throw new Error(
+      'No student work found. Students must provide a short or long answer.'
+    );
+  }
+  // Step 5: Determine student name
+  const studentName =
+    targetSubmission.creator?.username ||
+    targetSubmission.clazz?.name ||
+    'the student';
+
+  // Step 6: Build request body matching backend expected format
+  const cleanProblemStatement = stripHtml(problemStatement);
+
   const requestBody = {
-    problem: {
-      statement: stripHtml(problemStatement),
-    },
     student_work: {
-      short_answer: shortAnswer || '',
-      long_answer: longAnswer || '',
-      student_name: targetSubmission.creator?.username || 'student',
+      short_answer: shortAnswer,
+      long_answer: longAnswer,
+      student_name: studentName,
     },
-    response_mode: 'student_only',
+    response_mode: responseMode,
   };
 
-  console.log(
-    'Sending simplified request:',
-    JSON.stringify(requestBody, null, 2)
-  );
+  // Only include problem if we have valid text after cleaning
+  if (cleanProblemStatement && cleanProblemStatement.trim().length > 0) {
+    requestBody.problem = {
+      statement: cleanProblemStatement,
+    };
+  }
+
   return await makeAIRequest(requestBody);
 };
 
