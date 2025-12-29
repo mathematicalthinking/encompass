@@ -241,9 +241,23 @@ export default class ResponseNewComponent extends Component {
     return 'More Details';
   }
 
-  get showAIButton() {
-    const result = this.hasSubmission && this.hasStudentWork;
-    return result;
+  get aiButtonTooltip() {
+    if (!this.hasSubmission) {
+      return 'AI draft generation requires a valid submission';
+    }
+    if (!this.hasStudentWork) {
+      return 'AI draft generation requires student work (answers or explanations)';
+    }
+    return 'Generate AI draft based on student work';
+  }
+  get aiButtonDisabled() {
+    const disabled = !this.hasSubmission || !this.hasStudentWork;
+    console.log('aiButtonDisabled:', {
+      disabled,
+      hasSubmission: this.hasSubmission,
+      hasStudentWork: this.hasStudentWork,
+    });
+    return disabled;
   }
 
   get isValidQuillContent() {
@@ -295,7 +309,7 @@ export default class ResponseNewComponent extends Component {
   }
 
   get actualSubmission() {
-    return this.args.responseData?._pendingSubmission ?? this.args.submission;
+    return this.args.submission;
   }
 
   get hasStudentWork() {
@@ -330,7 +344,11 @@ export default class ResponseNewComponent extends Component {
   }
 
   _getSubmissionId() {
-    return this.args.submission?.id ?? null;
+    return (
+      this.args.responseData?._submissionRef?.id ??
+      this.args.submission?.id ??
+      null
+    );
   }
 
   preFormatText() {
@@ -434,6 +452,16 @@ export default class ResponseNewComponent extends Component {
     response.set('text', this.quillText);
     response.set('note', this.args.replyNote);
 
+    // Set submission relationship from passed argument
+    // Check if submission content exists, not just the property
+    if (this.args.submission) {
+      console.log(
+        'Setting submission relationship to:',
+        this.args.submission.id
+      );
+      response.set('submission', this.args.submission);
+    }
+
     if (!response.get('createdBy.content')) {
       response.set('createdBy', this.currentUser.user);
     }
@@ -443,6 +471,15 @@ export default class ResponseNewComponent extends Component {
   }
 
   handleSaveSuccess(savedResponse, toastMessage, isDraft) {
+    console.log(
+      'handleSaveSuccess called - savedResponse:',
+      savedResponse.id,
+      'isDraft:',
+      isDraft
+    );
+    console.log('Saved response submission:', savedResponse.submission?.id);
+    console.log('Saved response status:', savedResponse.status);
+
     this.loading.handleLoadingMessage(
       this,
       'end',
@@ -459,7 +496,10 @@ export default class ResponseNewComponent extends Component {
     );
 
     if (isDraft) {
-      // Navigate to responses.submission to view the draft with Edit Draft button
+      // For drafts, refresh the current route to show the new draft
+      this.args.handleResponseThread?.(savedResponse, 'mentor');
+
+      // Refresh the route to reload responses including the new draft
       this.router.transitionTo(
         'responses.submission',
         this.args.submission.id,
@@ -467,6 +507,8 @@ export default class ResponseNewComponent extends Component {
           queryParams: { responseId: savedResponse.id },
         }
       );
+
+      console.log('Draft saved successfully, refreshing route');
     } else {
       this.args.handleResponseThread?.(savedResponse, 'mentor');
       this.args.onSaveSuccess?.(this.args.submission, savedResponse);
@@ -535,11 +577,45 @@ export default class ResponseNewComponent extends Component {
 
   @action
   async generateAIDraft() {
+    console.log('generateAIDraft clicked:', {
+      hasSubmission: this.hasSubmission,
+      hasStudentWork: this.hasStudentWork,
+      submission: this.args.submission,
+    });
+    // Check if AI generation is appropriate
+    if (!this.hasSubmission) {
+      this.alert.showToast(
+        'error',
+        'Cannot generate AI draft: No submission found',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
+      return;
+    }
+
+    if (!this.hasStudentWork) {
+      this.alert.showToast(
+        'info',
+        'Cannot generate AI draft: No student work found. AI drafts require student answers or explanations to analyze.',
+        'bottom-end',
+        6000,
+        false,
+        null
+      );
+      return;
+    }
+
     const submissionId = this._getSubmissionId();
     if (!submissionId) {
       this.alert.showToast(
         'error',
-        'Cannot generate AI draft: Submission not found'
+        'Cannot generate AI draft: Submission ID not found',
+        'bottom-end',
+        5000,
+        false,
+        null
       );
       return;
     }

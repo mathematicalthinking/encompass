@@ -16,7 +16,7 @@
   {{/if}}
 {{/unless}}
 
-  {{#if this.sortedMentorReplies}}
+  {{#if this.sortedMentorReplies.length}}
     {{#unless @isOlderRevision}}
       {{#if @isCreating}}
         <h3 class='previous-responses-header'>Previous Conversation</h3>
@@ -152,6 +152,27 @@
       {{/if}}
     {{/each}}
 
+    {{! NEW: Show "New Response" button after responses when no drafts exist }}
+    {{#unless @isOlderRevision}}
+      {{#unless this.hasDrafts}}
+        {{#unless @isCreating}}
+          <div class="new-response-section">
+            <p class='info'>Ready to send another response?</p>
+            {{#if this.canSendNew}}
+              <div class="submit-buttons button-row">
+                <LinkTo
+                  @route="responses.new.submission"
+                  @model={{@submission.id}}
+                  class="primary-button"
+                >
+                  New Response
+                </LinkTo>
+              </div>
+            {{/if}}
+          </div>
+        {{/unless}}
+      {{/unless}}
+    {{/unless}}
 
   {{else}}
     {{#unless @isOlderRevision}}

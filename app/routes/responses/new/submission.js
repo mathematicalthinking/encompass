@@ -81,9 +81,6 @@ export default class ResponsesNewSubmissionRoute extends Route {
       source: 'submission',
     });
 
-    // Store submission reference temporarily outside Ember Data
-    response._pendingSubmission = submission;
-
     response.selections.addObjects(selections);
     response.comments.addObjects(comments);
 

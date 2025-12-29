@@ -136,18 +136,18 @@
         type='button'
         {{on 'click' (fn this.saveResponse false)}}
       >{{this.submitButtonText}}</button>
-       {{#if this.showAIButton}}
-          <button
-            class='primary-button ai-draft'
-            type='button'
-            {{on 'click' this.generateAIDraft}}
-          >Generate AI Draft</button>
-       {{/if}}
-      <button
-        class='primary-button save-draft'
-        type='button'
-        {{on 'click' (fn this.saveResponse true)}}
-      >Save as Draft</button>
+        <button
+          class='primary-button ai-draft'
+          type='button'
+          disabled={{this.aiButtonDisabled}}
+          title={{this.aiButtonTooltip}}
+          {{on 'click' this.generateAIDraft}}
+        >Generate AI Draft</button>
+        <button
+          class='primary-button save-draft'
+          type='button'
+          {{on 'click' (fn this.saveResponse true)}}
+        >Save as Draft</button>
     </div>
   </section>
 </div>
