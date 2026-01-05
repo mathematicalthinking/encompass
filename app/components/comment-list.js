@@ -135,17 +135,17 @@ export default class CommentListComponent extends Component {
     return {
       thisWorkspaceOnly: {
         label: 'This Workspace Only',
-        isChecked: true,
+        isChecked: this.thisWorkspaceOnly,
         isDisabled: this.args.isParentWorkspace,
       },
       thisSubmissionOnly: {
         label: 'This Submission Only',
-        isChecked: true,
+        isChecked: this.thisSubmissionOnly,
         isDisabled: false,
       },
       myCommentsOnly: {
         label: 'My Comments Only',
-        isChecked: !this.args.isParentWorkspace,
+        isChecked: this.myCommentsOnly,
         isDisabled: false,
       },
     };
