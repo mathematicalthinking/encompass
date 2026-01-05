@@ -1,0 +1,76 @@
+import Service from '@ember/service';
+import { service } from '@ember/service';
+
+/**
+ * AI Draft Service
+ *
+ * Centralized service for AI draft generation functionality.
+ * Handles student work validation and API communication for generating
+ * AI-powered feedback drafts based on student submissions.
+ */
+export default class AiDraftService extends Service {
+  @service store;
+
+  /**
+   * Checks if a submission has student work available for AI analysis
+   *
+   * Supports two data sources:
+   * 1. Direct properties: submission.shortAnswer and submission.longAnswer (regular submissions)
+   * 2. Answer relationship: answer.answer and answer.explanation (VMT submissions)
+   *
+   * @param {Object} submission
+   * @returns {Boolean}
+   */
+  hasStudentWork(submission) {
+    if (!submission) return false;
+
+    // Check direct submission properties first
+    let shortAnswer = submission.shortAnswer?.trim();
+    let longAnswer = submission.longAnswer?.trim();
+
+    // Fall back to answer relationship for VMT submissions
+    if (!shortAnswer && !longAnswer) {
+      const answerId = submission.belongsTo('answer').id();
+      if (answerId) {
+        const answer = this.store.peekRecord('answer', answerId);
+        if (answer) {
+          shortAnswer = answer.answer?.trim();
+          longAnswer = answer.explanation?.trim();
+        }
+      }
+    }
+
+    return Boolean(shortAnswer || longAnswer);
+  }
+
+  /**
+   * Generates an AI draft response for a given submission
+   *
+   * Makes API call to backend AI service which analyzes student work
+   * and generates appropriate feedback.
+   *
+   * @param {String} submissionId - The ID of the submission to generate feedback for
+   * @returns {Promise<String>} HTML string containing the generated draft
+   * @throws {Error} If API call fails or no content is received
+   */
+  async generateDraft(submissionId) {
+    const url = `/api/aiDraft?target=${encodeURIComponent(submissionId)}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || 'Failed to generate AI draft');
+    }
+
+    const data = await response.json();
+    if (!data || !data.draft) {
+      throw new Error('No content received');
+    }
+
+    return data.draft;
+  }
+}

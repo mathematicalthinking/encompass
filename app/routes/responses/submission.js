@@ -107,7 +107,6 @@ export default class ResponsesRoute extends AuthenticatedRoute {
         return;
       }
     }
-    console.log('Final response selected:', response?.id);
     if (!response && this.response) {
       response = this.response;
     }
