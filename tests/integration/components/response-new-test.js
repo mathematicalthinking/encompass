@@ -672,7 +672,7 @@ module('Integration | Component | response-new', function (hooks) {
 
 
   // --------------AI Draft -------------------------
-  test('shows Generate AI Draft button when submission exists', async function (assert) {
+  test('shows Draft From AI button when submission exists', async function (assert) {
     const mockSubmission = {
       id: 'submission1',
       shortAnswer: 'Student answer here',
@@ -698,31 +698,45 @@ module('Integration | Component | response-new', function (hooks) {
     );
 
     assert.dom('.ai-draft').exists();
-    assert.dom('.ai-draft').hasText('Generate AI Draft');
+    assert.dom('.ai-draft').hasText('Draft From AI');
   });
 
-  test('hides Generate AI Draft button when no submission', async function (assert) {
+  test('disables Draft From AI button when no submission', async function (assert) {
     await renderResponseNew(this, {
       student: 'Test Student',
       selections: [],
       comments: [],
-      submission: null
     });
 
-    assert.dom('.ai-draft').doesNotExist();
+    assert.dom('.ai-draft').exists('Button is visible');
+    assert.dom('.ai-draft').isDisabled('Button is disabled when no submission');
   });
 
-  test('hides Generate AI Draft button when submission has no student work', async function (assert) {
-    await renderResponseNew(this, {
-      student: 'Test Student',
-      selections: [],
-      comments: [],
-      submission: { 
-        id: 'submission1',
-        // No shortAnswer or longAnswer
+  test('disables Draft From AI button when submission has no student work', async function (assert) {
+    const mockSubmission = {
+      id: 'submission1',
+      // No shortAnswer or longAnswer
+      belongsTo(relationshipName) {
+        return {
+          id() {
+            return null;
+          }
+        };
       }
-    });
+    };
 
-    assert.dom('.ai-draft').doesNotExist('Button hidden when no student work');
+    await renderResponseNew(this, 
+      {
+        student: 'Test Student',
+        selections: [],
+        comments: [],
+      },
+      {
+        submission: mockSubmission
+      }
+    );
+
+    assert.dom('.ai-draft').exists('Button is visible');
+    assert.dom('.ai-draft').isDisabled('Button is disabled when no student work');
   });
 });
