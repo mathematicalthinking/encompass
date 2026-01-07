@@ -12,6 +12,7 @@ export default class ResponseNewComponent extends Component {
   @service('sweet-alert') alert;
   @service store;
   @service router;
+  @service('ai-draft') aiDraft;
 
   @tracked isEditing = false;
   @tracked isCreating = false;
@@ -242,22 +243,17 @@ export default class ResponseNewComponent extends Component {
   }
 
   get aiButtonTooltip() {
-    if (!this.hasSubmission) {
+    if (!this.hasSubmission)
       return 'AI draft generation requires a valid submission';
-    }
-    if (!this.hasStudentWork) {
+    if (!this.aiDraft.hasStudentWork(this.actualSubmission))
       return 'AI draft generation requires student work (answers or explanations)';
-    }
     return 'Generate AI draft based on student work';
   }
+
   get aiButtonDisabled() {
-    const disabled = !this.hasSubmission || !this.hasStudentWork;
-    console.log('aiButtonDisabled:', {
-      disabled,
-      hasSubmission: this.hasSubmission,
-      hasStudentWork: this.hasStudentWork,
-    });
-    return disabled;
+    return (
+      !this.hasSubmission || !this.aiDraft.hasStudentWork(this.actualSubmission)
+    );
   }
 
   get isValidQuillContent() {
@@ -310,33 +306,6 @@ export default class ResponseNewComponent extends Component {
 
   get actualSubmission() {
     return this.args.submission;
-  }
-
-  get hasStudentWork() {
-    const submission = this.actualSubmission;
-
-    if (!submission) {
-      return false;
-    }
-
-    // Check direct submission properties first
-    let shortAnswer = submission.shortAnswer?.trim();
-    let longAnswer = submission.longAnswer?.trim();
-
-    // If not found, check the answer relationship (for VMT submissions)
-    if (!shortAnswer && !longAnswer) {
-      const answerId = submission.belongsTo('answer').id();
-      if (answerId) {
-        // Use peekRecord to avoid triggering fetches
-        const answer = this.store.peekRecord('answer', answerId);
-        if (answer) {
-          shortAnswer = answer.answer?.trim();
-          longAnswer = answer.explanation?.trim();
-        }
-      }
-    }
-
-    return Boolean(shortAnswer || longAnswer);
   }
 
   clearErrorProps() {
@@ -577,25 +546,10 @@ export default class ResponseNewComponent extends Component {
 
   @action
   async generateAIDraft() {
-    console.log('generateAIDraft clicked:', {
-      hasSubmission: this.hasSubmission,
-      hasStudentWork: this.hasStudentWork,
-      submission: this.args.submission,
-    });
-    // Check if AI generation is appropriate
-    if (!this.hasSubmission) {
-      this.alert.showToast(
-        'error',
-        'Cannot generate AI draft: No submission found',
-        'bottom-end',
-        5000,
-        false,
-        null
-      );
-      return;
-    }
-
-    if (!this.hasStudentWork) {
+    if (
+      !this.hasSubmission ||
+      !this.aiDraft.hasStudentWork(this.actualSubmission)
+    ) {
       this.alert.showToast(
         'info',
         'Cannot generate AI draft: No student work found. AI drafts require student answers or explanations to analyze.',
@@ -619,7 +573,6 @@ export default class ResponseNewComponent extends Component {
       );
       return;
     }
-    const url = `/api/aiDraft?target=${encodeURIComponent(submissionId)}`;
 
     this.loading.handleLoadingMessage(
       this,
@@ -627,63 +580,21 @@ export default class ResponseNewComponent extends Component {
       'isAIDraftLoading',
       'doShowLoadingMessage'
     );
-
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || 'Failed to generate AI draft');
-      }
-
-      const data = await response.json();
-
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isAIDraftLoading',
-        'doShowLoadingMessage'
+      const draft = await this.aiDraft.generateDraft(submissionId);
+      this.aiGeneratedText = draft;
+      let isEmpty = draft.trim() === '' || draft === '<p><br></p>';
+      let isOverLimit = draft.length > this.maxResponseLength;
+      this.updateQuillText(draft, isEmpty, isOverLimit);
+      this.alert.showToast(
+        'success',
+        'AI draft generated successfully',
+        'bottom-end',
+        3000,
+        false,
+        null
       );
-
-      if (data && data.draft) {
-        this.aiGeneratedText = data.draft;
-
-        let isEmpty = data.draft.trim() === '' || data.draft === '<p><br></p>';
-        let isOverLimit = data.draft.length > this.maxResponseLength;
-        this.updateQuillText(data.draft, isEmpty, isOverLimit);
-
-        this.alert.showToast(
-          'success',
-          'AI draft generated successfully',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-      } else {
-        this.alert.showToast(
-          'error',
-          'Failed to generate AI draft - no content received',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-      }
     } catch (error) {
-      this.loading.handleLoadingMessage(
-        this,
-        'end',
-        'isAIDraftLoading',
-        'doShowLoadingMessage'
-      );
-
-      console.error('AI Draft Error:', error);
-
       this.alert.showToast(
         'error',
         error.message || 'Failed to generate AI draft',
@@ -691,6 +602,13 @@ export default class ResponseNewComponent extends Component {
         5000,
         false,
         null
+      );
+    } finally {
+      this.loading.handleLoadingMessage(
+        this,
+        'end',
+        'isAIDraftLoading',
+        'doShowLoadingMessage'
       );
     }
   }

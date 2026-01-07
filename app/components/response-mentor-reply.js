@@ -11,6 +11,7 @@ export default class ResponseMentorReplyComponent extends Component {
   @service navigation;
   @service currentUser;
   @service store;
+  @service('ai-draft') aiDraft;
 
   @tracked isRevising = false;
   @tracked isEditing = false;
@@ -23,6 +24,10 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked doShowLoadingMessage = false;
   @tracked currentDisplayResponseId = null;
   @tracked editingReplyId = null;
+  @tracked aiGeneratedText = null;
+  @tracked quillKey = 0;
+
+  maxResponseLength = 14680064;
 
   errorPropsToRemove = ['saveRecordErrors'];
   revisionsToolTip = 'Replies are sorted from oldest to newest, left to right.';
@@ -142,16 +147,6 @@ export default class ResponseMentorReplyComponent extends Component {
       (reply) => reply.responseType === 'mentor' && !reply.isTrashed
     );
 
-    console.log('sortedMentorReplies:', {
-      total: this.args.submissionResponses?.length,
-      afterFilter: mentorReplies?.length,
-      replies: mentorReplies?.map((r) => ({
-        id: r.id,
-        status: r.status,
-        isTrashed: r.isTrashed,
-        text: r.text?.substring(0, 50),
-      })),
-    });
     if (!mentorReplies || mentorReplies.length === 0) {
       return null;
     }
@@ -172,7 +167,6 @@ export default class ResponseMentorReplyComponent extends Component {
       : responses?.toArray?.() || [];
 
     if (responsesArray.length === 0) {
-      console.log('hasDrafts: No responses loaded yet');
       return true; // Assume drafts exist until data loads
     }
 
@@ -182,17 +176,6 @@ export default class ResponseMentorReplyComponent extends Component {
         !reply.isTrashed &&
         reply.status === 'draft'
     );
-
-    console.log('hasDrafts check:', {
-      total: responsesArray.length,
-      hasDrafts: result,
-      drafts: responsesArray
-        .filter(
-          (r) =>
-            r.responseType === 'mentor' && !r.isTrashed && r.status === 'draft'
-        )
-        .map((d) => ({ id: d.id, status: d.status, isTrashed: d.isTrashed })),
-    });
 
     return result;
   }
@@ -225,20 +208,27 @@ export default class ResponseMentorReplyComponent extends Component {
   };
 
   get canSendNew() {
-    const result =
+    return (
       !this.args.isParentWorkspace &&
       this.args.canSend &&
       !this.args.isOwnSubmission &&
-      !this.args.isOlderRevision;
-    console.log('canSendNew check:', {
-      isParentWorkspace: this.args.isParentWorkspace,
-      canSend: this.args.canSend,
-      isOwnSubmission: this.args.isOwnSubmission,
-      isOlderRevision: this.args.isOlderRevision,
-      result,
-    });
+      !this.args.isOlderRevision
+    );
+  }
 
-    return result;
+  get aiButtonTooltip() {
+    if (!this.args.submission)
+      return 'AI draft generation requires a valid submission';
+    if (!this.aiDraft.hasStudentWork(this.args.submission))
+      return 'AI draft generation requires student work (answers or explanations)';
+    return 'Generate AI draft based on student work';
+  }
+
+  get aiButtonDisabled() {
+    return (
+      !this.args.submission ||
+      !this.aiDraft.hasStudentWork(this.args.submission)
+    );
   }
 
   get sendButtonText() {
@@ -337,6 +327,54 @@ export default class ResponseMentorReplyComponent extends Component {
     revision.status = status;
 
     return revision;
+  }
+
+  @action
+  async generateAIDraft() {
+    if (
+      !this.args.submission ||
+      !this.aiDraft.hasStudentWork(this.args.submission)
+    ) {
+      this.alert.showToast(
+        'info',
+        'Cannot generate AI draft: No student work found. AI drafts require student answers or explanations to analyze.',
+        'bottom-end',
+        6000,
+        false,
+        null
+      );
+      return;
+    }
+
+    this._startLoading();
+    try {
+      const draft = await this.aiDraft.generateDraft(this.args.submission.id);
+      this.aiGeneratedText = draft;
+      this.quillKey++;
+      this.editRevisionText = draft;
+      let isEmpty = draft.trim() === '' || draft === '<p><br></p>';
+      let isOverLimit = draft.length > this.maxResponseLength;
+      this.updateQuillText(draft, isEmpty, isOverLimit);
+      this.alert.showToast(
+        'success',
+        'AI draft generated successfully',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (error) {
+      this.alert.showToast(
+        'error',
+        error.message || 'Failed to generate AI draft',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
+    } finally {
+      this._endLoading();
+    }
   }
 
   @action
@@ -599,16 +637,6 @@ export default class ResponseMentorReplyComponent extends Component {
 
   @action
   async saveResponse(isDraft = false) {
-    console.log(
-      'saveResponse called - isDraft:',
-      isDraft,
-      'isEditing:',
-      this.isEditing,
-      'isRevising:',
-      this.isRevising,
-      'isFinishingDraft:',
-      this.isFinishingDraft
-    );
     if (this.isEditing) {
       return this.saveEdit();
     } else if (this.isRevising) {
