@@ -21,6 +21,32 @@
   </div>
   {{! Main content }}
   <section class='new-response-content'>
+  
+  {{#if this.showAiDraftSection}}
+    <div class='ai-draft-section'>
+      <p class='response-header'>AI-Generated Suggestion</p>
+      
+      <div class='ai-draft-readonly-box'>
+        <Ui::QuillContainer
+          @startingText={{this.aiGeneratedText}}
+          @attrSectionId='ai-draft-readonly'
+          @readOnly={{true}}
+          @showErrors={{false}}
+        />
+      </div>
+      
+      <button
+        type='button'
+        class='ai-bring-down-btn'
+        disabled={{not this.canBringDown}}
+        {{on 'click' this.bringAiDraftDown}}
+      >
+        Bring it Down
+      </button>
+    </div>
+  {{/if}}
+
+  {{! Selections and Comments }}
     {{#if this.filteredSelections.length}}
 
       <section class='selections'>
@@ -85,6 +111,7 @@
       </section>
     {{/if}}
 
+    {{! Empty state message }}
     <div class='response-info'>
       {{#if this.explainEmptiness}}
         <p class='response-prefill'>
@@ -103,16 +130,19 @@
         </p>
       {{/if}}
     </div>
+    {{! Main Message Editor }}
     <div class='response-compose'>
       <p class='response-header'>Message</p>
 
       <Ui::QuillContainer
         @onEditorChange={{this.updateQuillText}}
+        @onQuillReady={{this.onQuillReady}}
         @attrSectionId='response-new-editor'
         @startingText={{this.replyText}}
         @maxLength={{this.maxResponseLength}}
         @showErrors={{true}}
         @emptyErrorMessage='Message body cannot be blank'
+        key={{this.quillEditorKey}}
       />
 
       {{#if this.showNoteField}}
