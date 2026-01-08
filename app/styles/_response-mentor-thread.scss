@@ -170,6 +170,60 @@
       font-weight: 400;
     }
   }
+
+  // AI Draft Section Styles(Read_Only)
+  .ai-draft-section {
+    margin-bottom: 1.5em;
+    padding: 1em;
+    background-color: #ffffff;
+    border-radius: 8px;
+    
+    .response-header {
+      font-weight: 600;
+      margin-bottom: 0.8em;
+      color: #333;
+      font-size: 1.05em;
+    }
+    
+    .ai-draft-readonly-box {
+      background-color: #f9f9f9;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 1em;
+      margin-bottom: 1em;
+      max-height: 400px;
+      overflow-y: auto;
+      
+      // Hide the Quill toolbar for read-only
+      .ql-toolbar {
+        display: none !important;
+      }
+      // Just disable editing - keep all other default Quill styles
+      .ql-editor {
+        pointer-events: none;
+        user-select: text;
+        cursor: default;
+      }
+    }
+    .ai-bring-down-btn {
+      // Inherit base button styles from theme
+      @extend .primary-button;
+      
+      padding: 0.5em 1em;
+      font-size: 0.95em;
+      
+      &:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+        
+        &:hover {
+          background-color: #cccccc; // Override hover state when disabled
+        }
+      }
+    }
+  }
+
   .new-response-header {
     display: flex;
     justify-content: space-between;
