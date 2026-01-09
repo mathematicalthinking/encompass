@@ -5,6 +5,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 export default class ResponseNewComponent extends Component {
   @service currentUser;
@@ -510,32 +511,28 @@ export default class ResponseNewComponent extends Component {
   convertPlainTextToHtml(text) {
     if (!text) return '';
 
-    // DON'T remove all indentation - we need it for nested lists
-    // Only normalize line endings
-    let normalizedText = text.replace(/\r\n/g, '\n');
+    let normalized = text;
 
-    // Combine consecutive numbered items that are separated by blank lines
-    // But preserve indented sub-items
-    let previousText = '';
-    while (previousText !== normalizedText) {
-      previousText = normalizedText;
-      // Match: number at START of line + content + blank lines + another number at START of line
-      normalizedText = normalizedText.replace(
-        /^(\d+\.\s[\s\S]*?)(\n\n+)(^\d+\.\s)/gm,
-        '$1\n$3'
-      );
-    }
+    // 1. Normalize line endings
+    normalized = normalized.replace(/\r\n/g, '\n');
 
-    marked.setOptions({
+    normalized = normalized.replace(/^ {2}(?=\d|-|\*)/gm, '    ');
+
+    normalized = normalized.replace(
+      /^(\s*\d+\..+)\n(?!\s*\d|\s*\\-|\s*$)(.*)/gm,
+      '$1 $2'
+    );
+
+    normalized = normalized.replace(/(\n\n)(?=\s*\d+\.)/g, '\n');
+
+    // 2. Configure Marked
+    const rawHtml = marked.parse(normalized, {
       breaks: true,
       gfm: true,
-      pedantic: false,
-      headerIds: false,
-      mangle: false,
     });
 
-    const html = marked.parse(normalizedText);
-    return html;
+    // 3. Sanitize
+    return DOMPurify.sanitize(rawHtml);
   }
 
   @action

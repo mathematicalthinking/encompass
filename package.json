@@ -60,6 +60,7 @@
     "csvtojson": "^2.0.10",
     "date-fns": "^4.1.0",
     "debug": "^4.3.4",
+    "dompurify": "^3.3.1",
     "dotenv": "^8.2.0",
     "express": "^4.19.2",
     "express-paginate": "^1.0.2",
