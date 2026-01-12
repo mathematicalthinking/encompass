@@ -1,10 +1,11 @@
 import Component from '@glimmer/component';
+import { service } from '@ember/service';
+
 /**
  * Arguments passed from parent:
  * - @comments
  * - @currentWorkspace
  * - @currentSubmission
- * - @currentSelection
  * - @isParentWorkspace
  * - @containerLayoutClass
  * - @isHidden
@@ -22,6 +23,7 @@ export default class CommentListComponent extends Component {
   @service('utility-methods') utils;
   @service('loading-display') loading;
   @service('workspace-permissions') permissions;
+  @service currentSelection;
   @service currentUser;
   @service store;
   @service errorHandling;
@@ -124,7 +126,7 @@ export default class CommentListComponent extends Component {
   }
 
   get onSelection() {
-    return this.utils.isNonEmptyObject(this.args.currentSelection);
+    return this.currentSelection.hasSelection;
   }
 
   get canComment() {

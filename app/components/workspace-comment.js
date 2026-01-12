@@ -6,6 +6,7 @@ export default class WorkspaceCommentComponent extends Component {
   @service currentUser;
   @service('workspace-permissions') permissions;
   @service('utility-methods') utils;
+  @service currentSelection;
 
   get originalWorkspace() {
     return this.args.comment?.originalComment?.workspace;
@@ -57,14 +58,14 @@ export default class WorkspaceCommentComponent extends Component {
     // For non-parent workspaces, check against group's original selection
     if (this.args.currentWorkspace?.workspaceType !== 'parent') {
       const groupSelectionId =
-        this.args.currentSelection?.originalSelection?.id;
+        this.currentSelection.selection?.originalSelection?.id;
       if (groupSelectionId) {
         return commentSelectionId === groupSelectionId;
       }
     }
 
     // Default: check against current selection
-    return commentSelectionId === this.args.currentSelection?.id;
+    return commentSelectionId === this.currentSelection.selection?.id;
   }
 
   get commentClasses() {
