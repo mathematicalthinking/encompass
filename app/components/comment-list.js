@@ -1,5 +1,8 @@
 import Component from '@glimmer/component';
 import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { subYears, format, parseISO } from 'date-fns';
 
 /**
  * Arguments passed from parent:
@@ -13,11 +16,6 @@ import { service } from '@ember/service';
  * TODO:
  * - Test the hashtag stuff to see if that is still working.
  */
-import { service } from '@ember/service';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-import { subYears, format, parseISO } from 'date-fns';
-
 export default class CommentListComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
