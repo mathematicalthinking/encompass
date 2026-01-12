@@ -7,6 +7,7 @@ import { getOwner } from '@ember/application';
 export default class WorkspaceSubmissionController extends Controller {
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
+  @service('current-selection') selectionService;
   @service currentUser;
   @service store;
   @tracked queryParams = ['vmtRoomId'];
@@ -15,7 +16,6 @@ export default class WorkspaceSubmissionController extends Controller {
   @tracked guider = this.guider;
 
   @tracked showOptions = true;
-  @tracked _currentSelection = null;
   @tracked areFoldersHidden = false;
   @tracked areCommentsHidden = false;
   @tracked itemsToDisplay = 'all';
@@ -26,11 +26,11 @@ export default class WorkspaceSubmissionController extends Controller {
   }
 
   get currentSelection() {
-    return this._currentSelection || this.workspaceController.currentSelection;
+    return this.selectionService.selection;
   }
 
   set currentSelection(selection) {
-    this._currentSelection = selection;
+    this.selectionService.setSelection(selection);
   }
 
   get workspaceOwner() {

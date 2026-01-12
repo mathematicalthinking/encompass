@@ -1,9 +1,9 @@
-/* eslint-disable ember/no-controller-access-in-routes */
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
 
 export default class SelectionRoute extends Route {
   @service store;
+  @service currentSelection;
 
   model(params) {
     return this.store.findRecord('selection', params.selection_id);
@@ -11,15 +11,13 @@ export default class SelectionRoute extends Route {
 
   setupController(controller, model, ...args) {
     super.setupController(controller, model, ...args);
-    const workspaceController = this.controllerFor('workspace');
-    workspaceController.currentSelection = model;
+    this.currentSelection.setSelection(model);
   }
 
   resetController(controller, isExiting, ...args) {
     super.resetController(controller, isExiting, ...args);
     if (isExiting) {
-      const workspaceController = this.controllerFor('workspace');
-      workspaceController.currentSelection = null;
+      this.currentSelection.clearSelection();
     }
   }
 }
