@@ -56,7 +56,7 @@ export default class WorkspaceCommentComponent extends Component {
     );
 
     // For non-parent workspaces, check against group's original selection
-    if (this.args.currentWorkspace?.workspaceType !== 'parent') {
+    if (!this.args.isParentWorkspace) {
       const groupSelectionId =
         this.currentSelection.selection?.originalSelection?.id;
       if (groupSelectionId) {
@@ -65,7 +65,7 @@ export default class WorkspaceCommentComponent extends Component {
     }
 
     // Default: check against current selection
-    return commentSelectionId === this.currentSelection.selection?.id;
+    return this.currentSelection.isCurrentSelection(commentSelectionId);
   }
 
   get commentClasses() {

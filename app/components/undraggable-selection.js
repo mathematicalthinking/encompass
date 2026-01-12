@@ -5,6 +5,7 @@ import { action } from '@ember/object';
 
 export default class UndraggableSelectionComponent extends Component {
   @service('utility-methods') utils;
+  @service currentSelection;
 
   @tracked isExpanded = false;
 
@@ -51,7 +52,7 @@ export default class UndraggableSelectionComponent extends Component {
   }
 
   get isSelected() {
-    return this.args.selection?.id === this.args.currentSelection?.id;
+    return this.currentSelection.isCurrentSelection(this.args.selection?.id);
   }
 
   get titleText() {

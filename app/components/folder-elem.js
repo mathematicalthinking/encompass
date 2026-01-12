@@ -38,11 +38,12 @@ export default class FolderElemComponent extends Component {
   }
 
   get containsCurrentSelection() {
-    const selectionId = this.currentSelection.selection?.id;
     const selections = this.args.model.isExpanded
       ? this.args.model.taggedSelections
       : this.args.model._selections;
-    return selections?.some((sel) => sel.id === selectionId);
+    return selections?.some((sel) =>
+      this.currentSelection.isCurrentSelection(sel.id)
+    );
   }
 
   get hasManyTaggings() {

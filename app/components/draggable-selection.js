@@ -7,6 +7,7 @@ export default class DraggableSelectionComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
   @service currentUser;
+  @service currentSelection;
 
   @tracked isExpanded = false;
   @tracked isDragging = false;
@@ -51,7 +52,7 @@ export default class DraggableSelectionComponent extends Component {
   }
 
   get isSelected() {
-    return this.args.selection?.id === this.args.currentSelection?.id;
+    return this.currentSelection.isCurrentSelection(this.args.selection?.id);
   }
 
   get isVmtClip() {

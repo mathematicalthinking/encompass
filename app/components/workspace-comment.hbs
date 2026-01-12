@@ -39,13 +39,18 @@
       ></i></span>
   {{/if}}
   {{#if this.permittedToComment}}
-    <a {{on "click" this.reuseComment}} title='reuse this comment'>
+    <button
+      type='button'
+      class='reuse_button'
+      {{on "click" this.reuseComment}}
+      title='reuse this comment'
+    >
       {{#if this.childrenLength}}
         {{this.childrenLength}}
       {{else}}
         <i class='fas fa-plus'></i>
       {{/if}}
-    </a>
+    </button>
   {{/if}}
 </div>
 

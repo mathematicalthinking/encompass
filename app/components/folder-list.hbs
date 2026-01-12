@@ -17,7 +17,6 @@
     <ul id='al_folders'>
       {{#each this.sortedFolders as |folder|}}
         <FolderElem
-          @store={{this.store}}
           @model={{folder}}
           @currentWorkspace={{@workspace}}
           @folderList={{@folders}}
@@ -25,7 +24,6 @@
           @dropped={{this.fileSelectionInFolder}}
           @confirm={{this.askToDelete}}
           @currentSubmission={{@currentSubmission}}
-          @currentSelection={{@currentSelection}}
           @canEditFolders={{this.canEdit}}
           @canDeleteFolders={{this.canDelete}}
           @wsTaggings={{@taggings}}

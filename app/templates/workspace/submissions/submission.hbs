@@ -77,7 +77,6 @@
     {{!section class="submissions"}}
     {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
     <SubmissionGroup
-      @store={{this.store}}
       @canRespond={{this.canRespond}}
       @submissions={{this.currentWorkspace.submissions.content}}
       @submission={{this.model.submission}}
@@ -98,7 +97,6 @@
       </div>
     {{/if}}
     <CommentList
-      @store={{this.store}}
       @comments={{this.nonTrashedComments}}
       @currentWorkspace={{this.currentWorkspace}}
       @currentSubmission={{this.model.submission}}

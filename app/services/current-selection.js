@@ -8,6 +8,10 @@ export default class CurrentSelectionService extends Service {
     return !!this.selection;
   }
 
+  get id() {
+    return this.selection?.id;
+  }
+
   setSelection(selection) {
     this.selection = selection;
   }
