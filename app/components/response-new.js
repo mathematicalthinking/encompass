@@ -36,6 +36,18 @@ export default class ResponseNewComponent extends Component {
   @tracked doShowLoadingMessage = false;
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
+  @tracked aiDraftRating = null;
+
+  starDefinitions = [
+    { value: 1, tooltip: 'Not usable - requires complete rewrite' },
+    {
+      value: 2,
+      tooltip: 'Has significant errors or disconnects that prevent use',
+    },
+    { value: 3, tooltip: 'Usable but requires editing before sending' },
+    { value: 4, tooltip: 'Ready to use - could be sent as is' },
+    { value: 5, tooltip: 'Exceptional quality - exceeds expectations' },
+  ];
 
   doUseOnlyOwnMarkup = true;
   maxResponseLength = 14680064;
@@ -257,9 +269,13 @@ export default class ResponseNewComponent extends Component {
   }
 
   get aiButtonDisabled() {
-    return (
-      !this.hasSubmission || !this.aiDraft.hasStudentWork(this.actualSubmission)
-    );
+    const hasSubmission = this.hasSubmission;
+    const actualSubmission = this.actualSubmission;
+    const hasWork = actualSubmission
+      ? this.aiDraft.hasStudentWork(actualSubmission)
+      : false;
+
+    return !hasSubmission || !hasWork;
   }
 
   get isValidQuillContent() {
@@ -271,7 +287,16 @@ export default class ResponseNewComponent extends Component {
   }
 
   get canBringDown() {
+    return !this.hasUsedAIDraft && this.aiDraftRating !== null;
+  }
+
+  get showRatingControls() {
     return !this.hasUsedAIDraft;
+  }
+
+  @action
+  isStarFilled(starNumber) {
+    return this.aiDraftRating !== null && this.aiDraftRating >= starNumber;
   }
 
   quote(string, opts, isImageTag) {
@@ -630,6 +655,7 @@ export default class ResponseNewComponent extends Component {
       // Convert AI plain text to HTML immediately and store it
       this.aiGeneratedText = this.convertPlainTextToHtml(draft);
       this.hasUsedAIDraft = false; // Reset "Bring it Down" button
+      this.aiDraftRating = null; // Reset rating for new draft
 
       this.alert.showToast(
         'success',
@@ -666,7 +692,7 @@ export default class ResponseNewComponent extends Component {
 
     // Get current editor content (HTML format)
     const currentText = this.quillText || '';
-    const separator = currentText.trim() ? '<p><br></p><p><br></p>' : '';
+    const separator = currentText.trim() ? '<p><br></p>' : '';
 
     // Combine HTML
     const newText = currentText + separator + this.aiGeneratedText;
@@ -693,5 +719,10 @@ export default class ResponseNewComponent extends Component {
       false,
       null
     );
+  }
+
+  @action
+  setStarRating(rating) {
+    this.aiDraftRating = rating;
   }
 }

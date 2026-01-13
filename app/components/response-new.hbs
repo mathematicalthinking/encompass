@@ -35,14 +35,34 @@
         />
       </div>
       
-      <button
-        type='button'
-        class='ai-bring-down-btn'
-        disabled={{not this.canBringDown}}
-        {{on 'click' this.bringAiDraftDown}}
-      >
-        Bring it Down
-      </button>
+      {{! Star Rating and Button Row }}
+      {{#if this.showRatingControls}}
+        <div class='ai-draft-actions'>
+          <div class='star-rating-container'>
+            <label class='star-rating-label'>Rate AI Draft <span class='required-asterisk'>*</span></label>
+            <div class='star-rating-stars'>
+              {{#each this.starDefinitions as |star|}}
+                <i
+                  class='fas fa-star star-icon {{if (this.isStarFilled star.value) "star-filled" "star-empty"}}'
+                  title={{star.tooltip}}
+                  {{on 'click' (fn this.setStarRating star.value)}}
+                  role='button'
+                  tabindex='0'
+                ></i>
+              {{/each}}
+            </div>
+          </div>
+          
+          <button
+            type='button'
+            class='ai-bring-down-btn'
+            disabled={{not this.canBringDown}}
+            {{on 'click' this.bringAiDraftDown}}
+          >
+            Bring it Down
+          </button>
+        </div>
+      {{/if}}
     </div>
   {{/if}}
 
