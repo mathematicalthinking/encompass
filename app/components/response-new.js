@@ -30,6 +30,8 @@ export default class ResponseNewComponent extends Component {
   @tracked quillText = '';
   @tracked isQuillEmpty = false;
   @tracked isQuillTooLong = false;
+
+  // AI Draft and Logging related tracked properties
   @tracked originalText = '';
   @tracked aiGeneratedText = null;
   @tracked hasUsedAIDraft = false;
@@ -37,6 +39,12 @@ export default class ResponseNewComponent extends Component {
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
   @tracked aiDraftRating = null;
+  @tracked showUsageCheckboxes = false;
+  @tracked usageNotForStudents = false;
+  @tracked usageNotForSelf = false;
+  @tracked usageForStudents = false;
+  @tracked usageToThinkAbout = false;
+  @tracked usageFeedbackOnAI = false;
 
   starDefinitions = [
     { value: 1, tooltip: 'Not usable - requires complete rewrite' },
@@ -47,6 +55,30 @@ export default class ResponseNewComponent extends Component {
     { value: 3, tooltip: 'Usable but requires editing before sending' },
     { value: 4, tooltip: 'Ready to use - could be sent as is' },
     { value: 5, tooltip: 'Exceptional quality - exceeds expectations' },
+  ];
+
+  usageOptions = [
+    {
+      key: 'usageNotForStudents',
+      label: 'I would/will not use this with students',
+    },
+    {
+      key: 'usageNotForSelf',
+      label:
+        'I will not use this for myself (learning about math, feedback, or my students)',
+    },
+    {
+      key: 'usageForStudents',
+      label: 'I would/will use this with my students',
+    },
+    {
+      key: 'usageToThinkAbout',
+      label: 'I will save this as something to think about',
+    },
+    {
+      key: 'usageFeedbackOnAI',
+      label: 'I will use this to give feedback on the AI performance',
+    },
   ];
 
   doUseOnlyOwnMarkup = true;
@@ -291,7 +323,17 @@ export default class ResponseNewComponent extends Component {
   }
 
   get showRatingControls() {
-    return !this.hasUsedAIDraft;
+    return !this.hasUsedAIDraft && !this.showUsageCheckboxes;
+  }
+
+  get hasSelectedUsageOption() {
+    return (
+      this.usageNotForStudents ||
+      this.usageNotForSelf ||
+      this.usageForStudents ||
+      this.usageToThinkAbout ||
+      this.usageFeedbackOnAI
+    );
   }
 
   @action
@@ -689,6 +731,23 @@ export default class ResponseNewComponent extends Component {
     if (!this.canBringDown || !this.aiGeneratedText) {
       return;
     }
+    // Show usage checkboxes instead of immediately copying
+    this.showUsageCheckboxes = true;
+  }
+
+  @action
+  continueWithAIDraft() {
+    if (!this.hasSelectedUsageOption) {
+      this.alert.showToast(
+        'info',
+        'Please select at least one option before continuing',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      return;
+    }
 
     // Get current editor content (HTML format)
     const currentText = this.quillText || '';
@@ -710,6 +769,7 @@ export default class ResponseNewComponent extends Component {
 
     // Mark draft as used
     this.hasUsedAIDraft = true;
+    this.showUsageCheckboxes = false;
 
     this.alert.showToast(
       'success',
