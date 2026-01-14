@@ -280,6 +280,41 @@
         opacity: 0.6;
       }
     }
+  
+    // Usage Checkboxes
+    .ai-usage-checkboxes {
+      padding: 1em;
+      background-color: #f9f9f9;
+      border-radius: 6px;
+      border: 2px solid #e0e0e0;
+
+      .usage-prompt {
+        font-weight: 600;
+        margin-bottom: 1em;
+        color: #333;
+
+        .required-asterisk {
+          color: #d9534f;
+        }
+      }
+
+      .usage-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin-bottom: 0.8em;
+        cursor: pointer;
+        font-size: 0.95em;
+
+        input[type='checkbox'] {
+          cursor: pointer;
+        }
+      }
+
+      .ai-continue-btn {
+        margin-top: 1em;
+      }
+    }
   }
 
   .new-response-header {
