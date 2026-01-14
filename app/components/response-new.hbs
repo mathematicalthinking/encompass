@@ -63,6 +63,25 @@
           </button>
         </div>
       {{/if}}
+      {{! Usage Checkboxes }}
+      {{#if this.showUsageCheckboxes}}
+        <div class='ai-usage-checkboxes'>
+          <p class='usage-prompt'>How will you use this AI draft? <span class='required-asterisk'>*</span> (Check all that apply)</p>
+          {{#each this.usageOptions as |option|}}
+            <label class='usage-option'>
+              <Input @type='checkbox' @checked={{get this option.key}} />
+              {{option.label}}
+            </label>
+          {{/each}}
+          <button
+            type='button'
+            class='ai-continue-btn primary-button'
+            {{on 'click' this.continueWithAIDraft}}
+          >
+            Continue
+          </button>
+        </div>
+      {{/if}}
     </div>
   {{/if}}
 
