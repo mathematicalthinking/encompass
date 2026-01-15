@@ -10,6 +10,7 @@ export default class WorkspaceSubmissionController extends Controller {
   @service('current-selection') selectionService;
   @service currentUser;
   @service store;
+  @service router;
   @tracked queryParams = ['vmtRoomId'];
   @service('assignment-permissions') permissions;
   // Tracked properties
@@ -371,7 +372,7 @@ export default class WorkspaceSubmissionController extends Controller {
 
   @action
   cancelComment() {
-    this.transitionToRoute('workspace.submission');
+    this.router.replaceWith('workspace.submissions.submission');
   }
 
   @action
