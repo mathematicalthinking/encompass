@@ -53,6 +53,17 @@
             </div>
           </div>
           
+          <div class='ai-feedback-container'>
+            <label for='ai-written-feedback' class='ai-feedback-label'>Written Feedback <span class='required-asterisk'>*</span></label>
+            <Textarea
+              id='ai-written-feedback'
+              placeholder='Share your thoughts on this AI-generated draft...'
+              rows={{2}}
+              @value={{this.aiWrittenFeedback}}
+              {{on 'input' this.updateAiWrittenFeedback}}
+            />
+          </div>
+          
           <button
             type='button'
             class='ai-bring-down-btn'
