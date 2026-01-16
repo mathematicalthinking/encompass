@@ -215,15 +215,15 @@
     
     .star-rating-container {
       display: flex;
+      flex-direction: row;
       align-items: center;
-      gap: 1em;
-      padding: 0.8em;
-      background-color: #f5f5f5;
-      border-radius: 6px;
+      gap: 0.5em;
       
       .star-rating-label {
         font-weight: 500;
         margin: 0;
+        font-size: 13px;
+        white-space: nowrap;
         
         .required-asterisk {
           color: #d9534f;
@@ -268,6 +268,32 @@
             }
           }
         }
+      }
+    }
+
+    .ai-feedback-container {
+      flex: 0 1 auto;
+      max-width: 450px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5em;
+      
+      .ai-feedback-label {
+        font-weight: 500;
+        margin: 0;
+        font-size: 13px;
+        white-space: nowrap;
+        
+        .required-asterisk {
+          color: #d9534f;
+        }
+      }
+      
+      textarea {
+        height: 30px;
+        padding: 4px 8px;
+        font-size: 13px;
       }
     }
     
