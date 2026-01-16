@@ -39,6 +39,7 @@ export default class ResponseNewComponent extends Component {
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
   @tracked aiDraftRating = null;
+  @tracked aiWrittenFeedback = '';
   @tracked showUsageCheckboxes = false;
   @tracked usageNotForStudents = false;
   @tracked usageNotForSelf = false;
@@ -319,7 +320,11 @@ export default class ResponseNewComponent extends Component {
   }
 
   get canBringDown() {
-    return !this.hasUsedAIDraft && this.aiDraftRating !== null;
+    return (
+      !this.hasUsedAIDraft &&
+      this.aiDraftRating !== null &&
+      this.aiWrittenFeedback.trim().length >= 10
+    );
   }
 
   get showRatingControls() {
@@ -339,6 +344,11 @@ export default class ResponseNewComponent extends Component {
   @action
   isStarFilled(starNumber) {
     return this.aiDraftRating !== null && this.aiDraftRating >= starNumber;
+  }
+
+  @action
+  updateAiWrittenFeedback(event) {
+    this.aiWrittenFeedback = event.target.value;
   }
 
   quote(string, opts, isImageTag) {
@@ -698,6 +708,7 @@ export default class ResponseNewComponent extends Component {
       this.aiGeneratedText = this.convertPlainTextToHtml(draft);
       this.hasUsedAIDraft = false; // Reset "Bring it Down" button
       this.aiDraftRating = null; // Reset rating for new draft
+      this.aiWrittenFeedback = ''; // Reset written feedback for new draft
 
       this.alert.showToast(
         'success',
