@@ -2,7 +2,6 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
-import { isEqual } from '@ember/utils';
 import moment from 'moment';
 
 /**
@@ -15,7 +14,6 @@ import moment from 'moment';
  */
 export default class SubmissionGroupComponent extends Component {
   @service('utility-methods') utils;
-  @service currentUrl;
   @service navigation;
 
   @tracked isHidden = false;
@@ -23,12 +21,6 @@ export default class SubmissionGroupComponent extends Component {
   @tracked switching = false;
   @tracked isNavMultiLine = false;
   @tracked ownHeight;
-
-  constructor() {
-    super(...arguments);
-    this.onNavResize = this.handleNavHeight.bind(this);
-    this.currentUrl.setCurrentUrl(window.location.href);
-  }
 
   get currentStudent() {
     return this.args.submission?.student;
@@ -42,18 +34,17 @@ export default class SubmissionGroupComponent extends Component {
     const submissions = this.args.submissions ?? [];
     const threads = {};
 
-    submissions
-      .slice()
-      .sortBy('student')
-      .mapBy('student')
-      .uniq()
-      .forEach((student) => {
-        if (!threads[student]) {
-          threads[student] = submissions
-            .filterBy('student', student)
-            .sortBy('createDate');
-        }
-      });
+    // Get unique student IDs, then sort them
+    const students = [...new Set(submissions.map((sub) => sub.student))].sort(
+      (a, b) => a.localeCompare(b)
+    );
+
+    // Group submissions by student
+    students.forEach((student) => {
+      threads[student] = submissions
+        .filter((sub) => sub.student === student)
+        .sort((a, b) => new Date(a.createDate) - new Date(b.createDate));
+    });
 
     return threads;
   }
@@ -71,7 +62,7 @@ export default class SubmissionGroupComponent extends Component {
   }
 
   get currentThread() {
-    return this.studentWork[this.currentStudent];
+    return this.studentWork[this.args.submission?.student] ?? [];
   }
 
   get currentRevisions() {
@@ -133,35 +124,51 @@ export default class SubmissionGroupComponent extends Component {
 
   get prevThread() {
     const currentThread = this.currentThread;
-    const index = currentThread.indexOf(this.args.submission);
+    if (!currentThread?.length) {
+      return undefined;
+    }
+
+    // If we're in a multi-revision thread and not at the latest, go to next revision
+    const threadHead = currentThread.at(-1);
     if (
       currentThread.length > 1 &&
-      !isEqual(this.args.submission, currentThread.at(-1))
+      this.args.submission !== threadHead
     ) {
+      const index = currentThread.indexOf(this.args.submission);
       return currentThread[index + 1];
     }
-    const thread = currentThread.at(-1);
-    if (thread === this.firstThread) {
-      return this.lastThread;
-    }
-    const prevIndex = this.submissionThreadHeads.indexOf(thread) - 1;
+
+    // Otherwise, go to previous student's latest submission (with wraparound)
+    const currentIndex = this.submissionThreadHeads.indexOf(threadHead);
+    const prevIndex =
+      currentIndex === 0
+        ? this.submissionThreadHeads.length - 1
+        : currentIndex - 1;
     return this.submissionThreadHeads[prevIndex];
   }
 
   get nextThread() {
     const currentThread = this.currentThread;
-    const index = currentThread.indexOf(this.args.submission);
+    if (!currentThread?.length) {
+      return undefined;
+    }
+
+    // If we're in a multi-revision thread and not at the first, go to previous revision
     if (
       currentThread.length > 1 &&
-      !isEqual(this.args.submission, currentThread[0])
+      this.args.submission !== currentThread[0]
     ) {
+      const index = currentThread.indexOf(this.args.submission);
       return currentThread[index - 1];
     }
-    const thread = currentThread.at(-1);
-    if (thread === this.lastThread) {
-      return this.firstThread;
-    }
-    const nextIndex = this.submissionThreadHeads.indexOf(thread) + 1;
+
+    // Otherwise, go to next student's latest submission (with wraparound)
+    const threadHead = currentThread.at(-1);
+    const currentIndex = this.submissionThreadHeads.indexOf(threadHead);
+    const nextIndex =
+      currentIndex === this.submissionThreadHeads.length - 1
+        ? 0
+        : currentIndex + 1;
     return this.submissionThreadHeads[nextIndex];
   }
 

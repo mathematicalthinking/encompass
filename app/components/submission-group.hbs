@@ -55,21 +55,23 @@
     </div>
 
     <div class='al_controller submission-row-item arrows'>
-      {{#if this.prevThread.vmtRoomInfo.roomId}}
-        <LinkTo
-          @route='workspace.submissions.submission'
-          @model={{this.prevThread.id}}
-          @query={{hash vmtRoomId=this.prevThread.vmtRoomInfo.roomId}}
-        >
-          <span id='leftArrow'><i class='fas fa-arrow-left'></i></span>
-        </LinkTo>
-      {{else}}
-        <LinkTo
-          @route='workspace.submissions.submission'
-          @model={{this.prevThread.id}}
-        >
-          <span id='leftArrow'><i class='fas fa-arrow-left'></i></span>
-        </LinkTo>
+      {{#if this.prevThread}}
+        {{#if this.prevThread.vmtRoomInfo.roomId}}
+          <LinkTo
+            @route='workspace.submissions.submission'
+            @model={{this.prevThread.id}}
+            @query={{hash vmtRoomId=this.prevThread.vmtRoomInfo.roomId}}
+          >
+            <span id='leftArrow'><i class='fas fa-arrow-left'></i></span>
+          </LinkTo>
+        {{else}}
+          <LinkTo
+            @route='workspace.submissions.submission'
+            @model={{this.prevThread.id}}
+          >
+            <span id='leftArrow'><i class='fas fa-arrow-left'></i></span>
+          </LinkTo>
+        {{/if}}
       {{/if}}
 
       <span class='al_number'>
@@ -82,21 +84,23 @@
         </span>
       </span>
 
-      {{#if this.nextThread.vmtRoomInfo.roomId}}
-        <LinkTo
-          @route='workspace.submissions.submission'
-          @model={{this.nextThread.id}}
-          @query={{hash vmtRoomId=this.nextThread.vmtRoomInfo.roomId}}
-        >
-          <span id='rightArrow'><i class='fas fa-arrow-right'></i></span>
-        </LinkTo>
-      {{else}}
-        <LinkTo
-          @route='workspace.submissions.submission'
-          @model={{this.nextThread.id}}
-        >
-          <span id='rightArrow'> <i class='fas fa-arrow-right'></i></span>
-        </LinkTo>
+      {{#if this.nextThread}}
+        {{#if this.nextThread.vmtRoomInfo.roomId}}
+          <LinkTo
+            @route='workspace.submissions.submission'
+            @model={{this.nextThread.id}}
+            @query={{hash vmtRoomId=this.nextThread.vmtRoomInfo.roomId}}
+          >
+            <span id='rightArrow'><i class='fas fa-arrow-right'></i></span>
+          </LinkTo>
+        {{else}}
+          <LinkTo
+            @route='workspace.submissions.submission'
+            @model={{this.nextThread.id}}
+          >
+            <span id='rightArrow'> <i class='fas fa-arrow-right'></i></span>
+          </LinkTo>
+        {{/if}}
       {{/if}}
     </div>
   </header>
