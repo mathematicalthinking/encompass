@@ -1,11 +1,14 @@
+// AI SERVICE MODIFIED FOR A/B TESTING - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
+// AI SERVICE MODIFIED FOR A/B TESTING - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
+// AI SERVICE MODIFIED FOR A/B TESTING - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
 const https = require('https');
 const http = require('http');
 const he = require('he');
 const models = require('../datasource/schemas');
 
 /**
- * Simplified AI Service for generating draft responses
- * Uses simple format compatible with current AWS API
+ * AI Service modified for A/B testing with variant support
+ * Will need tweaking once preferred input combination is finalized
  */
 
 /**
@@ -24,11 +27,19 @@ const stripHtml = (html) => {
 /**
  * Generate an AI draft response based on submission
  * @param {string} targetSubmissionId - The ID of the target submission
+ * @param {string} variant - A/B TEST VARIANT: Input variant ('A', 'B', 'C', or 'D')
+ * @param {string} workspaceId - Optional workspace ID to filter selections/comments
  * @returns {Promise<string>} The generated AI draft text
+ *
+ * A/B TEST VARIANTS - WILL BE SIMPLIFIED ONCE PREFERRED COMBINATION IS CHOSEN:
+ * A: Student work only
+ * B: Student work + teacher selections
+ * C: Student work + teacher comments (noticings, wonderings, feedback)
+ * D: Student work + teacher selections + teacher comments
  */
 const generateDraft = async (
   targetSubmissionId,
-  responseMode = 'student_only',
+  variant = 'A',
   workspaceId = null
 ) => {
   // Step 1: Fetch submission with all related data
@@ -125,8 +136,25 @@ const generateDraft = async (
       long_answer: longAnswer,
       student_name: studentName,
     },
-    response_mode: responseMode,
+    variant: variant, // A/B TEST: Include variant in request
   };
+
+  // A/B TEST: Add selections and comments based on variant
+  if (variant === 'B' || variant === 'D') {
+    // Include teacher selections
+    const selections = await getTeacherSelections(targetSubmissionId, workspaceId);
+    if (selections && selections.length > 0) {
+      requestBody.teacher_selections = selections;
+    }
+  }
+
+  if (variant === 'C' || variant === 'D') {
+    // Include teacher comments (noticings, wonderings, feedback)
+    const comments = await getTeacherComments(targetSubmissionId, workspaceId);
+    if (comments && comments.length > 0) {
+      requestBody.teacher_comments = comments;
+    }
+  }
 
   // Only include problem if we have valid text after cleaning
   if (cleanProblemStatement && cleanProblemStatement.trim().length > 0) {
@@ -136,6 +164,64 @@ const generateDraft = async (
   }
 
   return await makeAIRequest(requestBody);
+};
+
+/**
+ * A/B TEST HELPER: Get teacher selections for a submission
+ * @param {string} submissionId - The submission ID
+ * @param {string} workspaceId - The workspace ID to filter selections
+ * @returns {Promise<Array>} Array of selection objects
+ */
+const getTeacherSelections = async (submissionId, workspaceId) => {
+  try {
+    const selections = await models.Selection.find({
+      submission: submissionId,
+      workspace: workspaceId,
+    })
+      .populate('creator', 'username')
+      .select('text coordinates createdAt creator')
+      .lean()
+      .exec();
+
+    return selections.map(sel => ({
+      text: stripHtml(sel.text),
+      coordinates: sel.coordinates,
+      created_by: sel.creator?.username || 'teacher',
+      created_at: sel.createdAt,
+    }));
+  } catch (error) {
+    console.error('Error fetching teacher selections:', error);
+    return [];
+  }
+};
+
+/**
+ * A/B TEST HELPER: Get teacher comments for a submission
+ * @param {string} submissionId - The submission ID
+ * @param {string} workspaceId - The workspace ID to filter comments
+ * @returns {Promise<Array>} Array of comment objects
+ */
+const getTeacherComments = async (submissionId, workspaceId) => {
+  try {
+    const comments = await models.Comment.find({
+      submission: submissionId,
+      workspace: workspaceId,
+    })
+      .populate('creator', 'username')
+      .select('text label createdAt creator')
+      .lean()
+      .exec();
+
+    return comments.map(comment => ({
+      text: stripHtml(comment.text),
+      label: comment.label, // noticing, wondering, feedback, etc.
+      created_by: comment.creator?.username || 'teacher',
+      created_at: comment.createdAt,
+    }));
+  } catch (error) {
+    console.error('Error fetching teacher comments:', error);
+    return [];
+  }
 };
 
 /**
@@ -174,14 +260,22 @@ const makeAIRequest = async (requestBody) => {
           console.log('Parsed response object:', response);
           console.log('Available keys:', Object.keys(response));
           if (res.statusCode >= 200 && res.statusCode < 300) {
-            // Extract draft from response (AWS API returns draft_feedback field)
-            const draft = response.draft_feedback;
+            // Extract draft from response (try multiple possible field names)
+            let draft = response.draft_feedback || response.draft || response.text || response.message;
+            if (!draft && response.data) {
+              draft = response.data.draft_feedback || response.data.draft || response.data.text || response.data.message;
+            }
             console.log('Extracted draft text:', draft);
+            if (!draft) {
+              console.error('No draft text found in response. Available fields:', Object.keys(response));
+              reject(new Error('No draft text found in AI response'));
+              return;
+            }
             resolve(draft);
           } else {
             reject(
               new Error(
-                `AI error (${res.statusCode}): ${response.error || 'Unknown'}`
+                `AI error (${res.statusCode}): ${response.error || response.message || 'Unknown'}`
               )
             );
           }
