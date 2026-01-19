@@ -1,6 +1,17 @@
 <div id="response-mentor-reply">
 {{#unless @isOlderRevision}}
   {{#if @isCreating}}
+    {{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
+    {{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
+    {{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
+    <AiVariantComparison
+      @submission={{@submission}}
+      @workspace={{@workspace}}
+      @onDraftSelected={{this.handleVariantDraftSelected}}
+    />
+    {{!-- END TEMPORARY A/B TEST CODE --}}
+    {{!-- END TEMPORARY A/B TEST CODE --}}
+    {{!-- END TEMPORARY A/B TEST CODE --}}
     <ResponseNew
       @isCreating={{@isCreating}}
       @submission={{@submission}}
@@ -12,6 +23,7 @@
       @canDirectSend={{@canDirectSend}}
       @submissionResponses={{@submissionResponses}}
       @handleResponseThread={{this.handleNewMentorReply}}
+      @aiGeneratedText={{this.aiGeneratedText}}
     />
   {{/if}}
 {{/unless}}

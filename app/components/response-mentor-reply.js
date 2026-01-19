@@ -645,4 +645,16 @@ export default class ResponseMentorReplyComponent extends Component {
       return this.saveDraft(isDraft);
     }
   }
+
+  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
+  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
+  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
+  @action
+  handleVariantDraftSelected(draftText) {
+    // TEMPORARY A/B TEST CODE: Set the selected draft for the response-new editor
+    this.aiGeneratedText = draftText;
+  }
+  // END TEMPORARY A/B TEST CODE
+  // END TEMPORARY A/B TEST CODE
+  // END TEMPORARY A/B TEST CODE
 }
