@@ -45,16 +45,22 @@ export default class AiDraftService extends Service {
 
   /**
    * Generates an AI draft response for a given submission
+   * A/B TEST MODIFICATION - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
+   * A/B TEST MODIFICATION - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
+   * A/B TEST MODIFICATION - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
    *
    * Makes API call to backend AI service which analyzes student work
    * and generates appropriate feedback.
    *
    * @param {String} submissionId - The ID of the submission to generate feedback for
+   * @param {String} variant - A/B TEST VARIANT: The variant type ('A', 'B', 'C', 'D')
    * @returns {Promise<String>} HTML string containing the generated draft
    * @throws {Error} If API call fails or no content is received
    */
-  async generateDraft(submissionId) {
-    const url = `/api/aiDraft?target=${encodeURIComponent(submissionId)}`;
+  async generateDraft(submissionId, variant = 'A') {
+    const url = `/api/aiDraft?target=${encodeURIComponent(
+      submissionId
+    )}&variant=${encodeURIComponent(variant)}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
