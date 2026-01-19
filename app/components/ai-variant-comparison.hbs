@@ -1,0 +1,61 @@
+{{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
+{{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
+{{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
+<div class="ai-variant-comparison">
+  <div class="ab-test-notice">
+    <div class="ab-test-header">
+      <strong>A/B Testing: AI Response Variants</strong>
+    </div>
+    <div class="ab-test-message">
+      <p><strong>What's being tested:</strong> Different combinations of student work + teacher annotations (comments, selections) to determine the most effective AI input for generating helpful responses.</p>
+      <p><strong>What to focus on:</strong> Compare the quality and helpfulness of AI-generated responses across the four variant combinations below.</p>
+    </div>
+  </div>
+  
+  <!-- A/B TEST BOUNDARY MARKERS -->
+  <div class="ab-test-boundary">
+    <div class="ab-test-begin-marker">▶▶▶ BEGIN A/B TEST ◀◀◀</div>
+  </div>
+  
+  <button type="button" class="primary-button" {{on "click" (fn this.generateAllVariants @submission)}} disabled={{this.isLoading}}>
+    {{if this.isLoading "Generating..." "Generate All Variants"}}
+  </button>
+  {{#if this.error}}
+    <div class="error-message">{{this.error}}</div>
+  {{/if}}
+  <div class="variant-grid-2x2">
+    <div class="variant-cell-simple">
+      <div class="variant-title">Variant A: Student Work Only</div>
+      <button type="button" class="variant-generate-btn" {{on "click" (fn this.generateSingleVariant @submission 'A')}} disabled={{this.isVariantADisabled}}>
+        {{this.variantAButtonText}}
+      </button>
+      <div class="ai-draft-text">{{if this.draftA this.draftA "EMPTY - Click Generate to populate"}}</div>
+    </div>
+    <div class="variant-cell-simple">
+      <div class="variant-title">Variant B: Student Work + Selections</div>
+      <button type="button" class="variant-generate-btn" {{on "click" (fn this.generateSingleVariant @submission 'B')}} disabled={{this.isVariantBDisabled}}>
+        {{this.variantBButtonText}}
+      </button>
+      <div class="ai-draft-text">{{if this.draftB this.draftB "EMPTY - Click Generate to populate"}}</div>
+    </div>
+    <div class="variant-cell-simple">
+      <div class="variant-title">Variant C: Student Work + Comments (notice, wonder, feedback)</div>
+      <button type="button" class="variant-generate-btn" {{on "click" (fn this.generateSingleVariant @submission 'C')}} disabled={{this.isVariantCDisabled}}>
+        {{this.variantCButtonText}}
+      </button>
+      <div class="ai-draft-text">{{if this.draftC this.draftC "EMPTY - Click Generate to populate"}}</div>
+    </div>
+    <div class="variant-cell-simple">
+      <div class="variant-title">Variant D: Student Work + Selections + Comments (All)</div>
+      <button type="button" class="variant-generate-btn" {{on "click" (fn this.generateSingleVariant @submission 'D')}} disabled={{this.isVariantDDisabled}}>
+        {{this.variantDButtonText}}
+      </button>
+      <div class="ai-draft-text">{{if this.draftD this.draftD "EMPTY - Click Generate to populate"}}</div>
+    </div>
+  </div>
+  
+  <!-- A/B TEST BOUNDARY MARKERS -->
+  <div class="ab-test-boundary">
+    <div class="ab-test-end-marker">▶▶▶ END A/B TEST ◀◀◀</div>
+  </div>
+</div>
