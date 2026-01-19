@@ -1,3 +1,6 @@
+// AI API MODIFIED FOR A/B TESTING - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
+// AI API MODIFIED FOR A/B TESTING - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
+// AI API MODIFIED FOR A/B TESTING - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
 const utils = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
 const aiService = require('../../services/ai');
@@ -18,7 +21,7 @@ async function aiDraft(req, res, next) {
 
   const target = req.query.target;
   const workspace = req.query.workspace;
-  const responseMode = req.query.responseMode || 'all';
+  const variant = req.query.variant || 'A'; // A/B TEST: Default to variant A
 
   if (!target) {
     return utils.sendError.InvalidArgumentError(
@@ -27,26 +30,22 @@ async function aiDraft(req, res, next) {
     );
   }
 
-  // Validate response_mode
-  const validModes = ['student_only', 'teacher_only', 'all'];
-  if (!validModes.includes(responseMode)) {
+  // A/B TEST: Validate variant (A/B/C/D input combinations)
+  const validVariants = ['A', 'B', 'C', 'D'];
+  if (!validVariants.includes(variant)) {
     return utils.sendError.InvalidArgumentError(
-      `Invalid response_mode. Must be one of: ${validModes.join(', ')}`,
+      `Invalid variant. Must be one of: ${validVariants.join(', ')}`,
       res
     );
   }
 
   try {
-    // Generate AI draft using the AI service with response mode
-    const draft = await aiService.generateDraft(
-      target,
-      responseMode,
-      workspace
-    );
+    // A/B TEST: Generate AI draft using the AI service with variant
+    const draft = await aiService.generateDraft(target, variant, workspace);
 
     const response = {
       target: target,
-      responseMode: responseMode,
+      variant: variant, // A/B TEST: Include variant in response
       message: `AI draft generated for target submission: ${target}`,
       draft,
     };
