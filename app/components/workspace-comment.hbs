@@ -2,23 +2,25 @@
 <div class='comment-flex-item text'>
   <p>
     {{#if this.isForCurrentWorkspace}}
+      {{#if this.commentSelectionModels}}
+        <LinkTo
+          @route='workspace.submissions.submission.selections.selection'
+          @models={{this.commentSelectionModels}}
+          class='comment comment-text'
+        >
+          {{this.commentText}}
+        </LinkTo>
+      {{else}}
+        <span class='comment comment-text'>{{this.commentText}}</span>
+      {{/if}}
+    {{else}}
       <LinkTo
         @route='workspace.submissions.submission.selections.selection'
-        @models={{array
-          this.commentSelection.submission
-          this.commentSelection
-        }}
-        class='comment comment-text'
+        @models={{this.commentSelectionModelsWithWorkspace}}
+        class='comment-text'
       >
         {{this.commentText}}
       </LinkTo>
-    {{else}}
-      <a
-        class='newWindow comment-text'
-        target='_blank'
-        href='{{this.commentSelection.link}}'
-        rel='noopener noreferrer'
-      >{{this.commentText}}</a>
     {{/if}}
   </p>
   <p class='meta'>

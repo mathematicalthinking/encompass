@@ -296,7 +296,14 @@ export default class CommentListComponent extends Component {
         const selId = this.utils.getBelongsToId(comment, 'selection');
         return this.currentSelection.isCurrentSelection(selId);
       });
-    return [...this.searchResults, ...currentSelectionComments];
+
+    // Deduplicate by filtering out comments from currentSelectionComments that are already in searchResults
+    const searchIds = this.searchResults.map((c) => c.id);
+    const uniqueCurrentComments = currentSelectionComments.filter(
+      (comment) => !searchIds.includes(comment.id)
+    );
+
+    return [...this.searchResults, ...uniqueCurrentComments];
   }
 
   _buildCommentData() {

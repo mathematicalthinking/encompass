@@ -81,6 +81,42 @@ export default class WorkspaceCommentComponent extends Component {
     return this.args.comment?.selection;
   }
 
+  get commentSubmissionId() {
+    // Prefer the direct comment->submission id if present
+    const fromComment = this.utils.getBelongsToId(
+      this.args.comment,
+      'submission'
+    );
+    if (fromComment) {
+      return fromComment;
+    }
+    // Fallback: derive from the selection without forcing async load
+    return this.utils.getBelongsToId(this.commentSelection, 'submission');
+  }
+
+  get commentSelectionModels() {
+    const submissionId = this.commentSubmissionId;
+    const selectionId = this.commentSelection?.id;
+
+    if (!submissionId || !selectionId) {
+      return null;
+    }
+
+    return [submissionId, selectionId];
+  }
+
+  get commentSelectionModelsWithWorkspace() {
+    const workspaceId = this.commentWorkspace?.id;
+    const submissionId = this.commentSubmissionId;
+    const selectionId = this.commentSelection?.id;
+
+    if (!workspaceId || !submissionId || !selectionId) {
+      return null;
+    }
+
+    return [workspaceId, submissionId, selectionId];
+  }
+
   get commentText() {
     return this.args.comment?.text;
   }
