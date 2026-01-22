@@ -12,10 +12,11 @@ export default class SelectableAreaComponent extends Component {
   @tracked currSubId = this.args.model?.id || null;
   @tracked selecting = this.args.makingSelection || false;
   @tracked showing = this.args.showingSelections || false;
-  @tracked selections = [];
+  selections = [];
   currentSelections = null;
   imageTagging = null;
   selectionHighlighting = null;
+  onCreateCallback = null;
 
   constructor() {
     super(...arguments);
@@ -27,16 +28,15 @@ export default class SelectableAreaComponent extends Component {
 
   @action
   initializeSelectionTools() {
-    console.log('Initializing selection tools...');
     if (this._toolsInitialized) return;
-    this._toolsInitialized = true;
 
     const containerId = 'submission_container';
     const scrollableContainer = 'al_submission';
     const container = document.getElementById(containerId);
-    console.log('Container:', container);
 
     if (!container) return;
+
+    this._toolsInitialized = true;
 
     if (container.style.position !== 'absolute') {
       container.style.position = 'relative';
@@ -47,15 +47,13 @@ export default class SelectableAreaComponent extends Component {
       automaticEvent: !this.isTouchScreen,
     });
 
-    console.log('SelectionHighlighting:', this.selectionHighlighting);
-
-    this.selectionHighlighting.init((id) => {
-      console.log('Selection created with ID:', id);
+    this.onCreateCallback = (id) => {
       const selection = this.selectionHighlighting.getSelection(id);
       selection.selectionType = 'selection';
       this.args.addSelection(selection);
-    });
+    };
 
+    this.selectionHighlighting.init(this.onCreateCallback);
     this.selectionHighlighting.enableSelection();
 
     this.imageTagging = new window.ImageTagging({
@@ -72,8 +70,6 @@ export default class SelectableAreaComponent extends Component {
 
     this.imageTagging.loadTags(this.imgTags);
     this.imageTagging.enable();
-
-    console.log('about to load selections:', this.selections);
 
     this.selectionHighlighting.loadSelections(this.selections);
 
@@ -128,11 +124,23 @@ export default class SelectableAreaComponent extends Component {
 
   @action
   updateSelections(sels) {
-    const prevLength = this.currentSelections.length;
+    const prevLength = this.currentSelections?.length ?? 0;
     const newLength = sels.length;
     const wasSelRemoved = prevLength > newLength;
+    const contentJustLoaded = prevLength === 0 && newLength > 0;
 
     this.currentSelections = sels;
+
+    if (
+      contentJustLoaded &&
+      this.selectionHighlighting &&
+      this.onCreateCallback
+    ) {
+      this.selectionHighlighting.init(this.onCreateCallback);
+      if (this.args.makingSelection) {
+        this.selectionHighlighting.enableSelection();
+      }
+    }
 
     if (wasSelRemoved) {
       this.imageTagging?.removeAllTags();
@@ -148,7 +156,12 @@ export default class SelectableAreaComponent extends Component {
     const selections = [];
     const imgTags = [];
 
-    const modelSelections = this.model?.selections ?? [];
+    const modelSelections = this.args.model?.selections ?? [];
+
+    const previousCount = this.selections?.length ?? 0;
+    const newCount = modelSelections.filter((s) => !s.isTrashed).length;
+
+    const contentJustLoaded = previousCount === 0 && newCount > 0;
 
     modelSelections.forEach((selection) => {
       if (selection.isTrashed) return;
@@ -190,12 +203,23 @@ export default class SelectableAreaComponent extends Component {
 
     this.selections = selections;
     this.imgTags = imgTags;
+
+    if (
+      contentJustLoaded &&
+      this.selectionHighlighting &&
+      this.onCreateCallback
+    ) {
+      this.selectionHighlighting.init(this.onCreateCallback);
+      if (this.args.makingSelection) {
+        this.selectionHighlighting.enableSelection();
+      }
+    }
   }
 
   @action
   cleanup() {
     this.args.handleTransition(false);
-    this.selectionHighlighting.destroy();
-    this.imageTagging.destroy();
+    this.selectionHighlighting?.destroy();
+    this.imageTagging?.destroy();
   }
 }
