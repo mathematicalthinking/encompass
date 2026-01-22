@@ -17,6 +17,7 @@ export default class WorkspaceSubmissionRoute extends Route {
   @service('utility-methods') utils;
   @service currentUser;
   @service router;
+  @service store;
 
   queryParams = {
     vmtRoomId: {
@@ -25,13 +26,25 @@ export default class WorkspaceSubmissionRoute extends Route {
   };
 
   async model({ submission_id }) {
-    let submissions = await this.modelFor('workspace.submissions');
-    let workspace = await this.modelFor('workspace');
-    let assignment = await workspace.get('linkedAssignment');
+    const workspace = this.modelFor('workspace');
+    const assignment = workspace.get('linkedAssignment');
+
+    // Prefer cache, then fetch just this submission by id
+    let submission = this.store.peekRecord('submission', submission_id);
+    if (!submission) {
+      try {
+        submission = await this.store.findRecord('submission', submission_id);
+      } catch (error) {
+        console.error('Failed to load submission:', error);
+        this.router.transitionTo('workspace.submissions', workspace);
+        return;
+      }
+    }
+
     return hash({
       workspace,
       assignment,
-      submission: submissions.findBy('id', submission_id),
+      submission,
     });
   }
 

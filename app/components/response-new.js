@@ -4,6 +4,9 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
 export default class ResponseNewComponent extends Component {
   @service currentUser;
   @service('utility-methods') utils;
@@ -29,8 +32,10 @@ export default class ResponseNewComponent extends Component {
   @tracked isQuillTooLong = false;
   @tracked originalText = '';
   @tracked aiGeneratedText = null;
-
+  @tracked hasUsedAIDraft = false;
   @tracked doShowLoadingMessage = false;
+  @tracked quillEditorKey = 0;
+  @tracked pendingContent = null;
 
   doUseOnlyOwnMarkup = true;
   maxResponseLength = 14680064;
@@ -222,8 +227,9 @@ export default class ResponseNewComponent extends Component {
   }
 
   get replyText() {
-    if (this.aiGeneratedText) {
-      return this.aiGeneratedText;
+    // If we have pending content, use it for initial render
+    if (this.pendingContent !== null) {
+      return this.pendingContent;
     }
     return this.preFormatText();
   }
@@ -258,6 +264,14 @@ export default class ResponseNewComponent extends Component {
 
   get isValidQuillContent() {
     return !this.isQuillEmpty && !this.isQuillTooLong;
+  }
+
+  get showAiDraftSection() {
+    return this.aiGeneratedText !== null;
+  }
+
+  get canBringDown() {
+    return !this.hasUsedAIDraft;
   }
 
   quote(string, opts, isImageTag) {
@@ -494,6 +508,33 @@ export default class ResponseNewComponent extends Component {
     this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
   }
 
+  convertPlainTextToHtml(text) {
+    if (!text) return '';
+
+    let normalized = text;
+
+    // 1. Normalize line endings
+    normalized = normalized.replace(/\r\n/g, '\n');
+
+    normalized = normalized.replace(/^ {2}(?=\d|-|\*)/gm, '    ');
+
+    normalized = normalized.replace(
+      /^(\s*\d+\..+)\n(?!\s*\d|\s*\\-|\s*$)(.*)/gm,
+      '$1 $2'
+    );
+
+    normalized = normalized.replace(/(\n\n)(?=\s*\d+\.)/g, '\n');
+
+    // 2. Configure Marked
+    const rawHtml = marked.parse(normalized, {
+      breaks: true,
+      gfm: true,
+    });
+
+    // 3. Sanitize
+    return DOMPurify.sanitize(rawHtml);
+  }
+
   @action
   saveDraftResponse() {
     this.saveResponse(true);
@@ -582,10 +623,14 @@ export default class ResponseNewComponent extends Component {
     );
     try {
       const draft = await this.aiDraft.generateDraft(submissionId);
-      this.aiGeneratedText = draft;
-      let isEmpty = draft.trim() === '' || draft === '<p><br></p>';
-      let isOverLimit = draft.length > this.maxResponseLength;
-      this.updateQuillText(draft, isEmpty, isOverLimit);
+
+      // Clear any pending content from previous "Bring it Down"
+      this.pendingContent = null;
+
+      // Convert AI plain text to HTML immediately and store it
+      this.aiGeneratedText = this.convertPlainTextToHtml(draft);
+      this.hasUsedAIDraft = false; // Reset "Bring it Down" button
+
       this.alert.showToast(
         'success',
         'AI draft generated successfully',
@@ -611,5 +656,42 @@ export default class ResponseNewComponent extends Component {
         'doShowLoadingMessage'
       );
     }
+  }
+
+  @action
+  bringAiDraftDown() {
+    if (!this.canBringDown || !this.aiGeneratedText) {
+      return;
+    }
+
+    // Get current editor content (HTML format)
+    const currentText = this.quillText || '';
+    const separator = currentText.trim() ? '<p><br></p><p><br></p>' : '';
+
+    // Combine HTML
+    const newText = currentText + separator + this.aiGeneratedText;
+
+    // Set pending content and force Quill re-render
+    this.pendingContent = newText;
+    this.quillEditorKey += 1;
+
+    // Update tracked properties
+    this.quillText = newText;
+    let isEmpty = newText.trim() === '' || newText === '<p><br></p>';
+    let isOverLimit = newText.length > this.maxResponseLength;
+    this.isQuillEmpty = isEmpty;
+    this.isQuillTooLong = isOverLimit;
+
+    // Mark draft as used
+    this.hasUsedAIDraft = true;
+
+    this.alert.showToast(
+      'success',
+      'AI draft copied to editor',
+      'bottom-end',
+      2000,
+      false,
+      null
+    );
   }
 }

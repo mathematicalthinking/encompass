@@ -4,7 +4,6 @@ import moment from 'moment';
 
 export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
-  @service currentUrl;
 
   getUniqueFolderNames(selection) {
     const folderNames = new Set();
@@ -47,7 +46,7 @@ export default class WorkspaceReportsService extends Service {
     const data = labeledSubmissions.flatMap((submission) => {
       const baseData = {
         'Name of workspace': submission.get('workspaces.firstObject.name'),
-        'Workspace URL': this.currentUrl.currentUrl,
+        'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
         'Text of Submission': `Summary: ${

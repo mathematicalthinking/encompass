@@ -10,6 +10,7 @@ export default class WorkspaceSubmissionComponent extends Component {
   @service('utility-methods') utils;
   @service('workspace-permissions') permissions;
   @service navigation;
+  @service('current-selection') currentSelectionService;
 
   @tracked makingSelection = true;
   @tracked showingSelections = false;
@@ -19,6 +20,10 @@ export default class WorkspaceSubmissionComponent extends Component {
   @tracked isSelectionsBoxExpanded = false;
   @tracked isMessageListenerAttached = false;
   vmtReplayerInfo = null;
+
+  get currentSelection() {
+    return this.currentSelectionService.selection;
+  }
 
   get shouldCheck() {
     return this.makingSelection;
@@ -162,9 +167,9 @@ export default class WorkspaceSubmissionComponent extends Component {
   @action
   onSelectionSelect() {
     if (this.isVmt) {
-      let vmtStartTime = this.args.currentSelection.vmtInfo?.startTime;
+      let vmtStartTime = this.currentSelection.vmtInfo?.startTime;
       if (vmtStartTime >= 0) {
-        let endTime = this.args.currentSelection.vmtInfo.endTime;
+        let endTime = this.currentSelection.vmtInfo.endTime;
         this.setVmtReplayerTime(vmtStartTime, true, endTime);
         this.makingSelection = false;
       }
@@ -182,7 +187,7 @@ export default class WorkspaceSubmissionComponent extends Component {
       getUrl.pathname.split('/')[1];
 
     window.open(
-      `${baseUrl}#/responses/submission/${this.args.currentSubmission.id}`,
+      `${baseUrl}#/responses/submission/${this.currentSelection.submission.id}`,
       'newwindow',
       'width=1200, height=700'
     );
@@ -421,7 +426,7 @@ export default class WorkspaceSubmissionComponent extends Component {
 
     if (messageType === 'VMT_ON_REPLAYER_LOAD') {
       // set replayer to current selection start time if applicable
-      let vmtStartTime = this.args.currentSelection.vmtInfo.startTime;
+      let vmtStartTime = this.currentSelection.vmtInfo.startTime;
       if (vmtStartTime >= 0 && canSet) {
         this.vmtReplayerInfo = vmtReplayerInfo;
         // set replayer to start point but do not auto play
@@ -435,12 +440,12 @@ export default class WorkspaceSubmissionComponent extends Component {
   }
 
   get isOnVmtSelection() {
-    if (!this.isVmt || !this.args.currentSelection?.vmtInfo) {
+    if (!this.isVmt || !this.currentSelection?.vmtInfo) {
       return false;
     }
     return (
-      this.args.currentSelection.vmtInfo.startTime >= 0 &&
-      this.args.currentSelection.vmtInfo.endTime >= 0
+      this.currentSelection.vmtInfo.startTime >= 0 &&
+      this.currentSelection.vmtInfo.endTime >= 0
     );
   }
 

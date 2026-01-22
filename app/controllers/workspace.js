@@ -6,17 +6,15 @@
  */
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
-
+import { service } from '@ember/service';
 export default class WorkspaceController extends Controller {
-  @tracked currentSelection = null; //ENC-397, ENC-398
-
+  @service router;
   get showOverlay() {
     return this.makingSelection || this.taggingSelection;
   }
 
   @action
   popupMaskClicked() {
-    this.transitionToRoute('workspace.submission', this.currentSubmission);
+    this.router.transitionTo('workspace.submission', this.currentSubmission);
   }
 }
