@@ -4,7 +4,7 @@
 const https = require('https');
 const http = require('http');
 const he = require('he');
-const logger = require('log4js').getLogger('server');
+const logger = require('log4js').getLogger('ai');
 const models = require('../datasource/schemas');
 
 /**
@@ -180,12 +180,17 @@ const getTeacherSelections = async (submissionId, workspaceId, teacherId) => {
     if (workspaceId) {
       selectionQuery.workspace = workspaceId;
     }
+    logger.info('AI selection query:', selectionQuery);
     const selections = await models.Selection.find(selectionQuery)
       .populate('createdBy', 'username')
       .select('text createDate createdBy')
       .lean()
       .exec();
 
+    logger.info(
+      'AI selection IDs:',
+      selections.map((sel) => String(sel._id))
+    );
     return selections.map((sel) => ({
       text: stripHtml(sel.text),
       created_by: sel.createdBy?.username || 'teacher',
@@ -217,12 +222,17 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
       commentQuery.workspace = workspaceId;
     }
 
+    logger.info('AI comment query:', commentQuery);
     const comments = await models.Comment.find(commentQuery)
       .populate('createdBy', 'username')
       .select('text label createDate createdBy')
       .lean()
       .exec();
 
+    logger.info(
+      'AI comment IDs:',
+      comments.map((comment) => String(comment._id))
+    );
     return comments.map((comment) => ({
       text: stripHtml(comment.text),
       label: comment.label, // noticing, wondering, feedback, etc.
@@ -230,7 +240,7 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
       created_at: comment.createDate,
     }));
   } catch (error) {
-    console.error('Error fetching teacher comments:', error);
+    logger.error('Error fetching teacher comments:', error);
     return [];
   }
 };
@@ -253,6 +263,8 @@ const makeAIRequest = async (requestBody) => {
       ? requestBody.teacher_comments.length
       : 0,
   };
+  logger.info('AI request context:', requestContext);
+  logger.info('AI request payload:', requestBody);
   const options = {
     hostname: process.env.AI_DRAFT_HOST,
     port: process.env.AI_DRAFT_PORT,
@@ -283,13 +295,24 @@ const makeAIRequest = async (requestBody) => {
           console.log('Available keys:', Object.keys(response));
           if (res.statusCode >= 200 && res.statusCode < 300) {
             // Extract draft from response (try multiple possible field names)
-            let draft = response.draft_feedback || response.draft || response.text || response.message;
+            let draft =
+              response.draft_feedback ||
+              response.draft ||
+              response.text ||
+              response.message;
             if (!draft && response.data) {
-              draft = response.data.draft_feedback || response.data.draft || response.data.text || response.data.message;
+              draft =
+                response.data.draft_feedback ||
+                response.data.draft ||
+                response.data.text ||
+                response.data.message;
             }
             console.log('Extracted draft text:', draft);
             if (!draft) {
-              console.error('No draft text found in response. Available fields:', Object.keys(response));
+              console.error(
+                'No draft text found in response. Available fields:',
+                Object.keys(response)
+              );
               reject(new Error('No draft text found in AI response'));
               return;
             }
@@ -297,7 +320,9 @@ const makeAIRequest = async (requestBody) => {
           } else {
             reject(
               new Error(
-                `AI error (${res.statusCode}): ${response.error || response.message || 'Unknown'}`
+                `AI error (${res.statusCode}): ${
+                  response.error || response.message || 'Unknown'
+                }`
               )
             );
           }
