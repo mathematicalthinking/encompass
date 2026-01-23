@@ -328,8 +328,8 @@ export default class ResponseNewComponent extends Component {
 
   _getSubmissionId() {
     return (
-      this.args.responseData?._submissionRef?.id ??
       this.args.submission?.id ??
+      this.args.responseData?._submissionRef?.id ??
       null
     );
   }
