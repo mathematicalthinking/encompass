@@ -130,10 +130,7 @@ export default class SubmissionGroupComponent extends Component {
 
     // If we're in a multi-revision thread and not at the latest, go to next revision
     const threadHead = currentThread.at(-1);
-    if (
-      currentThread.length > 1 &&
-      this.args.submission !== threadHead
-    ) {
+    if (currentThread.length > 1 && this.args.submission !== threadHead) {
       const index = currentThread.indexOf(this.args.submission);
       return currentThread[index + 1];
     }
@@ -154,10 +151,7 @@ export default class SubmissionGroupComponent extends Component {
     }
 
     // If we're in a multi-revision thread and not at the first, go to previous revision
-    if (
-      currentThread.length > 1 &&
-      this.args.submission !== currentThread[0]
-    ) {
+    if (currentThread.length > 1 && this.args.submission !== currentThread[0]) {
       const index = currentThread.indexOf(this.args.submission);
       return currentThread[index - 1];
     }
@@ -214,7 +208,10 @@ export default class SubmissionGroupComponent extends Component {
   @action
   setCurrentSubmission(currentRevision) {
     if (currentRevision?.revision) {
-      this.navigation.toSubmission(currentRevision.revision.id);
+      this.navigation.toSubmission(
+        currentRevision.revision.id,
+        this.args.currentWorkspace?.id
+      );
     }
   }
 
@@ -222,7 +219,7 @@ export default class SubmissionGroupComponent extends Component {
   onStudentSelect(submissionId) {
     const match = this.submissionThreadHeads.find((s) => s.id === submissionId);
     if (match) {
-      this.navigation.toSubmission(match.id);
+      this.navigation.toSubmission(match.id, this.args.currentWorkspace?.id);
     }
   }
 
