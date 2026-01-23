@@ -41,7 +41,12 @@ async function aiDraft(req, res, next) {
 
   try {
     // A/B TEST: Generate AI draft using the AI service with variant
-    const draft = await aiService.generateDraft(target, variant, workspace);
+    const draft = await aiService.generateDraft(
+      target,
+      variant,
+      workspace,
+      user._id
+    );
 
     const response = {
       target: target,
