@@ -241,7 +241,11 @@ export default class CommentListComponent extends Component {
 
   _matchesSubmissionFilter(comment) {
     if (!this.thisSubmissionOnly) return true;
-    const subId = this.utils.getBelongsToId(comment, 'submission');
+    let subId = this.utils.getBelongsToId(comment, 'submission');
+    if (!subId) {
+      const selection = comment.selection;
+      subId = this.utils.getBelongsToId(selection, 'submission');
+    }
     return subId === this.args.currentSubmission?.id;
   }
 
@@ -306,12 +310,30 @@ export default class CommentListComponent extends Component {
     return [...this.searchResults, ...uniqueCurrentComments];
   }
 
+  _resolveSubmissionForNewComment() {
+    const selection = this.currentSelection.selection;
+    const selectionSubmissionId = this.utils.getBelongsToId(
+      selection,
+      'submission'
+    );
+    if (
+      !selectionSubmissionId ||
+      selectionSubmissionId === this.args.currentSubmission?.id
+    ) {
+      return this.args.currentSubmission;
+    }
+    return (
+      this.store.peekRecord('submission', selectionSubmissionId) ||
+      this.args.currentSubmission
+    );
+  }
+
   _buildCommentData() {
     return {
       text: this.newComment,
       label: this.newCommentLabel,
       selection: this.currentSelection.selection,
-      submission: this.args.currentSubmission,
+      submission: this._resolveSubmissionForNewComment(),
       workspace: this.args.currentWorkspace,
       parent: this.newCommentParent,
       useForResponse: !!this.labels[this.newCommentLabel].useForResponse,
@@ -322,10 +344,11 @@ export default class CommentListComponent extends Component {
   async _handleCommentCreated(record) {
     this.alert.showToast('success', 'Comment Created');
 
+    const submission = this._resolveSubmissionForNewComment();
     await this.updateCommentRelationships(
       record,
       this.currentSelection.selection,
-      this.args.currentSubmission,
+      submission,
       this.newCommentParent
     );
 

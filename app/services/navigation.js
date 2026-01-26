@@ -67,6 +67,25 @@ export default class NavigationService extends Service {
     });
   }
 
+  toSubmission(submissionId, workspaceId, queryParams) {
+    if (!submissionId) return;
+    const options = queryParams ? { queryParams } : undefined;
+    const resolvedWorkspaceId =
+      workspaceId || this.router.currentRoute?.params?.workspace_id;
+    const models = resolvedWorkspaceId
+      ? [resolvedWorkspaceId, submissionId]
+      : [submissionId];
+
+    const transition = this.router.transitionTo(
+      'workspace.submissions.submission',
+      ...models,
+      ...(options ? [options] : [])
+    );
+    transition?.catch?.((error) => {
+      console.error('toSubmission transition failed:', error);
+    });
+  }
+
   toNewResponse(submissionId, workspaceId) {
     this.router.transitionTo('responses.new.submission', submissionId, {
       queryParams: { workspaceId },
