@@ -23,6 +23,17 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
+function sanitizeCommentRefs(comment) {
+  if (!comment) return comment;
+  if (Array.isArray(comment.children)) {
+    comment.children = comment.children.filter(Boolean);
+  }
+  if (Array.isArray(comment.ancestors)) {
+    comment.ancestors = comment.ancestors.filter(Boolean);
+  }
+  return comment;
+}
+
 /**
  * @public
  * @method getComments
@@ -166,7 +177,7 @@ async function getComments(req, res, next) {
       }
     });
     if (!hasMissingRelationship) {
-      data.comments.push(comment);
+      data.comments.push(sanitizeCommentRefs(comment));
     }
   });
 
