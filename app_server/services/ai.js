@@ -25,6 +25,8 @@ const stripHtml = (html) => {
     .trim();
 };
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * Generate an AI draft response based on submission
  * @param {string} targetSubmissionId - The ID of the target submission
@@ -56,7 +58,7 @@ const generateDraft = async (
     })
     .populate('creator', 'username')
     .populate('clazz', 'name')
-    .select('shortAnswer longAnswer creator clazz publication')
+    .select('shortAnswer longAnswer creator clazz publication pdSet')
     .lean()
     .exec();
 
@@ -77,6 +79,35 @@ const generateDraft = async (
       .lean()
       .exec();
     if (problem) problemStatement = problem.text || problem.title;
+  }
+
+  const pdSetTitle = targetSubmission?.pdSet
+    ? stripHtml(targetSubmission.pdSet).split(' - ')[0].trim()
+    : '';
+
+  if (!problemStatement && pdSetTitle) {
+    const titleRegex = new RegExp(escapeRegex(pdSetTitle), 'i');
+    const matchedProblem = await models.Problem.findOne({
+      title: titleRegex,
+      isTrashed: { $ne: true },
+    })
+      .select('text title')
+      .lean()
+      .exec();
+    if (matchedProblem) {
+      problemStatement = matchedProblem.text || matchedProblem.title;
+    }
+  }
+
+  if (!problemStatement && pdSetTitle) {
+    const fallbackParts = [pdSetTitle];
+    const powId = targetSubmission?.publication?.publicationId;
+    if (powId) fallbackParts.push(`PoW ID: ${powId}`);
+    const className = targetSubmission?.clazz?.name;
+    if (className) fallbackParts.push(`Class: ${className}`);
+    problemStatement = `${fallbackParts.join(
+      '. '
+    )}. The student is sharing their mathematical thinking and work.`;
   }
 
   if (!problemStatement) {
