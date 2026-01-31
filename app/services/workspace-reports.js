@@ -5,6 +5,15 @@ import moment from 'moment';
 export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
 
+  stripHtml(text) {
+    if (!text) return '';
+    const withoutTags = String(text).replace(/<\/?[^>]+(>|$)/g, '');
+    if (typeof document === 'undefined') return withoutTags;
+    const decoder = document.createElement('textarea');
+    decoder.innerHTML = withoutTags;
+    return decoder.value;
+  }
+
   getUniqueFolderNames(selection) {
     const folderNames = new Set();
     const folders = selection.get('folders') || [];
@@ -51,15 +60,13 @@ export default class WorkspaceReportsService extends Service {
         'Original Submitter': submission.student,
         'Text of Submission': `Summary: ${
           submission.shortAnswer
-            ? submission.shortAnswer
-            : submission.get('answer.answer')
+            ? this.stripHtml(submission.shortAnswer)
+            : this.stripHtml(submission.get('answer.answer'))
         }  Full Answer: ${
           submission.longAnswer
-            ? submission.longAnswer
+            ? this.stripHtml(submission.longAnswer)
             : submission.get('answer.explanation')
-            ? submission
-                .get('answer.explanation')
-                .replace(/<\/?[^>]+(>|$)/g, '')
+            ? this.stripHtml(submission.get('answer.explanation'))
             : ''
         }`,
         'Submission ID': submission.id,
@@ -72,21 +79,43 @@ export default class WorkspaceReportsService extends Service {
         // For submissions without selections, return the base data only
         return [baseData];
       } else {
-        // For submissions with selections, add additional columns
-        return selections.map((selection) => {
+        // For submissions with selections, add one row per annotation/comment.
+        return selections.flatMap((selection) => {
           const selectorInfo = this.createSelectorInfo(selection);
-          let selectionData = {
-            [`Selector of Text`]: selectorInfo.username,
-            [`Text of Selection`]: selectorInfo.text,
-            [`Selector Date`]: selectorInfo.selectionCreateDate,
-            [`Annotator`]: selectorInfo.annotatorUsername,
-            [`Text of Annotator`]: selectorInfo.annotatorText,
-            [`Annotator Date`]: selectorInfo.annotatorCreateDate,
-            [`Folder(s) for Selection`]:
-              this.getUniqueFolderNames(selection).join('; '),
-          };
+          const folders = this.getUniqueFolderNames(selection).join('; ');
+          const comments = selection.get('comments') || [];
 
-          return { ...baseData, ...selectionData };
+          if (comments.length === 0) {
+            const selectionData = {
+              [`Selector of Text`]: selectorInfo.username,
+              [`Text of Selection`]: selectorInfo.text,
+              [`Selector Date`]: selectorInfo.selectionCreateDate,
+              [`Annotator`]: '',
+              [`Text of Annotator`]: '',
+              [`Annotator Date`]: '',
+              [`Folder(s) for Selection`]: folders,
+            };
+            return [{ ...baseData, ...selectionData }];
+          }
+
+          return comments.map((comment) => {
+            const annotatorText = this.stripHtml(comment.get('text'));
+            const annotatorUsername = comment.get('createdBy.username');
+            const annotatorCreateDate = moment(
+              comment.get('createDate')
+            ).format('MM/DD/YYYY');
+            const selectionData = {
+              [`Selector of Text`]: selectorInfo.username,
+              [`Text of Selection`]: selectorInfo.text,
+              [`Selector Date`]: selectorInfo.selectionCreateDate,
+              [`Annotator`]: annotatorUsername,
+              [`Text of Annotator`]: annotatorText,
+              [`Annotation Label`]: comment.get('label') || '',
+              [`Annotator Date`]: annotatorCreateDate,
+              [`Folder(s) for Selection`]: folders,
+            };
+            return { ...baseData, ...selectionData };
+          });
         });
       }
     });
@@ -108,9 +137,11 @@ export default class WorkspaceReportsService extends Service {
     const selectionCreateDate = moment(selector.get('createDate')).format(
       'MM/DD/YYYY'
     );
-    const text = selector.get('text');
+    const text = this.stripHtml(selector.get('text'));
     const username = selector.get('createdBy.username');
-    const annotatorText = selector.get('comments.firstObject.text');
+    const annotatorText = this.stripHtml(
+      selector.get('comments.firstObject.text')
+    );
     const annotatorUsername = selector.get(
       'comments.firstObject.createdBy.username'
     );
