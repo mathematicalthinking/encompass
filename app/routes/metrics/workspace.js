@@ -9,6 +9,17 @@ export default class MetricsWorkspaceRoute extends Route {
       params.workspace_id
     );
     const submissions = await workspace.submissions;
+    await Promise.all(
+      submissions.map(async (submission) => {
+        const selections = await submission.selections;
+        await Promise.all(
+          selections.map(async (selection) => {
+            await selection.comments;
+            await selection.taggings;
+          })
+        );
+      })
+    );
     return hash({
       workspace,
       submissions,
