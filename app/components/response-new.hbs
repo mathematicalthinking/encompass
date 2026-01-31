@@ -59,7 +59,7 @@
               <Textarea
                 id='ai-written-feedback'
                 placeholder='Share your thoughts on this AI-generated draft...'
-                rows={{2}}
+                rows={{3}}
                 @value={{this.aiWrittenFeedback}}
                 {{on 'input' this.updateAiWrittenFeedback}}
               />
@@ -208,7 +208,65 @@
       {{/if}}
     </div>
 
-    {{!-- AI action section removed temporarily; will be restored on a dedicated branch --}}
+    {{#if this.showAiActionSection}}
+      <div class='ai-action-section'>
+        <Ui::RadioGroup
+          @options={{this.aiActionOptions}}
+          @selectedValue={{this.aiActionSelection}}
+          @updateValue={{this.updateAiActionSelection}}
+        />
+
+        {{#if this.showRegenerationPrompt}}
+          <div class='regeneration-prompt'>
+            <p class='response-header'>Regeneration Prompt</p>
+            <Textarea
+              class='approver-note'
+              @value={{this.aiRegenerationPrompt}}
+              placeholder='Describe what should change in the regenerated draft...'
+            />
+          </div>
+        {{/if}}
+
+        <div class='checkbox-list'>
+          <p class='checkbox-list-label'>Options</p>
+          <ul>
+            <li>
+              <div class='checkbox-list-item'>
+                <Input
+                  @type='checkbox'
+                  @checked={{this.sendToStudentAction}}
+                  disabled={{not this.isFinalizeSelected}}
+                  {{on 'change' (fn this.updateFinalAction 'sendToStudentAction')}}
+                />
+                <p>Send to student</p>
+              </div>
+            </li>
+            <li>
+              <div class='checkbox-list-item'>
+                <Input
+                  @type='checkbox'
+                  @checked={{this.useAsNotesAction}}
+                  disabled={{not this.isFinalizeSelected}}
+                  {{on 'change' (fn this.updateFinalAction 'useAsNotesAction')}}
+                />
+                <p>Use as notes</p>
+              </div>
+            </li>
+            <li>
+              <div class='checkbox-list-item'>
+                <Input
+                  @type='checkbox'
+                  @checked={{this.saveDraftAction}}
+                  disabled={{not this.isFinalizeSelected}}
+                  {{on 'change' (fn this.updateFinalAction 'saveDraftAction')}}
+                />
+                <p>Save draft</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    {{/if}}
 
     {{#if this.doShowLoadingMessage}}
       <LoadingElem />
@@ -217,20 +275,22 @@
       <button
         class='primary-button save-response'
         type='button'
-        {{on 'click' (fn this.saveResponse false)}}
+        {{on 'click' this.handleSubmitAction}}
       >{{this.submitButtonText}}</button>
-        <button
-          class='primary-button ai-draft'
-          type='button'
-          disabled={{this.aiButtonDisabled}}
-          title={{this.aiButtonTooltip}}
-          {{on 'click' this.generateAIDraft}}
-        >Draft From AI</button>
-        <button
-          class='primary-button save-draft'
-          type='button'
-          {{on 'click' (fn this.saveResponse true)}}
-        >Save as Draft</button>
+        {{#unless this.showAiActionSection}}
+          <button
+            class='primary-button ai-draft'
+            type='button'
+            disabled={{this.aiButtonDisabled}}
+            title={{this.aiButtonTooltip}}
+            {{on 'click' this.generateAIDraft}}
+          >Draft From AI</button>
+          <button
+            class='primary-button save-draft'
+            type='button'
+            {{on 'click' (fn this.saveResponse true)}}
+          >Save as Draft</button>
+        {{/unless}}
     </div>
   </section>
 </div>
