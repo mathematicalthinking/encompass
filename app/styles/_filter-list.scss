@@ -552,9 +552,14 @@
             border-radius: 50%;
             text-align: center;
             margin-top: -46px;
-            line-height: 42px;
             height: 40px;
             width: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 40px;
+            position: relative;
+            z-index: 1;
             &:hover {
               cursor: pointer;
               background: darken($accent-color, 10%);
