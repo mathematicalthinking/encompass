@@ -18,6 +18,7 @@ export default Component.extend({
   wsRequestErrors: [],
   errorHandling: service('error-handling'),
   utils: service('utility-methods'),
+  store: service(),
   isVmtOnly: false,
   showVmtFilters: false,
   startDate: '',

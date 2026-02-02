@@ -1,0 +1,42 @@
+<div id='submission-viewer-list'>
+  <div class='main-list'>
+    {{#each @answers as |answer|}}
+      <SubmissionViewerListItem
+        @answer={{answer}}
+        @selectedAnswerIds={{@selectedAnswerIds}}
+        @onSelect={{this.onSelect}}
+        @isList={{@isList}}
+        @isGrid={{@isGrid}}
+        @threads={{@threads}}
+        @selectedMap={{this.answersSelectedHash}}
+        @moreMenuOptions={{@moreMenuOptions}}
+      />
+    {{else}}
+      <div class='no-results-container'>
+        <p class='info'>No submissions found</p>
+        <img src='../assets/images/no-results.svg' alt='No results' />
+        <p class='info'>Please change the filter criteria</p>
+      </div>
+    {{/each}}
+  </div>
+
+  <div
+    class='scroll-icon {{unless this.showScrollIcon "hidden"}}'
+    {{did-insert this.setupScrollListener}}
+    {{will-destroy this.teardownScrollListener}}
+  >
+    {{#if this.scrollBottom}}
+      <i
+        class='fas fa-chevron-circle-down'
+        role='button'
+        {{on 'click' this.superScroll}}
+      ></i>
+    {{else}}
+      <i
+        class='fas fa-chevron-circle-up'
+        role='button'
+        {{on 'click' this.superScroll}}
+      ></i>
+    {{/if}}
+  </div>
+</div>
