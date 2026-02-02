@@ -35,14 +35,6 @@
     <p class='sub-input-label'>You can set more custom permissions after you
       create the workspace</p>
 
-    {{#if this.saveError}}
-      <Ui::ErrorBox
-        @error='Sorry, something went wrong. Please try again'
-        @showDismiss={{true}}
-        @resetError={{this.resetSaveError}}
-      />
-    {{/if}}
-
     <div class='button-container'>
       <button
         class='secondary-button'

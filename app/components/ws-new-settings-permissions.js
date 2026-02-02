@@ -20,7 +20,6 @@ export default class WorkspaceNewContainerComponent extends Component {
   @service store;
   @tracked isEditing = false;
   @tracked selectedCollaborator = this.args.selectedCollaborator || null;
-  @tracked saveError = null;
   globalPermissionValue = 'viewOnly';
   globalItems = {
     groupName: 'globalPermissionValue',
@@ -123,10 +122,6 @@ export default class WorkspaceNewContainerComponent extends Component {
     this.globalPermissionValue = val;
   }
   @action
-  resetSaveError() {
-    this.saveError = null;
-  }
-  @action
   setCollaborator(val, $item) {
     if (!val) {
       return;
@@ -144,7 +139,7 @@ export default class WorkspaceNewContainerComponent extends Component {
   @action
   removeCollab(permissionObj) {
     if (this.utils.isNonEmptyObject(permissionObj)) {
-      this.args.permissions.removeObject(permissionObj);
+      this.args.onRemovePermission?.(permissionObj);
     }
   }
   @action
@@ -166,16 +161,9 @@ export default class WorkspaceNewContainerComponent extends Component {
     if (!this.utils.isNonEmptyObject(permissionsObject)) {
       return;
     }
-    const permissions = this.args.permissions;
-    // check if user already is in array
-    let existingObj = permissions.findBy('user', permissionsObject.user);
 
-    // remove existing permissions obj and add modified one
-    if (existingObj) {
-      permissions.removeObject(existingObj);
-    }
-
-    this.args.permissions.addObject(permissionsObject);
+    // Notify parent of save action
+    this.args.onSavePermission?.(permissionsObject);
 
     // clear selectedCollaborator
     // clear selectize input

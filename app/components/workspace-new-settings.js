@@ -177,6 +177,24 @@ export default Component.extend({
     return hash;
   }),
   actions: {
+    savePermission(permissionObj) {
+      const permissions = this.workspacePermissions;
+      // check if user already is in array
+      let existingObj = permissions.findBy('user', permissionObj.user);
+
+      // remove existing permissions obj and add modified one
+      if (existingObj) {
+        permissions.removeObject(existingObj);
+      }
+
+      permissions.addObject(permissionObj);
+    },
+    removePermission(permissionObj) {
+      const permissions = this.workspacePermissions;
+      if (permissions) {
+        permissions.removeObject(permissionObj);
+      }
+    },
     updateSelectedMode: function (val) {
       this.set('selectedMode', val);
     },
