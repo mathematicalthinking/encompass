@@ -91,7 +91,9 @@ export default class WorkspaceCommentComponent extends Component {
       return fromComment;
     }
     // Fallback: derive from the selection without forcing async load
-    return this.utils.getBelongsToId(this.commentSelection, 'submission');
+    return this.commentSelection
+      ? this.utils.getBelongsToId(this.commentSelection, 'submission')
+      : null;
   }
 
   get commentSelectionModels() {
@@ -99,7 +101,7 @@ export default class WorkspaceCommentComponent extends Component {
     const selectionId = this.commentSelection?.id;
 
     if (!submissionId || !selectionId) {
-      return null;
+      return [];
     }
 
     return [submissionId, selectionId];
@@ -111,7 +113,7 @@ export default class WorkspaceCommentComponent extends Component {
     const selectionId = this.commentSelection?.id;
 
     if (!workspaceId || !submissionId || !selectionId) {
-      return null;
+      return [];
     }
 
     return [workspaceId, submissionId, selectionId];
