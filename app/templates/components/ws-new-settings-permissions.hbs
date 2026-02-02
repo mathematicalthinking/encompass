@@ -1,4 +1,5 @@
-<p class='input-label'>
+<div id='ws-new-settings-permissions'>
+  <p class='input-label'>
   Collaborators
   <span
     class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
@@ -13,10 +14,10 @@
 <SelectizeInput
   @inputId='collab-select'
   @maxItems={{1}}
-  @initialOptions={{initialCollabOptions}}
-  @selectedItemsHash={{selectedCollaborators}}
-  @onItemAdd={{action 'setCollaborator'}}
-  @onItemRemove={{action 'setCollaborator'}}
+  @initialOptions={{@initialCollabOptions}}
+  @selectedItemsHash={{@selectedCollaborators}}
+  @onItemAdd={{this.setCollaborator}}
+  @onItemRemove={{this.setCollaborator}}
   @labelField='username'
   @valueField='id'
   @searchField='username'
@@ -24,21 +25,21 @@
   @placeholder='Search by username to add a collaborator'
 />
 
-{{#if selectedCollaborator}}
+{{#if this.selectedCollaborator}}
   <div class='global-permissions'>
     <Ui::RadioGroup
-      @options={{globalItems}}
+      @options={{this.globalItems}}
       @selectedValue={{this.globalPermissionValue}}
-      @updateValue={{action 'updateGlobalPermissionValue'}}
+      @updateValue={{this.updateGlobalPermissionValue}}
     />
     <p class='sub-input-label'>You can set more custom permissions after you
       create the workspace</p>
 
-    {{#if saveError}}
+    {{#if this.saveError}}
       <Ui::ErrorBox
         @error='Sorry, something went wrong. Please try again'
         @showDismiss={{true}}
-        @resetError={{action (mut saveError) null}}
+        @resetError={{this.resetSaveError}}
       />
     {{/if}}
 
@@ -46,29 +47,28 @@
       <button
         class='secondary-button'
         type='button'
-        {{action 'savePermissions'}}
+        {{on 'click' this.savePermissions}}
       >Save Permissions</button>
-      {{!-- <button class="secondary-button cancel-button" {{action (mut selectedUser) null}}>Cancel</button> --}}
     </div>
   </div>
 {{/if}}
 
-{{#if permissions}}
+{{#if @permissions}}
   <div class='added-collab'>
     <ul>
       <p class='input-label'>Added Collaborators</p>
-      {{#each permissions as |permission|}}
+      {{#each @permissions as |permission|}}
         <li>{{permission.user.username}}
           -
           {{collab-permissions permission.global}}
           <i
-            {{action 'editCollab' permission}}
+            {{on 'click' (fn this.editCollab permission)}}
             class='far fa-edit'
             aria-hidden='true'
             title='Modify'
           ></i>
           <i
-            {{action 'removeCollab' permission}}
+            {{on 'click' (fn this.removeCollab permission)}}
             class='fas fa-minus-circle'
             aria-hidden='true'
             title='Remove'
@@ -78,3 +78,4 @@
     </ul>
   </div>
 {{/if}}
+</div>
