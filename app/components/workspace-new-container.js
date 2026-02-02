@@ -25,7 +25,7 @@ import sortBy from 'lodash-es/sortBy';
 
  */
 export default class WorkspaceNewContainerComponent extends Component {
-  @service alert;
+  @service('sweet-alert') alert;
   @service errorHandling;
   @service currentUser;
   @service('utility-methods') utils;
