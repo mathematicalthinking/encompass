@@ -24,29 +24,22 @@ export default class WorkspaceReportsService extends Service {
   }
 
   getPuzzleText(submission) {
+    // Primary: assignment problem description
     const assignmentProblemText = this.stripHtml(
       submission.get('answer.assignment.problem.text')
     );
     if (assignmentProblemText) return assignmentProblemText;
 
-    const puzzleTitle = this.stripHtml(
-      submission.get('publication.puzzle.title')
-    );
-    if (puzzleTitle) return puzzleTitle;
-
+    // Secondary: problem text via problemId
     const puzzleProblemId = submission.get('publication.puzzle.problemId');
     if (puzzleProblemId) {
       const submissionProblemText = this.stripHtml(
         submission.get('problem.text')
       );
       if (submissionProblemText) return submissionProblemText;
-
-      const submissionProblemTitle = this.stripHtml(
-        submission.get('problem.title')
-      );
-      if (submissionProblemTitle) return submissionProblemTitle;
     }
 
+    // Fallback: pdSet context for legacy data
     const pdSetTitle = this.stripHtml(submission.get('pdSet'));
     if (pdSetTitle) {
       const fallbackParts = [pdSetTitle.split(' - ')[0].trim()];
@@ -59,6 +52,7 @@ export default class WorkspaceReportsService extends Service {
       )}. The student is sharing their mathematical thinking and work.`;
     }
 
+    // Final fallback
     return 'The student is sharing their mathematical thinking and work.';
   }
 
