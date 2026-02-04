@@ -224,18 +224,6 @@ export default class SubmissionGroupComponent extends Component {
   }
 
   @action
-  onStudentBlur() {
-    const select = document.getElementById('student-select');
-    if (!select || !select.selectize) return;
-
-    const currentValue = select.selectize.getValue();
-    const expectedValue = this.initialStudentItem[0];
-    if (currentValue !== expectedValue) {
-      select.selectize.setValue([expectedValue], true);
-    }
-  }
-
-  @action
   handleNavHeight() {
     const nav = document.getElementById('submission-nav');
     const height = nav?.offsetHeight ?? 0;
@@ -246,5 +234,20 @@ export default class SubmissionGroupComponent extends Component {
     }
 
     this.ownHeight = document.body.offsetHeight; // or another specific element
+  }
+
+  @action
+  syncSelectizeToSubmission() {
+    const selectInput = document.getElementById('student-select');
+    if (!selectInput?.selectize) {
+      return;
+    }
+
+    const expectedValue = this.initialStudentItem[0];
+    const currentValue = selectInput.selectize.getValue();
+
+    if (currentValue !== expectedValue && expectedValue) {
+      selectInput.selectize.setValue(expectedValue, true);
+    }
   }
 }
