@@ -11,6 +11,18 @@ export default class MetricsWorkspaceRoute extends Route {
     const submissions = await workspace.submissions;
     await Promise.all(
       submissions.map(async (submission) => {
+        // Preload puzzle text relationships
+        await submission.answer;
+        const answer = await submission.answer;
+        await answer.assignment;
+        const assignment = await answer.assignment;
+        await assignment.problem;
+        await submission.problem;
+        await submission.pdSet;
+        await submission.publication;
+        await submission.clazz;
+
+        // Preload selection relationships
         const selections = await submission.selections;
         await Promise.all(
           selections.map(async (selection) => {
