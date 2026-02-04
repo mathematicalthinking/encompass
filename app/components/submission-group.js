@@ -235,4 +235,19 @@ export default class SubmissionGroupComponent extends Component {
 
     this.ownHeight = document.body.offsetHeight; // or another specific element
   }
+
+  @action
+  syncSelectizeToSubmission() {
+    const selectInput = document.getElementById('student-select');
+    if (!selectInput?.selectize) {
+      return;
+    }
+
+    const expectedValue = this.initialStudentItem[0];
+    const currentValue = selectInput.selectize.getValue();
+
+    if (currentValue !== expectedValue && expectedValue) {
+      selectInput.selectize.setValue(expectedValue, true);
+    }
+  }
 }
