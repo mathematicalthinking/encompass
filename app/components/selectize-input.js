@@ -53,6 +53,14 @@ export default class SelectizeInputComponent extends Component {
 
   @action
   async updateSelectizeOptions(element) {
+    // Update tracked properties from args
+    if (this.args.initialOptions) {
+      this.options = this.args.initialOptions;
+    }
+    if (this.args.initialItems) {
+      this.items = this.args.initialItems;
+    }
+
     if (this.selectizeInstance) {
       this.selectizeInstance.destroy();
     }
