@@ -23,6 +23,45 @@ export default class WorkspaceReportsService extends Service {
     return Array.from(folderNames);
   }
 
+  getPuzzleText(submission) {
+    const assignmentProblemText = this.stripHtml(
+      submission.get('answer.assignment.problem.text')
+    );
+    if (assignmentProblemText) return assignmentProblemText;
+
+    const puzzleTitle = this.stripHtml(
+      submission.get('publication.puzzle.title')
+    );
+    if (puzzleTitle) return puzzleTitle;
+
+    const puzzleProblemId = submission.get('publication.puzzle.problemId');
+    if (puzzleProblemId) {
+      const submissionProblemText = this.stripHtml(
+        submission.get('problem.text')
+      );
+      if (submissionProblemText) return submissionProblemText;
+
+      const submissionProblemTitle = this.stripHtml(
+        submission.get('problem.title')
+      );
+      if (submissionProblemTitle) return submissionProblemTitle;
+    }
+
+    const pdSetTitle = this.stripHtml(submission.get('pdSet'));
+    if (pdSetTitle) {
+      const fallbackParts = [pdSetTitle.split(' - ')[0].trim()];
+      const powId = submission.get('publication.publicationId');
+      if (powId) fallbackParts.push(`PoW ID: ${powId}`);
+      const className = this.stripHtml(submission.get('clazz.name'));
+      if (className) fallbackParts.push(`Class: ${className}`);
+      return `${fallbackParts.join(
+        '. '
+      )}. The student is sharing their mathematical thinking and work.`;
+    }
+
+    return 'The student is sharing their mathematical thinking and work.';
+  }
+
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.slice();
 
@@ -58,6 +97,7 @@ export default class WorkspaceReportsService extends Service {
         'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
+        'Puzzle text': this.getPuzzleText(submission),
         'Text of Submission': `Summary: ${
           submission.shortAnswer
             ? this.stripHtml(submission.shortAnswer)
@@ -73,6 +113,7 @@ export default class WorkspaceReportsService extends Service {
         'Submission or Revision': submission.submissionLabel,
         'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
+        'EnCoMPASS templated response': '',
       };
       const selections = submission.get('selections').slice();
       if (selections.length === 0) {

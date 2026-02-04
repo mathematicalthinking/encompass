@@ -11,6 +11,15 @@ export default class MetricsWorkspaceRoute extends Route {
     const submissions = await workspace.submissions;
     await Promise.all(
       submissions.map(async (submission) => {
+        await submission.problem;
+        const answer = await submission.answer;
+        if (answer) {
+          await answer.problem;
+          const assignment = await answer.assignment;
+          if (assignment) {
+            await assignment.problem;
+          }
+        }
         const selections = await submission.selections;
         await Promise.all(
           selections.map(async (selection) => {
