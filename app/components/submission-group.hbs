@@ -27,7 +27,7 @@
     </ul>
 
     <div class='submission-row-item students-revisions'>
-      <div class='submission-row-item students'>
+      <div class='submission-row-item students' {{did-update this.syncSelectizeToSubmission @submission}}>
         <SelectizeInput
           @inputId='student-select'
           @initialOptions={{this.studentSelectOptions}}
