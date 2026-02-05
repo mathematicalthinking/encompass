@@ -63,11 +63,15 @@ export default class ResponsesRoute extends AuthenticatedRoute {
       'student',
       submission.get('student')
     );
-    const latestSubmission = submissionThread
-      .slice()
-      .sort((a, b) => new Date(b.createDate) - new Date(a.createDate))
-      .at(0);
-    const activeSubmission = latestSubmission || submission;
+    // OLD BEHAVIOR: Always used latest submission for Respond button
+    // const latestSubmission = submissionThread
+    //   .slice()
+    //   .sort((a, b) => new Date(b.createDate) - new Date(a.createDate))
+    //   .at(0);
+    // const activeSubmission = latestSubmission || submission;
+
+    // NEW BEHAVIOR: Use the submission being viewed (from URL params)
+    const activeSubmission = submission;
 
     let allResponses = this.store.peekAll('response');
     let additionalDrafts = allResponses.filter((response) => {
