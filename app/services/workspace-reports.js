@@ -23,6 +23,72 @@ export default class WorkspaceReportsService extends Service {
     return Array.from(folderNames);
   }
 
+  getPuzzleText(submission) {
+    if (!submission) {
+      return 'The student is sharing their mathematical thinking and work.';
+    }
+
+    try {
+      // Primary: assignment problem description
+      const answer = submission.get('answer');
+      if (answer) {
+        const assignment = answer.get('assignment');
+        if (assignment) {
+          const problem = assignment.get('problem');
+          if (problem) {
+            const text = this.stripHtml(problem.get('text'));
+            if (text) return text;
+          }
+        }
+      }
+    } catch (e) {
+      // Continue to fallback
+    }
+
+    try {
+      // Secondary: problem text via problemId
+      const publication = submission.get('publication');
+      if (publication && publication.get('puzzle.problemId')) {
+        const problem = submission.get('problem');
+        if (problem) {
+          const text = this.stripHtml(problem.get('text'));
+          if (text) return text;
+        }
+      }
+    } catch (e) {
+      // Continue to fallback
+    }
+
+    try {
+      // Fallback: pdSet context for legacy data
+      const pdSetTitle = this.stripHtml(submission.get('pdSet'));
+      if (pdSetTitle) {
+        const fallbackParts = [pdSetTitle.split(' - ')[0].trim()];
+
+        const publication = submission.get('publication');
+        if (publication) {
+          const powId = publication.get('publicationId');
+          if (powId) fallbackParts.push(`PoW ID: ${powId}`);
+        }
+
+        const clazz = submission.get('clazz');
+        if (clazz) {
+          const className = this.stripHtml(clazz.get('name'));
+          if (className) fallbackParts.push(`Class: ${className}`);
+        }
+
+        return `${fallbackParts.join(
+          '. '
+        )}. The student is sharing their mathematical thinking and work.`;
+      }
+    } catch (e) {
+      // Continue to final fallback
+    }
+
+    // Final fallback
+    return 'The student is sharing their mathematical thinking and work.';
+  }
+
   submissionReportCsv(model) {
     const submissionsArray = model.submissions.slice();
 
@@ -58,6 +124,7 @@ export default class WorkspaceReportsService extends Service {
         'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
+        'Puzzle text': this.getPuzzleText(submission),
         'Text of Submission': `Summary: ${
           submission.shortAnswer
             ? this.stripHtml(submission.shortAnswer)
