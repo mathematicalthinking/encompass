@@ -125,6 +125,7 @@ export default class WorkspaceReportsService extends Service {
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
         'Puzzle text': this.getPuzzleText(submission),
+        'Puzzle text': this.getPuzzleText(submission),
         'Text of Submission': `Summary: ${
           submission.shortAnswer
             ? this.stripHtml(submission.shortAnswer)
@@ -140,6 +141,7 @@ export default class WorkspaceReportsService extends Service {
         'Submission or Revision': submission.submissionLabel,
         'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
+        'EnCoMPASS templated response': '',
       };
       const selections = submission.get('selections').slice();
       if (selections.length === 0) {

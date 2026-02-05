@@ -1,6 +1,15 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { hash } from 'rsvp';
+
+async function safePreload(obj, prop) {
+  try {
+    await obj[prop];
+  } catch (e) {
+    // Silently ignore missing relationships
+  }
+}
+
 export default class MetricsWorkspaceRoute extends Route {
   @service store;
   async model(params) {
@@ -11,6 +20,28 @@ export default class MetricsWorkspaceRoute extends Route {
     const submissions = await workspace.submissions;
     await Promise.all(
       submissions.map(async (submission) => {
+        // Preload puzzle text relationships (guard against missing data)
+        try {
+          const answer = await submission.answer;
+          if (answer) {
+            const assignment = await answer.assignment;
+            if (assignment) {
+              await assignment.problem;
+            }
+          }
+        } catch (e) {
+          // Continue with fallbacks
+        }
+
+        // Preload other relationships safely
+        await Promise.all([
+          safePreload(submission, 'problem'),
+          safePreload(submission, 'pdSet'),
+          safePreload(submission, 'publication'),
+          safePreload(submission, 'clazz'),
+        ]);
+
+        // Preload selection relationships
         const selections = await submission.selections;
         await Promise.all(
           selections.map(async (selection) => {

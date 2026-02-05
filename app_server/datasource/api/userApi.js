@@ -59,8 +59,30 @@ async function sendUsers(req, res, next) {
     }
 
     if (req.query.alias === 'current') {
-      // if all they wanted was the current user, fine
-      return utils.sendResponse(res, { user });
+      // if all they wanted was the current user, return a sanitized copy
+      // so stale notification refs do not crash Ember Data relationship loading.
+      const safeUser = user.toObject ? user.toObject() : { ...user };
+      const ntfIds = Array.isArray(safeUser.notifications)
+        ? safeUser.notifications.filter(Boolean)
+        : [];
+
+      if (ntfIds.length > 0) {
+        const validNotifications = await models.Notification.find({
+          _id: { $in: ntfIds },
+          isTrashed: { $ne: true },
+        })
+          .select('_id')
+          .lean()
+          .exec();
+        const validIds = validNotifications.map((n) => String(n._id));
+        safeUser.notifications = ntfIds.filter((id) =>
+          validIds.includes(String(id))
+        );
+      } else {
+        safeUser.notifications = [];
+      }
+
+      return utils.sendResponse(res, { user: safeUser });
     }
 
     let criteria;

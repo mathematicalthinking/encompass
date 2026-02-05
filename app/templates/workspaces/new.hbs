@@ -1,2 +1,8 @@
 {{page-title "New Workspace"}}
-<WorkspaceNewContainer @model={{this.model}} @currentUser={{this.model.currentUser}} @store={{this.store}} @toWorkspaces="toWorkspaces" @toWorkspace="toWorkspace" />
+<WorkspaceNewContainer 
+    @folderSets={{@model.folderSets}} 
+    @sections={{@model.sections}}
+    @assignments={{@model.assignments}}
+    @users={{@model.users}}
+    @problems={{@model.problems}}
+/>

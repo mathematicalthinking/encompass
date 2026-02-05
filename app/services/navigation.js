@@ -11,7 +11,7 @@ export default class NavigationService extends Service {
    * @param {boolean} opts.replace - use replaceWith instead of transitionTo
    * @param {boolean} opts.fullReload - force hard reload to /
    */
-  goHome(opts = {}) {
+  toHome(opts = {}) {
     // decide destination (role-aware or from config)
     const route = this.homeRoute();
 
@@ -90,6 +90,14 @@ export default class NavigationService extends Service {
     this.router.transitionTo('responses.new.submission', submissionId, {
       queryParams: { workspaceId },
     });
+  }
+
+  toWorkspaces(id) {
+    this.router.transitionTo('workspace.work', id);
+  }
+
+  toWorkspace(id) {
+    this.router.transitionTo('workspace.work', id);
   }
 
   /** Opens a problem in a new window */

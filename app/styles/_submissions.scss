@@ -170,13 +170,25 @@
 #workspace-new-container {
   .scroll-icon {
     font-size: 3em;
-    display: none;
+    display: block;
     color: $accent-color;
     position: fixed;
     right: 30px;
     bottom: 30px;
     background-color: white;
     border-radius: 50%;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    opacity: 1;
+
+    &.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    i {
+      display: block;
+    }
   }
   .loading-message-container {
     text-align: center;

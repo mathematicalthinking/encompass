@@ -57,10 +57,15 @@ export default class AiDraftService extends Service {
    * @returns {Promise<String>} HTML string containing the generated draft
    * @throws {Error} If API call fails or no content is received
    */
-  async generateDraft(submissionId, variant = 'A') {
-    const url = `/api/aiDraft?target=${encodeURIComponent(
-      submissionId
-    )}&variant=${encodeURIComponent(variant)}`;
+  async generateDraft(submissionId, variant = 'A', workspaceId = null) {
+    const params = new URLSearchParams({
+      target: submissionId,
+      variant,
+    });
+    if (workspaceId) {
+      params.set('workspace', workspaceId);
+    }
+    const url = `/api/aiDraft?${params.toString()}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
@@ -68,11 +73,25 @@ export default class AiDraftService extends Service {
     });
 
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.message || 'Failed to generate AI draft');
+      const raw = await response.text();
+      let errMessage = 'Failed to generate AI draft';
+      try {
+        const parsed = JSON.parse(raw);
+        errMessage = parsed.message || parsed.error || errMessage;
+      } catch (e) {
+        // Upstream errors may return HTML/plain text (e.g., 502), preserve status.
+        errMessage = `Failed to generate AI draft (${response.status})`;
+      }
+      throw new Error(errMessage);
     }
 
-    const data = await response.json();
+    const raw = await response.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      throw new Error('Invalid response format from AI draft endpoint');
+    }
     if (!data || !data.draft) {
       throw new Error('No content received');
     }
