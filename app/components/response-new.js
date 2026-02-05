@@ -622,7 +622,11 @@ export default class ResponseNewComponent extends Component {
       'doShowLoadingMessage'
     );
     try {
-      const draft = await this.aiDraft.generateDraft(submissionId);
+      const draft = await this.aiDraft.generateDraft(
+        submissionId,
+        'A',
+        this.args.workspace?.id
+      );
 
       // Clear any pending content from previous "Bring it Down"
       this.pendingContent = null;
