@@ -33,6 +33,7 @@
   'notification',
   'vmtImportRequest',
   'group',
+  'aiVariant',
 ].forEach(function (path) {
   var module = require('./' + path);
 
