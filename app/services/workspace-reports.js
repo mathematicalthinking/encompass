@@ -16,7 +16,8 @@ export default class WorkspaceReportsService extends Service {
 
   getUniqueFolderNames(selection) {
     const folderNames = new Set();
-    const folders = selection.get('folders') || [];
+    const folders = (selection.get('folders') || [])
+      .filterBy('isTrashed', false);
     folders.forEach((folder) => {
       folderNames.add(folder.get('name'));
     });
@@ -143,7 +144,9 @@ export default class WorkspaceReportsService extends Service {
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
         'EnCoMPASS templated response': '',
       };
-      const selections = submission.get('selections').slice();
+      const selections = submission.get('selections')
+        .filterBy('isTrashed', false)
+        .slice();
       if (selections.length === 0) {
         // For submissions without selections, return the base data only
         return [baseData];
@@ -152,7 +155,8 @@ export default class WorkspaceReportsService extends Service {
         return selections.flatMap((selection) => {
           const selectorInfo = this.createSelectorInfo(selection);
           const folders = this.getUniqueFolderNames(selection).join('; ');
-          const comments = selection.get('comments') || [];
+          const comments = (selection.get('comments') || [])
+            .filterBy('isTrashed', false);
 
           if (comments.length === 0) {
             const selectionData = {
