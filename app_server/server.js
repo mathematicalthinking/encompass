@@ -293,7 +293,6 @@ server.post('/api/folderSets', api.post.folderSet);
 server.post('/api/updateWorkspaceRequests', api.post.updateWorkspaceRequest);
 server.post('/api/notifications', api.post.notification);
 server.post('/api/parentWorkspaceRequests', api.post.parentWorkspace);
-server.post('/api/aiVariants/generateAll', api.post.generateAllVariants);
 server.post('/api/groups', api.post.groups);
 server.post('/api/newWorkspaceRequests', api.post.newWorkspaceRequest);
 server.post('/api/import', api.post.import);
@@ -375,7 +374,6 @@ server.put(
 server.put('/api/organizations/:id', pathMw.validateId(), api.put.organization);
 server.put('/api/assignments/:id', pathMw.validateId(), api.put.assignment);
 server.put('/api/notifications/:id', pathMw.validateId(), api.put.notification);
-server.put('/api/aiVariants/:id', pathMw.validateId(), api.put.updateVariant);
 server.put('/api/groups/:id', api.put.groups);
 
 // API DELETE
