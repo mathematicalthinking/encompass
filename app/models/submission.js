@@ -23,6 +23,7 @@ export default class SubmissionModel extends AuditableModel {
   @hasMany('comment', { async: true }) comments;
   @hasMany('workspace', { async: true }) workspaces;
   @hasMany('response', { async: true }) responses;
+  @hasMany('ai-variant', { async: true }) aiVariants;
   @attr() vmtRoomInfo;
 
   get folders() {

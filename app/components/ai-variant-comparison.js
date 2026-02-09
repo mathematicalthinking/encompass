@@ -60,27 +60,16 @@ export default class AiVariantComparisonComponent extends Component {
 
   @action
   async generateSingleVariant(submission, variantCode) {
-    console.log(
-      `Starting generateSingleVariant for variant ${variantCode}, submission:`,
-      submission?.id
-    );
-    console.log('Workspace:', this.args.workspace?.id);
-
     this.loadingVariant = variantCode;
     this.error = null;
 
     try {
       const workspaceId = this.args.workspace?.id;
-      console.log(
-        `Generating variant ${variantCode} for workspace ${workspaceId}...`
-      );
-
       const result = await this.aiDraft.generateDraft(
         submission.id,
         variantCode,
         workspaceId
       );
-      console.log(`Variant ${variantCode} completed successfully`);
 
       // Set the appropriate tracked property
       switch (variantCode) {
@@ -97,8 +86,6 @@ export default class AiVariantComparisonComponent extends Component {
           this.draftD = result;
           break;
       }
-
-      console.log(`Variant ${variantCode} set successfully`);
     } catch (error) {
       console.error(`Error generating variant ${variantCode}:`, error);
       this.error = `Failed to generate variant ${variantCode}: ${error.message}`;
@@ -109,24 +96,18 @@ export default class AiVariantComparisonComponent extends Component {
 
   @action
   async generateAllVariants(submission) {
-    console.log('Starting generateAllVariants for submission:', submission?.id);
-    console.log('Workspace:', this.args.workspace?.id);
     this.isLoading = true;
     this.error = null;
     try {
       const workspaceId = this.args.workspace?.id;
       const results = await Promise.all(
         this.variants.map(async (v) => {
-          console.log(
-            `Generating variant ${v.code} for workspace ${workspaceId}...`
-          );
           try {
             const result = await this.aiDraft.generateDraft(
               submission.id,
               v.code,
               workspaceId
             );
-            console.log(`Variant ${v.code} completed successfully`);
             return result;
           } catch (error) {
             console.error(`Error generating variant ${v.code}:`, error);
@@ -134,12 +115,10 @@ export default class AiVariantComparisonComponent extends Component {
           }
         })
       );
-      console.log('All results received, setting individual drafts...');
       this.draftA = results[0];
       this.draftB = results[1];
       this.draftC = results[2];
       this.draftD = results[3];
-      console.log('Individual drafts set successfully');
     } catch (e) {
       console.error('Overall error:', e);
       this.error = e.message || 'Failed to generate drafts';

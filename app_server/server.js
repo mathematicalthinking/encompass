@@ -130,9 +130,7 @@ server.use(cookieParser());
 // - In prod: allow configured origin; if not set, no credentials + *
 const isDev = process.env.NODE_ENV === 'development';
 const devOrigin = 'http://localhost:4200';
-const corsOrigin = isDev
-  ? devOrigin
-  : process.env.CORS_ORIGIN || '*';
+const corsOrigin = isDev ? devOrigin : process.env.CORS_ORIGIN || '*';
 
 server.use(
   cors({
@@ -141,13 +139,14 @@ server.use(
       if (corsOrigin === '*' || origin === corsOrigin) return cb(null, origin);
       return cb(null, false);
     },
-    credentials: isDev || (!!process.env.CORS_ORIGIN && process.env.CORS_ORIGIN !== '*'),
+    credentials:
+      isDev || (!!process.env.CORS_ORIGIN && process.env.CORS_ORIGIN !== '*'),
     allowedHeaders: [
       'Origin',
       'X-Requested-With',
       'Content-Type',
       'Accept',
-      'Authorization'
+      'Authorization',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
@@ -168,7 +167,10 @@ server.use((req, res, next) => {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   );
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+  );
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
@@ -259,9 +261,14 @@ server.get('/api/images/file/:id', pathMw.validateId(), api.get.imageFile);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 server.get('/api/aiDraft', api.get.aiDraft);
+server.get('/api/aiVariants', api.get.aiVariants);
 server.get('/api/notifications', api.get.notifications);
 server.get('/api/notifications/:id', pathMw.validateId(), api.get.notification);
-server.get('/api/responseThreads/', paginate.middleware(25, 100), api.get.responseThreads);
+server.get(
+  '/api/responseThreads/',
+  paginate.middleware(25, 100),
+  api.get.responseThreads
+);
 server.get('/api/groups', api.get.groups);
 server.get('/api/groups/:id', api.get.group);
 
@@ -300,22 +307,70 @@ server.put('/api/comments/:id', pathMw.validateId(), api.put.comment);
 server.put('/api/responses/:id', pathMw.validateId(), api.put.response);
 server.put('/api/taggings/:id', pathMw.validateId(), api.put.tagging);
 server.put('/api/users/:id', pathMw.validateId(), api.put.user);
-server.put('/api/users/addSection/:id', pathMw.validateId(), api.put.user.addSection);
-server.put('/api/users/removeSection/:id', pathMw.validateId(), api.put.user.removeSection);
-server.put('/api/users/addAssignment/:id', pathMw.validateId(), api.put.user.addAssignment);
-server.put('/api/users/removeAssignment/:id', pathMw.validateId(), api.put.user.removeAssignment);
+server.put(
+  '/api/users/addSection/:id',
+  pathMw.validateId(),
+  api.put.user.addSection
+);
+server.put(
+  '/api/users/removeSection/:id',
+  pathMw.validateId(),
+  api.put.user.removeSection
+);
+server.put(
+  '/api/users/addAssignment/:id',
+  pathMw.validateId(),
+  api.put.user.addAssignment
+);
+server.put(
+  '/api/users/removeAssignment/:id',
+  pathMw.validateId(),
+  api.put.user.removeAssignment
+);
 server.put('/api/workspaces/:id', pathMw.validateId(), api.put.workspace);
 server.put('/api/problems/:id', pathMw.validateId(), api.put.problem);
-server.put('/api/problems/addCategory/:id', pathMw.validateId(), api.put.problem.addCategory);
-server.put('/api/problems/removeCategory/:id', pathMw.validateId(), api.put.problem.removeCategory);
+server.put(
+  '/api/problems/addCategory/:id',
+  pathMw.validateId(),
+  api.put.problem.addCategory
+);
+server.put(
+  '/api/problems/removeCategory/:id',
+  pathMw.validateId(),
+  api.put.problem.removeCategory
+);
 server.put('/api/answers/:id', pathMw.validateId(), api.put.answer);
 server.put('/api/sections/:id', pathMw.validateId(), api.put.section);
-server.put('/api/sections/addTeacher/:id', pathMw.validateId(), api.put.section.addTeacher);
-server.put('/api/sections/removeTeacher/:id', pathMw.validateId(), api.put.section.removeTeacher);
-server.put('/api/sections/addStudent/:id', pathMw.validateId(), api.put.section.addStudent);
-server.put('/api/sections/removeStudent/:id', pathMw.validateId(), api.put.section.removeStudent);
-server.put('/api/sections/addProblem/:id', pathMw.validateId(), api.put.section.addProblem);
-server.put('/api/sections/removeProblem/:id', pathMw.validateId(), api.put.section.removeProblem);
+server.put(
+  '/api/sections/addTeacher/:id',
+  pathMw.validateId(),
+  api.put.section.addTeacher
+);
+server.put(
+  '/api/sections/removeTeacher/:id',
+  pathMw.validateId(),
+  api.put.section.removeTeacher
+);
+server.put(
+  '/api/sections/addStudent/:id',
+  pathMw.validateId(),
+  api.put.section.addStudent
+);
+server.put(
+  '/api/sections/removeStudent/:id',
+  pathMw.validateId(),
+  api.put.section.removeStudent
+);
+server.put(
+  '/api/sections/addProblem/:id',
+  pathMw.validateId(),
+  api.put.section.addProblem
+);
+server.put(
+  '/api/sections/removeProblem/:id',
+  pathMw.validateId(),
+  api.put.section.removeProblem
+);
 server.put('/api/organizations/:id', pathMw.validateId(), api.put.organization);
 server.put('/api/assignments/:id', pathMw.validateId(), api.put.assignment);
 server.put('/api/notifications/:id', pathMw.validateId(), api.put.notification);
@@ -346,7 +401,7 @@ if (fs.existsSync(absBuild)) {
     /^\/metrics/,
     /^\/favicon\.ico$/,
     /^\/robots\.txt$/,
-    /^\/sitemap\.xml$/
+    /^\/sitemap\.xml$/,
   ];
 
   server.get('*', (req, res, next) => {

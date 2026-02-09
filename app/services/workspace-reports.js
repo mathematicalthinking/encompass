@@ -4,6 +4,7 @@ import moment from 'moment';
 
 export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
+  @service store;
 
   stripHtml(text) {
     if (!text) return '';
@@ -22,6 +23,52 @@ export default class WorkspaceReportsService extends Service {
       folderNames.add(folder.get('name'));
     });
     return Array.from(folderNames);
+  }
+
+  getAiVariantData(submission) {
+    // Variants will be fetched separately and passed in
+    // This is just a placeholder that returns empty columns
+    const variantData = {};
+    ['A', 'B', 'C', 'D'].forEach((key) => {
+      variantData[`AI Variant ${key}`] = '';
+    });
+    return variantData;
+  }
+
+  async fetchVariantsForSubmissions(submissions) {
+    // Fetch all variants for all submissions in one batch
+    const submissionIds = submissions.map((s) => s.id).join(',');
+
+    try {
+      const response = await fetch(
+        `/api/aiVariants?submissionIds=${submissionIds}`,
+        {
+          credentials: 'include',
+        }
+      );
+
+      if (!response.ok) {
+        return {};
+      }
+
+      const data = await response.json();
+
+      // Group variants by submission ID
+      const variantsBySubmission = {};
+      (data.variants || []).forEach((variant) => {
+        const submissionId = variant.submission._id || variant.submission;
+        if (!variantsBySubmission[submissionId]) {
+          variantsBySubmission[submissionId] = {};
+        }
+        variantsBySubmission[submissionId][variant.variantKey] =
+          variant.draftText;
+      });
+
+      return variantsBySubmission;
+    } catch (error) {
+      console.error('[Workspace Report] Error fetching variants:', error);
+      return {};
+    }
   }
 
   getPuzzleText(submission) {
@@ -90,8 +137,13 @@ export default class WorkspaceReportsService extends Service {
     return 'The student is sharing their mathematical thinking and work.';
   }
 
-  submissionReportCsv(model) {
+  async submissionReportCsv(model) {
     const submissionsArray = model.submissions.slice();
+
+    // Fetch all variants for all submissions
+    const variantsBySubmission = await this.fetchVariantsForSubmissions(
+      submissionsArray
+    );
 
     // Group submissions by submitter
     const submissionsByUser = submissionsArray.reduce((acc, submission) => {
@@ -120,12 +172,28 @@ export default class WorkspaceReportsService extends Service {
 
     // Generate CSV data with dynamic columns for selections
     const data = labeledSubmissions.flatMap((submission) => {
+      const submissionVariants = variantsBySubmission[submission.id] || {};
+
+      const variantData = {
+        'AI Variant A (Student Work Only)': this.stripHtml(
+          submissionVariants['A'] || ''
+        ),
+        'AI Variant B (Work + Selections)': this.stripHtml(
+          submissionVariants['B'] || ''
+        ),
+        'AI Variant C (Work + Comments)': this.stripHtml(
+          submissionVariants['C'] || ''
+        ),
+        'AI Variant D (Work + Selections + Comments)': this.stripHtml(
+          submissionVariants['D'] || ''
+        ),
+      };
+
       const baseData = {
         'Name of workspace': submission.get('workspaces.firstObject.name'),
         'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
-        'Puzzle text': this.getPuzzleText(submission),
         'Puzzle text': this.getPuzzleText(submission),
         'Text of Submission': `Summary: ${
           submission.shortAnswer
@@ -143,6 +211,7 @@ export default class WorkspaceReportsService extends Service {
         'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
         'EnCoMPASS templated response': '',
+        ...variantData, // Add AI variant columns
       };
       const selections = submission.get('selections')
         .filterBy('isTrashed', false)
@@ -291,8 +360,8 @@ export default class WorkspaceReportsService extends Service {
       };
     });
   }
-  submissionReport(model) {
-    const { headers, data } = this.submissionReportCsv(model);
+  async submissionReport(model) {
+    const { headers, data } = await this.submissionReportCsv(model);
     return this.jsonCsv.arrayToCsv(data, headers);
   }
 

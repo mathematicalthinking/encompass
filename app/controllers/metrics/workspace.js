@@ -5,6 +5,7 @@ import { inject as service } from '@ember/service';
 export default class MetricsWorkspaceController extends Controller {
   @tracked showSubmissions = false;
   @tracked showCloud = false;
+  @tracked workspaceCsv = '';
   @service workspaceReports;
 
   submissionsColumns = [
@@ -13,11 +14,24 @@ export default class MetricsWorkspaceController extends Controller {
     { name: 'Text', valuePath: 'text' },
   ];
 
-  get workspaceCsv() {
-    return encodeURIComponent(
-      this.workspaceReports.submissionReport(this.model)
-    );
+  async generateWorkspaceCsv() {
+    const csv = await this.workspaceReports.submissionReport(this.model);
+    this.workspaceCsv = encodeURIComponent(csv);
   }
+
+  @action
+  async downloadWorkspaceReport(event) {
+    event.preventDefault(); // Prevent default link behavior
+    const csv = await this.workspaceReports.submissionReport(this.model);
+    const encodedCsv = encodeURIComponent(csv);
+
+    // Create download link and trigger download
+    const link = document.createElement('a');
+    link.href = `data:text/csv;charset=utf-8,${encodedCsv}`;
+    link.download = 'workspace_report.csv';
+    link.click();
+  }
+
   get responseCsv() {
     return encodeURIComponent(this.workspaceReports.responseReport(this.model));
   }

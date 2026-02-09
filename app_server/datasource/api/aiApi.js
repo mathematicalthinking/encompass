@@ -4,6 +4,8 @@
 const utils = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
 const aiService = require('../../services/ai');
+const models = require('../schemas');
+const variantConfig = require('../../config/aiVariants');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -47,6 +49,42 @@ async function aiDraft(req, res, next) {
       workspace,
       user._id
     );
+
+    // Save variant to database for export/analysis
+    try {
+      const variantConfigData = variantConfig.activeVariants.find(
+        (v) => v.key === variant
+      );
+
+      if (!variantConfigData) {
+        return;
+      }
+
+      const existingVariant = await models.AIVariant.findOne({
+        submission: target,
+        variantKey: variant,
+        isTrashed: false,
+      });
+
+      if (!existingVariant) {
+        await models.AIVariant.create({
+          submission: target,
+          workspace: workspace,
+          variantKey: variant,
+          variantLabel: variantConfigData.label,
+          inputType: variantConfigData.inputType,
+          draftText: draft,
+          createdBy: user._id,
+        });
+      } else {
+        existingVariant.draftText = draft;
+        existingVariant.lastModifiedDate = new Date();
+        existingVariant.lastModifiedBy = user._id;
+        await existingVariant.save();
+      }
+    } catch (saveError) {
+      console.error('[AI Variant] Failed to save variant:', saveError);
+    }
 
     const response = {
       target: target,
