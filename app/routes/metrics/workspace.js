@@ -49,6 +49,9 @@ export default class MetricsWorkspaceRoute extends Route {
             await selection.taggings;
           })
         );
+
+        // NOTE: AI variants NOT preloaded here - fetched via REST API in workspace-reports service
+        // await safePreload(submission, 'aiVariants');
       })
     );
     return hash({
@@ -56,6 +59,7 @@ export default class MetricsWorkspaceRoute extends Route {
       submissions,
     });
   }
+
   resetController(controller, isExiting, transition) {
     if (isExiting && transition.targetName !== 'error') {
       controller.set('showSelections', false);
