@@ -98,7 +98,9 @@ const generateDraft = async (
       .select('text title')
       .lean()
       .exec();
-    if (problem) problemStatement = problem.text || problem.title;
+    if (problem) {
+      problemStatement = problem.text || problem.title;
+    }
   }
 
   if (!problemStatement && targetSubmission?.publication?.publicationId) {
@@ -109,7 +111,9 @@ const generateDraft = async (
       .select('text title')
       .lean()
       .exec();
-    if (problem) problemStatement = problem.text || problem.title;
+    if (problem) {
+      problemStatement = problem.text || problem.title;
+    }
   }
 
   if (!problemStatement && targetSubmission?.publication?.puzzle?.problemId) {
@@ -119,7 +123,9 @@ const generateDraft = async (
       .select('text title')
       .lean()
       .exec();
-    if (problem) problemStatement = problem.text || problem.title;
+    if (problem) {
+      problemStatement = problem.text || problem.title;
+    }
   }
 
   if (!problemStatement && puzzleTitle) {
