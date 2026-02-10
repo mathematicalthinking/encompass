@@ -85,9 +85,11 @@ const generateDraft = async (
   }
 
   // Step 2: Extract problem statement
+  const puzzleTitle = targetSubmission?.publication?.puzzle?.title;
+
   let problemStatement =
     targetSubmission?.answer?.assignment?.problem?.text ||
-    targetSubmission?.publication?.puzzle?.title;
+    targetSubmission?.answer?.assignment?.problem?.title;
 
   if (!problemStatement && targetSubmission?.answer?.problem) {
     const problem = await models.Problem.findById(
@@ -118,6 +120,10 @@ const generateDraft = async (
       .lean()
       .exec();
     if (problem) problemStatement = problem.text || problem.title;
+  }
+
+  if (!problemStatement && puzzleTitle) {
+    problemStatement = puzzleTitle;
   }
 
   const pdSetTitle = targetSubmission?.pdSet
