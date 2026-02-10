@@ -26,6 +26,24 @@ const stripHtml = (html) => {
 };
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const buildLooseTitleRegex = (title) => {
+  if (!title) return null;
+  const clean = stripHtml(title)
+    .replace(/[^\w\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!clean) return null;
+  const words = clean.split(' ');
+  const pattern = words
+    .map((word) => {
+      const escaped = escapeRegex(word);
+      if (escaped.length <= 2) return escaped;
+      if (escaped.endsWith('s')) return escaped;
+      return `${escaped}s?`;
+    })
+    .join('\\s+');
+  return new RegExp(pattern, 'i');
+};
 
 /**
  * Generate an AI draft response based on submission
@@ -58,7 +76,7 @@ const generateDraft = async (
     })
     .populate('creator', 'username')
     .populate('clazz', 'name')
-    .select('shortAnswer longAnswer creator clazz publication pdSet')
+    .select('shortAnswer longAnswer answer creator clazz publication pdSet')
     .lean()
     .exec();
 
@@ -70,6 +88,27 @@ const generateDraft = async (
   let problemStatement =
     targetSubmission?.answer?.assignment?.problem?.text ||
     targetSubmission?.publication?.puzzle?.title;
+
+  if (!problemStatement && targetSubmission?.answer?.problem) {
+    const problem = await models.Problem.findById(
+      targetSubmission.answer.problem
+    )
+      .select('text title')
+      .lean()
+      .exec();
+    if (problem) problemStatement = problem.text || problem.title;
+  }
+
+  if (!problemStatement && targetSubmission?.publication?.publicationId) {
+    const problem = await models.Problem.findOne({
+      puzzleId: targetSubmission.publication.publicationId,
+      isTrashed: { $ne: true },
+    })
+      .select('text title')
+      .lean()
+      .exec();
+    if (problem) problemStatement = problem.text || problem.title;
+  }
 
   if (!problemStatement && targetSubmission?.publication?.puzzle?.problemId) {
     const problem = await models.Problem.findById(
@@ -86,7 +125,9 @@ const generateDraft = async (
     : '';
 
   if (!problemStatement && pdSetTitle) {
-    const titleRegex = new RegExp(escapeRegex(pdSetTitle), 'i');
+    const titleRegex =
+      buildLooseTitleRegex(pdSetTitle) ||
+      new RegExp(escapeRegex(pdSetTitle), 'i');
     const matchedProblem = await models.Problem.findOne({
       title: titleRegex,
       isTrashed: { $ne: true },
