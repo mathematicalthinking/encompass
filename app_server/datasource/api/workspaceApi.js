@@ -40,6 +40,13 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
+const stripHtml = (text) => {
+  if (!text) return '';
+  return String(text)
+    .replace(/<\/?[^>]+(>|$)/g, '')
+    .trim();
+};
+
 function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
   // check if user has specific permissions in ws permissions array
   // ws has selections, submissions, folders, taggings populated
@@ -249,6 +256,149 @@ function getWorkspace(
       });
       callback(data);
     });
+}
+
+async function getWorkspaceProblemTexts(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError(
+        'You must be logged in.',
+        res
+      );
+    }
+
+    const workspaceId = req.params.id;
+    const canLoad = await access.get.workspace(user, workspaceId);
+    if (!canLoad) {
+      return utils.sendError.NotAuthorizedError(
+        'You do not have permission.',
+        res
+      );
+    }
+
+    const workspace = await models.Workspace.findById(workspaceId, {
+      submissions: 1,
+    })
+      .lean()
+      .exec();
+
+    if (!workspace) {
+      return utils.sendResponse(res, null);
+    }
+
+    const allowedIds = (workspace.submissions || []).map((id) => id.toString());
+    const requestedIds = req.query.submissionIds
+      ? req.query.submissionIds.split(',').filter(Boolean)
+      : [];
+    const idsToFetch =
+      requestedIds.length > 0
+        ? requestedIds.filter((id) => allowedIds.includes(id))
+        : allowedIds;
+
+    if (!idsToFetch.length) {
+      return utils.sendResponse(res, { problemTexts: {} });
+    }
+
+    const submissions = await models.Submission.find({
+      _id: { $in: idsToFetch },
+    })
+      .populate({
+        path: 'answer',
+        populate: {
+          path: 'assignment',
+          populate: { path: 'problem', select: 'text title' },
+        },
+      })
+      .select('answer publication pdSet clazz')
+      .lean()
+      .exec();
+
+    const problemById = new Map();
+    const problemByPuzzleId = new Map();
+
+    const getProblemById = async (id) => {
+      if (!id) return null;
+      const key = id.toString();
+      if (problemById.has(key)) return problemById.get(key);
+      const problem = await models.Problem.findById(id)
+        .select('text title')
+        .lean()
+        .exec();
+      problemById.set(key, problem || null);
+      return problem;
+    };
+
+    const getProblemByPuzzleId = async (puzzleId) => {
+      if (!puzzleId) return null;
+      const key = String(puzzleId);
+      if (problemByPuzzleId.has(key)) return problemByPuzzleId.get(key);
+      const problem = await models.Problem.findOne({
+        puzzleId,
+        isTrashed: { $ne: true },
+      })
+        .select('text title')
+        .lean()
+        .exec();
+      problemByPuzzleId.set(key, problem || null);
+      return problem;
+    };
+
+    const problemTexts = {};
+    for (const submission of submissions) {
+      let statement =
+        submission?.answer?.assignment?.problem?.text ||
+        submission?.answer?.assignment?.problem?.title;
+
+      if (!statement && submission?.answer?.problem) {
+        const problem = await getProblemById(submission.answer.problem);
+        if (problem) statement = problem.text || problem.title;
+      }
+
+      if (!statement && submission?.publication?.publicationId) {
+        const problem = await getProblemByPuzzleId(
+          submission.publication.publicationId
+        );
+        if (problem) statement = problem.text || problem.title;
+      }
+
+      if (!statement && submission?.publication?.puzzle?.problemId) {
+        const problem = await getProblemById(
+          submission.publication.puzzle.problemId
+        );
+        if (problem) statement = problem.text || problem.title;
+      }
+
+      if (!statement && submission?.publication?.puzzle?.title) {
+        statement = submission.publication.puzzle.title;
+      }
+
+      if (!statement && submission?.pdSet) {
+        const pdSetTitle = stripHtml(submission.pdSet).split(' - ')[0].trim();
+        const fallbackParts = [pdSetTitle];
+        const powId = submission?.publication?.publicationId;
+        if (powId) fallbackParts.push(`PoW ID: ${powId}`);
+        const className = stripHtml(submission?.clazz?.name || '');
+        if (className) fallbackParts.push(`Class: ${className}`);
+        statement = `${fallbackParts.join(
+          '. '
+        )}. The student is sharing their mathematical thinking and work.`;
+      }
+
+      if (!statement) {
+        statement =
+          'The student is sharing their mathematical thinking and work.';
+      }
+
+      problemTexts[submission._id] = statement;
+    }
+
+    return utils.sendResponse(res, { problemTexts });
+  } catch (err) {
+    console.error(`Error getWorkspaceProblemTexts: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 }
 
 /**
@@ -3824,6 +3974,7 @@ module.exports.post.workspaceEnc = postWorkspaceEnc;
 module.exports.post.cloneWorkspace = cloneWorkspace;
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;
+module.exports.get.workspaceProblemTexts = getWorkspaceProblemTexts;
 module.exports.put.workspace = putWorkspace;
 module.exports.post.workspace = postWorkspace;
 module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
