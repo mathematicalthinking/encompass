@@ -43,7 +43,7 @@ async function aiDraft(req, res, next) {
 
   try {
     // A/B TEST: Generate AI draft using the AI service with variant
-    const draft = await aiService.generateDraft(
+    const draftResult = await aiService.generateDraft(
       target,
       variant,
       workspace,
@@ -66,6 +66,10 @@ async function aiDraft(req, res, next) {
         isTrashed: false,
       });
 
+      const draftText =
+        typeof draftResult === 'object' && draftResult?.draft
+          ? draftResult.draft
+          : draftResult;
       if (!existingVariant) {
         await models.AIVariant.create({
           submission: target,
@@ -73,11 +77,11 @@ async function aiDraft(req, res, next) {
           variantKey: variant,
           variantLabel: variantConfigData.label,
           inputType: variantConfigData.inputType,
-          draftText: draft,
+          draftText: draftText,
           createdBy: user._id,
         });
       } else {
-        existingVariant.draftText = draft;
+        existingVariant.draftText = draftText;
         existingVariant.lastModifiedDate = new Date();
         existingVariant.lastModifiedBy = user._id;
         await existingVariant.save();
@@ -86,11 +90,15 @@ async function aiDraft(req, res, next) {
       console.error('[AI Variant] Failed to save variant:', saveError);
     }
 
+    const draftText =
+      typeof draftResult === 'object' && draftResult?.draft
+        ? draftResult.draft
+        : draftResult;
     const response = {
       target: target,
       variant: variant, // A/B TEST: Include variant in response
       message: `AI draft generated for target submission: ${target}`,
-      draft,
+      draft: draftText,
     };
 
     return utils.sendResponse(res, response);

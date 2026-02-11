@@ -228,6 +228,11 @@ server.get('/api/users', api.get.users);
 server.get('/api/users/:id', pathMw.validateId(), api.get.user);
 server.get('/api/workspaces', paginate.middleware(20, 100), api.get.workspaces);
 server.get('/api/workspaces/:id', pathMw.validateId(), api.get.workspace);
+server.get(
+  '/api/workspaces/:id/problemTexts',
+  pathMw.validateId(),
+  api.get.workspaceProblemTexts
+);
 server.get('/api/folders', api.get.folders);
 server.get('/api/folders/:id', pathMw.validateId(), api.get.folder);
 server.get('/api/foldersets', api.get.folderSets);

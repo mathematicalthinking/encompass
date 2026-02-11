@@ -17,8 +17,10 @@ export default class WorkspaceReportsService extends Service {
 
   getUniqueFolderNames(selection) {
     const folderNames = new Set();
-    const folders = (selection.get('folders') || [])
-      .filterBy('isTrashed', false);
+    const folders = (selection.get('folders') || []).filterBy(
+      'isTrashed',
+      false
+    );
     folders.forEach((folder) => {
       folderNames.add(folder.get('name'));
     });
@@ -67,6 +69,32 @@ export default class WorkspaceReportsService extends Service {
       return variantsBySubmission;
     } catch (error) {
       console.error('[Workspace Report] Error fetching variants:', error);
+      return {};
+    }
+  }
+
+  async fetchProblemTextsForSubmissions(submissions, workspaceId) {
+    if (!workspaceId || !Array.isArray(submissions) || submissions.length === 0)
+      return {};
+
+    const submissionIds = submissions.map((s) => s.id).join(',');
+
+    try {
+      const response = await fetch(
+        `/api/workspaces/${workspaceId}/problemTexts?submissionIds=${submissionIds}`,
+        {
+          credentials: 'include',
+        }
+      );
+
+      if (!response.ok) {
+        return {};
+      }
+
+      const data = await response.json();
+      return data.problemTexts || {};
+    } catch (error) {
+      console.error('[Workspace Report] Error fetching problem texts:', error);
       return {};
     }
   }
@@ -144,6 +172,10 @@ export default class WorkspaceReportsService extends Service {
     const variantsBySubmission = await this.fetchVariantsForSubmissions(
       submissionsArray
     );
+    const problemTextsBySubmission = await this.fetchProblemTextsForSubmissions(
+      submissionsArray,
+      model.workspace?.id
+    );
 
     // Group submissions by submitter
     const submissionsByUser = submissionsArray.reduce((acc, submission) => {
@@ -194,7 +226,10 @@ export default class WorkspaceReportsService extends Service {
         'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
-        'Puzzle text': this.getPuzzleText(submission),
+        'Puzzle text': this.stripHtml(
+          problemTextsBySubmission[submission.id] ||
+            this.getPuzzleText(submission)
+        ),
         'Text of Submission': `Summary: ${
           submission.shortAnswer
             ? this.stripHtml(submission.shortAnswer)
@@ -213,7 +248,8 @@ export default class WorkspaceReportsService extends Service {
         'EnCoMPASS templated response': '',
         ...variantData, // Add AI variant columns
       };
-      const selections = submission.get('selections')
+      const selections = submission
+        .get('selections')
         .filterBy('isTrashed', false)
         .slice();
       if (selections.length === 0) {
@@ -224,8 +260,10 @@ export default class WorkspaceReportsService extends Service {
         return selections.flatMap((selection) => {
           const selectorInfo = this.createSelectorInfo(selection);
           const folders = this.getUniqueFolderNames(selection).join('; ');
-          const comments = (selection.get('comments') || [])
-            .filterBy('isTrashed', false);
+          const comments = (selection.get('comments') || []).filterBy(
+            'isTrashed',
+            false
+          );
 
           if (comments.length === 0) {
             const selectionData = {
