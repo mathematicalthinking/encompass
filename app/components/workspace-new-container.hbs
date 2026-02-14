@@ -1,12 +1,11 @@
-<div class='flex-container-full'>
+<div class='flex-container-full workspace-new-container'>
   {{#if this.showSubmissionViewer}}
     <div class='flex-item-full filter-options collapse' id='filter-list-side'>
       <SubmissionsFilter
-        @store={{this.store}}
-        @onSearch={{action 'setFilterCriteria'}}
-        @sections={{this.model.sections}}
-        @assignments={{this.model.assignments}}
-        @users={{this.model.users}}
+        @onSearch={{this.setFilterCriteria}}
+        @sections={{@sections}}
+        @assignments={{@assignments}}
+        @users={{@users}}
         @selectedFolderSet={{this.selectedFolderSet}}
         @selectedAssignment={{this.selectedAssignment}}
         @selectedSection={{this.selectedSection}}
@@ -16,7 +15,6 @@
         @startDate={{this.startDate}}
         @endDate={{this.endDate}}
         @isTrashedOnly={{this.toggleTrashed}}
-        @currentUser={{this.currentUser}}
       />
 
     </div>
@@ -30,7 +28,7 @@
                 <button
                   class='primary-button animated fadeIn'
                   type='button'
-                  {{action 'restoreAllSelected'}}
+                  {{on 'click' this.restoreAllSelected}}
                 >Restore {{this.selectedAnswers.length}} Submissions</button>
               </div>
             {{else}}
@@ -38,7 +36,7 @@
                 <button
                   class='primary-button animated fadeIn create-ws'
                   type='button'
-                  {{action 'toSettingsConfig'}}
+                  {{on 'click' this.toSettingsConfig}}
                 >Create Workspace</button>
               </div>
             {{/if}}
@@ -76,11 +74,11 @@
               @content={{this.revisionsSelectOptions}}
               @cannotBeNull={{true}}
               @selectedValue={{this.selectedRevisionOption}}
-              @action={{action (mut this.selectedRevisionOption)}}
+              @onUpdate={{this.updateRevisionOption}}
             />
             <i
               class='fas fa-redo-alt refresh-icon'
-              {{action 'refreshList'}}
+              {{on 'click' this.refreshList}}
               title='Refresh Submission list'
             ></i>
           </div>
@@ -90,12 +88,12 @@
             <div class='sort-bar-item toggle-all'>
               <input
                 type='checkbox'
-                onclick={{action 'toggleCheckAllAnswers'}}
+                {{on 'change' this.toggleCheckAllAnswers}}
               />
             </div>
             <ToggleControl
               @classToAdd='sort-bar-item student'
-              @onUpdate={{action 'updateSortCriterion'}}
+              @onUpdate={{this.updateSortCriterion}}
               @initialState={{1}}
               @options={{this.sortOptions.student}}
               @label='Student'
@@ -105,7 +103,7 @@
             />
             <ToggleControl
               @classToAdd='sort-bar-item revisions'
-              @onUpdate={{action 'updateSortCriterion'}}
+              @onUpdate={{this.updateSortCriterion}}
               @initialState={{0}}
               @options={{this.sortOptions.revisions}}
               @label='Revisions'
@@ -114,7 +112,7 @@
             />
             <ToggleControl
               @classToAdd='sort-bar-item explanation'
-              @onUpdate={{action 'updateSortCriterion'}}
+              @onUpdate={{this.updateSortCriterion}}
               @initialState={{0}}
               @options={{this.sortOptions.explanation}}
               @label='Explanation'
@@ -123,7 +121,7 @@
             />
             <ToggleControl
               @classToAdd='sort-bar-item section'
-              @onUpdate={{action 'updateSortCriterion'}}
+              @onUpdate={{this.updateSortCriterion}}
               @initialState={{0}}
               @options={{this.sortOptions.section}}
               @label='Class'
@@ -132,7 +130,7 @@
             />
             <ToggleControl
               @classToAdd='sort-bar-item createDate'
-              @onUpdate={{action 'updateSortCriterion'}}
+              @onUpdate={{this.updateSortCriterion}}
               @initialState={{0}}
               @options={{this.sortOptions.createDate}}
               @label='Date'
@@ -161,8 +159,7 @@
               @isList={{true}}
               @isGrid={{false}}
               @moreMenuOptions={{this.moreMenuOptions}}
-              @store={{this.store}}
-              @onSelect={{action 'updateSelectedAnswers'}}
+              @onSelect={{this.updateSelectedAnswers}}
               @selectedAnswers={{this.selectedAnswers}}
               @threads={{this.submissionThreads}}
             />
@@ -174,30 +171,20 @@
 </div>
 {{#if this.showWorkspaceSettingsMenu}}
   <WorkspaceNewSettings
-    @store={{this.store}}
-    @users={{this.model.users}}
-    @folderSets={{this.model.folderSets}}
-    @onProceed={{action 'createWorkspace'}}
-    @onBack={{action 'toSearchFilter'}}
+    @users={{@users}}
+    @folderSets={{@folderSets}}
+    @onProceed={{this.createWorkspace}}
+    @onBack={{this.toSearchFilter}}
     @createWorkspaceError={{this.createWorkspaceError}}
-    @currentUser={{this.currentUser}}
   />
 {{/if}}
 {{#if this.showSubmissionViewer}}
   <div class='toggle-filter-menu'>
-    <button type='button' {{action 'toggleMenu'}}><i
+    <button type='button' {{on 'click' this.toggleMenu}}>
+      <i
         id='arrow-icon'
         class='fas fa-chevron-right'
-      ></i></button>
-
+      ></i>
+    </button>
   </div>
 {{/if}}
-
-<script>
-  $('.list-view').click(function (e) { if
-  (!($('#filter-list-side').hasClass('collapse'))) {
-  $('#arrow-icon').toggleClass('fa-rotate-180'); }
-  $('#filter-list-side').addClass('collapse'); });
-  $('#submission-new-link').click(function (e) {
-  $('#outlet').removeClass('hidden'); });
-</script>

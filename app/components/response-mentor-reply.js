@@ -348,7 +348,11 @@ export default class ResponseMentorReplyComponent extends Component {
 
     this._startLoading();
     try {
-      const draft = await this.aiDraft.generateDraft(this.args.submission.id);
+      const draft = await this.aiDraft.generateDraft(
+        this.args.submission.id,
+        'A',
+        this.args.workspace?.id
+      );
       this.aiGeneratedText = draft;
       this.quillKey++;
       this.editRevisionText = draft;
@@ -645,4 +649,16 @@ export default class ResponseMentorReplyComponent extends Component {
       return this.saveDraft(isDraft);
     }
   }
+
+  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
+  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
+  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
+  @action
+  handleVariantDraftSelected(draftText) {
+    // TEMPORARY A/B TEST CODE: Set the selected draft for the response-new editor
+    this.aiGeneratedText = draftText;
+  }
+  // END TEMPORARY A/B TEST CODE
+  // END TEMPORARY A/B TEST CODE
+  // END TEMPORARY A/B TEST CODE
 }

@@ -84,7 +84,6 @@
   <ul class='subfolders'>
     {{#each @model.sortedChildren as |folder|}}
       <FolderElem
-        @store={{@store}}
         @model={{folder}}
         @currentWorkspace={{@currentWorkspace}}
         @folderList={{@folderList}}
@@ -95,7 +94,6 @@
         @canDeleteFolders={{@canDeleteFolders}}
         @wsTaggings={{@wsTaggings}}
         @currentSubmission={{@currentSubmission}}
-        @currentSelection={{@currentSelection}}
         @moveOut={{@moveOut}}
         @moveUp={{@moveUp}}
         @moveDown={{@moveDown}}

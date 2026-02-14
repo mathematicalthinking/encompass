@@ -128,17 +128,11 @@ export default class ResponsesNewSubmissionRoute extends Route {
     }
 
     // Load all async data in parallel
-    const [submissions, recipient, selections, comments] = await Promise.all([
-      workspace.submissions,
+    const [recipient, selections, comments] = await Promise.all([
       this.resolveRecipient(submission, workspace),
       submission.selections,
       submission.comments,
     ]);
-
-    // should we check the student ids rather than the objects?
-    const studentSubmissions = submissions.filter(
-      (sub) => sub.uniqueIdentifier === submission.uniqueIdentifier
-    );
 
     const associatedResponses = this._filterResponsesBySubmission(
       allResponses,
@@ -158,7 +152,9 @@ export default class ResponsesNewSubmissionRoute extends Route {
       submission,
       workspace,
       responses: associatedResponses,
-      submissions: studentSubmissions,
+      // Only pass the single target submission, not entire revision thread
+      // This ensures "Draft From AI" and "Respond" work on the correct revision
+      submissions: [submission],
     };
   }
 

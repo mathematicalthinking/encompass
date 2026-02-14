@@ -153,12 +153,10 @@
         {{#each this.sortedDisplayList as |comment|}}
 
           <WorkspaceComment
-            @wsComments={{@comments}}
             @comment={{comment}}
             @currentWorkspace={{@currentWorkspace}}
             @reuseComment={{this.reuseComment}}
             @deleteComment={{this.deleteComment}}
-            @currentSelection={{@currentSelection}}
             @isParentWorkspace={{@isParentWorkspace}}
           />
         {{else}}

@@ -406,8 +406,8 @@ export default class ResponseNewComponent extends Component {
 
   _getSubmissionId() {
     return (
-      this.args.responseData?._submissionRef?.id ??
       this.args.submission?.id ??
+      this.args.responseData?._submissionRef?.id ??
       null
     );
   }
@@ -701,7 +701,11 @@ export default class ResponseNewComponent extends Component {
       'doShowLoadingMessage'
     );
     try {
-      const draft = await this.aiDraft.generateDraft(submissionId);
+      const draft = await this.aiDraft.generateDraft(
+        submissionId,
+        'A',
+        this.args.workspace?.id
+      );
 
       // Clear any pending content from previous "Bring it Down"
       this.pendingContent = null;

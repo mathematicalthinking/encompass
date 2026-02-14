@@ -25,6 +25,17 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
+function sanitizeSelectionRefs(selection) {
+  if (!selection) return selection;
+  if (Array.isArray(selection.comments)) {
+    selection.comments = selection.comments.filter(Boolean);
+  }
+  if (Array.isArray(selection.taggings)) {
+    selection.taggings = selection.taggings.filter(Boolean);
+  }
+  return selection;
+}
+
 /**
  * @public
  * @method getSelections
@@ -113,6 +124,7 @@ async function getSelections(req, res, next) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    selections = selections.map((sel) => sanitizeSelectionRefs(sel));
     var data = { selections: selections };
     utils.sendResponse(res, data);
   });
@@ -159,7 +171,7 @@ async function getSelection(req, res, next) {
 
     const data = {
       // user has permission; send back record
-      selection,
+      selection: sanitizeSelectionRefs(selection),
     };
 
     return utils.sendResponse(res, data);

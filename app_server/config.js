@@ -74,12 +74,22 @@ exports.nconf = nconf;
 
 logs.configure({
   appenders: {
-    srv: { type: 'file', filename: 'server.out', category: ['console'] },
-    err: { type: 'file', filename: 'error.out', category: ['server'] },
+    srv: {
+      type: 'file',
+      filename: 'server.out',
+      category: ['console'],
+    },
+    err: {
+      type: 'file',
+      filename: 'error.out',
+      category: ['server'],
+    },
+    ai: { type: 'file', filename: 'ai_demo.out', flags: 'w' },
     con: { type: 'console' },
   },
   categories: {
     default: { appenders: ['srv', 'err', 'con'], level: 'debug' },
+    ai: { appenders: ['ai', 'err', 'con'], level: 'debug' },
   },
   replaceConsole: true,
 });

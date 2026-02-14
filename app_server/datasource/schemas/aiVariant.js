@@ -1,0 +1,54 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+
+/**
+ * @public
+ * @class AIVariant
+ * @description Stores AI-generated feedback variants for A/B testing and analysis.
+ * Designed to be configuration-driven to support future simplification from
+ * multiple variants to a single production variant.
+ */
+var AIVariantSchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
+    lastModifiedBy: { type: ObjectId, ref: 'User' },
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
+
+    // Context - what submission is this variant for?
+    submission: { type: ObjectId, ref: 'Submission', required: true },
+    workspace: { type: ObjectId, ref: 'Workspace', required: true },
+
+    // Variant identification (flexible, not hardcoded)
+    variantKey: { type: String, required: true }, // e.g., 'A', 'B', 'C', 'D', or 'default' in future
+    variantLabel: { type: String, required: true }, // e.g., 'Student Work Only', 'Work + Selections'
+    inputType: { type: String, required: true }, // 'work_only', 'work_selections', 'work_comments', 'work_all'
+
+    // AI-generated content
+    draftText: { type: String, required: true },
+
+    // Teacher evaluation/interaction
+    rating: { type: Number, min: 1, max: 5 }, // Teacher's rating of this variant
+    isSelected: { type: Boolean, default: false }, // Did teacher choose this variant?
+    teacherNotes: { type: String }, // Teacher's notes about this variant
+
+    // Technical metadata
+    modelUsed: { type: String }, // e.g., 'claude-3-5-sonnet', 'gpt-4'
+    tokensUsed: { type: Number },
+    responseTime: { type: Number }, // milliseconds
+    ragEnabled: { type: Boolean, default: false }, // Was RAG used for this variant?
+  },
+  { versionKey: false }
+);
+
+// Indexes for efficient querying
+AIVariantSchema.index({ submission: 1, variantKey: 1 }, { unique: true }); // One variant per submission
+AIVariantSchema.index({ workspace: 1, createDate: -1 }); // For workspace reports
+AIVariantSchema.index({ createdBy: 1, createDate: -1 }); // For user analytics
+AIVariantSchema.index({ isSelected: 1 }); // For analyzing chosen variants
+
+module.exports.AIVariant = mongoose.model('AIVariant', AIVariantSchema);

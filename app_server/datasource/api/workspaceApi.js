@@ -40,6 +40,8 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
+const { resolveProblemText } = require('../../services/problemText');
+
 function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
   // check if user has specific permissions in ws permissions array
   // ws has selections, submissions, folders, taggings populated
@@ -249,6 +251,80 @@ function getWorkspace(
       });
       callback(data);
     });
+}
+
+async function getWorkspaceProblemTexts(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError(
+        'You must be logged in.',
+        res
+      );
+    }
+
+    const workspaceId = req.params.id;
+    const canLoad = await access.get.workspace(user, workspaceId);
+    if (!canLoad) {
+      return utils.sendError.NotAuthorizedError(
+        'You do not have permission.',
+        res
+      );
+    }
+
+    const workspace = await models.Workspace.findById(workspaceId, {
+      submissions: 1,
+    })
+      .lean()
+      .exec();
+
+    if (!workspace) {
+      return utils.sendResponse(res, null);
+    }
+
+    const allowedIds = (workspace.submissions || []).map((id) => id.toString());
+    const requestedIds = req.query.submissionIds
+      ? req.query.submissionIds.split(',').filter(Boolean)
+      : [];
+    const idsToFetch =
+      requestedIds.length > 0
+        ? requestedIds.filter((id) => allowedIds.includes(id))
+        : allowedIds;
+
+    if (!idsToFetch.length) {
+      return utils.sendResponse(res, { problemTexts: {} });
+    }
+
+    const submissions = await models.Submission.find({
+      _id: { $in: idsToFetch },
+    })
+      .populate({
+        path: 'answer',
+        populate: {
+          path: 'assignment',
+          populate: { path: 'problem', select: 'text title' },
+        },
+      })
+      .select('answer publication pdSet clazz')
+      .lean()
+      .exec();
+
+    const cache = {
+      problemById: new Map(),
+      problemByPuzzleId: new Map(),
+    };
+    const problemTexts = {};
+    for (const submission of submissions) {
+      const statement = await resolveProblemText(submission, models, cache);
+      problemTexts[submission._id] = statement;
+    }
+
+    return utils.sendResponse(res, { problemTexts });
+  } catch (err) {
+    console.error(`Error getWorkspaceProblemTexts: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 }
 
 /**
@@ -3824,6 +3900,7 @@ module.exports.post.workspaceEnc = postWorkspaceEnc;
 module.exports.post.cloneWorkspace = cloneWorkspace;
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;
+module.exports.get.workspaceProblemTexts = getWorkspaceProblemTexts;
 module.exports.put.workspace = putWorkspace;
 module.exports.post.workspace = postWorkspace;
 module.exports.post.newWorkspaceRequest = newWorkspaceRequest;

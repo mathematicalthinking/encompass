@@ -4,19 +4,178 @@ import moment from 'moment';
 
 export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
-  @service currentUrl;
+  @service store;
+
+  stripHtml(text) {
+    if (!text) return '';
+    const withoutTags = String(text).replace(/<\/?[^>]+(>|$)/g, '');
+    if (typeof document === 'undefined') return withoutTags;
+    const decoder = document.createElement('textarea');
+    decoder.innerHTML = withoutTags;
+    return decoder.value;
+  }
 
   getUniqueFolderNames(selection) {
     const folderNames = new Set();
-    const folders = selection.get('folders') || [];
+    const folders = (selection.get('folders') || []).filterBy(
+      'isTrashed',
+      false
+    );
     folders.forEach((folder) => {
       folderNames.add(folder.get('name'));
     });
     return Array.from(folderNames);
   }
 
-  submissionReportCsv(model) {
+  getAiVariantData(submission) {
+    // Variants will be fetched separately and passed in
+    // This is just a placeholder that returns empty columns
+    const variantData = {};
+    ['A', 'B', 'C', 'D'].forEach((key) => {
+      variantData[`AI Variant ${key}`] = '';
+    });
+    return variantData;
+  }
+
+  async fetchVariantsForSubmissions(submissions) {
+    // Fetch all variants for all submissions in one batch
+    const submissionIds = submissions.map((s) => s.id).join(',');
+
+    try {
+      const response = await fetch(
+        `/api/aiVariants?submissionIds=${submissionIds}`,
+        {
+          credentials: 'include',
+        }
+      );
+
+      if (!response.ok) {
+        return {};
+      }
+
+      const data = await response.json();
+
+      // Group variants by submission ID
+      const variantsBySubmission = {};
+      (data.variants || []).forEach((variant) => {
+        const submissionId = variant.submission._id || variant.submission;
+        if (!variantsBySubmission[submissionId]) {
+          variantsBySubmission[submissionId] = {};
+        }
+        variantsBySubmission[submissionId][variant.variantKey] =
+          variant.draftText;
+      });
+
+      return variantsBySubmission;
+    } catch (error) {
+      console.error('[Workspace Report] Error fetching variants:', error);
+      return {};
+    }
+  }
+
+  async fetchProblemTextsForSubmissions(submissions, workspaceId) {
+    if (!workspaceId || !Array.isArray(submissions) || submissions.length === 0)
+      return {};
+
+    const submissionIds = submissions.map((s) => s.id).join(',');
+
+    try {
+      const response = await fetch(
+        `/api/workspaces/${workspaceId}/problemTexts?submissionIds=${submissionIds}`,
+        {
+          credentials: 'include',
+        }
+      );
+
+      if (!response.ok) {
+        return {};
+      }
+
+      const data = await response.json();
+      return data.problemTexts || {};
+    } catch (error) {
+      console.error('[Workspace Report] Error fetching problem texts:', error);
+      return {};
+    }
+  }
+
+  getPuzzleText(submission) {
+    if (!submission) {
+      return 'The student is sharing their mathematical thinking and work.';
+    }
+
+    try {
+      // Primary: assignment problem description
+      const answer = submission.get('answer');
+      if (answer) {
+        const assignment = answer.get('assignment');
+        if (assignment) {
+          const problem = assignment.get('problem');
+          if (problem) {
+            const text = this.stripHtml(problem.get('text'));
+            if (text) return text;
+          }
+        }
+      }
+    } catch (e) {
+      // Continue to fallback
+    }
+
+    try {
+      // Secondary: problem text via problemId
+      const publication = submission.get('publication');
+      if (publication && publication.get('puzzle.problemId')) {
+        const problem = submission.get('problem');
+        if (problem) {
+          const text = this.stripHtml(problem.get('text'));
+          if (text) return text;
+        }
+      }
+    } catch (e) {
+      // Continue to fallback
+    }
+
+    try {
+      // Fallback: pdSet context for legacy data
+      const pdSetTitle = this.stripHtml(submission.get('pdSet'));
+      if (pdSetTitle) {
+        const fallbackParts = [pdSetTitle.split(' - ')[0].trim()];
+
+        const publication = submission.get('publication');
+        if (publication) {
+          const powId = publication.get('publicationId');
+          if (powId) fallbackParts.push(`PoW ID: ${powId}`);
+        }
+
+        const clazz = submission.get('clazz');
+        if (clazz) {
+          const className = this.stripHtml(clazz.get('name'));
+          if (className) fallbackParts.push(`Class: ${className}`);
+        }
+
+        return `${fallbackParts.join(
+          '. '
+        )}. The student is sharing their mathematical thinking and work.`;
+      }
+    } catch (e) {
+      // Continue to final fallback
+    }
+
+    // Final fallback
+    return 'The student is sharing their mathematical thinking and work.';
+  }
+
+  async submissionReportCsv(model) {
     const submissionsArray = model.submissions.slice();
+
+    // Fetch all variants for all submissions
+    const variantsBySubmission = await this.fetchVariantsForSubmissions(
+      submissionsArray
+    );
+    const problemTextsBySubmission = await this.fetchProblemTextsForSubmissions(
+      submissionsArray,
+      model.workspace?.id
+    );
 
     // Group submissions by submitter
     const submissionsByUser = submissionsArray.reduce((acc, submission) => {
@@ -45,49 +204,98 @@ export default class WorkspaceReportsService extends Service {
 
     // Generate CSV data with dynamic columns for selections
     const data = labeledSubmissions.flatMap((submission) => {
+      const submissionVariants = variantsBySubmission[submission.id] || {};
+
+      const variantData = {
+        'AI Variant A (Student Work Only)': this.stripHtml(
+          submissionVariants['A'] || ''
+        ),
+        'AI Variant B (Work + Selections)': this.stripHtml(
+          submissionVariants['B'] || ''
+        ),
+        'AI Variant C (Work + Comments)': this.stripHtml(
+          submissionVariants['C'] || ''
+        ),
+        'AI Variant D (Work + Selections + Comments)': this.stripHtml(
+          submissionVariants['D'] || ''
+        ),
+      };
+
       const baseData = {
         'Name of workspace': submission.get('workspaces.firstObject.name'),
-        'Workspace URL': this.currentUrl.currentUrl,
+        'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
+        'Puzzle text': this.stripHtml(
+          problemTextsBySubmission[submission.id] ||
+            this.getPuzzleText(submission)
+        ),
         'Text of Submission': `Summary: ${
           submission.shortAnswer
-            ? submission.shortAnswer
-            : submission.get('answer.answer')
+            ? this.stripHtml(submission.shortAnswer)
+            : this.stripHtml(submission.get('answer.answer'))
         }  Full Answer: ${
           submission.longAnswer
-            ? submission.longAnswer
+            ? this.stripHtml(submission.longAnswer)
             : submission.get('answer.explanation')
-            ? submission
-                .get('answer.explanation')
-                .replace(/<\/?[^>]+(>|$)/g, '')
+            ? this.stripHtml(submission.get('answer.explanation'))
             : ''
         }`,
         'Submission ID': submission.id,
         'Submission or Revision': submission.submissionLabel,
         'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
+        'EnCoMPASS templated response': '',
+        ...variantData, // Add AI variant columns
       };
-      const selections = submission.get('selections').slice();
+      const selections = submission
+        .get('selections')
+        .filterBy('isTrashed', false)
+        .slice();
       if (selections.length === 0) {
         // For submissions without selections, return the base data only
         return [baseData];
       } else {
-        // For submissions with selections, add additional columns
-        return selections.map((selection) => {
+        // For submissions with selections, add one row per annotation/comment.
+        return selections.flatMap((selection) => {
           const selectorInfo = this.createSelectorInfo(selection);
-          let selectionData = {
-            [`Selector of Text`]: selectorInfo.username,
-            [`Text of Selection`]: selectorInfo.text,
-            [`Selector Date`]: selectorInfo.selectionCreateDate,
-            [`Annotator`]: selectorInfo.annotatorUsername,
-            [`Text of Annotator`]: selectorInfo.annotatorText,
-            [`Annotator Date`]: selectorInfo.annotatorCreateDate,
-            [`Folder(s) for Selection`]:
-              this.getUniqueFolderNames(selection).join('; '),
-          };
+          const folders = this.getUniqueFolderNames(selection).join('; ');
+          const comments = (selection.get('comments') || []).filterBy(
+            'isTrashed',
+            false
+          );
 
-          return { ...baseData, ...selectionData };
+          if (comments.length === 0) {
+            const selectionData = {
+              [`Selector of Text`]: selectorInfo.username,
+              [`Text of Selection`]: selectorInfo.text,
+              [`Selector Date`]: selectorInfo.selectionCreateDate,
+              [`Annotator`]: '',
+              [`Text of Annotator`]: '',
+              [`Annotator Date`]: '',
+              [`Folder(s) for Selection`]: folders,
+            };
+            return [{ ...baseData, ...selectionData }];
+          }
+
+          return comments.map((comment) => {
+            const annotatorText = this.stripHtml(comment.get('text'));
+            const annotatorUsername = comment.get('createdBy.username');
+            const annotatorCreateDate = moment(
+              comment.get('createDate')
+            ).format('MM/DD/YYYY');
+            const selectionData = {
+              [`Selector of Text`]: selectorInfo.username,
+              [`Text of Selection`]: selectorInfo.text,
+              [`Selector Date`]: selectorInfo.selectionCreateDate,
+              [`Annotator`]: annotatorUsername,
+              [`Text of Annotator`]: annotatorText,
+              [`Annotation Label`]: comment.get('label') || '',
+              [`Annotator Date`]: annotatorCreateDate,
+              [`Folder(s) for Selection`]: folders,
+            };
+            return { ...baseData, ...selectionData };
+          });
         });
       }
     });
@@ -109,9 +317,11 @@ export default class WorkspaceReportsService extends Service {
     const selectionCreateDate = moment(selector.get('createDate')).format(
       'MM/DD/YYYY'
     );
-    const text = selector.get('text');
+    const text = this.stripHtml(selector.get('text'));
     const username = selector.get('createdBy.username');
-    const annotatorText = selector.get('comments.firstObject.text');
+    const annotatorText = this.stripHtml(
+      selector.get('comments.firstObject.text')
+    );
     const annotatorUsername = selector.get(
       'comments.firstObject.createdBy.username'
     );
@@ -188,8 +398,8 @@ export default class WorkspaceReportsService extends Service {
       };
     });
   }
-  submissionReport(model) {
-    const { headers, data } = this.submissionReportCsv(model);
+  async submissionReport(model) {
+    const { headers, data } = await this.submissionReportCsv(model);
     return this.jsonCsv.arrayToCsv(data, headers);
   }
 
