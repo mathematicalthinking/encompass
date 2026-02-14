@@ -703,24 +703,24 @@ export default class ResponseNewComponent extends Component {
     try {
       const draft = await this.aiDraft.generateDraft(
         submissionId,
-        'A',
+        'D',
         this.args.workspace?.id
       );
 
       // Clear any pending content from previous "Bring it Down"
       this.pendingContent = null;
 
-    // Convert AI plain text to HTML immediately and store it
-    this.aiGeneratedText = this.convertPlainTextToHtml(draft);
-    this.hasUsedAIDraft = false; // Reset "Bring it Down" button
-    this.aiDraftRating = null; // Reset rating for new draft
-    this.aiWrittenFeedback = ''; // Reset written feedback for new draft
-    this.hasCopiedAiText = false;
-    this.showUsageCheckboxes = false;
+      // Convert AI plain text to HTML immediately and store it
+      this.aiGeneratedText = this.convertPlainTextToHtml(draft);
+      this.hasUsedAIDraft = false; // Reset "Bring it Down" button
+      this.aiDraftRating = null; // Reset rating for new draft
+      this.aiWrittenFeedback = ''; // Reset written feedback for new draft
+      this.hasCopiedAiText = false;
+      this.showUsageCheckboxes = false;
 
-    this.alert.showToast(
-      'success',
-      'AI draft generated successfully',
+      this.alert.showToast(
+        'success',
+        'AI draft generated successfully',
         'bottom-end',
         3000,
         false,
@@ -768,8 +768,10 @@ export default class ResponseNewComponent extends Component {
       return;
     }
 
-    // Replace editor content with pure AI text
-    const newText = this.aiGeneratedText;
+    // Preserve existing editor content and append AI text
+    const currentText = this.quillText || '';
+    const separator = currentText.trim() ? '<p><br></p>' : '';
+    const newText = currentText + separator + this.aiGeneratedText;
 
     // Set pending content and force Quill re-render
     this.pendingContent = newText;

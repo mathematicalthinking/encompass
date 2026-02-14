@@ -350,7 +350,7 @@ export default class ResponseMentorReplyComponent extends Component {
     try {
       const draft = await this.aiDraft.generateDraft(
         this.args.submission.id,
-        'A',
+        'D',
         this.args.workspace?.id
       );
       this.aiGeneratedText = draft;
