@@ -25,25 +25,7 @@ const stripHtml = (html) => {
     .trim();
 };
 
-const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const buildLooseTitleRegex = (title) => {
-  if (!title) return null;
-  const clean = stripHtml(title)
-    .replace(/[^\w\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (!clean) return null;
-  const words = clean.split(' ');
-  const pattern = words
-    .map((word) => {
-      const escaped = escapeRegex(word);
-      if (escaped.length <= 2) return escaped;
-      if (escaped.endsWith('s')) return escaped;
-      return `${escaped}s?`;
-    })
-    .join('\\s+');
-  return new RegExp(pattern, 'i');
-};
+const { resolveProblemText } = require('./problemText');
 
 /**
  * Generate an AI draft response based on submission
@@ -85,88 +67,7 @@ const generateDraft = async (
   }
 
   // Step 2: Extract problem statement
-  const puzzleTitle = targetSubmission?.publication?.puzzle?.title;
-
-  let problemStatement =
-    targetSubmission?.answer?.assignment?.problem?.text ||
-    targetSubmission?.answer?.assignment?.problem?.title;
-
-  if (!problemStatement && targetSubmission?.answer?.problem) {
-    const problem = await models.Problem.findById(
-      targetSubmission.answer.problem
-    )
-      .select('text title')
-      .lean()
-      .exec();
-    if (problem) {
-      problemStatement = problem.text || problem.title;
-    }
-  }
-
-  if (!problemStatement && targetSubmission?.publication?.publicationId) {
-    const problem = await models.Problem.findOne({
-      puzzleId: targetSubmission.publication.publicationId,
-      isTrashed: { $ne: true },
-    })
-      .select('text title')
-      .lean()
-      .exec();
-    if (problem) {
-      problemStatement = problem.text || problem.title;
-    }
-  }
-
-  if (!problemStatement && targetSubmission?.publication?.puzzle?.problemId) {
-    const problem = await models.Problem.findById(
-      targetSubmission.publication.puzzle.problemId
-    )
-      .select('text title')
-      .lean()
-      .exec();
-    if (problem) {
-      problemStatement = problem.text || problem.title;
-    }
-  }
-
-  if (!problemStatement && puzzleTitle) {
-    problemStatement = puzzleTitle;
-  }
-
-  const pdSetTitle = targetSubmission?.pdSet
-    ? stripHtml(targetSubmission.pdSet).split(' - ')[0].trim()
-    : '';
-
-  if (!problemStatement && pdSetTitle) {
-    const titleRegex =
-      buildLooseTitleRegex(pdSetTitle) ||
-      new RegExp(escapeRegex(pdSetTitle), 'i');
-    const matchedProblem = await models.Problem.findOne({
-      title: titleRegex,
-      isTrashed: { $ne: true },
-    })
-      .select('text title')
-      .lean()
-      .exec();
-    if (matchedProblem) {
-      problemStatement = matchedProblem.text || matchedProblem.title;
-    }
-  }
-
-  if (!problemStatement && pdSetTitle) {
-    const fallbackParts = [pdSetTitle];
-    const powId = targetSubmission?.publication?.publicationId;
-    if (powId) fallbackParts.push(`PoW ID: ${powId}`);
-    const className = targetSubmission?.clazz?.name;
-    if (className) fallbackParts.push(`Class: ${className}`);
-    problemStatement = `${fallbackParts.join(
-      '. '
-    )}. The student is sharing their mathematical thinking and work.`;
-  }
-
-  if (!problemStatement) {
-    problemStatement =
-      'The student is sharing their mathematical thinking and work.';
-  }
+  const problemStatement = await resolveProblemText(targetSubmission, models);
 
   // Step 3: Extract and clean student work
   let shortAnswer = stripHtml(targetSubmission.shortAnswer || '');

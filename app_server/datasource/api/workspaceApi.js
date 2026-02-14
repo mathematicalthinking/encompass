@@ -40,12 +40,7 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
-const stripHtml = (text) => {
-  if (!text) return '';
-  return String(text)
-    .replace(/<\/?[^>]+(>|$)/g, '')
-    .trim();
-};
+const { resolveProblemText } = require('../../services/problemText');
 
 function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
   // check if user has specific permissions in ws permissions array
@@ -314,82 +309,13 @@ async function getWorkspaceProblemTexts(req, res, next) {
       .lean()
       .exec();
 
-    const problemById = new Map();
-    const problemByPuzzleId = new Map();
-
-    const getProblemById = async (id) => {
-      if (!id) return null;
-      const key = id.toString();
-      if (problemById.has(key)) return problemById.get(key);
-      const problem = await models.Problem.findById(id)
-        .select('text title')
-        .lean()
-        .exec();
-      problemById.set(key, problem || null);
-      return problem;
+    const cache = {
+      problemById: new Map(),
+      problemByPuzzleId: new Map(),
     };
-
-    const getProblemByPuzzleId = async (puzzleId) => {
-      if (!puzzleId) return null;
-      const key = String(puzzleId);
-      if (problemByPuzzleId.has(key)) return problemByPuzzleId.get(key);
-      const problem = await models.Problem.findOne({
-        puzzleId,
-        isTrashed: { $ne: true },
-      })
-        .select('text title')
-        .lean()
-        .exec();
-      problemByPuzzleId.set(key, problem || null);
-      return problem;
-    };
-
     const problemTexts = {};
     for (const submission of submissions) {
-      let statement =
-        submission?.answer?.assignment?.problem?.text ||
-        submission?.answer?.assignment?.problem?.title;
-
-      if (!statement && submission?.answer?.problem) {
-        const problem = await getProblemById(submission.answer.problem);
-        if (problem) statement = problem.text || problem.title;
-      }
-
-      if (!statement && submission?.publication?.publicationId) {
-        const problem = await getProblemByPuzzleId(
-          submission.publication.publicationId
-        );
-        if (problem) statement = problem.text || problem.title;
-      }
-
-      if (!statement && submission?.publication?.puzzle?.problemId) {
-        const problem = await getProblemById(
-          submission.publication.puzzle.problemId
-        );
-        if (problem) statement = problem.text || problem.title;
-      }
-
-      if (!statement && submission?.publication?.puzzle?.title) {
-        statement = submission.publication.puzzle.title;
-      }
-
-      if (!statement && submission?.pdSet) {
-        const pdSetTitle = stripHtml(submission.pdSet).split(' - ')[0].trim();
-        const fallbackParts = [pdSetTitle];
-        const powId = submission?.publication?.publicationId;
-        if (powId) fallbackParts.push(`PoW ID: ${powId}`);
-        const className = stripHtml(submission?.clazz?.name || '');
-        if (className) fallbackParts.push(`Class: ${className}`);
-        statement = `${fallbackParts.join(
-          '. '
-        )}. The student is sharing their mathematical thinking and work.`;
-      }
-
-      if (!statement) {
-        statement =
-          'The student is sharing their mathematical thinking and work.';
-      }
-
+      const statement = await resolveProblemText(submission, models, cache);
       problemTexts[submission._id] = statement;
     }
 
