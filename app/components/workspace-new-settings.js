@@ -202,16 +202,16 @@ export default class WorkspaceNewSettingsComponent extends Component {
   savePermission(permissionObj) {
     const permissions = this.workspacePermissions;
     // check if user already is in array
-    let existingObj = permissions.findBy('user', permissionObj.user);
+    let existingObj = Array.isArray(permissions)
+      ? permissions.find((p) => p.user === permissionObj.user)
+      : null;
 
     // remove existing permissions obj and add modified one
-    if (existingObj) {
-      this.workspacePermissions = permissions.filter(
-        (p) => p.user !== permissionObj.user
-      );
-    }
+    let updatedPermissions = existingObj
+      ? permissions.filter((p) => p.user !== permissionObj.user)
+      : permissions;
 
-    this.workspacePermissions = [...this.workspacePermissions, permissionObj];
+    this.workspacePermissions = [...updatedPermissions, permissionObj];
   }
 
   @action

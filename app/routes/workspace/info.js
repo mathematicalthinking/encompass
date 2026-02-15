@@ -12,10 +12,17 @@ export default class WorkspaceInfoRoute extends Route {
   async model() {
     let workspace = this.modelFor('workspace');
     let originalCollaborators = [];
-    if (workspace.get('collaborators.length')) {
-      originalCollaborators = await this.store.query('user', {
-        ids: workspace.collaborators,
-      });
+
+    // Safely access permissions to get user IDs
+    const permissions = workspace.get('permissions');
+    if (Array.isArray(permissions) && permissions.length > 0) {
+      // Extract only user IDs (plain values, not objects)
+      const userIds = permissions.map((p) => p.user).filter((id) => id);
+      if (userIds.length > 0) {
+        originalCollaborators = await this.store.query('user', {
+          ids: userIds,
+        });
+      }
     }
     return hash({
       workspace,

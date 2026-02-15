@@ -125,7 +125,7 @@ export default class WorkspacePermissionsService extends Service {
       return false;
     }
 
-    const userPermissions = wsPermissions.findBy('user', this.user.id);
+    const userPermissions = wsPermissions.find((p) => p.user === this.user.id);
     if (!utils.isNonEmptyObject(userPermissions)) {
       return false;
     }
