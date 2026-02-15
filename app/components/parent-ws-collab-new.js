@@ -142,9 +142,15 @@ export default class ParentWsCollabNewComponent extends Component {
     let ws = this.args.workspace;
     let permissions = ws.get('permissions');
 
+    // Create new permissions array with new collaborators
+    let newPermissions = Array.isArray(permissions) ? [...permissions] : [];
+    let newCollaborators = Array.isArray(this.args.originalCollaborators)
+      ? [...this.args.originalCollaborators]
+      : [];
+
     collabs.forEach((collab) => {
-      this.args.originalCollaborators.addObject(collab);
-      permissions.addObject({
+      newCollaborators.push(collab);
+      newPermissions.push({
         user: collab.get('id'),
         global: 'custom',
         submissions: { all: true, userOnly: false, submissionIds: [] },
@@ -153,6 +159,10 @@ export default class ParentWsCollabNewComponent extends Component {
         feedback: 'approver', // this is a workaround for collabs of a parent workspace to be able to see all of the responses. even tho the setting is approver, they will not be able to modify any responses for this workspace
       });
     });
+
+    // Update permissions using set instead of mutating
+    ws.set('permissions', newPermissions);
+    this.args.originalCollaborators = newCollaborators;
 
     ws.save().then(() => {
       this.alert.showToast(

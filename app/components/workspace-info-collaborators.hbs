@@ -131,7 +131,7 @@
                     }}
                       <Ui::RadioGroup
                         @options={{this.globalItems}}
-                        @selectedValue={{globalPermissionValue}}
+                        @selectedValue={{this.globalPermissionValue}}
                         @updateValue={{action 'updateGlobalPermissionValue'}}
                       />
                     {{else}}
@@ -152,7 +152,7 @@
                 {{#if
                   (is-equal collaborator.userObj this.selectedCollaborator)
                 }}
-                  {{#if showCustom}}
+                  {{#if this.showCustom}}
                     <div class='card-row'>
                       <div class='row-label'>
                         Submissions
@@ -230,7 +230,7 @@
                         <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.feedback}}
-                          @content={{this.feedbackPermissions}}
+                          @content={{this.feedbackPermission}}
                           @action={{action (mut this.feedback)}}
                         />
                       </div>

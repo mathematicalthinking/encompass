@@ -173,11 +173,22 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
       } else if (subValue === 'userOnly') {
         newObj.submissions.userOnly = true;
       } else if (subValue === 'custom') {
-        newObj.submissions.submissionIds = this.args.customSubmissionIds;
+        // Convert Ember array to plain array to avoid circular ref
+        newObj.submissions.submissionIds = Array.isArray(
+          this.args.customSubmissionIds
+        )
+          ? [...this.args.customSubmissionIds]
+          : [];
       }
     }
     this.args.originalCollaborators.addObject(this.collabUser);
-    permissions.addObject(newObj);
+
+    // Add the new permission object to the existing permissions
+    const newPermissions = Array.isArray(permissions)
+      ? [...permissions, newObj]
+      : [newObj];
+
+    ws.set('permissions', newPermissions);
 
     ws.save().then(() => {
       this.alert.showToast(
