@@ -30,12 +30,58 @@ export default class ResponseNewComponent extends Component {
   @tracked quillText = '';
   @tracked isQuillEmpty = false;
   @tracked isQuillTooLong = false;
+
+  // AI Draft and Logging related tracked properties
   @tracked originalText = '';
   @tracked aiGeneratedText = null;
   @tracked hasUsedAIDraft = false;
+  @tracked hasCopiedAiText = false;
   @tracked doShowLoadingMessage = false;
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
+  @tracked aiDraftRating = null;
+  @tracked aiWrittenFeedback = '';
+  @tracked showUsageCheckboxes = false;
+  @tracked usageNotForStudents = false;
+  @tracked usageNotForSelf = false;
+  @tracked usageForStudents = false;
+  @tracked usageToThinkAbout = false;
+  @tracked usageFeedbackOnAI = false;
+
+  starDefinitions = [
+    { value: 1, tooltip: 'Not usable - requires complete rewrite' },
+    {
+      value: 2,
+      tooltip: 'Has significant errors or disconnects that prevent use',
+    },
+    { value: 3, tooltip: 'Usable but requires editing before sending' },
+    { value: 4, tooltip: 'Ready to use - could be sent as is' },
+    { value: 5, tooltip: 'Exceptional quality - exceeds expectations' },
+  ];
+
+  usageOptions = [
+    {
+      key: 'usageNotForStudents',
+      label: 'I would/will not use this with students',
+    },
+    {
+      key: 'usageNotForSelf',
+      label:
+        'I will not use this for myself (learning about math, feedback, or my students)',
+    },
+    {
+      key: 'usageForStudents',
+      label: 'I would/will use this with my students',
+    },
+    {
+      key: 'usageToThinkAbout',
+      label: 'I will save this as something to think about',
+    },
+    {
+      key: 'usageFeedbackOnAI',
+      label: 'I will use this to give feedback on the AI performance',
+    },
+  ];
 
   doUseOnlyOwnMarkup = true;
   maxResponseLength = 14680064;
@@ -257,9 +303,13 @@ export default class ResponseNewComponent extends Component {
   }
 
   get aiButtonDisabled() {
-    return (
-      !this.hasSubmission || !this.aiDraft.hasStudentWork(this.actualSubmission)
-    );
+    const hasSubmission = this.hasSubmission;
+    const actualSubmission = this.actualSubmission;
+    const hasWork = actualSubmission
+      ? this.aiDraft.hasStudentWork(actualSubmission)
+      : false;
+
+    return !hasSubmission || !hasWork;
   }
 
   get isValidQuillContent() {
@@ -271,7 +321,35 @@ export default class ResponseNewComponent extends Component {
   }
 
   get canBringDown() {
-    return !this.hasUsedAIDraft;
+    return (
+      !this.hasUsedAIDraft &&
+      this.aiDraftRating !== null &&
+      this.aiWrittenFeedback.trim().length >= 10
+    );
+  }
+
+  get showRatingControls() {
+    return !this.hasUsedAIDraft && !this.showUsageCheckboxes;
+  }
+
+  get hasSelectedUsageOption() {
+    return (
+      this.usageNotForStudents ||
+      this.usageNotForSelf ||
+      this.usageForStudents ||
+      this.usageToThinkAbout ||
+      this.usageFeedbackOnAI
+    );
+  }
+
+  @action
+  isStarFilled(starNumber) {
+    return this.aiDraftRating !== null && this.aiDraftRating >= starNumber;
+  }
+
+  @action
+  updateAiWrittenFeedback(event) {
+    this.aiWrittenFeedback = event.target.value;
   }
 
   quote(string, opts, isImageTag) {
@@ -413,6 +491,7 @@ export default class ResponseNewComponent extends Component {
     this[p] = !this[p];
   }
 
+  @action
   cleanupTrashedItems(response) {
     response.selections?.forEach((selection) => {
       if (selection.isTrashed) {
@@ -624,7 +703,7 @@ export default class ResponseNewComponent extends Component {
     try {
       const draft = await this.aiDraft.generateDraft(
         submissionId,
-        'A',
+        'D',
         this.args.workspace?.id
       );
 
@@ -634,6 +713,10 @@ export default class ResponseNewComponent extends Component {
       // Convert AI plain text to HTML immediately and store it
       this.aiGeneratedText = this.convertPlainTextToHtml(draft);
       this.hasUsedAIDraft = false; // Reset "Bring it Down" button
+      this.aiDraftRating = null; // Reset rating for new draft
+      this.aiWrittenFeedback = ''; // Reset written feedback for new draft
+      this.hasCopiedAiText = false;
+      this.showUsageCheckboxes = false;
 
       this.alert.showToast(
         'success',
@@ -667,12 +750,27 @@ export default class ResponseNewComponent extends Component {
     if (!this.canBringDown || !this.aiGeneratedText) {
       return;
     }
+    // Show usage checkboxes instead of immediately copying
+    this.showUsageCheckboxes = true;
+  }
 
-    // Get current editor content (HTML format)
+  @action
+  continueWithAIDraft() {
+    if (!this.hasSelectedUsageOption) {
+      this.alert.showToast(
+        'info',
+        'Please select at least one option before continuing',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      return;
+    }
+
+    // Preserve existing editor content and append AI text
     const currentText = this.quillText || '';
-    const separator = currentText.trim() ? '<p><br></p><p><br></p>' : '';
-
-    // Combine HTML
+    const separator = currentText.trim() ? '<p><br></p>' : '';
     const newText = currentText + separator + this.aiGeneratedText;
 
     // Set pending content and force Quill re-render
@@ -688,6 +786,8 @@ export default class ResponseNewComponent extends Component {
 
     // Mark draft as used
     this.hasUsedAIDraft = true;
+    this.showUsageCheckboxes = false;
+    this.hasCopiedAiText = true;
 
     this.alert.showToast(
       'success',
@@ -697,5 +797,10 @@ export default class ResponseNewComponent extends Component {
       false,
       null
     );
+  }
+
+  @action
+  setStarRating(rating) {
+    this.aiDraftRating = rating;
   }
 }

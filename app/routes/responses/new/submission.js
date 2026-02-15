@@ -97,6 +97,13 @@ export default class ResponsesNewSubmissionRoute extends Route {
       { reload: true }
     );
 
+    // Load answer relationship for VMT submissions (needed for AI draft)
+    try {
+      await submission.answer;
+    } catch (e) {
+      // Answer might not exist for non-VMT submissions, that's okay
+    }
+
     // Early return if draft exists
     const draftResponse = this._findDraftResponse(
       allResponses,
