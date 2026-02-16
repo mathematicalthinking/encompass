@@ -227,44 +227,7 @@
           </div>
         {{/if}}
 
-        <div class='checkbox-list'>
-          <p class='checkbox-list-label'>Options</p>
-          <ul>
-            <li>
-              <div class='checkbox-list-item'>
-                <Input
-                  @type='checkbox'
-                  @checked={{this.sendToStudentAction}}
-                  disabled={{not this.isFinalizeSelected}}
-                  {{on 'change' (fn this.updateFinalAction 'sendToStudentAction')}}
-                />
-                <p>Send to student</p>
-              </div>
-            </li>
-            <li>
-              <div class='checkbox-list-item'>
-                <Input
-                  @type='checkbox'
-                  @checked={{this.useAsNotesAction}}
-                  disabled={{not this.isFinalizeSelected}}
-                  {{on 'change' (fn this.updateFinalAction 'useAsNotesAction')}}
-                />
-                <p>Use as notes</p>
-              </div>
-            </li>
-            <li>
-              <div class='checkbox-list-item'>
-                <Input
-                  @type='checkbox'
-                  @checked={{this.saveDraftAction}}
-                  disabled={{not this.isFinalizeSelected}}
-                  {{on 'change' (fn this.updateFinalAction 'saveDraftAction')}}
-                />
-                <p>Save draft</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+          {{!-- Final action options are now handled via the radio group --}}
       </div>
     {{/if}}
 

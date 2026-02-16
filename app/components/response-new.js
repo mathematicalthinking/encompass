@@ -38,9 +38,6 @@ export default class ResponseNewComponent extends Component {
   @tracked hasCopiedAiText = false;
   @tracked aiActionSelection = null;
   @tracked aiRegenerationPrompt = '';
-  @tracked sendToStudentAction = false;
-  @tracked useAsNotesAction = false;
-  @tracked saveDraftAction = false;
   @tracked doShowLoadingMessage = false;
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
@@ -186,6 +183,9 @@ export default class ResponseNewComponent extends Component {
   get submitButtonText() {
     if (this.hasCopiedAiText && this.aiActionSelection === 'regenerate') {
       return 'Regenerate Draft';
+    }
+    if (this.hasCopiedAiText && this.aiActionSelection === 'draft') {
+      return 'Save Draft';
     }
     if (this.hasCopiedAiText && this.aiActionSelection === 'finalize') {
       return 'Submit';
@@ -345,6 +345,7 @@ export default class ResponseNewComponent extends Component {
       groupName: 'ai-action-selection',
       inputs: [
         { label: 'Ready to Send', value: 'finalize' },
+        { label: 'Save Draft', value: 'draft' },
         { label: 'Regenerate Draft', value: 'regenerate' },
       ],
     };
@@ -356,10 +357,6 @@ export default class ResponseNewComponent extends Component {
 
   get showRegenerationPrompt() {
     return this.hasCopiedAiText && this.aiActionSelection === 'regenerate';
-  }
-
-  get isFinalizeSelected() {
-    return this.hasCopiedAiText && this.aiActionSelection === 'finalize';
   }
 
   get showRatingControls() {
@@ -530,11 +527,6 @@ export default class ResponseNewComponent extends Component {
     this.aiActionSelection = value;
   }
 
-  @action
-  updateFinalAction(key, event) {
-    this[key] = Boolean(event?.target?.checked);
-  }
-
   cleanupTrashedItems(response) {
     response.selections?.forEach((selection) => {
       if (selection.isTrashed) {
@@ -664,63 +656,34 @@ export default class ResponseNewComponent extends Component {
 
   @action
   async handleSubmitAction() {
+    if (!this.hasCopiedAiText) {
+      this.saveResponse(false);
+      return;
+    }
+
     if (this.hasCopiedAiText && this.aiActionSelection === 'regenerate') {
       this.generateAIDraft();
       return;
     }
 
-    const shouldSaveDraft = Boolean(this.saveDraftAction);
-    const shouldSend = Boolean(this.sendToStudentAction);
-
-    if (!shouldSaveDraft && !shouldSend) {
-      this.alert.showToast(
-        'info',
-        'Please select at least one final action before submitting.',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
-      return;
-    }
-
-    if (shouldSaveDraft && shouldSend) {
-      await this.saveDraftCopy();
-      this.saveResponse(false);
-      return;
-    }
-
-    if (shouldSaveDraft) {
+    if (this.hasCopiedAiText && this.aiActionSelection === 'draft') {
       this.saveResponse(true);
       return;
     }
 
-    if (shouldSend) {
+    if (this.hasCopiedAiText && this.aiActionSelection === 'finalize') {
       this.saveResponse(false);
+      return;
     }
-  }
 
-  async saveDraftCopy() {
-    const workspace =
-      this.args.responseData?.workspace ??
-      this.args.submission?.workspace ??
-      this.args.workspace;
-    const recipient = this.args.responseData?.recipient ?? this.args.recipient;
-
-    const response = this.store.createRecord('response', {
-      workspace,
-      recipient,
-      responseType: this.args.newReplyType,
-      source: 'submission',
-    });
-
-    response.selections?.addObjects(this.args.responseData?.selections || []);
-    response.comments?.addObjects(this.args.responseData?.comments || []);
-
-    this.cleanupTrashedItems(response);
-    this.prepareResponseData(response, true);
-
-    await response.save();
+    this.alert.showToast(
+      'info',
+      'Please choose an action before submitting.',
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
   }
 
   @action
@@ -821,14 +784,8 @@ export default class ResponseNewComponent extends Component {
       this.aiWrittenFeedback = ''; // Reset written feedback for new draft
       this.hasCopiedAiText = false;
       this.aiActionSelection = null;
-      this.sendToStudentAction = false;
-      this.useAsNotesAction = false;
-      this.saveDraftAction = false;
       this.showUsageCheckboxes = false;
 
-      this.alert.showToast(
-        'success',
-        'AI draft generated successfully',
       this.alert.showToast(
         'success',
         'AI draft generated successfully',
