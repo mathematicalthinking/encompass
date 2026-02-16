@@ -816,13 +816,27 @@ module('Unit | Component | workspace-submission', function (hooks) {
   });
 
   module('Property Validation', function () {
-    test('canSeeSelections property does not exist (validates bug fix)', function (assert) {
+    test('canSeeSelections property checks permission level 1 (view)', function (assert) {
+      // canSeeSelections is needed to properly check if user can VIEW selections
+      // (permission level 1), which is different from canSelect which checks
+      // permission level 2 (can EDIT selections)
+      this.setPermissions(() => true);
       const component = setupComponent(this);
 
       assert.strictEqual(
         component.canSeeSelections,
-        undefined,
-        'canSeeSelections should not exist - it was the source of the bug'
+        true,
+        'canSeeSelections should return true when user has view permission'
+      );
+
+      // Test with no permission
+      this.setPermissions(() => false);
+      const restrictedComponent = setupComponent(this);
+
+      assert.strictEqual(
+        restrictedComponent.canSeeSelections,
+        false,
+        'canSeeSelections should return false when user lacks view permission'
       );
     });
 
