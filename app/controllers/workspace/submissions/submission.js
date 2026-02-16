@@ -12,7 +12,7 @@ export default class WorkspaceSubmissionController extends Controller {
   @service store;
   @service router;
   @tracked queryParams = ['vmtRoomId'];
-  @service('assignment-permissions') permissions;
+  @service('workspace-permissions') permissions;
   // Tracked properties
   @tracked guider = this.guider;
 
