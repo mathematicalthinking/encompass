@@ -38,6 +38,7 @@ export default class ResponseNewComponent extends Component {
   @tracked hasCopiedAiText = false;
   @tracked aiActionSelection = null;
   @tracked aiRegenerationPrompt = '';
+  @tracked allowRerate = false;
   @tracked doShowLoadingMessage = false;
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
@@ -333,7 +334,7 @@ export default class ResponseNewComponent extends Component {
 
   get canBringDown() {
     return (
-      !this.hasUsedAIDraft &&
+      (!this.hasUsedAIDraft || this.allowRerate) &&
       this.aiDraftRating !== null &&
       this.aiWrittenFeedback.trim().length >= 10
     );
@@ -360,7 +361,9 @@ export default class ResponseNewComponent extends Component {
   }
 
   get showRatingControls() {
-    return !this.hasUsedAIDraft && !this.showUsageCheckboxes;
+    return (
+      !this.showUsageCheckboxes && (!this.hasUsedAIDraft || this.allowRerate)
+    );
   }
 
   get hasSelectedUsageOption() {
@@ -662,7 +665,11 @@ export default class ResponseNewComponent extends Component {
     }
 
     if (this.hasCopiedAiText && this.aiActionSelection === 'regenerate') {
-      this.generateAIDraft();
+      this.generateAIDraft({
+        preserveEditor: true,
+        preserveFinalizeState: true,
+        allowRerate: true,
+      });
       return;
     }
 
@@ -732,7 +739,13 @@ export default class ResponseNewComponent extends Component {
   }
 
   @action
-  async generateAIDraft() {
+  async generateAIDraft(options = {}) {
+    const {
+      preserveEditor = false,
+      preserveFinalizeState = false,
+      allowRerate = false,
+    } = options;
+
     if (
       !this.hasSubmission ||
       !this.aiDraft.hasStudentWork(this.actualSubmission)
@@ -774,17 +787,28 @@ export default class ResponseNewComponent extends Component {
         this.args.workspace?.id
       );
 
-      // Clear any pending content from previous "Bring it Down"
-      this.pendingContent = null;
+      if (!preserveEditor) {
+        // Clear any pending content from previous "Bring it Down"
+        this.pendingContent = null;
+      }
 
       // Convert AI plain text to HTML immediately and store it
       this.aiGeneratedText = this.convertPlainTextToHtml(draft);
-      this.hasUsedAIDraft = false; // Reset "Bring it Down" button
-      this.aiDraftRating = null; // Reset rating for new draft
-      this.aiWrittenFeedback = ''; // Reset written feedback for new draft
-      this.hasCopiedAiText = false;
-      this.aiActionSelection = null;
-      this.showUsageCheckboxes = false;
+      this.allowRerate = allowRerate;
+      if (allowRerate) {
+        this.aiDraftRating = null;
+        this.aiWrittenFeedback = '';
+      }
+      if (!preserveFinalizeState) {
+        this.hasUsedAIDraft = false; // Reset "Bring it Down" button
+        this.aiDraftRating = null; // Reset rating for new draft
+        this.aiWrittenFeedback = ''; // Reset written feedback for new draft
+        this.hasCopiedAiText = false;
+        this.aiActionSelection = null;
+        this.showUsageCheckboxes = false;
+      } else if (allowRerate) {
+        this.showUsageCheckboxes = false;
+      }
 
       this.alert.showToast(
         'success',
@@ -857,6 +881,7 @@ export default class ResponseNewComponent extends Component {
     this.showUsageCheckboxes = false;
     this.hasCopiedAiText = true;
     this.aiActionSelection = 'finalize';
+    this.allowRerate = false;
 
     this.alert.showToast(
       'success',
