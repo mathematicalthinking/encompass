@@ -30,7 +30,7 @@ export default class WorkspaceSubmissionComponent extends Component {
   }
 
   get areNoSelections() {
-    return this.canSeeSelections && !this.workspaceSelections.length > 0;
+    return this.canSelect && this.workspaceSelections.length === 0;
   }
 
   get workspaceSelections() {
