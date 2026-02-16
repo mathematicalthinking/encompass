@@ -16,7 +16,7 @@ export default class NavigationService extends Service {
     const route = this.homeRoute();
 
     if (opts.fullReload) {
-      window.location.assign('/'); // rare fallback
+      window.location.assign('/');
       return;
     }
     if (opts.replace) {
