@@ -34,7 +34,12 @@ export default class WorkspaceSubmissionComponent extends Component {
   }
 
   get areNoSelections() {
-    return this.canSelect && this.workspaceSelections.length === 0;
+    return this.canSeeSelections && this.workspaceSelections.length === 0;
+  }
+
+  get canSeeSelections() {
+    let cws = this.args.currentWorkspace;
+    return this.permissions.canEdit(cws, 'selections', 1);
   }
 
   get workspaceSelections() {
@@ -51,6 +56,10 @@ export default class WorkspaceSubmissionComponent extends Component {
   get canSelect() {
     let cws = this.args.currentWorkspace;
     return this.permissions.canEdit(cws, 'selections', 2);
+  }
+
+  get cannotSeeSelections() {
+    return !this.canSeeSelections;
   }
 
   get canDeleteSelection() {
