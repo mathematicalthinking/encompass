@@ -10,6 +10,7 @@ export default class WorkspaceSubmissionComponent extends Component {
   @service('utility-methods') utils;
   @service('workspace-permissions') permissions;
   @service navigation;
+  @service('current-selection') currentSelectionService;
 
   @tracked makingSelection = true;
   @tracked showingSelections = false;
@@ -18,14 +19,27 @@ export default class WorkspaceSubmissionComponent extends Component {
   @tracked wasShowingBeforeResizing = false;
   @tracked isSelectionsBoxExpanded = false;
   @tracked isMessageListenerAttached = false;
-  vmtReplayerInfo = null;
+  @tracked areSelectionsHidden = false;
+  @tracked wsSaveErrors = [];
+  @tracked vmtReplayerInfo = null;
+  @tracked vmtScreenshot = null;
+  @tracked vmtListener = null;
+
+  get currentSelection() {
+    return this.currentSelectionService.selection;
+  }
 
   get shouldCheck() {
     return this.makingSelection;
   }
 
   get areNoSelections() {
-    return this.canSeeSelections && !this.workspaceSelections.length > 0;
+    return this.canSeeSelections && this.workspaceSelections.length === 0;
+  }
+
+  get canSeeSelections() {
+    let cws = this.args.currentWorkspace;
+    return this.permissions.canEdit(cws, 'selections', 1);
   }
 
   get workspaceSelections() {
@@ -42,6 +56,10 @@ export default class WorkspaceSubmissionComponent extends Component {
   get canSelect() {
     let cws = this.args.currentWorkspace;
     return this.permissions.canEdit(cws, 'selections', 2);
+  }
+
+  get cannotSeeSelections() {
+    return !this.canSeeSelections;
   }
 
   get canDeleteSelection() {
@@ -162,9 +180,9 @@ export default class WorkspaceSubmissionComponent extends Component {
   @action
   onSelectionSelect() {
     if (this.isVmt) {
-      let vmtStartTime = this.args.currentSelection.vmtInfo?.startTime;
+      let vmtStartTime = this.currentSelection.vmtInfo?.startTime;
       if (vmtStartTime >= 0) {
-        let endTime = this.args.currentSelection.vmtInfo.endTime;
+        let endTime = this.currentSelection.vmtInfo.endTime;
         this.setVmtReplayerTime(vmtStartTime, true, endTime);
         this.makingSelection = false;
       }
@@ -182,7 +200,7 @@ export default class WorkspaceSubmissionComponent extends Component {
       getUrl.pathname.split('/')[1];
 
     window.open(
-      `${baseUrl}#/responses/submission/${this.args.currentSubmission.id}`,
+      `${baseUrl}#/responses/submission/${this.args.currentSubmission?.id}`,
       'newwindow',
       'width=1200, height=700'
     );
@@ -330,17 +348,72 @@ export default class WorkspaceSubmissionComponent extends Component {
 
   constructor() {
     super(...arguments);
-    if (this.args.currentWorkspace.workspaceType === 'parent') {
+    if (this.args.currentWorkspace?.workspaceType === 'parent') {
       this.makingSelection = false;
+    }
+  }
+
+  didInsertElement() {
+    super.didInsertElement(...arguments);
+    this.setOwnHeight();
+    this.setupResizeHandler();
+    this.setupVmtListener();
+  }
+
+  didReceiveAttrs() {
+    super.didReceiveAttrs(...arguments);
+    this.setupVmtListener();
+  }
+
+  didRender() {
+    super.didRender(...arguments);
+    if (this.args.switching === true) {
+      // Clear the switching flag after render is complete
+      setTimeout(() => {
+        // Notifies parent that switch is complete
+      }, 0);
+    }
+  }
+
+  setupVmtListener() {
+    if (!this.isVmt) return;
+
+    // Remove old listener if exists
+    if (this.vmtListener) {
+      window.removeEventListener('message', this.vmtListener);
+    }
+
+    let listener = this.onVmtMessage.bind(this);
+    this.vmtListener = listener;
+    window.addEventListener('message', listener);
+  }
+
+  setOwnHeight() {
+    try {
+      let submissionNav = document.getElementById('submission-nav');
+      let revisionsNavHeight = submissionNav?.offsetHeight || 0;
+
+      let element = this.element;
+      if (element) {
+        element.style.height = '100%';
+        element.style.height = `calc(100% - ${revisionsNavHeight}px)`;
+      }
+    } catch (e) {
+      // Silently fail if DOM elements don't exist
     }
   }
 
   willDestroy() {
     super.willDestroy(...arguments);
 
-    $(window).off('resize.selectableArea');
+    // Clean up VMT listener
+    if (this.vmtListener) {
+      window.removeEventListener('message', this.vmtListener);
+    }
 
     let workspace = this.args.currentWorkspace;
+    if (!workspace) return;
+
     let doOnlyUpdateLastViewed = true;
 
     if (this.isDirty) {
@@ -379,20 +452,14 @@ export default class WorkspaceSubmissionComponent extends Component {
       messageType: 'VMT_PAUSE_REPLAYER',
     };
     window.postMessage(messageData);
-    let canvases = this.element.querySelectorAll('canvas');
-    let canvas;
-    if (canvases.length > 1) {
-      // geogebra
-      canvas = canvases[0];
-    } else {
-      // desmos
-      canvas = canvases[0];
-    }
+
+    let canvases = this.element?.querySelectorAll('canvas') || [];
+    let canvas = canvases[0];
+
     if (!canvas) {
       return;
     }
-    let imgSrc = canvas.toDataURL();
-    return imgSrc;
+    return canvas.toDataURL();
   }
 
   setVmtReplayerTime(vmtStartTime, doAutoPlay, stopTime) {
@@ -415,36 +482,42 @@ export default class WorkspaceSubmissionComponent extends Component {
       return;
     }
 
-    let canSet = !this.isDestroying && !this.isDestroyed;
-
     let { messageType, vmtReplayerInfo } = data;
 
     if (messageType === 'VMT_ON_REPLAYER_LOAD') {
       // set replayer to current selection start time if applicable
-      let vmtStartTime = this.args.currentSelection.vmtInfo.startTime;
-      if (vmtStartTime >= 0 && canSet) {
+      let vmtStartTime = this.currentSelection?.vmtInfo?.startTime;
+      if (vmtStartTime >= 0) {
         this.vmtReplayerInfo = vmtReplayerInfo;
         // set replayer to start point but do not auto play
         this.setVmtReplayerTime(vmtStartTime, false, null);
       }
     }
 
-    if (messageType === 'VMT_UPDATE_REPLAYER' && canSet) {
+    if (messageType === 'VMT_UPDATE_REPLAYER') {
       this.vmtReplayerInfo = vmtReplayerInfo;
     }
   }
 
   get isOnVmtSelection() {
-    if (!this.isVmt || !this.args.currentSelection?.vmtInfo) {
+    if (!this.isVmt || !this.currentSelection?.vmtInfo) {
       return false;
     }
     return (
-      this.args.currentSelection.vmtInfo.startTime >= 0 &&
-      this.args.currentSelection.vmtInfo.endTime >= 0
+      this.currentSelection.vmtInfo.startTime >= 0 &&
+      this.currentSelection.vmtInfo.endTime >= 0
     );
   }
 
-  get isMakingVMTSelection() {
+  get isMakingVmtSelection() {
     return this.isVmt && this.makingSelection;
+  }
+
+  get currentClipStartTime() {
+    return this.currentSelection?.vmtInfo?.startTime;
+  }
+
+  get currentClipEndTime() {
+    return this.currentSelection?.vmtInfo?.endTime;
   }
 }

@@ -6,6 +6,7 @@ export default class WorkspaceCommentComponent extends Component {
   @service currentUser;
   @service('workspace-permissions') permissions;
   @service('utility-methods') utils;
+  @service currentSelection;
 
   get originalWorkspace() {
     return this.args.comment?.originalComment?.workspace;
@@ -55,16 +56,16 @@ export default class WorkspaceCommentComponent extends Component {
     );
 
     // For non-parent workspaces, check against group's original selection
-    if (this.args.currentWorkspace?.workspaceType !== 'parent') {
+    if (!this.args.isParentWorkspace) {
       const groupSelectionId =
-        this.args.currentSelection?.originalSelection?.id;
+        this.currentSelection.selection?.originalSelection?.id;
       if (groupSelectionId) {
         return commentSelectionId === groupSelectionId;
       }
     }
 
     // Default: check against current selection
-    return commentSelectionId === this.args.currentSelection?.id;
+    return this.currentSelection.isCurrentSelection(commentSelectionId);
   }
 
   get commentClasses() {
@@ -78,6 +79,42 @@ export default class WorkspaceCommentComponent extends Component {
 
   get commentSelection() {
     return this.args.comment?.selection;
+  }
+
+  get commentSubmissionId() {
+    // Prefer the direct comment->submission id if present
+    const fromComment = this.utils.getBelongsToId(
+      this.args.comment,
+      'submission'
+    );
+    if (fromComment) {
+      return fromComment;
+    }
+    // Fallback: derive from the selection without forcing async load
+    return this.utils.getBelongsToId(this.commentSelection, 'submission');
+  }
+
+  get commentSelectionModels() {
+    const submissionId = this.commentSubmissionId;
+    const selectionId = this.commentSelection?.id;
+
+    if (!submissionId || !selectionId) {
+      return null;
+    }
+
+    return [submissionId, selectionId];
+  }
+
+  get commentSelectionModelsWithWorkspace() {
+    const workspaceId = this.commentWorkspace?.id;
+    const submissionId = this.commentSubmissionId;
+    const selectionId = this.commentSelection?.id;
+
+    if (!workspaceId || !submissionId || !selectionId) {
+      return null;
+    }
+
+    return [workspaceId, submissionId, selectionId];
   }
 
   get commentText() {

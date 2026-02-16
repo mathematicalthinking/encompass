@@ -74,6 +74,22 @@ module('Integration | Component | comment-list', function (hooks) {
       id = 'u1';
     }
 
+    class CurrentSelectionService extends Service {
+      selection = null;
+
+      get hasSelection() {
+        return !!this.selection;
+      }
+
+      isCurrentSelection(selectionId) {
+        return this.selection?.id === selectionId;
+      }
+
+      setSelection(selection) {
+        this.selection = selection;
+      }
+    }
+
     class StoreService extends Service {
       createRecord() {
         return { save: () => Promise.resolve({}) };
@@ -101,6 +117,7 @@ module('Integration | Component | comment-list', function (hooks) {
       WorkspacePermissionsService
     );
     this.owner.register('service:currentUser', CurrentUserService);
+    this.owner.register('service:currentSelection', CurrentSelectionService);
     this.owner.register('service:store', StoreService);
     this.owner.register('service:error-handling', ErrorHandlingService);
   });
@@ -110,14 +127,12 @@ module('Integration | Component | comment-list', function (hooks) {
       comments = [],
       currentWorkspace = { id: 'w1' },
       currentSubmission = { id: 'sub1' },
-      currentSelection = { id: 's1' },
     } = props;
 
     context.setProperties({
       comments,
       currentWorkspace,
       currentSubmission,
-      currentSelection,
       ...props,
     });
 
@@ -125,7 +140,6 @@ module('Integration | Component | comment-list', function (hooks) {
       @comments={{this.comments}}
       @currentWorkspace={{this.currentWorkspace}}
       @currentSubmission={{this.currentSubmission}}
-      @currentSelection={{this.currentSelection}}
       @isParentWorkspace={{this.isParentWorkspace}}
       @containerLayoutClass={{this.containerLayoutClass}}
       @isHidden={{this.isHidden}}
@@ -139,7 +153,7 @@ module('Integration | Component | comment-list', function (hooks) {
   });
 
   test('handles null currentSelection', async function (assert) {
-    await renderCommentList(this, { currentSelection: null });
+    await renderCommentList(this);
     assert.dom('#comment-list').exists();
   });
 
@@ -149,13 +163,23 @@ module('Integration | Component | comment-list', function (hooks) {
   });
 
   test('shows cancel and save buttons when on selection', async function (assert) {
-    await renderCommentList(this, { currentSelection: { id: 's1' } });
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
     assert.dom('.cancel-button').exists();
     assert.dom('.save').exists();
   });
 
   test('cancel button clears textarea', async function (assert) {
-    await renderCommentList(this, { currentSelection: { id: 's1' } });
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
     await fillIn('#commentTextarea', 'Test comment');
     await click('.cancel-button');
     assert.dom('#commentTextarea').hasValue('');
@@ -255,7 +279,12 @@ module('Integration | Component | comment-list', function (hooks) {
   });
 
   test('adds on-selection class when currentSelection exists', async function (assert) {
-    await renderCommentList(this, { currentSelection: { id: 's1' } });
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
     assert.dom('#comment-list').hasClass('on-selection');
   });
 
@@ -265,7 +294,7 @@ module('Integration | Component | comment-list', function (hooks) {
   });
 
   test('hides compose buttons when no selection', async function (assert) {
-    await renderCommentList(this, { currentSelection: null });
+    await renderCommentList(this);
     assert.dom('.cancel-button').doesNotExist();
     assert.dom('.save').doesNotExist();
   });
@@ -290,7 +319,12 @@ module('Integration | Component | comment-list', function (hooks) {
       }
     );
 
-    await renderCommentList(this, { currentSelection: { id: 's1' } });
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
     assert.dom('.cancel-button').doesNotExist();
     assert.dom('.save').doesNotExist();
   });
@@ -346,7 +380,12 @@ module('Integration | Component | comment-list', function (hooks) {
       }
     );
 
-    await renderCommentList(this, { currentSelection: { id: 's1' } });
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
     await fillIn('#commentTextarea', 'New comment');
     await click('.save');
     assert.true(createRecordCalled);
@@ -370,7 +409,12 @@ module('Integration | Component | comment-list', function (hooks) {
       }
     );
 
-    await renderCommentList(this, { currentSelection: { id: 's1' } });
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
     await click('.save');
     assert.false(createRecordCalled);
   });
@@ -393,7 +437,12 @@ module('Integration | Component | comment-list', function (hooks) {
       }
     );
 
-    await renderCommentList(this, { currentSelection: { id: 's1' } });
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
     await fillIn('#commentTextarea', '   ');
     await click('.save');
     assert.false(createRecordCalled);
@@ -420,5 +469,122 @@ module('Integration | Component | comment-list', function (hooks) {
   test('label select has notice class by default', async function (assert) {
     await renderCommentList(this);
     assert.dom('.label-select').hasClass('notice');
+  });
+
+  // Tests for currentSelection service integration
+  test('uses currentSelection service instead of prop', async function (assert) {
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's1' });
+
+    await renderCommentList(this);
+
+    assert.strictEqual(currentSelectionService.selection.id, 's1');
+    assert.true(currentSelectionService.hasSelection);
+  });
+
+  test('detects when no selection via service', async function (assert) {
+    await renderCommentList(this);
+
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    assert.false(currentSelectionService.hasSelection);
+    assert.dom('.cancel-button').doesNotExist();
+  });
+
+  // Tests for parent workspace behavior with myCommentsOnly filter
+  test('does not show myCommentsOnly filter when isParentWorkspace', async function (assert) {
+    await renderCommentList(this, { isParentWorkspace: true });
+    assert.dom('input[name="myCommentsOnly"]').doesNotExist();
+  });
+
+  test('shows myCommentsOnly filter when not parent workspace', async function (assert) {
+    await renderCommentList(this, { isParentWorkspace: false });
+    assert.dom('input[name="myCommentsOnly"]').exists();
+  });
+
+  // Tests for results description messaging
+  test('shows "your comments" message when myCommentsOnly is true', async function (assert) {
+    const comment = {
+      id: 'c1',
+      text: 'test',
+      createDate: new Date(),
+      isTrashed: false,
+      submission: { id: 'sub1' },
+      workspace: { id: 'w1' },
+      createdBy: { id: 'u1' },
+    };
+
+    await renderCommentList(this, {
+      isParentWorkspace: false,
+      comments: [comment],
+    });
+
+    assert.dom('.results-message').includesText('only your comments');
+  });
+
+  test('shows "comments" without "your" when myCommentsOnly is false', async function (assert) {
+    const comment = {
+      id: 'c1',
+      text: 'test',
+      createDate: new Date(),
+      isTrashed: false,
+      submission: { id: 'sub1' },
+      workspace: { id: 'w1' },
+      createdBy: { id: 'u1' },
+    };
+
+    await renderCommentList(this, {
+      isParentWorkspace: false,
+      comments: [comment],
+    });
+
+    // Uncheck myCommentsOnly
+    await click('input[name="myCommentsOnly"]');
+
+    // Should show "comments" without "your"
+    assert.dom('.results-message').exists();
+    assert.dom('.results-message').doesNotIncludeText('only your');
+  });
+
+  test('shows "for current submission" in results when thisSubmissionOnly', async function (assert) {
+    const comment = {
+      id: 'c1',
+      text: 'test',
+      createDate: new Date(),
+      isTrashed: false,
+      submission: { id: 'sub1' },
+      workspace: { id: 'w1' },
+      createdBy: { id: 'u1' },
+    };
+
+    await renderCommentList(this, {
+      comments: [comment],
+    });
+
+    assert.dom('.results-message').includesText('for current submission');
+  });
+
+  test('shows "for current workspace" when only thisWorkspaceOnly is checked', async function (assert) {
+    const comment = {
+      id: 'c1',
+      text: 'test',
+      createDate: new Date(),
+      isTrashed: false,
+      submission: { id: 'sub1' },
+      workspace: { id: 'w1' },
+      createdBy: { id: 'u1' },
+    };
+
+    await renderCommentList(this, {
+      comments: [comment],
+    });
+
+    // Uncheck submission filter
+    await click('input[name="thisSubmissionOnly"]');
+
+    assert.dom('.results-message').includesText('for current workspace');
   });
 });

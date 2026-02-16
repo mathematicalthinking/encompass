@@ -26,6 +26,11 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   @tracked isUpdateRequestInProgress = false;
   @tracked createdParentData = {};
   @tracked updatedParentData = {};
+  @tracked updateErrors = null;
+  @tracked serverErrors = null;
+  @tracked wereNoAnswersToUpdate = false;
+  @tracked addedSubmissions = null;
+
   get isParentWs() {
     return this.args.workspace.workspaceType === 'parent';
   }
@@ -291,18 +296,32 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
       return;
     }
 
+    // Check if linkedAssignment proxy has actual content
+    let linkedAssignment = isParentUpdate
+      ? null
+      : this.args.linkedAssignment?.content || this.args.linkedAssignment;
+
+    // If we have a proxy but no content, treat it as missing
+    if (!isParentUpdate && (!linkedAssignment || !linkedAssignment.id)) {
+      this.missingLinkedAssignment = true;
+      return;
+    }
+
     if (isParentUpdate && !this.hasChildWorkspaces) {
       return (this.missingChildWorkspaces = true);
     }
 
     this.isUpdateRequestInProgress = true;
 
+    // Get the actual assignment from the belongsTo proxy
+
     let newUpdateRequest = this.store.createRecord('updateWorkspaceRequest', {
       workspace: this.args.workspace,
-      linkedAssignment: this.args.linkedAssignment,
+      linkedAssignment: linkedAssignment,
       createdBy: this.currentUser.user,
       isParentUpdate: this.isParentWs,
     });
+
     newUpdateRequest
       .save()
       .then((results) => {
@@ -310,6 +329,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
 
         if (isParentUpdate) {
           if (results.get('wasNoDataToUpdate') === true) {
+            console.log('[UPDATE WORKSPACE] Parent workspace up to date');
             this.alert.showToast(
               'info',
               'Workspace Up to Date',
@@ -372,6 +392,48 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         }
       })
       .catch((err) => {
+        console.error('[UPDATE WORKSPACE] ❌ Error caught:', err);
+
+        // Check if this is the Ember Data assertion error for embedded relationship objects
+        // This happens when the server returns full user objects instead of just {type, id}
+        // The update actually succeeded on the server, but the response has formatting issues
+        if (
+          err.message &&
+          err.message.includes(
+            'Assertion Failed: Encountered a relationship identifier'
+          )
+        ) {
+          // The update worked, we just need to refresh the workspace data
+          return this.args.workspace
+            .reload()
+            .then(() => {
+              this.alert.showToast(
+                'success',
+                'Workspace updated successfully',
+                'bottom-start',
+                3000,
+                false,
+                null
+              );
+            })
+            .catch((reloadErr) => {
+              console.error(
+                '[UPDATE WORKSPACE] ❌ Error reloading workspace:',
+                reloadErr
+              );
+              // Even if reload fails, the update succeeded
+              this.alert.showToast(
+                'info',
+                'Workspace updated. Please refresh the page.',
+                'bottom-start',
+                5000,
+                false,
+                null
+              );
+            });
+        }
+
+        // For other errors, use the standard error handling
         this.handleErrors(err, 'serverErrors');
       });
   }

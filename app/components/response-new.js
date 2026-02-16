@@ -805,7 +805,11 @@ export default class ResponseNewComponent extends Component {
       'doShowLoadingMessage'
     );
     try {
-      const draft = await this.aiDraft.generateDraft(submissionId);
+      const draft = await this.aiDraft.generateDraft(
+        submissionId,
+        'D',
+        this.args.workspace?.id
+      );
 
       // Clear any pending content from previous "Bring it Down"
       this.pendingContent = null;
@@ -822,6 +826,9 @@ export default class ResponseNewComponent extends Component {
       this.saveDraftAction = false;
       this.showUsageCheckboxes = false;
 
+      this.alert.showToast(
+        'success',
+        'AI draft generated successfully',
       this.alert.showToast(
         'success',
         'AI draft generated successfully',
@@ -872,8 +879,10 @@ export default class ResponseNewComponent extends Component {
       return;
     }
 
-    // Replace editor content with pure AI text
-    const newText = this.aiGeneratedText;
+    // Preserve existing editor content and append AI text
+    const currentText = this.quillText || '';
+    const separator = currentText.trim() ? '<p><br></p>' : '';
+    const newText = currentText + separator + this.aiGeneratedText;
 
     // Set pending content and force Quill re-render
     this.pendingContent = newText;

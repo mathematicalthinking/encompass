@@ -59,6 +59,20 @@ export default class ResponsesRoute extends AuthenticatedRoute {
       workspace.get('responses'),
     ]);
 
+    const submissionThread = studentSubmissions.filterBy(
+      'student',
+      submission.get('student')
+    );
+    // OLD BEHAVIOR: Always used latest submission for Respond button
+    // const latestSubmission = submissionThread
+    //   .slice()
+    //   .sort((a, b) => new Date(b.createDate) - new Date(a.createDate))
+    //   .at(0);
+    // const activeSubmission = latestSubmission || submission;
+
+    // NEW BEHAVIOR: Use the submission being viewed (from URL params)
+    const activeSubmission = submission;
+
     let allResponses = this.store.peekAll('response');
     let additionalDrafts = allResponses.filter((response) => {
       const workspaceId = this.utils.getBelongsToId(response, 'workspace');
@@ -68,7 +82,7 @@ export default class ResponsesRoute extends AuthenticatedRoute {
 
       return (
         workspaceId === workspace.id &&
-        submissionId === submission.id &&
+        submissionId === activeSubmission.id &&
         response.status === 'draft' &&
         createdById === currentUserId &&
         !response.isTrashed &&
@@ -119,12 +133,9 @@ export default class ResponsesRoute extends AuthenticatedRoute {
     }
 
     const model = {
-      submission,
+      submission: activeSubmission,
       workspace,
-      submissions: studentSubmissions.filterBy(
-        'student',
-        submission.get('student')
-      ),
+      submissions: submissionThread,
       responses: combinedResponses,
       response: response || null,
       allResponses,
@@ -208,6 +219,18 @@ export default class ResponsesRoute extends AuthenticatedRoute {
   redirect(model, transition) {
     if (!model) {
       this.router.transitionTo('responses');
+      return;
+    }
+    const routeSubmissionId = transition?.to?.params?.submission_id;
+    const latestSubmissionId = model.submission?.id;
+    if (
+      latestSubmissionId &&
+      routeSubmissionId &&
+      latestSubmissionId !== routeSubmissionId
+    ) {
+      this.router.replaceWith('responses.submission', latestSubmissionId, {
+        queryParams: transition?.to?.queryParams,
+      });
     }
   }
 }

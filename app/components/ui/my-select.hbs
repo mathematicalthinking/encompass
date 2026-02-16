@@ -14,7 +14,11 @@
         value='{{item}}'
         selected={{is-equal item @selectedValue}}
       >
-        {{item}}
+        {{#if item.display}}
+          {{item.display}}
+        {{else}}
+          {{item}}
+        {{/if}}
       </option>
     {{/each}}
   </select>

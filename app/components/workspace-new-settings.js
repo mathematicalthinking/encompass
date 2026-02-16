@@ -1,44 +1,72 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { service } from '@ember/service';
 import isObject from 'lodash-es/isObject';
 import isString from 'lodash-es/isString';
 import isNull from 'lodash-es/isNull';
 import validate from 'validate.js';
 
-export default Component.extend({
-  elementId: 'workspace-new-settings',
-  workspacePermissions: [],
-  utils: service('utility-methods'),
-  alert: service('sweet-alert'),
-  isEditingPermissions: false,
-  unsavedCollaborator: null,
-  selectedMode: 'private',
-  selectedSubmissionSettings: 'all',
-  selectedOwner: '',
-  init: function () {
-    this._super(...arguments);
-    this.set('selectedOwner', this.currentUser);
-  },
-  validModeValues: computed('modeInputs.inputs', function () {
-    const modeInputs = this.get('modeInputs.inputs');
+/**
+ * WorkspaceNewSettings Component
+ *
+ * Handles the configuration of new workspace settings including name, owner,
+ * privacy mode, folder sets, submission settings, and collaborator permissions.
+ *
+ * @component
+ * @example
+ * <WorkspaceNewSettings
+ *   @users={{@users}}
+ *   @folderSets={{@folderSets}}
+ *   @onProceed={{this.createWorkspace}}
+ *   @onBack={{this.toSearchFilter}}
+ *   @createWorkspaceError={{this.createWorkspaceError}}
+ * />
+ */
+export default class WorkspaceNewSettingsComponent extends Component {
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
+  @service currentUser;
+  @service store;
+
+  @tracked workspacePermissions = [];
+  @tracked isEditingPermissions = false;
+  @tracked unsavedCollaborator = null;
+  @tracked selectedMode = 'private';
+  @tracked selectedSubmissionSettings = 'all';
+  @tracked selectedOwner = null;
+  @tracked selectedFolderSet = null;
+  @tracked workspaceName = '';
+
+  // Error tracking
+  @tracked workspaceNameErrors = null;
+  @tracked ownerErrors = null;
+  @tracked privacySettingErrors = null;
+  @tracked folderSetErrors = null;
+
+  constructor() {
+    super(...arguments);
+    this.selectedOwner = this.currentUser.user;
+  }
+
+  get validModeValues() {
+    const modeInputs = this.modeInputs?.inputs;
 
     if (this.utils.isNonEmptyArray(modeInputs)) {
       return modeInputs.map((input) => input.value);
     }
     return [];
-  }),
-  constraints: computed('validModeValues', 'doCreateFolderSet', function () {
-    let res = {
+  }
+
+  get constraints() {
+    return {
       workspaceName: {
         presence: { allowEmpty: false },
         length: { maximum: 500 },
       },
-
       owner: {
         presence: { allowEmpty: false },
       },
-
       privacySetting: {
         inclusion: {
           within: this.validModeValues,
@@ -46,10 +74,9 @@ export default Component.extend({
         },
       },
     };
+  }
 
-    return res;
-  }),
-  submissionSettingsInputs: {
+  submissionSettingsInputs = {
     groupName: 'submissionSettings',
     required: true,
     inputs: [
@@ -64,57 +91,55 @@ export default Component.extend({
         moreInfo: 'Workspace will only include submissions of record',
       },
     ],
-  },
-  modeInputs: computed(
-    'currentUser.isStudent',
-    'currentUser.isAdmin',
-    function () {
-      let res = {
-        groupName: 'mode',
-        required: true,
-        inputs: [
-          {
-            value: 'private',
-            label: 'Private',
-            moreInfo:
-              'Workspace will only be visible to the owner and collaborators',
-          },
-          {
-            value: 'org',
-            label: 'My Org',
-            moreInfo:
-              'Workspace will be visible to everyone belonging to your org',
-          },
-          {
-            value: 'public',
-            label: 'Public',
-            moreInfo: 'Workspace will be visible to every Encompass user',
-          },
-        ],
-      };
+  };
 
-      if (
-        this.get('currentUser.isStudent') ||
-        !this.get('currentUser.isAdmin')
-      ) {
-        return res;
-      }
+  get modeInputs() {
+    const user = this.currentUser.user;
+    let res = {
+      groupName: 'mode',
+      required: true,
+      inputs: [
+        {
+          value: 'private',
+          label: 'Private',
+          moreInfo:
+            'Workspace will only be visible to the owner and collaborators',
+        },
+        {
+          value: 'org',
+          label: 'My Org',
+          moreInfo:
+            'Workspace will be visible to everyone belonging to your org',
+        },
+        {
+          value: 'public',
+          label: 'Public',
+          moreInfo: 'Workspace will be visible to every Encompass user',
+        },
+      ],
+    };
 
-      res.inputs.push({
-        value: 'internet',
-        label: 'Internet',
-        moreInfo:
-          'Workspace will be accesible to any user with a link to the workspace',
-      });
+    if (user?.isStudent || !user?.isAdmin) {
       return res;
     }
-  ),
-  initialOwner: computed('currentUser.id', function () {
-    return [this.currentUser.id];
-  }),
-  ownerOptions: computed('users.[]', function () {
-    if (this.users) {
-      return this.users.map((user) => {
+
+    res.inputs.push({
+      value: 'internet',
+      label: 'Internet',
+      moreInfo:
+        'Workspace will be accesible to any user with a link to the workspace',
+    });
+    return res;
+  }
+
+  get initialOwner() {
+    return [this.currentUser.user?.id];
+  }
+
+  get ownerOptions() {
+    const users = this.args.users;
+    if (users) {
+      return users.map((user) => {
         return {
           id: user.get('id'),
           username: user.get('username'),
@@ -122,10 +147,12 @@ export default Component.extend({
       });
     }
     return [];
-  }),
-  folderSetOptions: computed('folderSets.[]', function () {
-    if (this.folderSets) {
-      return this.folderSets.map((folderSet) => {
+  }
+
+  get folderSetOptions() {
+    const folderSets = this.args.folderSets;
+    if (folderSets) {
+      return folderSets.map((folderSet) => {
         return {
           id: folderSet.get('id'),
           name: folderSet.get('name'),
@@ -133,9 +160,9 @@ export default Component.extend({
       });
     }
     return [];
-  }),
+  }
 
-  initialCollabOptions: computed('selectedCollaborators', 'store', function () {
+  get initialCollabOptions() {
     let peeked = this.store.peekAll('user');
     let collabs = this.selectedCollaborators;
 
@@ -151,16 +178,10 @@ export default Component.extend({
         username: obj.get('username'),
       };
     });
-  }),
+  }
 
-  selectedCollaborators: computed('workspacePermissions.[]', function () {
+  get selectedCollaborators() {
     let hash = {};
-    // let wsOwnerId = this.get('workspace.owner.id');
-
-    // no reason to set owner as a collaborator
-    // if (wsOwnerId) {
-    //   hash[wsOwnerId] = true;
-    // }
     const workspacePermissions = this.workspacePermissions;
 
     if (!this.utils.isNonEmptyArray(workspacePermissions)) {
@@ -175,85 +196,122 @@ export default Component.extend({
       }
     });
     return hash;
-  }),
-  actions: {
-    updateSelectedMode: function (val) {
-      this.set('selectedMode', val);
-    },
-    updateSelectedSubmissionSettings: function (val) {
-      this.set('selectedSubmissionSettings', val);
-    },
-    updateSelectizeSingle(val, $item, propToUpdate, model) {
-      if (isNull($item)) {
-        this.set(propToUpdate, null);
-        return;
-      }
-      let record = this.store.peekRecord(model, val);
-      if (!record) {
-        return;
-      }
-      this.set(propToUpdate, record);
-    },
-    handleSettings() {
-      let errors;
-      const workspaceName = this.workspaceName;
-      const owner = this.selectedOwner;
-      const privacySetting = this.selectedMode;
-      const folderSet = this.selectedFolderSet;
-      const permissions = this.workspacePermissions;
-      const submissionSettings = this.selectedSubmissionSettings;
+  }
 
-      errors = validate(
-        { workspaceName, owner, privacySetting },
-        this.constraints
+  @action
+  savePermission(permissionObj) {
+    const permissions = this.workspacePermissions;
+    // check if user already is in array
+    let existingObj = Array.isArray(permissions)
+      ? permissions.find((p) => p.user === permissionObj.user)
+      : null;
+
+    // remove existing permissions obj and add modified one
+    let updatedPermissions = existingObj
+      ? permissions.filter((p) => p.user !== permissionObj.user)
+      : permissions;
+
+    this.workspacePermissions = [...updatedPermissions, permissionObj];
+  }
+
+  @action
+  removePermission(permissionObj) {
+    if (this.workspacePermissions) {
+      this.workspacePermissions = this.workspacePermissions.filter(
+        (p) => p !== permissionObj
       );
+    }
+  }
 
-      if (this.utils.isNonEmptyObject(errors)) {
-        this.alert.showToast(
-          'error',
-          'Missing required info',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-        for (let key of Object.keys(errors)) {
-          let errorProp = `${key}Errors`;
-          this.set(errorProp, errors[key]);
-        }
-        return;
+  @action
+  updateSelectedMode(val) {
+    this.selectedMode = val;
+  }
+
+  @action
+  updateSelectedSubmissionSettings(val) {
+    this.selectedSubmissionSettings = val;
+  }
+
+  @action
+  updateSelectizeSingle(val, $item, propToUpdate, model) {
+    if (isNull($item)) {
+      this[propToUpdate] = null;
+      return;
+    }
+    let record = this.store.peekRecord(model, val);
+    if (!record) {
+      return;
+    }
+    this[propToUpdate] = record;
+  }
+
+  @action
+  handleSettings() {
+    const workspaceName = this.workspaceName;
+    const owner = this.selectedOwner;
+    const privacySetting = this.selectedMode;
+    const folderSet = this.selectedFolderSet;
+    const permissions = this.workspacePermissions;
+    const submissionSettings = this.selectedSubmissionSettings;
+
+    const errors = validate(
+      { workspaceName, owner, privacySetting },
+      this.constraints
+    );
+
+    if (this.utils.isNonEmptyObject(errors)) {
+      this.alert.showToast(
+        'error',
+        'Missing required info',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      for (let key of Object.keys(errors)) {
+        let errorProp = `${key}Errors`;
+        this[errorProp] = errors[key];
       }
+      return;
+    }
 
-      const settings = {
-        requestedName: workspaceName,
-        owner,
-        mode: privacySetting,
-        folderSet,
-        permissionObjects: permissions,
-        submissionSettings,
-      };
+    const settings = {
+      requestedName: workspaceName,
+      owner,
+      mode: privacySetting,
+      folderSet,
+      permissionObjects: permissions,
+      submissionSettings,
+    };
 
-      if (this.isEditingPermissions) {
-        // prompt user to confirm they want to proceed
-        let username = this.get('unsavedCollaborator.username');
+    if (this.isEditingPermissions) {
+      // prompt user to confirm they want to proceed
+      let username = this.unsavedCollaborator?.username;
 
-        let title = 'Are you sure you want to proceed?';
-        let text = `You are currently in the process of editing permissions for ${username}. You will lose any unsaved changes if you continue.`;
+      let title = 'Are you sure you want to proceed?';
+      let text = `You are currently in the process of editing permissions for ${username}. You will lose any unsaved changes if you continue.`;
 
-        return this.alert
-          .showModal('warning', title, text, 'Proceed')
-          .then((result) => {
-            if (result.value) {
-              this.onProceed(settings);
-              return;
-            }
-          });
-      } else {
-        this.onProceed(settings);
-      }
-    },
-    back() {
-      this.onBack();
-    },
-  },
-});
+      return this.alert
+        .showModal('warning', title, text, 'Proceed')
+        .then((result) => {
+          if (result.value) {
+            this.args.onProceed?.(settings);
+            return;
+          }
+        });
+    } else {
+      this.args.onProceed?.(settings);
+    }
+  }
+
+  @action
+  back() {
+    this.args.onBack?.();
+  }
+
+  @action
+  resetError(errorProp) {
+    this[errorProp] = null;
+  }
+}

@@ -9,6 +9,7 @@ import isObject from 'lodash-es/isObject';
 import isNull from 'lodash-es/isNull';
 import map from 'lodash-es/map';
 import each from 'lodash-es/each';
+import { capitalize } from '@ember/string';
 
 export default Component.extend({
   elementId: 'submissions-filter',
@@ -17,6 +18,7 @@ export default Component.extend({
   wsRequestErrors: [],
   errorHandling: service('error-handling'),
   utils: service('utility-methods'),
+  store: service(),
   isVmtOnly: false,
   showVmtFilters: false,
   startDate: '',
@@ -121,7 +123,7 @@ export default Component.extend({
 
     for (let attr of ['sections', 'assignments', 'users']) {
       let modelProp = this.get(attr);
-      let newProp = `base${attr.capitalize()}`;
+      let newProp = `base${capitalize(attr)}`;
       if (modelProp) {
         this.set(newProp, modelProp.toArray());
       } else {

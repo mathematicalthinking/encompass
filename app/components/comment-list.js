@@ -1,10 +1,14 @@
 import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { subYears, format, parseISO } from 'date-fns';
+
 /**
  * Arguments passed from parent:
  * - @comments
  * - @currentWorkspace
  * - @currentSubmission
- * - @currentSelection
  * - @isParentWorkspace
  * - @containerLayoutClass
  * - @isHidden
@@ -12,22 +16,19 @@ import Component from '@glimmer/component';
  * TODO:
  * - Test the hashtag stuff to see if that is still working.
  */
-import { service } from '@ember/service';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-import { subYears, format, parseISO } from 'date-fns';
-
 export default class CommentListComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
   @service('loading-display') loading;
   @service('workspace-permissions') permissions;
+  @service currentSelection;
   @service currentUser;
   @service store;
   @service errorHandling;
 
   @tracked thisSubmissionOnly = true;
   @tracked thisWorkspaceOnly = true;
+  @tracked myCommentsOnly = true;
   @tracked commentFilterText = '';
   @tracked newComment = '';
   @tracked newCommentLabel = 'notice';
@@ -91,10 +92,6 @@ export default class CommentListComponent extends Component {
     return this.canComment && this.onSelection;
   }
 
-  get myCommentsOnly() {
-    return !this.args.isParentWorkspace;
-  }
-
   get newCommentPlaceholder() {
     const placeholder = this.labels[this.newCommentLabel].placeholder;
     if (Array.isArray(placeholder)) {
@@ -124,7 +121,7 @@ export default class CommentListComponent extends Component {
   }
 
   get onSelection() {
-    return this.utils.isNonEmptyObject(this.args.currentSelection);
+    return this.currentSelection.hasSelection;
   }
 
   get canComment() {
@@ -132,7 +129,7 @@ export default class CommentListComponent extends Component {
   }
 
   get filterOptions() {
-    return {
+    const base = {
       thisWorkspaceOnly: {
         label: 'This Workspace Only',
         isChecked: this.thisWorkspaceOnly,
@@ -143,12 +140,15 @@ export default class CommentListComponent extends Component {
         isChecked: this.thisSubmissionOnly,
         isDisabled: false,
       },
-      myCommentsOnly: {
+    };
+    if (!this.args.isParentWorkspace) {
+      base.myCommentsOnly = {
         label: 'My Comments Only',
         isChecked: this.myCommentsOnly,
         isDisabled: false,
-      },
-    };
+      };
+    }
+    return base;
   }
 
   get emptyResultsMessage() {
@@ -179,11 +179,12 @@ export default class CommentListComponent extends Component {
 
   get sortedDisplayList() {
     return [...this.displayList].sort((a, b) => {
-      const currentSelectionId = this.args.currentSelection?.id;
       const aSelectionId = this.utils.getBelongsToId(a, 'selection');
       const bSelectionId = this.utils.getBelongsToId(b, 'selection');
-      const isAForCurrentSelection = aSelectionId === currentSelectionId;
-      const isBForCurrentSelection = bSelectionId === currentSelectionId;
+      const isAForCurrentSelection =
+        this.currentSelection.isCurrentSelection(aSelectionId);
+      const isBForCurrentSelection =
+        this.currentSelection.isCurrentSelection(bSelectionId);
 
       if (isAForCurrentSelection && !isBForCurrentSelection) return -1;
       if (isBForCurrentSelection && !isAForCurrentSelection) return 1;
@@ -240,7 +241,11 @@ export default class CommentListComponent extends Component {
 
   _matchesSubmissionFilter(comment) {
     if (!this.thisSubmissionOnly) return true;
-    const subId = this.utils.getBelongsToId(comment, 'submission');
+    let subId = this.utils.getBelongsToId(comment, 'submission');
+    if (!subId) {
+      const selection = comment.selection;
+      subId = this.utils.getBelongsToId(selection, 'submission');
+    }
     return subId === this.args.currentSubmission?.id;
   }
 
@@ -293,17 +298,42 @@ export default class CommentListComponent extends Component {
       .peekAll('comment')
       .filter((comment) => {
         const selId = this.utils.getBelongsToId(comment, 'selection');
-        return selId === this.args.currentSelection?.id;
+        return this.currentSelection.isCurrentSelection(selId);
       });
-    return [...this.searchResults, ...currentSelectionComments];
+
+    // Deduplicate by filtering out comments from currentSelectionComments that are already in searchResults
+    const searchIds = this.searchResults.map((c) => c.id);
+    const uniqueCurrentComments = currentSelectionComments.filter(
+      (comment) => !searchIds.includes(comment.id)
+    );
+
+    return [...this.searchResults, ...uniqueCurrentComments];
+  }
+
+  _resolveSubmissionForNewComment() {
+    const selection = this.currentSelection.selection;
+    const selectionSubmissionId = this.utils.getBelongsToId(
+      selection,
+      'submission'
+    );
+    if (
+      !selectionSubmissionId ||
+      selectionSubmissionId === this.args.currentSubmission?.id
+    ) {
+      return this.args.currentSubmission;
+    }
+    return (
+      this.store.peekRecord('submission', selectionSubmissionId) ||
+      this.args.currentSubmission
+    );
   }
 
   _buildCommentData() {
     return {
       text: this.newComment,
       label: this.newCommentLabel,
-      selection: this.args.currentSelection,
-      submission: this.args.currentSubmission,
+      selection: this.currentSelection.selection,
+      submission: this._resolveSubmissionForNewComment(),
       workspace: this.args.currentWorkspace,
       parent: this.newCommentParent,
       useForResponse: !!this.labels[this.newCommentLabel].useForResponse,
@@ -314,10 +344,11 @@ export default class CommentListComponent extends Component {
   async _handleCommentCreated(record) {
     this.alert.showToast('success', 'Comment Created');
 
+    const submission = this._resolveSubmissionForNewComment();
     await this.updateCommentRelationships(
       record,
-      this.args.currentSelection,
-      this.args.currentSubmission,
+      this.currentSelection.selection,
+      submission,
       this.newCommentParent
     );
 
@@ -364,14 +395,15 @@ export default class CommentListComponent extends Component {
   }
 
   _getFilterResultsDescription() {
-    let base = 'Displaying';
-    if (this.myCommentsOnly) base += ' only your';
+    const owner = this.myCommentsOnly ? 'only your ' : '';
+    let scope = '';
+    if (this.thisSubmissionOnly) {
+      scope = 'for current submission';
+    } else if (this.thisWorkspaceOnly) {
+      scope = 'for current workspace';
+    }
 
-    if (this.thisSubmissionOnly)
-      return base + ` comments for current submission`;
-    if (this.thisWorkspaceOnly) return base + ` comments for current workspace`;
-
-    return base;
+    return `Displaying ${owner}comments${scope ? ' ' + scope : ''}`;
   }
 
   async _handleCommentDeletion(comment) {
@@ -427,7 +459,7 @@ export default class CommentListComponent extends Component {
     const comment = this.store.createRecord('comment', commentData);
 
     if (this.tags.length > 0) {
-      this.args.tagSelection?.(this.args.currentSelection, this.tags);
+      this.args.tagSelection?.(this.currentSelection.selection, this.tags);
     }
 
     try {
@@ -469,6 +501,9 @@ export default class CommentListComponent extends Component {
 
   @action
   updateFilter(prop) {
+    if (prop === 'myCommentsOnly' && this.args.isParentWorkspace) {
+      return;
+    }
     this[prop] = !this[prop];
     this.searchComments();
   }

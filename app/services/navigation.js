@@ -11,12 +11,12 @@ export default class NavigationService extends Service {
    * @param {boolean} opts.replace - use replaceWith instead of transitionTo
    * @param {boolean} opts.fullReload - force hard reload to /
    */
-  goHome(opts = {}) {
+  toHome(opts = {}) {
     // decide destination (role-aware or from config)
     const route = this.homeRoute();
 
     if (opts.fullReload) {
-      window.location.assign('/'); // rare fallback
+      window.location.assign('/');
       return;
     }
     if (opts.replace) {
@@ -67,10 +67,37 @@ export default class NavigationService extends Service {
     });
   }
 
+  toSubmission(submissionId, workspaceId, queryParams) {
+    if (!submissionId) return;
+    const options = queryParams ? { queryParams } : undefined;
+    const resolvedWorkspaceId =
+      workspaceId || this.router.currentRoute?.params?.workspace_id;
+    const models = resolvedWorkspaceId
+      ? [resolvedWorkspaceId, submissionId]
+      : [submissionId];
+
+    const transition = this.router.transitionTo(
+      'workspace.submissions.submission',
+      ...models,
+      ...(options ? [options] : [])
+    );
+    transition?.catch?.((error) => {
+      console.error('toSubmission transition failed:', error);
+    });
+  }
+
   toNewResponse(submissionId, workspaceId) {
     this.router.transitionTo('responses.new.submission', submissionId, {
       queryParams: { workspaceId },
     });
+  }
+
+  toWorkspaces(id) {
+    this.router.transitionTo('workspace.work', id);
+  }
+
+  toWorkspace(id) {
+    this.router.transitionTo('workspace.work', id);
   }
 
   /** Opens a problem in a new window */

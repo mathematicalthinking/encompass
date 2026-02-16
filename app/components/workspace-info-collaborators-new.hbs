@@ -82,8 +82,8 @@
             <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.folders}}
-              @content={{mainPermissions}}
-              @action={{action (mut folders)}}
+              @content={{this.mainPermissions}}
+              @action={{action (mut this.folders)}}
             />
           </div>
         </div>
@@ -114,7 +114,7 @@
         <div class='card-row'>
           <Ui::ErrorBox
             @error='Collaborator already exists. Edit permissions below'
-            @resetError={{action (mut existingUserError) false}}
+            @resetError={{action (mut this.existingUserError) false}}
             @showDismiss={{true}}
           />
         </div>

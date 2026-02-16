@@ -42,6 +42,7 @@ export default class WorkspaceModel extends AuditableModel {
   }
 
   @attr('string') workspaceType;
+  @attr('permissions') permissions;
   @hasMany('workspace', { inverse: null, async: true }) childWorkspaces;
   @hasMany('workspace', { inverse: null, async: true }) parentWorkspaces;
 
@@ -109,19 +110,21 @@ export default class WorkspaceModel extends AuditableModel {
     return loFmt === hiFmt ? loFmt : `${loFmt} - ${hiFmt}`;
   }
 
-  @attr() permissions;
   get collaborators() {
     const permissions = this.permissions;
     if (Array.isArray(permissions)) {
-      return permissions.mapBy('user');
+      return permissions.map((p) => p.user).filter((id) => id);
     }
-    return permissions;
+    return [];
   }
 
   get feedbackAuthorizers() {
     const permissions = this.permissions;
     if (Array.isArray(permissions)) {
-      return permissions.filterBy('feedback', 'approver').mapBy('user');
+      return permissions
+        .filter((p) => p.feedback === 'approver')
+        .map((p) => p.user)
+        .filter((id) => id);
     }
     return [];
   }

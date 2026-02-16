@@ -7,6 +7,7 @@ export default class FolderElemComponent extends Component {
   @service currentUser;
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
+  @service currentSelection;
   @service errorHandling;
 
   @tracked updateRecordErrors = [];
@@ -37,11 +38,12 @@ export default class FolderElemComponent extends Component {
   }
 
   get containsCurrentSelection() {
-    const selectionId = this.args.currentSelection?.id;
     const selections = this.args.model.isExpanded
       ? this.args.model.taggedSelections
       : this.args.model._selections;
-    return selections?.some((sel) => sel.id === selectionId);
+    return selections?.some((sel) =>
+      this.currentSelection.isCurrentSelection(sel.id)
+    );
   }
 
   get hasManyTaggings() {

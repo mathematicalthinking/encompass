@@ -158,8 +158,10 @@ export default class WorkspaceInfoCollaborators extends Component {
     //start with array of object and return array of objects
     if (this.utils.isNonEmptyArray(collabs)) {
       return permissions.map((permission) => {
-        permission.userObj = this.store.peekRecord('user', permission.user);
-        return permission;
+        return {
+          ...permission,
+          userObj: this.store.peekRecord('user', permission.user),
+        };
       });
     }
     return [];
@@ -294,13 +296,11 @@ export default class WorkspaceInfoCollaborators extends Component {
       return;
     }
     const permissions = this.args.workspace.get('permissions');
-    let existingObj = permissions.findBy('user', permissionsObject.user);
+    let existingObj = Array.isArray(permissions)
+      ? permissions.find((p) => p.user === permissionsObject.user)
+      : null;
 
     this.selectedUser = permissionsObject.userObj;
-
-    if (existingObj) {
-      permissions.removeObject(existingObj);
-    }
 
     let subValue = this.submissions.value;
 
@@ -361,10 +361,27 @@ export default class WorkspaceInfoCollaborators extends Component {
       } else if (subValue === 'userOnly') {
         newObj.submissions.userOnly = true;
       } else if (subValue === 'custom') {
-        newObj.submissions.submissionIds = this.args.customSubmissionIds;
+        // Convert Ember array to plain array to avoid circular ref
+        newObj.submissions.submissionIds = Array.isArray(
+          this.args.customSubmissionIds
+        )
+          ? [...this.args.customSubmissionIds]
+          : [];
       }
     }
-    permissions.addObject(newObj);
+
+    // Add the new permission object or update existing
+    let updatedPermissions;
+    if (Array.isArray(permissions)) {
+      // Remove existing permission for this user if it exists, then add new one
+      updatedPermissions = existingObj
+        ? [...permissions.filter((p) => p !== existingObj), newObj]
+        : [...permissions, newObj];
+    } else {
+      updatedPermissions = [newObj];
+    }
+
+    ws.set('permissions', updatedPermissions);
 
     ws.save().then(() => {
       this.globalPermissionValue = null;
@@ -391,7 +408,7 @@ export default class WorkspaceInfoCollaborators extends Component {
     const permissions = this.args.workspace.get('permissions');
 
     if (utils.isNonEmptyArray(permissions)) {
-      const objToRemove = permissions.findBy('user', user.get('id'));
+      const objToRemove = permissions.find((p) => p.user === user.get('id'));
       if (objToRemove) {
         let userDisplay = user.get('username');
         let pronoun = 'their';
@@ -412,9 +429,12 @@ export default class WorkspaceInfoCollaborators extends Component {
           )
           .then((result) => {
             if (result.value) {
-              permissions.removeObject(objToRemove);
-              const collaborators = this.args.originalCollaborators;
-              collaborators.removeObject(user);
+              // Remove the collaborator's permission object
+              const updatedPermissions = Array.isArray(permissions)
+                ? permissions.filter((p) => p !== objToRemove)
+                : [];
+              workspace.set('permissions', updatedPermissions);
+
               workspace.save().then(() => {
                 this.alert.showToast(
                   'success',

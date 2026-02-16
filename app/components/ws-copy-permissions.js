@@ -100,7 +100,11 @@ export default Component.extend({
     },
     removeCollab(permissionObj) {
       if (this.utils.isNonEmptyObject(permissionObj)) {
-        this.permissions.removeObject(permissionObj);
+        if (Array.isArray(this.permissions)) {
+          this.permissions = this.permissions.filter(
+            (p) => p !== permissionObj
+          );
+        }
       }
     },
     editCollab(permissionObj) {
@@ -118,14 +122,16 @@ export default Component.extend({
       }
       const permissions = this.permissions;
       // check if user already is in array
-      let existingObj = permissions.findBy('user', permissionsObject.user);
+      let existingObj = Array.isArray(permissions)
+        ? permissions.find((p) => p.user === permissionsObject.user)
+        : null;
 
       // remove existing permissions obj and add modified one
-      if (existingObj) {
-        permissions.removeObject(existingObj);
-      }
+      let updatedPermissions = existingObj
+        ? permissions.filter((p) => p !== existingObj)
+        : permissions;
 
-      this.permissions.addObject(permissionsObject);
+      this.permissions = [...updatedPermissions, permissionsObject];
 
       // clear selectedCollaborator
       // clear selectize input
