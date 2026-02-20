@@ -380,6 +380,7 @@ server.put('/api/organizations/:id', pathMw.validateId(), api.put.organization);
 server.put('/api/assignments/:id', pathMw.validateId(), api.put.assignment);
 server.put('/api/notifications/:id', pathMw.validateId(), api.put.notification);
 server.put('/api/groups/:id', api.put.groups);
+server.put('/api/aiInteractions/:id', pathMw.validateId(), api.put.aiInteraction);
 
 // API DELETE
 server.delete('/api/images/:id', pathMw.validateId(), api.delete.image);

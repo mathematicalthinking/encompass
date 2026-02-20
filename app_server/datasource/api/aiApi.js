@@ -6,6 +6,7 @@ const userAuth = require('../../middleware/userAuth');
 const aiService = require('../../services/ai');
 const models = require('../schemas');
 const variantConfig = require('../../config/aiVariants');
+const logger = require('log4js').getLogger('ai');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -24,6 +25,10 @@ async function aiDraft(req, res, next) {
   const target = req.query.target;
   const workspace = req.query.workspace;
   const variant = req.query.variant || 'A'; // A/B TEST: Default to variant A
+  const requestId = `aiDraft_${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+  const requestTimestamp = new Date().toISOString();
 
   if (!target) {
     return utils.sendError.InvalidArgumentError(
@@ -94,11 +99,39 @@ async function aiDraft(req, res, next) {
       typeof draftResult === 'object' && draftResult?.draft
         ? draftResult.draft
         : draftResult;
+
+    // Phase 1 logging stub (server-side)
+    logger.info('[AI LOG] aiDraft request', {
+      requestId,
+      submissionId: target,
+      workspaceId: workspace || null,
+      variant,
+      timestamp: requestTimestamp,
+      draftText: draftText || null,
+    });
+
+    let interactionId = null;
+    try {
+      const interaction = await models.AIInteraction.create({
+        createdBy: user._id,
+        submission: target,
+        workspace: workspace || null,
+        variant,
+        requestId,
+        requestTimestamp: new Date(requestTimestamp),
+        draftText: draftText || null,
+      });
+      interactionId = interaction?._id || null;
+    } catch (logError) {
+      logger.error('[AI LOG] Failed to persist aiDraft log', logError);
+    }
+
     const response = {
       target: target,
       variant: variant, // A/B TEST: Include variant in response
       message: `AI draft generated for target submission: ${target}`,
       draft: draftText,
+      interactionId,
     };
 
     return utils.sendResponse(res, response);
@@ -112,3 +145,78 @@ async function aiDraft(req, res, next) {
 }
 
 module.exports.get.aiDraft = aiDraft;
+
+async function updateAIInteraction(req, res, next) {
+  const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError(
+      'You must be logged in.',
+      res
+    );
+  }
+
+  const interactionId = req.params.id;
+  if (!interactionId) {
+    return utils.sendError.InvalidArgumentError(
+      'AI interaction id is required.',
+      res
+    );
+  }
+
+  try {
+    const interaction = await models.AIInteraction.findById(interactionId);
+    if (!interaction) {
+      return utils.sendError.NotFoundError('AI interaction not found.', res);
+    }
+
+    if (
+      interaction.createdBy &&
+      interaction.createdBy.toString() !== user._id.toString()
+    ) {
+      return utils.sendError.NotAuthorizedError(
+        'You do not have permission.',
+        res
+      );
+    }
+
+    const { action, rating, writtenFeedback, usageIntent, finalAction } =
+      req.body || {};
+
+    if (action) {
+      interaction.lastAction = action;
+      interaction.lastActionAt = new Date();
+    }
+
+    if (typeof rating === 'number') {
+      interaction.rating = rating;
+    }
+
+    if (typeof writtenFeedback === 'string') {
+      interaction.writtenFeedback = writtenFeedback;
+    }
+
+    if (Array.isArray(usageIntent)) {
+      interaction.usageIntent = usageIntent;
+    }
+
+    if (finalAction) {
+      interaction.finalAction = finalAction;
+    }
+
+    interaction.lastModifiedBy = user._id;
+    interaction.lastModifiedDate = new Date();
+
+    await interaction.save();
+
+    return utils.sendResponse(res, { interaction });
+  } catch (error) {
+    logger.error('[AI LOG] Failed to update AI interaction', error);
+    return utils.sendError.InternalError(
+      error.message || 'Failed to update AI interaction',
+      res
+    );
+  }
+}
+
+module.exports.put.aiInteraction = updateAIInteraction;
