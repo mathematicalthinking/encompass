@@ -34,6 +34,7 @@
   'vmtImportRequest',
   'group',
   'aiVariant',
+  'aiInteraction',
 ].forEach(function (path) {
   var module = require('./' + path);
 
