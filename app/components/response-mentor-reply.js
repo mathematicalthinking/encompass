@@ -348,17 +348,20 @@ export default class ResponseMentorReplyComponent extends Component {
 
     this._startLoading();
     try {
+      const workspaceId =
+        this.args.workspace?.id ?? this.args.submission?.workspace?.id;
       const draft = await this.aiDraft.generateDraft(
         this.args.submission.id,
         'D',
-        this.args.workspace?.id
+        workspaceId
       );
-      this.aiGeneratedText = draft;
+      const draftText = typeof draft === 'object' ? draft.draft : draft;
+      this.aiGeneratedText = draftText;
       this.quillKey++;
-      this.editRevisionText = draft;
-      let isEmpty = draft.trim() === '' || draft === '<p><br></p>';
-      let isOverLimit = draft.length > this.maxResponseLength;
-      this.updateQuillText(draft, isEmpty, isOverLimit);
+      this.editRevisionText = draftText;
+      let isEmpty = draftText.trim() === '' || draftText === '<p><br></p>';
+      let isOverLimit = draftText.length > this.maxResponseLength;
+      this.updateQuillText(draftText, isEmpty, isOverLimit);
       this.alert.showToast(
         'success',
         'AI draft generated successfully',

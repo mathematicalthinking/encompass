@@ -70,20 +70,21 @@ export default class AiVariantComparisonComponent extends Component {
         variantCode,
         workspaceId
       );
+      const draftText = typeof result === 'object' ? result.draft : result;
 
       // Set the appropriate tracked property
       switch (variantCode) {
         case 'A':
-          this.draftA = result;
+          this.draftA = draftText;
           break;
         case 'B':
-          this.draftB = result;
+          this.draftB = draftText;
           break;
         case 'C':
-          this.draftC = result;
+          this.draftC = draftText;
           break;
         case 'D':
-          this.draftD = result;
+          this.draftD = draftText;
           break;
       }
     } catch (error) {
@@ -108,7 +109,7 @@ export default class AiVariantComparisonComponent extends Component {
               v.code,
               workspaceId
             );
-            return result;
+            return typeof result === 'object' ? result.draft : result;
           } catch (error) {
             console.error(`Error generating variant ${v.code}:`, error);
             return `Error: ${error.message}`;

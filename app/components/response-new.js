@@ -39,6 +39,7 @@ export default class ResponseNewComponent extends Component {
   @tracked aiActionSelection = null;
   @tracked aiRegenerationPrompt = '';
   @tracked allowRerate = false;
+  @tracked aiInteractionId = null;
   @tracked doShowLoadingMessage = false;
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
@@ -376,6 +377,12 @@ export default class ResponseNewComponent extends Component {
     );
   }
 
+  get selectedUsageIntents() {
+    return this.usageOptions
+      .filter((option) => Boolean(this[option.key]))
+      .map((option) => option.label);
+  }
+
   @action
   isStarFilled(starNumber) {
     return this.aiDraftRating !== null && this.aiDraftRating >= starNumber;
@@ -665,6 +672,12 @@ export default class ResponseNewComponent extends Component {
     }
 
     if (this.hasCopiedAiText && this.aiActionSelection === 'regenerate') {
+      await this.logAiInteraction('regenerate', {
+        rating: this.aiDraftRating,
+        writtenFeedback: this.aiWrittenFeedback,
+        usageIntent: this.selectedUsageIntents,
+        finalAction: 'regenerate',
+      });
       this.generateAIDraft({
         preserveEditor: true,
         preserveFinalizeState: true,
@@ -674,11 +687,23 @@ export default class ResponseNewComponent extends Component {
     }
 
     if (this.hasCopiedAiText && this.aiActionSelection === 'draft') {
+      await this.logAiInteraction('save_draft', {
+        rating: this.aiDraftRating,
+        writtenFeedback: this.aiWrittenFeedback,
+        usageIntent: this.selectedUsageIntents,
+        finalAction: 'draft',
+      });
       this.saveResponse(true);
       return;
     }
 
     if (this.hasCopiedAiText && this.aiActionSelection === 'finalize') {
+      await this.logAiInteraction('submit', {
+        rating: this.aiDraftRating,
+        writtenFeedback: this.aiWrittenFeedback,
+        usageIntent: this.selectedUsageIntents,
+        finalAction: 'submit',
+      });
       this.saveResponse(false);
       return;
     }
@@ -781,10 +806,14 @@ export default class ResponseNewComponent extends Component {
       'doShowLoadingMessage'
     );
     try {
+      const workspaceId =
+        this.args.workspace?.id ??
+        this.args.responseData?.workspace?.id ??
+        this.args.submission?.workspace?.id;
       const draft = await this.aiDraft.generateDraft(
         submissionId,
         'D',
-        this.args.workspace?.id
+        workspaceId
       );
 
       if (!preserveEditor) {
@@ -792,8 +821,12 @@ export default class ResponseNewComponent extends Component {
         this.pendingContent = null;
       }
 
+      const draftText = typeof draft === 'object' ? draft.draft : draft;
+      this.aiInteractionId =
+        typeof draft === 'object' ? draft.interactionId : null;
+
       // Convert AI plain text to HTML immediately and store it
-      this.aiGeneratedText = this.convertPlainTextToHtml(draft);
+      this.aiGeneratedText = this.convertPlainTextToHtml(draftText);
       this.allowRerate = allowRerate;
       if (allowRerate) {
         this.aiDraftRating = null;
@@ -883,6 +916,13 @@ export default class ResponseNewComponent extends Component {
     this.aiActionSelection = 'finalize';
     this.allowRerate = false;
 
+    this.logAiInteraction('brought_down', {
+      rating: this.aiDraftRating,
+      writtenFeedback: this.aiWrittenFeedback,
+      usageIntent: this.selectedUsageIntents,
+      finalAction: 'bring_down',
+    });
+
     this.alert.showToast(
       'success',
       'AI draft copied to editor',
@@ -896,5 +936,24 @@ export default class ResponseNewComponent extends Component {
   @action
   setStarRating(rating) {
     this.aiDraftRating = rating;
+  }
+
+  async logAiInteraction(action, payload = {}) {
+    if (!this.aiInteractionId) return;
+
+    try {
+      await fetch(`/api/aiInteractions/${this.aiInteractionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          action,
+          ...payload,
+        }),
+      });
+    } catch (error) {
+      // Non-blocking: logging should not interrupt user flow
+      console.warn('AI interaction logging failed', error);
+    }
   }
 }
