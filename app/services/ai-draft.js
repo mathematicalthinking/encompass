@@ -96,6 +96,10 @@ export default class AiDraftService extends Service {
       throw new Error('No content received');
     }
 
-    return data.draft;
+    return {
+      draft: data.draft,
+      interactionId: data.interactionId || null,
+      requestId: data.requestId || null,
+    };
   }
 }
