@@ -672,17 +672,26 @@ export default class ResponseNewComponent extends Component {
     }
 
     if (this.hasCopiedAiText && this.aiActionSelection === 'regenerate') {
+      const priorInteractionId = this.aiInteractionId;
       await this.logAiInteraction('regenerate', {
         rating: this.aiDraftRating,
         writtenFeedback: this.aiWrittenFeedback,
         usageIntent: this.selectedUsageIntents,
         finalAction: 'regenerate',
       });
-      this.generateAIDraft({
+      const result = await this.generateAIDraft({
         preserveEditor: true,
         preserveFinalizeState: true,
         allowRerate: true,
       });
+      if (priorInteractionId && result?.interactionId) {
+        await this.logAiInteractionFor(priorInteractionId, 'superseded', {
+          isSuperseded: true,
+          supersededBy: result.interactionId,
+          supersededAt: new Date().toISOString(),
+          finalAction: 'superseded',
+        });
+      }
       return;
     }
 
@@ -822,8 +831,9 @@ export default class ResponseNewComponent extends Component {
       }
 
       const draftText = typeof draft === 'object' ? draft.draft : draft;
-      this.aiInteractionId =
+      const interactionId =
         typeof draft === 'object' ? draft.interactionId : null;
+      this.aiInteractionId = interactionId;
 
       // Convert AI plain text to HTML immediately and store it
       this.aiGeneratedText = this.convertPlainTextToHtml(draftText);
@@ -851,6 +861,7 @@ export default class ResponseNewComponent extends Component {
         false,
         null
       );
+      return { draftText, interactionId };
     } catch (error) {
       this.alert.showToast(
         'error',
@@ -941,8 +952,14 @@ export default class ResponseNewComponent extends Component {
   async logAiInteraction(action, payload = {}) {
     if (!this.aiInteractionId) return;
 
+    return this.logAiInteractionFor(this.aiInteractionId, action, payload);
+  }
+
+  async logAiInteractionFor(interactionId, action, payload = {}) {
+    if (!interactionId) return;
+
     try {
-      await fetch(`/api/aiInteractions/${this.aiInteractionId}`, {
+      await fetch(`/api/aiInteractions/${interactionId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
