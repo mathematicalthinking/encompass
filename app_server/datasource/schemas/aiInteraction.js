@@ -34,6 +34,11 @@ var AIInteractionSchema = new Schema(
     lastAction: { type: String },
     lastActionAt: { type: Date },
     finalAction: { type: String },
+
+    // Regeneration tracking
+    isSuperseded: { type: Boolean, default: false },
+    supersededBy: { type: ObjectId, ref: 'AIInteraction' },
+    supersededAt: { type: Date },
   },
   { versionKey: false }
 );
