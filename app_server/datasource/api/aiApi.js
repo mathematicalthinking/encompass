@@ -180,8 +180,16 @@ async function updateAIInteraction(req, res, next) {
       );
     }
 
-    const { action, rating, writtenFeedback, usageIntent, finalAction } =
-      req.body || {};
+    const {
+      action,
+      rating,
+      writtenFeedback,
+      usageIntent,
+      finalAction,
+      isSuperseded,
+      supersededBy,
+      supersededAt,
+    } = req.body || {};
 
     if (action) {
       interaction.lastAction = action;
@@ -202,6 +210,18 @@ async function updateAIInteraction(req, res, next) {
 
     if (finalAction) {
       interaction.finalAction = finalAction;
+    }
+
+    if (typeof isSuperseded === 'boolean') {
+      interaction.isSuperseded = isSuperseded;
+    }
+
+    if (supersededBy) {
+      interaction.supersededBy = supersededBy;
+    }
+
+    if (supersededAt) {
+      interaction.supersededAt = new Date(supersededAt);
     }
 
     interaction.lastModifiedBy = user._id;
