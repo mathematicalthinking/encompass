@@ -223,6 +223,7 @@
               class='approver-note'
               @value={{this.aiRegenerationPrompt}}
               placeholder='Describe what should change in the regenerated draft...'
+              {{on 'input' this.updateAiRegenerationPrompt}}
             />
           </div>
         {{/if}}

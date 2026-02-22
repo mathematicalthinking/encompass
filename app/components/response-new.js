@@ -393,6 +393,11 @@ export default class ResponseNewComponent extends Component {
     this.aiWrittenFeedback = event.target.value;
   }
 
+  @action
+  updateAiRegenerationPrompt(event) {
+    this.aiRegenerationPrompt = event.target.value;
+  }
+
   quote(string, opts, isImageTag) {
     string = string.replace(/(\r\n|\n|\r)/gm, ' ');
     let defaultPrefix = '         ';
@@ -676,6 +681,7 @@ export default class ResponseNewComponent extends Component {
       await this.logAiInteraction('regenerate', {
         rating: this.aiDraftRating,
         writtenFeedback: this.aiWrittenFeedback,
+        regenerationPrompt: this.aiRegenerationPrompt,
         usageIntent: this.selectedUsageIntents,
         finalAction: 'regenerate',
       });
@@ -846,6 +852,7 @@ export default class ResponseNewComponent extends Component {
         this.hasUsedAIDraft = false; // Reset "Bring it Down" button
         this.aiDraftRating = null; // Reset rating for new draft
         this.aiWrittenFeedback = ''; // Reset written feedback for new draft
+        this.aiRegenerationPrompt = '';
         this.hasCopiedAiText = false;
         this.aiActionSelection = null;
         this.showUsageCheckboxes = false;
