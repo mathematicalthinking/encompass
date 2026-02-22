@@ -184,6 +184,7 @@ async function updateAIInteraction(req, res, next) {
       action,
       rating,
       writtenFeedback,
+      regenerationPrompt,
       usageIntent,
       finalAction,
       isSuperseded,
@@ -202,6 +203,10 @@ async function updateAIInteraction(req, res, next) {
 
     if (typeof writtenFeedback === 'string') {
       interaction.writtenFeedback = writtenFeedback;
+    }
+
+    if (typeof regenerationPrompt === 'string') {
+      interaction.regenerationPrompt = regenerationPrompt;
     }
 
     if (Array.isArray(usageIntent)) {

@@ -30,6 +30,7 @@ var AIInteractionSchema = new Schema(
     // Phase 2 - user actions
     rating: { type: Number, min: 1, max: 5 },
     writtenFeedback: { type: String },
+    regenerationPrompt: { type: String },
     usageIntent: [{ type: String }],
     lastAction: { type: String },
     lastActionAt: { type: Date },
