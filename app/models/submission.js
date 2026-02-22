@@ -77,12 +77,15 @@ export default class SubmissionModel extends AuditableModel {
     let label = this.student;
     let createDate = this.createDate;
     if (createDate) {
-      const datePart = new Intl.DateTimeFormat(undefined, {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      }).format(new Date(createDate));
-      label += ` on ${datePart}`;
+      const date = new Date(createDate);
+      if (!isNaN(date.getTime())) {
+        const datePart = new Intl.DateTimeFormat(undefined, {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        }).format(date);
+        label += ` on ${datePart}`;
+      }
     }
     label += ` (${this.data?.thread?.threadId})`;
     return label;

@@ -2,7 +2,7 @@ import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 
 export default class MetricsIndexController extends Controller {
   @service store;
@@ -60,10 +60,10 @@ export default class MetricsIndexController extends Controller {
           folders: folders
             .map((folder) => (folder ? folder.name : ''))
             .join('; '),
-          actionDate: format(
-            new Date(selection.createDate),
-            'MM/dd/yy hh:mm:ss'
-          ),
+          actionDate: (() => {
+            const date = new Date(selection.createDate);
+            return isValid(date) ? format(date, 'MM/dd/yy hh:mm:ss') : '';
+          })(),
         };
       })
     );

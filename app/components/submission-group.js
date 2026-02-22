@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 
 /**
  *  <SubmissionGroup
@@ -76,12 +76,16 @@ export default class SubmissionGroupComponent extends Component {
     const thread = this.currentThread ?? [];
     return thread.map((submission, index, all) => {
       const createDate = new Date(submission.createDate);
-      const datePart = new Intl.DateTimeFormat(undefined, {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      }).format(createDate);
-      const timePart = format(createDate, 'h:mm');
+      let datePart = '';
+      let timePart = '';
+      if (isValid(createDate)) {
+        datePart = new Intl.DateTimeFormat(undefined, {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        }).format(createDate);
+        timePart = format(createDate, 'h:mm');
+      }
       return {
         index: index + 1,
         label: `${datePart} ${timePart}`,
