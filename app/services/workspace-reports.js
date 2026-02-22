@@ -1,6 +1,6 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
-import moment from 'moment';
+import { format, isValid } from 'date-fns';
 
 export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
@@ -281,9 +281,10 @@ export default class WorkspaceReportsService extends Service {
           return comments.map((comment) => {
             const annotatorText = this.stripHtml(comment.get('text'));
             const annotatorUsername = comment.get('createdBy.username');
-            const annotatorCreateDate = moment(
-              comment.get('createDate')
-            ).format('MM/DD/YYYY');
+            const commentDate = new Date(comment.get('createDate'));
+            const annotatorCreateDate = isValid(commentDate)
+              ? format(commentDate, 'MM/dd/yyyy')
+              : '';
             const selectionData = {
               [`Selector of Text`]: selectorInfo.username,
               [`Text of Selection`]: selectorInfo.text,
@@ -314,9 +315,11 @@ export default class WorkspaceReportsService extends Service {
 
     if (!selector) return defaultSelection;
 
-    const selectionCreateDate = moment(selector.get('createDate')).format(
-      'MM/DD/YYYY'
-    );
+    const createDate = new Date(selector.get('createDate'));
+    const selectionCreateDate = isValid(createDate)
+      ? format(createDate, 'MM/dd/yyyy')
+      : '';
+
     const text = this.stripHtml(selector.get('text'));
     const username = selector.get('createdBy.username');
     const annotatorText = this.stripHtml(
@@ -325,9 +328,13 @@ export default class WorkspaceReportsService extends Service {
     const annotatorUsername = selector.get(
       'comments.firstObject.createdBy.username'
     );
-    const annotatorCreateDate = moment(
+
+    const commentCreateDate = new Date(
       selector.get('comments.firstObject.createDate')
-    ).format('MM/DD/YYYY');
+    );
+    const annotatorCreateDate = isValid(commentCreateDate)
+      ? format(commentCreateDate, 'MM/dd/yyyy')
+      : '';
     const selectorInfo = {
       selectionCreateDate,
       text,
@@ -343,7 +350,7 @@ export default class WorkspaceReportsService extends Service {
     let revisionFields = {};
     for (let i = 1; i <= maxRevisions; i++) {
       revisionFields[`R${i}`] =
-        submissionLabel === `R${i}` ? moment().format('MM/DD/YYYY') : '';
+        submissionLabel === `R${i}` ? format(new Date(), 'MM/dd/yyyy') : '';
     }
     return revisionFields;
   }
@@ -372,8 +379,9 @@ export default class WorkspaceReportsService extends Service {
         .join('\n'); // Join responses with a newline character.
       const responseCreateDate = submission.responses
         .map((response) => {
-          return response.createDate
-            ? moment(response.createDate).format('MM/DD/YYYY')
+          const responseDate = new Date(response.createDate);
+          return isValid(responseDate)
+            ? format(responseDate, 'MM/dd/yyyy')
             : 'No Date';
         })
         .join('\n');

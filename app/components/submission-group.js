@@ -2,15 +2,22 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
-import moment from 'moment';
+import { format, isValid } from 'date-fns';
 
 /**
- * Passed in by template:
- * - submissions
- * - submission
- * - canSelect - only used to pass on to submissions
- * - currentUser - only used to pass on to submissions
- * - currentWorkspace - only used to pass on to submissions
+ *  <SubmissionGroup
+      @canRespond={{this.canRespond}}
+      @submissions={{this.currentWorkspace.submissions.content}}
+      @submission={{this.model.submission}}
+      @addSelection={{this.addSelection}}
+      @deleteSelection={{this.deleteSelection}}
+      @currentWorkspace={{this.currentWorkspace}}
+      @selections={{this.nonTrashedSelections}}
+      @responses={{this.nonTrashedResponses}}
+      @containerLayoutClass={{this.containerLayoutClass}}
+      @canSeeSelections={{this.canSeeSelections}}
+      @isParentWorkspace={{this.isParentWorkspace}}
+    />
  */
 export default class SubmissionGroupComponent extends Component {
   @service('utility-methods') utils;
@@ -68,9 +75,20 @@ export default class SubmissionGroupComponent extends Component {
   get currentRevisions() {
     const thread = this.currentThread ?? [];
     return thread.map((submission, index, all) => {
+      const createDate = new Date(submission.createDate);
+      let datePart = '';
+      let timePart = '';
+      if (isValid(createDate)) {
+        datePart = new Intl.DateTimeFormat(undefined, {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        }).format(createDate);
+        timePart = format(createDate, 'h:mm');
+      }
       return {
         index: index + 1,
-        label: moment(submission.createDate).format('l h:mm'),
+        label: `${datePart} ${timePart}`,
         revision: submission,
         thread: all.at(-1),
       };

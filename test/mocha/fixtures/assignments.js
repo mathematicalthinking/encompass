@@ -1,4 +1,4 @@
-const moment = require('moment');
+const { format } = require('date-fns');
 const seededAssignments = require('../../../seeders/assignments');
 const seededSections = require('../../../seeders/sections');
 
@@ -44,8 +44,9 @@ module.exports = {
       linkedWorkspaceRequest: {
         doCreate: false,
       },
-      expectedResultName: `Summer's Org Problem / ${moment(new Date()).format(
-        'MMM Do YYYY'
+      expectedResultName: `Summer's Org Problem / ${format(
+        new Date(),
+        'MMM do yyyy'
       )}`,
     },
   },

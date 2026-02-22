@@ -7,7 +7,7 @@
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
-const moment = require('moment');
+const { endOfDay, isValid, startOfDay } = require('date-fns');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -58,16 +58,13 @@ async function getAnswers(req, res, next) {
       let { startDate, endDate, students } = filterBy;
 
       if (startDate && endDate) {
-        let startMoment = moment(startDate).startOf('day');
-        let endMoment = moment(endDate).endOf('day');
-        let startDateObj = new Date(startMoment);
+        let startDateObj = new Date(startDate);
+        let endDateObj = new Date(endDate);
 
-        let endDateObj = new Date(endMoment);
-
-        if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
+        if (isValid(startDateObj) && isValid(endDateObj)) {
           filterBy.createDate = {
-            $gte: startDateObj,
-            $lte: endDateObj,
+            $gte: startOfDay(startDateObj),
+            $lte: endOfDay(endDateObj),
           };
         }
       }
