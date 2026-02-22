@@ -1,5 +1,5 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import moment from 'moment';
+import { format } from 'date-fns';
 import AuditableModel from './auditable';
 
 export default class SubmissionModel extends AuditableModel {
@@ -77,7 +77,12 @@ export default class SubmissionModel extends AuditableModel {
     let label = this.student;
     let createDate = this.createDate;
     if (createDate) {
-      label += ` on ${moment(createDate).format('l')}`;
+      const datePart = new Intl.DateTimeFormat(undefined, {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      }).format(new Date(createDate));
+      label += ` on ${datePart}`;
     }
     label += ` (${this.data?.thread?.threadId})`;
     return label;

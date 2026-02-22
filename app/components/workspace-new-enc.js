@@ -4,7 +4,7 @@ import { inject as service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
 import { tracked } from '@glimmer/tracking';
 import $ from 'jquery';
-import moment from 'moment';
+import { isValid, parse } from 'date-fns';
 import { later } from '@ember/runloop';
 
 export default class WorkspaceNewEncComponent extends Component {
@@ -84,17 +84,20 @@ export default class WorkspaceNewEncComponent extends Component {
   }
 
   get isDateRangeValid() {
-    const htmlFormat = 'YYYY-MM-DD';
     let start = this.startDate;
     let end = this.endDate;
 
     if (isEmpty(start) || isEmpty(end)) {
       return false;
     }
-    start = moment(start, htmlFormat);
-    end = moment(end, htmlFormat);
+    const parsedStart = parse(start, 'yyyy-MM-dd', new Date());
+    const parsedEnd = parse(end, 'yyyy-MM-dd', new Date());
 
-    return end > start;
+    if (!isValid(parsedStart) || !isValid(parsedEnd)) {
+      return false;
+    }
+
+    return parsedEnd > parsedStart;
   }
 
   get isAnswerCriteriaValid() {
@@ -152,21 +155,25 @@ export default class WorkspaceNewEncComponent extends Component {
   }
 
   getMongoDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    return new Date(dateMoment);
+    const parsedDate = parse(htmlDateString, 'yyyy-MM-dd', new Date());
+    if (!isValid(parsedDate)) {
+      return;
+    }
+    return parsedDate;
   }
 
   getEndDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    let date = new Date(dateMoment);
+    const parsedDate = parse(htmlDateString, 'yyyy-MM-dd', new Date());
+    if (!isValid(parsedDate)) {
+      return;
+    }
+    let date = new Date(parsedDate);
     date.setHours(23, 59, 59);
     return date;
   }

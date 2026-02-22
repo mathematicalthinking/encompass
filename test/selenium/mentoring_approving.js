@@ -2,7 +2,7 @@
 const { Builder } = require('selenium-webdriver');
 const { it, describe, before, after } = require('mocha');
 const { expect } = require('chai');
-const moment = require('moment');
+const { formatDistanceToNow } = require('date-fns');
 // REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
@@ -216,8 +216,11 @@ describe('Mentoring / Approving Interactions', function () {
     it('should display correct information about thread', async function () {
       let values = {
         workspace: workspaceInfo.name,
-        submissionDate: moment(submissionInfo.createDate).fromNow(),
-        replyDate: moment().fromNow(),
+        submissionDate: formatDistanceToNow(
+          new Date(submissionInfo.createDate),
+          { addSuffix: true }
+        ),
+        replyDate: formatDistanceToNow(new Date(), { addSuffix: true }),
         problem: workspaceInfo.problem,
         student: feedbackReceiver.username,
       };

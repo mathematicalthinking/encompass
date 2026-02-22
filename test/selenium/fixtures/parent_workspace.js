@@ -1,4 +1,4 @@
-const moment = require('moment');
+const { format } = require('date-fns');
 
 module.exports = {
   teacher: {
@@ -6,14 +6,13 @@ module.exports = {
     password: 'test',
     parentWorkspace: {
       name: `
-      Parent Ws Custom: Morty's Public / ${moment(new Date()).format(
-        'MMM Do YYYY'
-      )} `,
+      Parent Ws Custom: Morty's Public / ${format(new Date(), 'MMM do yyyy')} `,
       initialFolders: 4,
     },
     linkedWs: {
-      name: `mtgteacher: Morty's Public / ${moment(new Date()).format(
-        'MMM Do YYYY'
+      name: `mtgteacher: Morty's Public / ${format(
+        new Date(),
+        'MMM do yyyy'
       )} (MTG Period 1)`,
     },
   },
@@ -25,8 +24,9 @@ module.exports = {
       explanation: 'here is my explanation',
     },
     linkedWs: {
-      name: `mtgstudent1: Morty's Public Custom / ${moment(new Date()).format(
-        'MMM Do YYYY'
+      name: `mtgstudent1: Morty's Public Custom / ${format(
+        new Date(),
+        'MMM do yyyy'
       )} (MTG Period 1)`,
       newFolder: {
         name: 'curious',
@@ -44,8 +44,9 @@ module.exports = {
       explanation: 'here is my explanation as student2',
     },
     linkedWs: {
-      name: `mtgstudent2: Morty's Public Custom / ${moment(new Date()).format(
-        'MMM Do YYYY'
+      name: `mtgstudent2: Morty's Public Custom / ${format(
+        new Date(),
+        'MMM do yyyy'
       )} (MTG Period 1)`,
       newFolder: {
         name: 'interesting',
@@ -59,13 +60,14 @@ module.exports = {
     username: 'mtgstudent2',
     password: 'test',
     linkedWs: {
-      name: `mtgstudent3: Morty's Public Custom / ${moment(new Date()).format(
-        'MMM Do YYYY'
+      name: `mtgstudent3: Morty's Public Custom / ${format(
+        new Date(),
+        'MMM do yyyy'
       )} (MTG Period 1)`,
     },
   },
   newAssignment: {
-    name: `Morty's Public / ${moment(new Date()).format('MMM Do YYYY')}`,
+    name: `Morty's Public / ${format(new Date(), 'MMM do yyyy')}`,
     section: {
       id: '5c6eb4d49852e5710311d637',
       name: 'MTG Period 1',
@@ -85,11 +87,13 @@ module.exports = {
         username: 'mtgstudent3',
       },
     ],
-    linkedWsName: `Morty's Public Custom / ${moment(new Date()).format(
-      'MMM Do YYYY'
+    linkedWsName: `Morty's Public Custom / ${format(
+      new Date(),
+      'MMM do yyyy'
     )} (MTG Period 1)`,
-    parentWsName: `Parent Ws Custom: Morty's Public / ${moment(
-      new Date()
-    ).format('MMM Do YYYY')}`,
+    parentWsName: `Parent Ws Custom: Morty's Public / ${format(
+      new Date(),
+      'MMM do yyyy'
+    )}`,
   },
 };

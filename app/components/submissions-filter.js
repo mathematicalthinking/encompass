@@ -3,7 +3,7 @@ import { computed } from '@ember/object';
 import { later } from '@ember/runloop';
 import { service } from '@ember/service';
 import $ from 'jquery';
-import moment from 'moment';
+import { format, isValid, parse, subYears } from 'date-fns';
 import isArray from 'lodash-es/isArray';
 import isObject from 'lodash-es/isObject';
 import isNull from 'lodash-es/isNull';
@@ -37,8 +37,8 @@ export default Component.extend({
   },
   init: function () {
     this._super(...arguments);
-    this.set('startDate', moment().subtract(1, 'y').format('YYYY-MM-DD'));
-    this.set('endDate', moment().format('YYYY-MM-DD'));
+    this.set('startDate', format(subYears(new Date(), 1), 'yyyy-MM-dd'));
+    this.set('endDate', format(new Date(), 'yyyy-MM-dd'));
   },
   missingCriteriaMessage:
     'Please select either a teacher, assignment, problem, class, or at least one student.',
@@ -569,21 +569,25 @@ export default Component.extend({
   },
 
   getMongoDate: function (htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    return new Date(dateMoment);
+    const parsedDate = parse(htmlDateString, 'yyyy-MM-dd', new Date());
+    if (!isValid(parsedDate)) {
+      return;
+    }
+    return parsedDate;
   },
 
   getEndDate: function (htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
     if (typeof htmlDateString !== 'string') {
       return;
     }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    let date = new Date(dateMoment);
+    const parsedDate = parse(htmlDateString, 'yyyy-MM-dd', new Date());
+    if (!isValid(parsedDate)) {
+      return;
+    }
+    let date = new Date(parsedDate);
     date.setHours(23, 59, 59);
     return date;
   },

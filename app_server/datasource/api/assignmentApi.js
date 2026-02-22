@@ -5,7 +5,7 @@
  * @description This is the API for assignment based requests
  * @author Daniel Kelly
  */
-const moment = require('moment');
+const { format, isValid } = require('date-fns');
 
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
@@ -258,22 +258,26 @@ const postAssignment = async (req, res, next) => {
     } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
-    let assignedMoment = moment(assignedDate);
+    const assignedDateObj = new Date(assignedDate);
 
-    if (!assignedMoment.isValid()) {
+    if (!isValid(assignedDateObj)) {
       // invalid assigned Date
       // not required to have assigned date on creation
       delete req.body.assignment.assignedDate;
       delete req.body.assignment.dueDate;
     }
 
-    let dueMoment = moment(dueDate);
+    const dueDateObj = new Date(dueDate);
 
-    if (!dueMoment.isValid()) {
+    if (!isValid(dueDateObj)) {
       delete req.body.assignment.dueDate;
     }
 
-    if (dueMoment < assignedMoment) {
+    if (
+      isValid(dueDateObj) &&
+      isValid(assignedDateObj) &&
+      dueDateObj < assignedDateObj
+    ) {
       // due date before assigned date
       // set due data as undefined
       // can be edited later
@@ -299,9 +303,9 @@ const postAssignment = async (req, res, next) => {
         );
       }
       let formattedDate =
-        typeof assignedDate === 'string'
-          ? moment(assignedDate).format('MMM Do YYYY')
-          : moment(new Date()).format('MMM Do YYYY');
+        typeof assignedDate === 'string' && isValid(assignedDateObj)
+          ? format(assignedDateObj, 'MMM do yyyy')
+          : format(new Date(), 'MMM do yyyy');
       req.body.assignment.name = `${foundProblem.title} / ${formattedDate} `;
     }
 
