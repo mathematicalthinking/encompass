@@ -40,6 +40,7 @@ export default class ResponseNewComponent extends Component {
   @tracked aiRegenerationPrompt = '';
   @tracked allowRerate = false;
   @tracked aiInteractionId = null;
+  @tracked aiBroughtDownText = null;
   @tracked doShowLoadingMessage = false;
   @tracked quillEditorKey = 0;
   @tracked pendingContent = null;
@@ -398,6 +399,28 @@ export default class ResponseNewComponent extends Component {
     this.aiRegenerationPrompt = event.target.value;
   }
 
+  normalizeUsageText(text = '') {
+    return String(text).replace(/>\s+</g, '><').replace(/\s+/g, ' ').trim();
+  }
+
+  buildUsageOutcomePayload(finalText = this.quillText) {
+    if (!this.aiBroughtDownText) {
+      return {
+        actualUsage: null,
+        wasEditedAfterBringDown: null,
+      };
+    }
+
+    const wasEdited =
+      this.normalizeUsageText(finalText) !==
+      this.normalizeUsageText(this.aiBroughtDownText);
+
+    return {
+      actualUsage: wasEdited ? 'used_with_edits' : 'used_as_is',
+      wasEditedAfterBringDown: wasEdited,
+    };
+  }
+
   quote(string, opts, isImageTag) {
     string = string.replace(/(\r\n|\n|\r)/gm, ' ');
     let defaultPrefix = '         ';
@@ -607,6 +630,16 @@ export default class ResponseNewComponent extends Component {
       null
     );
 
+    if (this.hasCopiedAiText && this.aiInteractionId) {
+      const usageOutcome = this.buildUsageOutcomePayload(this.quillText);
+      this.logAiInteractionFor(this.aiInteractionId, null, {
+        finalAction: isDraft ? 'draft' : 'submit',
+        finalText: this.quillText,
+        finalResponse: savedResponse.id,
+        ...usageOutcome,
+      });
+    }
+
     if (isDraft) {
       // For drafts, refresh the current route to show the new draft
       this.args.handleResponseThread?.(savedResponse, 'mentor');
@@ -684,6 +717,8 @@ export default class ResponseNewComponent extends Component {
         regenerationPrompt: this.aiRegenerationPrompt,
         usageIntent: this.selectedUsageIntents,
         finalAction: 'regenerate',
+        actualUsage: 'not_used',
+        finalText: this.quillText,
       });
       const result = await this.generateAIDraft({
         preserveEditor: true,
@@ -696,28 +731,35 @@ export default class ResponseNewComponent extends Component {
           supersededBy: result.interactionId,
           supersededAt: new Date().toISOString(),
           finalAction: 'superseded',
+          actualUsage: 'not_used',
         });
       }
       return;
     }
 
     if (this.hasCopiedAiText && this.aiActionSelection === 'draft') {
+      const usageOutcome = this.buildUsageOutcomePayload(this.quillText);
       await this.logAiInteraction('save_draft', {
         rating: this.aiDraftRating,
         writtenFeedback: this.aiWrittenFeedback,
         usageIntent: this.selectedUsageIntents,
         finalAction: 'draft',
+        finalText: this.quillText,
+        ...usageOutcome,
       });
       this.saveResponse(true);
       return;
     }
 
     if (this.hasCopiedAiText && this.aiActionSelection === 'finalize') {
+      const usageOutcome = this.buildUsageOutcomePayload(this.quillText);
       await this.logAiInteraction('submit', {
         rating: this.aiDraftRating,
         writtenFeedback: this.aiWrittenFeedback,
         usageIntent: this.selectedUsageIntents,
         finalAction: 'submit',
+        finalText: this.quillText,
+        ...usageOutcome,
       });
       this.saveResponse(false);
       return;
@@ -840,6 +882,7 @@ export default class ResponseNewComponent extends Component {
       const interactionId =
         typeof draft === 'object' ? draft.interactionId : null;
       this.aiInteractionId = interactionId;
+      this.aiBroughtDownText = null;
 
       // Convert AI plain text to HTML immediately and store it
       this.aiGeneratedText = this.convertPlainTextToHtml(draftText);
@@ -853,6 +896,7 @@ export default class ResponseNewComponent extends Component {
         this.aiDraftRating = null; // Reset rating for new draft
         this.aiWrittenFeedback = ''; // Reset written feedback for new draft
         this.aiRegenerationPrompt = '';
+        this.aiBroughtDownText = null;
         this.hasCopiedAiText = false;
         this.aiActionSelection = null;
         this.showUsageCheckboxes = false;
@@ -933,12 +977,15 @@ export default class ResponseNewComponent extends Component {
     this.hasCopiedAiText = true;
     this.aiActionSelection = 'finalize';
     this.allowRerate = false;
+    this.aiBroughtDownText = newText;
 
     this.logAiInteraction('brought_down', {
       rating: this.aiDraftRating,
       writtenFeedback: this.aiWrittenFeedback,
       usageIntent: this.selectedUsageIntents,
       finalAction: 'bring_down',
+      actualUsage: 'pending',
+      broughtDownText: newText,
     });
 
     this.alert.showToast(
@@ -966,14 +1013,12 @@ export default class ResponseNewComponent extends Component {
     if (!interactionId) return;
 
     try {
+      const body = action ? { action, ...payload } : { ...payload };
       await fetch(`/api/aiInteractions/${interactionId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
-        body: JSON.stringify({
-          action,
-          ...payload,
-        }),
+        body: JSON.stringify(body),
       });
     } catch (error) {
       // Non-blocking: logging should not interrupt user flow
