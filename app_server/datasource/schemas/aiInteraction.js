@@ -40,6 +40,13 @@ var AIInteractionSchema = new Schema(
     isSuperseded: { type: Boolean, default: false },
     supersededBy: { type: ObjectId, ref: 'AIInteraction' },
     supersededAt: { type: Date },
+
+    // Intent vs actual usage tracking
+    actualUsage: { type: String },
+    wasEditedAfterBringDown: { type: Boolean },
+    broughtDownText: { type: String },
+    finalText: { type: String },
+    finalResponse: { type: ObjectId, ref: 'Response' },
   },
   { versionKey: false }
 );
