@@ -132,6 +132,7 @@ async function aiDraft(req, res, next) {
       message: `AI draft generated for target submission: ${target}`,
       draft: draftText,
       interactionId,
+      requestId,
     };
 
     return utils.sendResponse(res, response);
@@ -167,7 +168,7 @@ async function updateAIInteraction(req, res, next) {
   try {
     const interaction = await models.AIInteraction.findById(interactionId);
     if (!interaction) {
-      return utils.sendError.NotFoundError('AI interaction not found.', res);
+      return utils.sendResponse(res, null);
     }
 
     if (
@@ -187,6 +188,11 @@ async function updateAIInteraction(req, res, next) {
       regenerationPrompt,
       usageIntent,
       finalAction,
+      actualUsage,
+      wasEditedAfterBringDown,
+      broughtDownText,
+      finalText,
+      finalResponse,
       isSuperseded,
       supersededBy,
       supersededAt,
@@ -215,6 +221,26 @@ async function updateAIInteraction(req, res, next) {
 
     if (finalAction) {
       interaction.finalAction = finalAction;
+    }
+
+    if (typeof actualUsage === 'string') {
+      interaction.actualUsage = actualUsage;
+    }
+
+    if (typeof wasEditedAfterBringDown === 'boolean') {
+      interaction.wasEditedAfterBringDown = wasEditedAfterBringDown;
+    }
+
+    if (typeof broughtDownText === 'string') {
+      interaction.broughtDownText = broughtDownText;
+    }
+
+    if (typeof finalText === 'string') {
+      interaction.finalText = finalText;
+    }
+
+    if (finalResponse) {
+      interaction.finalResponse = finalResponse;
     }
 
     if (typeof isSuperseded === 'boolean') {
