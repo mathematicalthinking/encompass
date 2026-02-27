@@ -24,10 +24,13 @@ async function aiDraft(req, res, next) {
 
   const target = req.query.target;
   const workspace = req.query.workspace;
-  const variant = req.query.variant || 'A'; // A/B TEST: Default to variant A
-  const requestId = `aiDraft_${Date.now()}_${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+  const source = req.query.source || null;
+  const variant = req.query.variant || 'D';
+  const shouldPersistInteraction =
+    variant === 'D' && source === 'draft_from_ai';
+  const requestId = shouldPersistInteraction
+    ? `aiDraft_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+    : null;
   const requestTimestamp = new Date().toISOString();
 
   if (!target) {
@@ -61,10 +64,6 @@ async function aiDraft(req, res, next) {
         (v) => v.key === variant
       );
 
-      if (!variantConfigData) {
-        return;
-      }
-
       const existingVariant = await models.AIVariant.findOne({
         submission: target,
         variantKey: variant,
@@ -75,7 +74,12 @@ async function aiDraft(req, res, next) {
         typeof draftResult === 'object' && draftResult?.draft
           ? draftResult.draft
           : draftResult;
-      if (!existingVariant) {
+      if (!variantConfigData) {
+        logger.warn('[AI Variant] Missing variant config, skipping save', {
+          variant,
+          target,
+        });
+      } else if (!existingVariant) {
         await models.AIVariant.create({
           submission: target,
           workspace: workspace,
@@ -100,30 +104,37 @@ async function aiDraft(req, res, next) {
         ? draftResult.draft
         : draftResult;
 
-    // Phase 1 logging stub (server-side)
-    logger.info('[AI LOG] aiDraft request', {
-      requestId,
-      submissionId: target,
-      workspaceId: workspace || null,
-      variant,
-      timestamp: requestTimestamp,
-      draftText: draftText || null,
-    });
-
     let interactionId = null;
-    try {
-      const interaction = await models.AIInteraction.create({
-        createdBy: user._id,
-        submission: target,
-        workspace: workspace || null,
-        variant,
+    if (shouldPersistInteraction) {
+      logger.info('[AI LOG] aiDraft request', {
         requestId,
-        requestTimestamp: new Date(requestTimestamp),
+        submissionId: target,
+        workspaceId: workspace || null,
+        variant,
+        source,
+        timestamp: requestTimestamp,
         draftText: draftText || null,
       });
-      interactionId = interaction?._id || null;
-    } catch (logError) {
-      logger.error('[AI LOG] Failed to persist aiDraft log', logError);
+      try {
+        const interaction = await models.AIInteraction.create({
+          createdBy: user._id,
+          submission: target,
+          workspace: workspace || null,
+          variant,
+          requestId,
+          requestTimestamp: new Date(requestTimestamp),
+          draftText: draftText || null,
+        });
+        interactionId = interaction?._id || null;
+      } catch (logError) {
+        logger.error('[AI LOG] Failed to persist aiDraft log', logError);
+      }
+    } else {
+      logger.info('[AI LOG] Skipping AIInteraction persistence', {
+        variant,
+        target,
+        source,
+      });
     }
 
     const response = {
@@ -198,13 +209,24 @@ async function updateAIInteraction(req, res, next) {
       supersededAt,
     } = req.body || {};
 
-    if (action) {
+    if (typeof action === 'string' && action.trim()) {
       interaction.lastAction = action;
       interaction.lastActionAt = new Date();
     }
 
-    if (typeof rating === 'number') {
-      interaction.rating = rating;
+    if (typeof rating !== 'undefined') {
+      const normalizedRating = Number(rating);
+      if (
+        !Number.isFinite(normalizedRating) ||
+        normalizedRating < 1 ||
+        normalizedRating > 5
+      ) {
+        return utils.sendError.InvalidArgumentError(
+          'rating must be a number between 1 and 5.',
+          res
+        );
+      }
+      interaction.rating = normalizedRating;
     }
 
     if (typeof writtenFeedback === 'string') {
@@ -219,11 +241,11 @@ async function updateAIInteraction(req, res, next) {
       interaction.usageIntent = usageIntent;
     }
 
-    if (finalAction) {
+    if (typeof finalAction === 'string' && finalAction.trim()) {
       interaction.finalAction = finalAction;
     }
 
-    if (typeof actualUsage === 'string') {
+    if (typeof actualUsage === 'string' && actualUsage.trim()) {
       interaction.actualUsage = actualUsage;
     }
 
@@ -251,8 +273,15 @@ async function updateAIInteraction(req, res, next) {
       interaction.supersededBy = supersededBy;
     }
 
-    if (supersededAt) {
-      interaction.supersededAt = new Date(supersededAt);
+    if (typeof supersededAt !== 'undefined' && supersededAt !== null) {
+      const parsedSupersededAt = new Date(supersededAt);
+      if (Number.isNaN(parsedSupersededAt.getTime())) {
+        return utils.sendError.InvalidArgumentError(
+          'supersededAt must be a valid timestamp.',
+          res
+        );
+      }
+      interaction.supersededAt = parsedSupersededAt;
     }
 
     interaction.lastModifiedBy = user._id;
