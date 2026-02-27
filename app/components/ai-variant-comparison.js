@@ -68,7 +68,8 @@ export default class AiVariantComparisonComponent extends Component {
       const result = await this.aiDraft.generateDraft(
         submission.id,
         variantCode,
-        workspaceId
+        workspaceId,
+        'variant_comparison'
       );
       const draftText = typeof result === 'object' ? result.draft : result;
 
@@ -107,7 +108,8 @@ export default class AiVariantComparisonComponent extends Component {
             const result = await this.aiDraft.generateDraft(
               submission.id,
               v.code,
-              workspaceId
+              workspaceId,
+              'variant_comparison'
             );
             return typeof result === 'object' ? result.draft : result;
           } catch (error) {

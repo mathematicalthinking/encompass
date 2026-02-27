@@ -54,16 +54,25 @@ export default class AiDraftService extends Service {
    *
    * @param {String} submissionId - The ID of the submission to generate feedback for
    * @param {String} variant - A/B TEST VARIANT: The variant type ('A', 'B', 'C', 'D')
+   * @param {String|null} source - optional caller source tag for backend logging gates
    * @returns {Promise<String>} HTML string containing the generated draft
    * @throws {Error} If API call fails or no content is received
    */
-  async generateDraft(submissionId, variant = 'A', workspaceId = null) {
+  async generateDraft(
+    submissionId,
+    variant = 'D',
+    workspaceId = null,
+    source = null
+  ) {
     const params = new URLSearchParams({
       target: submissionId,
       variant,
     });
     if (workspaceId) {
       params.set('workspace', workspaceId);
+    }
+    if (source) {
+      params.set('source', source);
     }
     const url = `/api/aiDraft?${params.toString()}`;
     const response = await fetch(url, {

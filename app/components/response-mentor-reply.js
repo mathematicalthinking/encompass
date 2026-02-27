@@ -353,7 +353,8 @@ export default class ResponseMentorReplyComponent extends Component {
       const draft = await this.aiDraft.generateDraft(
         this.args.submission.id,
         'D',
-        workspaceId
+        workspaceId,
+        'mentor_reply'
       );
       const draftText = typeof draft === 'object' ? draft.draft : draft;
       this.aiGeneratedText = draftText;

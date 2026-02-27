@@ -870,7 +870,8 @@ export default class ResponseNewComponent extends Component {
       const draft = await this.aiDraft.generateDraft(
         submissionId,
         'D',
-        workspaceId
+        workspaceId,
+        'draft_from_ai'
       );
 
       if (!preserveEditor) {
