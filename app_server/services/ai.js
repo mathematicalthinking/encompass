@@ -103,45 +103,30 @@ const generateDraft = async (
   const cleanProblemStatement = stripHtml(problemStatement);
 
   const requestBody = {
+    variant,
+    use_rag: true,
+    return_examples: false,
+    problem: {
+      statement: cleanProblemStatement,
+    },
     student_work: {
       short_answer: shortAnswer,
       long_answer: longAnswer,
       student_name: studentName,
     },
-    variant: variant, // A/B TEST: Include variant in request
+    mentor_teacher_context: {
+      selections_and_observations: [],
+    },
   };
 
-  // A/B TEST: Add selections and comments based on variant
-  if (variant === 'B' || variant === 'D') {
-    // Include teacher selections
-    const selections = await getTeacherSelections(
-      targetSubmissionId,
-      workspaceId,
-      teacherId
-    );
-    if (selections && selections.length > 0) {
-      requestBody.teacher_selections = selections;
-    }
-  }
-
-  if (variant === 'C' || variant === 'D') {
-    // Include teacher comments (noticings, wonderings, feedback)
-    const comments = await getTeacherComments(
-      targetSubmissionId,
-      workspaceId,
-      teacherId
-    );
-    if (comments && comments.length > 0) {
-      requestBody.teacher_comments = comments;
-    }
-  }
-
-  // Only include problem if we have valid text after cleaning
-  if (cleanProblemStatement && cleanProblemStatement.trim().length > 0) {
-    requestBody.problem = {
-      statement: cleanProblemStatement,
-    };
-  }
+  const selectionsAndObservations = await buildSelectionsAndObservations(
+    targetSubmissionId,
+    variant,
+    workspaceId,
+    teacherId
+  );
+  requestBody.mentor_teacher_context.selections_and_observations =
+    selectionsAndObservations;
 
   return await makeAIRequest(requestBody);
 };
@@ -165,21 +150,14 @@ const getTeacherSelections = async (submissionId, workspaceId, teacherId) => {
     if (workspaceId) {
       selectionQuery.workspace = workspaceId;
     }
-    logger.info('AI selection query:', selectionQuery);
     const selections = await models.Selection.find(selectionQuery)
-      .populate('createdBy', 'username')
-      .select('text createDate createdBy')
+      .select('text')
       .lean()
       .exec();
-
-    logger.info(
-      'AI selection IDs:',
-      selections.map((sel) => String(sel._id))
-    );
     return selections.map((sel) => ({
-      text: stripHtml(sel.text),
-      created_by: sel.createdBy?.username || 'teacher',
-      created_at: sel.createDate,
+      selection_id: String(sel._id),
+      selected_text: stripHtml(sel.text),
+      comments: [],
     }));
   } catch (error) {
     logger.error('Error fetching teacher selections:', error);
@@ -206,28 +184,82 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
     if (workspaceId) {
       commentQuery.workspace = workspaceId;
     }
-
-    logger.info('AI comment query:', commentQuery);
     const comments = await models.Comment.find(commentQuery)
-      .populate('createdBy', 'username')
-      .select('text label createDate createdBy')
+      .populate('selection', 'text')
+      .select('text label selection')
       .lean()
       .exec();
-
-    logger.info(
-      'AI comment IDs:',
-      comments.map((comment) => String(comment._id))
-    );
     return comments.map((comment) => ({
+      selection_id: comment.selection?._id
+        ? String(comment.selection._id)
+        : comment.selection
+        ? String(comment.selection)
+        : null,
+      selected_text: stripHtml(comment.selection?.text || ''),
+      type: comment.label, // notice, wonder, feedback
       text: stripHtml(comment.text),
-      label: comment.label, // noticing, wondering, feedback, etc.
-      created_by: comment.createdBy?.username || 'teacher',
-      created_at: comment.createDate,
     }));
   } catch (error) {
     logger.error('Error fetching teacher comments:', error);
     return [];
   }
+};
+
+/**
+ * Build mentor_teacher_context.selections_and_observations payload
+ * based on requested variant.
+ */
+const buildSelectionsAndObservations = async (
+  submissionId,
+  variant,
+  workspaceId,
+  teacherId
+) => {
+  const includeSelections = variant === 'B' || variant === 'D';
+  const includeComments = variant === 'C' || variant === 'D';
+
+  const [selections, comments] = await Promise.all([
+    includeSelections
+      ? getTeacherSelections(submissionId, workspaceId, teacherId)
+      : Promise.resolve([]),
+    includeComments
+      ? getTeacherComments(submissionId, workspaceId, teacherId)
+      : Promise.resolve([]),
+  ]);
+
+  const selectionMap = new Map();
+  const list = [];
+
+  selections.forEach((selection) => {
+    const key = selection.selection_id || `sel_${list.length}`;
+    const row = {
+      selected_text: selection.selected_text || '',
+      comments: [],
+    };
+    selectionMap.set(key, row);
+    list.push(row);
+  });
+
+  comments.forEach((comment) => {
+    const key = comment.selection_id || `comment_only_${list.length}`;
+    let row = selectionMap.get(key);
+
+    if (!row) {
+      row = {
+        selected_text: comment.selected_text || '',
+        comments: [],
+      };
+      selectionMap.set(key, row);
+      list.push(row);
+    }
+
+    row.comments.push({
+      type: comment.type || '',
+      text: comment.text || '',
+    });
+  });
+
+  return list;
 };
 
 /**
@@ -237,19 +269,6 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
  */
 const makeAIRequest = async (requestBody) => {
   const postData = JSON.stringify(requestBody);
-  const requestContext = {
-    variant: requestBody.variant,
-    has_teacher_selections: Boolean(requestBody.teacher_selections?.length),
-    teacher_selections_count: requestBody.teacher_selections
-      ? requestBody.teacher_selections.length
-      : 0,
-    has_teacher_comments: Boolean(requestBody.teacher_comments?.length),
-    teacher_comments_count: requestBody.teacher_comments
-      ? requestBody.teacher_comments.length
-      : 0,
-  };
-  logger.info('AI request context:', requestContext);
-  logger.info('AI request payload:', requestBody);
   const options = {
     hostname: process.env.AI_DRAFT_HOST,
     port: process.env.AI_DRAFT_PORT,
@@ -273,11 +292,9 @@ const makeAIRequest = async (requestBody) => {
       let data = '';
       res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
-        console.log('AI response:', { statusCode: res.statusCode, body: data });
+        let response;
         try {
-          const response = JSON.parse(data);
-          console.log('Parsed response object:', response);
-          console.log('Available keys:', Object.keys(response));
+          response = JSON.parse(data);
           if (res.statusCode >= 200 && res.statusCode < 300) {
             // Extract draft from response (try multiple possible field names)
             let draft =
@@ -292,12 +309,7 @@ const makeAIRequest = async (requestBody) => {
                 response.data.text ||
                 response.data.message;
             }
-            console.log('Extracted draft text:', draft);
             if (!draft) {
-              console.error(
-                'No draft text found in response. Available fields:',
-                Object.keys(response)
-              );
               reject(new Error('No draft text found in AI response'));
               return;
             }
