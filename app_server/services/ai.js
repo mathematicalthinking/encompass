@@ -25,6 +25,29 @@ const stripHtml = (html) => {
     .trim();
 };
 
+const looksLikeId = (value) =>
+  typeof value === 'string' &&
+  (/^[a-f0-9]{24}$/i.test(value) || /^[0-9]+$/.test(value.trim()));
+
+const resolveStudentName = (submission) => {
+  const creator = submission?.creator || {};
+  const candidates = [
+    creator.fullName,
+    creator.safeName,
+    creator.name,
+    creator.username,
+  ];
+
+  for (const candidate of candidates) {
+    const clean = stripHtml(candidate || '');
+    if (clean && !looksLikeId(clean)) {
+      return clean;
+    }
+  }
+
+  return 'the student';
+};
+
 const { resolveProblemText } = require('./problemText');
 
 /**
@@ -56,8 +79,6 @@ const generateDraft = async (
         populate: { path: 'problem', select: 'text title' },
       },
     })
-    .populate('creator', 'username')
-    .populate('clazz', 'name')
     .select('shortAnswer longAnswer answer creator clazz publication pdSet')
     .lean()
     .exec();
@@ -94,10 +115,7 @@ const generateDraft = async (
     );
   }
   // Step 4: Determine student name
-  const studentName =
-    targetSubmission.creator?.username ||
-    targetSubmission.clazz?.name ||
-    'the student';
+  const studentName = resolveStudentName(targetSubmission);
 
   // Step 5: Build request body matching backend expected format
   const cleanProblemStatement = stripHtml(problemStatement);
