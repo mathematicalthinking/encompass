@@ -53,15 +53,13 @@ const { resolveProblemText } = require('./problemText');
 /**
  * Generate an AI draft response based on submission
  * @param {string} targetSubmissionId - The ID of the target submission
- * @param {string} variant - A/B TEST VARIANT: Input variant ('A', 'B', 'C', or 'D')
+ * @param {string} variant - Input variant ('A' or 'D')
  * @param {string} workspaceId - Optional workspace ID to filter selections/comments
  * @param {string} teacherId - Teacher user ID to scope selections/comments
  * @returns {Promise<string>} The generated AI draft text
  *
- * A/B TEST VARIANTS - WILL BE SIMPLIFIED ONCE PREFERRED COMBINATION IS CHOSEN:
+ * Active variants:
  * A: Student work only
- * B: Student work + teacher selections
- * C: Student work + teacher comments (noticings, wonderings, feedback)
  * D: Student work + teacher selections + teacher comments
  */
 const generateDraft = async (
@@ -150,7 +148,7 @@ const generateDraft = async (
 };
 
 /**
- * A/B TEST HELPER: Get teacher selections for a submission
+ * Helper: Get teacher selections for a submission
  * @param {string} submissionId - The submission ID
  * @param {string} workspaceId - The workspace ID to filter selections
  * @param {string} teacherId - The teacher user ID to filter selections
@@ -184,7 +182,7 @@ const getTeacherSelections = async (submissionId, workspaceId, teacherId) => {
 };
 
 /**
- * A/B TEST HELPER: Get teacher comments for a submission
+ * Helper: Get teacher comments for a submission
  * @param {string} submissionId - The submission ID
  * @param {string} workspaceId - The workspace ID to filter comments
  * @param {string} teacherId - The teacher user ID to filter comments
@@ -233,8 +231,8 @@ const buildSelectionsAndObservations = async (
   workspaceId,
   teacherId
 ) => {
-  const includeSelections = variant === 'B' || variant === 'D';
-  const includeComments = variant === 'C' || variant === 'D';
+  const includeSelections = variant === 'D';
+  const includeComments = variant === 'D';
 
   const [selections, comments] = await Promise.all([
     includeSelections

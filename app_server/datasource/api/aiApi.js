@@ -23,7 +23,7 @@ async function aiDraft(req, res, next) {
 
   const target = req.query.target;
   const workspace = req.query.workspace;
-  const variant = req.query.variant || 'A'; // A/B TEST: Default to variant A
+  const variant = req.query.variant || 'A'; // Default to variant A
 
   if (!target) {
     return utils.sendError.InvalidArgumentError(
@@ -32,8 +32,8 @@ async function aiDraft(req, res, next) {
     );
   }
 
-  // A/B TEST: Validate variant (A/B/C/D input combinations)
-  const validVariants = ['A', 'B', 'C', 'D'];
+  // Validate variant using active server configuration
+  const validVariants = variantConfig.activeVariants.map((v) => v.key);
   if (!validVariants.includes(variant)) {
     return utils.sendError.InvalidArgumentError(
       `Invalid variant. Must be one of: ${validVariants.join(', ')}`,
@@ -42,7 +42,7 @@ async function aiDraft(req, res, next) {
   }
 
   try {
-    // A/B TEST: Generate AI draft using the AI service with variant
+    // Generate AI draft using the AI service with selected variant
     const draftResult = await aiService.generateDraft(
       target,
       variant,
@@ -56,10 +56,6 @@ async function aiDraft(req, res, next) {
         (v) => v.key === variant
       );
 
-      if (!variantConfigData) {
-        return;
-      }
-
       const existingVariant = await models.AIVariant.findOne({
         submission: target,
         variantKey: variant,
@@ -70,7 +66,11 @@ async function aiDraft(req, res, next) {
         typeof draftResult === 'object' && draftResult?.draft
           ? draftResult.draft
           : draftResult;
-      if (!existingVariant) {
+      if (!variantConfigData) {
+        console.warn(
+          `[AI Variant] No active config found for variant ${variant}; skipping save`
+        );
+      } else if (!existingVariant) {
         await models.AIVariant.create({
           submission: target,
           workspace: workspace,
@@ -96,7 +96,7 @@ async function aiDraft(req, res, next) {
         : draftResult;
     const response = {
       target: target,
-      variant: variant, // A/B TEST: Include variant in response
+      variant: variant,
       message: `AI draft generated for target submission: ${target}`,
       draft: draftText,
     };
