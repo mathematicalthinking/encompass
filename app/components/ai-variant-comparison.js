@@ -14,16 +14,16 @@ export default class AiVariantComparisonComponent extends Component {
 
   @tracked draftA = null;
   @tracked draftB = null;
-  @tracked draftC = null;
-  @tracked draftD = null;
 
   @tracked loadingVariant = null; // Track which variant is currently loading
 
   variants = [
-    { code: 'A', label: 'Student work only' },
-    { code: 'B', label: 'Student work + teacher selections' },
-    { code: 'C', label: 'Student work + teacher comments' },
-    { code: 'D', label: 'Student work + selections + comments' },
+    { code: 'A', displayLabel: 'A', label: 'Student work only' },
+    {
+      code: 'D',
+      displayLabel: 'B',
+      label: 'Student work + selections + comments',
+    },
   ];
 
   get isVariantADisabled() {
@@ -31,14 +31,6 @@ export default class AiVariantComparisonComponent extends Component {
   }
 
   get isVariantBDisabled() {
-    return this.isLoading || this.loadingVariant === 'B';
-  }
-
-  get isVariantCDisabled() {
-    return this.isLoading || this.loadingVariant === 'C';
-  }
-
-  get isVariantDDisabled() {
     return this.isLoading || this.loadingVariant === 'D';
   }
 
@@ -47,15 +39,7 @@ export default class AiVariantComparisonComponent extends Component {
   }
 
   get variantBButtonText() {
-    return this.loadingVariant === 'B' ? 'Generating...' : 'Generate B';
-  }
-
-  get variantCButtonText() {
-    return this.loadingVariant === 'C' ? 'Generating...' : 'Generate C';
-  }
-
-  get variantDButtonText() {
-    return this.loadingVariant === 'D' ? 'Generating...' : 'Generate D';
+    return this.loadingVariant === 'D' ? 'Generating...' : 'Generate B';
   }
 
   @action
@@ -76,14 +60,8 @@ export default class AiVariantComparisonComponent extends Component {
         case 'A':
           this.draftA = result;
           break;
-        case 'B':
-          this.draftB = result;
-          break;
-        case 'C':
-          this.draftC = result;
-          break;
         case 'D':
-          this.draftD = result;
+          this.draftB = result;
           break;
       }
     } catch (error) {
@@ -117,8 +95,6 @@ export default class AiVariantComparisonComponent extends Component {
       );
       this.draftA = results[0];
       this.draftB = results[1];
-      this.draftC = results[2];
-      this.draftD = results[3];
     } catch (e) {
       console.error('Overall error:', e);
       this.error = e.message || 'Failed to generate drafts';
@@ -137,11 +113,8 @@ export default class AiVariantComparisonComponent extends Component {
       case 'B':
         draftText = this.draftB;
         break;
-      case 'C':
-        draftText = this.draftC;
-        break;
       case 'D':
-        draftText = this.draftD;
+        draftText = this.draftB;
         break;
     }
     if (this.args.onDraftSelected && draftText) {
