@@ -8,30 +8,20 @@
  */
 
 module.exports = {
-  // Current A/B Testing Mode: 4 variants
+  // Current A/B Testing Mode: 2 active variants
+  // Variant mapping:
+  // - A -> Student Work Only
+  // - D -> Student Work + Selections + Comments (shown as "Variant B" in UI)
   activeVariants: [
     {
       key: 'A',
-      label: 'Student Work Only',
+      label: 'Variant A: Student Work Only',
       inputType: 'work_only',
       description: 'AI analyzes only student submission text',
     },
     {
-      key: 'B',
-      label: 'Work + Selections',
-      inputType: 'work_selections',
-      description: 'AI analyzes student work + teacher text selections',
-    },
-    {
-      key: 'C',
-      label: 'Work + Comments',
-      inputType: 'work_comments',
-      description:
-        'AI analyzes student work + teacher comments (notice/wonder/feedback)',
-    },
-    {
       key: 'D',
-      label: 'Work + Selections + Comments',
+      label: 'Variant B: Work + Selections + Comments',
       inputType: 'work_all',
       description: 'AI analyzes student work + all teacher annotations',
     },

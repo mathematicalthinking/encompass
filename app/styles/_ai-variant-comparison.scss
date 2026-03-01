@@ -4,10 +4,10 @@
 .ai-variant-comparison {
   margin-bottom: 2em;
 }
-.variant-grid-2x2 {
+.variant-grid-2x2,
+.variant-stack {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1em;
   margin-top: 1em;
   width: 100%;
@@ -18,9 +18,9 @@
 
 // Responsive design for smaller screens
 @media (max-width: 768px) {
-  .variant-grid-2x2 {
+  .variant-grid-2x2,
+  .variant-stack {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto;
     gap: 0.75em;
     padding: 0 0.5em;
   }

@@ -31,7 +31,7 @@ export default class WorkspaceReportsService extends Service {
     // Variants will be fetched separately and passed in
     // This is just a placeholder that returns empty columns
     const variantData = {};
-    ['A', 'B', 'C', 'D'].forEach((key) => {
+    ['A', 'B'].forEach((key) => {
       variantData[`AI Variant ${key}`] = '';
     });
     return variantData;
@@ -210,14 +210,8 @@ export default class WorkspaceReportsService extends Service {
         'AI Variant A (Student Work Only)': this.stripHtml(
           submissionVariants['A'] || ''
         ),
-        'AI Variant B (Work + Selections)': this.stripHtml(
-          submissionVariants['B'] || ''
-        ),
-        'AI Variant C (Work + Comments)': this.stripHtml(
-          submissionVariants['C'] || ''
-        ),
-        'AI Variant D (Work + Selections + Comments)': this.stripHtml(
-          submissionVariants['D'] || ''
+        'AI Variant B (Work + Selections + Comments)': this.stripHtml(
+          submissionVariants['D'] || submissionVariants['B'] || ''
         ),
       };
 
