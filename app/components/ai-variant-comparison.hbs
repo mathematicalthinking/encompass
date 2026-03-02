@@ -30,6 +30,39 @@
         {{this.variantAButtonText}}
       </button>
       <div class="ai-draft-text">{{if this.draftA this.draftA "EMPTY - Click Generate to populate"}}</div>
+      <div class="ai-feedback-controls">
+        <div class="star-rating-container">
+          <label class="star-rating-label">Rate AI Draft <span class="required-asterisk">*</span></label>
+          <div class="star-rating-stars">
+            {{#each this.starDefinitions as |star|}}
+              <i
+                class="fas fa-star star-icon {{if (this.isStarActive 'A' star.value) 'star-filled' 'star-empty'}}"
+                role="button"
+                tabindex="0"
+                title={{star.tooltip}}
+                {{on "click" (fn this.setVariantRating 'A' star.value)}}
+              ></i>
+            {{/each}}
+          </div>
+          <span class="rating-value">{{this.ratingLabelA}}</span>
+        </div>
+        <div class="ai-feedback-container">
+          <label for="variant-a-feedback" class="ai-feedback-label">Written Feedback <span class="required-asterisk">*</span></label>
+          <Textarea
+            id="variant-a-feedback"
+            class="variant-feedback-textarea"
+            @value={{this.feedbackA}}
+            placeholder="Write your feedback for Variant A(at least 10 characters long)"
+            {{on "input" (fn this.setVariantFeedback 'A')}}
+          />
+        </div>
+        <button
+          type="button"
+          class="ai-bring-down-btn"
+          disabled={{not this.canBringDownA}}
+          {{on "click" (fn this.bringDownVariant 'A')}}
+        >Bring It Down</button>
+      </div>
     </div>
     <div class="variant-cell-simple">
       <div class="variant-title">Variant B: Student Work + Selections + Comments (All)</div>
@@ -37,6 +70,39 @@
         {{this.variantBButtonText}}
       </button>
       <div class="ai-draft-text">{{if this.draftB this.draftB "EMPTY - Click Generate to populate"}}</div>
+      <div class="ai-feedback-controls">
+        <div class="star-rating-container">
+          <label class="star-rating-label">Rate AI Draft <span class="required-asterisk">*</span></label>
+          <div class="star-rating-stars">
+            {{#each this.starDefinitions as |star|}}
+              <i
+                class="fas fa-star star-icon {{if (this.isStarActive 'D' star.value) 'star-filled' 'star-empty'}}"
+                role="button"
+                tabindex="0"
+                title={{star.tooltip}}
+                {{on "click" (fn this.setVariantRating 'D' star.value)}}
+              ></i>
+            {{/each}}
+          </div>
+          <span class="rating-value">{{this.ratingLabelB}}</span>
+        </div>
+        <div class="ai-feedback-container">
+          <label for="variant-b-feedback" class="ai-feedback-label">Written Feedback <span class="required-asterisk">*</span></label>
+          <Textarea
+            id="variant-b-feedback"
+            class="variant-feedback-textarea"
+            @value={{this.feedbackD}}
+            placeholder="Write your feedback for Variant B(at least 10 characters long)"
+            {{on "input" (fn this.setVariantFeedback 'D')}}
+          />
+        </div>
+        <button
+          type="button"
+          class="ai-bring-down-btn"
+          disabled={{not this.canBringDownD}}
+          {{on "click" (fn this.bringDownVariant 'D')}}
+        >Bring It Down</button>
+      </div>
     </div>
   </div>
   

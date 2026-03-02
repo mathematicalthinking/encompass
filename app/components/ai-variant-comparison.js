@@ -14,6 +14,10 @@ export default class AiVariantComparisonComponent extends Component {
 
   @tracked draftA = null;
   @tracked draftB = null;
+  @tracked ratingA = 0;
+  @tracked ratingD = 0;
+  @tracked feedbackA = '';
+  @tracked feedbackD = '';
 
   @tracked loadingVariant = null; // Track which variant is currently loading
 
@@ -42,6 +46,36 @@ export default class AiVariantComparisonComponent extends Component {
     return this.loadingVariant === 'D' ? 'Generating...' : 'Generate B';
   }
 
+  starDefinitions = [
+    { value: 1, tooltip: 'Poor: Not useful, needs major changes' },
+    { value: 2, tooltip: 'Fair: Somewhat useful but significant issues' },
+    { value: 3, tooltip: 'Good: Moderately helpful with minor issues' },
+    { value: 4, tooltip: 'Very Good: Helpful and well-formed' },
+    { value: 5, tooltip: 'Excellent: Very useful, clear, and actionable' },
+  ];
+
+  get canBringDownA() {
+    return Boolean(this.draftA);
+  }
+
+  get canBringDownD() {
+    return Boolean(this.draftB);
+  }
+
+  get ratingLabelA() {
+    return this.ratingA > 0 ? `${this.ratingA} / 5` : 'No rating yet';
+  }
+
+  get ratingLabelB() {
+    return this.ratingD > 0 ? `${this.ratingD} / 5` : 'No rating yet';
+  }
+
+  @action
+  isStarActive(variantCode, starNumber) {
+    const rating = variantCode === 'A' ? this.ratingA : this.ratingD;
+    return rating >= starNumber;
+  }
+
   @action
   async generateSingleVariant(submission, variantCode) {
     this.loadingVariant = variantCode;
@@ -59,9 +93,13 @@ export default class AiVariantComparisonComponent extends Component {
       switch (variantCode) {
         case 'A':
           this.draftA = result;
+          this.ratingA = 0;
+          this.feedbackA = '';
           break;
         case 'D':
           this.draftB = result;
+          this.ratingD = 0;
+          this.feedbackD = '';
           break;
       }
     } catch (error) {
@@ -95,6 +133,10 @@ export default class AiVariantComparisonComponent extends Component {
       );
       this.draftA = results[0];
       this.draftB = results[1];
+      this.ratingA = 0;
+      this.ratingD = 0;
+      this.feedbackA = '';
+      this.feedbackD = '';
     } catch (e) {
       console.error('Overall error:', e);
       this.error = e.message || 'Failed to generate drafts';
@@ -104,19 +146,35 @@ export default class AiVariantComparisonComponent extends Component {
   }
 
   @action
-  useDraft(variant) {
-    let draftText;
-    switch (variant) {
-      case 'A':
-        draftText = this.draftA;
-        break;
-      case 'B':
-        draftText = this.draftB;
-        break;
-      case 'D':
-        draftText = this.draftB;
-        break;
+  setVariantRating(variantCode, rating) {
+    if (variantCode === 'A') {
+      this.ratingA = rating;
+      return;
     }
+    if (variantCode === 'D') {
+      this.ratingD = rating;
+    }
+  }
+
+  @action
+  setVariantFeedback(variantCode, event) {
+    const value = event.target.value || '';
+    if (variantCode === 'A') {
+      this.feedbackA = value;
+      return;
+    }
+    if (variantCode === 'D') {
+      this.feedbackD = value;
+    }
+  }
+
+  @action
+  bringDownVariant(variantCode) {
+    const draftText = variantCode === 'A' ? this.draftA : this.draftB;
+    if (!draftText) {
+      return;
+    }
+
     if (this.args.onDraftSelected && draftText) {
       this.args.onDraftSelected(draftText);
     }
