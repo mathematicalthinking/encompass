@@ -49,18 +49,15 @@ async function aiDraft(req, res, next) {
       workspace,
       user._id
     );
+    const requestId = `aiVariant_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
 
     // Save variant to database for export/analysis
     try {
       const variantConfigData = variantConfig.activeVariants.find(
         (v) => v.key === variant
       );
-
-      const existingVariant = await models.AIVariant.findOne({
-        submission: target,
-        variantKey: variant,
-        isTrashed: false,
-      });
 
       const draftText =
         typeof draftResult === 'object' && draftResult?.draft
@@ -70,7 +67,7 @@ async function aiDraft(req, res, next) {
         console.warn(
           `[AI Variant] No active config found for variant ${variant}; skipping save`
         );
-      } else if (!existingVariant) {
+      } else {
         await models.AIVariant.create({
           submission: target,
           workspace: workspace,
@@ -78,13 +75,9 @@ async function aiDraft(req, res, next) {
           variantLabel: variantConfigData.label,
           inputType: variantConfigData.inputType,
           draftText: draftText,
+          requestId,
           createdBy: user._id,
         });
-      } else {
-        existingVariant.draftText = draftText;
-        existingVariant.lastModifiedDate = new Date();
-        existingVariant.lastModifiedBy = user._id;
-        await existingVariant.save();
       }
     } catch (saveError) {
       console.error('[AI Variant] Failed to save variant:', saveError);
@@ -99,6 +92,7 @@ async function aiDraft(req, res, next) {
       variant: variant,
       message: `AI draft generated for target submission: ${target}`,
       draft: draftText,
+      requestId,
     };
 
     return utils.sendResponse(res, response);
