@@ -14,8 +14,13 @@ export default class AiVariantComparisonComponent extends Component {
 
   @tracked draftA = null;
   @tracked draftB = null;
+  @tracked ratingA = 0;
+  @tracked ratingD = 0;
+  @tracked feedbackA = '';
+  @tracked feedbackD = '';
 
   @tracked loadingVariant = null; // Track which variant is currently loading
+  minFeedbackLength = 10;
 
   variants = [
     { code: 'A', displayLabel: 'A', label: 'Student work only' },
@@ -42,6 +47,62 @@ export default class AiVariantComparisonComponent extends Component {
     return this.loadingVariant === 'D' ? 'Generating...' : 'Generate B';
   }
 
+  starDefinitions = [
+    { value: 1, tooltip: 'Poor: Not useful, needs major changes' },
+    { value: 2, tooltip: 'Fair: Somewhat useful but significant issues' },
+    { value: 3, tooltip: 'Good: Moderately helpful with minor issues' },
+    { value: 4, tooltip: 'Very Good: Helpful and well-formed' },
+    { value: 5, tooltip: 'Excellent: Very useful, clear, and actionable' },
+  ];
+
+  get canBringDownA() {
+    return (
+      Boolean(this.draftA) &&
+      this.ratingA > 0 &&
+      this.feedbackA.trim().length >= this.minFeedbackLength
+    );
+  }
+
+  get canBringDownD() {
+    return (
+      Boolean(this.draftB) &&
+      this.ratingD > 0 &&
+      this.feedbackD.trim().length >= this.minFeedbackLength
+    );
+  }
+
+  get bringDownTooltipA() {
+    if (!this.draftA) return 'Generate Variant A first';
+    if (this.ratingA <= 0) return 'Rate Variant A before bringing it down';
+    if (this.feedbackA.trim().length < this.minFeedbackLength) {
+      return `Add at least ${this.minFeedbackLength} characters of written feedback for Variant A`;
+    }
+    return 'Bring Variant A into the editor';
+  }
+
+  get bringDownTooltipB() {
+    if (!this.draftB) return 'Generate Variant B first';
+    if (this.ratingD <= 0) return 'Rate Variant B before bringing it down';
+    if (this.feedbackD.trim().length < this.minFeedbackLength) {
+      return `Add at least ${this.minFeedbackLength} characters of written feedback for Variant B`;
+    }
+    return 'Bring Variant B into the editor';
+  }
+
+  get ratingLabelA() {
+    return this.ratingA > 0 ? `${this.ratingA} / 5` : 'No rating yet';
+  }
+
+  get ratingLabelB() {
+    return this.ratingD > 0 ? `${this.ratingD} / 5` : 'No rating yet';
+  }
+
+  @action
+  isStarActive(variantCode, starNumber) {
+    const rating = variantCode === 'A' ? this.ratingA : this.ratingD;
+    return rating >= starNumber;
+  }
+
   @action
   async generateSingleVariant(submission, variantCode) {
     this.loadingVariant = variantCode;
@@ -59,9 +120,13 @@ export default class AiVariantComparisonComponent extends Component {
       switch (variantCode) {
         case 'A':
           this.draftA = result;
+          this.ratingA = 0;
+          this.feedbackA = '';
           break;
         case 'D':
           this.draftB = result;
+          this.ratingD = 0;
+          this.feedbackD = '';
           break;
       }
     } catch (error) {
@@ -95,6 +160,10 @@ export default class AiVariantComparisonComponent extends Component {
       );
       this.draftA = results[0];
       this.draftB = results[1];
+      this.ratingA = 0;
+      this.ratingD = 0;
+      this.feedbackA = '';
+      this.feedbackD = '';
     } catch (e) {
       console.error('Overall error:', e);
       this.error = e.message || 'Failed to generate drafts';
@@ -104,21 +173,48 @@ export default class AiVariantComparisonComponent extends Component {
   }
 
   @action
-  useDraft(variant) {
-    let draftText;
-    switch (variant) {
-      case 'A':
-        draftText = this.draftA;
-        break;
-      case 'B':
-        draftText = this.draftB;
-        break;
-      case 'D':
-        draftText = this.draftB;
-        break;
+  setVariantRating(variantCode, rating) {
+    if (variantCode === 'A') {
+      this.ratingA = rating;
+      return;
     }
+    if (variantCode === 'D') {
+      this.ratingD = rating;
+    }
+  }
+
+  @action
+  setVariantFeedback(variantCode, event) {
+    const value = event.target.value || '';
+    if (variantCode === 'A') {
+      this.feedbackA = value;
+      return;
+    }
+    if (variantCode === 'D') {
+      this.feedbackD = value;
+    }
+  }
+
+  @action
+  bringDownVariant(variantCode) {
+    const canBringDown =
+      variantCode === 'A' ? this.canBringDownA : this.canBringDownD;
+    if (!canBringDown) {
+      return;
+    }
+
+    const draftText = variantCode === 'A' ? this.draftA : this.draftB;
+    if (!draftText) {
+      return;
+    }
+
     if (this.args.onDraftSelected && draftText) {
-      this.args.onDraftSelected(draftText);
+      this.args.onDraftSelected({
+        draftText,
+        variantKey: variantCode,
+        rating: variantCode === 'A' ? this.ratingA : this.ratingD,
+        writtenFeedback: variantCode === 'A' ? this.feedbackA : this.feedbackD,
+      });
     }
   }
 }

@@ -62,8 +62,11 @@ export default class WorkspaceReportsService extends Service {
         if (!variantsBySubmission[submissionId]) {
           variantsBySubmission[submissionId] = {};
         }
-        variantsBySubmission[submissionId][variant.variantKey] =
-          variant.draftText;
+        // API returns newest-first; keep the first seen value per variant key.
+        if (variantsBySubmission[submissionId][variant.variantKey] == null) {
+          variantsBySubmission[submissionId][variant.variantKey] =
+            variant.draftText;
+        }
       });
 
       return variantsBySubmission;
@@ -241,6 +244,11 @@ export default class WorkspaceReportsService extends Service {
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
         'EnCoMPASS templated response': '',
         ...variantData, // Add AI variant columns
+        'AI Final Edit Version': this.stripHtml(submission.aiFinalEditText),
+        'AI Final Edit Source Variant': submission.aiFinalEditSourceVariant,
+        'AI Final Edit Rating': submission.aiFinalEditRating,
+        'AI Final Edit Feedback': this.stripHtml(submission.aiFinalEditFeedback),
+        'AI Final Edit Saved At': this.formatDateOrEmpty(submission.aiFinalEditAt),
       };
       const selections = submission
         .get('selections')
@@ -338,6 +346,12 @@ export default class WorkspaceReportsService extends Service {
       annotatorCreateDate,
     };
     return Object.assign({}, defaultSelection, selectorInfo);
+  }
+
+  formatDateOrEmpty(value) {
+    if (!value) return '';
+    const dateValue = value instanceof Date ? value : new Date(value);
+    return isValid(dateValue) ? format(dateValue, 'MM/dd/yyyy HH:mm') : '';
   }
 
   generateRevisionFields(submissionLabel, maxRevisions) {

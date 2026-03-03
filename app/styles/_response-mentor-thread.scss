@@ -171,6 +171,22 @@
     }
   }
 
+  .ab-draft-editor-section {
+    margin: 1em 0 1.5em 5em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1em;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: calc(100% - 5em);
+  }
+
+  .ab-draft-editor-actions {
+    margin-top: 0.75em;
+    display: flex;
+    justify-content: flex-end;
+  }
+
   // AI Draft Section Styles(Read_Only)
   .ai-draft-section {
     margin-bottom: 1.5em;

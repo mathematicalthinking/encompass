@@ -37,6 +37,7 @@ var AIVariantSchema = new Schema(
     teacherNotes: { type: String }, // Teacher's notes about this variant
 
     // Technical metadata
+    requestId: { type: String },
     modelUsed: { type: String }, // e.g., 'claude-3-5-sonnet', 'gpt-4'
     tokensUsed: { type: Number },
     responseTime: { type: Number }, // milliseconds
@@ -46,7 +47,8 @@ var AIVariantSchema = new Schema(
 );
 
 // Indexes for efficient querying
-AIVariantSchema.index({ submission: 1, variantKey: 1 }, { unique: true }); // One variant per submission
+AIVariantSchema.index({ submission: 1, variantKey: 1, createDate: -1 }); // Keep full generation history
+AIVariantSchema.index({ requestId: 1 }); // Lookup by request id when debugging logs
 AIVariantSchema.index({ workspace: 1, createDate: -1 }); // For workspace reports
 AIVariantSchema.index({ createdBy: 1, createDate: -1 }); // For user analytics
 AIVariantSchema.index({ isSelected: 1 }); // For analyzing chosen variants

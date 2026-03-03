@@ -47,6 +47,12 @@ var baseSubmission = {
   status: { type: String },
   pdSet: { type: String, default: 'default' },
   uploadedFile: { uploadedFileId: Number, savedFileName: String }, // This is from PoWs
+  aiFinalEditText: { type: String },
+  aiFinalEditAt: { type: Date },
+  aiFinalEditBy: { type: ObjectId, ref: 'User' },
+  aiFinalEditSourceVariant: { type: String },
+  aiFinalEditRating: { type: Number, min: 1, max: 5 },
+  aiFinalEditFeedback: { type: String },
 };
 
 /**

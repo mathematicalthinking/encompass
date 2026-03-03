@@ -25,6 +25,11 @@ export default class SubmissionModel extends AuditableModel {
   @hasMany('response', { async: true }) responses;
   @hasMany('ai-variant', { async: true }) aiVariants;
   @attr() vmtRoomInfo;
+  @attr('string') aiFinalEditText;
+  @attr('date') aiFinalEditAt;
+  @attr('string') aiFinalEditSourceVariant;
+  @attr('number') aiFinalEditRating;
+  @attr('string') aiFinalEditFeedback;
 
   get folders() {
     let folders = [];
