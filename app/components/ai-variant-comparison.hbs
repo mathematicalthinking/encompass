@@ -60,6 +60,7 @@
           type="button"
           class="ai-bring-down-btn"
           disabled={{not this.canBringDownA}}
+          title={{this.bringDownTooltipA}}
           {{on "click" (fn this.bringDownVariant 'A')}}
         >Bring It Down</button>
       </div>
@@ -100,6 +101,7 @@
           type="button"
           class="ai-bring-down-btn"
           disabled={{not this.canBringDownD}}
+          title={{this.bringDownTooltipB}}
           {{on "click" (fn this.bringDownVariant 'D')}}
         >Bring It Down</button>
       </div>

@@ -20,6 +20,7 @@ export default class AiVariantComparisonComponent extends Component {
   @tracked feedbackD = '';
 
   @tracked loadingVariant = null; // Track which variant is currently loading
+  minFeedbackLength = 10;
 
   variants = [
     { code: 'A', displayLabel: 'A', label: 'Student work only' },
@@ -55,11 +56,37 @@ export default class AiVariantComparisonComponent extends Component {
   ];
 
   get canBringDownA() {
-    return Boolean(this.draftA);
+    return (
+      Boolean(this.draftA) &&
+      this.ratingA > 0 &&
+      this.feedbackA.trim().length >= this.minFeedbackLength
+    );
   }
 
   get canBringDownD() {
-    return Boolean(this.draftB);
+    return (
+      Boolean(this.draftB) &&
+      this.ratingD > 0 &&
+      this.feedbackD.trim().length >= this.minFeedbackLength
+    );
+  }
+
+  get bringDownTooltipA() {
+    if (!this.draftA) return 'Generate Variant A first';
+    if (this.ratingA <= 0) return 'Rate Variant A before bringing it down';
+    if (this.feedbackA.trim().length < this.minFeedbackLength) {
+      return `Add at least ${this.minFeedbackLength} characters of written feedback for Variant A`;
+    }
+    return 'Bring Variant A into the editor';
+  }
+
+  get bringDownTooltipB() {
+    if (!this.draftB) return 'Generate Variant B first';
+    if (this.ratingD <= 0) return 'Rate Variant B before bringing it down';
+    if (this.feedbackD.trim().length < this.minFeedbackLength) {
+      return `Add at least ${this.minFeedbackLength} characters of written feedback for Variant B`;
+    }
+    return 'Bring Variant B into the editor';
   }
 
   get ratingLabelA() {
@@ -170,13 +197,24 @@ export default class AiVariantComparisonComponent extends Component {
 
   @action
   bringDownVariant(variantCode) {
+    const canBringDown =
+      variantCode === 'A' ? this.canBringDownA : this.canBringDownD;
+    if (!canBringDown) {
+      return;
+    }
+
     const draftText = variantCode === 'A' ? this.draftA : this.draftB;
     if (!draftText) {
       return;
     }
 
     if (this.args.onDraftSelected && draftText) {
-      this.args.onDraftSelected(draftText);
+      this.args.onDraftSelected({
+        draftText,
+        variantKey: variantCode,
+        rating: variantCode === 'A' ? this.ratingA : this.ratingD,
+        writtenFeedback: variantCode === 'A' ? this.feedbackA : this.feedbackD,
+      });
     }
   }
 }
