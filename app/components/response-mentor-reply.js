@@ -26,6 +26,11 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked editingReplyId = null;
   @tracked aiGeneratedText = null;
   @tracked quillKey = 0;
+  @tracked variantComposeText = '';
+  @tracked isSavingFinalEdit = false;
+  @tracked finalEditSourceVariant = null;
+  @tracked finalEditRating = null;
+  @tracked finalEditFeedback = '';
 
   maxResponseLength = 14680064;
 
@@ -263,8 +268,41 @@ export default class ResponseMentorReplyComponent extends Component {
     );
   }
 
+  get canSaveFinalEditVersion() {
+    return (
+      Boolean(this.args.submission?.id) &&
+      !this.isSavingFinalEdit &&
+      !this._isEmptyEditorContent(this.quillText) &&
+      this.isValidQuillContent
+    );
+  }
+
+  get saveFinalEditButtonText() {
+    return this.isSavingFinalEdit ? 'Saving...' : 'Save Final Edit Version';
+  }
+
   _hasContentChanged(oldText, newText, oldNote, newNote) {
     return oldText !== newText || oldNote !== newNote;
+  }
+
+  _isEmptyEditorContent(content) {
+    if (!content) return true;
+
+    const normalized = content.replace(/\s+/g, '').toLowerCase();
+    return (
+      normalized === '' ||
+      normalized === '<p><br></p>' ||
+      normalized === '<div><br></div>' ||
+      normalized === '<p></p>'
+    );
+  }
+
+  _mergeDraftIntoEditor(existingContent, draftText) {
+    if (this._isEmptyEditorContent(existingContent)) {
+      return draftText;
+    }
+
+    return `${existingContent}<p><br></p>${draftText}`;
   }
 
   _startLoading() {
@@ -630,6 +668,72 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   @action
+  updateVariantComposeText(content, isEmpty, isOverLengthLimit) {
+    // Keep variantComposeText as the seed value for Quill only.
+    // Quill emits onEditorChange during setup (did-insert); updating the same
+    // tracked field here triggers Ember's "updated after use" assertion.
+    this.updateQuillText(content, isEmpty, isOverLengthLimit);
+  }
+
+  @action
+  async saveFinalEditVersion() {
+    if (!this.canSaveFinalEditVersion) {
+      return;
+    }
+
+    const submissionId = this.args.submission?.id;
+    const savedAt = new Date();
+    const payload = {
+      aiFinalEditText: this.quillText,
+      aiFinalEditAt: savedAt,
+      aiFinalEditBy: this.currentUser.user?.id,
+      aiFinalEditSourceVariant: this.finalEditSourceVariant,
+      aiFinalEditRating: this.finalEditRating,
+      aiFinalEditFeedback: this.finalEditFeedback,
+    };
+
+    this.isSavingFinalEdit = true;
+    try {
+      const response = await fetch(`/api/submissions/${submissionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ submission: payload }),
+      });
+
+      if (!response.ok) {
+        const raw = await response.text();
+        throw new Error(raw || 'Failed to save final edit version');
+      }
+
+      this.args.submission.aiFinalEditText = payload.aiFinalEditText;
+      this.args.submission.aiFinalEditAt = payload.aiFinalEditAt;
+      this.args.submission.aiFinalEditSourceVariant =
+        payload.aiFinalEditSourceVariant;
+
+      this.alert.showToast(
+        'success',
+        'Final edit version saved',
+        'bottom-end',
+        2500,
+        false,
+        null
+      );
+    } catch (error) {
+      this.alert.showToast(
+        'error',
+        error.message || 'Failed to save final edit version',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
+    } finally {
+      this.isSavingFinalEdit = false;
+    }
+  }
+
+  @action
   cancelCompose() {
     this.editRevisionText = '';
     this.editRevisionNote = '';
@@ -654,9 +758,27 @@ export default class ResponseMentorReplyComponent extends Component {
   // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
   // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
   @action
-  handleVariantDraftSelected(draftText) {
-    // TEMPORARY A/B TEST CODE: Set the selected draft for the response-new editor
+  handleVariantDraftSelected(draftSelection) {
+    // TEMPORARY A/B TEST CODE: Set the selected draft for the in-place editor
+    const draftText =
+      typeof draftSelection === 'string'
+        ? draftSelection
+        : draftSelection?.draftText;
+    if (!draftText) {
+      return;
+    }
+
+    if (typeof draftSelection === 'object' && draftSelection !== null) {
+      this.finalEditSourceVariant = draftSelection.variantKey || null;
+      this.finalEditRating = draftSelection.rating ?? null;
+      this.finalEditFeedback = draftSelection.writtenFeedback || '';
+    }
+
     this.aiGeneratedText = draftText;
+    const existingContent = this.quillText || this.variantComposeText;
+    const mergedText = this._mergeDraftIntoEditor(existingContent, draftText);
+    this.variantComposeText = mergedText;
+    this.quillText = mergedText;
   }
   // END TEMPORARY A/B TEST CODE
   // END TEMPORARY A/B TEST CODE

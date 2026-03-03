@@ -9,6 +9,26 @@
       @workspace={{@workspace}}
       @onDraftSelected={{this.handleVariantDraftSelected}}
     />
+    <div class='ab-draft-editor-section'>
+      <p class='response-header'>Draft Editor</p>
+      <Ui::QuillContainer
+        @onEditorChange={{this.updateVariantComposeText}}
+        @startingText={{this.variantComposeText}}
+        @maxLength={{10000}}
+        @showErrors={{true}}
+        @emptyErrorMessage='Message body cannot be blank'
+      />
+      <div class='ab-draft-editor-actions'>
+        <button
+          type='button'
+          class='primary-button'
+          disabled={{not this.canSaveFinalEditVersion}}
+          {{on 'click' this.saveFinalEditVersion}}
+        >
+          {{this.saveFinalEditButtonText}}
+        </button>
+      </div>
+    </div>
     {{!-- END TEMPORARY A/B TEST CODE --}}
     {{!-- END TEMPORARY A/B TEST CODE --}}
     {{!-- END TEMPORARY A/B TEST CODE --}}
