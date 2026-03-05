@@ -1,5 +1,4 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import { format } from 'date-fns';
 import AuditableModel from './auditable';
 
 export default class SubmissionModel extends AuditableModel {
@@ -27,9 +26,8 @@ export default class SubmissionModel extends AuditableModel {
   @attr() vmtRoomInfo;
   @attr('string') aiFinalEditText;
   @attr('date') aiFinalEditAt;
-  @attr('string') aiFinalEditSourceVariant;
-  @attr('number') aiFinalEditRating;
-  @attr('string') aiFinalEditFeedback;
+  @attr() aiFinalEditBy;
+  @attr() aiFinalEditVersions;
 
   get folders() {
     let folders = [];
