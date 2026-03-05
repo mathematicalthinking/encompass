@@ -29,9 +29,9 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked quillKey = 0;
   @tracked variantComposeText = '';
   @tracked isSavingFinalEdit = false;
-  @tracked finalEditSourceVariant = null;
-  @tracked finalEditRating = null;
-  @tracked finalEditFeedback = '';
+  @tracked latestBroughtDownVariantLogId = null;
+  @tracked latestBroughtDownRequestId = null;
+  @tracked latestBroughtDownVariantKey = null;
 
   maxResponseLength = 14680064;
 
@@ -728,13 +728,20 @@ export default class ResponseMentorReplyComponent extends Component {
 
     const submissionId = this.args.submission?.id;
     const savedAt = new Date();
+    const savedBy = this.currentUser.user?.id || null;
+    const appendedVersion = {
+      text: this.quillText,
+      savedAt,
+      savedBy,
+      sourceVariantLogId: this.latestBroughtDownVariantLogId,
+      sourceRequestId: this.latestBroughtDownRequestId,
+      sourceVariantKey: this.latestBroughtDownVariantKey,
+    };
     const payload = {
       aiFinalEditText: this.quillText,
       aiFinalEditAt: savedAt,
-      aiFinalEditBy: this.currentUser.user?.id,
-      aiFinalEditSourceVariant: this.finalEditSourceVariant,
-      aiFinalEditRating: this.finalEditRating,
-      aiFinalEditFeedback: this.finalEditFeedback,
+      aiFinalEditBy: savedBy,
+      appendAiFinalEditVersion: appendedVersion,
     };
 
     this.isSavingFinalEdit = true;
@@ -753,8 +760,13 @@ export default class ResponseMentorReplyComponent extends Component {
 
       this.args.submission.aiFinalEditText = payload.aiFinalEditText;
       this.args.submission.aiFinalEditAt = payload.aiFinalEditAt;
-      this.args.submission.aiFinalEditSourceVariant =
-        payload.aiFinalEditSourceVariant;
+      this.args.submission.aiFinalEditBy = payload.aiFinalEditBy;
+      const existingRawVersions = this.args.submission.aiFinalEditVersions;
+      const existingVersions = Array.isArray(existingRawVersions)
+        ? existingRawVersions
+        : existingRawVersions?.toArray?.() || [];
+      this.args.submission.aiFinalEditVersions =
+        existingVersions.concat(appendedVersion);
 
       this.alert.showToast(
         'success',
@@ -812,9 +824,9 @@ export default class ResponseMentorReplyComponent extends Component {
     }
 
     if (typeof draftSelection === 'object' && draftSelection !== null) {
-      this.finalEditSourceVariant = draftSelection.variantKey || null;
-      this.finalEditRating = draftSelection.rating ?? null;
-      this.finalEditFeedback = draftSelection.writtenFeedback || '';
+      this.latestBroughtDownVariantLogId = draftSelection.variantLogId || null;
+      this.latestBroughtDownRequestId = draftSelection.requestId || null;
+      this.latestBroughtDownVariantKey = draftSelection.variantKey || null;
     }
 
     const preparedDraft = this._prepareDraftForEditor(draftText);
