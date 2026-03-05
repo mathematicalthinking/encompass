@@ -312,6 +312,7 @@ server.put('/api/comments/:id', pathMw.validateId(), api.put.comment);
 server.put('/api/responses/:id', pathMw.validateId(), api.put.response);
 server.put('/api/taggings/:id', pathMw.validateId(), api.put.tagging);
 server.put('/api/users/:id', pathMw.validateId(), api.put.user);
+server.put('/api/aiVariants/:id', pathMw.validateId(), api.put.aiVariant);
 server.put(
   '/api/users/addSection/:id',
   pathMw.validateId(),
