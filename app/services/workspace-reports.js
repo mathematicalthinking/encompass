@@ -27,14 +27,22 @@ export default class WorkspaceReportsService extends Service {
     return Array.from(folderNames);
   }
 
-  getAiVariantData(submission) {
-    // Variants will be fetched separately and passed in
-    // This is just a placeholder that returns empty columns
-    const variantData = {};
-    ['A', 'B'].forEach((key) => {
-      variantData[`AI Variant ${key}`] = '';
-    });
-    return variantData;
+  toArray(value) {
+    if (Array.isArray(value)) return value;
+    return value?.toArray?.() || [];
+  }
+
+  normalizeObjectId(value) {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    if (typeof value === 'object') {
+      if (value._id) return this.normalizeObjectId(value._id);
+      if (value.id) return String(value.id);
+      if (value.toString && value.toString !== Object.prototype.toString) {
+        return String(value.toString());
+      }
+    }
+    return String(value);
   }
 
   async fetchVariantsForSubmissions(submissions) {
@@ -55,18 +63,17 @@ export default class WorkspaceReportsService extends Service {
 
       const data = await response.json();
 
-      // Group variants by submission ID
+      // Group variants by submission ID and variant key (newest -> oldest).
       const variantsBySubmission = {};
       (data.variants || []).forEach((variant) => {
         const submissionId = variant.submission._id || variant.submission;
         if (!variantsBySubmission[submissionId]) {
           variantsBySubmission[submissionId] = {};
         }
-        // API returns newest-first; keep the first seen value per variant key.
         if (variantsBySubmission[submissionId][variant.variantKey] == null) {
-          variantsBySubmission[submissionId][variant.variantKey] =
-            variant.draftText;
+          variantsBySubmission[submissionId][variant.variantKey] = [];
         }
+        variantsBySubmission[submissionId][variant.variantKey].push(variant);
       });
 
       return variantsBySubmission;
@@ -208,17 +215,132 @@ export default class WorkspaceReportsService extends Service {
     // Generate CSV data with dynamic columns for selections
     const data = labeledSubmissions.flatMap((submission) => {
       const submissionVariants = variantsBySubmission[submission.id] || {};
+      const variantARows = this.toArray(submissionVariants['A']);
+      const variantDRows = this.toArray(submissionVariants['D']);
+      const legacyVariantBRows = this.toArray(submissionVariants['B']);
+      const variantBRows = variantDRows.length
+        ? variantDRows
+        : legacyVariantBRows;
 
-      const variantData = {
-        'AI Variant A (Student Work Only)': this.stripHtml(
-          submissionVariants['A'] || ''
-        ),
-        'AI Variant B (Work + Selections + Comments)': this.stripHtml(
-          submissionVariants['D'] || submissionVariants['B'] || ''
-        ),
+      const finalEditVersions = this.toArray(submission.aiFinalEditVersions);
+      const finalEditRows = finalEditVersions.length
+        ? finalEditVersions.slice().reverse()
+        : submission.aiFinalEditText || submission.aiFinalEditAt
+        ? [
+            {
+              text: submission.aiFinalEditText,
+              savedAt: submission.aiFinalEditAt,
+            },
+          ]
+        : [];
+
+      const emptyAiData = {
+        'AI Variant A (Student Work Only)': '',
+        'AI Variant A Rating': '',
+        'AI Variant A Feedback': '',
+        'AI Variant B (Work + Selections + Comments)': '',
+        'AI Variant B Rating': '',
+        'AI Variant B Feedback': '',
+        'AI Final Edit Version': '',
+        'AI Final Edit Saved At': '',
       };
 
-      const baseData = {
+      const variantAiRows = Array.from(
+        { length: Math.max(variantARows.length, variantBRows.length, 1) },
+        (_, index) => {
+          const variantA = variantARows[index] || null;
+          const variantB = variantBRows[index] || null;
+
+          return {
+            'AI Variant A (Student Work Only)': this.stripHtml(
+              variantA?.draftText || ''
+            ),
+            'AI Variant A Rating': variantA?.rating ?? '',
+            'AI Variant A Feedback': this.stripHtml(
+              variantA?.teacherNotes || ''
+            ),
+            'AI Variant B (Work + Selections + Comments)': this.stripHtml(
+              variantB?.draftText || ''
+            ),
+            'AI Variant B Rating': variantB?.rating ?? '',
+            'AI Variant B Feedback': this.stripHtml(
+              variantB?.teacherNotes || ''
+            ),
+            'AI Final Edit Version': '',
+            'AI Final Edit Saved At': '',
+          };
+        }
+      );
+
+      const aiRows = variantAiRows.map((row) => ({ ...row }));
+      const variantRowIndexByLogId = new Map();
+      variantARows.forEach((row, index) => {
+        const key = this.normalizeObjectId(row?._id);
+        if (key) {
+          variantRowIndexByLogId.set(key, index);
+        }
+      });
+      variantBRows.forEach((row, index) => {
+        const key = this.normalizeObjectId(row?._id);
+        if (key && !variantRowIndexByLogId.has(key)) {
+          variantRowIndexByLogId.set(key, index);
+        }
+      });
+
+      const overflowAiRows = [];
+      finalEditRows.forEach((finalEdit) => {
+        const finalEditData = {
+          'AI Final Edit Version': this.stripHtml(finalEdit?.text || ''),
+          'AI Final Edit Saved At': this.formatDateOrEmpty(finalEdit?.savedAt),
+        };
+        if (
+          !finalEditData['AI Final Edit Version'] &&
+          !finalEditData['AI Final Edit Saved At']
+        ) {
+          return;
+        }
+
+        const sourceVariantLogId = this.normalizeObjectId(
+          finalEdit?.sourceVariantLogId
+        );
+        const associatedIndex =
+          sourceVariantLogId && variantRowIndexByLogId.has(sourceVariantLogId)
+            ? variantRowIndexByLogId.get(sourceVariantLogId)
+            : null;
+
+        if (
+          associatedIndex != null &&
+          !aiRows[associatedIndex]['AI Final Edit Version'] &&
+          !aiRows[associatedIndex]['AI Final Edit Saved At']
+        ) {
+          aiRows[associatedIndex] = {
+            ...aiRows[associatedIndex],
+            ...finalEditData,
+          };
+          return;
+        }
+
+        if (associatedIndex != null) {
+          overflowAiRows.push({
+            ...variantAiRows[associatedIndex],
+            ...finalEditData,
+          });
+          return;
+        }
+
+        overflowAiRows.push({
+          ...emptyAiData,
+          ...finalEditData,
+        });
+      });
+
+      if (!aiRows.length && !overflowAiRows.length) {
+        aiRows.push({ ...emptyAiData });
+      }
+
+      const combinedAiRows = aiRows.concat(overflowAiRows);
+
+      const staticData = {
         'Name of workspace': submission.get('workspaces.firstObject.name'),
         'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
@@ -243,64 +365,71 @@ export default class WorkspaceReportsService extends Service {
         'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
         'EnCoMPASS templated response': '',
-        ...variantData, // Add AI variant columns
-        'AI Final Edit Version': this.stripHtml(submission.aiFinalEditText),
-        'AI Final Edit Source Variant': submission.aiFinalEditSourceVariant,
-        'AI Final Edit Rating': submission.aiFinalEditRating,
-        'AI Final Edit Feedback': this.stripHtml(submission.aiFinalEditFeedback),
-        'AI Final Edit Saved At': this.formatDateOrEmpty(submission.aiFinalEditAt),
       };
       const selections = submission
         .get('selections')
         .filterBy('isTrashed', false)
         .slice();
-      if (selections.length === 0) {
-        // For submissions without selections, return the base data only
-        return [baseData];
-      } else {
-        // For submissions with selections, add one row per annotation/comment.
-        return selections.flatMap((selection) => {
-          const selectorInfo = this.createSelectorInfo(selection);
-          const folders = this.getUniqueFolderNames(selection).join('; ');
-          const comments = (selection.get('comments') || []).filterBy(
-            'isTrashed',
-            false
-          );
+      const selectionRows =
+        selections.length === 0
+          ? [{}]
+          : selections.flatMap((selection) => {
+              const selectorInfo = this.createSelectorInfo(selection);
+              const folders = this.getUniqueFolderNames(selection).join('; ');
+              const comments = (selection.get('comments') || []).filterBy(
+                'isTrashed',
+                false
+              );
 
-          if (comments.length === 0) {
-            const selectionData = {
-              [`Selector of Text`]: selectorInfo.username,
-              [`Text of Selection`]: selectorInfo.text,
-              [`Selector Date`]: selectorInfo.selectionCreateDate,
-              [`Annotator`]: '',
-              [`Text of Annotator`]: '',
-              [`Annotator Date`]: '',
-              [`Folder(s) for Selection`]: folders,
-            };
-            return [{ ...baseData, ...selectionData }];
-          }
+              if (comments.length === 0) {
+                return [
+                  {
+                    [`Selector of Text`]: selectorInfo.username,
+                    [`Text of Selection`]: selectorInfo.text,
+                    [`Selector Date`]: selectorInfo.selectionCreateDate,
+                    [`Annotator`]: '',
+                    [`Text of Annotator`]: '',
+                    [`Annotator Date`]: '',
+                    [`Folder(s) for Selection`]: folders,
+                  },
+                ];
+              }
 
-          return comments.map((comment) => {
-            const annotatorText = this.stripHtml(comment.get('text'));
-            const annotatorUsername = comment.get('createdBy.username');
-            const commentDate = new Date(comment.get('createDate'));
-            const annotatorCreateDate = isValid(commentDate)
-              ? format(commentDate, 'MM/dd/yyyy')
-              : '';
-            const selectionData = {
-              [`Selector of Text`]: selectorInfo.username,
-              [`Text of Selection`]: selectorInfo.text,
-              [`Selector Date`]: selectorInfo.selectionCreateDate,
-              [`Annotator`]: annotatorUsername,
-              [`Text of Annotator`]: annotatorText,
-              [`Annotation Label`]: comment.get('label') || '',
-              [`Annotator Date`]: annotatorCreateDate,
-              [`Folder(s) for Selection`]: folders,
-            };
-            return { ...baseData, ...selectionData };
-          });
-        });
+              return comments.map((comment) => {
+                const annotatorText = this.stripHtml(comment.get('text'));
+                const annotatorUsername = comment.get('createdBy.username');
+                const commentDate = new Date(comment.get('createDate'));
+                const annotatorCreateDate = isValid(commentDate)
+                  ? format(commentDate, 'MM/dd/yyyy')
+                  : '';
+                return {
+                  [`Selector of Text`]: selectorInfo.username,
+                  [`Text of Selection`]: selectorInfo.text,
+                  [`Selector Date`]: selectorInfo.selectionCreateDate,
+                  [`Annotator`]: annotatorUsername,
+                  [`Text of Annotator`]: annotatorText,
+                  [`Annotation Label`]: comment.get('label') || '',
+                  [`Annotator Date`]: annotatorCreateDate,
+                  [`Folder(s) for Selection`]: folders,
+                };
+              });
+            });
+
+      const baseRows = selectionRows.map((selectionData, index) => ({
+        ...staticData,
+        ...(index === 0 ? combinedAiRows[0] || emptyAiData : emptyAiData),
+        ...selectionData,
+      }));
+
+      if (combinedAiRows.length <= 1) {
+        return baseRows;
       }
+
+      const extraAiRows = combinedAiRows.slice(1).map((aiData) => ({
+        ...staticData,
+        ...aiData,
+      }));
+      return baseRows.concat(extraAiRows);
     });
 
     const headers = [...new Set(data.flatMap((row) => Object.keys(row)))];
