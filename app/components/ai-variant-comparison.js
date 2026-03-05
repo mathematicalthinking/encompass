@@ -1,6 +1,4 @@
 // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
-// TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
-// TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -14,6 +12,10 @@ export default class AiVariantComparisonComponent extends Component {
 
   @tracked draftA = null;
   @tracked draftB = null;
+  @tracked variantLogIdA = null;
+  @tracked variantLogIdD = null;
+  @tracked requestIdA = null;
+  @tracked requestIdD = null;
   @tracked ratingA = 0;
   @tracked ratingD = 0;
   @tracked feedbackA = '';
@@ -113,18 +115,23 @@ export default class AiVariantComparisonComponent extends Component {
       const result = await this.aiDraft.generateDraft(
         submission.id,
         variantCode,
-        workspaceId
+        workspaceId,
+        { includeMeta: true }
       );
 
       // Set the appropriate tracked property
       switch (variantCode) {
         case 'A':
-          this.draftA = result;
+          this.draftA = result.draft;
+          this.variantLogIdA = result.variantLogId;
+          this.requestIdA = result.requestId;
           this.ratingA = 0;
           this.feedbackA = '';
           break;
         case 'D':
-          this.draftB = result;
+          this.draftB = result.draft;
+          this.variantLogIdD = result.variantLogId;
+          this.requestIdD = result.requestId;
           this.ratingD = 0;
           this.feedbackD = '';
           break;
@@ -149,17 +156,33 @@ export default class AiVariantComparisonComponent extends Component {
             const result = await this.aiDraft.generateDraft(
               submission.id,
               v.code,
-              workspaceId
+              workspaceId,
+              { includeMeta: true }
             );
-            return result;
+            return { variantCode: v.code, result };
           } catch (error) {
             console.error(`Error generating variant ${v.code}:`, error);
-            return `Error: ${error.message}`;
+            return { variantCode: v.code, error: error.message };
           }
         })
       );
-      this.draftA = results[0];
-      this.draftB = results[1];
+
+      results.forEach(({ variantCode, result, error }) => {
+        const draftText = error ? `Error: ${error}` : result?.draft;
+        const variantLogId = result?.variantLogId || null;
+        const requestId = result?.requestId || null;
+
+        if (variantCode === 'A') {
+          this.draftA = draftText;
+          this.variantLogIdA = variantLogId;
+          this.requestIdA = requestId;
+        } else if (variantCode === 'D') {
+          this.draftB = draftText;
+          this.variantLogIdD = variantLogId;
+          this.requestIdD = requestId;
+        }
+      });
+
       this.ratingA = 0;
       this.ratingD = 0;
       this.feedbackA = '';
@@ -214,6 +237,9 @@ export default class AiVariantComparisonComponent extends Component {
         variantKey: variantCode,
         rating: variantCode === 'A' ? this.ratingA : this.ratingD,
         writtenFeedback: variantCode === 'A' ? this.feedbackA : this.feedbackD,
+        variantLogId:
+          variantCode === 'A' ? this.variantLogIdA : this.variantLogIdD,
+        requestId: variantCode === 'A' ? this.requestIdA : this.requestIdD,
       });
     }
   }
