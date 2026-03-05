@@ -57,7 +57,13 @@ export default class AiDraftService extends Service {
    * @returns {Promise<String>} HTML string containing the generated draft
    * @throws {Error} If API call fails or no content is received
    */
-  async generateDraft(submissionId, variant = 'A', workspaceId = null) {
+  async generateDraft(
+    submissionId,
+    variant = 'A',
+    workspaceId = null,
+    options = {}
+  ) {
+    const includeMeta = Boolean(options.includeMeta);
     const params = new URLSearchParams({
       target: submissionId,
       variant,
@@ -94,6 +100,15 @@ export default class AiDraftService extends Service {
     }
     if (!data || !data.draft) {
       throw new Error('No content received');
+    }
+
+    if (includeMeta) {
+      return {
+        draft: data.draft,
+        requestId: data.requestId || null,
+        variantLogId: data.variantLogId || null,
+        variant: data.variant || variant,
+      };
     }
 
     return data.draft;

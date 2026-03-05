@@ -1,6 +1,4 @@
 {{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
-{{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
-{{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
 <div class="ai-variant-comparison">
   <div class="ab-test-notice">
     <div class="ab-test-header">
@@ -12,7 +10,7 @@
     </div>
   </div>
   
-  <!-- A/B TEST BOUNDARY MARKERS -->
+  {{!-- A/B TEST BOUNDARY MARKERS --}}
   <div class="ab-test-boundary">
     <div class="ab-test-begin-marker">▶▶▶ BEGIN A/B TEST ◀◀◀</div>
   </div>
@@ -58,6 +56,12 @@
         </div>
         <button
           type="button"
+          class="ai-log-review-btn"
+          disabled={{not this.canLogReviewA}}
+          {{on "click" (fn this.logVariantReview 'A')}}
+        >{{this.logReviewButtonTextA}}</button>
+        <button
+          type="button"
           class="ai-bring-down-btn"
           disabled={{not this.canBringDownA}}
           title={{this.bringDownTooltipA}}
@@ -99,6 +103,12 @@
         </div>
         <button
           type="button"
+          class="ai-log-review-btn"
+          disabled={{not this.canLogReviewD}}
+          {{on "click" (fn this.logVariantReview 'D')}}
+        >{{this.logReviewButtonTextB}}</button>
+        <button
+          type="button"
           class="ai-bring-down-btn"
           disabled={{not this.canBringDownD}}
           title={{this.bringDownTooltipB}}
@@ -108,7 +118,7 @@
     </div>
   </div>
   
-  <!-- A/B TEST BOUNDARY MARKERS -->
+  {{!-- A/B TEST BOUNDARY MARKERS --}}
   <div class="ab-test-boundary">
     <div class="ab-test-end-marker">▶▶▶ END A/B TEST ◀◀◀</div>
   </div>

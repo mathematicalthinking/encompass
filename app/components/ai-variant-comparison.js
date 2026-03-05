@@ -1,6 +1,4 @@
 // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
-// TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
-// TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -14,6 +12,14 @@ export default class AiVariantComparisonComponent extends Component {
 
   @tracked draftA = null;
   @tracked draftB = null;
+  @tracked variantLogIdA = null;
+  @tracked variantLogIdD = null;
+  @tracked requestIdA = null;
+  @tracked requestIdD = null;
+  @tracked isReviewLoggedA = false;
+  @tracked isReviewLoggedD = false;
+  @tracked isLoggingReviewA = false;
+  @tracked isLoggingReviewD = false;
   @tracked ratingA = 0;
   @tracked ratingD = 0;
   @tracked feedbackA = '';
@@ -55,36 +61,107 @@ export default class AiVariantComparisonComponent extends Component {
     { value: 5, tooltip: 'Excellent: Very useful, clear, and actionable' },
   ];
 
-  get canBringDownA() {
+  _forVariant(variantCode, valueA, valueD) {
+    return variantCode === 'A' ? valueA : valueD;
+  }
+
+  _setReviewLogged(variantCode, value) {
+    if (variantCode === 'A') {
+      this.isReviewLoggedA = value;
+      return;
+    }
+    this.isReviewLoggedD = value;
+  }
+
+  _setLoggingReview(variantCode, value) {
+    if (variantCode === 'A') {
+      this.isLoggingReviewA = value;
+      return;
+    }
+    this.isLoggingReviewD = value;
+  }
+
+  _resetReviewInputs(variantCode) {
+    this._setReviewLogged(variantCode, false);
+    if (variantCode === 'A') {
+      this.ratingA = 0;
+      this.feedbackA = '';
+      return;
+    }
+    this.ratingD = 0;
+    this.feedbackD = '';
+  }
+
+  _applyGeneratedVariant(variantCode, draftText, variantLogId, requestId) {
+    if (variantCode === 'A') {
+      this.draftA = draftText;
+      this.variantLogIdA = variantLogId;
+      this.requestIdA = requestId;
+    } else {
+      this.draftB = draftText;
+      this.variantLogIdD = variantLogId;
+      this.requestIdD = requestId;
+    }
+    this._resetReviewInputs(variantCode);
+  }
+
+  _canLogReview(variantCode) {
+    const draft = this._forVariant(variantCode, this.draftA, this.draftB);
+    const rating = this._forVariant(variantCode, this.ratingA, this.ratingD);
+    const feedback = this._forVariant(
+      variantCode,
+      this.feedbackA,
+      this.feedbackD
+    );
+    const isLogging = this._forVariant(
+      variantCode,
+      this.isLoggingReviewA,
+      this.isLoggingReviewD
+    );
     return (
-      Boolean(this.draftA) &&
-      this.ratingA > 0 &&
-      this.feedbackA.trim().length >= this.minFeedbackLength
+      Boolean(draft) &&
+      rating > 0 &&
+      feedback.trim().length >= this.minFeedbackLength &&
+      !isLogging
     );
   }
 
+  get canBringDownA() {
+    return Boolean(this.draftA) && this.isReviewLoggedA;
+  }
+
   get canBringDownD() {
-    return (
-      Boolean(this.draftB) &&
-      this.ratingD > 0 &&
-      this.feedbackD.trim().length >= this.minFeedbackLength
-    );
+    return Boolean(this.draftB) && this.isReviewLoggedD;
+  }
+
+  get canLogReviewA() {
+    return this._canLogReview('A');
+  }
+
+  get canLogReviewD() {
+    return this._canLogReview('D');
   }
 
   get bringDownTooltipA() {
     if (!this.draftA) return 'Generate Variant A first';
-    if (this.ratingA <= 0) return 'Rate Variant A before bringing it down';
+    if (this.ratingA <= 0) return 'Rate Variant A before logging review';
     if (this.feedbackA.trim().length < this.minFeedbackLength) {
       return `Add at least ${this.minFeedbackLength} characters of written feedback for Variant A`;
+    }
+    if (!this.isReviewLoggedA) {
+      return 'Log review for Variant A before bringing it down';
     }
     return 'Bring Variant A into the editor';
   }
 
   get bringDownTooltipB() {
     if (!this.draftB) return 'Generate Variant B first';
-    if (this.ratingD <= 0) return 'Rate Variant B before bringing it down';
+    if (this.ratingD <= 0) return 'Rate Variant B before logging review';
     if (this.feedbackD.trim().length < this.minFeedbackLength) {
       return `Add at least ${this.minFeedbackLength} characters of written feedback for Variant B`;
+    }
+    if (!this.isReviewLoggedD) {
+      return 'Log review for Variant B before bringing it down';
     }
     return 'Bring Variant B into the editor';
   }
@@ -95,6 +172,14 @@ export default class AiVariantComparisonComponent extends Component {
 
   get ratingLabelB() {
     return this.ratingD > 0 ? `${this.ratingD} / 5` : 'No rating yet';
+  }
+
+  get logReviewButtonTextA() {
+    return this.isLoggingReviewA ? 'Logging...' : 'Log Review';
+  }
+
+  get logReviewButtonTextB() {
+    return this.isLoggingReviewD ? 'Logging...' : 'Log Review';
   }
 
   @action
@@ -113,22 +198,17 @@ export default class AiVariantComparisonComponent extends Component {
       const result = await this.aiDraft.generateDraft(
         submission.id,
         variantCode,
-        workspaceId
+        workspaceId,
+        { includeMeta: true }
       );
 
       // Set the appropriate tracked property
-      switch (variantCode) {
-        case 'A':
-          this.draftA = result;
-          this.ratingA = 0;
-          this.feedbackA = '';
-          break;
-        case 'D':
-          this.draftB = result;
-          this.ratingD = 0;
-          this.feedbackD = '';
-          break;
-      }
+      this._applyGeneratedVariant(
+        variantCode,
+        result.draft,
+        result.variantLogId || null,
+        result.requestId || null
+      );
     } catch (error) {
       console.error(`Error generating variant ${variantCode}:`, error);
       this.error = `Failed to generate variant ${variantCode}: ${error.message}`;
@@ -149,21 +229,28 @@ export default class AiVariantComparisonComponent extends Component {
             const result = await this.aiDraft.generateDraft(
               submission.id,
               v.code,
-              workspaceId
+              workspaceId,
+              { includeMeta: true }
             );
-            return result;
+            return { variantCode: v.code, result };
           } catch (error) {
             console.error(`Error generating variant ${v.code}:`, error);
-            return `Error: ${error.message}`;
+            return { variantCode: v.code, error: error.message };
           }
         })
       );
-      this.draftA = results[0];
-      this.draftB = results[1];
-      this.ratingA = 0;
-      this.ratingD = 0;
-      this.feedbackA = '';
-      this.feedbackD = '';
+
+      results.forEach(({ variantCode, result, error }) => {
+        const draftText = error ? `Error: ${error}` : result?.draft;
+        const variantLogId = result?.variantLogId || null;
+        const requestId = result?.requestId || null;
+        this._applyGeneratedVariant(
+          variantCode,
+          draftText,
+          variantLogId,
+          requestId
+        );
+      });
     } catch (e) {
       console.error('Overall error:', e);
       this.error = e.message || 'Failed to generate drafts';
@@ -176,10 +263,12 @@ export default class AiVariantComparisonComponent extends Component {
   setVariantRating(variantCode, rating) {
     if (variantCode === 'A') {
       this.ratingA = rating;
+      this._setReviewLogged(variantCode, false);
       return;
     }
     if (variantCode === 'D') {
       this.ratingD = rating;
+      this._setReviewLogged(variantCode, false);
     }
   }
 
@@ -188,10 +277,71 @@ export default class AiVariantComparisonComponent extends Component {
     const value = event.target.value || '';
     if (variantCode === 'A') {
       this.feedbackA = value;
+      this._setReviewLogged(variantCode, false);
       return;
     }
     if (variantCode === 'D') {
       this.feedbackD = value;
+      this._setReviewLogged(variantCode, false);
+    }
+  }
+
+  @action
+  async logVariantReview(variantCode) {
+    const rating = this._forVariant(variantCode, this.ratingA, this.ratingD);
+    const feedback = this._forVariant(
+      variantCode,
+      this.feedbackA,
+      this.feedbackD
+    );
+    const variantLogId = this._forVariant(
+      variantCode,
+      this.variantLogIdA,
+      this.variantLogIdD
+    );
+
+    if (rating <= 0 || feedback.trim().length < this.minFeedbackLength) {
+      return;
+    }
+
+    if (!variantLogId) {
+      this.error = `Variant ${variantCode} review could not be logged because variantLogId is missing. Generate the variant again and retry.`;
+      return;
+    }
+
+    this._setLoggingReview(variantCode, true);
+    this.error = null;
+    try {
+      const response = await fetch(`/api/aiVariants/${variantLogId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          aiVariant: {
+            rating,
+            teacherNotes: feedback,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        let errMessage = `Failed to log review for variant ${variantCode}`;
+        try {
+          const parsed = await response.json();
+          errMessage = parsed.message || parsed.error || errMessage;
+        } catch (e) {
+          // Best-effort parse only; keep default message.
+        }
+        throw new Error(errMessage);
+      }
+
+      this._setReviewLogged(variantCode, true);
+    } catch (error) {
+      console.error(`Error logging review for variant ${variantCode}:`, error);
+      this.error =
+        error.message || `Failed to log review for variant ${variantCode}`;
+    } finally {
+      this._setLoggingReview(variantCode, false);
     }
   }
 
@@ -212,8 +362,16 @@ export default class AiVariantComparisonComponent extends Component {
       this.args.onDraftSelected({
         draftText,
         variantKey: variantCode,
-        rating: variantCode === 'A' ? this.ratingA : this.ratingD,
-        writtenFeedback: variantCode === 'A' ? this.feedbackA : this.feedbackD,
+        variantLogId: this._forVariant(
+          variantCode,
+          this.variantLogIdA,
+          this.variantLogIdD
+        ),
+        requestId: this._forVariant(
+          variantCode,
+          this.requestIdA,
+          this.requestIdD
+        ),
       });
     }
   }

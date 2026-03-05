@@ -50,9 +50,16 @@ var baseSubmission = {
   aiFinalEditText: { type: String },
   aiFinalEditAt: { type: Date },
   aiFinalEditBy: { type: ObjectId, ref: 'User' },
-  aiFinalEditSourceVariant: { type: String },
-  aiFinalEditRating: { type: Number, min: 1, max: 5 },
-  aiFinalEditFeedback: { type: String },
+  aiFinalEditVersions: [
+    {
+      text: { type: String },
+      savedAt: { type: Date },
+      savedBy: { type: ObjectId, ref: 'User' },
+      sourceVariantLogId: { type: ObjectId, ref: 'AIVariant' },
+      sourceRequestId: { type: String },
+      sourceVariantKey: { type: String },
+    },
+  ],
 };
 
 /**

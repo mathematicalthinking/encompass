@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import DOMPurify from 'dompurify';
 
 export default class ResponseMentorReplyComponent extends Component {
   @service('sweet-alert') alert;
@@ -28,9 +29,9 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked quillKey = 0;
   @tracked variantComposeText = '';
   @tracked isSavingFinalEdit = false;
-  @tracked finalEditSourceVariant = null;
-  @tracked finalEditRating = null;
-  @tracked finalEditFeedback = '';
+  @tracked latestBroughtDownVariantLogId = null;
+  @tracked latestBroughtDownRequestId = null;
+  @tracked latestBroughtDownVariantKey = null;
 
   maxResponseLength = 14680064;
 
@@ -297,12 +298,56 @@ export default class ResponseMentorReplyComponent extends Component {
     );
   }
 
-  _mergeDraftIntoEditor(existingContent, draftText) {
+  _headlineForVariant(variantKey) {
+    if (variantKey === 'A') return 'Variant A';
+    if (variantKey === 'D') return 'Variant B';
+    return 'AI Draft';
+  }
+
+  _withDraftHeadline(draftText, variantKey = null) {
+    const headline = this._headlineForVariant(variantKey);
+    return `<p><strong>${headline}</strong></p><p><br></p>${draftText}`;
+  }
+
+  _mergeDraftIntoEditor(existingContent, draftText, variantKey = null) {
+    const block = this._withDraftHeadline(draftText, variantKey);
     if (this._isEmptyEditorContent(existingContent)) {
-      return draftText;
+      return block;
     }
 
-    return `${existingContent}<p><br></p>${draftText}`;
+    return `${existingContent}<p><br></p>${block}`;
+  }
+
+  _escapeDraftLine(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/ {2,}/g, (spaces) => '&nbsp;'.repeat(spaces.length));
+  }
+
+  _prepareDraftForEditor(draftText) {
+    if (!draftText) return '';
+    const raw = String(draftText);
+
+    // Preserve existing HTML drafts, but sanitize before inserting.
+    if (/<\/?[a-z][\s\S]*>/i.test(raw)) {
+      return DOMPurify.sanitize(raw);
+    }
+
+    // Plain text path: preserve each input line as its own paragraph so Quill
+    // does not collapse lines or drop metadata/list lines on append.
+    const lines = raw.replace(/\r\n/g, '\n').split('\n');
+    const html = lines
+      .map((line) => {
+        if (line.trim() === '') {
+          return '<p><br></p>';
+        }
+        return `<p>${this._escapeDraftLine(line)}</p>`;
+      })
+      .join('');
+
+    return html;
   }
 
   _startLoading() {
@@ -683,13 +728,20 @@ export default class ResponseMentorReplyComponent extends Component {
 
     const submissionId = this.args.submission?.id;
     const savedAt = new Date();
+    const savedBy = this.currentUser.user?.id || null;
+    const appendedVersion = {
+      text: this.quillText,
+      savedAt,
+      savedBy,
+      sourceVariantLogId: this.latestBroughtDownVariantLogId,
+      sourceRequestId: this.latestBroughtDownRequestId,
+      sourceVariantKey: this.latestBroughtDownVariantKey,
+    };
     const payload = {
       aiFinalEditText: this.quillText,
       aiFinalEditAt: savedAt,
-      aiFinalEditBy: this.currentUser.user?.id,
-      aiFinalEditSourceVariant: this.finalEditSourceVariant,
-      aiFinalEditRating: this.finalEditRating,
-      aiFinalEditFeedback: this.finalEditFeedback,
+      aiFinalEditBy: savedBy,
+      appendAiFinalEditVersion: appendedVersion,
     };
 
     this.isSavingFinalEdit = true;
@@ -708,8 +760,13 @@ export default class ResponseMentorReplyComponent extends Component {
 
       this.args.submission.aiFinalEditText = payload.aiFinalEditText;
       this.args.submission.aiFinalEditAt = payload.aiFinalEditAt;
-      this.args.submission.aiFinalEditSourceVariant =
-        payload.aiFinalEditSourceVariant;
+      this.args.submission.aiFinalEditBy = payload.aiFinalEditBy;
+      const existingRawVersions = this.args.submission.aiFinalEditVersions;
+      const existingVersions = Array.isArray(existingRawVersions)
+        ? existingRawVersions
+        : existingRawVersions?.toArray?.() || [];
+      this.args.submission.aiFinalEditVersions =
+        existingVersions.concat(appendedVersion);
 
       this.alert.showToast(
         'success',
@@ -755,8 +812,6 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
-  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
-  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
   @action
   handleVariantDraftSelected(draftSelection) {
     // TEMPORARY A/B TEST CODE: Set the selected draft for the in-place editor
@@ -769,18 +824,21 @@ export default class ResponseMentorReplyComponent extends Component {
     }
 
     if (typeof draftSelection === 'object' && draftSelection !== null) {
-      this.finalEditSourceVariant = draftSelection.variantKey || null;
-      this.finalEditRating = draftSelection.rating ?? null;
-      this.finalEditFeedback = draftSelection.writtenFeedback || '';
+      this.latestBroughtDownVariantLogId = draftSelection.variantLogId || null;
+      this.latestBroughtDownRequestId = draftSelection.requestId || null;
+      this.latestBroughtDownVariantKey = draftSelection.variantKey || null;
     }
 
-    this.aiGeneratedText = draftText;
+    const preparedDraft = this._prepareDraftForEditor(draftText);
+    this.aiGeneratedText = preparedDraft;
     const existingContent = this.quillText || this.variantComposeText;
-    const mergedText = this._mergeDraftIntoEditor(existingContent, draftText);
+    const mergedText = this._mergeDraftIntoEditor(
+      existingContent,
+      preparedDraft,
+      draftSelection?.variantKey
+    );
     this.variantComposeText = mergedText;
     this.quillText = mergedText;
   }
-  // END TEMPORARY A/B TEST CODE
-  // END TEMPORARY A/B TEST CODE
   // END TEMPORARY A/B TEST CODE
 }
