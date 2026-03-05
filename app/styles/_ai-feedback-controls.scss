@@ -95,6 +95,18 @@
   box-sizing: border-box;
 }
 
+.ai-feedback-controls .ai-log-review-btn {
+  @extend .primary-button;
+  width: auto;
+  white-space: nowrap;
+}
+
+.ai-feedback-controls .ai-log-review-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .ai-feedback-controls .ai-bring-down-btn {
   @extend .primary-button;
   width: auto;
