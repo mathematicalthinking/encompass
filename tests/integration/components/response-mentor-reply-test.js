@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, findAll } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 
@@ -45,7 +45,9 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     if (response.isTrashed === undefined) response.isTrashed = false;
     if (submission) {
       // Handle Ember proxy objects - use get() if available
-      const responses = submission.get ? submission.get('responses') : submission.responses;
+      const responses = submission.get
+        ? submission.get('responses')
+        : submission.responses;
       if (!responses) {
         submission.responses = [response];
       } else if (!responses.includes(response)) {
@@ -91,7 +93,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     // Auto-setup all responses with required properties
     const responses = context.submissionResponses || [];
-    responses.forEach(r => {
+    responses.forEach((r) => {
       if (r && r.submission) {
         setupResponse(r, r.submission);
       }
@@ -270,6 +272,299 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     });
 
     assert.dom('.response-mentor-container').exists();
+  });
+
+  test('renders final edit history in ascending order by savedAt', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-history',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [
+      {
+        text: '<p>Newest final edit</p>',
+        savedAt: new Date('2026-03-06T10:00:00.000Z'),
+        savedBy: 'user1',
+      },
+      {
+        text: '<p>Oldest final edit</p>',
+        savedAt: new Date('2026-03-06T09:00:00.000Z'),
+        savedBy: 'user1',
+      },
+    ];
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-section')
+      .exists('Final edit history section renders');
+    assert
+      .dom('.final-edit-history-item')
+      .exists({ count: 2 }, 'Two final edit history entries render');
+
+    const renderedTexts = findAll('.final-edit-history-text').map((el) =>
+      el.textContent.replace(/\s+/g, ' ').trim()
+    );
+    assert.strictEqual(
+      renderedTexts[0],
+      'Oldest final edit',
+      'Oldest entry appears first'
+    );
+    assert.strictEqual(
+      renderedTexts[1],
+      'Newest final edit',
+      'Newest entry appears second'
+    );
+  });
+
+  test('shows only current user final edit history entries', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-history-current-user',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [
+      {
+        text: '<p>Other user edit</p>',
+        savedAt: new Date('2026-03-06T08:00:00.000Z'),
+        savedBy: 'user2',
+      },
+      {
+        text: '<p>My older edit</p>',
+        savedAt: new Date('2026-03-06T09:00:00.000Z'),
+        savedBy: 'user1',
+      },
+      {
+        text: '<p>My newer edit</p>',
+        savedAt: new Date('2026-03-06T10:00:00.000Z'),
+        savedBy: 'user1',
+      },
+    ];
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-item')
+      .exists({ count: 2 }, 'Only current user entries are shown');
+
+    const renderedTexts = findAll('.final-edit-history-text').map((el) =>
+      el.textContent.replace(/\s+/g, ' ').trim()
+    );
+    assert.deepEqual(
+      renderedTexts,
+      ['My older edit', 'My newer edit'],
+      'Only current user history is rendered in ascending order'
+    );
+  });
+
+  test('does not render final edit history when only other users entries exist', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-history-other-user-only',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [
+      {
+        text: '<p>Other user only edit</p>',
+        savedAt: new Date('2026-03-06T08:00:00.000Z'),
+        savedBy: 'user2',
+      },
+    ];
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-section')
+      .doesNotExist('History section is hidden for non-owner entries');
+    assert
+      .dom('.final-edit-history-item')
+      .doesNotExist('No final edit rows render');
+  });
+
+  test('renders legacy final edit snapshot when versions array is empty', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-legacy',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [];
+    submission.aiFinalEditText = '<p>Legacy final edit snapshot</p>';
+    submission.aiFinalEditAt = new Date('2026-03-06T08:30:00.000Z');
+    submission.aiFinalEditBy = 'user1';
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-item')
+      .exists({ count: 1 }, 'One legacy fallback entry renders');
+    assert
+      .dom('.final-edit-history-text')
+      .includesText(
+        'Legacy final edit snapshot',
+        'Legacy final edit text is displayed'
+      );
+  });
+
+  test('does not render legacy final edit snapshot for other user', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-legacy-other-user',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [];
+    submission.aiFinalEditText = '<p>Other user legacy snapshot</p>';
+    submission.aiFinalEditAt = new Date('2026-03-06T08:30:00.000Z');
+    submission.aiFinalEditBy = 'user2';
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-item')
+      .doesNotExist('Legacy fallback is hidden for other users');
+  });
+
+  test('renders Saved By as username for current user history entries', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-history-saved-by-name',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [
+      {
+        text: '<p>Named saver edit</p>',
+        savedAt: new Date('2026-03-06T10:00:00.000Z'),
+        savedBy: 'user1',
+      },
+    ];
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-saved-by')
+      .includesText('testuser', 'Saved By shows resolved username');
+  });
+
+  test('sanitizes final edit history html while preserving safe formatting', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-history-sanitize',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [
+      {
+        text: '<p>Safe <strong>format</strong></p><script>alert("x")</script><img src="x" onerror="alert(1)">',
+        savedAt: new Date('2026-03-06T10:00:00.000Z'),
+        savedBy: 'user1',
+      },
+    ];
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-text strong')
+      .exists('Safe formatting tags are preserved');
+    assert
+      .dom('.final-edit-history-text')
+      .includesText('Safe format', 'Visible text is preserved');
+    assert
+      .dom('.final-edit-history-text script')
+      .doesNotExist('Script tags are stripped');
+
+    const historyHtml = findAll('.final-edit-history-text')
+      .map((el) => el.innerHTML)
+      .join(' ');
+    assert.notOk(
+      historyHtml.includes('onerror='),
+      'Dangerous event handler attributes are removed'
+    );
+  });
+
+  test('preserves line breaks for plain text final edit history entries', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    const submission = store.createRecord('submission', {
+      id: 'sub-final-history-plain-text',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+    });
+
+    submission.aiFinalEditVersions = [
+      {
+        text: 'Line one\nLine two',
+        savedAt: new Date('2026-03-06T10:00:00.000Z'),
+        savedBy: 'user1',
+      },
+    ];
+
+    this.set('submission', submission);
+
+    await renderMentorReply(this, {
+      submission,
+      submissionResponses: [],
+      canSend: false,
+    });
+
+    assert
+      .dom('.final-edit-history-text')
+      .includesText('Line one', 'First line is rendered');
+    assert
+      .dom('.final-edit-history-text')
+      .includesText('Line two', 'Second line is rendered');
+
+    const historyHtml = findAll('.final-edit-history-text')
+      .map((el) => el.innerHTML)
+      .join(' ');
+    assert.ok(
+      historyHtml.includes('<br>'),
+      'Newlines are rendered as line breaks'
+    );
   });
 
   // --- Status and Permission Tests ---
@@ -928,8 +1223,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('shows Edit Draft button for own draft response', async function (assert) {
     const store = this.owner.lookup('service:store');
-    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const user = store.createRecord('user', {
+      id: 'user1',
+      username: 'mentor',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const draft = store.createRecord('response', {
       text: 'Draft text',
       status: 'draft',
@@ -952,8 +1252,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('shows Delete button for own draft response', async function (assert) {
     const store = this.owner.lookup('service:store');
-    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const user = store.createRecord('user', {
+      id: 'user1',
+      username: 'mentor',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const draft = store.createRecord('response', {
       text: 'Draft text',
       status: 'draft',
@@ -979,8 +1284,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     const store = this.owner.lookup('service:store');
     // beforeEach sets currentUser.user = { id: 'user1', username: 'testuser' }
     // Create draft owned by different user
-    const otherUser = store.createRecord('user', { id: 'otherUser456', username: 'other' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const otherUser = store.createRecord('user', {
+      id: 'otherUser456',
+      username: 'other',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const draft = store.createRecord('response', {
       text: 'Draft text',
       status: 'draft',
@@ -1007,8 +1317,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('displays DRAFT badge for draft responses', async function (assert) {
     const store = this.owner.lookup('service:store');
-    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const user = store.createRecord('user', {
+      id: 'user1',
+      username: 'mentor',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const draft = store.createRecord('response', {
       text: 'Draft text',
       status: 'draft',
@@ -1031,8 +1346,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('does not show DRAFT badge for approved responses', async function (assert) {
     const store = this.owner.lookup('service:store');
-    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const user = store.createRecord('user', {
+      id: 'user1',
+      username: 'mentor',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const approved = store.createRecord('response', {
       text: 'Approved text',
       status: 'approved',
@@ -1055,8 +1375,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('shows Delete button for pendingApproval response when user can approve', async function (assert) {
     const store = this.owner.lookup('service:store');
-    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const user = store.createRecord('user', {
+      id: 'user1',
+      username: 'mentor',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const pending = store.createRecord('response', {
       text: 'Pending text',
       status: 'pendingApproval',
@@ -1080,8 +1405,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('hides action buttons in parent workspace', async function (assert) {
     const store = this.owner.lookup('service:store');
-    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
+    const user = store.createRecord('user', {
+      id: 'user1',
+      username: 'mentor',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
     const draft = store.createRecord('response', {
       text: 'Draft text',
       status: 'draft',
@@ -1107,16 +1437,23 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   test('filters out trashed responses from display', async function (assert) {
     const store = this.owner.lookup('service:store');
-    const user = store.createRecord('user', { id: 'user1', username: 'mentor' });
-    const submission = store.createRecord('submission', { creator: { username: 'student' } });
-    
+    const user = store.createRecord('user', {
+      id: 'user1',
+      username: 'mentor',
+    });
+    const submission = store.createRecord('submission', {
+      creator: { username: 'student' },
+    });
+
     const visibleDraft = store.createRecord('response', {
       text: 'Visible draft',
       status: 'draft',
       createDate: new Date('2024-01-01'),
     });
     visibleDraft.createdBy = user;
-    visibleDraft.recipient = store.createRecord('user', { username: 'student' });
+    visibleDraft.recipient = store.createRecord('user', {
+      username: 'student',
+    });
     visibleDraft.submission = submission;
     mockResponseGet(visibleDraft);
     setupResponse(visibleDraft, submission);
@@ -1128,7 +1465,9 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       createDate: new Date('2024-01-02'),
     });
     trashedDraft.createdBy = user;
-    trashedDraft.recipient = store.createRecord('user', { username: 'student' });
+    trashedDraft.recipient = store.createRecord('user', {
+      username: 'student',
+    });
     trashedDraft.submission = submission;
     mockResponseGet(trashedDraft);
     setupResponse(trashedDraft, submission);
@@ -1154,8 +1493,12 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       isOlderRevision: true,
     });
 
-    assert.dom('a.primary-button').doesNotExist('New Response button should be hidden for older revisions');
-    assert.dom('.info').doesNotExist('No replies message should also be hidden');
+    assert
+      .dom('a.primary-button')
+      .doesNotExist('New Response button should be hidden for older revisions');
+    assert
+      .dom('.info')
+      .doesNotExist('No replies message should also be hidden');
   });
 
   test('shows New Response button when isOlderRevision is false', async function (assert) {
@@ -1168,7 +1511,9 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       isOlderRevision: false,
     });
 
-    assert.dom('a.primary-button').exists('New Response button should appear for most recent submission');
+    assert
+      .dom('a.primary-button')
+      .exists('New Response button should appear for most recent submission');
     assert.dom('a.primary-button').hasText('New Response');
   });
 });
