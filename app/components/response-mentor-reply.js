@@ -157,12 +157,8 @@ export default class ResponseMentorReplyComponent extends Component {
       (reply) => reply?.responseType === 'mentor' && !reply?.isTrashed
     );
 
-    if (!mentorReplies || mentorReplies.length === 0) {
+    if (mentorReplies.length === 0) {
       return [];
-    }
-
-    if (typeof mentorReplies.sortBy === 'function') {
-      return mentorReplies.sortBy('createDate');
     }
 
     return mentorReplies
