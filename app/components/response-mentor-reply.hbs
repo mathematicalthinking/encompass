@@ -47,7 +47,7 @@
   {{/if}}
 {{/unless}}
 
-  {{#if this.sortedMentorReplies.length}}
+  {{#if this.hasPreviousConversation}}
     {{#unless @isOlderRevision}}
       {{#if @isCreating}}
         <h3 class='previous-responses-header'>Previous Conversation</h3>
@@ -188,6 +188,39 @@
       {{/if}}
     {{/each}}
 
+    {{#if this.finalEditHistoryEntries.length}}
+      <div class='final-edit-history-section'>
+        <h4 class='response-header'>Final Edit History</h4>
+        {{#each this.finalEditHistoryEntries as |entry|}}
+          <div class='response-mentor-container final-edit-history-item'>
+            <div class='response-mentor-info'>
+              <div class='response-users'>
+                <p class='response-time final-edit-history-saved-at'>
+                  {{#if entry.savedAt}}
+                    {{format-date entry.savedAt 'MMMM Do, YYYY'}}
+                    {{format-date entry.savedAt 'h:mm a'}}
+                  {{else}}
+                    Saved time unavailable
+                  {{/if}}
+                </p>
+                {{#if entry.savedBy}}
+                  <p>
+                    <span class='response-label'>Saved By:</span>
+                    <span class='response-value final-edit-history-saved-by'>{{entry.savedBy}}</span>
+                  </p>
+                {{/if}}
+              </div>
+              <div class='response-text-container'>
+                <div class='response-text final-edit-history-text'>
+                  {{{entry.html}}}
+                </div>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{/if}}
+
     {{! Show "New Response" button after responses when no drafts exist }}
     {{! Removed @isOlderRevision check - allow responding to any revision }}
       {{#unless this.hasDrafts}}
@@ -210,21 +243,22 @@
       {{/unless}}
 
   {{else}}
-    {{! Removed @isOlderRevision check - allow responding to any revision }}
-    <p class='info'>No Mentor Feedback for this revision yet.</p>
-    <img src='/assets/images/no-message.svg' alt='No Replies' />
-    {{#if this.canSendNew}}
-      Click 'New Response' to begin composing a new Mentor Reply.
-      <div class="submit-buttons button-row">
-        <LinkTo
-          @route="responses.new.submission"
-          @model={{@submission.id}}
-          class="primary-button"
-        >
-          New Response
-        </LinkTo>
-      </div>
-    {{/if}}
+    {{#unless @isOlderRevision}}
+      <p class='info'>No Mentor Feedback for this revision yet.</p>
+      <img src='/assets/images/no-message.svg' alt='No Replies' />
+      {{#if this.canSendNew}}
+        Click 'New Response' to begin composing a new Mentor Reply.
+        <div class="submit-buttons button-row">
+          <LinkTo
+            @route="responses.new.submission"
+            @model={{@submission.id}}
+            class="primary-button"
+          >
+            New Response
+          </LinkTo>
+        </div>
+      {{/if}}
+    {{/unless}}
   {{/if}}
   {{! page pagination for mentor replies }}
   {{!-- <div class="mentor-replies">
