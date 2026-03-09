@@ -149,15 +149,105 @@ export default class ResponseMentorReplyComponent extends Component {
     return this.isComposing && this.newReplyStatus !== 'approved';
   }
   get sortedMentorReplies() {
-    const mentorReplies = this.args.submissionResponses?.filter(
-      (reply) => reply.responseType === 'mentor' && !reply.isTrashed
+    const rawResponses = this.args.submissionResponses;
+    const responses = Array.isArray(rawResponses)
+      ? rawResponses
+      : rawResponses?.toArray?.() || [];
+    const mentorReplies = responses.filter(
+      (reply) => reply?.responseType === 'mentor' && !reply?.isTrashed
     );
 
-    if (!mentorReplies || mentorReplies.length === 0) {
-      return null;
+    if (mentorReplies.length === 0) {
+      return [];
     }
 
-    return mentorReplies.sortBy('createDate');
+    return mentorReplies
+      .slice()
+      .sort(
+        (a, b) => new Date(a?.createDate || 0) - new Date(b?.createDate || 0)
+      );
+  }
+
+  get finalEditHistoryEntries() {
+    const submission = this.args.submission;
+    if (!submission) {
+      return [];
+    }
+    const currentUserId = this._normalizeObjectId(this.currentUser.user);
+    if (!currentUserId) {
+      return [];
+    }
+    const userNameById = this._buildUserNameByIdMap();
+
+    const rawVersions = submission.aiFinalEditVersions;
+    const versions = Array.isArray(rawVersions)
+      ? rawVersions
+      : rawVersions?.toArray?.() || [];
+    const ownVersions = versions.filter(
+      (version) => this._normalizeObjectId(version?.savedBy) === currentUserId
+    );
+
+    let normalized = ownVersions
+      .map((version, index) => {
+        const html = this._toSafeHistoryHtml(version?.text || '');
+        const { savedBy, savedById } = this._resolveSavedByDisplay(
+          version?.savedBy,
+          userNameById
+        );
+        const savedAtRaw = version?.savedAt || null;
+        const savedAtDate = savedAtRaw ? new Date(savedAtRaw) : null;
+        const savedAt =
+          savedAtDate && !Number.isNaN(savedAtDate.getTime())
+            ? savedAtDate
+            : null;
+
+        return {
+          id: `${savedAt?.getTime() || 'no-date'}-${index}`,
+          html,
+          savedAt,
+          savedBy,
+          savedById,
+        };
+      })
+      .filter((entry) => entry.html || entry.savedAt);
+
+    const legacySavedById = this._normalizeObjectId(submission.aiFinalEditBy);
+    if (
+      normalized.length === 0 &&
+      legacySavedById === currentUserId &&
+      (submission.aiFinalEditText || submission.aiFinalEditAt)
+    ) {
+      const fallbackSavedAt = submission.aiFinalEditAt
+        ? new Date(submission.aiFinalEditAt)
+        : null;
+      normalized = [
+        {
+          id: 'legacy-final-edit',
+          html: this._toSafeHistoryHtml(submission.aiFinalEditText || ''),
+          ...this._resolveSavedByDisplay(
+            submission.aiFinalEditBy,
+            userNameById
+          ),
+          savedAt:
+            fallbackSavedAt && !Number.isNaN(fallbackSavedAt.getTime())
+              ? fallbackSavedAt
+              : null,
+        },
+      ];
+    }
+
+    return normalized.sort((a, b) => {
+      const aMs = a.savedAt ? a.savedAt.getTime() : Number.POSITIVE_INFINITY;
+      const bMs = b.savedAt ? b.savedAt.getTime() : Number.POSITIVE_INFINITY;
+      return aMs - bMs;
+    });
+  }
+
+  get hasPreviousConversation() {
+    return (
+      this.sortedMentorReplies.length > 0 ||
+      this.finalEditHistoryEntries.length > 0
+    );
   }
 
   get showNoteHeader() {
@@ -201,7 +291,7 @@ export default class ResponseMentorReplyComponent extends Component {
     if (this.args.isParentWorkspace) return false;
     const isOwnReply =
       this.utils.getBelongsToId(reply, 'createdBy') ===
-      this.currentUser.user?.id;
+      this._normalizeObjectId(this.currentUser.user);
     const status = reply.status;
     const isBeingEdited =
       this.isFinishingDraft && this.editingReplyId === reply.id;
@@ -280,6 +370,114 @@ export default class ResponseMentorReplyComponent extends Component {
 
   get saveFinalEditButtonText() {
     return this.isSavingFinalEdit ? 'Saving...' : 'Save Final Edit Version';
+  }
+
+  _toSafeHistoryHtml(content) {
+    if (!content) return '';
+
+    const raw = String(content);
+
+    if (/<\/?[a-z][\s\S]*>/i.test(raw)) {
+      return DOMPurify.sanitize(raw);
+    }
+
+    return raw
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\r?\n/g, '<br>');
+  }
+
+  _buildUserNameByIdMap() {
+    const names = new Map();
+    const add = (id, name) => {
+      if (!id || !name || names.has(id)) return;
+      names.set(id, name);
+    };
+
+    const currentUserId = this._normalizeObjectId(this.currentUser.user);
+    add(currentUserId, this._getUserDisplayName(this.currentUser.user));
+
+    const rawReplies = this.sortedMentorReplies;
+    const replies = Array.isArray(rawReplies)
+      ? rawReplies
+      : rawReplies?.toArray?.() || [];
+
+    for (const reply of replies) {
+      const createdById =
+        this.utils.getBelongsToId(reply, 'createdBy') ||
+        this._normalizeObjectId(reply?.createdBy);
+      add(createdById, this._getUserDisplayName(reply?.createdBy));
+    }
+
+    return names;
+  }
+
+  _resolveSavedByDisplay(savedByValue, userNameById) {
+    const directName = this._getUserDisplayName(savedByValue);
+    const savedById = this._normalizeObjectId(savedByValue);
+    const currentUserId = this._normalizeObjectId(this.currentUser.user);
+
+    // Show saver identity only for rows saved by the current logged-in user.
+    if (savedById && currentUserId && savedById !== currentUserId) {
+      return { savedBy: null, savedById };
+    }
+
+    if (directName) {
+      return { savedBy: directName, savedById };
+    }
+
+    if (savedById && userNameById?.has(savedById)) {
+      return { savedBy: userNameById.get(savedById), savedById };
+    }
+
+    if (savedById) {
+      const userRecord = this.store.peekRecord('user', savedById);
+      const recordName = this._getUserDisplayName(userRecord);
+      if (recordName) {
+        return { savedBy: recordName, savedById };
+      }
+    }
+
+    return { savedBy: savedById || null, savedById };
+  }
+
+  _normalizeObjectId(value) {
+    if (!value) return null;
+    if (typeof value === 'string') return value;
+
+    if (typeof value === 'object') {
+      const id = typeof value.get === 'function' ? value.get('id') : value.id;
+      if (typeof id === 'string') return id;
+
+      const rawId =
+        typeof value.get === 'function' ? value.get('_id') : value._id;
+      if (typeof rawId === 'string') return rawId;
+      if (rawId && typeof rawId.toString === 'function') {
+        return rawId.toString();
+      }
+    }
+
+    return null;
+  }
+
+  _getUserDisplayName(userLike) {
+    if (!userLike || typeof userLike === 'string') return null;
+
+    const read = (key) => {
+      if (typeof userLike.get === 'function') {
+        return userLike.get(key);
+      }
+      return userLike[key];
+    };
+
+    return (
+      read('safeName') ||
+      read('fullName') ||
+      read('displayName') ||
+      read('username') ||
+      null
+    );
   }
 
   _hasContentChanged(oldText, newText, oldNote, newNote) {
@@ -728,7 +926,7 @@ export default class ResponseMentorReplyComponent extends Component {
 
     const submissionId = this.args.submission?.id;
     const savedAt = new Date();
-    const savedBy = this.currentUser.user?.id || null;
+    const savedBy = this._normalizeObjectId(this.currentUser.user);
     const appendedVersion = {
       text: this.quillText,
       savedAt,

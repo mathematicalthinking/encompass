@@ -192,7 +192,7 @@ export default class ResponseNewComponent extends Component {
       return 'Submit';
     }
     if (this.args.canDirectSend) {
-      return 'Submit';
+      return 'Send';
     }
     return 'Submit for Approval';
   }
