@@ -10,7 +10,9 @@
     <div class='ab-draft-editor-section'>
       <p class='response-header'>Draft Editor</p>
       <Ui::QuillContainer
+        @attrSectionId='variant-draft-editor'
         @onEditorChange={{this.updateVariantComposeText}}
+        @onQuillReady={{this.onVariantQuillReady}}
         @startingText={{this.variantComposeText}}
         @maxLength={{10000}}
         @showErrors={{true}}
@@ -194,27 +196,54 @@
         {{#each this.finalEditHistoryEntries as |entry|}}
           <div class='response-mentor-container final-edit-history-item'>
             <div class='response-mentor-info'>
-              <div class='response-users'>
-                <p class='response-time final-edit-history-saved-at'>
-                  {{#if entry.savedAt}}
-                    {{format-date entry.savedAt 'MMMM Do, YYYY'}}
-                    {{format-date entry.savedAt 'h:mm a'}}
-                  {{else}}
-                    Saved time unavailable
-                  {{/if}}
-                </p>
-                {{#if entry.savedBy}}
-                  <p>
-                    <span class='response-label'>Saved By:</span>
-                    <span class='response-value final-edit-history-saved-by'>{{entry.savedBy}}</span>
+              <div class='response-users' style='display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;'>
+                <div class='final-edit-history-left'>
+                  <p class='response-time final-edit-history-saved-at'>
+                    {{#if entry.savedAt}}
+                      {{format-date entry.savedAt 'MMMM Do, YYYY'}}
+                      {{format-date entry.savedAt 'h:mm a'}}
+                    {{else}}
+                      Saved time unavailable
+                    {{/if}}
                   </p>
-                {{/if}}
+                  {{#if entry.savedBy}}
+                    <p>
+                      <span class='response-label'>Saved By:</span>
+                      <span class='response-value final-edit-history-saved-by'>{{entry.savedBy}}</span>
+                    </p>
+                  {{/if}}
+                </div>
+                <div class='final-edit-history-right' style='text-align: right;'>
+                  {{#if entry.rating}}
+                    <p class='final-edit-history-rating' style='margin-bottom: 0.5rem;'>
+                      <span class='response-label'>AI Draft Rating:</span>
+                      <span class='response-value star-rating-display' style='display: inline-flex; gap: 0.3em; margin-left: 0.5rem;'>
+                        {{#each (array 1 2 3 4 5) as |starNum|}}
+                          <i class='fas fa-star star-icon {{if (this.isHistoryStarFilled starNum entry.rating) "star-filled" "star-empty"}}' style='font-size: 18px;'></i>
+                        {{/each}}
+                      </span>
+                    </p>
+                  {{/if}}
+                  {{#if entry.writtenFeedback}}
+                    <p class='final-edit-history-feedback' style='margin-top: 0.5rem; text-align: left;'>
+                      <span class='response-label' style='display: block; margin-bottom: 0.25rem;'>AI Draft Feedback:</span>
+                      <span class='response-value' style='display: block; font-style: italic; word-break: break-word;'>{{entry.writtenFeedback}}</span>
+                    </p>
+                  {{/if}}
+                </div>
               </div>
               <div class='response-text-container'>
                 <div class='response-text final-edit-history-text'>
                   {{{entry.html}}}
                 </div>
               </div>
+              {{#if @isCreating}}
+                <div class='final-edit-history-actions button-row'>
+                  <button {{on 'click' (fn this.copyHistoryEntryToEditor entry)}} class='primary-button' type='button' title='Copy this version into the Draft Editor'>
+                    Copy to Editor
+                  </button>
+                </div>
+              {{/if}}
             </div>
           </div>
         {{/each}}

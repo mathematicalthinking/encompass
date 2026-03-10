@@ -32,9 +32,18 @@ var AIVariantSchema = new Schema(
     draftText: { type: String, required: true },
 
     // Teacher evaluation/interaction
-    rating: { type: Number, min: 1, max: 5 }, // Teacher's rating of this variant
+    rating: { type: Number, min: 1, max: 5 }, // Teacher's rating of this variant (latest)
     isSelected: { type: Boolean, default: false }, // Did teacher choose this variant?
-    teacherNotes: { type: String }, // Teacher's notes about this variant
+    teacherNotes: { type: String }, // Teacher's notes about this variant (latest)
+    // Append-only review history so past reviews are never overwritten
+    reviewHistory: [
+      {
+        rating: { type: Number, min: 1, max: 5 },
+        teacherNotes: { type: String },
+        reviewedAt: { type: Date },
+        reviewedBy: { type: ObjectId, ref: 'User' },
+      },
+    ],
 
     // Technical metadata
     requestId: { type: String },

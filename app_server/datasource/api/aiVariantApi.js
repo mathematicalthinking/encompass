@@ -71,6 +71,16 @@ async function putVariant(req, res) {
 
     variant.rating = rating;
     variant.teacherNotes = teacherNotes;
+    // Append to history so each logged review is preserved (never overwritten)
+    if (!Array.isArray(variant.reviewHistory)) {
+      variant.reviewHistory = [];
+    }
+    variant.reviewHistory.push({
+      rating,
+      teacherNotes,
+      reviewedAt: new Date(),
+      reviewedBy: user._id,
+    });
     variant.lastModifiedBy = user._id;
     variant.lastModifiedDate = new Date();
     await variant.save();

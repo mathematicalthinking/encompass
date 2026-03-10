@@ -67,6 +67,11 @@ export default class QuillContainerComponent extends Component {
     this.handleStartingText();
     this.handleQuillChange();
     this.previousStartingText = this.args.startingText;
+
+    // Notify parent component if callback provided
+    if (this.args.onQuillReady) {
+      this.args.onQuillReady(quill);
+    }
   }
 
   @action

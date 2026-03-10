@@ -418,6 +418,8 @@ function putSubmission(req, res, next) {
         sourceVariantLogId: appendAiFinalEditVersion.sourceVariantLogId || null,
         sourceRequestId: appendAiFinalEditVersion.sourceRequestId || null,
         sourceVariantKey: appendAiFinalEditVersion.sourceVariantKey || null,
+        rating: appendAiFinalEditVersion.rating || null,
+        writtenFeedback: appendAiFinalEditVersion.writtenFeedback || null,
       });
     }
 

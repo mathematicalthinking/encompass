@@ -29,9 +29,12 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked quillKey = 0;
   @tracked variantComposeText = '';
   @tracked isSavingFinalEdit = false;
+  @tracked variantQuillInstance = null;
   @tracked latestBroughtDownVariantLogId = null;
   @tracked latestBroughtDownRequestId = null;
   @tracked latestBroughtDownVariantKey = null;
+  @tracked latestBroughtDownRating = null;
+  @tracked latestBroughtDownFeedback = null;
 
   maxResponseLength = 14680064;
 
@@ -50,6 +53,10 @@ export default class ResponseMentorReplyComponent extends Component {
 
   get statusIconFill() {
     return this.args.iconFillOptions?.[this.args.displayResponse?.status];
+  }
+
+  isHistoryStarFilled(starNum, rating) {
+    return rating != null && starNum <= rating;
   }
 
   _checkResponseChange() {
@@ -207,6 +214,8 @@ export default class ResponseMentorReplyComponent extends Component {
           savedAt,
           savedBy,
           savedById,
+          rating: version?.rating ?? null,
+          writtenFeedback: version?.writtenFeedback ?? null,
         };
       })
       .filter((entry) => entry.html || entry.savedAt);
@@ -232,14 +241,16 @@ export default class ResponseMentorReplyComponent extends Component {
             fallbackSavedAt && !Number.isNaN(fallbackSavedAt.getTime())
               ? fallbackSavedAt
               : null,
+          rating: null,
+          writtenFeedback: null,
         },
       ];
     }
 
     return normalized.sort((a, b) => {
-      const aMs = a.savedAt ? a.savedAt.getTime() : Number.POSITIVE_INFINITY;
-      const bMs = b.savedAt ? b.savedAt.getTime() : Number.POSITIVE_INFINITY;
-      return aMs - bMs;
+      const aMs = a.savedAt ? a.savedAt.getTime() : Number.NEGATIVE_INFINITY;
+      const bMs = b.savedAt ? b.savedAt.getTime() : Number.NEGATIVE_INFINITY;
+      return bMs - aMs;
     });
   }
 
@@ -502,13 +513,22 @@ export default class ResponseMentorReplyComponent extends Component {
     return 'AI Draft';
   }
 
-  _withDraftHeadline(draftText, variantKey = null) {
-    const headline = this._headlineForVariant(variantKey);
+  _withDraftHeadline(draftText, variantKey = null, customHeadline = null) {
+    const headline = customHeadline || this._headlineForVariant(variantKey);
     return `<p><strong>${headline}</strong></p><p><br></p>${draftText}`;
   }
 
-  _mergeDraftIntoEditor(existingContent, draftText, variantKey = null) {
-    const block = this._withDraftHeadline(draftText, variantKey);
+  _mergeDraftIntoEditor(
+    existingContent,
+    draftText,
+    variantKey = null,
+    customHeadline = null
+  ) {
+    const block = this._withDraftHeadline(
+      draftText,
+      variantKey,
+      customHeadline
+    );
     if (this._isEmptyEditorContent(existingContent)) {
       return block;
     }
@@ -934,6 +954,8 @@ export default class ResponseMentorReplyComponent extends Component {
       sourceVariantLogId: this.latestBroughtDownVariantLogId,
       sourceRequestId: this.latestBroughtDownRequestId,
       sourceVariantKey: this.latestBroughtDownVariantKey,
+      rating: this.latestBroughtDownRating,
+      writtenFeedback: this.latestBroughtDownFeedback,
     };
     const payload = {
       aiFinalEditText: this.quillText,
@@ -989,6 +1011,11 @@ export default class ResponseMentorReplyComponent extends Component {
   }
 
   @action
+  onVariantQuillReady(quillInstance) {
+    this.variantQuillInstance = quillInstance;
+  }
+
+  @action
   cancelCompose() {
     this.editRevisionText = '';
     this.editRevisionNote = '';
@@ -1025,6 +1052,8 @@ export default class ResponseMentorReplyComponent extends Component {
       this.latestBroughtDownVariantLogId = draftSelection.variantLogId || null;
       this.latestBroughtDownRequestId = draftSelection.requestId || null;
       this.latestBroughtDownVariantKey = draftSelection.variantKey || null;
+      this.latestBroughtDownRating = draftSelection.rating || null;
+      this.latestBroughtDownFeedback = draftSelection.writtenFeedback || null;
     }
 
     const preparedDraft = this._prepareDraftForEditor(draftText);
@@ -1039,4 +1068,40 @@ export default class ResponseMentorReplyComponent extends Component {
     this.quillText = mergedText;
   }
   // END TEMPORARY A/B TEST CODE
+
+  @action
+  copyHistoryEntryToEditor(entry) {
+    if (!entry?.html) return;
+
+    // Check if we have the Quill instance
+    if (!this.variantQuillInstance) {
+      console.error('Variant Quill instance not ready');
+      return;
+    }
+
+    // Get existing content from the Quill editor
+    const existingContent = this.variantQuillInstance.root.innerHTML || '';
+
+    // Merge: if editor is empty, just use the entry html; otherwise append
+    const mergedText = this._isEmptyEditorContent(existingContent)
+      ? entry.html
+      : `${existingContent}<p><br></p>${entry.html}`;
+
+    // Use Quill's clipboard API to properly set HTML content
+    const delta = this.variantQuillInstance.clipboard.convert(mergedText);
+    this.variantQuillInstance.setContents(delta, 'user');
+
+    // Update tracked properties to keep them in sync
+    this.variantComposeText = mergedText;
+    this.quillText = mergedText;
+
+    this.alert.showToast(
+      'success',
+      'Final edit version copied to editor',
+      'bottom-end',
+      2000,
+      false,
+      null
+    );
+  }
 }
