@@ -10,7 +10,9 @@
     <div class='ab-draft-editor-section'>
       <p class='response-header'>Draft Editor</p>
       <Ui::QuillContainer
+        @attrSectionId='variant-draft-editor'
         @onEditorChange={{this.updateVariantComposeText}}
+        @onQuillReady={{this.onVariantQuillReady}}
         @startingText={{this.variantComposeText}}
         @maxLength={{10000}}
         @showErrors={{true}}
@@ -235,6 +237,13 @@
                   {{{entry.html}}}
                 </div>
               </div>
+              {{#if @isCreating}}
+                <div class='final-edit-history-actions button-row'>
+                  <button {{on 'click' (fn this.copyHistoryEntryToEditor entry)}} class='primary-button' type='button' title='Copy this version into the Draft Editor'>
+                    Copy to Editor
+                  </button>
+                </div>
+              {{/if}}
             </div>
           </div>
         {{/each}}
