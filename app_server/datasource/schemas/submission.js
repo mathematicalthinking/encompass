@@ -58,6 +58,8 @@ var baseSubmission = {
       sourceVariantLogId: { type: ObjectId, ref: 'AIVariant' },
       sourceRequestId: { type: String },
       sourceVariantKey: { type: String },
+      rating: { type: Number },
+      writtenFeedback: { type: String },
     },
   ],
 };
