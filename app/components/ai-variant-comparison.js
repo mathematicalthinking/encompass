@@ -372,6 +372,8 @@ export default class AiVariantComparisonComponent extends Component {
           this.requestIdA,
           this.requestIdD
         ),
+        rating: variantCode === 'A' ? this.ratingA : this.ratingD,
+        writtenFeedback: variantCode === 'A' ? this.feedbackA : this.feedbackD,
       });
     }
   }

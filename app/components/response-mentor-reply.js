@@ -32,6 +32,8 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked latestBroughtDownVariantLogId = null;
   @tracked latestBroughtDownRequestId = null;
   @tracked latestBroughtDownVariantKey = null;
+  @tracked latestBroughtDownRating = null;
+  @tracked latestBroughtDownFeedback = null;
 
   maxResponseLength = 14680064;
 
@@ -50,6 +52,10 @@ export default class ResponseMentorReplyComponent extends Component {
 
   get statusIconFill() {
     return this.args.iconFillOptions?.[this.args.displayResponse?.status];
+  }
+
+  isHistoryStarFilled(starNum, rating) {
+    return rating != null && starNum <= rating;
   }
 
   _checkResponseChange() {
@@ -207,6 +213,8 @@ export default class ResponseMentorReplyComponent extends Component {
           savedAt,
           savedBy,
           savedById,
+          rating: version?.rating ?? null,
+          writtenFeedback: version?.writtenFeedback ?? null,
         };
       })
       .filter((entry) => entry.html || entry.savedAt);
@@ -232,14 +240,16 @@ export default class ResponseMentorReplyComponent extends Component {
             fallbackSavedAt && !Number.isNaN(fallbackSavedAt.getTime())
               ? fallbackSavedAt
               : null,
+          rating: null,
+          writtenFeedback: null,
         },
       ];
     }
 
     return normalized.sort((a, b) => {
-      const aMs = a.savedAt ? a.savedAt.getTime() : Number.POSITIVE_INFINITY;
-      const bMs = b.savedAt ? b.savedAt.getTime() : Number.POSITIVE_INFINITY;
-      return aMs - bMs;
+      const aMs = a.savedAt ? a.savedAt.getTime() : Number.NEGATIVE_INFINITY;
+      const bMs = b.savedAt ? b.savedAt.getTime() : Number.NEGATIVE_INFINITY;
+      return bMs - aMs;
     });
   }
 
@@ -934,6 +944,8 @@ export default class ResponseMentorReplyComponent extends Component {
       sourceVariantLogId: this.latestBroughtDownVariantLogId,
       sourceRequestId: this.latestBroughtDownRequestId,
       sourceVariantKey: this.latestBroughtDownVariantKey,
+      rating: this.latestBroughtDownRating,
+      writtenFeedback: this.latestBroughtDownFeedback,
     };
     const payload = {
       aiFinalEditText: this.quillText,
@@ -1025,6 +1037,8 @@ export default class ResponseMentorReplyComponent extends Component {
       this.latestBroughtDownVariantLogId = draftSelection.variantLogId || null;
       this.latestBroughtDownRequestId = draftSelection.requestId || null;
       this.latestBroughtDownVariantKey = draftSelection.variantKey || null;
+      this.latestBroughtDownRating = draftSelection.rating || null;
+      this.latestBroughtDownFeedback = draftSelection.writtenFeedback || null;
     }
 
     const preparedDraft = this._prepareDraftForEditor(draftText);
