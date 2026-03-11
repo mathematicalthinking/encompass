@@ -35,6 +35,8 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked latestBroughtDownVariantKey = null;
   @tracked latestBroughtDownRating = null;
   @tracked latestBroughtDownFeedback = null;
+  @tracked isHistoryExpanded = false;
+  @tracked expandedHistoryItems = new Set();
 
   maxResponseLength = 14680064;
 
@@ -250,8 +252,12 @@ export default class ResponseMentorReplyComponent extends Component {
     return normalized.sort((a, b) => {
       const aMs = a.savedAt ? a.savedAt.getTime() : Number.NEGATIVE_INFINITY;
       const bMs = b.savedAt ? b.savedAt.getTime() : Number.NEGATIVE_INFINITY;
-      return bMs - aMs;
+      return bMs - aMs; // Sort descending so most recent is first
     });
+  }
+
+  get hasMultipleHistoryEntries() {
+    return this.finalEditHistoryEntries.length > 1;
   }
 
   get hasPreviousConversation() {
@@ -1068,6 +1074,27 @@ export default class ResponseMentorReplyComponent extends Component {
     this.quillText = mergedText;
   }
   // END TEMPORARY A/B TEST CODE
+
+  @action
+  toggleHistoryExpansion() {
+    this.isHistoryExpanded = !this.isHistoryExpanded;
+  }
+
+  @action
+  toggleHistoryItem(entryId) {
+    if (this.expandedHistoryItems.has(entryId)) {
+      this.expandedHistoryItems.delete(entryId);
+    } else {
+      this.expandedHistoryItems.add(entryId);
+    }
+    // Force reactivity
+    this.expandedHistoryItems = new Set(this.expandedHistoryItems);
+  }
+
+  @action
+  isHistoryItemExpanded(entryId) {
+    return this.expandedHistoryItems.has(entryId);
+  }
 
   @action
   copyHistoryEntryToEditor(entry) {
