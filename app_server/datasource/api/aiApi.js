@@ -149,20 +149,7 @@ async function aiDraft(req, res) {
 
     return utils.sendResponse(res, response);
   } catch (error) {
-    console.error('AI draft generation error:', {
-      target,
-      variant,
-      workspace,
-      message: error.message,
-      statusCode: error.statusCode || null,
-      host: error.host || null,
-      port: error.port || null,
-      path: error.path || null,
-      method: error.method || null,
-      responseBodyPreview: error.responseBodyPreview || null,
-      hint: error.hint || null,
-      stack: error.stack,
-    });
+    console.error('AI draft generation error:', error);
     return utils.sendError.InternalError(
       error.message || 'Failed to generate AI draft',
       res
