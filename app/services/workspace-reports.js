@@ -175,6 +175,92 @@ export default class WorkspaceReportsService extends Service {
     return 'The student is sharing their mathematical thinking and work.';
   }
 
+  buildSelectionRowsFromSubmission(submission) {
+    const selections = submission
+      .get('selections')
+      .filterBy('isTrashed', false)
+      .slice();
+
+    return selections.length === 0
+      ? [{}]
+      : selections.flatMap((selection) => {
+          const selectorInfo = this.createSelectorInfo(selection);
+          const folders = this.getUniqueFolderNames(selection).join('; ');
+          const comments = (selection.get('comments') || []).filterBy(
+            'isTrashed',
+            false
+          );
+
+          if (comments.length === 0) {
+            return [
+              {
+                [`Selector of Text`]: selectorInfo.username,
+                [`Text of Selection`]: selectorInfo.text,
+                [`Selector Date`]: selectorInfo.selectionCreateDate,
+                [`Annotator`]: '',
+                [`Text of Annotator`]: '',
+                [`Annotator Date`]: '',
+                [`Folder(s) for Selection`]: folders,
+              },
+            ];
+          }
+
+          return comments.map((comment) => {
+            const annotatorText = this.stripHtml(comment.get('text'));
+            const annotatorUsername = comment.get('createdBy.username');
+            const commentDate = new Date(comment.get('createDate'));
+            const annotatorCreateDate = isValid(commentDate)
+              ? format(commentDate, 'MM/dd/yyyy')
+              : '';
+            return {
+              [`Selector of Text`]: selectorInfo.username,
+              [`Text of Selection`]: selectorInfo.text,
+              [`Selector Date`]: selectorInfo.selectionCreateDate,
+              [`Annotator`]: annotatorUsername,
+              [`Text of Annotator`]: annotatorText,
+              [`Annotation Label`]: comment.get('label') || '',
+              [`Annotator Date`]: annotatorCreateDate,
+              [`Folder(s) for Selection`]: folders,
+            };
+          });
+        });
+  }
+
+  buildSelectionRowsFromSnapshot(sentAnnotations) {
+    if (!Array.isArray(sentAnnotations) || sentAnnotations.length === 0) {
+      return [{}];
+    }
+
+    return sentAnnotations.flatMap((selection) => {
+      const baseRow = {
+        [`Selector of Text`]: selection.selectorUsername || '',
+        [`Text of Selection`]: this.stripHtml(selection.selectedText || ''),
+        [`Selector Date`]: this.formatDateOnlyOrEmpty(selection.selectorDate),
+        [`Folder(s) for Selection`]: '',
+      };
+      const comments = Array.isArray(selection.comments) ? selection.comments : [];
+
+      if (comments.length === 0) {
+        return [
+          {
+            ...baseRow,
+            [`Annotator`]: '',
+            [`Text of Annotator`]: '',
+            [`Annotator Date`]: '',
+          },
+        ];
+      }
+
+      return comments.map((comment) => ({
+        ...baseRow,
+        [`Annotator`]: comment.annotatorUsername || '',
+        [`Text of Annotator`]: this.stripHtml(comment.text || ''),
+        [`Annotation Label`]: comment.type || '',
+        [`Annotator Date`]: this.formatDateOnlyOrEmpty(comment.annotatorDate),
+      }));
+    });
+  }
+
   async submissionReportCsv(model) {
     const submissionsArray = model.submissions.slice();
 
@@ -268,6 +354,8 @@ export default class WorkspaceReportsService extends Service {
             ),
             'AI Final Edit Version': '',
             'AI Final Edit Saved At': '',
+            _sentAnnotations:
+              variantB?.sentAnnotations || variantA?.sentAnnotations || [],
           };
         }
       );
@@ -366,70 +454,24 @@ export default class WorkspaceReportsService extends Service {
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
         'EnCoMPASS templated response': '',
       };
-      const selections = submission
-        .get('selections')
-        .filterBy('isTrashed', false)
-        .slice();
-      const selectionRows =
-        selections.length === 0
-          ? [{}]
-          : selections.flatMap((selection) => {
-              const selectorInfo = this.createSelectorInfo(selection);
-              const folders = this.getUniqueFolderNames(selection).join('; ');
-              const comments = (selection.get('comments') || []).filterBy(
-                'isTrashed',
-                false
-              );
+      const liveSelectionRows = this.buildSelectionRowsFromSubmission(submission);
 
-              if (comments.length === 0) {
-                return [
-                  {
-                    [`Selector of Text`]: selectorInfo.username,
-                    [`Text of Selection`]: selectorInfo.text,
-                    [`Selector Date`]: selectorInfo.selectionCreateDate,
-                    [`Annotator`]: '',
-                    [`Text of Annotator`]: '',
-                    [`Annotator Date`]: '',
-                    [`Folder(s) for Selection`]: folders,
-                  },
-                ];
-              }
+      return combinedAiRows.flatMap((aiData) => {
+        const sentAnnotations = Array.isArray(aiData._sentAnnotations)
+          ? aiData._sentAnnotations
+          : [];
+        const selectionRows = sentAnnotations.length
+          ? this.buildSelectionRowsFromSnapshot(sentAnnotations)
+          : liveSelectionRows;
+        const reportAiData = { ...aiData };
+        delete reportAiData._sentAnnotations;
 
-              return comments.map((comment) => {
-                const annotatorText = this.stripHtml(comment.get('text'));
-                const annotatorUsername = comment.get('createdBy.username');
-                const commentDate = new Date(comment.get('createDate'));
-                const annotatorCreateDate = isValid(commentDate)
-                  ? format(commentDate, 'MM/dd/yyyy')
-                  : '';
-                return {
-                  [`Selector of Text`]: selectorInfo.username,
-                  [`Text of Selection`]: selectorInfo.text,
-                  [`Selector Date`]: selectorInfo.selectionCreateDate,
-                  [`Annotator`]: annotatorUsername,
-                  [`Text of Annotator`]: annotatorText,
-                  [`Annotation Label`]: comment.get('label') || '',
-                  [`Annotator Date`]: annotatorCreateDate,
-                  [`Folder(s) for Selection`]: folders,
-                };
-              });
-            });
-
-      const baseRows = selectionRows.map((selectionData, index) => ({
-        ...staticData,
-        ...(index === 0 ? combinedAiRows[0] || emptyAiData : emptyAiData),
-        ...selectionData,
-      }));
-
-      if (combinedAiRows.length <= 1) {
-        return baseRows;
-      }
-
-      const extraAiRows = combinedAiRows.slice(1).map((aiData) => ({
-        ...staticData,
-        ...aiData,
-      }));
-      return baseRows.concat(extraAiRows);
+        return selectionRows.map((selectionData) => ({
+          ...staticData,
+          ...reportAiData,
+          ...selectionData,
+        }));
+      });
     });
 
     const headers = [...new Set(data.flatMap((row) => Object.keys(row)))];
@@ -481,6 +523,12 @@ export default class WorkspaceReportsService extends Service {
     if (!value) return '';
     const dateValue = value instanceof Date ? value : new Date(value);
     return isValid(dateValue) ? format(dateValue, 'MM/dd/yyyy HH:mm') : '';
+  }
+
+  formatDateOnlyOrEmpty(value) {
+    if (!value) return '';
+    const dateValue = value instanceof Date ? value : new Date(value);
+    return isValid(dateValue) ? format(dateValue, 'MM/dd/yyyy') : '';
   }
 
   generateRevisionFields(submissionLabel, maxRevisions) {
