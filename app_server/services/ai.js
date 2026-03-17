@@ -71,31 +71,9 @@ const getStagePrefix = (path = '') => {
   return '';
 };
 
-const uniquePaths = (paths = []) => [
-  ...new Set(paths.filter(Boolean).map((path) => normalizeApiPath(path))),
-];
-
-const buildStatusPathCandidates = (requestPath, ticketId, statusPath) => {
+const buildStatusPath = (requestPath, ticketId) => {
   const stagePrefix = getStagePrefix(requestPath);
-  const encodedTicketId = encodeURIComponent(ticketId);
-
-  if (statusPath) {
-    const normalizedStatusPath = normalizeApiPath(statusPath);
-
-    return uniquePaths([
-      normalizedStatusPath,
-      stagePrefix &&
-      !normalizedStatusPath.startsWith(`${stagePrefix}/`) &&
-      normalizedStatusPath !== stagePrefix
-        ? `${stagePrefix}${normalizedStatusPath}`
-        : null,
-    ]);
-  }
-
-  return uniquePaths([
-    `${stagePrefix}/api/status/${encodedTicketId}`,
-    `/api/status/${encodedTicketId}`,
-  ]);
+  return `${stagePrefix}/api/status/${encodeURIComponent(ticketId)}`;
 };
 
 const extractDraft = (payload = {}) => {
@@ -477,57 +455,20 @@ const makeAIRequest = async (requestBody) => {
         req.end();
       });
 
-    const requestJsonWithCandidates = async (
-      requestOptions,
-      body = null,
-      pathCandidates = []
-    ) => {
-      const candidates = uniquePaths([requestOptions.path, ...pathCandidates]);
-      let lastError = null;
-
-      for (const path of candidates) {
-        try {
-          return await requestJson({ ...requestOptions, path }, body);
-        } catch (error) {
-          lastError = error;
-
-          if (
-            error?.statusCode !== 403 &&
-            error?.statusCode !== 404 &&
-            error?.statusCode !== 405
-          ) {
-            throw error;
-          }
-        }
-      }
-
-      throw lastError;
-    };
-
     requestJson(options, postData)
       .then((response) => {
-        const initialDraft = extractDraft(response);
-        if (initialDraft) {
-          resolve(initialDraft);
-          return;
-        }
-
         const ticketId = response.ticketId || response.ticket_id || null;
         if (!ticketId) {
-          reject(new Error('No draft text found in AI response'));
+          reject(new Error('No ticket ID found in AI response'));
           return;
         }
 
         const startedAt = Date.now();
-        const statusPathCandidates = buildStatusPathCandidates(
-          options.path,
-          ticketId,
-          response.statusPath || response.status_path
-        );
+        const statusPath = buildStatusPath(options.path, ticketId);
         const statusOptions = {
           hostname: options.hostname,
           port: options.port,
-          path: statusPathCandidates[0],
+          path: statusPath,
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -544,11 +485,7 @@ const makeAIRequest = async (requestBody) => {
             return;
           }
 
-          requestJsonWithCandidates(
-            statusOptions,
-            null,
-            statusPathCandidates.slice(1)
-          )
+          requestJson(statusOptions)
             .then((statusResponse) => {
               const status = String(statusResponse.status || '').toLowerCase();
 
