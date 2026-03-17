@@ -50,6 +50,119 @@ const resolveStudentName = (submission) => {
 
 const { resolveProblemText } = require('./problemText');
 
+const normalizeApiPath = (path = '') => {
+  if (!path) {
+    return '';
+  }
+
+  return path.startsWith('/') ? path : `/${path}`;
+};
+
+const STAGE_NAMES = new Set(['prod', 'dev', 'test', 'stage', 'staging']);
+
+const getStagePrefix = (path = '') => {
+  const segments = normalizeApiPath(path).split('/').filter(Boolean);
+  const firstSegment = segments[0];
+
+  if (firstSegment && STAGE_NAMES.has(firstSegment.toLowerCase())) {
+    return `/${firstSegment}`;
+  }
+
+  return '';
+};
+
+const uniquePaths = (paths = []) => [
+  ...new Set(paths.filter(Boolean).map((path) => normalizeApiPath(path))),
+];
+
+const buildStatusPathCandidates = (requestPath, ticketId, statusPath) => {
+  const stagePrefix = getStagePrefix(requestPath);
+  const encodedTicketId = encodeURIComponent(ticketId);
+
+  if (statusPath) {
+    const normalizedStatusPath = normalizeApiPath(statusPath);
+
+    return uniquePaths([
+      normalizedStatusPath,
+      stagePrefix &&
+      !normalizedStatusPath.startsWith(`${stagePrefix}/`) &&
+      normalizedStatusPath !== stagePrefix
+        ? `${stagePrefix}${normalizedStatusPath}`
+        : null,
+    ]);
+  }
+
+  return uniquePaths([
+    `${stagePrefix}/api/status/${encodedTicketId}`,
+    `/api/status/${encodedTicketId}`,
+  ]);
+};
+
+const extractDraft = (payload = {}) => {
+  let draft =
+    payload.draft_response ||
+    payload.draft_feedback ||
+    payload.feedback ||
+    payload.draft ||
+    payload.text ||
+    payload.message;
+
+  if (!draft && payload.data) {
+    draft =
+      payload.data.draft_response ||
+      payload.data.draft_feedback ||
+      payload.data.feedback ||
+      payload.data.draft ||
+      payload.data.text ||
+      payload.data.message;
+  }
+
+  return draft;
+};
+
+const summarizeResponseBody = (value, maxLength = 400) => {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  const text =
+    typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength)}...`;
+};
+
+const buildAIServiceError = ({
+  message,
+  statusCode = null,
+  requestOptions = {},
+  responseBody = null,
+}) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  error.host = requestOptions.hostname || null;
+  error.port = requestOptions.port || null;
+  error.path = requestOptions.path || null;
+  error.method = requestOptions.method || null;
+  error.responseBodyPreview = summarizeResponseBody(responseBody);
+
+  if (statusCode === 403) {
+    error.hint =
+      'Upstream AI service denied the request. Check API Gateway stage/path, API-key authorization, resource policy, or source-network restrictions.';
+  } else if (statusCode === 404) {
+    error.hint =
+      'Upstream AI endpoint was not found. Check AI_DRAFT_HOST, AI_DRAFT_PATH, and deployed stage routing.';
+  } else if (statusCode && statusCode >= 500) {
+    error.hint =
+      'Upstream AI service failed after receiving the request. Check the external service logs.';
+  }
+
+  return error;
+};
+
 /**
  * Generate an AI draft response based on submission
  * @param {string} targetSubmissionId - The ID of the target submission
@@ -120,8 +233,6 @@ const generateDraft = async (
 
   const requestBody = {
     variant,
-    use_rag: true,
-    return_examples: false,
     problem: {
       statement: cleanProblemStatement,
     },
@@ -302,59 +413,172 @@ const makeAIRequest = async (requestBody) => {
   }
 
   return new Promise((resolve, reject) => {
-    // Choose http for local development, https for production
     const protocol = options.hostname === 'localhost' ? http : https;
-    const req = protocol.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => {
-        let response;
-        try {
-          response = JSON.parse(data);
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            // Extract draft from response (try multiple possible field names)
-            let draft =
-              response.draft_feedback ||
-              response.draft ||
-              response.text ||
-              response.message;
-            if (!draft && response.data) {
-              draft =
-                response.data.draft_feedback ||
-                response.data.draft ||
-                response.data.text ||
-                response.data.message;
-            }
-            if (!draft) {
-              reject(new Error('No draft text found in AI response'));
+    const requestJson = (requestOptions, body = null) =>
+      new Promise((resolveRequest, rejectRequest) => {
+        const req = protocol.request(requestOptions, (res) => {
+          let data = '';
+          res.on('data', (chunk) => (data += chunk));
+          res.on('end', () => {
+            let response = {};
+            try {
+              response = data ? JSON.parse(data) : {};
+            } catch (e) {
+              rejectRequest(
+                buildAIServiceError({
+                  message: `Invalid response from AI service: ${e.message}`,
+                  statusCode: res.statusCode,
+                  requestOptions,
+                  responseBody: data,
+                })
+              );
               return;
             }
-            resolve(draft);
-          } else {
-            reject(
-              new Error(
-                `AI error (${res.statusCode}): ${
+
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              resolveRequest(response);
+              return;
+            }
+
+            rejectRequest(
+              buildAIServiceError({
+                message: `AI error (${res.statusCode}): ${
                   response.error || response.message || 'Unknown'
-                }`
-              )
+                }`,
+                statusCode: res.statusCode,
+                requestOptions,
+                responseBody: data || response,
+              })
             );
-          }
-        } catch (e) {
-          reject(new Error(`Invalid response: ${e.message}`));
+          });
+        });
+
+        req.on('error', (e) =>
+          rejectRequest(
+            buildAIServiceError({
+              message: `Connection failed: ${e.message}`,
+              requestOptions,
+            })
+          )
+        );
+        req.setTimeout(30000, () => {
+          req.destroy();
+          rejectRequest(
+            buildAIServiceError({
+              message: 'Request timeout',
+              requestOptions,
+            })
+          );
+        });
+
+        if (body) {
+          req.write(body);
         }
+        req.end();
       });
-    });
 
-    req.on('error', (e) =>
-      reject(new Error(`Connection failed: ${e.message}`))
-    );
-    req.setTimeout(30000, () => {
-      req.destroy();
-      reject(new Error('Request timeout'));
-    });
+    const requestJsonWithCandidates = async (
+      requestOptions,
+      body = null,
+      pathCandidates = []
+    ) => {
+      const candidates = uniquePaths([requestOptions.path, ...pathCandidates]);
+      let lastError = null;
 
-    req.write(postData);
-    req.end();
+      for (const path of candidates) {
+        try {
+          return await requestJson({ ...requestOptions, path }, body);
+        } catch (error) {
+          lastError = error;
+
+          if (
+            error?.statusCode !== 403 &&
+            error?.statusCode !== 404 &&
+            error?.statusCode !== 405
+          ) {
+            throw error;
+          }
+        }
+      }
+
+      throw lastError;
+    };
+
+    requestJson(options, postData)
+      .then((response) => {
+        const initialDraft = extractDraft(response);
+        if (initialDraft) {
+          resolve(initialDraft);
+          return;
+        }
+
+        const ticketId = response.ticketId || response.ticket_id || null;
+        if (!ticketId) {
+          reject(new Error('No draft text found in AI response'));
+          return;
+        }
+
+        const startedAt = Date.now();
+        const statusPathCandidates = buildStatusPathCandidates(
+          options.path,
+          ticketId,
+          response.statusPath || response.status_path
+        );
+        const statusOptions = {
+          hostname: options.hostname,
+          port: options.port,
+          path: statusPathCandidates[0],
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+
+        if (process.env.AI_DRAFT_API_KEY) {
+          statusOptions.headers['x-api-key'] = process.env.AI_DRAFT_API_KEY;
+        }
+
+        const poll = () => {
+          if (Date.now() - startedAt >= 180000) {
+            reject(new Error('Draft generation timed out. Please retry.'));
+            return;
+          }
+
+          requestJsonWithCandidates(
+            statusOptions,
+            null,
+            statusPathCandidates.slice(1)
+          )
+            .then((statusResponse) => {
+              const status = String(statusResponse.status || '').toLowerCase();
+
+              if (status === 'completed' || status === 'ready') {
+                const draft = extractDraft(statusResponse);
+                if (!draft) {
+                  reject(new Error('No draft text found in AI response'));
+                  return;
+                }
+                resolve(draft);
+                return;
+              }
+
+              if (status === 'failed' || status === 'error') {
+                reject(
+                  new Error(
+                    statusResponse.error || 'Failed to generate AI draft'
+                  )
+                );
+                return;
+              }
+
+              setTimeout(poll, 1000);
+            })
+            .catch(reject);
+        };
+
+        poll();
+      })
+      .catch(reject);
   });
 };
 
