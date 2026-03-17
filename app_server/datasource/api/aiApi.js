@@ -11,7 +11,7 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
-async function aiDraft(req, res, next) {
+async function aiDraft(req, res) {
   let user = userAuth.requireUser(req);
 
   if (!user) {
