@@ -57,6 +57,9 @@ async function aiDraft(req, res) {
       typeof draftResult === 'object' && draftResult?.draft
         ? draftResult.draft
         : draftResult;
+    const sentAnnotations = Array.isArray(draftResult?.sentAnnotations)
+      ? draftResult.sentAnnotations
+      : [];
     const variantConfigData = variantConfig.activeVariants.find(
       (v) => v.key === variant
     );
@@ -75,6 +78,7 @@ async function aiDraft(req, res) {
           variantLabel: variantConfigData.label,
           inputType: variantConfigData.inputType,
           draftText: draftText,
+          sentAnnotations,
           requestId,
           createdBy: user._id,
         });
@@ -102,6 +106,7 @@ async function aiDraft(req, res) {
                 variantLabel: variantConfigData.label,
                 inputType: variantConfigData.inputType,
                 draftText,
+                sentAnnotations,
                 requestId,
                 lastModifiedBy: user._id,
                 lastModifiedDate: new Date(),
