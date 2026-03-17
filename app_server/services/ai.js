@@ -76,27 +76,7 @@ const buildStatusPath = (requestPath, ticketId) => {
   return `${stagePrefix}/api/status/${encodeURIComponent(ticketId)}`;
 };
 
-const extractDraft = (payload = {}) => {
-  let draft =
-    payload.draft_response ||
-    payload.draft_feedback ||
-    payload.feedback ||
-    payload.draft ||
-    payload.text ||
-    payload.message;
-
-  if (!draft && payload.data) {
-    draft =
-      payload.data.draft_response ||
-      payload.data.draft_feedback ||
-      payload.data.feedback ||
-      payload.data.draft ||
-      payload.data.text ||
-      payload.data.message;
-  }
-
-  return draft;
-};
+const extractDraft = (payload = {}) => payload.draft_feedback || null;
 
 const summarizeResponseBody = (value, maxLength = 400) => {
   if (value === null || value === undefined) {
@@ -492,7 +472,7 @@ const makeAIRequest = async (requestBody) => {
               if (status === 'completed' || status === 'ready') {
                 const draft = extractDraft(statusResponse);
                 if (!draft) {
-                  reject(new Error('No draft text found in AI response'));
+                  reject(new Error('No draft_feedback found in AI response'));
                   return;
                 }
                 resolve(draft);
