@@ -30,6 +30,21 @@ var AIVariantSchema = new Schema(
 
     // AI-generated content
     draftText: { type: String, required: true },
+    sentAnnotations: [
+      {
+        selectedText: { type: String },
+        selectorUsername: { type: String },
+        selectorDate: { type: Date },
+        comments: [
+          {
+            type: { type: String },
+            text: { type: String },
+            annotatorUsername: { type: String },
+            annotatorDate: { type: Date },
+          },
+        ],
+      },
+    ],
 
     // Teacher evaluation/interaction
     rating: { type: Number, min: 1, max: 5 }, // Teacher's rating of this variant (latest)

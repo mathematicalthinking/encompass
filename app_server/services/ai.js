@@ -204,16 +204,19 @@ const generateDraft = async (
     },
   };
 
-  const selectionsAndObservations = await buildSelectionsAndObservations(
+  const { requestRows, sentAnnotations } = await buildSelectionsAndObservations(
     targetSubmissionId,
     variant,
     workspaceId,
     teacherId
   );
-  requestBody.mentor_teacher_context.selections_and_observations =
-    selectionsAndObservations;
+  requestBody.mentor_teacher_context.selections_and_observations = requestRows;
 
-  return await makeAIRequest(requestBody);
+  const draft = await makeAIRequest(requestBody);
+  return {
+    draft,
+    sentAnnotations,
+  };
 };
 
 /**
@@ -236,12 +239,15 @@ const getTeacherSelections = async (submissionId, workspaceId, teacherId) => {
       selectionQuery.workspace = workspaceId;
     }
     const selections = await models.Selection.find(selectionQuery)
-      .select('text')
+      .populate('createdBy', 'username')
+      .select('text createDate createdBy')
       .lean()
       .exec();
     return selections.map((sel) => ({
       selection_id: String(sel._id),
       selected_text: stripHtml(sel.text),
+      selector_username: sel.createdBy?.username || '',
+      selector_date: sel.createDate || null,
       comments: [],
     }));
   } catch (error) {
@@ -271,7 +277,8 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
     }
     const comments = await models.Comment.find(commentQuery)
       .populate('selection', 'text')
-      .select('text label selection')
+      .populate('createdBy', 'username')
+      .select('text label selection createDate createdBy')
       .lean()
       .exec();
     return comments.map((comment) => ({
@@ -283,6 +290,8 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
       selected_text: stripHtml(comment.selection?.text || ''),
       type: comment.label, // notice, wonder, feedback
       text: stripHtml(comment.text),
+      annotator_username: comment.createdBy?.username || '',
+      annotator_date: comment.createDate || null,
     }));
   } catch (error) {
     logger.error('Error fetching teacher comments:', error);
@@ -318,7 +327,10 @@ const buildSelectionsAndObservations = async (
   selections.forEach((selection) => {
     const key = selection.selection_id || `sel_${list.length}`;
     const row = {
+      selection_id: selection.selection_id || null,
       selected_text: selection.selected_text || '',
+      selector_username: selection.selector_username || '',
+      selector_date: selection.selector_date || null,
       comments: [],
     };
     selectionMap.set(key, row);
@@ -331,7 +343,10 @@ const buildSelectionsAndObservations = async (
 
     if (!row) {
       row = {
+        selection_id: comment.selection_id || null,
         selected_text: comment.selected_text || '',
+        selector_username: '',
+        selector_date: null,
         comments: [],
       };
       selectionMap.set(key, row);
@@ -341,10 +356,31 @@ const buildSelectionsAndObservations = async (
     row.comments.push({
       type: comment.type || '',
       text: comment.text || '',
+      annotator_username: comment.annotator_username || '',
+      annotator_date: comment.annotator_date || null,
     });
   });
 
-  return list;
+  return {
+    requestRows: list.map((row) => ({
+      selected_text: row.selected_text || '',
+      comments: row.comments.map((comment) => ({
+        type: comment.type || '',
+        text: comment.text || '',
+      })),
+    })),
+    sentAnnotations: list.map((row) => ({
+      selectedText: row.selected_text || '',
+      selectorUsername: row.selector_username || '',
+      selectorDate: row.selector_date || null,
+      comments: row.comments.map((comment) => ({
+        type: comment.type || '',
+        text: comment.text || '',
+        annotatorUsername: comment.annotator_username || '',
+        annotatorDate: comment.annotator_date || null,
+      })),
+    })),
+  };
 };
 
 /**
