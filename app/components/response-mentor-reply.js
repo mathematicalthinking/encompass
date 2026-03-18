@@ -148,6 +148,57 @@ export default class ResponseMentorReplyComponent extends Component {
       : this.args.displayResponse;
   }
 
+  get variantSourceResponseData() {
+    return this.responseNewModel;
+  }
+
+  get variantFilteredSelections() {
+    const selections = this.variantSourceResponseData?.selections;
+    const selectionArray = Array.isArray(selections)
+      ? selections
+      : selections?.toArray?.() || selections?.content || [];
+
+    return selectionArray.filter((selection) => {
+      if (!selection || selection.isTrashed) {
+        return false;
+      }
+      const creatorId = this.utils.getBelongsToId(selection, 'createdBy');
+      return creatorId === this.currentUser.id;
+    });
+  }
+
+  get variantFilteredComments() {
+    const comments = this.variantSourceResponseData?.comments;
+    const commentArray = Array.isArray(comments)
+      ? comments
+      : comments?.toArray?.() || comments?.content || [];
+
+    return commentArray.filter((comment) => {
+      if (!comment || comment.isTrashed) {
+        return false;
+      }
+      const creatorId = this.utils.getBelongsToId(comment, 'createdBy');
+      return creatorId === this.currentUser.id;
+    });
+  }
+
+  get variantGreeting() {
+    const student = this.variantSourceResponseData?.student;
+    if (!student) return 'Hello,';
+    const firstSpace = student.indexOf(' ');
+    const firstName =
+      firstSpace === -1 ? student : student.slice(0, firstSpace);
+    return `Hello ${firstName},`;
+  }
+
+  get variantWho() {
+    return 'You';
+  }
+
+  get variantEditorStartingText() {
+    return this.variantComposeText || this.preFormatVariantText();
+  }
+
   get replyHeadingText() {
     if (this.isEditing) return 'Editing Mentor Reply';
     if (this.isRevising) return 'New Revision';
@@ -517,6 +568,82 @@ export default class ResponseMentorReplyComponent extends Component {
     if (variantKey === 'A') return 'Variant A';
     if (variantKey === 'D') return 'Variant B';
     return 'AI Draft';
+  }
+
+  _quotePrefillText(string, opts, isImageTag = false) {
+    let normalized = String(string || '').replace(/(\r\n|\n|\r)/gm, ' ');
+    const defaultPrefix = '         ';
+    let prefix = defaultPrefix;
+    let html = '';
+    let wrapInBlockQuote = true;
+
+    if (opts && Object.prototype.hasOwnProperty.call(opts, 'type')) {
+      wrapInBlockQuote = false;
+      if (opts.usePrefix) {
+        switch (opts.type) {
+          case 'notice':
+            prefix = '...and I noticed that...';
+            break;
+          case 'wonder':
+            prefix = '...and I wondered about...';
+            break;
+          case 'feedback':
+            prefix = '...and I thought...';
+            break;
+          default:
+            prefix = defaultPrefix;
+        }
+      }
+    }
+
+    if (wrapInBlockQuote) {
+      html += isImageTag
+        ? normalized
+        : `<blockquote class="pf-response-text">${normalized}</blockquote><br>`;
+    } else {
+      html += `<p>${prefix}</p><br>`;
+      html += isImageTag
+        ? normalized
+        : `<p class="pf-response-text">${normalized}</p><br>`;
+    }
+
+    return html;
+  }
+
+  preFormatVariantText() {
+    let text = `<p>${this.variantGreeting}</p><br>`;
+
+    if (this.variantFilteredSelections.length === 0) {
+      return text;
+    }
+
+    this.variantFilteredSelections.forEach((selection) => {
+      const who = this.variantWho;
+      const selectionText = selection.text || '';
+      const imageTagLink = selection.imageTagLink;
+      let quoteInput = selectionText;
+      let isImageTag = false;
+
+      if (imageTagLink) {
+        isImageTag = true;
+        quoteInput = `<img src="${imageTagLink}" alt="${selectionText}"><br>`;
+      }
+
+      text += `<p>${who} wrote:</p><br>`;
+      text += this._quotePrefillText(quoteInput, null, isImageTag);
+
+      this.variantFilteredComments.forEach((comment) => {
+        const selectionId = this.utils.getBelongsToId(comment, 'selection');
+        if (selectionId === selection.id) {
+          text += this._quotePrefillText(comment.text, {
+            type: comment.label,
+            usePrefix: true,
+          });
+        }
+      });
+    });
+
+    return text;
   }
 
   _withDraftHeadline(draftText, variantKey = null, customHeadline = null) {
@@ -1064,7 +1191,8 @@ export default class ResponseMentorReplyComponent extends Component {
 
     const preparedDraft = this._prepareDraftForEditor(draftText);
     this.aiGeneratedText = preparedDraft;
-    const existingContent = this.quillText || this.variantComposeText;
+    const existingContent =
+      this.quillText || this.variantComposeText || this.preFormatVariantText();
     const mergedText = this._mergeDraftIntoEditor(
       existingContent,
       preparedDraft,
