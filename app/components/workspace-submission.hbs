@@ -91,7 +91,10 @@
     {{/if}}
   </aside>
 
-  <div id='al_submission'>
+  <div
+    id='al_submission'
+    style={{if this.makingSelection 'height: auto; overflow-y: visible;' ''}}
+  >
     {{#if this.makingSelection}}
       <h3 id='sel-view-header' class='selectable-view-header'>Selectable View!</h3>
 
@@ -218,6 +221,48 @@
   </div>{{!/al_submission}}
   <h5 id='selections-header' class='submission-header selections'>
     Selections
+    <span
+      class='hide-show-selections'
+      style='position: relative; margin-right: 8px; padding: 0 5px;'
+      {{did-insert this.registerSelectionFilterMenu}}
+      {{will-destroy this.unregisterSelectionFilterMenu}}
+    >
+      <span
+        role='button'
+        tabindex='0'
+        title='Filter selections'
+        style='font-size: 1em; font-weight: 400; color: #5e5e5e; line-height: 25px; cursor: pointer;'
+        {{on 'click' this.toggleSelectionFilterMenu}}
+        {{on 'keydown' this.handleSelectionFilterKeydown}}
+      >
+        <span class='filter-label' style='margin-right: 5px;'>Filter</span><i class='fas fa-filter'></i>
+      </span>
+      {{#if this.showSelectionFilterMenu}}
+        <span
+          class='hover-menu checkbox'
+          style='display: block; position: absolute; top: 24px; right: 0; min-width: 240px; font-size: 1em; font-weight: 400; color: #5e5e5e;'
+        >
+          <ul>
+            {{#each-in this.selectionFilterOptions as |option values|}}
+              <li>
+                <label>
+                  <input
+                    type='checkbox'
+                    checked={{values.isChecked}}
+                    name={{option}}
+                    {{on 'click' (fn this.updateSelectionFilter option)}}
+                    disabled={{values.isDisabled}}
+                  />
+                  <span>
+                    <span class='radio-text' style='white-space: nowrap;'>{{values.label}}</span>
+                  </span>
+                </label>
+              </li>
+            {{/each-in}}
+          </ul>
+        </span>
+      {{/if}}
+    </span>
     {{#if this.showExpandSelections}}
       <div class='expand-selections'>
         <img
