@@ -24,6 +24,12 @@ export default class WorkspaceSubmissionComponent extends Component {
   @tracked vmtReplayerInfo = null;
   @tracked vmtScreenshot = null;
   @tracked vmtListener = null;
+  @tracked thisSubmissionOnly = true;
+  @tracked thisWorkspaceOnly = true;
+  @tracked mySelectionsOnly = true;
+  @tracked showSelectionFilterMenu = false;
+  selectionFilterMenuElement = null;
+  selectionFilterMenuOutsideHandler = null;
 
   get currentSelection() {
     return this.currentSelectionService.selection;
@@ -43,14 +49,48 @@ export default class WorkspaceSubmissionComponent extends Component {
   }
 
   get workspaceSelections() {
-    let subId = this.args.currentSubmission.id;
     return this.args.selections.filter((sel) => {
-      return subId === this.utils.getBelongsToId(sel, 'submission');
+      if (sel.isTrashed) return false;
+      return (
+        this._matchesSelectionWorkspaceFilter(sel) &&
+        this._matchesSelectionSubmissionFilter(sel) &&
+        this._matchesSelectionOwnerFilter(sel)
+      );
     });
   }
 
+  get selectionFilterOptions() {
+    const base = {
+      thisWorkspaceOnly: {
+        label: 'This Workspace Only',
+        isChecked: this.thisWorkspaceOnly,
+        isDisabled: this.args.isParentWorkspace,
+      },
+      thisSubmissionOnly: {
+        label: 'This Submission Only',
+        isChecked: this.thisSubmissionOnly,
+        isDisabled: false,
+      },
+    };
+    if (!this.args.isParentWorkspace) {
+      base.mySelectionsOnly = {
+        label: 'My Selections Only',
+        isChecked: this.mySelectionsOnly,
+        isDisabled: false,
+      };
+    }
+    return base;
+  }
+
   get trashedSelections() {
-    return this.workspaceSelections.filter((selection) => selection.isTrashed);
+    return this.args.selections.filter((selection) => {
+      if (!selection.isTrashed) return false;
+      return (
+        this._matchesSelectionWorkspaceFilter(selection) &&
+        this._matchesSelectionSubmissionFilter(selection) &&
+        this._matchesSelectionOwnerFilter(selection)
+      );
+    });
   }
 
   get canSelect() {
@@ -175,6 +215,90 @@ export default class WorkspaceSubmissionComponent extends Component {
   @action
   hideShowSelections() {
     this.areSelectionsHidden = !this.areSelectionsHidden;
+  }
+
+  @action
+  updateSelectionFilter(prop) {
+    if (prop === 'mySelectionsOnly' && this.args.isParentWorkspace) {
+      return;
+    }
+    this[prop] = !this[prop];
+  }
+
+  @action
+  toggleSelectionFilterMenu() {
+    this.showSelectionFilterMenu = !this.showSelectionFilterMenu;
+  }
+
+  @action
+  handleSelectionFilterKeydown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.toggleSelectionFilterMenu();
+      return;
+    }
+    if (event.key === 'Escape') {
+      this.showSelectionFilterMenu = false;
+    }
+  }
+
+  @action
+  registerSelectionFilterMenu(element) {
+    this.selectionFilterMenuElement = element;
+    if (this.selectionFilterMenuOutsideHandler) {
+      return;
+    }
+    this.selectionFilterMenuOutsideHandler = (event) => {
+      if (!this.showSelectionFilterMenu || !this.selectionFilterMenuElement) {
+        return;
+      }
+      if (this.selectionFilterMenuElement.contains(event.target)) {
+        return;
+      }
+      this.showSelectionFilterMenu = false;
+    };
+    document.addEventListener(
+      'mousedown',
+      this.selectionFilterMenuOutsideHandler
+    );
+    document.addEventListener(
+      'touchstart',
+      this.selectionFilterMenuOutsideHandler
+    );
+  }
+
+  @action
+  unregisterSelectionFilterMenu() {
+    if (this.selectionFilterMenuOutsideHandler) {
+      document.removeEventListener(
+        'mousedown',
+        this.selectionFilterMenuOutsideHandler
+      );
+      document.removeEventListener(
+        'touchstart',
+        this.selectionFilterMenuOutsideHandler
+      );
+    }
+    this.selectionFilterMenuOutsideHandler = null;
+    this.selectionFilterMenuElement = null;
+  }
+
+  _matchesSelectionOwnerFilter(selection) {
+    if (!this.mySelectionsOnly) return true;
+    const creatorId = this.utils.getBelongsToId(selection, 'createdBy');
+    return creatorId === this.currentUser.id;
+  }
+
+  _matchesSelectionSubmissionFilter(selection) {
+    if (!this.thisSubmissionOnly) return true;
+    const submissionId = this.utils.getBelongsToId(selection, 'submission');
+    return submissionId === this.args.currentSubmission?.id;
+  }
+
+  _matchesSelectionWorkspaceFilter(selection) {
+    if (!this.thisWorkspaceOnly) return true;
+    const workspaceId = this.utils.getBelongsToId(selection, 'workspace');
+    return workspaceId === this.args.currentWorkspace?.id;
   }
 
   @action
@@ -350,28 +474,6 @@ export default class WorkspaceSubmissionComponent extends Component {
     super(...arguments);
     if (this.args.currentWorkspace?.workspaceType === 'parent') {
       this.makingSelection = false;
-    }
-  }
-
-  didInsertElement() {
-    super.didInsertElement(...arguments);
-    this.setOwnHeight();
-    this.setupResizeHandler();
-    this.setupVmtListener();
-  }
-
-  didReceiveAttrs() {
-    super.didReceiveAttrs(...arguments);
-    this.setupVmtListener();
-  }
-
-  didRender() {
-    super.didRender(...arguments);
-    if (this.args.switching === true) {
-      // Clear the switching flag after render is complete
-      setTimeout(() => {
-        // Notifies parent that switch is complete
-      }, 0);
     }
   }
 
