@@ -103,27 +103,23 @@ export default class NavigationService extends Service {
   /** Opens a problem in a new window */
   openProblem(problemId) {
     if (!problemId) return;
-    window.open(
-      `${window.location.origin}/#${this.router.urlFor(
-        'problems.problem',
-        problemId
-      )}`,
-      'newwindow',
-      'width=1200, height=700'
-    );
+    const problemPath = this.router.urlFor('problems.problem', problemId);
+    const problemUrl = new URL(problemPath, window.location.origin).toString();
+    window.open(problemUrl, 'newwindow', 'width=1200, height=700');
   }
 
   /** Opens a workspace submission in a new window */
   openSubmission(workspaceId, submissionId) {
     if (!workspaceId || !submissionId) return;
-    window.open(
-      `${window.location.origin}/#${this.router.urlFor(
-        'workspace.submissions.submission',
-        workspaceId,
-        submissionId
-      )}`,
-      'newwindow',
-      'width=1200, height=700'
+    const submissionPath = this.router.urlFor(
+      'workspace.submissions.submission',
+      workspaceId,
+      submissionId
     );
+    const submissionUrl = new URL(
+      submissionPath,
+      window.location.origin
+    ).toString();
+    window.open(submissionUrl, 'newwindow', 'width=1200, height=700');
   }
 }
