@@ -452,20 +452,37 @@ export default class WorkspaceSubmissionComponent extends Component {
   }
 
   @action
-  async openProblem() {
-    const problemId = await this.args.currentSubmission?.answer?.problem?.id;
+  async openProblem(event) {
+    event?.preventDefault?.();
+
+    const readProp = (obj, key) => {
+      if (!obj) return undefined;
+      if (typeof obj.get === 'function') {
+        return obj.get(key);
+      }
+      return obj[key];
+    };
+
+    const submission = this.args.currentSubmission;
+    const answer = readProp(submission, 'answer');
+
+    let problem = readProp(answer, 'problem');
+    if (problem?.then) {
+      problem = await problem;
+    }
+
+    const puzzle = readProp(submission, 'puzzle');
+    const problemId =
+      readProp(problem, 'id') ||
+      this.utils.getBelongsToId(answer, 'problem') ||
+      readProp(answer, 'problemId') ||
+      readProp(puzzle, 'problemId');
+
     if (!problemId) {
       return;
     }
 
-    let getUrl = window.location;
-    let baseUrl = getUrl.protocol + '//' + getUrl.host;
-
-    window.open(
-      `${baseUrl}/#/problems/${problemId}`,
-      'newwindow',
-      'width=1200, height=700'
-    );
+    this.navigation.openProblem(problemId);
   }
 
   // Lifecycle hooks
