@@ -4,7 +4,6 @@ import { format, isValid } from 'date-fns';
 
 export default class WorkspaceReportsService extends Service {
   @service jsonCsv;
-  @service store;
 
   stripHtml(text) {
     if (!text) return '';
@@ -25,62 +24,6 @@ export default class WorkspaceReportsService extends Service {
       folderNames.add(folder.get('name'));
     });
     return Array.from(folderNames);
-  }
-
-  toArray(value) {
-    if (Array.isArray(value)) return value;
-    return value?.toArray?.() || [];
-  }
-
-  normalizeObjectId(value) {
-    if (!value) return '';
-    if (typeof value === 'string') return value;
-    if (typeof value === 'object') {
-      if (value._id) return this.normalizeObjectId(value._id);
-      if (value.id) return String(value.id);
-      if (value.toString && value.toString !== Object.prototype.toString) {
-        return String(value.toString());
-      }
-    }
-    return String(value);
-  }
-
-  async fetchVariantsForSubmissions(submissions) {
-    // Fetch all variants for all submissions in one batch
-    const submissionIds = submissions.map((s) => s.id).join(',');
-
-    try {
-      const response = await fetch(
-        `/api/aiVariants?submissionIds=${submissionIds}`,
-        {
-          credentials: 'include',
-        }
-      );
-
-      if (!response.ok) {
-        return {};
-      }
-
-      const data = await response.json();
-
-      // Group variants by submission ID and variant key (newest -> oldest).
-      const variantsBySubmission = {};
-      (data.variants || []).forEach((variant) => {
-        const submissionId = variant.submission._id || variant.submission;
-        if (!variantsBySubmission[submissionId]) {
-          variantsBySubmission[submissionId] = {};
-        }
-        if (variantsBySubmission[submissionId][variant.variantKey] == null) {
-          variantsBySubmission[submissionId][variant.variantKey] = [];
-        }
-        variantsBySubmission[submissionId][variant.variantKey].push(variant);
-      });
-
-      return variantsBySubmission;
-    } catch (error) {
-      console.error('[Workspace Report] Error fetching variants:', error);
-      return {};
-    }
   }
 
   async fetchProblemTextsForSubmissions(submissions, workspaceId) {
@@ -182,7 +125,18 @@ export default class WorkspaceReportsService extends Service {
       .slice();
 
     return selections.length === 0
-      ? [{}]
+      ? [
+          {
+            [`Selector of Text`]: '',
+            [`Text of Selection`]: '',
+            [`Selector Date`]: '',
+            [`Annotator`]: '',
+            [`Text of Annotator`]: '',
+            [`Annotation Label`]: '',
+            [`Annotator Date`]: '',
+            [`Folder(s) for Selection`]: '',
+          },
+        ]
       : selections.flatMap((selection) => {
           const selectorInfo = this.createSelectorInfo(selection);
           const folders = this.getUniqueFolderNames(selection).join('; ');
@@ -199,6 +153,7 @@ export default class WorkspaceReportsService extends Service {
                 [`Selector Date`]: selectorInfo.selectionCreateDate,
                 [`Annotator`]: '',
                 [`Text of Annotator`]: '',
+                [`Annotation Label`]: '',
                 [`Annotator Date`]: '',
                 [`Folder(s) for Selection`]: folders,
               },
@@ -226,48 +181,8 @@ export default class WorkspaceReportsService extends Service {
         });
   }
 
-  buildSelectionRowsFromSnapshot(sentAnnotations) {
-    if (!Array.isArray(sentAnnotations) || sentAnnotations.length === 0) {
-      return [{}];
-    }
-
-    return sentAnnotations.flatMap((selection) => {
-      const baseRow = {
-        [`Selector of Text`]: selection.selectorUsername || '',
-        [`Text of Selection`]: this.stripHtml(selection.selectedText || ''),
-        [`Selector Date`]: this.formatDateOnlyOrEmpty(selection.selectorDate),
-        [`Folder(s) for Selection`]: '',
-      };
-      const comments = Array.isArray(selection.comments) ? selection.comments : [];
-
-      if (comments.length === 0) {
-        return [
-          {
-            ...baseRow,
-            [`Annotator`]: '',
-            [`Text of Annotator`]: '',
-            [`Annotator Date`]: '',
-          },
-        ];
-      }
-
-      return comments.map((comment) => ({
-        ...baseRow,
-        [`Annotator`]: comment.annotatorUsername || '',
-        [`Text of Annotator`]: this.stripHtml(comment.text || ''),
-        [`Annotation Label`]: comment.type || '',
-        [`Annotator Date`]: this.formatDateOnlyOrEmpty(comment.annotatorDate),
-      }));
-    });
-  }
-
   async submissionReportCsv(model) {
     const submissionsArray = model.submissions.slice();
-
-    // Fetch all variants for all submissions
-    const variantsBySubmission = await this.fetchVariantsForSubmissions(
-      submissionsArray
-    );
     const problemTextsBySubmission = await this.fetchProblemTextsForSubmissions(
       submissionsArray,
       model.workspace?.id
@@ -300,140 +215,12 @@ export default class WorkspaceReportsService extends Service {
 
     // Generate CSV data with dynamic columns for selections
     const data = labeledSubmissions.flatMap((submission) => {
-      const submissionVariants = variantsBySubmission[submission.id] || {};
-      const variantARows = this.toArray(submissionVariants['A']);
-      const variantDRows = this.toArray(submissionVariants['D']);
-      const legacyVariantBRows = this.toArray(submissionVariants['B']);
-      const variantBRows = variantDRows.length
-        ? variantDRows
-        : legacyVariantBRows;
-
-      const finalEditVersions = this.toArray(submission.aiFinalEditVersions);
-      const finalEditRows = finalEditVersions.length
-        ? finalEditVersions.slice().reverse()
-        : submission.aiFinalEditText || submission.aiFinalEditAt
-        ? [
-            {
-              text: submission.aiFinalEditText,
-              savedAt: submission.aiFinalEditAt,
-            },
-          ]
-        : [];
-
-      const emptyAiData = {
-        'AI Variant A (Student Work Only)': '',
-        'AI Variant A Rating': '',
-        'AI Variant A Feedback': '',
-        'AI Variant B (Work + Selections + Comments)': '',
-        'AI Variant B Rating': '',
-        'AI Variant B Feedback': '',
-        'AI Final Edit Version': '',
-        'AI Final Edit Saved At': '',
-      };
-
-      const variantAiRows = Array.from(
-        { length: Math.max(variantARows.length, variantBRows.length, 1) },
-        (_, index) => {
-          const variantA = variantARows[index] || null;
-          const variantB = variantBRows[index] || null;
-
-          return {
-            'AI Variant A (Student Work Only)': this.stripHtml(
-              variantA?.draftText || ''
-            ),
-            'AI Variant A Rating': variantA?.rating ?? '',
-            'AI Variant A Feedback': this.stripHtml(
-              variantA?.teacherNotes || ''
-            ),
-            'AI Variant B (Work + Selections + Comments)': this.stripHtml(
-              variantB?.draftText || ''
-            ),
-            'AI Variant B Rating': variantB?.rating ?? '',
-            'AI Variant B Feedback': this.stripHtml(
-              variantB?.teacherNotes || ''
-            ),
-            'AI Final Edit Version': '',
-            'AI Final Edit Saved At': '',
-            _sentAnnotations:
-              variantB?.sentAnnotations || variantA?.sentAnnotations || [],
-          };
-        }
-      );
-
-      const aiRows = variantAiRows.map((row) => ({ ...row }));
-      const variantRowIndexByLogId = new Map();
-      variantARows.forEach((row, index) => {
-        const key = this.normalizeObjectId(row?._id);
-        if (key) {
-          variantRowIndexByLogId.set(key, index);
-        }
-      });
-      variantBRows.forEach((row, index) => {
-        const key = this.normalizeObjectId(row?._id);
-        if (key && !variantRowIndexByLogId.has(key)) {
-          variantRowIndexByLogId.set(key, index);
-        }
-      });
-
-      const overflowAiRows = [];
-      finalEditRows.forEach((finalEdit) => {
-        const finalEditData = {
-          'AI Final Edit Version': this.stripHtml(finalEdit?.text || ''),
-          'AI Final Edit Saved At': this.formatDateOrEmpty(finalEdit?.savedAt),
-        };
-        if (
-          !finalEditData['AI Final Edit Version'] &&
-          !finalEditData['AI Final Edit Saved At']
-        ) {
-          return;
-        }
-
-        const sourceVariantLogId = this.normalizeObjectId(
-          finalEdit?.sourceVariantLogId
-        );
-        const associatedIndex =
-          sourceVariantLogId && variantRowIndexByLogId.has(sourceVariantLogId)
-            ? variantRowIndexByLogId.get(sourceVariantLogId)
-            : null;
-
-        if (
-          associatedIndex != null &&
-          !aiRows[associatedIndex]['AI Final Edit Version'] &&
-          !aiRows[associatedIndex]['AI Final Edit Saved At']
-        ) {
-          aiRows[associatedIndex] = {
-            ...aiRows[associatedIndex],
-            ...finalEditData,
-          };
-          return;
-        }
-
-        if (associatedIndex != null) {
-          overflowAiRows.push({
-            ...variantAiRows[associatedIndex],
-            ...finalEditData,
-          });
-          return;
-        }
-
-        overflowAiRows.push({
-          ...emptyAiData,
-          ...finalEditData,
-        });
-      });
-
-      if (!aiRows.length && !overflowAiRows.length) {
-        aiRows.push({ ...emptyAiData });
-      }
-
-      const combinedAiRows = aiRows.concat(overflowAiRows);
-
       const staticData = {
         'Name of workspace': submission.get('workspaces.firstObject.name'),
         'Workspace URL': window.location.href,
         'Workspace Owner': model.workspace.get('owner.username'),
         'Original Submitter': submission.student,
-        'Puzzle text': this.stripHtml(
+        'Puzzle Text': this.stripHtml(
           problemTextsBySubmission[submission.id] ||
             this.getPuzzleText(submission)
         ),
@@ -452,26 +239,12 @@ export default class WorkspaceReportsService extends Service {
         'Submission or Revision': submission.submissionLabel,
         'Number of Workspace Folders': model.workspace.foldersLength,
         'Number of Notice/Wonder/Feedback': model.workspace.commentsLength,
-        'EnCoMPASS templated response': '',
       };
-      const liveSelectionRows = this.buildSelectionRowsFromSubmission(submission);
-
-      return combinedAiRows.flatMap((aiData) => {
-        const sentAnnotations = Array.isArray(aiData._sentAnnotations)
-          ? aiData._sentAnnotations
-          : [];
-        const selectionRows = sentAnnotations.length
-          ? this.buildSelectionRowsFromSnapshot(sentAnnotations)
-          : liveSelectionRows;
-        const reportAiData = { ...aiData };
-        delete reportAiData._sentAnnotations;
-
-        return selectionRows.map((selectionData) => ({
-          ...staticData,
-          ...reportAiData,
-          ...selectionData,
-        }));
-      });
+      const selectionRows = this.buildSelectionRowsFromSubmission(submission);
+      return selectionRows.map((selectionData) => ({
+        ...staticData,
+        ...selectionData,
+      }));
     });
 
     const headers = [...new Set(data.flatMap((row) => Object.keys(row)))];
@@ -517,18 +290,6 @@ export default class WorkspaceReportsService extends Service {
       annotatorCreateDate,
     };
     return Object.assign({}, defaultSelection, selectorInfo);
-  }
-
-  formatDateOrEmpty(value) {
-    if (!value) return '';
-    const dateValue = value instanceof Date ? value : new Date(value);
-    return isValid(dateValue) ? format(dateValue, 'MM/dd/yyyy HH:mm') : '';
-  }
-
-  formatDateOnlyOrEmpty(value) {
-    if (!value) return '';
-    const dateValue = value instanceof Date ? value : new Date(value);
-    return isValid(dateValue) ? format(dateValue, 'MM/dd/yyyy') : '';
   }
 
   generateRevisionFields(submissionLabel, maxRevisions) {
