@@ -14,6 +14,7 @@ import { capitalize } from '@ember/string';
 export default Component.extend({
   elementId: 'submissions-filter',
   alert: service('sweet-alert'),
+  currentUser: service(),
   findRecordErrors: [],
   wsRequestErrors: [],
   errorHandling: service('error-handling'),
@@ -57,10 +58,10 @@ export default Component.extend({
     }
   ),
 
-  isTeacher: computed('currentUser.{accountType,actingRole}', function () {
+  isTeacher: computed('currentUser.user.{accountType,actingRole}', function () {
     return (
-      this.get('currentUser.accountType') === 'T' &&
-      this.get('currentUser.actingRole') !== 'student'
+      this.get('currentUser.user.accountType') === 'T' &&
+      this.get('currentUser.user.actingRole') !== 'student'
     );
   }),
 
@@ -201,7 +202,7 @@ export default Component.extend({
 
       // students can only make workspaces from their own work
       if (this.get('currentUser.isStudent')) {
-        return [this.currentUser];
+        return [this.currentUser.user];
       }
 
       if (assignment) {

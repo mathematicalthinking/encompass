@@ -50,6 +50,10 @@ module('Unit | Component | workspace-submission', function (hooks) {
           accountType: 'T',
           isAdmin: false,
         };
+
+        get id() {
+          return this.user?.id;
+        }
       }
     );
 
@@ -180,6 +184,15 @@ module('Unit | Component | workspace-submission', function (hooks) {
       deleteSelection: args.deleteSelection || (() => {}),
     };
 
+    component.args.selections.forEach((selection) => {
+      if (selection.workspace === undefined) {
+        selection.workspace = component.args.currentWorkspace?.id;
+      }
+      if (selection.createdBy === undefined) {
+        selection.createdBy = 'user-1';
+      }
+    });
+
     return component;
   }
 
@@ -239,7 +252,7 @@ module('Unit | Component | workspace-submission', function (hooks) {
       );
     });
 
-    test('areNoSelections considers trashed selections as selections', function (assert) {
+    test('areNoSelections treats trashed-only selections as no active selections', function (assert) {
       const submission = createSubmission('sub-3');
       const trashedSelection = createSelection('sel-trash-1', 'sub-3', true);
       const workspace = createWorkspace('ws-3');
@@ -250,7 +263,7 @@ module('Unit | Component | workspace-submission', function (hooks) {
         selections: [trashedSelection],
       });
 
-      // workspaceSelections includes trashed items (filtered by submission ID only)
+      // workspaceSelections excludes trashed items
       const result = component.areNoSelections;
 
       assert.strictEqual(
@@ -261,8 +274,8 @@ module('Unit | Component | workspace-submission', function (hooks) {
 
       assert.strictEqual(
         result,
-        false,
-        'areNoSelections should be false when trashed selections exist'
+        true,
+        'areNoSelections should be true when only trashed selections exist'
       );
     });
 
@@ -324,7 +337,7 @@ module('Unit | Component | workspace-submission', function (hooks) {
       );
     });
 
-    test('workspaceSelections includes both trashed and non-trashed', function (assert) {
+    test('workspaceSelections excludes trashed selections', function (assert) {
       const submission = createSubmission('sub-6');
       const activeSelection = createSelection('sel-active', 'sub-6', false);
       const trashedSelection = createSelection('sel-trashed', 'sub-6', true);
@@ -340,8 +353,17 @@ module('Unit | Component | workspace-submission', function (hooks) {
 
       assert.strictEqual(
         filtered.length,
-        2,
-        'workspaceSelections should include both trashed and non-trashed'
+        1,
+        'workspaceSelections should exclude trashed selections'
+      );
+
+      assert.ok(
+        filtered.includes(activeSelection),
+        'workspaceSelections should include non-trashed selections'
+      );
+      assert.notOk(
+        filtered.includes(trashedSelection),
+        'workspaceSelections should not include trashed selections'
       );
     });
 

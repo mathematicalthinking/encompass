@@ -1,8 +1,7 @@
-{{#if this.model.currentUser.isStudent}}
+{{#if this.currentUser.isStudent}}
   <div class='centered'>FORBIDDEN</div>
 {{else}}
   <UserList
-    @currentUser={{this.model.currentUser}}
     @users={{this.model.users}}
     @organizations={{this.model.organiztions}}
     @trashedUsers={{this.model.trashedUsers}}

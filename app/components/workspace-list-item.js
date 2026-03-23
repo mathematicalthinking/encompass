@@ -6,6 +6,7 @@ import filter from 'lodash-es/filter';
 export default Component.extend({
   classNames: ['workspace-list-item'],
   alert: service('sweet-alert'),
+  currentUser: service(),
   permissions: service('workspace-permissions'),
   menuOptions: [
     {
@@ -35,12 +36,12 @@ export default Component.extend({
   ],
   store: service(),
   ellipsisMenuOptions: computed(
-    'currentUser.hiddenWorkspaces',
+    'currentUser.user.hiddenWorkspaces',
     'menuOptions',
     'workspace.{id,isTrashed}',
     function () {
       let ws = this.workspace;
-      let currentUser = this.currentUser;
+      let currentUser = this.currentUser.user;
       let hiddenWorkspaces = currentUser.get('hiddenWorkspaces');
       let deleted = this.get('workspace.isTrashed');
       let canDelete = this.permissions.canDelete(ws);
@@ -139,9 +140,9 @@ export default Component.extend({
         responseOptions: { none: true },
         permissionOptions: {},
         copyWorkspaceError: null,
-        createdBy: this.currentUser,
-        lastModifiedBy: this.currentUser,
-        owner: this.currentUser,
+        createdBy: this.currentUser.user,
+        lastModifiedBy: this.currentUser.user,
+        owner: this.currentUser.user,
         originalWsId: workspace,
         createdWorkspace: null,
         createdFolderSet: null,
@@ -210,7 +211,7 @@ export default Component.extend({
 
     hideWorkspace: function () {
       let workspaceId = this.get('workspace.id');
-      let user = this.currentUser;
+      let user = this.currentUser.user;
       this.alert
         .showModal(
           'question',

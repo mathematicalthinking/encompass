@@ -6,26 +6,28 @@
  */
 import { hash } from 'rsvp';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import AuthenticatedRoute from '../_authenticated_route';
 
 export default class WorkspacesIndexRoute extends AuthenticatedRoute {
   @service store;
+  @service currentUser;
   templateName = 'workspaces/workspaces';
 
   model() {
-    const user = this.modelFor('application');
     let workspaceCriteria = {};
 
-    if (!user.get('isAdmin')) {
+    if (!this.currentUser.isAdmin) {
       workspaceCriteria = {
         filterBy: {
-          $or: [{ createdBy: user.id }, { owner: user.id }],
+          $or: [
+            { createdBy: this.currentUser.id },
+            { owner: this.currentUser.id },
+          ],
         },
       };
     }
     return hash({
-      currentUser: user,
       organizations: this.store.findAll('organization'),
       workspaces: this.store.query('workspace', workspaceCriteria),
     });

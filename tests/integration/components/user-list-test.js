@@ -2,6 +2,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import Service from '@ember/service';
 
 module('Integration | Component | user-list', function (hooks) {
   setupRenderingTest(hooks);
@@ -35,23 +36,66 @@ module('Integration | Component | user-list', function (hooks) {
     return { ...base, ...overrides };
   };
 
+  hooks.beforeEach(function () {
+    class CurrentUserStub extends Service {
+      user = buildCurrentUser();
+
+      setUser(user) {
+        this.user = user;
+      }
+
+      get id() {
+        return this.user?.id;
+      }
+
+      get isAdmin() {
+        return this.user?.isAdmin;
+      }
+
+      get isPdAdmin() {
+        return this.user?.isPdAdmin;
+      }
+
+      get isTeacher() {
+        return this.user?.isTeacher;
+      }
+
+      get isStudent() {
+        return this.user?.isStudent;
+      }
+    }
+
+    this.owner.register('service:current-user', CurrentUserStub);
+  });
+
   // Shorthand helpers for common account types
-  const adminUser = (overrides = {}) => buildUser({ accountType: 'A', ...overrides });
-  const pdUser = (overrides = {}) => buildUser({ accountType: 'P', ...overrides });
-  const teacherUser = (overrides = {}) => buildUser({ accountType: 'T', ...overrides });
-  const studentUser = (overrides = {}) => buildUser({ accountType: 'S', ...overrides });
-  const trashedUser = (overrides = {}) => buildUser({ isTrashed: true, isAuthorized: false, ...overrides });
+  const adminUser = (overrides = {}) =>
+    buildUser({ accountType: 'A', ...overrides });
+  const pdUser = (overrides = {}) =>
+    buildUser({ accountType: 'P', ...overrides });
+  const teacherUser = (overrides = {}) =>
+    buildUser({ accountType: 'T', ...overrides });
+  const studentUser = (overrides = {}) =>
+    buildUser({ accountType: 'S', ...overrides });
+  const trashedUser = (overrides = {}) =>
+    buildUser({ isTrashed: true, isAuthorized: false, ...overrides });
 
   // Render helper
   // Accepts the small bits of test data and mounts the component. Tests
   // should call this instead of manually setting 'this.set(...)'
-  async function renderUserList(context, { users = [], currentUser = {}, trashedUsers } = {}) {
+  async function renderUserList(
+    context,
+    { users = [], currentUser = {}, trashedUsers } = {}
+  ) {
     context.set('users', users);
-    context.set('currentUser', currentUser);
+    const currentUserService = context.owner.lookup('service:current-user');
+    currentUserService.setUser(buildCurrentUser(currentUser));
     if (trashedUsers !== undefined) {
       context.set('trashedUsers', trashedUsers);
     }
-    await render(hbs`<UserList @users={{this.users}} @currentUser={{this.currentUser}} @trashedUsers={{this.trashedUsers}} />`);
+    await render(
+      hbs`<UserList @users={{this.users}} @trashedUsers={{this.trashedUsers}} />`
+    );
   }
 
   // --- Tests ---
@@ -72,7 +116,11 @@ module('Integration | Component | user-list', function (hooks) {
     ];
     await renderUserList(this, {
       users,
-      currentUser: buildCurrentUser({ id: 'me', username: 'admin-me', isAdmin: true }),
+      currentUser: buildCurrentUser({
+        id: 'me',
+        username: 'admin-me',
+        isAdmin: true,
+      }),
     });
     // headings and visible users
     assert.dom(this.element).includesText('Administrators');
@@ -81,22 +129,45 @@ module('Integration | Component | user-list', function (hooks) {
     assert.dom(this.element).includesText('pd-1');
 
     // trashed admin should not appear
-    assert.notOk(this.element.textContent.includes('trashed-admin'), 'trashed admins excluded from admin lists');
+    assert.notOk(
+      this.element.textContent.includes('trashed-admin'),
+      'trashed admins excluded from admin lists'
+    );
   });
 
- // pd admin sees only users from their organization in unauth list
+  // pd admin sees only users from their organization in unauth list
   test('waiting for authorization list shows unauth users and pd admins', async function (assert) {
     const users = [
-      buildUser({ id: 'u1', username: 'unauth-same-org', isAuthorized: false, isTrashed: false, organization: { id: 'org1', name: 'Acme' } }),
-      buildUser({ id: 'u2', username: 'unauth-other-org', isAuthorized: false, isTrashed: false, organization: { id: 'org2', name: 'OtherCo' } }),
+      buildUser({
+        id: 'u1',
+        username: 'unauth-same-org',
+        isAuthorized: false,
+        isTrashed: false,
+        organization: { id: 'org1', name: 'Acme' },
+      }),
+      buildUser({
+        id: 'u2',
+        username: 'unauth-other-org',
+        isAuthorized: false,
+        isTrashed: false,
+        organization: { id: 'org2', name: 'OtherCo' },
+      }),
     ];
     await renderUserList(this, {
       users,
-      currentUser: buildCurrentUser({ id: 'me', username: 'pd-admin', isPdAdmin: true, organization: { id: 'org1', name: 'Acme' } }),
+      currentUser: buildCurrentUser({
+        id: 'me',
+        username: 'pd-admin',
+        isPdAdmin: true,
+        organization: { id: 'org1', name: 'Acme' },
+      }),
     });
     assert.dom(this.element).includesText('Waiting for Authorization');
     assert.dom(this.element).includesText('unauth-same-org');
-    assert.notOk(this.element.textContent.includes('unauth-other-org'), 'pd admin should not see unauth users from other orgs');
+    assert.notOk(
+      this.element.textContent.includes('unauth-other-org'),
+      'pd admin should not see unauth users from other orgs'
+    );
   });
 
   // Teacher's view
@@ -105,15 +176,40 @@ module('Integration | Component | user-list', function (hooks) {
   // (their own account, students they teach, users they created, and org peers)
   test('teacher sees your account, students in your classes, users you have created, and org users', async function (assert) {
     const users = [
-      teacherUser({ id: 'u1', username: 'teacher1', sections: [{ role: 'teacher', sectionId: 'sec-1' }], createdBy: { id: 'u1' } }),
-      studentUser({ id: 'u2', username: 'student1', sections: [{ role: 'student', sectionId: 'sec-1' }], createdBy: { id: 'other' } }),
-      teacherUser({ id: 'u3', username: 'created-user', sections: [], createdBy: { id: 'u1' } }),
-      pdUser({ id: 'u4', username: 'org-colleague', accountType: 'P', organization: { id: 'org1', name: '21PSTEM' } }),
+      teacherUser({
+        id: 'u1',
+        username: 'teacher1',
+        sections: [{ role: 'teacher', sectionId: 'sec-1' }],
+        createdBy: { id: 'u1' },
+      }),
+      studentUser({
+        id: 'u2',
+        username: 'student1',
+        sections: [{ role: 'student', sectionId: 'sec-1' }],
+        createdBy: { id: 'other' },
+      }),
+      teacherUser({
+        id: 'u3',
+        username: 'created-user',
+        sections: [],
+        createdBy: { id: 'u1' },
+      }),
+      pdUser({
+        id: 'u4',
+        username: 'org-colleague',
+        accountType: 'P',
+        organization: { id: 'org1', name: '21PSTEM' },
+      }),
     ];
 
     await renderUserList(this, {
       users,
-      currentUser: buildCurrentUser({ id: 'u1', username: 'teacher1', isTeacher: true, sections: [{ role: 'teacher', sectionId: 'sec-1' }] }),
+      currentUser: buildCurrentUser({
+        id: 'u1',
+        username: 'teacher1',
+        isTeacher: true,
+        sections: [{ role: 'teacher', sectionId: 'sec-1' }],
+      }),
     });
 
     // Titles
@@ -132,13 +228,30 @@ module('Integration | Component | user-list', function (hooks) {
   // assert that same-org users are visible and cross-org users are hidden.
   test('pd admin sees only users from their organization', async function (assert) {
     const users = [
-      teacherUser({ id: 'a1', username: 'same-org-user', organization: { id: 'org1', name: 'Acme' } }),
-      teacherUser({ id: 'b1', username: 'other-org-user', organization: { id: 'org2', name: 'OtherCo' } }),
-      pdUser({ id: 'me', username: 'pd-admin', organization: { id: 'org1', name: 'Acme' } }),
+      teacherUser({
+        id: 'a1',
+        username: 'same-org-user',
+        organization: { id: 'org1', name: 'Acme' },
+      }),
+      teacherUser({
+        id: 'b1',
+        username: 'other-org-user',
+        organization: { id: 'org2', name: 'OtherCo' },
+      }),
+      pdUser({
+        id: 'me',
+        username: 'pd-admin',
+        organization: { id: 'org1', name: 'Acme' },
+      }),
     ];
     await renderUserList(this, {
       users,
-      currentUser: buildCurrentUser({ id: 'me', username: 'pd-admin', isPdAdmin: true, organization: { id: 'org1', name: 'Acme' } }),
+      currentUser: buildCurrentUser({
+        id: 'me',
+        username: 'pd-admin',
+        isPdAdmin: true,
+        organization: { id: 'org1', name: 'Acme' },
+      }),
     });
     assert.dom(this.element).includesText('same-org-user');
     assert.notOk(this.element.textContent.includes('other-org-user'));
@@ -147,9 +260,21 @@ module('Integration | Component | user-list', function (hooks) {
   // sorting by create date, test checkes the actual DOM order
   test('sortByCreateDateDesc renders newer users before older users', async function (assert) {
     const users = [
-      buildUser({ id: 'old', username: 'older', createDate: '2025-01-01T00:00:00Z' }),
-      buildUser({ id: 'new', username: 'newer', createDate: '2025-12-01T00:00:00Z' }),
-      buildUser({ id: 'mid', username: 'mid',   createDate: '2025-06-01T00:00:00Z' }),
+      buildUser({
+        id: 'old',
+        username: 'older',
+        createDate: '2025-01-01T00:00:00Z',
+      }),
+      buildUser({
+        id: 'new',
+        username: 'newer',
+        createDate: '2025-12-01T00:00:00Z',
+      }),
+      buildUser({
+        id: 'mid',
+        username: 'mid',
+        createDate: '2025-06-01T00:00:00Z',
+      }),
     ];
 
     await renderUserList(this, {
@@ -170,19 +295,33 @@ module('Integration | Component | user-list', function (hooks) {
     // We use deepEqual here because 'equal' would only check object identity.
     // deepEqual compares the contents of the two arrays, so it passes if the
     // DOM-produced list has the same values in the same order as expected.
-    assert.deepEqual(usernames, ['newer', 'mid', 'older'], 'users are rendered newest to oldest');
+    assert.deepEqual(
+      usernames,
+      ['newer', 'mid', 'older'],
+      'users are rendered newest to oldest'
+    );
   });
 
   // Defensive: rendering with an empty users array should not crash and shows the main UI.
   test('renders safely with empty users array', async function (assert) {
     await renderUserList(this, { users: [], currentUser: buildCurrentUser() });
-    assert.dom('h1').hasText('Users', 'renders main heading when users is empty');
+    assert
+      .dom('h1')
+      .hasText('Users', 'renders main heading when users is empty');
   });
 
   // Defensive: rendering when currentUser is missing optional fields should not throw
   test('renders safely when currentUser is missing optional fields', async function (assert) {
-    await renderUserList(this, { users: [buildUser({ id: 'u1', username: 'user1' })], currentUser: {} });
-    assert.dom('h1').hasText('Users', 'component renders even if currentUser lacks expected fields');
+    await renderUserList(this, {
+      users: [buildUser({ id: 'u1', username: 'user1' })],
+      currentUser: {},
+    });
+    assert
+      .dom('h1')
+      .hasText(
+        'Users',
+        'component renders even if currentUser lacks expected fields'
+      );
   });
 
   // Admins can toggle visibility of trashed/deleted users.
@@ -192,7 +331,11 @@ module('Integration | Component | user-list', function (hooks) {
 
     await renderUserList(this, {
       users,
-      currentUser: buildCurrentUser({ id: 'u1', username: 'admin1', isAdmin: true }),
+      currentUser: buildCurrentUser({
+        id: 'u1',
+        username: 'admin1',
+        isAdmin: true,
+      }),
       trashedUsers,
     });
 
@@ -210,5 +353,4 @@ module('Integration | Component | user-list', function (hooks) {
     assert.dom('.toggle-button').hasText('Show Deleted Users');
     assert.dom(this.element).doesNotIncludeText('trashed-user');
   });
-
 });

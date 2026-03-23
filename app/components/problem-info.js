@@ -618,7 +618,7 @@ export default class ProblemInfoComponent extends Component {
           }
         });
     } else if (accountType === 'P') {
-      return this.args.currentUser.get('organization').then((org) => {
+      return this.user.get('organization').then((org) => {
         org.get('recommendedProblems').addObject(problem);
         org.save().then(() => {
           this.alert.showToast(

@@ -115,7 +115,7 @@
         <td>Organization
           {{#if this.isEditing}}<span class='required-star'>*</span>{{/if}}</td>
         {{#if this.isEditing}}
-          {{#if @currentUser.isAdmin}}
+          {{#if this.currentUser.isAdmin}}
             <td>
               {{@user.organization.name}}
               <Ui::TwitterTypeahead
@@ -138,7 +138,7 @@
       <tr>
         <td>Requested Organization</td>
         {{#if this.isEditing}}
-          {{#if @currentUser.isAdmin}}
+          {{#if this.currentUser.isAdmin}}
             <td>
               Would you like to create
               {{@user.organizationRequest}}<br />
@@ -290,7 +290,7 @@
           type='button'
           {{on 'click' this.editUser}}
         >Edit</button>
-        {{#if @currentUser.isAdmin}}
+        {{#if this.currentUser.isAdmin}}
           {{#if @user.isTrashed}}
             <button
               class='action_button restore-button'

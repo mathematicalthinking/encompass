@@ -6,18 +6,22 @@ import { service } from '@ember/service';
 export default class UserListComponent extends Component {
   @tracked showDeletedUsers = false;
   @service store;
+  @service currentUser;
+
+  get userOrganization() {
+    return this.currentUser.user.organization?.name || 'No Organization';
+  }
 
   get unauthUsers() {
-    const { users, currentUser } = this.args;
-    const filteredUsers = users.filter(
+    const filteredUsers = this.args.users.filter(
       (user) => !user.isTrashed && !user.isAuthorized
     );
 
-    if (currentUser.isPdAdmin) {
+    if (this.currentUser.isPdAdmin) {
       const orgUsers = filteredUsers.filter(
         (user) =>
-          user.organization?.id === currentUser.organization?.id &&
-          user.username !== currentUser.username
+          user.organization?.id === this.currentUser.user.organization?.id &&
+          user.username !== this.currentUser.user.username
       );
       return this.sortByCreateDateDesc(orgUsers);
     }
@@ -26,13 +30,12 @@ export default class UserListComponent extends Component {
   }
 
   get adminUsers() {
-    const { users, currentUser } = this.args;
-    const filteredAdmins = users.filter(
+    const filteredAdmins = this.args.users.filter(
       (user) =>
         !user.isTrashed &&
         user.isAuthorized &&
         user.accountType === 'A' &&
-        user.username !== currentUser.username
+        user.username !== this.currentUser.user.username
     );
 
     return this.sortByCreateDateDesc(filteredAdmins);
@@ -47,15 +50,14 @@ export default class UserListComponent extends Component {
 
   // Getter for teacher users
   get teacherUsers() {
-    const { users, currentUser } = this.args;
-    const filteredTeachers = users.filter(
+    const filteredTeachers = this.args.users.filter(
       (user) => !user.isTrashed && user.isAuthorized && user.accountType === 'T'
     );
-    if (currentUser.isPdAdmin) {
+    if (this.currentUser.isPdAdmin) {
       const orgUsersNotYou = filteredTeachers.filter(
         (user) =>
-          user.organization?.id === currentUser.organization?.id &&
-          user.username !== currentUser.username
+          user.organization?.id === this.currentUser.user.organization?.id &&
+          user.username !== this.currentUser.user.username
       );
       return this.sortByCreateDateDesc(orgUsersNotYou);
     }
@@ -63,15 +65,14 @@ export default class UserListComponent extends Component {
   }
 
   get studentUsers() {
-    const { users, currentUser } = this.args;
-    const filteredStudents = users.filter(
+    const filteredStudents = this.args.users.filter(
       (user) => !user.isTrashed && user.isAuthorized && user.accountType === 'S'
     );
-    if (currentUser.isPdAdmin) {
+    if (this.currentUser.isPdAdmin) {
       const orgUsersNotYou = filteredStudents.filter(
         (user) =>
-          user.organization?.id === currentUser.organization?.id &&
-          user.username !== currentUser.username
+          user.organization?.id === this.currentUser.user.organization?.id &&
+          user.username !== this.currentUser.user.username
       );
       return this.sortByCreateDateDesc(orgUsersNotYou);
     }
@@ -80,15 +81,15 @@ export default class UserListComponent extends Component {
 
   // These are all the students that are in sections you are a teacher of
   get yourStudents() {
-    const { users, currentUser } = this.args;
     const teacherSections =
-      currentUser.sections?.filter((section) => section.role === 'teacher') ??
-      [];
+      this.currentUser.user.sections?.filter(
+        (section) => section.role === 'teacher'
+      ) ?? [];
     const teacherSectionIds = teacherSections.map(
       (section) => section.sectionId
     );
 
-    return users.filter((user) =>
+    return this.args.users.filter((user) =>
       user.sections.some(
         (section) =>
           section.role === 'student' &&
@@ -99,7 +100,7 @@ export default class UserListComponent extends Component {
 
   // These are all the users that you have created - filter out duplicates
   get yourUsers() {
-    const yourId = this.args.currentUser.id;
+    const yourId = this.currentUser.id;
     const yourUsers = this.args.users.filter(
       (user) => user.createdBy?.id === yourId
     );
@@ -108,16 +109,15 @@ export default class UserListComponent extends Component {
 
   // These are all the users that are in the same org as you
   get orgUsers() {
-    const { users, currentUser } = this.args;
-    const yourOrgId = currentUser.organization?.id;
+    const yourOrgId = this.currentUser.user.organization?.id;
 
-    const orgUsers = users.filter(
+    const orgUsers = this.args.users.filter(
       (user) =>
         !user.isTrashed &&
         user.organization?.id === yourOrgId &&
         user.accountType &&
         user.accountType !== 'S' &&
-        user.username !== currentUser.username
+        user.username !== this.currentUser.user.username
     );
 
     return this.sortByCreateDateDesc(orgUsers);

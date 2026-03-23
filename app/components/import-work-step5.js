@@ -6,6 +6,7 @@ import isNull from 'lodash-es/isNull';
 
 export default Component.extend({
   elementId: 'import-work-step5',
+  currentUser: service(),
   creatingWs: equal('doCreateWs', true),
   creatingAssignment: equal('createAssignmentValue', true),
   utils: service('utility-methods'),
