@@ -50,7 +50,7 @@ export default class MetricsWorkspaceRoute extends Route {
           })
         );
 
-        // NOTE: AI variants NOT preloaded here - fetched via REST API in workspace-reports service
+        // NOTE: AI variants NOT preloaded here - fetched via REST API in ai-generation-reports service
         // await safePreload(submission, 'aiVariants');
       })
     );
