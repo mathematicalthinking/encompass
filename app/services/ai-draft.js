@@ -53,7 +53,7 @@ export default class AiDraftService extends Service {
    * and generates appropriate feedback.
    *
    * @param {String} submissionId - The ID of the submission to generate feedback for
-   * @param {String} variant - Variant key ('A' or 'D')
+   * @param {String} variant - Variant key ('A', 'B', 'E', or 'F'); legacy aliases C/D are accepted server-side
    * @returns {Promise<String>} HTML string containing the generated draft
    * @throws {Error} If API call fails or no content is received
    */

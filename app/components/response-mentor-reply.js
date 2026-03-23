@@ -566,6 +566,8 @@ export default class ResponseMentorReplyComponent extends Component {
 
   _headlineForVariant(variantKey) {
     if (variantKey === 'A') return 'Variant A';
+    if (variantKey === 'B') return 'Variant B';
+    // Backward-compat for historical rows saved before B/D split.
     if (variantKey === 'D') return 'Variant B';
     return 'AI Draft';
   }
@@ -784,7 +786,7 @@ export default class ResponseMentorReplyComponent extends Component {
     try {
       const draft = await this.aiDraft.generateDraft(
         this.args.submission.id,
-        'D',
+        'B',
         this.args.workspace?.id
       );
       this.aiGeneratedText = draft;
