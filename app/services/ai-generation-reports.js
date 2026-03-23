@@ -1,5 +1,5 @@
 import Service from '@ember/service';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { format, isValid } from 'date-fns';
 
 const AI_GENERATION_REPORT_HEADERS = [
@@ -35,58 +35,55 @@ const AI_GENERATION_REPORT_HEADERS = [
 export default class AiGenerationReportsService extends Service {
   @service jsonCsv;
 
+  readPath(source, path) {
+    if (!source || !path) return undefined;
+    const segments = String(path).split('.');
+    let current = source;
+
+    for (let index = 0; index < segments.length; index++) {
+      if (current == null) return undefined;
+
+      const segment = segments[index];
+      if (segment === 'firstObject' && Array.isArray(current)) {
+        current = current[0];
+        continue;
+      }
+
+      if (typeof current.get === 'function') {
+        const remainingPath = segments.slice(index).join('.');
+        const valueFromGet = current.get(remainingPath);
+        if (valueFromGet !== undefined) {
+          return valueFromGet;
+        }
+      }
+
+      current = current[segment];
+    }
+
+    return current;
+  }
+
   canonicalVariantInfo(variant) {
     const rawKey = String(variant?.variantKey || '')
       .trim()
       .toUpperCase();
     const rawLabel = String(variant?.variantLabel || '').trim();
-    const lowerLabel = rawLabel.toLowerCase();
-    const ragKnown = typeof variant?.ragEnabled === 'boolean';
-    const ragEnabled = ragKnown
-      ? Boolean(variant?.ragEnabled)
-      : rawKey === 'A' || rawKey === 'B';
 
-    // Normalize input type bucket; fall back to legacy key/label inference.
-    let inputBucket = '';
-    if (variant?.inputType === 'work_only') {
-      inputBucket = 'work_only';
-    } else if (variant?.inputType === 'work_all') {
-      inputBucket = 'work_all';
-    } else if (['A', 'C', 'E'].includes(rawKey)) {
-      inputBucket = 'work_only';
-    } else if (['B', 'D', 'F'].includes(rawKey)) {
-      inputBucket = 'work_all';
-    } else if (
-      lowerLabel.includes('selections') ||
-      lowerLabel.includes('comments')
-    ) {
-      inputBucket = 'work_all';
-    } else if (lowerLabel.includes('work only')) {
-      inputBucket = 'work_only';
-    }
-
-    const canonical = {
+    // Preserve stored keys for historical rows (including legacy C/D).
+    // New rows are expected to persist as A/B/E/F from backend config.
+    const defaultLabels = {
       A: 'Variant A: Student Work Only (RAG On)',
       B: 'Variant B: Student Work + Selections + Comments (All) (RAG On)',
+      C: 'Variant C: Student Work Only (RAG Off)',
+      D: 'Variant D: Student Work + Selections + Comments (All) (RAG Off)',
       E: 'Variant E: Student Work Only (RAG Off)',
       F: 'Variant F: Student Work + Selections + Comments (All) (RAG Off)',
     };
 
-    if (inputBucket === 'work_only' && ragEnabled) {
-      return { key: 'A', label: canonical.A };
-    }
-    if (inputBucket === 'work_all' && ragEnabled) {
-      return { key: 'B', label: canonical.B };
-    }
-    if (inputBucket === 'work_only' && !ragEnabled) {
-      return { key: 'E', label: canonical.E };
-    }
-    if (inputBucket === 'work_all' && !ragEnabled) {
-      return { key: 'F', label: canonical.F };
-    }
-
-    // Unknown/partial data fallback
-    return { key: rawKey, label: rawLabel };
+    return {
+      key: rawKey,
+      label: rawLabel || defaultLabels[rawKey] || '',
+    };
   }
 
   stripHtml(text) {
@@ -158,14 +155,16 @@ export default class AiGenerationReportsService extends Service {
   }
 
   getSubmissionText(submission) {
+    const answerText = this.readPath(submission, 'answer.answer');
+    const answerExplanation = this.readPath(submission, 'answer.explanation');
     const summary = submission?.shortAnswer
       ? this.stripHtml(submission.shortAnswer)
-      : this.stripHtml(submission?.get('answer.answer'));
+      : this.stripHtml(answerText);
 
     const fullAnswer = submission?.longAnswer
       ? this.stripHtml(submission.longAnswer)
-      : submission?.get('answer.explanation')
-      ? this.stripHtml(submission.get('answer.explanation'))
+      : answerExplanation
+      ? this.stripHtml(answerExplanation)
       : '';
 
     return `Summary: ${summary}  Full Answer: ${fullAnswer}`;
@@ -288,10 +287,11 @@ export default class AiGenerationReportsService extends Service {
 
       return {
         'Name of workspace':
-          submission?.get('workspaces.firstObject.name') ||
+          this.readPath(submission, 'workspaces.firstObject.name') ||
           model?.workspace?.name,
         'Workspace URL': window.location.href,
-        'Workspace Owner': model?.workspace?.get('owner.username') || '',
+        'Workspace Owner':
+          this.readPath(model?.workspace, 'owner.username') || '',
         'Original Submitter':
           submission?.student || variant?.submission?.student || '',
         'Submission ID': submissionId,
