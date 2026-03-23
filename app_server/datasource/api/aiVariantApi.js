@@ -23,6 +23,7 @@ async function getVariants(req, res) {
     const variants = await models.AIVariant.find(query)
       .populate('submission', 'student shortAnswer')
       .populate('createdBy', 'username')
+      .populate('reviewHistory.reviewedBy', 'username')
       .sort({ createDate: -1 });
 
     return utils.sendResponse(res, { variants });
