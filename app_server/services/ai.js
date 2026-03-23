@@ -124,21 +124,30 @@ const buildAIServiceError = ({
 /**
  * Generate an AI draft response based on submission
  * @param {string} targetSubmissionId - The ID of the target submission
- * @param {string} variant - Input variant ('A' or 'D')
+ * @param {string} variant - Upstream variant key ('A', 'B', 'C', 'D')
  * @param {string} workspaceId - Optional workspace ID to filter selections/comments
  * @param {string} teacherId - Teacher user ID to scope selections/comments
+ * @param {object} options - Variant options from config
+ * @param {string} options.inputType - Input context mode (work_only, work_all, etc.)
+ * @param {boolean} options.useRag - Whether upstream should use RAG
  * @returns {Promise<string>} The generated AI draft text
  *
- * Active variants:
- * A: Student work only
- * D: Student work + teacher selections + teacher comments
+ * Active storage variants:
+ * A: Student work only (RAG on)
+ * B: Student work + teacher selections + teacher comments (RAG on)
+ * E: Student work only (RAG off; maps upstream to C)
+ * F: Student work + teacher selections + teacher comments (RAG off; maps upstream to D)
  */
 const generateDraft = async (
   targetSubmissionId,
   variant = 'A',
   workspaceId = null,
-  teacherId = null
+  teacherId = null,
+  options = {}
 ) => {
+  const inputType = options.inputType || 'work_only';
+  const useRag = Boolean(options.useRag);
+
   // Step 1: Fetch submission with all related data
   const targetSubmission = await models.Submission.findById(targetSubmissionId)
     .populate({
@@ -191,6 +200,7 @@ const generateDraft = async (
 
   const requestBody = {
     variant,
+    use_rag: useRag,
     problem: {
       statement: cleanProblemStatement,
     },
@@ -206,7 +216,7 @@ const generateDraft = async (
 
   const { requestRows, sentAnnotations } = await buildSelectionsAndObservations(
     targetSubmissionId,
-    variant,
+    inputType,
     workspaceId,
     teacherId
   );
@@ -305,12 +315,14 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
  */
 const buildSelectionsAndObservations = async (
   submissionId,
-  variant,
+  inputType,
   workspaceId,
   teacherId
 ) => {
-  const includeSelections = variant === 'D';
-  const includeComments = variant === 'D';
+  const includeSelections =
+    inputType === 'work_selections' || inputType === 'work_all';
+  const includeComments =
+    inputType === 'work_comments' || inputType === 'work_all';
 
   const [selections, comments] = await Promise.all([
     includeSelections

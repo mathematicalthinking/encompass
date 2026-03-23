@@ -7,6 +7,7 @@ export default class MetricsWorkspaceController extends Controller {
   @tracked showCloud = false;
   @tracked workspaceCsv = '';
   @service workspaceReports;
+  @service('ai-generation-reports') aiGenerationReports;
 
   submissionsColumns = [
     { name: 'Record', valuePath: 'recordType' },
@@ -29,6 +30,18 @@ export default class MetricsWorkspaceController extends Controller {
     const link = document.createElement('a');
     link.href = `data:text/csv;charset=utf-8,${encodedCsv}`;
     link.download = 'workspace_report.csv';
+    link.click();
+  }
+
+  @action
+  async downloadAiGenerationReport(event) {
+    event.preventDefault();
+    const csv = await this.aiGenerationReports.aiGenerationReport(this.model);
+    const encodedCsv = encodeURIComponent(csv);
+
+    const link = document.createElement('a');
+    link.href = `data:text/csv;charset=utf-8,${encodedCsv}`;
+    link.download = 'ai_generation_report.csv';
     link.click();
   }
 

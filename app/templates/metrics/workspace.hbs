@@ -22,6 +22,10 @@
           {{on "click" this.downloadWorkspaceReport}}
         >Export Workspace Data</a>
         <a
+          href="#"
+          {{on "click" this.downloadAiGenerationReport}}
+        >Export AI Generation Data</a>
+        <a
           href='data:text/csv;charset=utf-8,{{this.responseCsv}}'
           download='mentoring_report.csv'
         >Export Mentoring Data</a>
@@ -85,9 +89,7 @@
         />
         <t.body @rows={{this.tableRows}} as |b|>
           <b.row as |r|>
-            <r.cell
-              as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-            >
+            <r.cell as |cellValue columnValue rowValue|>
               {{#if (is-equal columnValue.name 'Text')}}
                 {{make-html-safe cellValue}}
               {{else if (is-equal cellValue 'submission')}}

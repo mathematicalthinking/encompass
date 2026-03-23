@@ -783,7 +783,7 @@ export default class ResponseNewComponent extends Component {
     try {
       const draft = await this.aiDraft.generateDraft(
         submissionId,
-        'D',
+        'B',
         this.args.workspace?.id
       );
 

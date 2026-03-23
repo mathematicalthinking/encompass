@@ -71,7 +71,7 @@
     </div>
     <div class="variant-cell-simple">
       <div class="variant-title">Variant B: Student Work + Selections + Comments (All)</div>
-      <button type="button" class="variant-generate-btn" {{on "click" (fn this.generateSingleVariant @submission 'D')}} disabled={{this.isVariantBDisabled}}>
+      <button type="button" class="variant-generate-btn" {{on "click" (fn this.generateSingleVariant @submission 'B')}} disabled={{this.isVariantBDisabled}}>
         {{this.variantBButtonText}}
       </button>
       <div class="ai-draft-text">{{if this.draftB this.draftB "EMPTY - Click Generate to populate"}}</div>
@@ -81,11 +81,11 @@
           <div class="star-rating-stars">
             {{#each this.starDefinitions as |star|}}
               <i
-                class="fas fa-star star-icon {{if (this.isStarActive 'D' star.value) 'star-filled' 'star-empty'}}"
+                class="fas fa-star star-icon {{if (this.isStarActive 'B' star.value) 'star-filled' 'star-empty'}}"
                 role="button"
                 tabindex="0"
                 title={{star.tooltip}}
-                {{on "click" (fn this.setVariantRating 'D' star.value)}}
+                {{on "click" (fn this.setVariantRating 'B' star.value)}}
               ></i>
             {{/each}}
           </div>
@@ -96,23 +96,23 @@
           <Textarea
             id="variant-b-feedback"
             class="variant-feedback-textarea"
-            @value={{this.feedbackD}}
+            @value={{this.feedbackB}}
             placeholder="Write your feedback for Variant B(at least 10 characters long)"
-            {{on "input" (fn this.setVariantFeedback 'D')}}
+            {{on "input" (fn this.setVariantFeedback 'B')}}
           />
         </div>
         <button
           type="button"
           class="ai-log-review-btn"
-          disabled={{not this.canLogReviewD}}
-          {{on "click" (fn this.logVariantReview 'D')}}
+          disabled={{not this.canLogReviewB}}
+          {{on "click" (fn this.logVariantReview 'B')}}
         >{{this.logReviewButtonTextB}}</button>
         <button
           type="button"
           class="ai-bring-down-btn"
-          disabled={{not this.canBringDownD}}
+          disabled={{not this.canBringDownB}}
           title={{this.bringDownTooltipB}}
-          {{on "click" (fn this.bringDownVariant 'D')}}
+          {{on "click" (fn this.bringDownVariant 'B')}}
         >Copy to Editor</button>
       </div>
     </div>

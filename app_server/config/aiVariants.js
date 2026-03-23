@@ -8,22 +8,50 @@
  */
 
 module.exports = {
-  // Current A/B Testing Mode: 2 active variants
-  // Variant mapping:
-  // - A -> Student Work Only
-  // - D -> Student Work + Selections + Comments (shown as "Variant B" in UI)
+  // Current A/B/E/F Testing Mode: 4 active variants
+  // Storage mapping:
+  // - A -> Student Work Only (RAG on)
+  // - B -> Student Work + Selections + Comments (RAG on)
+  // - E -> Student Work Only (RAG off)
+  // - F -> Student Work + Selections + Comments (RAG off)
+  //
+  // Upstream compatibility mapping:
+  // - E behaves as legacy C
+  // - F behaves as legacy D
   activeVariants: [
     {
       key: 'A',
-      label: 'Variant A: Student Work Only',
+      label: 'Variant A: Student Work Only (RAG On)',
       inputType: 'work_only',
       description: 'AI analyzes only student submission text',
+      useRag: true,
+      upstreamVariant: 'A',
     },
     {
-      key: 'D',
-      label: 'Variant B: Work + Selections + Comments',
+      key: 'B',
+      label: 'Variant B: Student Work + Selections + Comments (All) (RAG On)',
       inputType: 'work_all',
       description: 'AI analyzes student work + all teacher annotations',
+      useRag: true,
+      upstreamVariant: 'B',
+    },
+    {
+      key: 'E',
+      label: 'Variant E: Student Work Only (RAG Off)',
+      inputType: 'work_only',
+      description: 'AI analyzes only student submission text with RAG disabled',
+      useRag: false,
+      upstreamVariant: 'C',
+    },
+    {
+      key: 'F',
+      label:
+        'Variant F: Student Work + Selections + Comments (All) (RAG Off)',
+      inputType: 'work_all',
+      description:
+        'AI analyzes student work + all teacher annotations with RAG disabled',
+      useRag: false,
+      upstreamVariant: 'D',
     },
   ],
 
@@ -32,17 +60,5 @@ module.exports = {
   generateAllOnRequest: true,
 
   // Default variant when system simplifies to single mode
-  defaultVariantKey: 'D',
-
-  // FUTURE MODE (example - after picking winner):
-  // activeVariants: [
-  //   {
-  //     key: 'default',
-  //     label: 'AI Feedback',
-  //     inputType: 'work_all',
-  //     description: 'Production AI feedback mode'
-  //   }
-  // ],
-  // generateAllOnRequest: false,
-  // defaultVariantKey: 'default'
+  defaultVariantKey: 'B',
 };
