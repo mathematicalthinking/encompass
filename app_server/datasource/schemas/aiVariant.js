@@ -24,7 +24,7 @@ var AIVariantSchema = new Schema(
     workspace: { type: ObjectId, ref: 'Workspace', required: true },
 
     // Variant identification (flexible, not hardcoded)
-    variantKey: { type: String, required: true }, // e.g., 'A', 'B', 'C', 'D', or 'default' in future
+    variantKey: { type: String, required: true }, // e.g., 'A', 'B', 'E', 'F' (legacy C/D may exist in historical rows)
     variantLabel: { type: String, required: true }, // e.g., 'Student Work Only', 'Work + Selections'
     inputType: { type: String, required: true }, // 'work_only', 'work_selections', 'work_comments', 'work_all'
 

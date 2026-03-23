@@ -11,6 +11,23 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
+const LEGACY_VARIANT_ALIASES = Object.freeze({
+  C: 'E',
+  D: 'F',
+});
+
+const normalizeRequestedVariant = (rawVariant = 'A') => {
+  const requestedVariant = String(rawVariant || 'A').trim().toUpperCase();
+  const storageVariant =
+    LEGACY_VARIANT_ALIASES[requestedVariant] || requestedVariant;
+
+  return {
+    requestedVariant,
+    storageVariant,
+    wasAliased: requestedVariant !== storageVariant,
+  };
+};
+
 async function aiDraft(req, res) {
   let user = userAuth.requireUser(req);
 
@@ -23,7 +40,8 @@ async function aiDraft(req, res) {
 
   const target = req.query.target;
   const workspace = req.query.workspace;
-  const variant = req.query.variant || 'A'; // Default to variant A
+  const { requestedVariant, storageVariant, wasAliased } =
+    normalizeRequestedVariant(req.query.variant || 'A');
 
   if (!target) {
     return utils.sendError.InvalidArgumentError(
@@ -34,20 +52,36 @@ async function aiDraft(req, res) {
 
   // Validate variant using active server configuration
   const validVariants = variantConfig.activeVariants.map((v) => v.key);
-  if (!validVariants.includes(variant)) {
+  if (!validVariants.includes(storageVariant)) {
     return utils.sendError.InvalidArgumentError(
-      `Invalid variant. Must be one of: ${validVariants.join(', ')}`,
+      `Invalid variant. Must be one of: ${validVariants.join(', ')} (legacy aliases: C->E, D->F)`,
       res
     );
   }
 
   try {
+    const variantConfigData = variantConfig.activeVariants.find(
+      (v) => v.key === storageVariant
+    );
+    if (!variantConfigData) {
+      return utils.sendError.InvalidArgumentError(
+        `No variant configuration found for: ${storageVariant}`,
+        res
+      );
+    }
+    const upstreamVariant =
+      variantConfigData.upstreamVariant || variantConfigData.key;
+
     // Generate AI draft using the AI service with selected variant
     const draftResult = await aiService.generateDraft(
       target,
-      variant,
+      upstreamVariant,
       workspace,
-      user._id
+      user._id,
+      {
+        inputType: variantConfigData.inputType,
+        useRag: Boolean(variantConfigData.useRag),
+      }
     );
     const requestId = `aiVariant_${Date.now()}_${Math.random()
       .toString(36)
@@ -60,30 +94,22 @@ async function aiDraft(req, res) {
     const sentAnnotations = Array.isArray(draftResult?.sentAnnotations)
       ? draftResult.sentAnnotations
       : [];
-    const variantConfigData = variantConfig.activeVariants.find(
-      (v) => v.key === variant
-    );
 
     // Save variant to database for export/analysis
     try {
-      if (!variantConfigData) {
-        console.warn(
-          `[AI Variant] No active config found for variant ${variant}; skipping save`
-        );
-      } else {
-        const variantRow = await models.AIVariant.create({
-          submission: target,
-          workspace: workspace,
-          variantKey: variant,
-          variantLabel: variantConfigData.label,
-          inputType: variantConfigData.inputType,
-          draftText: draftText,
-          sentAnnotations,
-          requestId,
-          createdBy: user._id,
-        });
-        variantLogId = variantRow?._id?.toString() || null;
-      }
+      const variantRow = await models.AIVariant.create({
+        submission: target,
+        workspace: workspace,
+        variantKey: storageVariant,
+        variantLabel: variantConfigData.label,
+        inputType: variantConfigData.inputType,
+        ragEnabled: Boolean(variantConfigData.useRag),
+        draftText: draftText,
+        sentAnnotations,
+        requestId,
+        createdBy: user._id,
+      });
+      variantLogId = variantRow?._id?.toString() || null;
     } catch (saveError) {
       const isDuplicateKey =
         saveError?.code === 11000 ||
@@ -97,7 +123,7 @@ async function aiDraft(req, res) {
           const fallbackRow = await models.AIVariant.findOneAndUpdate(
             {
               submission: target,
-              variantKey: variant,
+              variantKey: storageVariant,
               isTrashed: false,
             },
             {
@@ -105,6 +131,7 @@ async function aiDraft(req, res) {
                 workspace,
                 variantLabel: variantConfigData.label,
                 inputType: variantConfigData.inputType,
+                ragEnabled: Boolean(variantConfigData.useRag),
                 draftText,
                 sentAnnotations,
                 requestId,
@@ -128,7 +155,7 @@ async function aiDraft(req, res) {
 
           if (variantLogId) {
             console.warn(
-              `[AI Variant] Reused existing row for ${target}/${variant} after duplicate-key save error`
+              `[AI Variant] Reused existing row for ${target}/${storageVariant} after duplicate-key save error`
             );
           }
         } catch (fallbackError) {
@@ -145,12 +172,19 @@ async function aiDraft(req, res) {
     }
     const response = {
       target: target,
-      variant: variant,
+      variant: storageVariant,
+      requestedVariant,
+      upstreamVariant,
       message: `AI draft generated for target submission: ${target}`,
       draft: draftText,
       requestId,
       variantLogId,
+      inputType: variantConfigData.inputType,
+      useRag: Boolean(variantConfigData.useRag),
     };
+    if (wasAliased) {
+      response.variantAliasApplied = `${requestedVariant}->${storageVariant}`;
+    }
 
     return utils.sendResponse(res, response);
   } catch (error) {
