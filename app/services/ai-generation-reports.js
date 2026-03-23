@@ -35,6 +35,60 @@ const AI_GENERATION_REPORT_HEADERS = [
 export default class AiGenerationReportsService extends Service {
   @service jsonCsv;
 
+  canonicalVariantInfo(variant) {
+    const rawKey = String(variant?.variantKey || '')
+      .trim()
+      .toUpperCase();
+    const rawLabel = String(variant?.variantLabel || '').trim();
+    const lowerLabel = rawLabel.toLowerCase();
+    const ragKnown = typeof variant?.ragEnabled === 'boolean';
+    const ragEnabled = ragKnown
+      ? Boolean(variant?.ragEnabled)
+      : rawKey === 'A' || rawKey === 'B';
+
+    // Normalize input type bucket; fall back to legacy key/label inference.
+    let inputBucket = '';
+    if (variant?.inputType === 'work_only') {
+      inputBucket = 'work_only';
+    } else if (variant?.inputType === 'work_all') {
+      inputBucket = 'work_all';
+    } else if (['A', 'C', 'E'].includes(rawKey)) {
+      inputBucket = 'work_only';
+    } else if (['B', 'D', 'F'].includes(rawKey)) {
+      inputBucket = 'work_all';
+    } else if (
+      lowerLabel.includes('selections') ||
+      lowerLabel.includes('comments')
+    ) {
+      inputBucket = 'work_all';
+    } else if (lowerLabel.includes('work only')) {
+      inputBucket = 'work_only';
+    }
+
+    const canonical = {
+      A: 'Variant A: Student Work Only (RAG On)',
+      B: 'Variant B: Student Work + Selections + Comments (All) (RAG On)',
+      E: 'Variant E: Student Work Only (RAG Off)',
+      F: 'Variant F: Student Work + Selections + Comments (All) (RAG Off)',
+    };
+
+    if (inputBucket === 'work_only' && ragEnabled) {
+      return { key: 'A', label: canonical.A };
+    }
+    if (inputBucket === 'work_all' && ragEnabled) {
+      return { key: 'B', label: canonical.B };
+    }
+    if (inputBucket === 'work_only' && !ragEnabled) {
+      return { key: 'E', label: canonical.E };
+    }
+    if (inputBucket === 'work_all' && !ragEnabled) {
+      return { key: 'F', label: canonical.F };
+    }
+
+    // Unknown/partial data fallback
+    return { key: rawKey, label: rawLabel };
+  }
+
   stripHtml(text) {
     if (!text) return '';
     const withoutTags = String(text).replace(/<\/?[^>]+(>|$)/g, '');
@@ -217,6 +271,7 @@ export default class AiGenerationReportsService extends Service {
     );
 
     const rows = variants.map((variant) => {
+      const normalizedVariant = this.canonicalVariantInfo(variant);
       const submissionId = this.normalizeObjectId(
         variant?.submission?._id || variant?.submission
       );
@@ -245,8 +300,8 @@ export default class AiGenerationReportsService extends Service {
           ? this.getSubmissionText(submission)
           : '',
         'AI Variant Log ID': this.normalizeObjectId(variant?._id),
-        'AI Variant Key': variant?.variantKey || '',
-        'AI Variant Label': variant?.variantLabel || '',
+        'AI Variant Key': normalizedVariant.key || '',
+        'AI Variant Label': normalizedVariant.label || '',
         'AI Draft Text': this.stripHtml(variant?.draftText || ''),
         'AI Rating': variant?.rating ?? '',
         'AI Rating Text': this.stripHtml(variant?.teacherNotes || ''),
