@@ -567,8 +567,11 @@ export default class ResponseMentorReplyComponent extends Component {
   _headlineForVariant(variantKey) {
     if (variantKey === 'A') return 'Variant A';
     if (variantKey === 'B') return 'Variant B';
-    // Backward-compat for historical rows saved before B/D split.
-    if (variantKey === 'D') return 'Variant B';
+    if (variantKey === 'E') return 'Variant E';
+    if (variantKey === 'F') return 'Variant F';
+    // Backward-compat for historical rows saved before canonical A/B/E/F.
+    if (variantKey === 'C') return 'Variant E';
+    if (variantKey === 'D') return 'Variant F';
     return 'AI Draft';
   }
 
