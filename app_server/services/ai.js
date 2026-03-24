@@ -59,6 +59,9 @@ const normalizeApiPath = (path = '') => {
 };
 
 const STAGE_NAMES = new Set(['prod', 'dev', 'test', 'stage', 'staging']);
+const AI_DRAFT_HTTP_TIMEOUT_MS = 120000;
+const AI_DRAFT_POLL_MAX_MS = 120000 * 4;
+const AI_DRAFT_POLL_INTERVAL_MS = 1000;
 
 const getStagePrefix = (path = '') => {
   const segments = normalizeApiPath(path).split('/').filter(Boolean);
@@ -467,7 +470,7 @@ const makeAIRequest = async (requestBody) => {
             })
           )
         );
-        req.setTimeout(30000, () => {
+        req.setTimeout(AI_DRAFT_HTTP_TIMEOUT_MS, () => {
           req.destroy();
           rejectRequest(
             buildAIServiceError({
@@ -508,7 +511,7 @@ const makeAIRequest = async (requestBody) => {
         }
 
         const poll = () => {
-          if (Date.now() - startedAt >= 180000) {
+          if (Date.now() - startedAt >= AI_DRAFT_POLL_MAX_MS) {
             reject(new Error('Draft generation timed out. Please retry.'));
             return;
           }
@@ -536,7 +539,7 @@ const makeAIRequest = async (requestBody) => {
                 return;
               }
 
-              setTimeout(poll, 1000);
+              setTimeout(poll, AI_DRAFT_POLL_INTERVAL_MS);
             })
             .catch(reject);
         };
