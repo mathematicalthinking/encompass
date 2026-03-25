@@ -887,6 +887,7 @@ export default class ResponseMentorReplyComponent extends Component {
       this._resetEditState();
 
       if (!isDraft) {
+        await this._saveFinalVersionToVariant(this.quillText);
         this.args.onSaveSuccess?.(this.args.submission, savedResponse);
       }
     } catch (err) {
@@ -923,6 +924,7 @@ export default class ResponseMentorReplyComponent extends Component {
 
     try {
       await this.args.displayResponse.save();
+      await this._saveFinalVersionToVariant(this.quillText);
       this._endLoading();
       this._showSuccessToast('Response Updated');
       this.isEditing = false;
@@ -981,6 +983,9 @@ export default class ResponseMentorReplyComponent extends Component {
         promises.push(this.args.displayResponse.save());
       }
       const [savedRevision] = await Promise.all(promises);
+      if (!isDraft) {
+        await this._saveFinalVersionToVariant(this.quillText);
+      }
       this._endLoading();
       this._showSuccessToast(toastMessage);
       this.isRevising = false;
@@ -1074,6 +1079,51 @@ export default class ResponseMentorReplyComponent extends Component {
     // Quill emits onEditorChange during setup (did-insert); updating the same
     // tracked field here triggers Ember's "updated after use" assertion.
     this.updateQuillText(content, isEmpty, isOverLengthLimit);
+  }
+
+  async _markSelectedVariantAsUsed() {
+    if (!this.latestBroughtDownVariantLogId) {
+      return;
+    }
+
+    try {
+      await fetch(`/api/aiVariants/${this.latestBroughtDownVariantLogId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          aiVariant: {
+            isSelected: true,
+          },
+        }),
+      });
+    } catch (error) {
+      // Best-effort tracking only; do not block editing flow.
+      console.warn('Failed to mark AI variant as selected/used:', error);
+    }
+  }
+
+  async _saveFinalVersionToVariant(finalText) {
+    if (!this.latestBroughtDownVariantLogId || !finalText) {
+      return;
+    }
+
+    try {
+      await fetch(`/api/aiVariants/${this.latestBroughtDownVariantLogId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          aiVariant: {
+            isSelected: true,
+            finalVersionText: finalText,
+          },
+        }),
+      });
+    } catch (error) {
+      // Best-effort tracking only; do not block save flow.
+      console.warn('Failed to persist final AI version on variant:', error);
+    }
   }
 
   @action
@@ -1192,6 +1242,10 @@ export default class ResponseMentorReplyComponent extends Component {
       this.latestBroughtDownVariantKey = draftSelection.variantKey || null;
       this.latestBroughtDownRating = draftSelection.rating || null;
       this.latestBroughtDownFeedback = draftSelection.writtenFeedback || null;
+
+      if (this.latestBroughtDownVariantLogId) {
+        this._markSelectedVariantAsUsed();
+      }
     }
 
     const preparedDraft = this._prepareDraftForEditor(draftText);

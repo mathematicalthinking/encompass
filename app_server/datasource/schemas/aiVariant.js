@@ -49,7 +49,12 @@ var AIVariantSchema = new Schema(
     // Teacher evaluation/interaction
     rating: { type: Number, min: 1, max: 5 }, // Teacher's rating of this variant (latest)
     isSelected: { type: Boolean, default: false }, // Did teacher choose this variant?
+    selectedAt: { type: Date }, // When the draft was brought down/selected
+    selectedBy: { type: ObjectId, ref: 'User' }, // Who brought down/selected this variant
     teacherNotes: { type: String }, // Teacher's notes about this variant (latest)
+    finalVersionText: { type: String }, // Final response text saved after using this AI draft
+    finalVersionSavedAt: { type: Date }, // When final version was saved
+    finalVersionSavedBy: { type: ObjectId, ref: 'User' }, // Who saved final version
     // Append-only review history so past reviews are never overwritten
     reviewHistory: [
       {

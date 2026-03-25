@@ -17,7 +17,9 @@ const LEGACY_VARIANT_ALIASES = Object.freeze({
 });
 
 const normalizeRequestedVariant = (rawVariant = 'A') => {
-  const requestedVariant = String(rawVariant || 'A').trim().toUpperCase();
+  const requestedVariant = String(rawVariant || 'A')
+    .trim()
+    .toUpperCase();
   const storageVariant =
     LEGACY_VARIANT_ALIASES[requestedVariant] || requestedVariant;
 
@@ -54,7 +56,9 @@ async function aiDraft(req, res) {
   const validVariants = variantConfig.activeVariants.map((v) => v.key);
   if (!validVariants.includes(storageVariant)) {
     return utils.sendError.InvalidArgumentError(
-      `Invalid variant. Must be one of: ${validVariants.join(', ')} (legacy aliases: C->E, D->F)`,
+      `Invalid variant. Must be one of: ${validVariants.join(
+        ', '
+      )} (legacy aliases: C->E, D->F)`,
       res
     );
   }
@@ -94,6 +98,9 @@ async function aiDraft(req, res) {
     const sentAnnotations = Array.isArray(draftResult?.sentAnnotations)
       ? draftResult.sentAnnotations
       : [];
+    const responseTime = Number.isFinite(draftResult?.responseTime)
+      ? draftResult.responseTime
+      : null;
 
     // Save variant to database for export/analysis
     try {
@@ -106,6 +113,7 @@ async function aiDraft(req, res) {
         ragEnabled: Boolean(variantConfigData.useRag),
         draftText: draftText,
         sentAnnotations,
+        responseTime,
         requestId,
         createdBy: user._id,
       });
@@ -134,6 +142,7 @@ async function aiDraft(req, res) {
                 ragEnabled: Boolean(variantConfigData.useRag),
                 draftText,
                 sentAnnotations,
+                responseTime,
                 requestId,
                 lastModifiedBy: user._id,
                 lastModifiedDate: new Date(),
@@ -179,6 +188,7 @@ async function aiDraft(req, res) {
       draft: draftText,
       requestId,
       variantLogId,
+      responseTime,
       inputType: variantConfigData.inputType,
       useRag: Boolean(variantConfigData.useRag),
     };
