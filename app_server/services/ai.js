@@ -133,7 +133,7 @@ const buildAIServiceError = ({
  * @param {object} options - Variant options from config
  * @param {string} options.inputType - Input context mode (work_only, work_all, etc.)
  * @param {boolean} options.useRag - Whether upstream should use RAG
- * @returns {Promise<string>} The generated AI draft text
+ * @returns {Promise<object>} Generated draft payload including draft text and response time
  *
  * Active storage variants:
  * A: Student work only (RAG on)
@@ -225,10 +225,18 @@ const generateDraft = async (
   );
   requestBody.mentor_teacher_context.selections_and_observations = requestRows;
 
-  const draft = await makeAIRequest(requestBody);
+  const aiResult = await makeAIRequest(requestBody);
+  const draft =
+    typeof aiResult === 'object' && aiResult?.draft ? aiResult.draft : aiResult;
+  const responseTime =
+    typeof aiResult === 'object' && Number.isFinite(aiResult?.responseTime)
+      ? aiResult.responseTime
+      : null;
+
   return {
     draft,
     sentAnnotations,
+    responseTime,
   };
 };
 
@@ -526,7 +534,10 @@ const makeAIRequest = async (requestBody) => {
                   reject(new Error('No draft_feedback found in AI response'));
                   return;
                 }
-                resolve(draft);
+                resolve({
+                  draft,
+                  responseTime: Date.now() - startedAt,
+                });
                 return;
               }
 
