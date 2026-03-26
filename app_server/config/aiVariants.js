@@ -41,17 +41,16 @@ module.exports = {
       inputType: 'work_only',
       description: 'AI analyzes only student submission text with RAG disabled',
       useRag: false,
-      upstreamVariant: 'C',
+      upstreamVariant: 'E',
     },
     {
       key: 'F',
-      label:
-        'Variant F: Student Work + Selections + Comments (All) (RAG Off)',
+      label: 'Variant F: Student Work + Selections + Comments (All) (RAG Off)',
       inputType: 'work_all',
       description:
         'AI analyzes student work + all teacher annotations with RAG disabled',
       useRag: false,
-      upstreamVariant: 'D',
+      upstreamVariant: 'F',
     },
   ],
 
