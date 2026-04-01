@@ -118,13 +118,6 @@ async function putVariant(req, res) {
       variant.finalVersionText = payload.finalVersionText;
       variant.finalVersionSavedAt = new Date();
       variant.finalVersionSavedBy = user._id;
-      variant.isSelected = true;
-      if (!variant.selectedAt) {
-        variant.selectedAt = variant.finalVersionSavedAt;
-      }
-      if (!variant.selectedBy) {
-        variant.selectedBy = user._id;
-      }
     }
 
     variant.lastModifiedBy = user._id;
