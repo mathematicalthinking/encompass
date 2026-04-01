@@ -226,6 +226,14 @@ export default class AiVariantComparisonComponent extends Component {
         break;
     }
     this._resetReviewInputs(variantCode);
+
+    if (this.args.onVariantGenerated && variantLogId) {
+      this.args.onVariantGenerated({
+        variantKey: variantCode,
+        variantLogId,
+        requestId: requestId || null,
+      });
+    }
   }
 
   _canLogReview(variantCode) {
