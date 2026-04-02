@@ -1,12 +1,9 @@
 <div class='draggable-selection'>
   <div
-    class='selectionLink
+    class='selectionLink selection-tooltip
       {{if this.isImage "image-tag"}}
       {{if this.isSelected "is-selected"}}'
-    title='{{this.titleText}} {{if this.isParentWorkspace " by "}} {{if
-      this.isParentWorkspace
-      @selection.createdBy.username
-    }}'
+    data-selection-tooltip={{this.selectionTooltip}}
   >
 
     {{#if this.modelIdsReady}}
