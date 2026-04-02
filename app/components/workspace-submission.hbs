@@ -93,7 +93,7 @@
 
   <div
     id='al_submission'
-    style={{if this.makingSelection 'height: auto; overflow-y: visible;' ''}}
+    class='{{if this.makingSelection "is-selecting"}}'
   >
     {{#if this.makingSelection}}
       <h3 id='sel-view-header' class='selectable-view-header'>Selectable View!</h3>
