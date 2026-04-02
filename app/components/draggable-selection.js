@@ -3,6 +3,33 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
+const SELECTION_DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  dateStyle: 'short',
+  timeStyle: 'short',
+});
+const SELECTION_TOOLTIP_CACHE = new WeakMap();
+
+function readPath(obj, path) {
+  if (!obj || !path) {
+    return undefined;
+  }
+
+  if (typeof obj.get === 'function') {
+    try {
+      return obj.get(path);
+    } catch (_error) {
+      return undefined;
+    }
+  }
+
+  return path.split('.').reduce((current, segment) => {
+    if (current == null) {
+      return undefined;
+    }
+    return current[segment];
+  }, obj);
+}
+
 export default class DraggableSelectionComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
@@ -38,7 +65,9 @@ export default class DraggableSelectionComponent extends Component {
 
   get canDelete() {
     const currentUserId = this.currentUser.id;
-    const creatorId = this.args.selection.createdBy.id;
+    const creatorId =
+      this.utils.getBelongsToId(this.args.selection, 'createdBy') ||
+      readPath(this.args.selection, 'createdBy.id');
     return currentUserId === creatorId || this.args.canDeleteSelections;
   }
 
@@ -65,17 +94,48 @@ export default class DraggableSelectionComponent extends Component {
       const createDate = new Date(
         this.args.selection?.createDate ?? Date.now()
       );
-      const formatter = new Intl.DateTimeFormat(undefined, {
-        dateStyle: 'short',
-        timeStyle: 'short',
-      });
-      const displayDate = formatter.format(createDate);
+      const displayDate = SELECTION_DATE_FORMATTER.format(createDate);
       return `Created ${displayDate}`;
     }
     const { startTime, endTime } = this.args.selection.vmtInfo;
     return `${this.utils.getTimeStringFromMs(
       startTime
     )} - ${this.utils.getTimeStringFromMs(endTime)}`;
+  }
+
+  get selectionCreatorName() {
+    const selection = this.args.selection;
+    if (!selection) {
+      return '';
+    }
+
+    const directCreator =
+      readPath(selection, 'createdBy.username') ||
+      readPath(selection, 'originalSelection.createdBy.username');
+    if (directCreator) {
+      return directCreator;
+    }
+
+    return '';
+  }
+
+  get selectionTooltip() {
+    const selection = this.args.selection;
+    if (!selection) {
+      return '';
+    }
+
+    const cachedTooltip = SELECTION_TOOLTIP_CACHE.get(selection);
+    if (cachedTooltip) {
+      return cachedTooltip;
+    }
+
+    const creatorName = this.selectionCreatorName;
+    const tooltip = creatorName
+      ? `${this.titleText} by ${creatorName}`
+      : `${this.titleText}`;
+    SELECTION_TOOLTIP_CACHE.set(selection, tooltip);
+    return tooltip;
   }
 
   get overlayIcon() {
