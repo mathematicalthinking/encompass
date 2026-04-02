@@ -562,6 +562,11 @@
       margin-bottom: 0;
       height: calc(100% - 211px);
       overflow-y: auto;
+
+      &.is-selecting {
+        height: auto;
+        overflow-y: visible;
+      }
     }
 
     #confirm-text-sel {
@@ -634,6 +639,27 @@
 
         span {
           padding: 2px;
+        }
+
+        &.selection-tooltip {
+          position: relative;
+
+          &:hover::after {
+            content: attr(data-selection-tooltip);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background-color: #8bc34a;
+            color: white;
+            font-size: 13px;
+            white-space: nowrap;
+            border-radius: 4px;
+            margin-top: 5px;
+            z-index: 1000;
+            pointer-events: none;
+          }
         }
 
         &.image-tag {
