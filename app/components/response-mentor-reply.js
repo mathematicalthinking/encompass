@@ -35,6 +35,8 @@ export default class ResponseMentorReplyComponent extends Component {
   @tracked latestBroughtDownVariantKey = null;
   @tracked latestBroughtDownRating = null;
   @tracked latestBroughtDownFeedback = null;
+  @tracked generatedVariantLogIds = [];
+  @tracked broughtDownVariantLogIds = [];
   @tracked isHistoryExpanded = false;
   @tracked expandedHistoryItems = new Set();
 
@@ -887,7 +889,7 @@ export default class ResponseMentorReplyComponent extends Component {
       this._resetEditState();
 
       if (!isDraft) {
-        await this._saveFinalVersionToVariant(this.quillText);
+        await this._saveFinalVersionToVariants(this.quillText);
         this.args.onSaveSuccess?.(this.args.submission, savedResponse);
       }
     } catch (err) {
@@ -924,7 +926,7 @@ export default class ResponseMentorReplyComponent extends Component {
 
     try {
       await this.args.displayResponse.save();
-      await this._saveFinalVersionToVariant(this.quillText);
+      await this._saveFinalVersionToVariants(this.quillText);
       this._endLoading();
       this._showSuccessToast('Response Updated');
       this.isEditing = false;
@@ -984,7 +986,7 @@ export default class ResponseMentorReplyComponent extends Component {
       }
       const [savedRevision] = await Promise.all(promises);
       if (!isDraft) {
-        await this._saveFinalVersionToVariant(this.quillText);
+        await this._saveFinalVersionToVariants(this.quillText);
       }
       this._endLoading();
       this._showSuccessToast(toastMessage);
@@ -1081,13 +1083,54 @@ export default class ResponseMentorReplyComponent extends Component {
     this.updateQuillText(content, isEmpty, isOverLengthLimit);
   }
 
-  async _markSelectedVariantAsUsed() {
-    if (!this.latestBroughtDownVariantLogId) {
+  _rememberBroughtDownVariantLogId(variantLogId) {
+    if (!variantLogId) {
+      return;
+    }
+
+    const normalizedId = String(variantLogId);
+    if (this.broughtDownVariantLogIds.includes(normalizedId)) {
+      return;
+    }
+
+    this.broughtDownVariantLogIds = [
+      ...this.broughtDownVariantLogIds,
+      normalizedId,
+    ];
+  }
+
+  _rememberGeneratedVariantLogId(variantLogId) {
+    if (!variantLogId) {
+      return;
+    }
+
+    const normalizedId = String(variantLogId);
+    if (this.generatedVariantLogIds.includes(normalizedId)) {
+      return;
+    }
+
+    this.generatedVariantLogIds = [
+      ...this.generatedVariantLogIds,
+      normalizedId,
+    ];
+  }
+
+  _getFinalVersionTargetVariantIds() {
+    const mergedIds = [
+      ...this.generatedVariantLogIds,
+      ...this.broughtDownVariantLogIds,
+      this.latestBroughtDownVariantLogId,
+    ].filter(Boolean);
+    return [...new Set(mergedIds)];
+  }
+
+  async _markSelectedVariantAsUsed(variantLogId) {
+    if (!variantLogId) {
       return;
     }
 
     try {
-      await fetch(`/api/aiVariants/${this.latestBroughtDownVariantLogId}`, {
+      await fetch(`/api/aiVariants/${variantLogId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
@@ -1103,26 +1146,54 @@ export default class ResponseMentorReplyComponent extends Component {
     }
   }
 
-  async _saveFinalVersionToVariant(finalText) {
-    if (!this.latestBroughtDownVariantLogId || !finalText) {
+  async _saveFinalVersionToVariants(finalText) {
+    if (!finalText) {
+      return;
+    }
+
+    const targetVariantLogIds = this._getFinalVersionTargetVariantIds();
+    if (targetVariantLogIds.length === 0) {
       return;
     }
 
     try {
-      await fetch(`/api/aiVariants/${this.latestBroughtDownVariantLogId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({
-          aiVariant: {
-            isSelected: true,
-            finalVersionText: finalText,
-          },
-        }),
-      });
+      const results = await Promise.allSettled(
+        targetVariantLogIds.map((variantLogId) =>
+          fetch(`/api/aiVariants/${variantLogId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              aiVariant: {
+                finalVersionText: finalText,
+              },
+            }),
+          })
+        )
+      );
+
+      const failedIds = results
+        .map((result, index) => ({
+          result,
+          variantLogId: targetVariantLogIds[index],
+        }))
+        .filter(({ result }) => {
+          if (result.status === 'rejected') {
+            return true;
+          }
+          return !result.value?.ok;
+        })
+        .map(({ variantLogId }) => variantLogId);
+
+      if (failedIds.length > 0) {
+        console.warn(
+          'Failed to persist final AI version on some variants:',
+          failedIds
+        );
+      }
     } catch (error) {
       // Best-effort tracking only; do not block save flow.
-      console.warn('Failed to persist final AI version on variant:', error);
+      console.warn('Failed to persist final AI version on variants:', error);
     }
   }
 
@@ -1176,6 +1247,8 @@ export default class ResponseMentorReplyComponent extends Component {
       this.args.submission.aiFinalEditVersions =
         existingVersions.concat(appendedVersion);
 
+      await this._saveFinalVersionToVariants(payload.aiFinalEditText);
+
       this.alert.showToast(
         'success',
         'Final edit version saved',
@@ -1226,6 +1299,16 @@ export default class ResponseMentorReplyComponent extends Component {
 
   // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
   @action
+  handleVariantGenerated(variantGeneration) {
+    if (!variantGeneration || typeof variantGeneration !== 'object') {
+      return;
+    }
+
+    this._rememberGeneratedVariantLogId(variantGeneration.variantLogId);
+  }
+
+  // TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD
+  @action
   handleVariantDraftSelected(draftSelection) {
     // TEMPORARY A/B TEST CODE: Set the selected draft for the in-place editor
     const draftText =
@@ -1244,7 +1327,11 @@ export default class ResponseMentorReplyComponent extends Component {
       this.latestBroughtDownFeedback = draftSelection.writtenFeedback || null;
 
       if (this.latestBroughtDownVariantLogId) {
-        this._markSelectedVariantAsUsed();
+        this._rememberGeneratedVariantLogId(this.latestBroughtDownVariantLogId);
+        this._rememberBroughtDownVariantLogId(
+          this.latestBroughtDownVariantLogId
+        );
+        this._markSelectedVariantAsUsed(this.latestBroughtDownVariantLogId);
       }
     }
 

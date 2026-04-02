@@ -99,6 +99,77 @@ export default class AiGenerationReportsService extends Service {
     return String(value);
   }
 
+  toArray(value) {
+    if (Array.isArray(value)) return value;
+    if (value && typeof value.toArray === 'function') {
+      return value.toArray();
+    }
+    if (value && typeof value.slice === 'function') {
+      return value.slice();
+    }
+    return [];
+  }
+
+  getTimestamp(value) {
+    if (!value) return 0;
+    const dateValue = value instanceof Date ? value : new Date(value);
+    return isValid(dateValue) ? dateValue.getTime() : 0;
+  }
+
+  getVariantFinalEditText(variant, submission) {
+    const variantText = variant?.finalVersionText;
+    if (typeof variantText === 'string' && variantText.trim().length > 0) {
+      return variantText;
+    }
+
+    const versionHistory = this.toArray(
+      this.readPath(submission, 'aiFinalEditVersions') ||
+        submission?.aiFinalEditVersions
+    );
+    if (!versionHistory.length) {
+      return '';
+    }
+
+    const variantLogId = this.normalizeObjectId(variant?._id || variant?.id);
+    const requestId = String(variant?.requestId || '').trim();
+    const matchingEntries = versionHistory.filter((entry) => {
+      const sourceVariantLogId = this.normalizeObjectId(
+        this.readPath(entry, 'sourceVariantLogId') || entry?.sourceVariantLogId
+      );
+      if (
+        variantLogId &&
+        sourceVariantLogId &&
+        sourceVariantLogId === variantLogId
+      ) {
+        return true;
+      }
+
+      const sourceRequestId = String(
+        this.readPath(entry, 'sourceRequestId') || entry?.sourceRequestId || ''
+      ).trim();
+      return Boolean(
+        requestId && sourceRequestId && sourceRequestId === requestId
+      );
+    });
+
+    if (!matchingEntries.length) {
+      return '';
+    }
+
+    const latestMatch = matchingEntries
+      .slice()
+      .sort(
+        (a, b) =>
+          this.getTimestamp(this.readPath(a, 'savedAt') || a?.savedAt) -
+          this.getTimestamp(this.readPath(b, 'savedAt') || b?.savedAt)
+      )
+      .pop();
+
+    return String(
+      this.readPath(latestMatch, 'text') || latestMatch?.text || ''
+    );
+  }
+
   formatDateTimeOrEmpty(value) {
     if (!value) return '';
     const dateValue = value instanceof Date ? value : new Date(value);
@@ -301,7 +372,7 @@ export default class AiGenerationReportsService extends Service {
         'Sent Annotation Snapshot':
           this.buildSentAnnotationSnapshot(sentAnnotations),
         'Final Edit Text': this.stripHtml(
-          variant?.finalVersionText || submission?.aiFinalEditText || ''
+          this.getVariantFinalEditText(variant, submission)
         ),
       };
     });
