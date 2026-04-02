@@ -1,16 +1,10 @@
 <div class='unundraggable-selection'>
   <div
-    class='selectionLink
+    class='selectionLink selection-tooltip
       {{if this.isImage "image-tag"}}
       {{if this.isSelected "is-selected"}}
       {{if this.isText "selection_text"}}'
-    title='{{this.titleText}} {{if this.isParentWorkspace " by "}} {{if
-      this.isParentWorkspace
-      @selection.originalSelection.createdBy.username
-    }} {{if this.isParentWorkspace " in "}} {{if
-      this.isParentWorkspace
-      @selection.originalSelection.workspace.name
-    }}'
+    data-selection-tooltip={{this.selectionTooltip}}
   >
     {{#if this.modelIdsReady}}
       <LinkTo
