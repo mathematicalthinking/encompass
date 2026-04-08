@@ -4,15 +4,12 @@ import { service } from '@ember/service';
 
 export default class SectionsSectionRoute extends AuthenticatedRoute {
   @service store;
-  @service router;
   async model(params) {
-    const section = await this.store.findRecord('section', params.section_id);
     return hash({
-      section,
       groups: this.store.query('group', {
         section: params.section_id,
       }),
-      students: section.students?.slice() ?? [],
+      section: this.store.findRecord('section', params.section_id),
       cachedProblems: this.store.findAll('problem'),
     });
   }

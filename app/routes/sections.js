@@ -7,7 +7,7 @@ export default class SectionsRoute extends AuthenticatedRoute {
   @service currentUser;
   async model() {
     return hash({
-      isStudent: this.currentUser.isStudent, // used by template to conditionally show "Create New Class" button
+      isStudent: this.currentUser.isStudent, // used by index template to conditionally show "Create New Class" button
       sections: this.store.findAll('section'),
     });
   }

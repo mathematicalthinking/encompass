@@ -2,7 +2,7 @@ import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import $ from 'jquery';
 
 export default class SectionInfoComponent extends ErrorHandlingComponent {
@@ -38,27 +38,11 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
   @tracked newGroupName = '';
   @tracked newGroupStudents = [];
+
   constructor() {
     super(...arguments);
     this.setSectionAttributes();
   }
-
-  // didReceiveAttrs() {
-  //   let section = this.currentSection;
-  //   let didSectionChange = !isEqual(section, this.args.section);
-  //   this.isAddingTeacher = false;
-
-  //   if (didSectionChange) {
-  //     if (this.isEditingStudents) {
-  //       this.isEditingStudents = false;
-  //     }
-
-  //     if (this.isEditingTeachers) {
-  //       this.isEditingTeachers = false;
-  //     }
-  //     return this.setSectionAttributes();
-  //   }
-  // }
 
   setSectionAttributes() {
     let section = this.args.section;
@@ -128,16 +112,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     selectize.clear();
   }
-
-  // scrollIfEditingStudents: observer('isEditingStudents', function () {
-  //   if (this.isEditingStudents) {
-  //     later(() => {
-  //       $('html, body').animate({
-  //         scrollTop: $(document).height(),
-  //       });
-  //     }, 100);
-  //   }
-  // }),
 
   @tracked addTeacherQueryParams = {
     filterBy: {

@@ -104,7 +104,7 @@
         <ul class='listing'>
           {{#each @section.teachers as |teacher|}}
             <li>
-              {{#if @currentUser.isStudent}}
+              {{#if this.currentUser.isStudent}}
                 {{teacher.username}}
               {{else}}
                 <LinkTo @route='users.user' @model={{teacher.id}}>
@@ -184,7 +184,7 @@
         <ul class='listing'>
           {{#each @section.students as |student|}}
             <li>
-              {{#if @currentUser.isStudent}}
+              {{#if this.currentUser.isStudent}}
                 {{student.username}}
               {{else}}
                 <LinkTo @route='users.user' @model={{student.id}}>
@@ -318,7 +318,7 @@
   {{/each}}
   {{#if this.showAssignment}}
     <AssignmentNew
-      @cachedProblems={{this.cachedProblems}}
+      @cachedProblems={{@cachedProblems}}
       @cancel={{action (mut this.showAssignment) null}}
       @fromSectionInfo={{true}}
       @problems={{this.problemList}}
