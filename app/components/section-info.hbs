@@ -15,13 +15,13 @@
             {{#if this.isEditingName}}
               <i
                 title='Done'
-                {{action 'updateSectionName'}}
+                {{on 'click' this.updateSectionName}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 title='Edit'
-                {{action (mut this.isEditingName) true}}
+                {{on 'click' this.startEditingName}}
                 class='far fa-edit'
               ></i>
             {{/if}}
@@ -48,13 +48,13 @@
             {{#if this.isEditingAssignments}}
               <i
                 title='Done'
-                {{action (mut this.isEditingAssignments) false}}
+                {{on 'click' (fn this.setIsEditingAssignments false)}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 title='Edit'
-                {{action (mut this.isEditingAssignments) true}}
+                {{on 'click' (fn this.setIsEditingAssignments true)}}
                 class='far fa-edit'
               ></i>
             {{/if}}
@@ -78,8 +78,8 @@
         <div class='btn-container'>
           <button
             class='action_button'
-            type='submit'
-            {{action 'updateShowAssignment'}}
+            type='button'
+            {{on 'click' this.updateShowAssignment}}
           >New Assignment</button>
         </div>
       {{/if}}
@@ -89,13 +89,13 @@
             {{#if this.isEditingTeachers}}
               <i
                 title='Done'
-                {{action (mut this.isEditingTeachers) false}}
+                {{on 'click' (fn this.setIsEditingTeachers false)}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 title='Edit'
-                {{action (mut this.isEditingTeachers) true}}
+                {{on 'click' (fn this.setIsEditingTeachers true)}}
                 class='far fa-edit'
               ></i>
             {{/if}}
@@ -116,8 +116,8 @@
                 {{#if this.isEditingTeachers}}
                   <button
                     class='trash-button'
-                    type='submit'
-                    {{action 'removeTeacher' teacher}}
+                    type='button'
+                    {{on 'click' (fn this.removeTeacher teacher)}}
                   >
                     <i
                       title='remove'
@@ -146,7 +146,7 @@
               @inputId='select-add-teacher'
               @maxItems={{1}}
               @initialOptions={{this.initialTeacherOptions}}
-              @onItemAdd={{action 'addTeacher'}}
+              @onItemAdd={{this.addTeacher}}
               @model='user'
               @isAsync={{true}}
               @labelField='username'
@@ -168,14 +168,14 @@
             {{#if this.isEditingStudents}}
               <i
                 title='Done'
-                {{action (mut this.isEditingStudents) false}}
+                {{on 'click' (fn this.setIsEditingStudents false)}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 data-test='edit-students'
                 title='Edit'
-                {{action (mut this.isEditingStudents) true}}
+                {{on 'click' (fn this.setIsEditingStudents true)}}
                 class='far fa-edit'
               ></i>
             {{/if}}
@@ -196,8 +196,8 @@
                 {{#if this.isEditingStudents}}
                   <button
                     class='trash-button'
-                    type='submit'
-                    {{action 'removeStudent' student}}
+                    type='button'
+                    {{on 'click' (fn this.removeStudent student)}}
                   >
                     <i class='far fa-times-circle' aria-hidden='true'></i>
                   </button>
@@ -284,8 +284,8 @@
                 @group={{group}}
                 @addGroup={{this.addGroup}}
                 @students={{this.studentList}}
-                @updateGroup={{action 'updateGroup'}}
-                @deleteGroup={{action 'deleteGroup'}}
+                @updateGroup={{this.updateGroup}}
+                @deleteGroup={{this.deleteGroup}}
               />
             {{/unless}}
           {{/each}}
@@ -308,7 +308,7 @@
       id='deleteSection'
       class='right'
       type='button'
-      {{action 'confirmDelete'}}
+      {{on 'click' this.confirmDelete}}
     ><i class='fa fa-trash' aria-hidden='true'></i></button>
 
   {{/unless}}
@@ -319,7 +319,7 @@
   {{#if this.showAssignment}}
     <AssignmentNew
       @cachedProblems={{@cachedProblems}}
-      @cancel={{action (mut this.showAssignment) null}}
+      @cancel={{this.hideAssignmentEditor}}
       @fromSectionInfo={{true}}
       @problems={{this.problemList}}
       @selectedSection={{@section}}

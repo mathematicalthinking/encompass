@@ -61,10 +61,25 @@ export default class SelectizeInputComponent extends Component {
       this.items = this.args.initialItems;
     }
 
-    if (this.selectizeInstance) {
-      this.selectizeInstance.destroy();
+    if (!this.selectizeInstance) {
+      await this.initializeSelectize(element);
+      return;
     }
-    this.initializeSelectize(element);
+
+    this.selectizeInstance.clearOptions();
+    this.selectizeInstance.addOption(this.options || []);
+
+    if (this.items) {
+      this.selectizeInstance.setValue(this.items, true);
+    }
+
+    this.selectizeInstance.refreshOptions(false);
+
+    if (this.args.isDisabled) {
+      this.selectizeInstance.disable();
+    } else {
+      this.selectizeInstance.enable();
+    }
   }
 
   configureOptionsHash() {

@@ -3,7 +3,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
 import { service } from '@ember/service';
-import $ from 'jquery';
 
 export default class SectionInfoComponent extends ErrorHandlingComponent {
   @service('sweet-alert') alert;
@@ -14,6 +13,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @tracked removeTeacherError = null;
   @tracked isEditingStudents = false;
   @tracked isEditingTeachers = false;
+  @tracked isEditingAssignments = false;
+  @tracked currentSection = null;
   @tracked organization = null;
   @tracked studentList = null;
   @tracked teacherList = null;
@@ -44,24 +45,16 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     this.setSectionAttributes();
   }
 
-  setSectionAttributes() {
-    let section = this.args.section;
+  async setSectionAttributes() {
+    const section = this.args.section;
     this.currentSection = section;
-    return Promise.resolve(section.get('students'))
-      .then((students) => {
-        this.studentList = students;
-        return section.get('teachers');
-      })
-      .then((teachers) => {
-        this.teacherList = teachers;
-        return section.get('organization');
-      })
-      .then((org) => {
-        this.organization = org;
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'dataLoadErrors');
-      });
+    try {
+      this.studentList = await section.students;
+      this.teacherList = await section.teachers;
+      this.organization = await section.organization;
+    } catch (err) {
+      this.handleErrors(err, 'dataLoadErrors');
+    }
   }
 
   get canEdit() {
@@ -106,7 +99,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     if (!id) {
       return;
     }
-    let selectize = $(`#${id}`)[0].selectize;
+    const element = document.getElementById(id);
+    const selectize = element?.selectize;
     if (!selectize) {
       return;
     }
@@ -131,8 +125,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       filtered = teachersOnly.removeObjects(currentTeachers);
       return filtered.map((obj) => {
         return {
-          id: obj.get('id'),
-          username: obj.get('username'),
+          id: obj.id,
+          username: obj.username,
         };
       });
     }
@@ -145,6 +139,27 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     return (this.addGroup = !this.addGroup);
   }
+
+  @action startEditingName() {
+    this.isEditingName = true;
+  }
+
+  @action setIsEditingAssignments(value) {
+    this.isEditingAssignments = value;
+  }
+
+  @action setIsEditingTeachers(value) {
+    this.isEditingTeachers = value;
+  }
+
+  @action setIsEditingStudents(value) {
+    this.isEditingStudents = value;
+  }
+
+  @action hideAssignmentEditor() {
+    this.showAssignment = false;
+  }
+
   @action async saveGroup(e) {
     e.preventDefault(); //not sure why this button was causing a submit...
     if (!this.newGroupStudents.length || !this.newGroupName) {
@@ -184,9 +199,12 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
   @action async placeStudent(student) {
     if (this.newGroupStudents.includes(student)) {
-      return this.newGroupStudents.removeObject(student);
+      this.newGroupStudents = this.newGroupStudents.filter(
+        (s) => s !== student
+      );
+      return;
     }
-    return this.newGroupStudents.pushObject(student);
+    this.newGroupStudents = [...this.newGroupStudents, student];
   }
   @action async updateGroup(group, user) {
     if (!user) return;
@@ -244,9 +262,9 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       return;
     }
 
-    let section = this.currentSection;
-    let students = section.get('students');
-    let selectedUser = user;
+    const section = this.currentSection;
+    const students = section.students;
+    const selectedUser = user;
 
     students.removeObject(selectedUser);
 
@@ -268,9 +286,9 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
 
   @action removeTeacher(user) {
-    let section = this.currentSection;
-    let teachers = this.teacherList;
-    let teachersLength = teachers.get('length');
+    const section = this.currentSection;
+    const teachers = this.teacherList;
+    const teachersLength = teachers.length;
 
     if (teachersLength > 1) {
       teachers.removeObject(user);
@@ -316,7 +334,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
 
   @action deleteSection() {
     const section = this.args.section;
-    section.set('isTrashed', true);
+    section.isTrashed = true;
     return section
       .save()
       .then(() => {
@@ -341,11 +359,12 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       .then((problems) => {
         this.problemList = problems;
         this.showAssignment = true;
-        this.sectionList.pushObject(this.args.section);
+        this.sectionList = [...this.sectionList, this.args.section];
 
         later(() => {
-          $('html, body').animate({
-            scrollTop: $(document).height(),
+          window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth',
           });
         }, 100);
       })
@@ -356,8 +375,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
 
   @action updateSectionName() {
     this.isEditingName = false;
-    let section = this.currentSection;
-    if (section.get('hasDirtyAttributes')) {
+    const section = this.currentSection;
+    if (section.hasDirtyAttributes) {
       this.currentSection
         .save()
         .then(() => {

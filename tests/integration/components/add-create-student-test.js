@@ -4,18 +4,24 @@ import { render, click, fillIn, triggerEvent } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import Service from '@ember/service';
 import EmberObject from '@ember/object';
+import { A } from '@ember/array';
+import Component from '@glimmer/component';
+import $ from 'jquery';
 
 module('Integration | Component | add-create-student', function (hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function () {
+    this.originalJQueryPost = $.post;
+
     // Mock sweet-alert service
-    this.owner.register(
-      'service:sweet-alert',
-      class extends Service {
-        showToast() {}
+    const alertService = class extends Service {
+      toastCalls = [];
+      showToast(type, message) {
+        this.toastCalls.push({ type, message });
       }
-    );
+    };
+    this.owner.register('service:sweet-alert', alertService);
 
     // Mock currentUser service
     this.owner.register(
@@ -29,52 +35,108 @@ module('Integration | Component | add-create-student', function (hooks) {
     );
 
     // Mock store service
+    const user1 = EmberObject.create({
+      id: 'student1',
+      username: 'student_one',
+      _id: 'student1',
+      accountType: 'S',
+      get(key) {
+        return this[key];
+      },
+    });
+    const user2 = EmberObject.create({
+      id: 'student2',
+      username: 'student_two',
+      _id: 'student2',
+      accountType: 'S',
+      get(key) {
+        return this[key];
+      },
+    });
+    const newStudent = EmberObject.create({
+      id: 'student-new',
+      username: 'brand_new_student',
+      _id: 'student-new',
+      accountType: 'S',
+      get(key) {
+        return this[key];
+      },
+    });
+
+    this.userMap = {
+      student1: user1,
+      student2: user2,
+      'student-new': newStudent,
+    };
+
     const mockStore = class extends Service {
       peekAll() {
         return {
-          toArray() {
-            return [];
+          toArray: () => {
+            return [user1, user2, newStudent];
           },
         };
       }
-      peekRecord() {
-        return null;
+      peekRecord(modelName, id) {
+        return this.userMap[id] || null;
       }
-      findRecord() {
-        return Promise.resolve({});
+      findRecord(modelName, id) {
+        return Promise.resolve(this.userMap[id] || null);
       }
     };
+    mockStore.prototype.userMap = this.userMap;
     this.owner.register('service:store', mockStore);
 
+    class SelectizeInputStub extends Component {}
+    this.owner.register(
+      'template:components/selectize-input',
+      hbs`
+        <div id={{@inputId}} class='selectize-input-stub'>
+          <button
+            type='button'
+            class='simulate-select-existing'
+            {{on 'click' (fn @onItemAdd 'student1')}}
+          >
+            Pick Existing Student
+          </button>
+          <button
+            type='button'
+            class='simulate-select-other'
+            {{on 'click' (fn @onItemAdd 'student2')}}
+          >
+            Pick Other Student
+          </button>
+        </div>
+      `
+    );
+    this.owner.register('component:selectize-input', SelectizeInputStub);
+
     // Set up mock section
+    this.saveCallCount = 0;
     this.set(
       'section',
       EmberObject.create({
         id: 'section1',
         name: 'Test Section',
         sectionPassword: 'testpass123',
-        save() {
+        students: A([]),
+        save: () => {
+          this.saveCallCount += 1;
           return Promise.resolve();
         },
       })
     );
 
     // Set up mock students array
-    this.set('students', {
-      toArray() {
-        return [];
-      },
-      includes() {
-        return false;
-      },
-      findBy() {
-        return undefined;
-      },
-      pushObject() {},
-      addObject() {},
-    });
+    this.set('students', this.section.students);
 
     this.set('sectionPassword', 'classpass123');
+
+    $.post = () => Promise.resolve({ _id: 'student-new' });
+  });
+
+  hooks.afterEach(function () {
+    $.post = this.originalJQueryPost;
   });
 
   test('it renders with correct structure', async function (assert) {
@@ -305,5 +367,103 @@ module('Integration | Component | add-create-student', function (hooks) {
         'Create and Add',
         'Create and Add button exists with correct text'
       );
+  });
+
+  test('it adds an existing student selected from existing-user picker', async function (assert) {
+    await render(hbs`
+      <AddCreateStudent
+        @section={{this.section}}
+        @students={{this.students}}
+        @sectionPassword={{this.sectionPassword}}
+      />
+    `);
+
+    await click('.simulate-select-existing');
+
+    assert.true(
+      this.students.includes(this.userMap.student1),
+      'selected existing student is added to section students'
+    );
+    assert.strictEqual(this.saveCallCount, 1, 'section is saved once');
+
+    const alert = this.owner.lookup('service:sweet-alert');
+    assert.strictEqual(alert.toastCalls.length, 1, 'shows success toast');
+    assert.strictEqual(alert.toastCalls[0].message, 'Student Added');
+  });
+
+  test('it prevents adding duplicate existing student from picker', async function (assert) {
+    this.students.pushObject(this.userMap.student1);
+
+    await render(hbs`
+      <AddCreateStudent
+        @section={{this.section}}
+        @students={{this.students}}
+        @sectionPassword={{this.sectionPassword}}
+      />
+    `);
+
+    await click('.simulate-select-existing');
+
+    assert
+      .dom('.error-message')
+      .includesText('User already registered in this section.');
+    assert.strictEqual(
+      this.saveCallCount,
+      0,
+      'section is not saved for duplicate'
+    );
+  });
+
+  test('it creates and adds a new student when form is valid', async function (assert) {
+    await render(hbs`
+      <AddCreateStudent
+        @section={{this.section}}
+        @students={{this.students}}
+        @sectionPassword={{this.sectionPassword}}
+      />
+    `);
+
+    await fillIn('#username', 'brand_new_student');
+    await fillIn('#password', 'abc12345');
+    await click('.submit button.action_button');
+
+    assert.true(
+      this.students.includes(this.userMap['student-new']),
+      'newly created student is added to section students'
+    );
+    assert.strictEqual(this.saveCallCount, 1, 'section is saved after create');
+
+    const alert = this.owner.lookup('service:sweet-alert');
+    assert.strictEqual(
+      alert.toastCalls[0].message,
+      'Student Created',
+      'shows create success toast'
+    );
+  });
+
+  test('it shows username unavailable when signup reports existing username', async function (assert) {
+    $.post = () =>
+      Promise.resolve({
+        message: 'There already exists a user with that username',
+      });
+
+    await render(hbs`
+      <AddCreateStudent
+        @section={{this.section}}
+        @students={{this.students}}
+        @sectionPassword={{this.sectionPassword}}
+      />
+    `);
+
+    await fillIn('#username', 'taken_username');
+    await fillIn('#password', 'abc12345');
+    await click('.submit button.action_button');
+
+    assert.dom('.error-message').includesText('Username is unavailable.');
+    assert.strictEqual(
+      this.saveCallCount,
+      0,
+      'does not save section on signup conflict'
+    );
   });
 });

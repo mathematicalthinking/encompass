@@ -4,7 +4,7 @@ import { render, click, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 import Component from '@glimmer/component';
-import EmberObject from '@ember/object';
+import EmberObject, { action } from '@ember/object';
 import { A } from '@ember/array';
 
 function buildUser(overrides = {}) {
@@ -188,7 +188,41 @@ module('Integration | Component | section-info', function (hooks) {
 
     class SelectizeInputStub extends Component {}
     class AssignmentNewStub extends Component {}
-    class AddCreateStudentStub extends Component {}
+    class AddCreateStudentStub extends Component {
+      @action addExistingStudent() {
+        const section = this.args.section;
+        const existingStudent = buildUser({
+          id: 'student-existing',
+          username: 'existing-student',
+          accountType: 'S',
+        });
+
+        const alreadyAdded = section.students.some(
+          (student) => student.id === existingStudent.id
+        );
+
+        if (!alreadyAdded) {
+          section.students.pushObject(existingStudent);
+        }
+      }
+
+      @action addNewStudent() {
+        const section = this.args.section;
+        const newStudent = buildUser({
+          id: 'student-new',
+          username: 'brand-new-student',
+          accountType: 'S',
+        });
+
+        const alreadyAdded = section.students.some(
+          (student) => student.id === newStudent.id
+        );
+
+        if (!alreadyAdded) {
+          section.students.pushObject(newStudent);
+        }
+      }
+    }
     class GroupInfoStub extends Component {}
 
     this.owner.register('service:sweet-alert', SweetAlertStub);
@@ -212,7 +246,24 @@ module('Integration | Component | section-info', function (hooks) {
 
     this.owner.register(
       'template:components/add-create-student',
-      hbs`<div class='add-create-student-stub' data-section-id={{@section.id}}></div>`
+      hbs`
+        <div class='add-create-student-stub' data-section-id={{@section.id}}>
+          <button
+            type='button'
+            class='add-existing-student-btn'
+            {{on 'click' this.addExistingStudent}}
+          >
+            Add Existing Student
+          </button>
+          <button
+            type='button'
+            class='add-new-student-btn'
+            {{on 'click' this.addNewStudent}}
+          >
+            Add New Student
+          </button>
+        </div>
+      `
     );
     this.owner.register('component:add-create-student', AddCreateStudentStub);
 
@@ -356,6 +407,123 @@ module('Integration | Component | section-info', function (hooks) {
       this.element.querySelectorAll('.group-options .fa-check').length,
       1,
       'already grouped students are marked in the add-group list'
+    );
+  });
+
+  test('student edit mode allows adding an existing student to the section', async function (assert) {
+    const section = buildSection({
+      students: [
+        buildUser({ id: 'student-1', username: 'alice', accountType: 'S' }),
+      ],
+    });
+
+    await renderSectionInfo(this, { section });
+
+    await click('[data-test="edit-students"]');
+    await settled();
+    await click('.add-existing-student-btn');
+    await settled();
+
+    assert
+      .dom('.section-info-detail.students')
+      .includesText('existing-student', 'existing student is added to list');
+  });
+
+  test('adding the same existing student twice does not create duplicates', async function (assert) {
+    const section = buildSection({
+      students: [
+        buildUser({ id: 'student-1', username: 'alice', accountType: 'S' }),
+      ],
+    });
+
+    await renderSectionInfo(this, { section });
+
+    await click('[data-test="edit-students"]');
+    await settled();
+    await click('.add-existing-student-btn');
+    await click('.add-existing-student-btn');
+    await settled();
+
+    const matchingItems = Array.from(
+      this.element.querySelectorAll('.section-info-detail.students li')
+    ).filter((item) => item.textContent.includes('existing-student'));
+
+    assert.strictEqual(
+      matchingItems.length,
+      1,
+      'existing student appears only once'
+    );
+  });
+
+  test('student edit mode allows adding a newly created student to the section', async function (assert) {
+    const section = buildSection({
+      students: [
+        buildUser({ id: 'student-1', username: 'alice', accountType: 'S' }),
+      ],
+    });
+
+    await renderSectionInfo(this, { section });
+
+    await click('[data-test="edit-students"]');
+    await settled();
+    await click('.add-new-student-btn');
+    await settled();
+
+    assert
+      .dom('.section-info-detail.students')
+      .includesText('brand-new-student', 'newly created student is added');
+  });
+
+  test('adding both existing and new students keeps all unique entries visible', async function (assert) {
+    const section = buildSection({
+      students: [
+        buildUser({ id: 'student-1', username: 'alice', accountType: 'S' }),
+      ],
+    });
+
+    await renderSectionInfo(this, { section });
+
+    await click('[data-test="edit-students"]');
+    await settled();
+    await click('.add-existing-student-btn');
+    await click('.add-new-student-btn');
+    await settled();
+
+    assert.dom('.section-info-detail.students').includesText('alice');
+    assert
+      .dom('.section-info-detail.students')
+      .includesText('existing-student');
+    assert
+      .dom('.section-info-detail.students')
+      .includesText('brand-new-student');
+  });
+
+  test('attempting to add an already-enrolled existing student keeps single entry', async function (assert) {
+    const section = buildSection({
+      students: [
+        buildUser({
+          id: 'student-existing',
+          username: 'existing-student',
+          accountType: 'S',
+        }),
+      ],
+    });
+
+    await renderSectionInfo(this, { section });
+
+    await click('[data-test="edit-students"]');
+    await settled();
+    await click('.add-existing-student-btn');
+    await settled();
+
+    const matchingItems = Array.from(
+      this.element.querySelectorAll('.section-info-detail.students li')
+    ).filter((item) => item.textContent.includes('existing-student'));
+
+    assert.strictEqual(
+      matchingItems.length,
+      1,
+      'already-enrolled student remains a single entry'
     );
   });
 });

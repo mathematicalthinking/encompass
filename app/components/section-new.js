@@ -68,7 +68,7 @@ export default class SectionNewComponent extends Component {
   }
 
   @action async createSection() {
-    let newSectionName = this.newSectionName;
+    const newSectionName = this.newSectionName;
     let teacher = this.teacher;
 
     if (typeof teacher === 'string') {
@@ -82,22 +82,22 @@ export default class SectionNewComponent extends Component {
       teacher = foundTeacher;
     }
 
-    let organization =
+    const organization =
       teacher && teacher.organization
         ? teacher.organization
         : this.organization ?? this.args.organization;
 
-    let values = {
+    const values = {
       name: newSectionName,
       teacher: teacher,
       organization,
     };
 
-    let validation = validate(values, this.constraints);
+    const validation = validate(values, this.constraints);
     if (validation) {
       // Set error messages via error-handling service
-      for (let key of Object.keys(validation)) {
-        let errorProp = `${key}FormErrors`;
+      for (const key of Object.keys(validation)) {
+        const errorProp = `${key}FormErrors`;
         this.errorHandling.errors[errorProp] = validation[key];
       }
       return;
@@ -113,23 +113,21 @@ export default class SectionNewComponent extends Component {
     const sectionData = this.store.createRecord('section', values);
     sectionData.teachers.addObject(teacher);
 
-    sectionData
-      .save()
-      .then((section) => {
-        const name = section.name;
-        this.alert.showToast(
-          'success',
-          `${name} created`,
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-        this.router.transitionTo('sections.section', section.id);
-      })
-      .catch((err) => {
-        this.errorHandling.handleErrors(err, 'createRecordErrors', sectionData);
-      });
+    try {
+      const section = await sectionData.save();
+      const name = section.name;
+      this.alert.showToast(
+        'success',
+        `${name} created`,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      this.router.transitionTo('sections.section', section.id);
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'createRecordErrors', sectionData);
+    }
   }
 
   @action

@@ -43,8 +43,18 @@ export default class AssignmentReportComponent extends Component {
   get reportWithUser() {
     const { details, students } = this.args;
 
+    if (!details || typeof details !== 'object') {
+      console.warn(
+        '[assignment-report] details is missing or invalid',
+        details
+      );
+      return {};
+    }
+
+    const safeStudents = Array.isArray(students) ? students : [];
+
     return Object.entries(details).reduce((acc, [userId, val]) => {
-      const user = students.find((s) => s.id === userId);
+      const user = safeStudents.find((s) => s.id === userId);
       const username = user?.username;
       if (username) {
         acc[username] = val;
