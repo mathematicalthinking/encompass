@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, settled } from '@ember/test-helpers';
+import { render, click, fillIn, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 import Component from '@glimmer/component';
@@ -408,6 +408,36 @@ module('Integration | Component | section-info', function (hooks) {
       1,
       'already grouped students are marked in the add-group list'
     );
+  });
+
+  test('saving a new group does not mutate the queried groups array', async function (assert) {
+    assert.expect(3);
+
+    const alice = buildUser({
+      id: 'student-1',
+      username: 'alice',
+      accountType: 'S',
+    });
+    const section = buildSection({ students: [alice] });
+    const groups = A([]);
+
+    groups.addObject = () => {
+      throw new Error('groups array should not be mutated directly');
+    };
+
+    await renderSectionInfo(this, { section, groups });
+
+    await click('.section-info-detail.groups .far.fa-edit');
+    await fillIn('.new-group-name', 'New Group');
+    await click('#group-student-student-1');
+    await click('.save-group');
+    await settled();
+
+    assert.dom(this.element).includesText('New Group', 'new group is rendered');
+
+    const alert = this.owner.lookup('service:sweet-alert');
+    assert.strictEqual(alert.toastCalls.length, 1, 'shows a success toast');
+    assert.strictEqual(alert.toastCalls[0].type, 'success', 'save succeeded');
   });
 
   test('student edit mode allows adding an existing student to the section', async function (assert) {

@@ -30,9 +30,20 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @tracked problemLoadErrors = [];
   @tracked addGroup = false;
   @tracked isEditingName = false;
+  @tracked editedSectionName = '';
+  @tracked createdGroups = [];
+
+  get groups() {
+    const queriedGroups = this.args.groups?.toArray?.() || [];
+
+    return [...queriedGroups, ...this.createdGroups].filter(
+      (group, index, groups) =>
+        groups.findIndex((candidate) => candidate.id === group.id) === index
+    );
+  }
+
   get groupedStudents() {
-    return this.args.groups
-      .toArray()
+    return this.groups
       .filter((group) => !group.isTrashed)
       .map((group) => group.students.toArray().map((student) => student.id))
       .flat();
@@ -141,7 +152,34 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
 
   @action startEditingName() {
+    this.editedSectionName = this.currentSection?.name || '';
     this.isEditingName = true;
+  }
+
+  @action handleFormSubmit(event) {
+    event.preventDefault();
+  }
+
+  @action handleSectionNameInput(value) {
+    this.editedSectionName = value;
+  }
+
+  @action handleNewGroupNameInput(value) {
+    this.newGroupName = value;
+  }
+
+  @action handleSectionNameKeydown(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.updateSectionName();
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.editedSectionName = this.currentSection?.name || '';
+      this.isEditingName = false;
+    }
   }
 
   @action setIsEditingAssignments(value) {
@@ -165,7 +203,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     if (!this.newGroupStudents.length || !this.newGroupName) {
       return this.alert.showToast('error', 'Please complete all fields');
     }
-    if (this.args.groups.mapBy('name').includes(this.newGroupName)) {
+    if (this.groups.some((group) => group.name === this.newGroupName)) {
       return this.alert.showToast(
         'error',
         'Your class already has a group with this name'
@@ -191,20 +229,59 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         false,
         null
       );
-      this.args.groups.addObject(savedGroup);
+      this.createdGroups = [...this.createdGroups, res];
     } catch (err) {
       console.log(err);
       this.alert.showToast('error', `${err}`, 'bottom-end', 5000, false, null);
     }
   }
-  @action async placeStudent(student) {
-    if (this.newGroupStudents.includes(student)) {
-      this.newGroupStudents = this.newGroupStudents.filter(
-        (s) => s !== student
-      );
+  @action placeStudent(student, isSelected) {
+    if (!student) {
       return;
     }
-    this.newGroupStudents = [...this.newGroupStudents, student];
+
+    if (isSelected) {
+      if (!this.newGroupStudents.includes(student)) {
+        this.newGroupStudents = [...this.newGroupStudents, student];
+      }
+      return;
+    }
+
+    this.newGroupStudents = this.newGroupStudents.filter((s) => s !== student);
+  }
+  @action async saveGroupChanges(group, { name, students }) {
+    if (!group) {
+      return;
+    }
+
+    const originalName = group.name;
+    const originalStudents = group.students.toArray();
+
+    group.name = name;
+    group.students.setObjects(students);
+
+    try {
+      const res = await group.save();
+      this.alert.showToast(
+        'success',
+        `group "${res.name}" updated`,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (err) {
+      group.rollbackAttributes();
+      group.students.setObjects(originalStudents);
+      this.alert.showToast(
+        'error',
+        'oops there was a problem',
+        3000,
+        false,
+        null
+      );
+      throw err;
+    }
   }
   @action async updateGroup(group, user) {
     if (!user) return;
@@ -374,25 +451,32 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   }
 
   @action updateSectionName() {
-    this.isEditingName = false;
     const section = this.currentSection;
-    if (section.hasDirtyAttributes) {
-      this.currentSection
-        .save()
-        .then(() => {
-          this.alert.showToast(
-            'success',
-            'Class Name Updated',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
+    const newName = this.editedSectionName;
+
+    this.isEditingName = false;
+
+    if (!section || section.name === newName) {
+      return;
     }
+
+    section.name = newName;
+
+    section
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          'Class Name Updated',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'updateSectionErrors', section);
+      });
   }
   @action addTeacher(val, $item) {
     if (!val) {

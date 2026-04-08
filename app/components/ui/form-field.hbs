@@ -1,7 +1,7 @@
 <div
   class='ui-form-field'
-  {{did-update this.resetEditingValue @isEditing}}
-  {{did-update this.resetEditingValue @value}}
+  ...attributes
+  {{did-update this.resetEditingValue @value @isEditing}}
 >
   {{! If isEditing is true, render an input/checkbox/other editable UI }}
   {{#if @isEditing}}
@@ -26,6 +26,7 @@
         value={{this.currentValue}}
         placeholder={{@placeholder}}
         {{on 'input' this.handleInput}}
+        {{on 'keydown' this.handleKeydown}}
       ></textarea>
     {{else if (is-equal @type 'button')}}
       <button
@@ -46,6 +47,7 @@
         value={{this.currentValue}}
         placeholder={{@placeholder}}
         {{on 'input' this.handleInput}}
+        {{on 'keydown' this.handleKeydown}}
       />
     {{/if}}
     {{! If not editing, display the value }}

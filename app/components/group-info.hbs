@@ -1,7 +1,11 @@
 <li class='groups-item'>
   <div class='header'>
     {{#if this.isUpdating}}
-      <Input class='groups-item-input' @value={{@group.name}} />
+      <Input
+        class='groups-item-input'
+        @value={{this.draftName}}
+        {{on 'input' this.updateDraftName}}
+      />
     {{else}}
       <span
         {{on 'click' this.toggleDisplayStudents}}
