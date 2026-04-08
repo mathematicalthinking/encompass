@@ -9,13 +9,11 @@ export default class SectionsSectionRoute extends AuthenticatedRoute {
     const section = await this.store.findRecord('section', params.section_id);
     return hash({
       section,
-      groups: this.store
-        .query('group', {
-          section: params.section_id,
-        })
-        .slice(),
+      groups: this.store.query('group', {
+        section: params.section_id,
+      }),
       students: section.students?.slice() ?? [],
-      cachedProblems: this.store.findAll('problem').slice(),
+      cachedProblems: this.store.findAll('problem'),
     });
   }
 }
