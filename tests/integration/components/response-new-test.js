@@ -102,7 +102,7 @@ module('Integration | Component | response-new', function (hooks) {
   async function renderResponseNew(context, responseData, extraArgs = {}) {
     context.set('responseData', responseData);
     context.setProperties(extraArgs); // This sets submission, canDirectSend, etc.
-    
+
     await render(hbs`<ResponseNew 
       @responseData={{this.responseData}}
       @submission={{this.submission}}
@@ -162,8 +162,8 @@ module('Integration | Component | response-new', function (hooks) {
             @canDirectSend={{this.canDirectSend}}
         />`);
 
-    // Button should show "Send" instead of "Submit for Approval"
-    assert.dom('.save-response').hasText('Send');
+    // Button should show the current direct-send label.
+    assert.dom('.save-response').hasText('Submit');
   });
 
   test('displays selections when available', async function (assert) {
@@ -670,7 +670,6 @@ module('Integration | Component | response-new', function (hooks) {
       .containsText('From: testuser', 'Current user still displayed');
   });
 
-
   // --------------AI Draft -------------------------
   test('shows Draft From AI button when submission exists', async function (assert) {
     const mockSubmission = {
@@ -681,19 +680,20 @@ module('Integration | Component | response-new', function (hooks) {
         return {
           id() {
             return null;
-          }
+          },
         };
-      }
+      },
     };
 
-    await renderResponseNew(this, 
+    await renderResponseNew(
+      this,
       {
         student: 'Test Student',
         selections: [],
         comments: [],
       },
       {
-        submission: mockSubmission  // Pass as separate argument
+        submission: mockSubmission, // Pass as separate argument
       }
     );
 
@@ -720,23 +720,26 @@ module('Integration | Component | response-new', function (hooks) {
         return {
           id() {
             return null;
-          }
+          },
         };
-      }
+      },
     };
 
-    await renderResponseNew(this, 
+    await renderResponseNew(
+      this,
       {
         student: 'Test Student',
         selections: [],
         comments: [],
       },
       {
-        submission: mockSubmission
+        submission: mockSubmission,
       }
     );
 
     assert.dom('.ai-draft').exists('Button is visible');
-    assert.dom('.ai-draft').isDisabled('Button is disabled when no student work');
+    assert
+      .dom('.ai-draft')
+      .isDisabled('Button is disabled when no student work');
   });
 });

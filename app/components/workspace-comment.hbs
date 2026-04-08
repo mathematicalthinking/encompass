@@ -14,13 +14,17 @@
         <span class='comment comment-text'>{{this.commentText}}</span>
       {{/if}}
     {{else}}
-      <LinkTo
-        @route='workspace.submissions.submission.selections.selection'
-        @models={{this.commentSelectionModelsWithWorkspace}}
-        class='comment-text'
-      >
-        {{this.commentText}}
-      </LinkTo>
+      {{#if this.commentSelectionModelsWithWorkspace}}
+        <LinkTo
+          @route='workspace.submissions.submission.selections.selection'
+          @models={{this.commentSelectionModelsWithWorkspace}}
+          class='comment-text'
+        >
+          {{this.commentText}}
+        </LinkTo>
+      {{else}}
+        <span class='comment comment-text'>{{this.commentText}}</span>
+      {{/if}}
     {{/if}}
   </p>
   <p class='meta'>
