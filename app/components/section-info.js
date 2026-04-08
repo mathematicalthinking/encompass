@@ -10,6 +10,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @service('utility-methods') utils;
   @service router;
   @service store;
+  @service currentUser;
   @tracked removeTeacherError = null;
   @tracked isEditingStudents = false;
   @tracked isEditingTeachers = false;
@@ -82,30 +83,30 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   get canEdit() {
     // can only edit if created section, admin, pdadmin, or teacher
 
-    if (this.args.currentUser.isStudent) {
+    if (this.currentUser.isStudent) {
       return false;
     }
-    if (this.args.currentUser.isAdmin) {
+    if (this.currentUser.isAdmin) {
       return true;
     }
     let creatorId = this.utils.getBelongsToId(this.args.section, 'createdBy');
 
-    if (creatorId === this.args.currentUser.id) {
+    if (creatorId === this.currentUser.id) {
       return true;
     }
 
     let teacherIds = this.args.section.hasMany('teachers').ids();
-    if (teacherIds.includes(this.args.currentUser.id)) {
+    if (teacherIds.includes(this.currentUser.id)) {
       return true;
     }
 
-    if (this.args.currentUser.isPdAdmin) {
+    if (this.currentUser.isPdAdmin) {
       let sectionOrgId = this.utils.getBelongsToId(
         this.args.section,
         'organization'
       );
       let userOrgId = this.utils.getBelongsToId(
-        this.args.currentUser,
+        this.currentUser.user,
         'organization'
       );
       return sectionOrgId === userOrgId;
@@ -183,9 +184,9 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     const savedGroup = this.store.createRecord('group');
     savedGroup.section = this.args.section;
-    savedGroup.createdBy = this.args.currentUser;
+    savedGroup.createdBy = this.currentUser.user;
     savedGroup.createDate = new Date();
-    savedGroup.lastModifiedBy = this.args.currentUser;
+    savedGroup.lastModifiedBy = this.currentUser.user;
     savedGroup.lastModifiedDate = new Date();
     savedGroup.name = this.newGroupName;
     savedGroup.students = this.newGroupStudents;
@@ -358,10 +359,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       .catch((err) => {
         this.handleErrors(err, 'updateSectionErrors', section);
       });
-  }
-
-  @action toAssignmentInfo(assignment) {
-    this.router.transitionTo('assignments.assignment', assignment.id);
   }
 
   @action updateShowAssignment() {

@@ -1,2 +1,7 @@
-{{page-title this.model.section.name}}
-<SectionInfo @section={{this.model.section}} @cachedProblems={{this.model.cachedProblems}} @students={{this.model.students}} @currentUser={{this.model.currentUser}} @groups={{this.model.groups}} />
+{{page-title @model.section.name}}
+<SectionInfo 
+    @section={{@model.section}} 
+    @cachedProblems={{@model.cachedProblems}} 
+    @students={{@model.students}} 
+    @groups={{@model.groups}} 
+/>

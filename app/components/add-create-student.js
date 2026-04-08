@@ -18,6 +18,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   @tracked incorrectUsername = false;
   @service('sweet-alert') alert;
   @service store;
+  @service currentUser;
 
   clearCreateInputs() {
     let fields = ['username', 'firstName', 'lastName', 'password'];
@@ -50,14 +51,14 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
     return filtered;
   }
 
-  createStudent(info) {
+  async createStudent(info) {
     // info is object with username, password, name?
     let { username, password, firstName, lastName } = info;
 
     let organization = this.organization;
     let sectionId = this.args.section.id;
     let sectionRole = 'student';
-    let currentUser = this.args.currentUser;
+    let currentUser = this.currentUser.user;
 
     let createUserData = {
       firstName,
@@ -73,12 +74,9 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       isFromSectionPage: true,
     };
 
-    if (organization) {
-      createUserData.organization = organization.id;
-    } else {
-      createUserData.organization =
-        this.args.currentUser.get('organization.id');
-    }
+    createUserData.organization = organization
+      ? organization.id
+      : await currentUser.organization.id;
 
     return $.post({
       url: '/auth/signup',

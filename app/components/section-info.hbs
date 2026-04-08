@@ -213,7 +213,6 @@
       <div class='update-students'>
         {{#if this.isEditingStudents}}
           <AddCreateStudent
-            @currentUser={{@currentUser}}
             @section={{this.currentSection}}
             @students={{this.studentList}}
             @sectionPassword={{@section.sectionPassword}}
@@ -319,14 +318,12 @@
   {{/each}}
   {{#if this.showAssignment}}
     <AssignmentNew
-      @currentUser={{@currentUser}}
       @cachedProblems={{this.cachedProblems}}
       @cancel={{action (mut this.showAssignment) null}}
       @fromSectionInfo={{true}}
       @problems={{this.problemList}}
       @selectedSection={{@section}}
       @sections={{this.sectionList}}
-      @store={{this.store}}
     />
   {{/if}}
 </div>
