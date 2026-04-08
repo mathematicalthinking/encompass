@@ -1,28 +1,26 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { later } from '@ember/runloop';
 import { service } from '@ember/service';
 import validate from 'validate.js';
-import $ from 'jquery';
 
-export default class SectionNewComponent extends ErrorHandlingComponent {
+export default class SectionNewComponent extends Component {
   @service store;
   @service router;
   @service('sweet-alert') alert;
+  @service errorHandling;
   @service currentUser;
-  @tracked createRecordErrors = [];
-  @tracked leader = null;
-  @tracked teachers = [];
-  @tracked selectedOrganization = null;
-  @tracked missingFieldsError = false;
-  @tracked userOrg = null;
+
   @tracked newSectionName = '';
   @tracked teacher = null;
-  @tracked teacherFormErrors = null;
   @tracked organization = null;
-  @tracked organizationFormErrors = null;
-  @tracked nameFormErrors = null;
+  @tracked invalidTeacherUsername = false;
+
+  tooltips = {
+    name: 'Please give your class a name',
+    leader: 'The main owner of this class',
+    organization: "The organization of this class is the same as the leader's",
+  };
 
   constraints = {
     name: {
@@ -35,20 +33,15 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
       presence: { allowEmpty: false },
     },
   };
-  tooltips = {
-    name: 'Please give your class a name',
-    leader: 'The main owner of this class',
-    organization: "The organization of this class is the same as the leader's",
-  };
 
-  //Non admin User creating section
-  //set user as teacher
   constructor() {
     super(...arguments);
+    // Non-admin user creating section: set user as teacher
     if (this.currentUser.isTeacher) {
       this.teacher = this.currentUser.user;
       this.organization = this.args.organization;
     }
+    // PD Admin creating section
     if (this.currentUser.isPdAdmin) {
       this.organization = this.args.organization;
     }
@@ -58,52 +51,72 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
     return this.teacher && !this.invalidTeacherUsername;
   }
 
+  get createRecordErrors() {
+    return this.errorHandling.getErrors('createRecordErrors');
+  }
+
+  get nameFormErrors() {
+    return this.errorHandling.getErrors('nameFormErrors');
+  }
+
+  get teacherFormErrors() {
+    return this.errorHandling.getErrors('teacherFormErrors');
+  }
+
+  get organizationFormErrors() {
+    return this.errorHandling.getErrors('organizationFormErrors');
+  }
+
   @action async createSection() {
     let newSectionName = this.newSectionName;
     let teacher = this.teacher;
-    if (typeof teacher === 'string') {
-      teacher = await this.args.users.findBy('username', teacher);
-    }
-    let organization =
-      teacher && teacher.get('organization')
-        ? teacher.get('organization')
-        : this.args.organization;
 
-    let constraints = this.constraints;
+    if (typeof teacher === 'string') {
+      const foundTeacher = this.args.users.find(
+        (user) => user.username === teacher
+      );
+      if (!foundTeacher) {
+        this.invalidTeacherUsername = true;
+        return;
+      }
+      teacher = foundTeacher;
+    }
+
+    let organization =
+      teacher && teacher.organization
+        ? teacher.organization
+        : this.organization ?? this.args.organization;
+
     let values = {
       name: newSectionName,
       teacher: teacher,
       organization,
     };
-    let validation = validate(values, constraints);
+
+    let validation = validate(values, this.constraints);
     if (validation) {
-      // errors
+      // Set error messages via error-handling service
       for (let key of Object.keys(validation)) {
         let errorProp = `${key}FormErrors`;
-        this[errorProp] = validation[key];
-        $('#create-class').addClass('animated shake slow');
+        this.errorHandling.errors[errorProp] = validation[key];
       }
       return;
     }
 
-    if (typeof teacher === 'string') {
-      let users = this.args.users;
-      let user = users.findBy('username', teacher);
-      if (!user) {
-        this.invalidTeacherUsername = true;
-        return;
-      }
-      teacher = user;
-    }
+    // Clear any previous form errors
+    this.errorHandling.removeMessages(
+      'nameFormErrors',
+      'teacherFormErrors',
+      'organizationFormErrors'
+    );
 
-    var sectionData = this.store.createRecord('section', values);
-
-    sectionData.get('teachers').addObject(teacher);
+    const sectionData = this.store.createRecord('section', values);
+    sectionData.teachers.addObject(teacher);
 
     sectionData
       .save()
       .then((section) => {
-        let name = section.get('name');
+        const name = section.name;
         this.alert.showToast(
           'success',
           `${name} created`,
@@ -115,35 +128,25 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
         this.router.transitionTo('sections.section', section.id);
       })
       .catch((err) => {
-        this.handleErrors(err, 'createRecordErrors', sectionData);
+        this.errorHandling.handleErrors(err, 'createRecordErrors', sectionData);
       });
   }
 
-  @action closeError(error) {
-    $('.error-box').addClass('fadeOutRight');
-    later(() => {
-      $('.error-box').remove();
-    }, 500);
-  }
-
-  @action checkError() {
-    if (this.missingFieldsError) {
-      this.missingFieldsError = false;
-    }
-    const errorsList = [
-      'teacherFormErrors',
-      'nameFormErrors',
-      'organizationFormErrors',
-    ];
-    errorsList.forEach((err) => (this[err] = null));
-  }
-
-  @action cancel() {
-    this.router.transitionTo('sections');
+  @action
+  handleNameChange(value) {
+    this.newSectionName = value;
+    this.errorHandling.removeMessages('nameFormErrors');
   }
 
   @action
-  setTeacher(selectedTeacher) {
+  handleTeacherSelect(selectedTeacher) {
     this.teacher = selectedTeacher;
+    this.invalidTeacherUsername = false;
+    this.errorHandling.removeMessages('teacherFormErrors');
+  }
+
+  @action
+  cancel() {
+    this.router.transitionTo('sections');
   }
 }
