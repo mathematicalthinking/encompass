@@ -6,13 +6,17 @@ import Service from '@ember/service';
 import EmberObject from '@ember/object';
 import { A } from '@ember/array';
 import Component from '@glimmer/component';
-import $ from 'jquery';
 
 module('Integration | Component | add-create-student', function (hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function () {
-    this.originalJQueryPost = $.post;
+    this.originalFetch = window.fetch;
+    window.fetch = () =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ _id: 'student-new' }),
+      });
 
     // Mock sweet-alert service
     const alertService = class extends Service {
@@ -131,12 +135,10 @@ module('Integration | Component | add-create-student', function (hooks) {
     this.set('students', this.section.students);
 
     this.set('sectionPassword', 'classpass123');
-
-    $.post = () => Promise.resolve({ _id: 'student-new' });
   });
 
   hooks.afterEach(function () {
-    $.post = this.originalJQueryPost;
+    window.fetch = this.originalFetch;
   });
 
   test('it renders with correct structure', async function (assert) {
@@ -442,9 +444,13 @@ module('Integration | Component | add-create-student', function (hooks) {
   });
 
   test('it shows username unavailable when signup reports existing username', async function (assert) {
-    $.post = () =>
+    window.fetch = () =>
       Promise.resolve({
-        message: 'There already exists a user with that username',
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            message: 'There already exists a user with that username',
+          }),
       });
 
     await render(hbs`

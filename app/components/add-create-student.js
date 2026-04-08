@@ -1,9 +1,8 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
-import $ from 'jquery';
 
 export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   @tracked isUsingDefaultPassword = false;
@@ -74,67 +73,69 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       isFromSectionPage: true,
     };
 
-    createUserData.organization = organization
-      ? organization.id
-      : await currentUser.organization.id;
+    const org = organization || (await currentUser.organization);
+    createUserData.organization = org?.id;
 
-    return $.post({
-      url: '/auth/signup',
-      data: createUserData,
-    })
-      .then((res) => {
-        this.removeMessages('createUserErrors');
-        if (res.message) {
-          if (
-            res.message === 'There already exists a user with that username'
-          ) {
-            this.usernameAlreadyExists = true;
-          } else {
-            this.createUserErrors = [res.message];
-          }
-        } else if (res.user && res.canAddExistingUser === true) {
-          this.canAddExistingUser = true;
-          this.existingUser = res.user;
-        } else {
-          let userId = res._id;
-          let section = this.args.section;
-          let students = section.get('students');
-          return this.store
-            .findRecord('user', userId)
-            .then((user) => {
-              students.pushObject(user); //add student to students aray
-              section
-                .save()
-                .then(() => {
-                  this.clearCreateInputs();
-                  this.alert.showToast(
-                    'success',
-                    'Student Created',
-                    'bottom-end',
-                    3000,
-                    false,
-                    null
-                  );
-                })
-                .catch((err) => {
-                  this.handleErrors(err, 'updateSectionErrors', section);
-                });
-            })
-            .catch((err) => {
-              this.handleErrors(err, 'findUserErrors');
-            });
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'createUserErrors', createUserData);
+    try {
+      const response = await fetch('/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(createUserData),
+        credentials: 'same-origin',
       });
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+      const res = await response.json();
+      this.removeMessages('createUserErrors');
+      if (res.message) {
+        if (res.message === 'There already exists a user with that username') {
+          this.usernameAlreadyExists = true;
+        } else {
+          this.createUserErrors = [res.message];
+        }
+      } else if (res.user && res.canAddExistingUser === true) {
+        this.canAddExistingUser = true;
+        this.existingUser = res.user;
+      } else {
+        const userId = res._id;
+        const section = this.args.section;
+        const students = section.get('students');
+        try {
+          const user = await this.store.findRecord('user', userId);
+          students.pushObject(user);
+          try {
+            await section.save();
+            this.clearCreateInputs();
+            this.alert.showToast(
+              'success',
+              'Student Created',
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+          } catch (err) {
+            this.handleErrors(err, 'updateSectionErrors', section);
+          }
+        } catch (err) {
+          this.handleErrors(err, 'findUserErrors');
+        }
+      }
+    } catch (err) {
+      this.handleErrors(err, 'createUserErrors');
+    }
   }
 
   clearSelectizeInput(id) {
     if (!id) {
       return;
     }
-    let selectize = $(`#${id}`)[0].selectize;
+    const el = document.getElementById(id);
+    if (!el) {
+      return;
+    }
+    const selectize = el.selectize;
     if (!selectize) {
       return;
     }
