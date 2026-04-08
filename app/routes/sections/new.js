@@ -17,12 +17,12 @@ export default class SectionsNewRoute extends AuthenticatedRoute {
     const sections = this.store.findAll('section');
     const users = await this.store.query('user', {});
     const addableTeachers = users.rejectBy('accountType', 'S');
+    const organization = await this.currentUser.user.organization;
     return hash({
-      // @TODO: pass along organization of current user bc used in component
+      organization,
       users,
       addableTeachers,
       organizations,
-      user: this.currentUser.user, // @TODO: remove this and use service in component
       sections,
     });
   }

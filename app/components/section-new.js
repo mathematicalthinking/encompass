@@ -10,6 +10,7 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   @service store;
   @service router;
   @service('sweet-alert') alert;
+  @service currentUser;
   @tracked createRecordErrors = [];
   @tracked leader = null;
   @tracked teachers = [];
@@ -44,12 +45,12 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
   //set user as teacher
   constructor() {
     super(...arguments);
-    if (this.args.user.isTeacher) {
-      this.teacher = this.args.user;
-      this.organization = this.teacher.get('organization');
+    if (this.currentUser.isTeacher) {
+      this.teacher = this.currentUser.user;
+      this.organization = this.args.organization;
     }
-    if (this.args.user.isPdAdmin) {
-      this.organization = this.args.user.get('organization');
+    if (this.currentUser.isPdAdmin) {
+      this.organization = this.args.organization;
     }
   }
 
@@ -66,13 +67,13 @@ export default class SectionNewComponent extends ErrorHandlingComponent {
     let organization =
       teacher && teacher.get('organization')
         ? teacher.get('organization')
-        : this.args.user.get('organization');
+        : this.args.organization;
 
     let constraints = this.constraints;
     let values = {
       name: newSectionName,
       teacher: teacher,
-      organization: organization,
+      organization,
     };
     let validation = validate(values, constraints);
     if (validation) {
