@@ -11,7 +11,7 @@
       @inputId='select-add-student'
       @maxItems={{1}}
       @initialOptions={{this.initialStudentOptions}}
-      @onItemAdd={{action 'updateStudents'}}
+      @onItemAdd={{this.updateStudents}}
       @model='user'
       @isAsync={{true}}
       @labelField='username'
@@ -35,19 +35,21 @@
         </div>
         {{#if this.isUsingDefaultPassword}}
           <div class='create-student-input'>
-            <label for='defaulPassword'>
+            <label for='defaultPassword'>
               Class Password
               <span class='required-star'>*</span>
               {{#if this.isEditingSectionPassword}}
                 <i
                   title='Done'
-                  {{action 'updateSectionPassword'}}
+                  role='button'
+                  {{on 'click' this.updateSectionPassword}}
                   class='far fa-check-square'
                 ></i>
               {{else}}
                 <i
                   title='Edit'
-                  {{action (mut this.isEditingSectionPassword) true}}
+                  role='button'
+                  {{on 'click' this.startEditingSectionPassword}}
                   class='far fa-edit'
                 ></i>
               {{/if}}
@@ -63,7 +65,7 @@
               <button
                 id='show-password-btn'
                 type='button'
-                {{action 'showPassword'}}
+                {{on 'click' this.togglePassword}}
               >
                 {{#if this.showingPassword}}
                   <i class='fas fa-eye-slash'></i>
@@ -77,8 +79,8 @@
                   <p class='section-info'>{{@sectionPassword}}
                     <button
                       id='show-password-btn'
-                      type='submit'
-                      {{action (mut this.isShowingClassPassword) false}}
+                      type='button'
+                      {{on 'click' this.hideClassPassword}}
                     >
                       <i class='fas fa-eye-slash'></i>
                     </button>
@@ -92,8 +94,8 @@
                   />
                   <button
                     id='show-password-btn'
-                    type='submit'
-                    {{action (mut this.isShowingClassPassword) true}}
+                    type='button'
+                    {{on 'click' this.showClassPassword}}
                   ><i class='fas fa-eye'></i></button>
                 {{/if}}
               {{else}}
@@ -140,7 +142,7 @@
 
           {{#unless this.isUsingDefaultPassword}}
             <div class='create-student-input'>
-              <label for='addpassword'>
+              <label for='password'>
                 Password
                 <span class='required-star'>*</span>
               </label>
@@ -153,8 +155,8 @@
               />
               <button
                 id='show-password-btn'
-                type='submit'
-                {{action 'showPassword'}}
+                type='button'
+                {{on 'click' this.togglePassword}}
               >
                 {{#if this.showingPassword}}
                   <i class='fas fa-eye-slash'></i>
@@ -167,22 +169,20 @@
           <div class='submit'>
             <button
               class='action_button'
-              type='submit'
-              {{action 'validateCreateStudent'}}
-            >Create and Add </button>
+              type='button'
+              {{on 'click' this.validateCreateStudent}}
+            >Create and Add</button>
           </div>
         </div>
       </fieldset>
       {{#if this.usernameAlreadyExists}}
-        <p class='error-message'> Username is unavailable.</p>
+        <p class='error-message'>Username is unavailable.</p>
       {{/if}}
       {{#if this.userAlreadyInSection}}
-        <p class='error-message'> User already registered in this section.</p>
-        {{!-- <button class="action_button" {{action 'exitAddExistingUsername' }}> Close </button> --}}
+        <p class='error-message'>User already registered in this section.</p>
       {{/if}}
       {{#if this.isMissingCredentials}}
-        <p class='error-message'> Please fill in all required fields</p>
-        {{!-- <button class="action_button" {{action 'exitAddExistingUsername' }}> Close </button> --}}
+        <p class='error-message'>Please fill in all required fields</p>
       {{/if}}
       {{#if this.incorrectUsername}}
         <p class='error-message'>Username must be all lowercase, at least 3
@@ -196,14 +196,14 @@
           to this section?
           <button
             class='action_button'
-            type='submit'
-            {{action 'addExistingStudent'}}
-          > yes </button>
+            type='button'
+            {{on 'click' this.addExistingStudent}}
+          >yes</button>
           <button
             class='action_button'
-            type='submit'
-            {{action 'exitAddExistingUsername'}}
-          > no </button>
+            type='button'
+            {{on 'click' this.exitAddExistingUsername}}
+          >no</button>
         </p>
       {{/if}}
       {{#each this.createUserErrors as |error|}}
