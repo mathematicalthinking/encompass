@@ -29,7 +29,4 @@ export default class SectionsSectionRoute extends AuthenticatedRoute {
   @action toAssignmentInfo(assignment) {
     this.router.transitionTo('assignments.assignment', assignment);
   }
-  @action refreshModel() {
-    this.refresh();
-  }
 }

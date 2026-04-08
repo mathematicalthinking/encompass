@@ -363,7 +363,6 @@ export default class UserInfoComponent extends Component {
     this.isResettingPassword = false;
     this.resetPasswordSuccess = true;
     this.errorHandling.removeMessages('findRecordErrors');
-    this.args.refresh();
   }
 
   @action
