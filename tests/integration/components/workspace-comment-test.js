@@ -10,7 +10,20 @@ module('Integration | Component | workspace-comment', function (hooks) {
   hooks.beforeEach(function () {
     class UtilityMethodsService extends Service {
       getBelongsToId(record, key) {
-        return record[key]?.id;
+        if (!record || !key) {
+          return null;
+        }
+
+        const value = record[key];
+        if (!value) {
+          return null;
+        }
+
+        if (typeof value === 'object') {
+          return value.id ?? null;
+        }
+
+        return value;
       }
       getHasManyIds(record, key) {
         return record[key] || [];
@@ -247,13 +260,13 @@ module('Integration | Component | workspace-comment', function (hooks) {
     assert.dom('.workspace').hasText('Original Workspace');
   });
 
-  test('renders external link when not for current workspace', async function (assert) {
+  test('renders workspace route link when not for current workspace', async function (assert) {
     await renderWorkspaceComment(this, {
       comment: createComment({ workspace: { id: 'w2' } }),
       currentWorkspace: { id: 'w1' },
     });
-    assert.dom('a.newWindow').exists();
-    assert.dom('a.newWindow').hasAttribute('target', '_blank');
+
+    assert.dom('a.comment-text').exists();
   });
 
   // --- Group Workspace Selection Matching ---

@@ -14,6 +14,7 @@
       <td>Username</td>
       <td>
         <Ui::FormField
+          @id='user-username'
           @isEditing={{this.isEditing}}
           @type='text'
           @value={{@user.username}}
@@ -27,6 +28,7 @@
       <td>First Name</td>
       <td>
         <Ui::FormField
+          @id='user-first-name'
           @isEditing={{this.isEditing}}
           @type='text'
           @value={{@user.firstName}}
@@ -39,6 +41,7 @@
       <td>Last Name</td>
       <td>
         <Ui::FormField
+          @id='user-last-name'
           @isEditing={{this.isEditing}}
           @type='text'
           @value={{@user.lastName}}
@@ -57,6 +60,7 @@
       <td>Email</td>
       <td>
         <Ui::FormField
+          @id='user-email'
           @isEditing={{this.isEditing}}
           @type='text'
           @value={{@user.email}}
@@ -77,6 +81,7 @@
             Yes
           {{else}}
             <Ui::FormField
+              @id='user-email-auth'
               @isEditing={{this.isEditing}}
               @type='checkbox'
               @value={{@user.isEmailConfirmed}}
@@ -176,6 +181,7 @@
       <td>Location</td>
       <td>
         <Ui::FormField
+          @id='user-location'
           @isEditing={{this.isEditing}}
           @type='text'
           @value={{@user.location}}
@@ -188,6 +194,7 @@
       <td>Seen Tour</td>
       <td>
         <Ui::FormField
+          @id='user-seen-tour'
           @isEditing={{this.isEditing}}
           @type='button'
           @value={{this.tourDate}}
@@ -242,6 +249,7 @@
       <td>
         {{#if this.canEdit}}
           <Ui::FormField
+            @id='user-isAuth'
             @isEditing={{this.isEditing}}
             @type='checkbox'
             @value={{yes-no @user.isAuthorized}}

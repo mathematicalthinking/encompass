@@ -45,12 +45,11 @@
   .section-new-input {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 
     label {
-      flex: 1 0 100px;
-      width: 20%;
-      max-width: 200px;
+      flex: 0 0 200px;
+      white-space: nowrap;
       padding: 12px 20px;
       color: black;
       font-size: 1em;
@@ -61,8 +60,21 @@
       max-width: 400px;
     }
 
+    .ui-form-field {
+      flex: 1 0 200px;
+      max-width: 400px;
+    }
+
+    .section-new-info {
+      flex: 1 0 200px;
+      max-width: 400px;
+      padding: 12px 20px;
+      margin: 8px 0;
+      font-size: 1em;
+    }
+
     .error-message {
-      width: 70%;
+      width: 100%;
     }
 
   }

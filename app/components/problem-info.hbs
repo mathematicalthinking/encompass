@@ -42,6 +42,7 @@
       <div class='info-main'>
         <div class='heading'>
           <Ui::FormField
+            @id='problem-title'
             @isEditing={{@isEditing}}
             @type='text'
             @value={{this.problem.title}}
@@ -79,6 +80,7 @@
           <p class='info-content-label'>Author</p>
           <div class='info-content-block author'>
             <Ui::FormField
+              @id='problem-author'
               @isEditing={{@isEditing}}
               @type='text'
               @value={{this.problem.author}}
@@ -248,6 +250,7 @@
           <div class='info-content-block additional'>
             <div class='input-container'>
               <Ui::FormField
+                @id='problem-additional-info'
                 @isEditing={{@isEditing}}
                 @type='textarea'
                 @value={{this.problem.additionalInfo}}
@@ -340,6 +343,7 @@
           <div class='info-content-block sharing'>
             <div class='input-container'>
               <Ui::FormField
+                @id='problem-sharing-auth'
                 @isEditing={{@isEditing}}
                 @type='text'
                 @value={{this.problem.sharingAuth}}

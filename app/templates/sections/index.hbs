@@ -1,6 +1,6 @@
 {{page-title "Classes"}}
 <div id="section-home" class="home-view">
-  {{#if this.model.currentUser.isStudent}}
+  {{#if @model.isStudent}}
     <h1>Welcome to the Classes Page</h1>
     <p>Click on a class name to display information about your classes.</p>
   {{else}}

@@ -1,2 +1,5 @@
-<SectionList @store={{this.store}} @sections={{this.model.sections}} @currentUser={{this.model.currentUser}} />
+<SectionList @sections={{@model.sections}}/>
 
+<div class='list-outlet'>
+  {{outlet}}
+</div>

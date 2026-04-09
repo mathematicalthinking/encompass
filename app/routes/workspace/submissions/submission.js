@@ -187,7 +187,7 @@ export default class WorkspaceSubmissionRoute extends Route {
     tagging
       .save()
       .then(() => {
-        this.alert.showToast(
+        this.sweetAlert.showToast(
           'success',
           'Selection Filed',
           'bottom-end',

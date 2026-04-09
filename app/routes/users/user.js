@@ -7,13 +7,20 @@ export default class UsersUserRoute extends Route {
   @service currentUser;
   async model(params) {
     const organizations = this.store.findAll('organization');
-    const user = await this.store.findRecord('user', params.user_id);
+    const user = await this.store.findRecord('user', params.user_id, {
+      reload: true,
+    });
+    const sectionIds = (user.sections ?? [])
+      .map((section) => section.sectionId)
+      .filter(Boolean);
+    const userSections = sectionIds.length
+      ? this.store.query('section', { ids: sectionIds })
+      : [];
+
     return hash({
       currentUser: this.currentUser.user, // @TODO: remove this and use service in component
       user,
-      userSections: this.store.query('section', {
-        ids: user.sections.map((section) => section.sectionId),
-      }),
+      userSections,
       organizations,
     });
   }

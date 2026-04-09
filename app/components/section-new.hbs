@@ -5,7 +5,7 @@
   </header>
 
   <div class='info'>
-    {{#if @user.isAdmin}}
+    {{#if this.currentUser.isAdmin}}
       <p>In order to create a new class, we need a name for the class, a primary
         teacher, and the affiliated organization. The organization will
         automatically be set as the selected teacher's organization. If the
@@ -30,13 +30,13 @@
             </span>
             <span class='required-star'>*</span>
           </label>
-          <Input
-            id='newSectionName'
-            required='true'
+          <Ui::FormField
+            @id='newSectionName'
+            @isEditing={{true}}
             @type='text'
             @value={{this.newSectionName}}
-            placeholder='Enter class name'
-            {{on 'input' this.checkError}}
+            @placeholder='Enter class name'
+            @onChange={{this.handleNameChange}}
           />
           {{#each this.nameFormErrors as |error|}}
             <p class='error-message'>{{error}}</p>
@@ -53,14 +53,14 @@
             </span>
             <span class='required-star'>*</span>
           </label>
-          {{#if @user.isTeacher}}
+          {{#if this.currentUser.isTeacher}}
             <p class='section-new-info teacher'>{{this.teacher.username}}</p>
           {{else}}
             <Ui::TwitterTypeahead
               @placeholder="Teacher's username"
               @dataList={{@addableTeachers}}
               @optionLabelPath='username'
-              @onSelect={{this.setTeacher}}
+              @onSelect={{this.handleTeacherSelect}}
               @minLength={{2}}
               @setSelectedValueOnChange={{true}}
             />
@@ -76,7 +76,7 @@
               data-tooltip={{this.tooltips.organization}}
             >Organization </span>
           </label>
-          {{#if @user.isAdmin}}
+          {{#if this.currentUser.isAdmin}}
             {{#if this.validTeacher}}
               {{#if this.teacher.organization.name}}
                 <p
@@ -85,13 +85,13 @@
               {{else}}
                 <p class='section-new-info'>{{this.teacher.username}}
                   does not belong to an organization. Class will be created with
-                  your organization ({{@user.organization.name}}).</p>
+                  your organization ({{@organization.name}}).</p>
               {{/if}}
             {{else}}
               <p class='section-new-info'>Please select a teacher first.</p>
             {{/if}}
           {{else}}
-            <p class='section-new-info'>{{@user.organization.name}}</p>
+            <p class='section-new-info'>{{@organization.name}}</p>
           {{/if}}
 
         </div>
@@ -113,12 +113,12 @@
       class='action_button'
       id='create-class'
       type='button'
-      {{action 'createSection'}}
+      {{on 'click' this.createSection}}
     >Create Class</button>
     <button
       class='action_button cancel-button'
       type='button'
-      {{action 'cancel'}}
+      {{on 'click' this.cancel}}
     >
       Cancel
     </button>
@@ -126,9 +126,6 @@
   </section>
 
   {{#each this.createRecordErrors as |error|}}
-    <p class='error-box animated fadeInLeft'>
-      {{error}}
-      <button class='dismiss' type='button' {{action 'closeError'}}>x</button>
-    </p>
+    <p class='error-message'>{{error}}</p>
   {{/each}}
 </div>

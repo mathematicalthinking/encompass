@@ -33,6 +33,13 @@ export default class UiFormFieldComponent extends Component {
   }
 
   @action
+  handleKeydown(event) {
+    if (this.args.onKeydown) {
+      this.args.onKeydown(event);
+    }
+  }
+
+  @action
   resetEditingValue() {
     this.currentValue = this.args.value;
   }

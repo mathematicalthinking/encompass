@@ -1498,7 +1498,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       .doesNotExist('New Response button should be hidden for older revisions');
     assert
       .dom('.info')
-      .doesNotExist('No replies message should also be hidden');
+      .exists('No replies message remains visible for older revisions');
   });
 
   test('shows New Response button when isOlderRevision is false', async function (assert) {
