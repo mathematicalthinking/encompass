@@ -65,10 +65,27 @@ export default class DraggableSelectionComponent extends Component {
 
   get canDelete() {
     const currentUserId = this.currentUser.id;
-    const creatorId =
+    const creatorId = this.selectionCreatorId;
+    const isAdmin = this.currentUser.isAdmin && !this.currentUser.isStudent;
+    return (
+      currentUserId === creatorId || (isAdmin && this.args.canDeleteSelections)
+    );
+  }
+
+  get selectionCreatorId() {
+    return (
       this.utils.getBelongsToId(this.args.selection, 'createdBy') ||
-      readPath(this.args.selection, 'createdBy.id');
-    return currentUserId === creatorId || this.args.canDeleteSelections;
+      readPath(this.args.selection, 'createdBy.id')
+    );
+  }
+
+  get isOwnSelection() {
+    return this.currentUser.id === this.selectionCreatorId;
+  }
+
+  get isAdminDeletingOthersSelection() {
+    const isAdmin = this.currentUser.isAdmin && !this.currentUser.isStudent;
+    return isAdmin && !this.isOwnSelection;
   }
 
   get isImage() {
@@ -164,18 +181,24 @@ export default class DraggableSelectionComponent extends Component {
 
   @action
   deleteSelection() {
-    this.alert
-      .showModal(
-        'warning',
-        'Are you sure you want to delete this selection?',
-        null,
-        'Yes, delete it'
-      )
-      .then((result) => {
-        if (result.value) {
-          this.args.deleteSelection(this.args.selection);
-        }
-      });
+    if (!this.canDelete) {
+      this.alert.showToast('error', 'You can only delete your own selections.');
+      return;
+    }
+
+    const isAdminDeletingOthers = this.isAdminDeletingOthersSelection;
+    const title = isAdminDeletingOthers
+      ? 'This selection belongs to another user. Delete it anyway?'
+      : 'Are you sure you want to delete this selection?';
+    const confirmText = isAdminDeletingOthers
+      ? 'Yes, delete another user selection'
+      : 'Yes, delete it';
+
+    this.alert.showModal('warning', title, null, confirmText).then((result) => {
+      if (result.value) {
+        this.args.deleteSelection(this.args.selection);
+      }
+    });
   }
 
   @action
