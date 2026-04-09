@@ -29,9 +29,11 @@
       </LinkTo>
     {{/if}}
     {{#unless this.isImage}}
-      <span {{on 'click' (fn this.deleteSelection @selection)}}><i
-          class='fas fa-minus-circle'
-        ></i></span>
+      {{#if this.canDelete}}
+        <span {{on 'click' (fn this.deleteSelection @selection)}}><i
+            class='fas fa-minus-circle'
+          ></i></span>
+      {{/if}}
     {{/unless}}
   </div>
   {{#if this.isImage}}
