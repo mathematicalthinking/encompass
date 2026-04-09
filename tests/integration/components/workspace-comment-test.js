@@ -39,6 +39,8 @@ module('Integration | Component | workspace-comment', function (hooks) {
     class CurrentUserService extends Service {
       id = 'u1';
       user = { id: 'u1', username: 'testuser' };
+      isAdmin = false;
+      isStudent = false;
     }
 
     class CurrentSelectionService extends Service {
@@ -191,6 +193,31 @@ module('Integration | Component | workspace-comment', function (hooks) {
     );
     await renderWorkspaceComment(this);
     assert.dom('.delete_button').doesNotExist();
+  });
+
+  test('hides delete button for non-admin user on another user comment', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ createdBy: { id: 'u2', username: 'other-user' } }),
+    });
+    assert.dom('.delete_button').doesNotExist();
+  });
+
+  test('shows delete button for admin on another user comment', async function (assert) {
+    this.owner.unregister('service:currentUser');
+    this.owner.register(
+      'service:currentUser',
+      class extends Service {
+        id = 'u1';
+        user = { id: 'u1', username: 'admin-user' };
+        isAdmin = true;
+        isStudent = false;
+      }
+    );
+
+    await renderWorkspaceComment(this, {
+      comment: createComment({ createdBy: { id: 'u2', username: 'other-user' } }),
+    });
+    assert.dom('.delete_button').exists();
   });
 
   test('shows reuse button when user can comment', async function (assert) {
