@@ -472,11 +472,33 @@ export default class CommentListComponent extends Component {
 
   @action
   async deleteComment(comment) {
+    if (!comment) {
+      return;
+    }
+
+    const creatorId = this.utils.getBelongsToId(comment, 'createdBy');
+    const isOwnComment = creatorId === this.currentUser.id;
+    const isAdmin = this.currentUser.isAdmin && !this.currentUser.isStudent;
+
+    if (!isOwnComment && !isAdmin) {
+      this.alert.showToast('error', 'You can only delete your own comments.');
+      return;
+    }
+
+    const modalTitle =
+      isAdmin && !isOwnComment
+        ? 'This comment belongs to another user. Delete it anyway?'
+        : 'Are you sure you want to delete this comment?';
+    const confirmText =
+      isAdmin && !isOwnComment
+        ? 'Yes, delete another user comment'
+        : 'Yes, delete it';
+
     const confirmed = await this.alert.showModal(
       'warning',
-      'Are you sure you want to delete this comment?',
+      modalTitle,
       null,
-      'Yes, delete it'
+      confirmText
     );
 
     if (confirmed.value) {

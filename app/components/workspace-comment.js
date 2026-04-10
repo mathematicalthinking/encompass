@@ -31,7 +31,8 @@ export default class WorkspaceCommentComponent extends Component {
   }
 
   get canDelete() {
-    return this._canEditComments(4);
+    const isAdmin = this.currentUser.isAdmin && !this.currentUser.isStudent;
+    return this._canEditComments(4) && (this.isOwnComment || isAdmin);
   }
 
   get permittedToComment() {
@@ -145,6 +146,10 @@ export default class WorkspaceCommentComponent extends Component {
 
   @action
   deleteComment() {
+    if (!this.canDelete) {
+      return;
+    }
+
     this.args.deleteComment?.(this.args.comment);
   }
 

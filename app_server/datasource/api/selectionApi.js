@@ -371,13 +371,57 @@ async function putSelection(req, res, next) {
       return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
 
-    let selection = await models.Selection.findById(req.params.id);
+    let selection = await models.Selection.findById(req.params.id).exec();
 
     if (!selection) {
       logger.info(
         `${user.username} attempted to update nonexistant selection with id ${req.params.id}`
       );
       return utils.sendResponse(res, null);
+    }
+
+    let workspaceId = selection.workspace || req.body.selection?.workspace;
+
+    let popWs = await models.Workspace.findById(workspaceId)
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
+
+    if (!popWs || popWs.isTrashed) {
+      logger.info(
+        `${user.username} attempted to modify selection ${req.params.id} for missing or trashed workspace ${workspaceId}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    const isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
+    const isSelectionCreator = areObjectIdsEqual(user._id, selection.createdBy);
+    const isDeleteAttempt =
+      req.body.selection?.isTrashed === true && selection.isTrashed !== true;
+
+    if (isDeleteAttempt && !isSelectionCreator && !isAdmin) {
+      logger.info(
+        `Permission denied: ${user.username} attempted to delete selection ${req.params.id} created by another user`
+      );
+      return utils.sendError.NotAuthorizedError(
+        'You can only delete your own selections.',
+        res
+      );
+    }
+
+    let canModifySelectionInWs =
+      isSelectionCreator || wsAccess.canModify(user, popWs, 'selections', 3);
+
+    if (!canModifySelectionInWs) {
+      logger.info(
+        `Permission denied to modify selection ${req.params.id} in workspace ${popWs.name} (id: ${popWs._id})`
+      );
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission to modify selections in this workspace`,
+        res
+      );
     }
 
     for (let field in req.body.selection) {

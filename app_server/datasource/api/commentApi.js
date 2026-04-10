@@ -340,9 +340,32 @@ async function putComment(req, res, next) {
       return utils.sendResponse(res, null);
     }
 
+    let comment = await models.Comment.findById(req.params.id).exec();
+
+    if (!comment) {
+      logger.info(
+        `${user.username} attempted to modify missing comment ${req.params.id} for workspace ${workspaceId}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    const isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
+    const isCommentCreator = areObjectIdsEqual(user._id, comment.createdBy);
+    const isDeleteAttempt =
+      req.body.comment?.isTrashed === true && comment.isTrashed !== true;
+
+    if (isDeleteAttempt && !isCommentCreator && !isAdmin) {
+      logger.info(
+        `Permission denied: ${user.username} attempted to delete comment ${req.params.id} created by another user`
+      );
+      return utils.sendError.NotAuthorizedError(
+        'You can only delete your own comments.',
+        res
+      );
+    }
+
     let canModifyCommentInWs =
-      _.isEqual(user._id, req.body.comment.createdBy) ||
-      wsAccess.canModify(user, popWs, 'comments', 3);
+      isCommentCreator || wsAccess.canModify(user, popWs, 'comments', 3);
 
     if (!canModifyCommentInWs) {
       logger.info(
@@ -352,15 +375,6 @@ async function putComment(req, res, next) {
         `You don't have permission to modify comments in this workspace`,
         res
       );
-    }
-
-    let comment = await models.Comment.findById(req.params.id).exec();
-
-    if (!comment) {
-      logger.info(
-        `${user.username} attempted to modify missing comment ${req.params.id} for workspace ${workspaceId}`
-      );
-      return utils.sendResponse(res, null);
     }
 
     for (let field in req.body.comment) {

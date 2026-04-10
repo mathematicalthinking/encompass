@@ -495,6 +495,14 @@ export default class WorkspaceSubmissionController extends Controller {
   @action
   deleteSelection(selection) {
     var controller = this;
+    const creatorId = this.utils.getBelongsToId(selection, 'createdBy');
+    const isOwnSelection = creatorId === this.currentUser.id;
+    const isAdmin = this.currentUser.isAdmin && !this.currentUser.isStudent;
+
+    if (!isOwnSelection && !isAdmin) {
+      this.alert.showToast('error', 'You can only delete your own selections.');
+      return;
+    }
 
     selection.set('isTrashed', true);
 
@@ -516,14 +524,7 @@ export default class WorkspaceSubmissionController extends Controller {
     selection.save().then(function (record) {
       record.deleteRecord(); // Locally delete the object to update UI
 
-      controller.alert.showToast(
-        'success',
-        'Selection Deleted',
-        'bottom-end',
-        3000,
-        false,
-        null
-      );
+      controller.alert.showToast('success', 'Selection Deleted');
 
       controller.transitionToRoute(
         'workspace.submissions.submission',
