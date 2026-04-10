@@ -10,11 +10,24 @@ module('Integration | Component | comment-list', function (hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function () {
-    this.owner.register(
-      'component:workspace-comment',
-      class extends Component {
-        static template = hbs`<li class="ws-comment-comp"></li>`;
+    class WorkspaceCommentStub extends Component {
+      // Non-empty class to satisfy lint rule for Glimmer stub components.
+      get isStubComponent() {
+        return true;
       }
+    }
+    this.owner.register('component:workspace-comment', WorkspaceCommentStub);
+    this.owner.register(
+      'template:components/workspace-comment',
+      hbs`<li class='ws-comment-comp'>
+        <button
+          type='button'
+          class='stub-delete-comment'
+          {{on 'click' (fn @deleteComment @comment)}}
+        >
+          Delete
+        </button>
+      </li>`
     );
     this.owner.register(
       'component:search-bar',
@@ -42,11 +55,17 @@ module('Integration | Component | comment-list', function (hooks) {
     );
 
     class SweetAlertService extends Service {
+      toastCalls = [];
+      modalCalls = [];
+      modalResult = { value: false };
+
       showToast() {
+        this.toastCalls.push([...arguments]);
         return Promise.resolve({ value: false });
       }
       showModal() {
-        return Promise.resolve({ value: false });
+        this.modalCalls.push([...arguments]);
+        return Promise.resolve(this.modalResult);
       }
     }
 
@@ -56,6 +75,9 @@ module('Integration | Component | comment-list', function (hooks) {
       }
       getBelongsToId(record, key) {
         return record[key]?.id;
+      }
+      getHasManyIds(record, key) {
+        return record?.[key] || [];
       }
     }
 
@@ -586,5 +608,137 @@ module('Integration | Component | comment-list', function (hooks) {
     await click('input[name="thisSubmissionOnly"]');
 
     assert.dom('.results-message').includesText('for current workspace');
+  });
+
+  test('blocks non-admin cross-user delete attempt with toast and no modal', async function (assert) {
+    let saveCalled = false;
+    const comment = {
+      id: 'c1',
+      text: 'cross-user',
+      createDate: new Date(),
+      isTrashed: false,
+      submission: { id: 'sub1' },
+      workspace: { id: 'w1' },
+      createdBy: { id: 'u2' },
+      save() {
+        saveCalled = true;
+        return Promise.resolve({});
+      },
+    };
+
+    await renderCommentList(this, {
+      comments: [comment],
+      isParentWorkspace: false,
+    });
+
+    await click('input[name="myCommentsOnly"]');
+    assert.dom('.stub-delete-comment').exists();
+    const alert = this.owner.lookup('service:sweet-alert');
+    await click('.stub-delete-comment');
+    assert.false(saveCalled, 'does not save on unauthorized delete');
+    assert.strictEqual(
+      alert.modalCalls.length,
+      0,
+      'does not open confirmation modal'
+    );
+    assert.strictEqual(alert.toastCalls.length, 1, 'shows one toast');
+    assert.strictEqual(
+      alert.toastCalls[0][1],
+      'You can only delete your own comments.',
+      'shows ownership block message'
+    );
+  });
+
+  test('admin cross-user delete uses warning modal copy', async function (assert) {
+    this.owner.register(
+      'service:currentUser',
+      class extends Service {
+        user = { id: 'u1', username: 'admin' };
+        id = 'u1';
+        isAdmin = true;
+        isStudent = false;
+      }
+    );
+
+    const comment = {
+      id: 'c1',
+      text: 'cross-user',
+      createDate: new Date(),
+      isTrashed: false,
+      submission: { id: 'sub1' },
+      workspace: { id: 'w1' },
+      createdBy: { id: 'u2' },
+      save() {
+        return Promise.resolve({});
+      },
+    };
+
+    await renderCommentList(this, {
+      comments: [comment],
+      isParentWorkspace: false,
+    });
+
+    await click('input[name="myCommentsOnly"]');
+    assert.dom('.stub-delete-comment').exists();
+    const alert = this.owner.lookup('service:sweet-alert');
+    alert.modalResult = { value: false };
+
+    await click('.stub-delete-comment');
+
+    assert.strictEqual(
+      alert.modalCalls.length,
+      1,
+      'opens one confirmation modal'
+    );
+    assert.strictEqual(
+      alert.modalCalls[0][1],
+      'This comment belongs to another user. Delete it anyway?'
+    );
+    assert.strictEqual(
+      alert.modalCalls[0][3],
+      'Yes, delete another user comment'
+    );
+  });
+
+  test('canceling admin cross-user delete does not delete comment', async function (assert) {
+    this.owner.register(
+      'service:currentUser',
+      class extends Service {
+        user = { id: 'u1', username: 'admin' };
+        id = 'u1';
+        isAdmin = true;
+        isStudent = false;
+      }
+    );
+
+    let saveCalled = false;
+    const comment = {
+      id: 'c1',
+      text: 'cross-user',
+      createDate: new Date(),
+      isTrashed: false,
+      submission: { id: 'sub1' },
+      workspace: { id: 'w1' },
+      createdBy: { id: 'u2' },
+      save() {
+        saveCalled = true;
+        return Promise.resolve({});
+      },
+    };
+
+    await renderCommentList(this, {
+      comments: [comment],
+      isParentWorkspace: false,
+    });
+
+    await click('input[name="myCommentsOnly"]');
+    assert.dom('.stub-delete-comment').exists();
+    const alert = this.owner.lookup('service:sweet-alert');
+    alert.modalResult = { value: false };
+
+    await click('.stub-delete-comment');
+
+    assert.false(saveCalled, 'does not save when modal is canceled');
+    assert.false(comment.isTrashed, 'comment remains not trashed');
   });
 });
