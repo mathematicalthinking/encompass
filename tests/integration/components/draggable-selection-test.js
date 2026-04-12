@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, settled } from '@ember/test-helpers';
+import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 
@@ -92,6 +92,23 @@ module('Integration | Component | draggable-selection', function (hooks) {
     />`);
   }
 
+  function registerCurrentUser(owner, overrides = {}) {
+    owner.unregister('service:currentUser');
+    owner.register(
+      'service:currentUser',
+      class extends Service {
+        id = 'u1';
+        isAdmin = false;
+        isStudent = false;
+
+        constructor() {
+          super(...arguments);
+          Object.assign(this, overrides);
+        }
+      }
+    );
+  }
+
   test('shows delete icon for owner even when canDeleteSelections is false', async function (assert) {
     await renderSelection(this, {
       selection: createSelection({
@@ -115,15 +132,11 @@ module('Integration | Component | draggable-selection', function (hooks) {
   });
 
   test('shows delete icon for admin on another user selection when permission allows', async function (assert) {
-    this.owner.unregister('service:currentUser');
-    this.owner.register(
-      'service:currentUser',
-      class extends Service {
-        id = 'u1';
-        isAdmin = true;
-        isStudent = false;
-      }
-    );
+    registerCurrentUser(this.owner, {
+      id: 'u1',
+      isAdmin: true,
+      isStudent: false,
+    });
 
     await renderSelection(this, {
       selection: createSelection({
@@ -135,16 +148,46 @@ module('Integration | Component | draggable-selection', function (hooks) {
     assert.dom('.fa-minus-circle').exists();
   });
 
+  test('hides delete icon for admin on another user selection when canDeleteSelections is false', async function (assert) {
+    registerCurrentUser(this.owner, {
+      id: 'u1',
+      isAdmin: true,
+      isStudent: false,
+    });
+
+    await renderSelection(this, {
+      selection: createSelection({
+        createdBy: { id: 'u2', username: 'other' },
+      }),
+      canDeleteSelections: false,
+    });
+
+    assert.dom('.fa-minus-circle').doesNotExist();
+  });
+
+  test('hides delete icon when admin is acting as student on another user selection', async function (assert) {
+    registerCurrentUser(this.owner, {
+      id: 'u1',
+      isAdmin: true,
+      isStudent: true,
+    });
+
+    await renderSelection(this, {
+      selection: createSelection({
+        createdBy: { id: 'u2', username: 'other' },
+      }),
+      canDeleteSelections: true,
+    });
+
+    assert.dom('.fa-minus-circle').doesNotExist();
+  });
+
   test('uses admin warning modal copy for admin cross-user delete', async function (assert) {
-    this.owner.unregister('service:currentUser');
-    this.owner.register(
-      'service:currentUser',
-      class extends Service {
-        id = 'u1';
-        isAdmin = true;
-        isStudent = false;
-      }
-    );
+    registerCurrentUser(this.owner, {
+      id: 'u1',
+      isAdmin: true,
+      isStudent: false,
+    });
 
     let deletedSelection = null;
     await renderSelection(this, {
@@ -161,7 +204,6 @@ module('Integration | Component | draggable-selection', function (hooks) {
     alert.modalResult = { value: false };
 
     await click('.fa-minus-circle');
-    await settled();
 
     assert.strictEqual(alert.modalCalls.length, 1);
     assert.strictEqual(
@@ -193,7 +235,6 @@ module('Integration | Component | draggable-selection', function (hooks) {
     alert.modalResult = { value: true };
 
     await click('.fa-minus-circle');
-    await settled();
 
     assert.strictEqual(alert.modalCalls.length, 1);
     assert.strictEqual(

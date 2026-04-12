@@ -21,8 +21,18 @@ export default class WorkspaceCommentComponent extends Component {
   }
 
   get childrenLength() {
-    const childrenIds = this.utils.getHasManyIds(this.args.comment, 'children');
-    return childrenIds?.length || 0;
+    const getHasManyIds = this.utils?.getHasManyIds;
+    if (typeof getHasManyIds === 'function') {
+      const childrenIds = getHasManyIds.call(
+        this.utils,
+        this.args.comment,
+        'children'
+      );
+      return childrenIds?.length || 0;
+    }
+
+    const children = this.args.comment?.children;
+    return Array.isArray(children) ? children.length : 0;
   }
 
   get isOwnComment() {
