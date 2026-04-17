@@ -8,12 +8,12 @@
   </span>
 </p>
 <Ui::RadioGroup
-  @options={{createWs}}
+  @options={{this.createWs}}
   @selectedValue={{this.doCreateWs}}
   @updateValue={{action 'updateDoCreateWs'}}
 />
 
-{{#if creatingWs}}
+{{#if this.creatingWs}}
   <div class='create-ws-content'>
     <div class='ws-new name'>
       <p class='input-label'>
@@ -31,16 +31,16 @@
           id='ws-new-name'
           class='single-text-input'
           @type='text'
-          @value={{workspaceName}}
+          @value={{this.workspaceName}}
           placeholder='Provide a name for your workspace'
         />
       </div>
-      {{#if missingNameError}}
+      {{#if this.missingNameError}}
         <div class='create-ws-error'>
           <Ui::ErrorBox
-            @error={{missingNameError}}
+            @error={{this.missingNameError}}
             @showDismiss={{true}}
-            @resetError={{action (mut missingNameError) null}}
+            @resetError={{action (mut this.missingNameError) null}}
           />
         </div>
       {{/if}}
@@ -61,8 +61,8 @@
       <SelectizeInput
         @store={{this.store}}
         @inputId='owner-select'
-        @initialOptions={{ownerOptions}}
-        @initialItems={{initialOwnerItem}}
+        @initialOptions={{this.ownerOptions}}
+        @initialItems={{this.initialOwnerItem}}
         @maxItems={{1}}
         @onItemAdd={{action 'updateSelectizeSingle'}}
         @onItemRemove={{action 'updateSelectizeSingle'}}
@@ -73,12 +73,12 @@
         @propToUpdate='selectedOwner'
         @placeholder='Search by username to choose as owner'
       />
-      {{#if missingOwnerError}}
+      {{#if this.missingOwnerError}}
         <div class='create-ws-error'>
           <Ui::ErrorBox
-            @error={{missingOwnerError}}
+            @error={{this.missingOwnerError}}
             @showDismiss={{true}}
-            @resetError={{action (mut missingOwnerError) null}}
+            @resetError={{action (mut this.missingOwnerError) null}}
           />
         </div>
       {{/if}}
@@ -95,7 +95,7 @@
         </span>
       </p>
       <Ui::RadioGroup
-        @options={{modeInputs}}
+        @options={{this.modeInputs}}
         @selectedValue={{this.selectedMode}}
         @updateValue={{action 'updateSelectedMode'}}
       />
@@ -114,9 +114,9 @@
       <SelectizeInput
         @store={{this.store}}
         @inputId='folderset-select'
-        @initialOptions={{folderSetOptions}}
+        @initialOptions={{this.folderSetOptions}}
         @maxItems={{1}}
-        @initialItems={{initialFolderSetItem}}
+        @initialItems={{this.initialFolderSetItem}}
         @onItemAdd={{action 'updateSelectizeSingle'}}
         @onItemRemove={{action 'updateSelectizeSingle'}}
         @labelField='name'
@@ -133,7 +133,7 @@
 {{/if}}
 
 {{#unless this.currentUser.isStudent}}
-  {{#if selectedSection}}
+  {{#if this.selectedSection}}
     <div class='ws-new assignment'>
       <p class='input-label'>
         Would you like to save this work as an assignment?
@@ -145,7 +145,7 @@
         </span>
       </p>
       <Ui::RadioGroup
-        @options={{createAssignment}}
+        @options={{this.createAssignment}}
         @selectedValue={{this.createAssignmentValue}}
         @updateValue={{action 'updateCreateAssignmentValue'}}
       />
@@ -153,7 +153,7 @@
   {{/if}}
 {{/unless}}
 
-{{#if creatingAssignment}}
+{{#if this.creatingAssignment}}
   <div class='create-ws-content'>
     <div class='ws-new name'>
       <p class='input-label'>
@@ -170,16 +170,16 @@
           id='assignment-name'
           class='single-text-input'
           @type='text'
-          @value={{assignmentName}}
+          @value={{this.assignmentName}}
           placeholder='Provide a name for your assignment'
         />
       </div>
-      {{#if missingAssignmentError}}
+      {{#if this.missingAssignmentError}}
         <div class='create-ws-error'>
           <Ui::ErrorBox
-            @error={{missingAssignmentError}}
+            @error={{this.missingAssignmentError}}
             @showDismiss={{true}}
-            @resetError={{action (mut missingAssignmentError) null}}
+            @resetError={{action (mut this.missingAssignmentError) null}}
           />
         </div>
       {{/if}}

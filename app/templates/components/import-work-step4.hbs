@@ -2,9 +2,9 @@
 
 <div class="flex-container">
   <div class="student-list">
-    {{#if selectedSection}}
-      <h4 class="section-name">{{selectedSection.name}}</h4>
-      {{#each displayList as |student|}}
+    {{#if this.selectedSection}}
+      <h4 class="section-name">{{this.selectedSection.name}}</h4>
+      {{#each this.displayList as |student|}}
         <p class="student-name">{{student.username}}</p>
       {{/each}}
     {{else}}
@@ -13,8 +13,8 @@
   </div>
 
   <div class="matching-container">
-    {{#each answers as |answer|}}
-      <StudentMatchingAnswer @store={{this.store}} @answer={{answer}} @selectedSection={{selectedSection}} @checkStatus={{action "checkStatus"}} @studentMap={{studentMap}} @addedStudentNames={{addedStudentNames}} @newNameFilter={{newNameFilter}} />
+    {{#each this.answers as |answer|}}
+      <StudentMatchingAnswer @store={{this.store}} @answer={{answer}} @selectedSection={{this.selectedSection}} @checkStatus={{action "checkStatus"}} @studentMap={{this.studentMap}} @addedStudentNames={{this.addedStudentNames}} @newNameFilter={{this.newNameFilter}} />
     {{/each}}
   </div>
 </div>
