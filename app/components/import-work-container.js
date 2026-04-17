@@ -1,12 +1,16 @@
-import Component, { tracked } from '@glimmer/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { service } from '@ember/service';
 
 export default class ImportWorkComponent extends Component {
+  @service store;
+  @service('sweet-alert') alert;
+  @service('error-handling') errorHandling;
+  @service('utility-methods') utils;
+  @service('current-user') currentUser;
+
   @tracked elementId = 'import-work-container';
-  @tracked alert = 'sweet-alert';
-  @tracked errorHandling = 'error-handling';
-  @tracked utils = 'utility-methods';
-  @tracked currentUser = 'current-user';
   @tracked selectedProblem = null;
   @tracked selectedSection = null;
   @tracked selectedOwner = null;
@@ -34,6 +38,11 @@ export default class ImportWorkComponent extends Component {
   @tracked createAnswerErrors = [];
   @tracked postErrors = [];
   @tracked currentStep = { value: 1 };
+  @tracked studentMap = {};
+  @tracked submissionCount = 0;
+  @tracked createdAssignment = null;
+  @tracked isCompDirty = false;
+  @tracked isFetchingSectionStudents = false;
   @tracked steps = [
     { value: 0 },
     { value: 1 },
@@ -111,7 +120,39 @@ export default class ImportWorkComponent extends Component {
 
   constructor(owner, args) {
     super(owner, args);
-    this.sections = this.args.model.sections;
+    this.sections = this.args.model?.sections || [];
+  }
+
+  get users() {
+    return this.args.users || [];
+  }
+
+  get folderSets() {
+    return this.args.model?.folderSets || [];
+  }
+
+  doConfirmLeaving(value) {
+    if (typeof this.args.doConfirmLeaving === 'function') {
+      this.args.doConfirmLeaving(value);
+    }
+  }
+
+  toWorkspaces(workspace) {
+    if (!workspace?._id) {
+      return;
+    }
+
+    if (typeof this.args.toWorkspaces === 'function') {
+      this.args.toWorkspaces(workspace);
+      return;
+    }
+
+    const firstSubmissionId = workspace.submissions?.[0];
+    if (firstSubmissionId) {
+      window.location.href = `#/workspaces/${workspace._id}/submissions/${firstSubmissionId}`;
+      return;
+    }
+    window.location.href = `#/workspaces/${workspace._id}/work`;
   }
 
   @action
@@ -131,10 +172,11 @@ export default class ImportWorkComponent extends Component {
 
   @action
   resetImportDetails() {
-    const opts = ['selectedProblem', 'selectedSection', 'uploadedFiles'];
+    const opts = ['selectedProblem', 'selectedSection'];
     opts.forEach((opt) => {
       this[opt] = null;
     });
+    this.uploadedFiles = [];
   }
 
   @action
@@ -181,6 +223,7 @@ export default class ImportWorkComponent extends Component {
     }
   }
 
+  @action
   setSelectedProblem() {
     this.currentStep = this.steps[2];
   }
@@ -194,7 +237,12 @@ export default class ImportWorkComponent extends Component {
     const students = await this.getSectionStudents(section);
     this.isFetchingSectionStudents = false;
 
-    const asArray = students.toArray();
+    const asArray =
+      typeof students?.toArray === 'function'
+        ? students.toArray()
+        : Array.isArray(students)
+        ? students
+        : [];
     const hash = {};
     asArray.forEach((user) => {
       hash[user.id] = user;
@@ -205,15 +253,21 @@ export default class ImportWorkComponent extends Component {
 
   @action
   setUploadedFiles(files) {
-    this.uploadedFiles = files;
-    this.send('loadStudentMatching');
+    this.uploadedFiles = Array.isArray(files) ? files : [];
+    this.loadStudentMatching();
   }
 
   @action
   setMatchedStudents() {
     let submissionCount = 0;
-    this.answers.forEach((answer) => {
-      submissionCount += answer.students.length + answer.studentNames.length;
+    (this.answers || []).forEach((answer) => {
+      const studentsCount = Array.isArray(answer.students)
+        ? answer.students.length
+        : 0;
+      const studentNamesCount = Array.isArray(answer.studentNames)
+        ? answer.studentNames.length
+        : 0;
+      submissionCount += studentsCount + studentNamesCount;
     });
     this.submissionCount = submissionCount;
     this.currentStep = this.steps[5];
@@ -225,17 +279,19 @@ export default class ImportWorkComponent extends Component {
 
   @action
   async loadStudentMatching() {
-    const images = this.uploadedFiles;
+    const images = Array.isArray(this.uploadedFiles) ? this.uploadedFiles : [];
     const answers = images.map((image) => {
       const record = this.store.peekRecord('image', image._id);
       const url = `/api/images/file/${image._id}`;
       const imgStr = `<img src='${url}'>`;
       return {
         explanation: imgStr,
-        explanationImage: record,
+        explanationImage: record || image,
         problem: this.selectedProblem,
         section: this.selectedSection,
         isSubmitted: true,
+        students: [],
+        studentNames: [],
       };
     });
 
@@ -251,20 +307,19 @@ export default class ImportWorkComponent extends Component {
 
   @action
   async uploadAnswers() {
-    let that = this;
     this.isUploadingAnswer = true;
-    let answers = this.answers;
-    let assignment = this.createdAssignment ? this.createdAssignment : null;
+    let answers = this.answers || [];
+    let assignment = this.createdAssignment || null;
     try {
       const allAnswers = await Promise.all(
         answers.map(async (answer) => {
           if (this.utils.isNonEmptyArray(answer.students)) {
             return Promise.all(
               answer.students.map(async (student) => {
-                let ans = that.store.createRecord('answer', answer);
+                let ans = this.store.createRecord('answer', answer);
                 ans.answer = 'See Image';
-                ans.section = that.selectedSection;
-                ans.problem = that.selectedProblem;
+                ans.section = this.selectedSection;
+                ans.problem = this.selectedProblem;
                 ans.assignment = assignment;
                 ans.createdBy = student;
                 await ans.save();
@@ -275,18 +330,19 @@ export default class ImportWorkComponent extends Component {
           if (this.utils.isNonEmptyArray(answer.studentNames)) {
             return Promise.all(
               answer.studentNames.map(async (student) => {
-                let ans = that.store.createRecord('answer', answer);
+                let ans = this.store.createRecord('answer', answer);
                 ans.answer = 'See Image';
-                ans.section = that.selectedSection;
-                ans.problem = that.selectedProblem;
+                ans.section = this.selectedSection;
+                ans.problem = this.selectedProblem;
                 ans.assignment = assignment;
-                ans.createdBy = that.currentUser.user;
-                ans.studentNames = student;
+                ans.createdBy = this.currentUser.user;
+                ans.studentNames = [student];
                 await ans.save();
                 return ans;
               })
             );
           }
+          return [];
         })
       );
       const flattenedAnswers = allAnswers.flat(1);
@@ -298,17 +354,18 @@ export default class ImportWorkComponent extends Component {
         false,
         null
       );
-      this.uploadAnswers = true;
+      this.uploadedAnswers = true;
       if (this.workspaceName) {
         this.isUploadingAnswer = false;
         this.isCreatingWorkspace = true;
-        this.uploadedAnswers = true;
         this.createSubmissions(flattenedAnswers);
       } else {
+        this.isUploadingAnswer = false;
         this.isCompDirty = false;
         this.doConfirmLeaving(false);
       }
     } catch (err) {
+      this.isUploadingAnswer = false;
       this.errorHandling.handleErrors(err, 'createAnswerErrors');
     }
   }
@@ -328,12 +385,12 @@ export default class ImportWorkComponent extends Component {
       const studentNames = ans.studentNames;
 
       publication.puzzle.title = this.selectedProblem.title;
-      publication.puzzle.problemId = problem.problemId;
+      publication.puzzle.problemId = problem.problemId || problem.id;
 
       if (this.utils.isNonEmptyArray(studentNames)) {
         creator.username = studentNames;
       } else {
-        creator.studentId = student.userId;
+        creator.studentId = student.userId || student.id;
         creator.username = student.username;
       }
 
@@ -342,7 +399,7 @@ export default class ImportWorkComponent extends Component {
         clazz.name = section.name;
         const teachers = section.teachers;
         const primaryTeacher = teachers.firstObject;
-        teacher.id = primaryTeacher.userId;
+        teacher.id = primaryTeacher.userId || primaryTeacher.id;
       }
 
       let sub = {
@@ -381,7 +438,7 @@ export default class ImportWorkComponent extends Component {
     };
 
     try {
-      const res = await fetch('api/import', {
+      const res = await fetch('/api/import', {
         method: 'POST',
         body: JSON.stringify(postData),
         headers: {
@@ -406,6 +463,7 @@ export default class ImportWorkComponent extends Component {
         );
       }
     } catch (err) {
+      this.isCreatingWorkspace = false;
       this.errorHandling.handleErrors(err, 'postErrors');
     }
   }
@@ -451,6 +509,7 @@ export default class ImportWorkComponent extends Component {
         );
         this.uploadAnswers();
       } catch (err) {
+        this.savingAssignment = false;
         this.errorHandling.handleErrors(
           err,
           'createRecordErrors',
@@ -471,10 +530,13 @@ export default class ImportWorkComponent extends Component {
 
   @action
   toggleMenu() {
-    document.getElementById('filter-list-side').classList.toggle('collapse');
-    document.getElementById('arrow-icon').classList.toggle('fa-rotate-180');
-    document
-      .getElementById('filter-list-side')
-      .classList.add('animated', 'slideInLeft');
+    const filter = document.getElementById('filter-list-side');
+    const arrow = document.getElementById('arrow-icon');
+    if (!filter || !arrow) {
+      return;
+    }
+    filter.classList.toggle('collapse');
+    arrow.classList.toggle('fa-rotate-180');
+    filter.classList.add('animated', 'slideInLeft');
   }
 }

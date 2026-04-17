@@ -3,7 +3,7 @@
     <div class='filter-items'>
       <h2>Summary</h2>
       <ul class='primary-filter-list'>
-        {{#each detailsItems as |item|}}
+        {{#each this.detailsItems as |item|}}
           <DetailsListItem
             @label={{item.label}}
             @displayValue={{item.displayValue}}
@@ -11,9 +11,9 @@
             @propName={{item.propName}}
             @children={{item.children}}
             @isArray={{item.isArray}}
-            @editValue={{action 'goToStep'}}
+            @editValue={{this.goToStep}}
             @associatedStep={{item.associatedStep}}
-            @currentStep={{currentStep.value}}
+            @currentStep={{this.currentStep.value}}
           />
         {{/each}}
       </ul>
@@ -32,32 +32,32 @@
               <span>Select Problem</span>
             </li>
             <li
-              class='step-2
-                {{if (greater-equal currentStep.value 2) "active-step"}}'
+                class='step-2
+                {{if (greater-equal this.currentStep.value 2) "active-step"}}'
             >
               <span>Select Class</span>
             </li>
             <li
-              class='step-3
-                {{if (greater-equal currentStep.value 3) "active-step"}}'
+                class='step-3
+                {{if (greater-equal this.currentStep.value 3) "active-step"}}'
             >
               <span>Upload Files</span>
             </li>
             <li
-              class='step-4
-                {{if (greater-equal currentStep.value 4) "active-step"}}'
+                class='step-4
+                {{if (greater-equal this.currentStep.value 4) "active-step"}}'
             >
               <span>Match Students</span>
             </li>
             <li
-              class='step-5
-                {{if (greater-equal currentStep.value 5) "active-step"}}'
+                class='step-5
+                {{if (greater-equal this.currentStep.value 5) "active-step"}}'
             >
               <span>Create Workspace</span>
             </li>
             <li
-              class='step-6
-                {{if (greater-equal currentStep.value 6) "active-step"}}'
+                class='step-6
+                {{if (greater-equal this.currentStep.value 6) "active-step"}}'
             >
               <span>Review</span>
             </li>
@@ -66,106 +66,106 @@
       </div>
 
       <div class='step-content'>
-        {{#if showSelectProblem}}
+        {{#if this.showSelectProblem}}
           <ImportWorkStep1
             @store={{this.store}}
-            @selectedProblem={{selectedProblem}}
-            @onProceed={{action 'setSelectedProblem'}}
+            @selectedProblem={{this.selectedProblem}}
+            @onProceed={{this.setSelectedProblem}}
           />
         {{/if}}
 
-        {{#if showSelectClass}}
+        {{#if this.showSelectClass}}
           <ImportWorkStep2
             @store={{this.store}}
-            @selectedSection={{selectedSection}}
-            @selectedValue={{selectedValue}}
-            @onBack={{action 'changeStep'}}
-            @onProceed={{action 'setSelectedSection'}}
+            @selectedSection={{this.selectedSection}}
+            @selectedValue={{this.selectedValue}}
+            @onBack={{this.changeStep}}
+            @onProceed={{this.setSelectedSection}}
           />
         {{/if}}
 
-        {{#if showUploadFiles}}
+        {{#if this.showUploadFiles}}
           <ImportWorkStep3
             @store={{this.store}}
-            @selectedProblem={{selectedProblem}}
-            @selectedSection={{selectedSection}}
-            @onBack={{action 'changeStep'}}
-            @onProceed={{action 'setUploadedFiles'}}
-            @existingAnswers={{answers}}
-            @uploadedFiles={{uploadedFiles}}
+            @selectedProblem={{this.selectedProblem}}
+            @selectedSection={{this.selectedSection}}
+            @onBack={{this.changeStep}}
+            @onProceed={{this.setUploadedFiles}}
+            @existingAnswers={{this.answers}}
+            @uploadedFiles={{this.uploadedFiles}}
           />
         {{/if}}
 
-        {{#if showMatchStudents}}
+        {{#if this.showMatchStudents}}
           <ImportWorkStep4
             @store={{this.store}}
-            @uploadedFiles={{uploadedFiles}}
-            @answers={{answers}}
-            @selectedProblem={{selectedProblem}}
-            @studentMap={{studentMap}}
-            @selectedSection={{selectedSection}}
-            @onBack={{action 'changeStep'}}
-            @onProceed={{action 'setMatchedStudents'}}
+            @uploadedFiles={{this.uploadedFiles}}
+            @answers={{this.answers}}
+            @selectedProblem={{this.selectedProblem}}
+            @studentMap={{this.studentMap}}
+            @selectedSection={{this.selectedSection}}
+            @onBack={{this.changeStep}}
+            @onProceed={{this.setMatchedStudents}}
           />
         {{/if}}
 
-        {{#if showCreateWs}}
+        {{#if this.showCreateWs}}
           <ImportWorkStep5
             @currentUser={{this.currentUser.user}}
-            @users={{users}}
-            @selectedOwner={{selectedOwner}}
-            @selectedFolderSet={{selectedFolderSet}}
-            @createAssignmentValue={{createAssignmentValue}}
-            @doCreateWs={{doCreateWs}}
-            @selectedMode={{selectedMode}}
-            @folderSets={{folderSets}}
+            @users={{this.users}}
+            @selectedOwner={{this.selectedOwner}}
+            @selectedFolderSet={{this.selectedFolderSet}}
+            @createAssignmentValue={{this.createAssignmentValue}}
+            @doCreateWs={{this.doCreateWs}}
+            @selectedMode={{this.selectedMode}}
+            @folderSets={{this.folderSets}}
             @store={{this.store}}
-            @uploadedFiles={{uploadedFiles}}
-            @answers={{answers}}
-            @selectedProblem={{selectedProblem}}
-            @selectedSection={{selectedSection}}
-            @workspaceName={{workspaceName}}
-            @workspaceOwner={{workspaceOwner}}
-            @workspaceMode={{workspaceMode}}
-            @folderSet={{folderSet}}
-            @assignmentName={{assignmentName}}
-            @onBack={{action 'changeStep'}}
-            @onProceed={{action 'prepareReview'}}
+            @uploadedFiles={{this.uploadedFiles}}
+            @answers={{this.answers}}
+            @selectedProblem={{this.selectedProblem}}
+            @selectedSection={{this.selectedSection}}
+            @workspaceName={{this.workspaceName}}
+            @workspaceOwner={{this.workspaceOwner}}
+            @workspaceMode={{this.workspaceMode}}
+            @folderSet={{this.folderSet}}
+            @assignmentName={{this.assignmentName}}
+            @onBack={{this.changeStep}}
+            @onProceed={{this.prepareReview}}
           />
         {{/if}}
 
-        {{#if showReview}}
+        {{#if this.showReview}}
           <ImportWorkStep6
             @store={{this.store}}
-            @uploadedFiles={{uploadedFiles}}
-            @answers={{answers}}
-            @selectedProblem={{selectedProblem}}
-            @selectedSection={{selectedSection}}
-            @submissionCount={{submissionCount}}
-            @workspaceName={{workspaceName}}
-            @workspaceOwner={{workspaceOwner}}
-            @workspaceMode={{workspaceMode}}
-            @folderSet={{folderSet}}
-            @assignmentName={{assignmentName}}
-            @savingAssignment={{savingAssignment}}
-            @isUploadingAnswer={{isUploadingAnswer}}
-            @isCreatingWorkspace={{isCreatingWorkspace}}
-            @uploadedAnswers={{uploadedAnswers}}
-            @createdWorkspace={{createdWorkspace}}
-            @createdAssignment={{createdAssignment}}
-            @onBack={{action 'changeStep'}}
-            @onProceed={{action 'importWork'}}
+            @uploadedFiles={{this.uploadedFiles}}
+            @answers={{this.answers}}
+            @selectedProblem={{this.selectedProblem}}
+            @selectedSection={{this.selectedSection}}
+            @submissionCount={{this.submissionCount}}
+            @workspaceName={{this.workspaceName}}
+            @workspaceOwner={{this.workspaceOwner}}
+            @workspaceMode={{this.workspaceMode}}
+            @folderSet={{this.folderSet}}
+            @assignmentName={{this.assignmentName}}
+            @savingAssignment={{this.savingAssignment}}
+            @isUploadingAnswer={{this.isUploadingAnswer}}
+            @isCreatingWorkspace={{this.isCreatingWorkspace}}
+            @uploadedAnswers={{this.uploadedAnswers}}
+            @createdWorkspace={{this.createdWorkspace}}
+            @createdAssignment={{this.createdAssignment}}
+            @onBack={{this.changeStep}}
+            @onProceed={{this.importWork}}
           />
         {{/if}}
       </div>
 
-      {{#each findRecordErrors as |error|}}
+      {{#each this.findRecordErrors as |error|}}
         <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
       {{/each}}
-      {{#each postErrors as |error|}}
+      {{#each this.postErrors as |error|}}
         <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
       {{/each}}
-      {{#each createAnswerErrors as |error|}}
+      {{#each this.createAnswerErrors as |error|}}
         <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
       {{/each}}
     </div>
@@ -173,7 +173,7 @@
 </div>
 
 <div class='toggle-filter-menu'>
-  <button type='button' {{action 'toggleMenu'}}><i
+  <button type='button' {{on 'click' this.toggleMenu}}><i
       id='arrow-icon'
       class='fas fa-chevron-right'
     ></i></button>
