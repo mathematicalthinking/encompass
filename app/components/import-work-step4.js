@@ -1,7 +1,6 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { service } from '@ember/service';
-import map from 'lodash-es/map';
 
 export default Component.extend({
   elementId: 'import-work-step4',
@@ -19,9 +18,7 @@ export default Component.extend({
     if (!this.studentMap) {
       return [];
     }
-    return map(this.studentMap, (val, key) => {
-      return val;
-    });
+    return Object.keys(this.studentMap).map((key) => this.studentMap[key]);
   }),
 
   addStudentNameFilter: function (name) {
