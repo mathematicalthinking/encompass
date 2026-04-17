@@ -43,6 +43,13 @@ export default class SelectizeInputComponent extends Component {
     }
 
     const optionsHash = this.configureOptionsHash();
+    if (typeof $.fn?.selectize !== 'function') {
+      console.error(
+        'Selectize plugin is not available on jQuery. Ensure selectize is loaded before component init.'
+      );
+      return;
+    }
+
     const selectizeInstance = $(element).selectize(optionsHash);
     this.selectizeInstance = selectizeInstance[0].selectize;
 

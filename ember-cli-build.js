@@ -17,6 +17,7 @@ module.exports = function (defaults) {
   app.import('vendor/image-tagging.js'); // used only in selectable-area component
   app.import('vendor/selection-highlighting.js'); // used only in selectable-area component
   app.import('vendor/guiders.js'); // used for tours; currently all commented out in the codebase by previous dev
+  app.import('node_modules/selectize/dist/js/standalone/selectize.js');
 
   // Use `app.import` to add additional libraries to the generated
   // output files.
