@@ -8,6 +8,7 @@ export default Component.extend({
   creatingWs: equal('doCreateWs', true),
   creatingAssignment: equal('createAssignmentValue', true),
   utils: service('utility-methods'),
+  alert: service('sweet-alert'),
   workspaceOwner: null,
   workspaceMode: null,
   folderSet: null,
@@ -142,41 +143,83 @@ export default Component.extend({
       this.set(propToUpdate, record);
     },
     createWorkspace() {
-      this.set('workspaceName', this.workspaceName);
+      let workspaceName =
+        typeof this.workspaceName === 'string'
+          ? this.workspaceName.trim()
+          : this.workspaceName;
+      this.set('workspaceName', workspaceName);
       this.set('workspaceOwner', this.selectedOwner);
       this.set('workspaceMode', this.selectedMode);
       this.set('folderSet', this.selectedFolderSet);
-      if (!this.workspaceName || !this.selectedOwner) {
-        if (!this.workspaceName) {
+      if (!workspaceName || !this.selectedOwner) {
+        if (!workspaceName) {
           this.set(
             'missingNameError',
             'Please provide a name for your workspace'
           );
+        } else {
+          this.set('missingNameError', null);
         }
         if (!this.selectedOwner) {
           this.set(
             'missingOwnerError',
             'Please provide an owner for your workspace'
           );
+        } else {
+          this.set('missingOwnerError', null);
         }
+        this.alert.showToast(
+          'error',
+          'Workspace name and owner are required to continue',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        return;
       } else {
+        this.set('missingNameError', null);
+        this.set('missingOwnerError', null);
         this.set('createWorkspaceError', null);
         this.onProceed();
       }
     },
 
     next() {
+      let hasAssignmentError = false;
       if (this.createAssignmentValue) {
-        if (!this.assignmentName) {
+        let assignmentName =
+          typeof this.assignmentName === 'string'
+            ? this.assignmentName.trim()
+            : this.assignmentName;
+
+        if (!assignmentName) {
           this.set(
             'missingAssignmentError',
             'Please provide a name for your assignment'
           );
+          hasAssignmentError = true;
+        } else {
+          this.set('missingAssignmentError', null);
         }
-        this.set('assignmentName', this.assignmentName);
+        this.set('assignmentName', assignmentName);
       } else {
+        this.set('missingAssignmentError', null);
         this.set('assignmentName', null);
       }
+
+      if (hasAssignmentError) {
+        this.alert.showToast(
+          'error',
+          'Assignment name is required to continue',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+        return;
+      }
+
       if (this.doCreateWs) {
         this.send('createWorkspace');
       } else {
