@@ -62,7 +62,7 @@ export default Component.extend({
       let selectedIds = this.selectedIds || [];
 
       each(this.studentMap, (val, key) => {
-        if (!selectedIds.includes(val)) {
+        if (!selectedIds.includes(val.get('id'))) {
           options.addObject({
             id: val.get('id'),
             username: val.get('username'),
@@ -102,7 +102,7 @@ export default Component.extend({
     } else {
       creators = this.get('submission.studentNames');
       userObj = creators.find((name) => {
-        return name === userObj;
+        return name === userId;
       });
       if (doRemove) {
         creators.removeObject(userObj);
