@@ -23,3 +23,11 @@
   <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
   <button class="primary-button" type="button" {{action "next"}}>Next</button>
 </div>
+
+{{#if this.isMatchingIncompleteError}}
+  <Ui::ErrorBox
+    @error='Please match at least one student/name for each submission before continuing'
+    @showDismiss={{true}}
+    @resetError={{action (mut this.isMatchingIncompleteError) null}}
+  />
+{{/if}}
