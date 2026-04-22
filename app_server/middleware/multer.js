@@ -21,21 +21,20 @@ const buildDestination = function (req, fileInfo, next) {
   if (!user) {
     return next(new Error('No user logged in'));
   }
-  // Generate error if the destination folder does not exist.
+  // Ensure destination folder exists before writing uploaded PDFs.
   let buildDir = 'build';
   if (process.env.BUILD_DIR) {
     buildDir = process.env.BUILD_DIR;
   }
   let dest = path.resolve(process.cwd(), `${buildDir}/image_uploads/tmp_pdfs`);
-  fs.access(dest, fs.constants.F_OK, (err) => {
+  fs.mkdir(dest, { recursive: true }, (err) => {
     if (err) {
-      let errResp = `ERROR - PDF Images directory ${dest} does not exist - ${err}`;
+      let errResp = `ERROR - Could not create PDF Images directory ${dest} - ${err}`;
       console.error(errResp);
-      next(err);
+      return next(err);
     }
+    return next(null, dest);
   });
-
-  next(null, dest);
 };
 
 const filename = (req, file, next) => {
