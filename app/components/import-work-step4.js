@@ -30,33 +30,38 @@ export default Component.extend({
     return trimmed.length > 1 && !names.includes(trimmed);
   },
 
+  isReadyToProceed() {
+    let answers = this.answers;
+    return (
+      Array.isArray(answers) &&
+      answers.length > 0 &&
+      answers.every((ans) => {
+        return (
+          this.utils.isNonEmptyArray(ans.students) ||
+          this.utils.isNonEmptyArray(ans.studentNames)
+        );
+      })
+    );
+  },
+
   actions: {
     checkStatus: function () {
-      if (this.isMatchingIncompleteError) {
+      let isReady = this.isReadyToProceed();
+      if (isReady && this.isMatchingIncompleteError) {
         this.set('isMatchingIncompleteError', null);
       }
-      let answers = this.answers;
-
-      answers.forEach((ans) => {
-        let isValid =
-          this.utils.isNonEmptyArray(ans.students) ||
-          this.utils.isNonEmptyArray(ans.studentNames);
-
-        if (!isValid) {
-          this.set('isReadyToReviewAnswers', false);
-          return;
-        }
-        this.set('isReadyToReviewAnswers', true);
-      });
+      this.set('isReadyToReviewAnswers', isReady);
+      return isReady;
     },
     next() {
-      if (this.isReadyToReviewAnswers) {
+      let isReady = this.send('checkStatus');
+      if (isReady) {
         this.onProceed();
       } else {
         this.set('isMatchingIncompleteError', true);
         this.alert.showToast(
           'error',
-          `Unmatched submission(s)`,
+          'Please match at least one student/name for each submission',
           'bottom-end',
           3000,
           false,
