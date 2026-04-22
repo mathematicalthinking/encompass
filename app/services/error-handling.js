@@ -38,13 +38,20 @@ export default class ErrorHandlingService extends Service {
   handleErrors(err, propName, record = null, records = []) {
     this._setErrorMessages(err, propName);
 
-    if (record && this._isRecordInvalid(record)) {
+    if (
+      record &&
+      this._isRecordInvalid(record) &&
+      typeof record.rollbackAttributes === 'function'
+    ) {
       record.rollbackAttributes();
     }
 
-    if (records) {
+    if (Array.isArray(records)) {
       records.forEach((r) => {
-        if (this._isRecordInvalid(r)) {
+        if (
+          this._isRecordInvalid(r) &&
+          typeof r?.rollbackAttributes === 'function'
+        ) {
           r.rollbackAttributes();
         }
       });
@@ -138,7 +145,7 @@ export default class ErrorHandlingService extends Service {
    * @returns {boolean}
    */
   _isRecordInvalid(record) {
-    return !record?.isValid ?? false;
+    return Boolean(record) && record.isValid === false;
   }
 
   /**
