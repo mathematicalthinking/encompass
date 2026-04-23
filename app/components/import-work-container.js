@@ -53,6 +53,37 @@ export default class ImportWorkComponent extends Component {
     { value: 6 },
   ];
 
+  getRecordId(record) {
+    if (!record) {
+      return null;
+    }
+    const proxiedContent = record.content || record._content || null;
+    if (proxiedContent && proxiedContent !== record) {
+      const proxiedId = this.getRecordId(proxiedContent);
+      if (proxiedId) {
+        return proxiedId;
+      }
+    }
+    return (
+      record.id ||
+      record._id ||
+      record.userId ||
+      (typeof record.get === 'function'
+        ? record.get('id') || record.get('_id') || record.get('userId')
+        : null)
+    );
+  }
+
+  getRecordValue(record, key) {
+    if (!record) {
+      return null;
+    }
+    if (typeof record.get === 'function') {
+      return record.get(key);
+    }
+    return record[key];
+  }
+
   get showSelectProblem() {
     return this.currentStep.value === 1;
   }
@@ -273,7 +304,19 @@ export default class ImportWorkComponent extends Component {
     this.currentStep = this.steps[5];
   }
   @action
-  prepareReview() {
+  prepareReview(config = null) {
+    if (this.utils.isNonEmptyObject(config)) {
+      this.doCreateWs = config.doCreateWs === true;
+      this.createAssignmentValue = config.createAssignmentValue === true;
+      this.selectedOwner = config.selectedOwner || null;
+      this.selectedFolderSet = config.selectedFolderSet || null;
+      this.selectedMode = config.selectedMode || 'private';
+      this.workspaceName = config.workspaceName || null;
+      this.workspaceOwner = config.workspaceOwner || null;
+      this.workspaceMode = config.workspaceMode || null;
+      this.folderSet = config.folderSet || null;
+      this.assignmentName = config.assignmentName || null;
+    }
     this.currentStep = this.steps[6];
   }
 
@@ -311,7 +354,7 @@ export default class ImportWorkComponent extends Component {
     let answers = this.answers || [];
     let assignment = this.createdAssignment || null;
     try {
-      const allAnswers = await Promise.all(
+      const allAnswerEntries = await Promise.all(
         answers.map(async (answer) => {
           if (this.utils.isNonEmptyArray(answer.students)) {
             return Promise.all(
@@ -323,7 +366,11 @@ export default class ImportWorkComponent extends Component {
                 ans.assignment = assignment;
                 ans.createdBy = student;
                 await ans.save();
-                return ans;
+                return {
+                  answerRecord: ans,
+                  creatorStudent: student,
+                  studentNames: [],
+                };
               })
             );
           }
@@ -338,27 +385,37 @@ export default class ImportWorkComponent extends Component {
                 ans.createdBy = this.currentUser.user;
                 ans.studentNames = [student];
                 await ans.save();
-                return ans;
+                return {
+                  answerRecord: ans,
+                  creatorStudent: this.currentUser.user,
+                  studentNames: [student],
+                };
               })
             );
           }
           return [];
         })
       );
-      const flattenedAnswers = allAnswers.flat(1);
+      const flattenedAnswerEntries = allAnswerEntries.flat(1);
       this.alert.showToast(
         'success',
-        `${flattenedAnswers.length} Submissions Created`,
+        `${flattenedAnswerEntries.length} Submissions Created`,
         'bottom-end',
         3000,
         false,
         null
       );
       this.uploadedAnswers = true;
-      if (this.workspaceName) {
+      const normalizedWorkspaceName =
+        typeof this.workspaceName === 'string'
+          ? this.workspaceName.trim()
+          : this.workspaceName;
+      const shouldCreateWorkspace = Boolean(normalizedWorkspaceName);
+      this.workspaceName = normalizedWorkspaceName || null;
+      if (shouldCreateWorkspace) {
         this.isUploadingAnswer = false;
         this.isCreatingWorkspace = true;
-        this.createSubmissions(flattenedAnswers);
+        await this.createSubmissions(flattenedAnswerEntries);
       } else {
         this.isUploadingAnswer = false;
         this.isCompDirty = false;
@@ -366,12 +423,25 @@ export default class ImportWorkComponent extends Component {
       }
     } catch (err) {
       this.isUploadingAnswer = false;
+      this.isCreatingWorkspace = false;
       this.errorHandling.handleErrors(err, 'createAnswerErrors');
+      this.alert.showToast(
+        'error',
+        err?.message || 'Failed while preparing workspace submissions',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
     }
   }
   @action
-  createSubmissions(answers) {
-    let subs = answers.map((ans) => {
+  createSubmissions(answerEntries) {
+    if (!Array.isArray(answerEntries) || answerEntries.length === 0) {
+      throw new Error('No submissions were prepared for workspace creation.');
+    }
+    let subs = answerEntries.map((entry) => {
+      const ans = entry?.answerRecord || entry;
       const clazz = {};
       const publication = {
         publicationId: null,
@@ -379,32 +449,62 @@ export default class ImportWorkComponent extends Component {
       };
       const creator = {};
       const teacher = {};
-      const student = ans.createdBy;
-      const section = ans.section;
-      const problem = ans.problem;
-      const studentNames = ans.studentNames;
+      const student =
+        entry?.creatorStudent || this.getRecordValue(ans, 'createdBy');
+      const section =
+        this.getRecordValue(ans, 'section') || this.selectedSection;
+      const problem =
+        this.getRecordValue(ans, 'problem') || this.selectedProblem;
+      const entryStudentNames = Array.isArray(entry?.studentNames)
+        ? entry.studentNames
+        : [];
+      const ansStudentNames = this.getRecordValue(ans, 'studentNames');
+      const studentNames = this.utils.isNonEmptyArray(entryStudentNames)
+        ? entryStudentNames
+        : this.utils.isNonEmptyArray(ansStudentNames)
+        ? ansStudentNames
+        : [];
 
-      publication.puzzle.title = this.selectedProblem.title;
-      publication.puzzle.problemId = problem.problemId || problem.id;
+      publication.puzzle.title =
+        this.getRecordValue(this.selectedProblem, 'title') || '';
+      publication.puzzle.problemId =
+        this.getRecordValue(problem, 'problemId') ||
+        this.getRecordValue(problem, 'id') ||
+        this.getRecordId(problem) ||
+        null;
 
       if (this.utils.isNonEmptyArray(studentNames)) {
         creator.username = studentNames;
       } else {
-        creator.studentId = student.userId || student.id;
-        creator.username = student.username;
+        creator.studentId =
+          this.getRecordValue(student, 'userId') || this.getRecordId(student);
+        creator.username =
+          this.getRecordValue(student, 'username') ||
+          this.getRecordValue(student, 'name') ||
+          '';
       }
 
-      if (this.utils.isNonEmptyObject(section.content)) {
-        clazz.sectionId = section.sectionId;
-        clazz.name = section.name;
-        const teachers = section.teachers;
-        const primaryTeacher = teachers.firstObject;
-        teacher.id = primaryTeacher.userId || primaryTeacher.id;
+      if (section) {
+        clazz.sectionId =
+          this.getRecordValue(section, 'sectionId') ||
+          this.getRecordId(section);
+        clazz.name = this.getRecordValue(section, 'name') || '';
+        const teachers = this.getRecordValue(section, 'teachers');
+        const primaryTeacher =
+          teachers?.firstObject ||
+          (Array.isArray(teachers) ? teachers[0] : null) ||
+          null;
+        if (primaryTeacher) {
+          teacher.id =
+            this.getRecordValue(primaryTeacher, 'userId') ||
+            this.getRecordId(primaryTeacher);
+        }
       }
 
+      const answerId = this.getRecordId(ans);
       let sub = {
         // longAnswer: ans.explanation,
-        answer: ans.id,
+        answer: answerId,
         clazz: clazz,
         creator: creator,
         teacher: teacher,
@@ -412,7 +512,8 @@ export default class ImportWorkComponent extends Component {
       };
       return sub;
     });
-    this.createWorkspace(subs);
+
+    return this.createWorkspace(subs);
   }
 
   @action
@@ -420,51 +521,113 @@ export default class ImportWorkComponent extends Component {
     this.isCreatingWorkspace = true;
     this.isCompDirty = false;
     this.doConfirmLeaving(false);
-    let folderSetId;
-    let folderSet = this.folderSet;
-    if (folderSet) {
-      folderSetId = folderSet.id;
-    } else {
-      folderSetId = '';
+    const ownerRecord = this.workspaceOwner || this.selectedOwner || null;
+    const workspaceOwnerId =
+      this.getRecordId(ownerRecord) || this.getRecordId(this.currentUser?.user);
+    const folderSetRecord = this.folderSet || this.selectedFolderSet || null;
+    const folderSetId = this.getRecordId(folderSetRecord) || '';
+    const workspaceMode = this.workspaceMode || this.selectedMode || 'private';
+    const requestedName =
+      typeof this.workspaceName === 'string'
+        ? this.workspaceName.trim()
+        : this.workspaceName;
+    const safeRequestedName =
+      requestedName || `Imported Workspace ${new Date().toISOString()}`;
+
+    if (!workspaceOwnerId) {
+      this.isCreatingWorkspace = false;
+      const msg = 'Workspace owner is required to create workspace';
+      this.errorHandling.handleErrors(new Error(msg), 'postErrors');
+      this.alert.showToast('error', msg, 'bottom-end', 4000, false, null);
+      return;
     }
 
     let postData = {
       subs: JSON.stringify(subs),
       doCreateWorkspace: true,
-      workspaceOwner: JSON.stringify(this.workspaceOwner.id),
-      requestedName: JSON.stringify(this.workspaceName),
-      workspaceMode: JSON.stringify(this.workspaceMode),
+      workspaceOwner: JSON.stringify(workspaceOwnerId),
+      requestedName: JSON.stringify(safeRequestedName),
+      workspaceMode: JSON.stringify(workspaceMode),
       folderSet: JSON.stringify(folderSetId),
     };
-
     try {
-      const res = await fetch('/api/import', {
-        method: 'POST',
-        body: JSON.stringify(postData),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
-      this.isCreatingWorkspace = false;
-      if (data.workspace) {
-        this.createdWorkspace = data.workspace;
-        let hasCreatedAssignment = this.createdAssignment;
-        if (!this.utils.isNonEmptyObject(hasCreatedAssignment)) {
-          this.toWorkspaces(data.workspace);
+      let timeoutId;
+      const requestTimeoutMs = 45000;
+      const res = await Promise.race([
+        fetch('/api/import', {
+          method: 'POST',
+          body: JSON.stringify(postData),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }),
+        new Promise((_, reject) => {
+          timeoutId = setTimeout(() => {
+            reject(
+              new Error(
+                'Workspace creation timed out. It may still finish in the background.'
+              )
+            );
+          }, requestTimeoutMs);
+        }),
+      ]).finally(() => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
         }
-        this.alert.showToast(
-          'success',
-          'Workspace Created',
-          'bottom-end',
-          4000,
-          false,
-          null
+      });
+      const raw = await res.text();
+      let data = {};
+      if (raw) {
+        try {
+          data = JSON.parse(raw);
+        } catch (_err) {
+          data = { message: raw };
+        }
+      }
+
+      if (!res.ok) {
+        const message =
+          data?.errors?.[0]?.detail ||
+          data?.message ||
+          `Workspace creation failed with status ${res.status}`;
+        throw new Error(message);
+      }
+
+      const createdWorkspace =
+        data.workspace ||
+        (Array.isArray(data.workspaces) ? data.workspaces[0] : null);
+
+      if (!createdWorkspace) {
+        throw new Error(
+          'Workspace was not created. No workspace payload returned.'
         );
       }
+
+      this.isCreatingWorkspace = false;
+      this.createdWorkspace = createdWorkspace;
+      let hasCreatedAssignment = this.createdAssignment;
+      if (!this.utils.isNonEmptyObject(hasCreatedAssignment)) {
+        this.toWorkspaces(createdWorkspace);
+      }
+      this.alert.showToast(
+        'success',
+        'Workspace Created',
+        'bottom-end',
+        4000,
+        false,
+        null
+      );
     } catch (err) {
       this.isCreatingWorkspace = false;
       this.errorHandling.handleErrors(err, 'postErrors');
+      this.alert.showToast(
+        'error',
+        err?.message || 'Workspace creation failed',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
     }
   }
 
