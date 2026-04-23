@@ -37,6 +37,7 @@ export default class ImportWorkComponent extends Component {
   @tracked findRecordErrors = [];
   @tracked createAnswerErrors = [];
   @tracked postErrors = [];
+  @tracked createWorkspaceError = null;
   @tracked currentStep = { value: 1 };
   @tracked studentMap = {};
   @tracked submissionCount = 0;
@@ -519,6 +520,7 @@ export default class ImportWorkComponent extends Component {
   @action
   async createWorkspace(subs) {
     this.isCreatingWorkspace = true;
+    this.createWorkspaceError = null;
     this.isCompDirty = false;
     this.doConfirmLeaving(false);
     const ownerRecord = this.workspaceOwner || this.selectedOwner || null;
@@ -619,6 +621,7 @@ export default class ImportWorkComponent extends Component {
       );
     } catch (err) {
       this.isCreatingWorkspace = false;
+      this.createWorkspaceError = err?.message || 'Workspace creation failed';
       this.errorHandling.handleErrors(err, 'postErrors');
       this.alert.showToast(
         'error',
@@ -629,6 +632,11 @@ export default class ImportWorkComponent extends Component {
         null
       );
     }
+  }
+
+  @action
+  resetCreateWorkspaceError() {
+    this.createWorkspaceError = null;
   }
 
   @action

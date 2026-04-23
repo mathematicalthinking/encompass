@@ -24,6 +24,15 @@
 
   {{#if this.workspaceName}}
     <div class="import-review workspace">
+      {{#if this.createWorkspaceError}}
+        <div class='create-ws-error'>
+          <Ui::ErrorBox
+            @error={{this.createWorkspaceError}}
+            @showDismiss={{true}}
+            @resetError={{this.onResetWorkspaceError}}
+          />
+        </div>
+      {{/if}}
       {{#if this.createdWorkspace}}
         <p class="input-label">Created Workspace</p>
         <p class="success-info animated fadeIn"><b>{{this.workspaceName}}</b> was successfully created.
