@@ -43,7 +43,7 @@
         <ul>
           {{#if this.ellipsisMenuOptions}}
           {{#each this.ellipsisMenuOptions as |option|}}
-          <li {{action option.action}}>
+          <li {{action option.action bubbles=false}}>
             <label>
               <span class="icon-text">{{option.label}}</span>
               <i class={{option.icon}}></i>
@@ -74,7 +74,7 @@
           <ul>
             {{#if this.ellipsisMenuOptions}}
             {{#each this.ellipsisMenuOptions as |option|}}
-            <li {{action option.action}}>
+            <li {{action option.action bubbles=false}}>
               <label>
                 <span class="icon-text">{{option.label}}</span>
                 <i class={{option.icon}}></i>
@@ -147,5 +147,3 @@
     $('.click-menu').addClass('hidden');
   });
 </script>
-
-

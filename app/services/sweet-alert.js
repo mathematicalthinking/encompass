@@ -1,4 +1,5 @@
 import Service from '@ember/service';
+import Swal from 'sweetalert2';
 
 export default class SweetAlertService extends Service {
   successColor = '#CBFDCB';
@@ -23,9 +24,9 @@ export default class SweetAlertService extends Service {
 
   getSwalApi() {
     if (typeof window === 'undefined') {
-      return null;
+      return Swal || null;
     }
-    return window.Swal || window.swal || null;
+    return window.Swal || window.swal || Swal || null;
   }
 
   fire(config) {
