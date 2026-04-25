@@ -85,6 +85,87 @@ export default class ImportWorkComponent extends Component {
     return record[key];
   }
 
+  findRecordInCollection(collection, id) {
+    if (!collection || !id) {
+      return null;
+    }
+    const normalizedId = String(id);
+    const asArray =
+      typeof collection.toArray === 'function'
+        ? collection.toArray()
+        : Array.isArray(collection)
+        ? collection
+        : [];
+    return (
+      asArray.find((record) => {
+        const recordId =
+          this.getRecordId(record) ||
+          this.getRecordValue(record, 'id') ||
+          this.getRecordValue(record, '_id');
+        return String(recordId) === normalizedId;
+      }) || null
+    );
+  }
+
+  parseQueryBoolean(value) {
+    if (value === true || value === 'true') {
+      return true;
+    }
+    if (value === false || value === 'false') {
+      return false;
+    }
+    return null;
+  }
+
+  restoreInitialStateFromQuery() {
+    const maxStep = this.steps.length - 1;
+    const parsedStep = Number.parseInt(this.args.initialStep, 10);
+    let targetStep =
+      Number.isInteger(parsedStep) && parsedStep >= 1 && parsedStep <= maxStep
+        ? parsedStep
+        : 1;
+
+    const initialProblemId = this.args.initialProblemId;
+    if (initialProblemId) {
+      const selectedProblem =
+        this.store.peekRecord('problem', initialProblemId) ||
+        this.findRecordInCollection(
+          this.args.model?.problems,
+          initialProblemId
+        );
+      if (selectedProblem) {
+        this.selectedProblem = selectedProblem;
+      }
+    }
+
+    const initialSectionId = this.args.initialSectionId;
+    if (initialSectionId) {
+      const selectedSection =
+        this.store.peekRecord('section', initialSectionId) ||
+        this.findRecordInCollection(
+          this.args.model?.sections,
+          initialSectionId
+        );
+      if (selectedSection) {
+        this.selectedSection = selectedSection;
+      }
+    }
+
+    const initialUseClass = this.parseQueryBoolean(this.args.initialUseClass);
+    if (initialUseClass !== null) {
+      this.selectedValue = initialUseClass;
+    }
+
+    if (targetStep > 1 && !this.selectedProblem) {
+      targetStep = 1;
+    }
+    if (targetStep > 2 && this.selectedValue && !this.selectedSection) {
+      targetStep = 2;
+    }
+
+    this.currentStep = this.steps[targetStep];
+  }
+
   get showSelectProblem() {
     return this.currentStep.value === 1;
   }
@@ -153,6 +234,7 @@ export default class ImportWorkComponent extends Component {
   constructor(owner, args) {
     super(owner, args);
     this.sections = this.args.model?.sections || [];
+    this.restoreInitialStateFromQuery();
   }
 
   get users() {
@@ -475,7 +557,7 @@ export default class ImportWorkComponent extends Component {
         null;
 
       if (this.utils.isNonEmptyArray(studentNames)) {
-        creator.username = studentNames;
+        creator.username = studentNames[0];
       } else {
         creator.studentId =
           this.getRecordValue(student, 'userId') || this.getRecordId(student);

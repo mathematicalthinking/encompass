@@ -1,3 +1,11 @@
 {{page-title "New Class"}}
-<SectionNew @organization={{@model.organization}} @users={{@model.users}} @addableTeachers={{@model.addableTeachers}} />
-
+<SectionNew
+  @organization={{@model.organization}}
+  @users={{@model.users}}
+  @addableTeachers={{@model.addableTeachers}}
+  @returnTo={{this.returnTo}}
+  @returnStep={{this.returnStep}}
+  @importProblemId={{this.importProblemId}}
+  @importSectionId={{this.importSectionId}}
+  @importUseClass={{this.importUseClass}}
+/>

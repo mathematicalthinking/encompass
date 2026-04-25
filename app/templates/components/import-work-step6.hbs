@@ -8,7 +8,7 @@
       <p class="input-label">Import Summary</p>
       {{#if this.uploadedAnswers}}
         <p class="success-info animated fadeIn"><b>{{this.submissionCount}} submissions</b> have successfully been created as answers for <b>{{this.selectedProblem.title}}</b></p>
-        <p class="info  animated fadeIn">You can create a workspace from these submissions <LinkTo @route="workspaces.new">here</LinkTo></p>
+        <p class="info  animated fadeIn">You can create a workspace from these submissions <LinkTo @route="workspaces.new" target="_blank" rel="noopener noreferrer">here</LinkTo></p>
       {{else}}
         <p class="info"><b>{{this.submissionCount}} submissions</b> will be created in EnCoMPASS as answers for <b>{{this.selectedProblem.title}}</b></p>
         <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
@@ -36,7 +36,7 @@
       {{#if this.createdWorkspace}}
         <p class="input-label">Created Workspace</p>
         <p class="success-info animated fadeIn"><b>{{this.workspaceName}}</b> was successfully created.
-          View it <a href={{this.workspaceLink}}>here</a>
+          View it <a href={{this.workspaceLink}} target="_blank" rel="noopener noreferrer">here</a>
         </p>
       {{else}}
         <p class="input-label">Workspace to be created</p>
@@ -113,7 +113,7 @@
       {{#if this.createdAssignment}}
         <p class="input-label">Created Assignment</p>
         <p class="success-info animated fadeIn"><b>{{this.createdAssignment.name}}</b> was successfully created.
-          View it <LinkTo @route="assignments.assignment" @model={{this.createdAssignment}}>here</LinkTo>
+          View it <LinkTo @route="assignments.assignment" @model={{this.createdAssignment}} target="_blank" rel="noopener noreferrer">here</LinkTo>
         </p>
       {{else}}
         <p class="input-label">Assignment to be created</p>

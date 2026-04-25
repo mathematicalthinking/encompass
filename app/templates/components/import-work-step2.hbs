@@ -14,7 +14,17 @@
 />
 
 <p class='sub-input-label'>If you want, you can create a new class
-  <LinkTo @route='sections.new' class='new-link'>here</LinkTo></p>
+  <LinkTo
+    @route='sections.new'
+    @query={{hash
+      returnTo='import'
+      returnStep=2
+      importProblemId=this.selectedProblem.id
+      importSectionId=this.selectedSection.id
+      importUseClass=this.selectedValue
+    }}
+    class='new-link'
+  >here</LinkTo></p>
 
 {{#if this.selectingClass}}
   <p class='input-label class'>
