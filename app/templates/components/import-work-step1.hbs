@@ -12,9 +12,13 @@
   one
   <LinkTo
     @route='problems.new'
+    @query={{hash
+      returnTo='import'
+      importProblemId=this.selectedProblem.id
+      importSectionId=this.selectedSection.id
+      importUseClass=this.selectedValue
+    }}
     class='new-link'
-    target='_blank'
-    rel='noopener noreferrer'
   >here</LinkTo>.</p>
 <SelectizeInput
   @inputId='select-problem'

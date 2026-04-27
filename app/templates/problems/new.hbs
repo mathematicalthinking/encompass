@@ -1,4 +1,10 @@
 {{page-title 'New Problem'}}
 <div id='problem-new' class='side-info'>
-  <ProblemNew @organizations={{@model.organizations}} />
+  <ProblemNew
+    @organizations={{@model.organizations}}
+    @returnTo={{this.returnTo}}
+    @importProblemId={{this.importProblemId}}
+    @importSectionId={{this.importSectionId}}
+    @importUseClass={{this.importUseClass}}
+  />
 </div>
