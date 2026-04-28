@@ -1290,7 +1290,7 @@ function newWorkspace(submissionSet, user, folderSetId) {
     if (err) {
       console.error(`Error newWorkspace save: ${err}`);
     }
-    var wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
+    var wsInfo = { newWsId: ws._id, newWsOwner: ws.owner };
     var folderSetInfo = { folderSetId: folderSetId, folderSetObjects: null };
     newFolderStructure(user, wsInfo, folderSetInfo).then(function () {
       promise.resolve();
@@ -2258,7 +2258,7 @@ async function postWorkspaceEnc(req, res, next) {
       lastViewed: new Date(),
     });
     let ws = await workspace.save();
-    const wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
+    const wsInfo = { newWsId: ws._id, newWsOwner: ws.owner };
     const folderSetInfo = { folderSetId: folderSet, folderSetObjects: null };
 
     // creates new folders for workspace

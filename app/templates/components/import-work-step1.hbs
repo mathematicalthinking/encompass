@@ -10,12 +10,21 @@
 <p class='sub-input-label'>Start typing the name of the problem of which you
   would like to add existing work. If your problem does not exist yet, create
   one
-  <LinkTo @route='problems.new' class='new-link'>here</LinkTo>.</p>
+  <LinkTo
+    @route='problems.new'
+    @query={{hash
+      returnTo='import'
+      importProblemId=this.selectedProblem.id
+      importSectionId=this.selectedSection.id
+      importUseClass=this.selectedValue
+    }}
+    class='new-link'
+  >here</LinkTo>.</p>
 <SelectizeInput
   @inputId='select-problem'
   @isAsync={{true}}
   @maxItems={{1}}
-  @initialItems={{initialProblemItem}}
+  @initialItems={{this.initialProblemItem}}
   @onItemAdd={{action 'setSelectedProblem'}}
   @onItemRemove={{action 'setSelectedProblem'}}
   @labelField='title'
@@ -29,10 +38,10 @@
   @preload='focus'
 />
 
-{{#if missingProblem}}
+{{#if this.missingProblem}}
   <Ui::ErrorBox
     @error='Please select a problem'
-    @resetError={{action (mut missingProblem) null}}
+    @resetError={{action (mut this.missingProblem) null}}
     @showDismiss={{true}}
   />
 {{/if}}

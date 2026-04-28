@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { later } from '@ember/runloop';
+import { later, cancel } from '@ember/runloop';
 export default class ImageUploadComponent extends Component {
   @service('sweet-alert') alert;
   @service store;
@@ -77,14 +77,16 @@ export default class ImageUploadComponent extends Component {
       .then((res) => {
         let images = res.images;
         this.uploadedImages = images;
+        this.uploadErrors = [];
         this.store.pushPayload({ images });
 
         return res.images;
       })
       .catch((err) => {
         this.setShowLoadingMessage(false);
+        this.uploadErrors = [err?.message || 'Image upload failed'];
         this.errorHandling.handleErrors(err, 'uploadErrors');
-        return err;
+        return null;
       });
   }
 
@@ -101,18 +103,30 @@ export default class ImageUploadComponent extends Component {
 
       if (!response.ok) {
         // Read the error body to provide a meaningful message
-        let errorText = await response.text();
-        throw new Error(errorText);
+        let errorBody = await response.text();
+        let errorMessage = `Upload failed with status ${response.status}`;
+        if (errorBody) {
+          try {
+            let parsed = JSON.parse(errorBody);
+            errorMessage = parsed?.errors?.[0]?.detail || errorBody;
+          } catch (_err) {
+            errorMessage = errorBody;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       let data = await response.json();
       let { images } = data;
       this.uploadedPdfs = images;
+      this.uploadErrors = [];
       this.store.pushPayload({ images });
       return images;
     } catch (err) {
       this.setShowLoadingMessage(false);
-      this.errorHandling.handleErrors(err, 'uploadErrors', err);
+      this.uploadErrors = [err?.message || 'PDF upload failed'];
+      this.errorHandling.handleErrors(err, 'uploadErrors');
+      return null;
     }
   }
 
@@ -130,7 +144,7 @@ export default class ImageUploadComponent extends Component {
       // Hide immediately and cancel any pending timer
       this.showLoadingMessage = false;
       if (this.loadingMessageTimer) {
-        this.loadingMessageTimer.cancel();
+        cancel(this.loadingMessageTimer);
         this.loadingMessageTimer = null;
       }
     }
@@ -198,6 +212,7 @@ export default class ImageUploadComponent extends Component {
 
   @action
   uploadImages() {
+    this.uploadErrors = [];
     const uploadData = this.filesToBeUploaded;
     if (!uploadData) {
       this.setShowLoadingMessage(false);
@@ -234,65 +249,66 @@ export default class ImageUploadComponent extends Component {
     }
 
     if (imageCount > 0) {
-      return this.uploadImage(formData).then(() => {
+      return this.uploadImage(formData).then((images) => {
+        if (!Array.isArray(images) || images.length === 0) {
+          return;
+        }
         if (pdfCount > 0) {
-          return this.uploadPdf(pdfFormData).then(() => {
-            let results;
-            if (this.uploadedPdfs && this.uploadedImages) {
-              results = this.uploadedPdfs.concat(this.uploadedImages);
-              this.setShowLoadingMessage(false);
-              let fileModifier = results.length === 1 ? 'file' : 'files';
+          return this.uploadPdf(pdfFormData).then((pdfs) => {
+            if (!Array.isArray(pdfs) || pdfs.length === 0) {
+              return;
+            }
+            let results = pdfs.concat(images);
+            this.setShowLoadingMessage(false);
+            let fileModifier = results.length === 1 ? 'file' : 'files';
 
-              let msg = `Uploaded ${results.length} ${fileModifier} successfully`;
-              this.alert.showToast(
-                'success',
-                msg,
-                'bottom-end',
-                3000,
-                false,
-                null
-              );
-              if (this.handleUploadResults) {
-                this.handleUploadResults(results);
-              }
-              this.uploadResults = results;
-              if (this.doResetFilesAfterUpload) {
-                this.resetFileInput();
-              }
+            let msg = `Uploaded ${results.length} ${fileModifier} successfully`;
+            this.alert.showToast(
+              'success',
+              msg,
+              'bottom-end',
+              3000,
+              false,
+              null
+            );
+            if (typeof this.args.handleUploadResults === 'function') {
+              this.args.handleUploadResults(results);
+            }
+            this.uploadResults = results;
+            if (this.args.doResetFilesAfterUpload) {
+              this.resetFileInput();
             }
           });
         } else {
           this.setShowLoadingMessage(false);
-
-          let images = this.uploadedImages;
           let fileModifier = images.length === 1 ? 'file' : 'files';
 
           let msg = `Uploaded ${images.length} ${fileModifier} successfully`;
           this.alert.showToast('success', msg, 'bottom-end', 3000, false, null);
-          if (this.handleUploadResults) {
-            this.handleUploadResults(images);
+          if (typeof this.args.handleUploadResults === 'function') {
+            this.args.handleUploadResults(images);
           }
-          this.uploadResults = this.uploadedImages;
-          if (this.doResetFilesAfterUpload) {
+          this.uploadResults = images;
+          if (this.args.doResetFilesAfterUpload) {
             this.resetFileInput();
           }
         }
       });
     } else if (pdfCount > 0) {
-      return this.uploadPdf(pdfFormData).then(() => {
+      return this.uploadPdf(pdfFormData).then((pdfs) => {
+        if (!Array.isArray(pdfs) || pdfs.length === 0) {
+          return;
+        }
         this.setShowLoadingMessage(false);
-
-        let pdfs = this.uploadedPdfs;
-
         let fileModifier = pdfs.length === 1 ? 'file' : 'files';
 
         let msg = `Uploaded ${pdfs.length} ${fileModifier} successfully`;
         this.alert.showToast('success', msg, 'bottom-end', 3000, false, null);
-        if (this.handleUploadResults) {
-          this.handleUploadResults(pdfs);
+        if (typeof this.args.handleUploadResults === 'function') {
+          this.args.handleUploadResults(pdfs);
         }
-        this.uploadResults = this.uploadedPdfs;
-        if (this.doResetFilesAfterUpload) {
+        this.uploadResults = pdfs;
+        if (this.args.doResetFilesAfterUpload) {
           this.resetFileInput();
         }
       });
@@ -306,8 +322,8 @@ export default class ImageUploadComponent extends Component {
     }
 
     this.filesToBeUploaded = event.target.form.firstElementChild.files;
-    if (this.storeFiles) {
-      this.storeFiles(event.target.form.firstElementChild.files);
+    if (typeof this.args.storeFiles === 'function') {
+      this.args.storeFiles(event.target.form.firstElementChild.files);
     }
   }
 }

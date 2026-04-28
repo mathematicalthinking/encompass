@@ -1,12 +1,16 @@
-import Component, { tracked } from '@glimmer/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { service } from '@ember/service';
 
 export default class ImportWorkComponent extends Component {
+  @service store;
+  @service('sweet-alert') alert;
+  @service('error-handling') errorHandling;
+  @service('utility-methods') utils;
+  @service('current-user') currentUser;
+
   @tracked elementId = 'import-work-container';
-  @tracked alert = 'sweet-alert';
-  @tracked errorHandling = 'error-handling';
-  @tracked utils = 'utility-methods';
-  @tracked currentUser = 'current-user';
   @tracked selectedProblem = null;
   @tracked selectedSection = null;
   @tracked selectedOwner = null;
@@ -33,7 +37,13 @@ export default class ImportWorkComponent extends Component {
   @tracked findRecordErrors = [];
   @tracked createAnswerErrors = [];
   @tracked postErrors = [];
+  @tracked createWorkspaceError = null;
   @tracked currentStep = { value: 1 };
+  @tracked studentMap = {};
+  @tracked submissionCount = 0;
+  @tracked createdAssignment = null;
+  @tracked isCompDirty = false;
+  @tracked isFetchingSectionStudents = false;
   @tracked steps = [
     { value: 0 },
     { value: 1 },
@@ -43,6 +53,118 @@ export default class ImportWorkComponent extends Component {
     { value: 5 },
     { value: 6 },
   ];
+
+  getRecordId(record) {
+    if (!record) {
+      return null;
+    }
+    const proxiedContent = record.content || record._content || null;
+    if (proxiedContent && proxiedContent !== record) {
+      const proxiedId = this.getRecordId(proxiedContent);
+      if (proxiedId) {
+        return proxiedId;
+      }
+    }
+    return (
+      record.id ||
+      record._id ||
+      record.userId ||
+      (typeof record.get === 'function'
+        ? record.get('id') || record.get('_id') || record.get('userId')
+        : null)
+    );
+  }
+
+  getRecordValue(record, key) {
+    if (!record) {
+      return null;
+    }
+    if (typeof record.get === 'function') {
+      return record.get(key);
+    }
+    return record[key];
+  }
+
+  findRecordInCollection(collection, id) {
+    if (!collection || !id) {
+      return null;
+    }
+    const normalizedId = String(id);
+    const asArray =
+      typeof collection.toArray === 'function'
+        ? collection.toArray()
+        : Array.isArray(collection)
+        ? collection
+        : [];
+    return (
+      asArray.find((record) => {
+        const recordId =
+          this.getRecordId(record) ||
+          this.getRecordValue(record, 'id') ||
+          this.getRecordValue(record, '_id');
+        return String(recordId) === normalizedId;
+      }) || null
+    );
+  }
+
+  parseQueryBoolean(value) {
+    if (value === true || value === 'true') {
+      return true;
+    }
+    if (value === false || value === 'false') {
+      return false;
+    }
+    return null;
+  }
+
+  restoreInitialStateFromQuery() {
+    const maxStep = this.steps.length - 1;
+    const parsedStep = Number.parseInt(this.args.initialStep, 10);
+    let targetStep =
+      Number.isInteger(parsedStep) && parsedStep >= 1 && parsedStep <= maxStep
+        ? parsedStep
+        : 1;
+
+    const initialProblemId = this.args.initialProblemId;
+    if (initialProblemId) {
+      const selectedProblem =
+        this.store.peekRecord('problem', initialProblemId) ||
+        this.findRecordInCollection(
+          this.args.model?.problems,
+          initialProblemId
+        );
+      if (selectedProblem) {
+        this.selectedProblem = selectedProblem;
+      }
+    }
+
+    const initialSectionId = this.args.initialSectionId;
+    if (initialSectionId) {
+      const selectedSection =
+        this.store.peekRecord('section', initialSectionId) ||
+        this.findRecordInCollection(
+          this.args.model?.sections,
+          initialSectionId
+        );
+      if (selectedSection) {
+        this.selectedSection = selectedSection;
+      }
+    }
+
+    const initialUseClass = this.parseQueryBoolean(this.args.initialUseClass);
+    if (initialUseClass !== null) {
+      this.selectedValue = initialUseClass;
+    }
+
+    if (targetStep > 1 && !this.selectedProblem) {
+      targetStep = 1;
+    }
+    if (targetStep > 2 && this.selectedValue && !this.selectedSection) {
+      targetStep = 2;
+    }
+
+    this.currentStep = this.steps[targetStep];
+  }
 
   get showSelectProblem() {
     return this.currentStep.value === 1;
@@ -111,7 +233,40 @@ export default class ImportWorkComponent extends Component {
 
   constructor(owner, args) {
     super(owner, args);
-    this.sections = this.args.model.sections;
+    this.sections = this.args.model?.sections || [];
+    this.restoreInitialStateFromQuery();
+  }
+
+  get users() {
+    return this.args.users || [];
+  }
+
+  get folderSets() {
+    return this.args.model?.folderSets || [];
+  }
+
+  doConfirmLeaving(value) {
+    if (typeof this.args.doConfirmLeaving === 'function') {
+      this.args.doConfirmLeaving(value);
+    }
+  }
+
+  toWorkspaces(workspace) {
+    if (!workspace?._id) {
+      return;
+    }
+
+    if (typeof this.args.toWorkspaces === 'function') {
+      this.args.toWorkspaces(workspace);
+      return;
+    }
+
+    const firstSubmissionId = workspace.submissions?.[0];
+    if (firstSubmissionId) {
+      window.location.href = `#/workspaces/${workspace._id}/submissions/${firstSubmissionId}`;
+      return;
+    }
+    window.location.href = `#/workspaces/${workspace._id}/work`;
   }
 
   @action
@@ -131,10 +286,11 @@ export default class ImportWorkComponent extends Component {
 
   @action
   resetImportDetails() {
-    const opts = ['selectedProblem', 'selectedSection', 'uploadedFiles'];
+    const opts = ['selectedProblem', 'selectedSection'];
     opts.forEach((opt) => {
       this[opt] = null;
     });
+    this.uploadedFiles = [];
   }
 
   @action
@@ -181,6 +337,7 @@ export default class ImportWorkComponent extends Component {
     }
   }
 
+  @action
   setSelectedProblem() {
     this.currentStep = this.steps[2];
   }
@@ -194,7 +351,12 @@ export default class ImportWorkComponent extends Component {
     const students = await this.getSectionStudents(section);
     this.isFetchingSectionStudents = false;
 
-    const asArray = students.toArray();
+    const asArray =
+      typeof students?.toArray === 'function'
+        ? students.toArray()
+        : Array.isArray(students)
+        ? students
+        : [];
     const hash = {};
     asArray.forEach((user) => {
       hash[user.id] = user;
@@ -205,37 +367,57 @@ export default class ImportWorkComponent extends Component {
 
   @action
   setUploadedFiles(files) {
-    this.uploadedFiles = files;
-    this.send('loadStudentMatching');
+    this.uploadedFiles = Array.isArray(files) ? files : [];
+    this.loadStudentMatching();
   }
 
   @action
   setMatchedStudents() {
     let submissionCount = 0;
-    this.answers.forEach((answer) => {
-      submissionCount += answer.students.length + answer.studentNames.length;
+    (this.answers || []).forEach((answer) => {
+      const studentsCount = Array.isArray(answer.students)
+        ? answer.students.length
+        : 0;
+      const studentNamesCount = Array.isArray(answer.studentNames)
+        ? answer.studentNames.length
+        : 0;
+      submissionCount += studentsCount + studentNamesCount;
     });
     this.submissionCount = submissionCount;
     this.currentStep = this.steps[5];
   }
   @action
-  prepareReview() {
+  prepareReview(config = null) {
+    if (this.utils.isNonEmptyObject(config)) {
+      this.doCreateWs = config.doCreateWs === true;
+      this.createAssignmentValue = config.createAssignmentValue === true;
+      this.selectedOwner = config.selectedOwner || null;
+      this.selectedFolderSet = config.selectedFolderSet || null;
+      this.selectedMode = config.selectedMode || 'private';
+      this.workspaceName = config.workspaceName || null;
+      this.workspaceOwner = config.workspaceOwner || null;
+      this.workspaceMode = config.workspaceMode || null;
+      this.folderSet = config.folderSet || null;
+      this.assignmentName = config.assignmentName || null;
+    }
     this.currentStep = this.steps[6];
   }
 
   @action
   async loadStudentMatching() {
-    const images = this.uploadedFiles;
+    const images = Array.isArray(this.uploadedFiles) ? this.uploadedFiles : [];
     const answers = images.map((image) => {
       const record = this.store.peekRecord('image', image._id);
       const url = `/api/images/file/${image._id}`;
       const imgStr = `<img src='${url}'>`;
       return {
         explanation: imgStr,
-        explanationImage: record,
+        explanationImage: record || image,
         problem: this.selectedProblem,
         section: this.selectedSection,
         isSubmitted: true,
+        students: [],
+        studentNames: [],
       };
     });
 
@@ -251,70 +433,98 @@ export default class ImportWorkComponent extends Component {
 
   @action
   async uploadAnswers() {
-    let that = this;
     this.isUploadingAnswer = true;
-    let answers = this.answers;
-    let assignment = this.createdAssignment ? this.createdAssignment : null;
+    let answers = this.answers || [];
+    let assignment = this.createdAssignment || null;
     try {
-      const allAnswers = await Promise.all(
+      const allAnswerEntries = await Promise.all(
         answers.map(async (answer) => {
           if (this.utils.isNonEmptyArray(answer.students)) {
             return Promise.all(
               answer.students.map(async (student) => {
-                let ans = that.store.createRecord('answer', answer);
+                let ans = this.store.createRecord('answer', answer);
                 ans.answer = 'See Image';
-                ans.section = that.selectedSection;
-                ans.problem = that.selectedProblem;
+                ans.section = this.selectedSection;
+                ans.problem = this.selectedProblem;
                 ans.assignment = assignment;
                 ans.createdBy = student;
                 await ans.save();
-                return ans;
+                return {
+                  answerRecord: ans,
+                  creatorStudent: student,
+                  studentNames: [],
+                };
               })
             );
           }
           if (this.utils.isNonEmptyArray(answer.studentNames)) {
             return Promise.all(
               answer.studentNames.map(async (student) => {
-                let ans = that.store.createRecord('answer', answer);
+                let ans = this.store.createRecord('answer', answer);
                 ans.answer = 'See Image';
-                ans.section = that.selectedSection;
-                ans.problem = that.selectedProblem;
+                ans.section = this.selectedSection;
+                ans.problem = this.selectedProblem;
                 ans.assignment = assignment;
-                ans.createdBy = that.currentUser.user;
-                ans.studentNames = student;
+                ans.createdBy = this.currentUser.user;
+                ans.studentNames = [student];
                 await ans.save();
-                return ans;
+                return {
+                  answerRecord: ans,
+                  creatorStudent: this.currentUser.user,
+                  studentNames: [student],
+                };
               })
             );
           }
+          return [];
         })
       );
-      const flattenedAnswers = allAnswers.flat(1);
+      const flattenedAnswerEntries = allAnswerEntries.flat(1);
       this.alert.showToast(
         'success',
-        `${flattenedAnswers.length} Submissions Created`,
+        `${flattenedAnswerEntries.length} Submissions Created`,
         'bottom-end',
         3000,
         false,
         null
       );
-      this.uploadAnswers = true;
-      if (this.workspaceName) {
+      this.uploadedAnswers = true;
+      const normalizedWorkspaceName =
+        typeof this.workspaceName === 'string'
+          ? this.workspaceName.trim()
+          : this.workspaceName;
+      const shouldCreateWorkspace = Boolean(normalizedWorkspaceName);
+      this.workspaceName = normalizedWorkspaceName || null;
+      if (shouldCreateWorkspace) {
         this.isUploadingAnswer = false;
         this.isCreatingWorkspace = true;
-        this.uploadedAnswers = true;
-        this.createSubmissions(flattenedAnswers);
+        await this.createSubmissions(flattenedAnswerEntries);
       } else {
+        this.isUploadingAnswer = false;
         this.isCompDirty = false;
         this.doConfirmLeaving(false);
       }
     } catch (err) {
+      this.isUploadingAnswer = false;
+      this.isCreatingWorkspace = false;
       this.errorHandling.handleErrors(err, 'createAnswerErrors');
+      this.alert.showToast(
+        'error',
+        err?.message || 'Failed while preparing workspace submissions',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
     }
   }
   @action
-  createSubmissions(answers) {
-    let subs = answers.map((ans) => {
+  createSubmissions(answerEntries) {
+    if (!Array.isArray(answerEntries) || answerEntries.length === 0) {
+      throw new Error('No submissions were prepared for workspace creation.');
+    }
+    let subs = answerEntries.map((entry) => {
+      const ans = entry?.answerRecord || entry;
       const clazz = {};
       const publication = {
         publicationId: null,
@@ -322,32 +532,62 @@ export default class ImportWorkComponent extends Component {
       };
       const creator = {};
       const teacher = {};
-      const student = ans.createdBy;
-      const section = ans.section;
-      const problem = ans.problem;
-      const studentNames = ans.studentNames;
+      const student =
+        entry?.creatorStudent || this.getRecordValue(ans, 'createdBy');
+      const section =
+        this.getRecordValue(ans, 'section') || this.selectedSection;
+      const problem =
+        this.getRecordValue(ans, 'problem') || this.selectedProblem;
+      const entryStudentNames = Array.isArray(entry?.studentNames)
+        ? entry.studentNames
+        : [];
+      const ansStudentNames = this.getRecordValue(ans, 'studentNames');
+      const studentNames = this.utils.isNonEmptyArray(entryStudentNames)
+        ? entryStudentNames
+        : this.utils.isNonEmptyArray(ansStudentNames)
+        ? ansStudentNames
+        : [];
 
-      publication.puzzle.title = this.selectedProblem.title;
-      publication.puzzle.problemId = problem.problemId;
+      publication.puzzle.title =
+        this.getRecordValue(this.selectedProblem, 'title') || '';
+      publication.puzzle.problemId =
+        this.getRecordValue(problem, 'problemId') ||
+        this.getRecordValue(problem, 'id') ||
+        this.getRecordId(problem) ||
+        null;
 
       if (this.utils.isNonEmptyArray(studentNames)) {
-        creator.username = studentNames;
+        creator.username = studentNames[0];
       } else {
-        creator.studentId = student.userId;
-        creator.username = student.username;
+        creator.studentId =
+          this.getRecordValue(student, 'userId') || this.getRecordId(student);
+        creator.username =
+          this.getRecordValue(student, 'username') ||
+          this.getRecordValue(student, 'name') ||
+          '';
       }
 
-      if (this.utils.isNonEmptyObject(section.content)) {
-        clazz.sectionId = section.sectionId;
-        clazz.name = section.name;
-        const teachers = section.teachers;
-        const primaryTeacher = teachers.firstObject;
-        teacher.id = primaryTeacher.userId;
+      if (section) {
+        clazz.sectionId =
+          this.getRecordValue(section, 'sectionId') ||
+          this.getRecordId(section);
+        clazz.name = this.getRecordValue(section, 'name') || '';
+        const teachers = this.getRecordValue(section, 'teachers');
+        const primaryTeacher =
+          teachers?.firstObject ||
+          (Array.isArray(teachers) ? teachers[0] : null) ||
+          null;
+        if (primaryTeacher) {
+          teacher.id =
+            this.getRecordValue(primaryTeacher, 'userId') ||
+            this.getRecordId(primaryTeacher);
+        }
       }
 
+      const answerId = this.getRecordId(ans);
       let sub = {
         // longAnswer: ans.explanation,
-        answer: ans.id,
+        answer: answerId,
         clazz: clazz,
         creator: creator,
         teacher: teacher,
@@ -355,59 +595,130 @@ export default class ImportWorkComponent extends Component {
       };
       return sub;
     });
-    this.createWorkspace(subs);
+
+    return this.createWorkspace(subs);
   }
 
   @action
   async createWorkspace(subs) {
     this.isCreatingWorkspace = true;
+    this.createWorkspaceError = null;
     this.isCompDirty = false;
     this.doConfirmLeaving(false);
-    let folderSetId;
-    let folderSet = this.folderSet;
-    if (folderSet) {
-      folderSetId = folderSet.id;
-    } else {
-      folderSetId = '';
+    const ownerRecord = this.workspaceOwner || this.selectedOwner || null;
+    const workspaceOwnerId =
+      this.getRecordId(ownerRecord) || this.getRecordId(this.currentUser?.user);
+    const folderSetRecord = this.folderSet || this.selectedFolderSet || null;
+    const folderSetId = this.getRecordId(folderSetRecord) || '';
+    const workspaceMode = this.workspaceMode || this.selectedMode || 'private';
+    const requestedName =
+      typeof this.workspaceName === 'string'
+        ? this.workspaceName.trim()
+        : this.workspaceName;
+    const safeRequestedName =
+      requestedName || `Imported Workspace ${new Date().toISOString()}`;
+
+    if (!workspaceOwnerId) {
+      this.isCreatingWorkspace = false;
+      const msg = 'Workspace owner is required to create workspace';
+      this.errorHandling.handleErrors(new Error(msg), 'postErrors');
+      this.alert.showToast('error', msg, 'bottom-end', 4000, false, null);
+      return;
     }
 
     let postData = {
       subs: JSON.stringify(subs),
       doCreateWorkspace: true,
-      workspaceOwner: JSON.stringify(this.workspaceOwner.id),
-      requestedName: JSON.stringify(this.workspaceName),
-      workspaceMode: JSON.stringify(this.workspaceMode),
+      workspaceOwner: JSON.stringify(workspaceOwnerId),
+      requestedName: JSON.stringify(safeRequestedName),
+      workspaceMode: JSON.stringify(workspaceMode),
       folderSet: JSON.stringify(folderSetId),
     };
-
     try {
-      const res = await fetch('api/import', {
-        method: 'POST',
-        body: JSON.stringify(postData),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
-      this.isCreatingWorkspace = false;
-      if (data.workspace) {
-        this.createdWorkspace = data.workspace;
-        let hasCreatedAssignment = this.createdAssignment;
-        if (!this.utils.isNonEmptyObject(hasCreatedAssignment)) {
-          this.toWorkspaces(data.workspace);
+      let timeoutId;
+      const requestTimeoutMs = 45000;
+      const res = await Promise.race([
+        fetch('/api/import', {
+          method: 'POST',
+          body: JSON.stringify(postData),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }),
+        new Promise((_, reject) => {
+          timeoutId = setTimeout(() => {
+            reject(
+              new Error(
+                'Workspace creation timed out. It may still finish in the background.'
+              )
+            );
+          }, requestTimeoutMs);
+        }),
+      ]).finally(() => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
         }
-        this.alert.showToast(
-          'success',
-          'Workspace Created',
-          'bottom-end',
-          4000,
-          false,
-          null
+      });
+      const raw = await res.text();
+      let data = {};
+      if (raw) {
+        try {
+          data = JSON.parse(raw);
+        } catch (_err) {
+          data = { message: raw };
+        }
+      }
+
+      if (!res.ok) {
+        const message =
+          data?.errors?.[0]?.detail ||
+          data?.message ||
+          `Workspace creation failed with status ${res.status}`;
+        throw new Error(message);
+      }
+
+      const createdWorkspace =
+        data.workspace ||
+        (Array.isArray(data.workspaces) ? data.workspaces[0] : null);
+
+      if (!createdWorkspace) {
+        throw new Error(
+          'Workspace was not created. No workspace payload returned.'
         );
       }
+
+      this.isCreatingWorkspace = false;
+      this.createdWorkspace = createdWorkspace;
+      let hasCreatedAssignment = this.createdAssignment;
+      if (!this.utils.isNonEmptyObject(hasCreatedAssignment)) {
+        this.toWorkspaces(createdWorkspace);
+      }
+      this.alert.showToast(
+        'success',
+        'Workspace Created',
+        'bottom-end',
+        4000,
+        false,
+        null
+      );
     } catch (err) {
+      this.isCreatingWorkspace = false;
+      this.createWorkspaceError = err?.message || 'Workspace creation failed';
       this.errorHandling.handleErrors(err, 'postErrors');
+      this.alert.showToast(
+        'error',
+        err?.message || 'Workspace creation failed',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
     }
+  }
+
+  @action
+  resetCreateWorkspaceError() {
+    this.createWorkspaceError = null;
   }
 
   @action
@@ -451,6 +762,7 @@ export default class ImportWorkComponent extends Component {
         );
         this.uploadAnswers();
       } catch (err) {
+        this.savingAssignment = false;
         this.errorHandling.handleErrors(
           err,
           'createRecordErrors',
@@ -471,10 +783,13 @@ export default class ImportWorkComponent extends Component {
 
   @action
   toggleMenu() {
-    document.getElementById('filter-list-side').classList.toggle('collapse');
-    document.getElementById('arrow-icon').classList.toggle('fa-rotate-180');
-    document
-      .getElementById('filter-list-side')
-      .classList.add('animated', 'slideInLeft');
+    const filter = document.getElementById('filter-list-side');
+    const arrow = document.getElementById('arrow-icon');
+    if (!filter || !arrow) {
+      return;
+    }
+    filter.classList.toggle('collapse');
+    arrow.classList.toggle('fa-rotate-180');
+    filter.classList.add('animated', 'slideInLeft');
   }
 }

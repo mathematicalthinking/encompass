@@ -12,23 +12,23 @@
 <ImageUpload
   @class='form-file'
   @handleUploadResults={{action 'updateCurrentFiles'}}
-  @filesToBeUploaded={{selectedFiles}}
+  @filesToBeUploaded={{this.selectedFiles}}
   @acceptMultiple={{true}}
   @doResetFilesAfterUpload={{true}}
 />
 
-{{#if missingFiles}}
+{{#if this.missingFiles}}
   <Ui::ErrorBox
     @error='You must upload at least one file to continue'
-    @resetError={{action (mut missingFiles) null}}
+    @resetError={{action (mut this.missingFiles) null}}
     @showDismiss={{true}}
   />
 {{/if}}
 
-{{#if uploadedFiles}}
+{{#if this.uploadedFiles}}
   <h5> Uploaded Files</h5>
   <ul>
-    {{#each uploadedFiles as |f|}}
+    {{#each this.uploadedFiles as |f|}}
       <li>
 
         {{f.originalname}}

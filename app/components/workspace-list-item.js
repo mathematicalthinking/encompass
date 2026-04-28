@@ -172,7 +172,11 @@ export default Component.extend({
             workspace
               .save()
               .then((workspace) => {
-                if (this.showMoreMenu) {
+                if (
+                  !this.isDestroyed &&
+                  !this.isDestroying &&
+                  this.showMoreMenu
+                ) {
                   this.set('showMoreMenu', false);
                 }
                 this.alert
@@ -226,7 +230,11 @@ export default Component.extend({
             user
               .save()
               .then((user) => {
-                if (this.showMoreMenu) {
+                if (
+                  !this.isDestroyed &&
+                  !this.isDestroying &&
+                  this.showMoreMenu
+                ) {
                   this.set('showMoreMenu', false);
                 }
                 this.alert
@@ -278,7 +286,11 @@ export default Component.extend({
             workspace
               .save()
               .then(() => {
-                if (this.showMoreMenu) {
+                if (
+                  !this.isDestroyed &&
+                  !this.isDestroying &&
+                  this.showMoreMenu
+                ) {
                   this.set('showMoreMenu', false);
                 }
                 this.alert.showToast(

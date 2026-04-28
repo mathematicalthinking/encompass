@@ -67,6 +67,30 @@ export default class SectionNewComponent extends Component {
     return this.errorHandling.getErrors('organizationFormErrors');
   }
 
+  get showBackToImport() {
+    return this.args.returnTo === 'import';
+  }
+
+  get importQueryParams() {
+    const queryParams = {
+      step: this.args.returnStep || 1,
+    };
+    if (this.args.importProblemId) {
+      queryParams.problemId = this.args.importProblemId;
+    }
+    if (this.args.importSectionId) {
+      queryParams.sectionId = this.args.importSectionId;
+    }
+    if (
+      this.args.importUseClass !== null &&
+      this.args.importUseClass !== undefined &&
+      this.args.importUseClass !== ''
+    ) {
+      queryParams.useClass = this.args.importUseClass;
+    }
+    return queryParams;
+  }
+
   @action async createSection() {
     const newSectionName = this.newSectionName;
     let teacher = this.teacher;
@@ -124,6 +148,17 @@ export default class SectionNewComponent extends Component {
         false,
         null
       );
+      if (this.showBackToImport) {
+        this.router.transitionTo('import', {
+          queryParams: {
+            ...this.importQueryParams,
+            step: 2,
+            sectionId: section.id,
+            useClass: true,
+          },
+        });
+        return;
+      }
       this.router.transitionTo('sections.section', section.id);
     } catch (err) {
       this.errorHandling.handleErrors(err, 'createRecordErrors', sectionData);
@@ -145,6 +180,12 @@ export default class SectionNewComponent extends Component {
 
   @action
   cancel() {
+    if (this.showBackToImport) {
+      this.router.transitionTo('import', {
+        queryParams: this.importQueryParams,
+      });
+      return;
+    }
     this.router.transitionTo('sections');
   }
 }

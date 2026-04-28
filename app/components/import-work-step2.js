@@ -2,7 +2,6 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
 import { service } from '@ember/service';
-import isNull from 'lodash-es/isNull';
 
 export default Component.extend({
   elementId: 'import-work-step2',
@@ -46,7 +45,7 @@ export default Component.extend({
         return;
       }
 
-      const isRemoval = isNull($item);
+      const isRemoval = this.utils.isNullOrUndefined($item);
       if (isRemoval) {
         this.set('selectedSection', null);
         return;

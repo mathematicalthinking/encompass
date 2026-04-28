@@ -7,6 +7,7 @@ import config from './config/environment';
 
 // export for others scripts to use
 window.$ = $;
+window.jQuery = $;
 
 $.ajaxSetup({
   xhrFields: {

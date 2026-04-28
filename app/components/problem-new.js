@@ -60,6 +60,49 @@ export default class ProblemNewComponent extends Component {
     return this.errorHandling.getErrors('imageUploadErrors') || [];
   }
 
+  get importQueryParams() {
+    const queryParams = {
+      step: 1,
+    };
+    if (this.args.importSectionId) {
+      queryParams.sectionId = this.args.importSectionId;
+    }
+    if (
+      this.args.importUseClass !== null &&
+      this.args.importUseClass !== undefined &&
+      this.args.importUseClass !== ''
+    ) {
+      queryParams.useClass = this.args.importUseClass;
+    }
+    if (this.args.importProblemId) {
+      queryParams.problemId = this.args.importProblemId;
+    }
+    return queryParams;
+  }
+
+  transitionToImport(problemId = null) {
+    const queryParams = problemId
+      ? { ...this.importQueryParams, problemId }
+      : this.importQueryParams;
+    this.router.transitionTo('import', { queryParams });
+  }
+
+  transitionAfterCreate(problemId) {
+    if (this.args.returnTo === 'import') {
+      this.transitionToImport(problemId);
+      return;
+    }
+    this.router.transitionTo('problems.problem', problemId);
+  }
+
+  transitionAfterCancel() {
+    if (this.args.returnTo === 'import') {
+      this.transitionToImport();
+      return;
+    }
+    this.router.transitionTo('problems');
+  }
+
   constructor() {
     super(...arguments);
     // if the outlet exists (where this component appears in the parent), show it
@@ -175,9 +218,7 @@ export default class ProblemNewComponent extends Component {
                     false,
                     null
                   );
-                  // let parentView = this.parentView;
-                  // this.get('parentActions.refreshList').call(parentView);
-                  this.router.transitionTo('problems.problem', problem.id);
+                  this.transitionAfterCreate(problem.id);
                 })
                 .catch((err) => {
                   if (
@@ -223,7 +264,7 @@ export default class ProblemNewComponent extends Component {
                     false,
                     null
                   );
-                  this.router.transitionTo('problems.problem', problem.id);
+                  this.transitionAfterCreate(problem.id);
                 })
                 .catch((err) => {
                   if (
@@ -256,9 +297,7 @@ export default class ProblemNewComponent extends Component {
             false,
             null
           );
-          // let parentView = this.parentView;
-          // this.get('parentActions.refreshList').call(parentView);
-          this.router.transitionTo('problems.problem', res.id);
+          this.transitionAfterCreate(res.id);
         })
         .catch((err) => {
           if (
@@ -338,7 +377,7 @@ export default class ProblemNewComponent extends Component {
   @action
   cancelProblem() {
     document.getElementById('outlet')?.classList.add('hidden');
-    this.router.transitionTo('problems');
+    this.transitionAfterCancel();
   }
 
   @action setFileToUpload(file) {
@@ -359,7 +398,7 @@ export default class ProblemNewComponent extends Component {
   @action
   hideInfo() {
     document.getElementById('outlet')?.classList.add('hidden');
-    this.router.transitionTo('problems');
+    this.transitionAfterCancel();
   }
 
   @action confirmCreatePublic() {

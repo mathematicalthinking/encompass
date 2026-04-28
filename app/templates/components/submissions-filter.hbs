@@ -199,11 +199,23 @@
       />
     {{/if}}
 
-    <button
-      class='primary-button search-answers'
-      type='button'
-      {{action 'buildCriteria'}}
-    >Search</button>
+    <li>
+      <div class='search-action'>
+        <button
+          class='primary-button search-answers'
+          type='button'
+          {{action 'buildCriteria'}}
+        >Search</button>
+      </div>
+    </li>
+    <li>
+      <div class='import-action'>
+        <LinkTo
+          @route='import'
+          class='primary-button search-answers'
+        >Import Assignment</LinkTo>
+      </div>
+    </li>
   </ul>
 </div>
 

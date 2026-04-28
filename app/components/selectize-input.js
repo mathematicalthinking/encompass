@@ -2,8 +2,8 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-import 'selectize';
-import $ from 'jquery';
+import $ from 'jquery/dist/jquery.js';
+import 'selectize/dist/js/standalone/selectize.js';
 
 export default class SelectizeInputComponent extends Component {
   @service store;
@@ -14,6 +14,21 @@ export default class SelectizeInputComponent extends Component {
   @tracked metaData;
 
   @tracked selectizeInstance;
+
+  getSelectizeJQuery() {
+    const globalJQ =
+      typeof window !== 'undefined' ? window.jQuery || window.$ : null;
+
+    if (typeof $.fn?.selectize === 'function') {
+      return $;
+    }
+
+    if (typeof globalJQ?.fn?.selectize === 'function') {
+      return globalJQ;
+    }
+
+    return null;
+  }
 
   // Fetch initial options if they are not provided
   async fetchInitialOptions() {
@@ -43,7 +58,15 @@ export default class SelectizeInputComponent extends Component {
     }
 
     const optionsHash = this.configureOptionsHash();
-    const selectizeInstance = $(element).selectize(optionsHash);
+    const jq = this.getSelectizeJQuery();
+    if (!jq) {
+      console.error(
+        'Selectize plugin is not available on jQuery. Ensure selectize is loaded before component init.'
+      );
+      return;
+    }
+
+    const selectizeInstance = jq(element).selectize(optionsHash);
     this.selectizeInstance = selectizeInstance[0].selectize;
 
     if (this.args.isDisabled) {

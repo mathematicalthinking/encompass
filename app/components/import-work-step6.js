@@ -1,9 +1,9 @@
 import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
-import { later } from '@ember/runloop';
+import { computed } from '@ember/object';
+import { or } from '@ember/object/computed';
 
 export default Component.extend({
-  elementId: 'import-work-step6',
+  tagName: '',
 
   shouldHideButtons: computed(
     'isUploadingAnswer',
@@ -28,32 +28,23 @@ export default Component.extend({
     'isCreatingWorkspace',
     'createdWorkspace',
     function () {
-      let createdWorkspace = this.createdWorkspace;
-      return `/#/workspaces/${createdWorkspace._id}/submissions/${createdWorkspace.submissions[0]}`;
+      const createdWorkspace = this.createdWorkspace;
+      const workspaceId = createdWorkspace?._id;
+      if (!workspaceId) {
+        return '/#/workspaces';
+      }
+      const firstSubmissionId = createdWorkspace?.submissions?.[0];
+      if (!firstSubmissionId) {
+        return `/#/workspaces/${workspaceId}/work`;
+      }
+      return `/#/workspaces/${workspaceId}/submissions/${firstSubmissionId}`;
     }
   ),
 
-  handleLoadingMessage: observer(
+  showLoadingMessage: or(
     'isUploadingAnswer',
     'isCreatingWorkspace',
-    'savingAssignment',
-    function () {
-      const that = this;
-      if (
-        !this.isUploadingAnswer ||
-        !this.isCreatingWorkspace ||
-        this.savingAssignment
-      ) {
-        this.set('showLoadingMessage', false);
-        return;
-      }
-      later(function () {
-        if (that.isDestroyed || that.isDestroying) {
-          return;
-        }
-        that.set('showLoadingMessage', true);
-      }, 800);
-    }
+    'savingAssignment'
   ),
 
   actions: {

@@ -22,6 +22,27 @@ export default class SweetAlertService extends Service {
     }
   }
 
+  getSwalApi() {
+    if (typeof window === 'undefined') {
+      return Swal || null;
+    }
+    return window.Swal || window.swal || Swal || null;
+  }
+
+  fire(config) {
+    const api = this.getSwalApi();
+    if (!api) {
+      return Promise.resolve(null);
+    }
+    if (typeof api.fire === 'function') {
+      return api.fire(config);
+    }
+    if (typeof api === 'function') {
+      return api(config);
+    }
+    return Promise.resolve(null);
+  }
+
   showToast(
     type = 'success',
     title = 'Updated Successfully',
@@ -31,7 +52,7 @@ export default class SweetAlertService extends Service {
     confirmButtonText = null
   ) {
     const backgroundColor = this.setBackgroundColor(type);
-    return Swal.fire({
+    return this.fire({
       icon: type,
       title: title,
       position: position,
@@ -44,7 +65,7 @@ export default class SweetAlertService extends Service {
   }
 
   showModal(type, title, text, confirmText, cancelText = 'Cancel') {
-    return Swal.fire({
+    return this.fire({
       icon: type,
       title: title,
       text: text,
@@ -56,7 +77,7 @@ export default class SweetAlertService extends Service {
   }
 
   showPrompt(input, title, text, confirmButtonText) {
-    return Swal.fire({
+    return this.fire({
       input: input,
       title: title,
       text: text,
@@ -72,7 +93,7 @@ export default class SweetAlertService extends Service {
     text = null,
     confirmButtonText = 'OK'
   ) {
-    return Swal.fire({
+    return this.fire({
       input: 'select',
       title,
       inputPlaceholder,

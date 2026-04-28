@@ -1,6 +1,5 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import isNull from 'lodash-es/isNull';
 import { service } from '@ember/service';
 
 export default Component.extend({
@@ -21,7 +20,7 @@ export default Component.extend({
         return;
       }
 
-      const isRemoval = isNull($item);
+      const isRemoval = this.utils.isNullOrUndefined($item);
       if (isRemoval) {
         this.set('selectedProblem', null);
         return;

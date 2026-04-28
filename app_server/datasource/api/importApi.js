@@ -149,7 +149,7 @@ const buildSubmissionSet = async function (submissions, user) {
 
 /* jshint ignore:start */
 const postImport = async function (req, res, next) {
-  let submissionSet;
+  let submissionSet = null;
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const subData = JSON.parse(req.body.subs);
@@ -196,16 +196,20 @@ const postImport = async function (req, res, next) {
     }
     // else create workspace from newly created submissions
 
-    // submissionSet is used to determine if a workspace already exists for
-    // a given set of submissions
-    submissionSet = await buildSubmissionSet(submissions, user);
+    // Only build submissionSet when we need an auto-generated name.
+    // This aggregate can be expensive and is not required when the client
+    // already provides an explicit workspace name.
+    if (!requestedName) {
+      submissionSet = await buildSubmissionSet(submissions, user);
+    }
 
-    let name;
-
-    if (requestedName) {
-      name = requestedName;
-    } else {
-      name = workspaceApi.nameWorkspace(submissionSet, user, false);
+    let name = requestedName;
+    if (!name) {
+      if (submissionSet) {
+        name = workspaceApi.nameWorkspace(submissionSet, user, false);
+      } else {
+        name = `Imported Workspace ${new Date().toISOString()}`;
+      }
     }
 
     const ownerOrg = await userAuth.getUserOrg(workspaceOwner);
@@ -222,12 +226,17 @@ const postImport = async function (req, res, next) {
     });
     let ws = await workspace.save();
     let folderHash = { folderSetId: folderSetId };
-    let wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
-    let newFolderSet = await workspaceApi.newFolderStructure(
-      user,
-      wsInfo,
-      folderHash
-    ); // eslint-disable-line no-unused-vars
+    let wsInfo = { newWsId: ws._id, newWsOwner: ws.owner };
+    // Do not block workspace creation response on folder recursion/persistence.
+    Promise.resolve(
+      workspaceApi.newFolderStructure(user, wsInfo, folderHash)
+    ).catch((folderErr) => {
+      logger.error(
+        `postImport folder setup failed for workspace ${ws._id}: ${
+          folderErr?.message || folderErr
+        }`
+      );
+    });
     //sending back workspace and submissionID for redirect
     const data = { workspace: ws };
     return utils.sendResponse(res, data);
@@ -441,7 +450,7 @@ const postVmtImportRequests = async (req, res, next) => {
       let folderHash = { folderSetId: folderSet };
       let wsInfo = {
         newWsId: savedWorkspace._id,
-        newWsOwner: savedWorkspace._owner,
+        newWsOwner: savedWorkspace.owner,
       };
       await workspaceApi.newFolderStructure(user, wsInfo, folderHash);
 

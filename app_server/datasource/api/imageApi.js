@@ -8,6 +8,8 @@
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
 const sharp = require('sharp');
+const path = require('path');
+const { spawnSync } = require('child_process');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -165,8 +167,154 @@ const readFilePromise = function (file) {
   });
 };
 
+const safeUnlink = async function (filePath) {
+  if (!isNonEmptyString(filePath)) {
+    return;
+  }
+  try {
+    await fs.promises.unlink(filePath);
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error(`Error removing temporary file ${filePath}: ${err}`);
+    }
+  }
+};
+
+const EXTRA_BINARY_PATHS = ['/opt/homebrew/bin', '/usr/local/bin'];
+
+const getMergedBinaryPath = function () {
+  let pathParts = [];
+  if (isNonEmptyString(process.env.PATH)) {
+    pathParts = process.env.PATH.split(':');
+  }
+
+  const merged = [...new Set([...pathParts, ...EXTRA_BINARY_PATHS])].filter(
+    (p) => isNonEmptyString(p)
+  );
+
+  return merged.join(':');
+};
+
+const getBinaryCheckEnv = function () {
+  return {
+    ...process.env,
+    PATH: getMergedBinaryPath(),
+  };
+};
+
+let runtimePathEnsured = false;
+
+const ensureRuntimeBinaryPath = function () {
+  if (runtimePathEnsured) {
+    return;
+  }
+
+  const mergedPath = getMergedBinaryPath();
+  if (isNonEmptyString(mergedPath)) {
+    process.env.PATH = mergedPath;
+  }
+
+  runtimePathEnsured = true;
+};
+
+const canRunBinary = function (bin, args = ['--version']) {
+  try {
+    const result = spawnSync(bin, args, {
+      stdio: 'ignore',
+      env: getBinaryCheckEnv(),
+    });
+    return result.status === 0;
+  } catch (_err) {
+    return false;
+  }
+};
+
+let pdfEngineInfoCache = null;
+const DEFAULT_MAX_PDF_PAGES = 300;
+
+const getMaxPdfPages = function () {
+  const parsed = parseInt(process.env.PDF_CONVERSION_MAX_PAGES, 10);
+  if (Number.isInteger(parsed) && parsed > 0) {
+    return parsed;
+  }
+  return DEFAULT_MAX_PDF_PAGES;
+};
+
+const isOutOfRangePageError = function (message) {
+  if (!isNonEmptyString(message)) {
+    return false;
+  }
+  const normalized = message.toLowerCase();
+
+  return (
+    normalized.includes('requested first page') ||
+    normalized.includes('number of pages in file') ||
+    normalized.includes('does not contain page') ||
+    normalized.includes('no pages will be processed')
+  );
+};
+
+const convertPdfPagesSequentially = async function (convert) {
+  const maxPages = getMaxPdfPages();
+  const results = [];
+
+  for (let page = 1; page <= maxPages; page++) {
+    try {
+      const fileObj = await convert(page);
+      results.push(fileObj);
+    } catch (err) {
+      const message = err?.message || `${err}`;
+      if (results.length > 0 && isOutOfRangePageError(message)) {
+        break;
+      }
+      throw err;
+    }
+  }
+
+  if (results.length === 0) {
+    throw new Error('PDF conversion produced no pages.');
+  }
+
+  return results;
+};
+
+const detectPdfEngineInfo = function () {
+  const hasGM = canRunBinary('gm', ['version']);
+  const hasConvert = canRunBinary('convert', ['-version']);
+  const hasGhostscript = canRunBinary('gs', ['--version']);
+
+  let engine = null;
+  if (hasGM) {
+    engine = 'graphicsmagick';
+  } else if (hasConvert) {
+    engine = 'imagemagick';
+  }
+
+  return { engine, hasGhostscript };
+};
+
+const getPdfEngineInfo = function () {
+  if (
+    pdfEngineInfoCache &&
+    pdfEngineInfoCache.engine &&
+    pdfEngineInfoCache.hasGhostscript
+  ) {
+    return pdfEngineInfoCache;
+  }
+
+  const detected = detectPdfEngineInfo();
+  if (detected.engine && detected.hasGhostscript) {
+    pdfEngineInfoCache = detected;
+  }
+
+  return detected;
+};
+
 const postImages = async function (req, res, next) {
   try {
+    // Make sure subprocesses started by pdf2pic/gm can see system binaries.
+    ensureRuntimeBinaryPath();
+
     const user = userAuth.requireUser(req);
 
     if (!user) {
@@ -178,6 +326,13 @@ const postImages = async function (req, res, next) {
       return utils.sendError.InvalidContentError('No files to upload!', res);
     }
 
+    let buildDir = process.env.BUILD_DIR || 'build';
+    const saveDir = path.resolve(
+      process.cwd(),
+      `${buildDir}/image_uploads/tmp_pngs`
+    );
+    await fs.promises.mkdir(saveDir, { recursive: true });
+
     let sizeThreshold = 614400; // 600kb
     let widthThreshold = 1000; // 1000 pixels wide max
 
@@ -187,35 +342,41 @@ const postImages = async function (req, res, next) {
         let mimeType = f.mimetype;
         let isPDF = mimeType === 'application/pdf';
 
-        let buildDir = 'build';
-        if (process.env.BUILD_DIR) {
-          buildDir = process.env.BUILD_DIR;
-        }
-        const saveDir = `./${buildDir}/image_uploads/tmp_pngs`;
-        fs.access(saveDir, fs.constants.F_OK, (err) => {
-          if (err) {
-            console.error(
-              `ERROR - PNG Images directory ${saveDir} does not exist`
+        if (isPDF) {
+          const { engine, hasGhostscript } = getPdfEngineInfo();
+          if (!engine || !hasGhostscript) {
+            throw new Error(
+              "PDF conversion requires GraphicsMagick or ImageMagick ('convert') plus Ghostscript ('gs') on the server."
             );
           }
-        });
 
-        if (isPDF) {
+          let sourcePdfPath = f.path;
+          if (!isNonEmptyString(sourcePdfPath)) {
+            throw new Error('Missing PDF path for conversion');
+          }
+
+          let sourceBase = path.parse(
+            f.filename || f.originalname || `pdf-${Date.now()}`
+          ).name;
+          sourceBase = sourceBase.replace(/[^a-zA-Z0-9_-]/g, '_');
+          let saveName = `${sourceBase || 'pdf'}-${Date.now()}`;
+
           // https://www.npmjs.com/package/pdf2pic#usage
           // https://github.com/yakovmeister/pdf2pic-examples/blob/master/from-file-to-images.js
           const options = {
             density: 100, // output pixels per inch
-            savename: f.name, // output file name
-            savedir: saveDir, // output file location
+            saveFilename: saveName, // output file name
+            savePath: saveDir, // output file location
             format: 'png', // output file format
             // size: 500 // output size in pixels
             width: 500,
             height: 646,
           };
 
-          let file = f.path;
-          console.log(f.path);
-          const convert = fromPath(file, options);
+          const convert = fromPath(sourcePdfPath, options);
+          if (engine === 'imagemagick') {
+            convert.setGMClass(true);
+          }
 
           // TODO: complete edgecase for large pdfs
           // let pdfBuffer = await readFilePromise(file);
@@ -231,43 +392,51 @@ const postImages = async function (req, res, next) {
 
           // let pageOptions = pageCount > maxPages ? pageOptionsArr : -1;
 
-          return convert
-            .bulk(-1)
-            .then((results) => {
-              return Promise.all(
-                results.map((fileObj) => {
-                  let file = fileObj.path;
-                  let pageNum = fileObj.page;
-
-                  let newFile = {
-                    createdBy: user,
-                    createDate: Date.now(),
-                    originalname: f.originalname,
-                    pdfPageNum: pageNum,
-                    mimetype: 'image/png',
-                  };
-
-                  return readFilePromise(file)
-                    .then((data) => {
-                      let newImage = new models.Image(newFile);
-
-                      let buffer = Buffer.from(data).toString('base64');
-                      let format = `data:image/png;base64,`;
-                      let imgData = `${format}${buffer}`;
-                      newImage.imageData = imgData;
-                      return newImage;
-                    })
-                    .catch((err) => {
-                      console.error('error converting', err);
-                    });
-                })
+          try {
+            let results;
+            try {
+              results = await convertPdfPagesSequentially(convert);
+            } catch (err) {
+              const message = err?.message || `${err}`;
+              if (/not authorized .*PDF/i.test(message)) {
+                throw new Error(
+                  'ImageMagick security policy is blocking PDF conversion. Enable PDF in policy.xml or use GraphicsMagick.'
+                );
+              }
+              throw new Error(
+                `PDF conversion failed: ${message}. Ensure 'convert' and 'gs' are available in PATH for the server process.`
               );
-            })
-            .catch((err) => {
-              console.error(`Pdf conversion error: ${err}`);
-              console.trace();
-              return utils.sendError.InternalError(err, res);
-            });
+            }
+            return Promise.all(
+              results.map(async (fileObj) => {
+                let pagePath = fileObj.path;
+                let pageNum = fileObj.page;
+
+                let newFile = {
+                  createdBy: user,
+                  createDate: Date.now(),
+                  originalname: f.originalname,
+                  pdfPageNum: pageNum,
+                  mimetype: 'image/png',
+                };
+
+                try {
+                  let pageData = await readFilePromise(pagePath);
+                  let newImage = new models.Image(newFile);
+
+                  let buffer = Buffer.from(pageData).toString('base64');
+                  let format = `data:image/png;base64,`;
+                  let imgData = `${format}${buffer}`;
+                  newImage.imageData = imgData;
+                  return newImage;
+                } finally {
+                  await safeUnlink(pagePath);
+                }
+              })
+            );
+          } finally {
+            await safeUnlink(sourcePdfPath);
+          }
         } else {
           // not PDF
           let originalSharp = sharp(data);
@@ -331,7 +500,7 @@ const postImages = async function (req, res, next) {
   } catch (err) {
     console.error(`Error postImages: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    return utils.sendError.InternalError(err?.message || err, res);
   }
 };
 
