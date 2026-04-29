@@ -1,4 +1,4 @@
-<div class='card-container'>
+<div class='card-container student-matching-answer'>
   <div class='card-title'>
     <p class='card-heading'>{{this.image.fileNameDisplay}}</p>
   </div>
@@ -9,7 +9,7 @@
       alt={{this.image.fileNameDisplay}}
     />
     <div class='overlay'>
-      <button type='button' {{action 'expandImage'}}><i
+      <button type='button' {{on 'click' this.expandImage}}><i
           class='fas fa-expand'
         ></i></button>
     </div>
@@ -20,14 +20,14 @@
       @maxItems={{10}}
       @initialOptions={{this.studentOptions}}
       @initialItems={{this.initialStudentItems}}
-      @onItemAdd={{action 'updateSelectedIds'}}
-      @onItemRemove={{action 'updateSelectedIds'}}
+      @onItemAdd={{this.updateSelectedIds}}
+      @onItemRemove={{this.updateSelectedIds}}
       @labelField='username'
       @searchField='username'
       @valueField='id'
       @model='user'
       @placeholder='Search students by username'
-      @create={{action 'addStudentName'}}
+      @create={{this.addStudentName}}
       @createFilter={{this.newNameFilter}}
     />
   </div>
@@ -35,7 +35,9 @@
 
 {{#if this.isExpanded}}
   <div class='full-image'>
-    <i class='fas fa-times' {{action 'expandImage'}}></i>
+    <button type='button' {{on 'click' this.expandImage}}>
+      <i class='fas fa-times'></i>
+    </button>
     <img src={{this.image.imageData}} alt={{this.image.fileNameDisplay}} />
   </div>
 {{/if}}

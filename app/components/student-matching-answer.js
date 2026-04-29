@@ -1,155 +1,236 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { action, set } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
-import each from 'lodash-es/each';
-import isNull from 'lodash-es/isNull';
 
-export default Component.extend({
-  classNames: ['student-matching-answer'],
-  utils: service('utility-methods'),
-  errorHandling: service('error-handling'),
-  section: null,
-  submission: null,
-  isExpanded: false,
-  selectedIds: [],
+export default class StudentMatchingAnswerComponent extends Component {
+  @service('utility-methods') utils;
 
-  selectizeInputId: computed(
-    'answer.explanationImage.id',
-    'answer.id',
-    function () {
-      let id = this.get('answer.explanationImage.id') || '';
-      return `select-add-student${id}`;
+  @tracked isExpanded = false;
+  @tracked selectedIds = [];
+
+  get answer() {
+    return this.args.answer;
+  }
+
+  get image() {
+    return this.answer?.explanationImage;
+  }
+
+  get selectizeInputId() {
+    const id = this.image?.id || this.answer?.id || '';
+    return `select-add-student${id}`;
+  }
+
+  ensureSubmissionCollections() {
+    const submission = this.answer;
+    if (!submission) {
+      return null;
     }
-  ),
 
-  didReceiveAttrs: function () {
-    this._super();
-    const section = this.selectedSection;
-    const answer = this.answer;
-    const image = answer.explanationImage;
-    this.set('image', image);
-
-    this.set('section', section);
-    this.set('submission', answer);
-
-    if (!Array.isArray(this.get('submission.students'))) {
-      this.set('submission.students', []);
+    if (!Array.isArray(submission.students)) {
+      set(submission, 'students', []);
     }
-    if (!Array.isArray(this.get('submission.studentNames'))) {
-      this.set('submission.studentNames', []);
+    if (!Array.isArray(submission.studentNames)) {
+      set(submission, 'studentNames', []);
     }
-  },
 
-  initialStudentItems: computed(
-    'submission.students.[]',
-    'submission.studentNames.[]',
-    function () {
-      let userItems = this.get('submission.students').mapBy('id');
-      let nameItems = this.get('submission.studentNames');
-      return userItems.pushObjects(nameItems);
+    return submission;
+  }
+
+  normalizeArray(val) {
+    if (Array.isArray(val)) {
+      return val;
     }
-  ),
+    if (typeof val?.slice === 'function') {
+      return val.slice();
+    }
+    return [];
+  }
 
-  studentOptions: computed(
-    'selectedIds.[]',
-    'studentMap',
-    'addedStudentNames.[]',
-    function () {
-      if (!this.studentMap) {
-        return [];
+  getRecordValue(record, prop) {
+    if (!record) {
+      return null;
+    }
+    if (typeof record.get === 'function') {
+      return record.get(prop);
+    }
+    return record[prop];
+  }
+
+  getRecordId(record) {
+    return (
+      this.getRecordValue(record, 'id') ||
+      this.getRecordValue(record, '_id') ||
+      null
+    );
+  }
+
+  get initialStudentItems() {
+    const submission = this.ensureSubmissionCollections();
+    if (!submission) {
+      return [];
+    }
+
+    const userItems = this.normalizeArray(submission.students)
+      .map((student) => this.getRecordId(student))
+      .filter(Boolean);
+    const nameItems = this.normalizeArray(submission.studentNames);
+
+    return [...userItems, ...nameItems];
+  }
+
+  get studentOptions() {
+    if (!this.args.studentMap) {
+      return [];
+    }
+
+    const options = [];
+    const selectedIds = this.selectedIds || [];
+
+    Object.values(this.args.studentMap).forEach((student) => {
+      const id = this.getRecordId(student);
+      if (!id || selectedIds.includes(id)) {
+        return;
       }
-      let options = [];
-      let selectedIds = this.selectedIds || [];
 
-      each(this.studentMap, (val, key) => {
-        if (!selectedIds.includes(val.get('id'))) {
-          options.addObject({
-            id: val.get('id'),
-            username: val.get('username'),
-          });
-        }
+      options.push({
+        id,
+        username: this.getRecordValue(student, 'username') || '',
       });
-      each(this.addedStudentNames, (name) => {
-        options.addObject({
-          id: name,
-          username: name,
-        });
+    });
+
+    (this.args.addedStudentNames || []).forEach((name) => {
+      options.push({
+        id: name,
+        username: name,
       });
-      return options;
+    });
+
+    return options;
+  }
+
+  addUnique(arrayRef, value) {
+    if (!Array.isArray(arrayRef) || !value) {
+      return;
     }
-  ),
+    if (typeof arrayRef.addObject === 'function') {
+      arrayRef.addObject(value);
+      return;
+    }
+    if (!arrayRef.includes(value)) {
+      arrayRef.push(value);
+    }
+  }
+
+  removeValue(arrayRef, value, matcher = null) {
+    if (!Array.isArray(arrayRef)) {
+      return;
+    }
+
+    if (typeof arrayRef.removeObject === 'function' && !matcher) {
+      arrayRef.removeObject(value);
+      return;
+    }
+
+    const index = arrayRef.findIndex((item) => {
+      if (matcher) {
+        return matcher(item);
+      }
+      return item === value;
+    });
+
+    if (index > -1) {
+      arrayRef.splice(index, 1);
+    }
+  }
 
   updateAnswer(userId, doRemove) {
     if (!userId) {
       return;
     }
 
-    let isMongoId = this.utils.isValidMongoId(userId);
+    const submission = this.ensureSubmissionCollections();
+    if (!submission) {
+      return;
+    }
 
-    let creators;
-    let userObj;
+    let isMongoId = this.utils.isValidMongoId(userId);
 
     // add or remove encompass user from students array on answer object
     if (isMongoId) {
-      creators = this.get('submission.students');
-      userObj = creators.findBy('id', userId);
+      let creators = this.normalizeArray(submission.students);
+      const userObj = (this.args.studentMap || {})[userId];
+
       if (doRemove) {
-        creators.removeObject(userObj);
-      } else {
-        creators.addObject(this.studentMap[userId]);
+        this.removeValue(creators, userObj, (student) => {
+          return this.getRecordId(student) === userId;
+        });
+      } else if (userObj) {
+        const existing = creators.find((student) => {
+          return this.getRecordId(student) === userId;
+        });
+        if (!existing) {
+          this.addUnique(creators, userObj);
+        }
       }
+      set(submission, 'students', creators);
       // add or remove string name from studentNames array on answer object
     } else {
-      creators = this.get('submission.studentNames');
-      userObj = creators.find((name) => {
-        return name === userId;
-      });
+      let creators = this.normalizeArray(submission.studentNames);
       if (doRemove) {
-        creators.removeObject(userObj);
+        this.removeValue(creators, userId);
       } else {
-        creators.addObject(userId);
+        this.addUnique(creators, userId);
         // keep track of which string name items have been added
         // once user creates item for one answer, it should be available on other answers to select
-        this.addedStudentNames.addObject(userId);
+        this.addUnique(this.args.addedStudentNames, userId);
       }
+      set(submission, 'studentNames', creators);
     }
     // check if all answers have been assigned at least one student
-    this.checkStatus();
-  },
+    if (typeof this.args.checkStatus === 'function') {
+      this.args.checkStatus();
+    }
+  }
 
-  actions: {
-    //val will either be mongo objectId of encompass user or string name added by user
-    updateSelectedIds: function (val, $item) {
-      if (!val) {
-        return;
+  // val will either be mongo objectId of encompass user or string name added by user
+  @action
+  updateSelectedIds(val, item) {
+    if (!val) {
+      return;
+    }
+    let doRemove;
+    if (this.utils.isNullOrUndefined(item)) {
+      this.selectedIds = (this.selectedIds || []).filter((id) => id !== val);
+      doRemove = true;
+    } else {
+      if (!(this.selectedIds || []).includes(val)) {
+        this.selectedIds = [...(this.selectedIds || []), val];
       }
-      let doRemove;
-      if (isNull($item)) {
-        this.selectedIds.removeObject(val);
-        doRemove = true;
-      } else {
-        this.selectedIds.addObject(val);
-        doRemove = false;
-      }
+      doRemove = false;
+    }
 
-      this.updateAnswer(val, doRemove);
-    },
-    expandImage: function () {
-      this.set('isExpanded', !this.isExpanded);
-    },
+    this.updateAnswer(val, doRemove);
+  }
 
-    // runs when creating item in selectize control
-    // used for adding non encompass users which will be added to studentNames array
-    addStudentName: function (input, cb) {
-      if (typeof input !== 'string') {
-        return;
-      }
-      let trimmed = input.trim();
+  @action
+  expandImage() {
+    this.isExpanded = !this.isExpanded;
+  }
 
-      return cb({
-        username: trimmed,
-        id: trimmed,
-      });
-    },
-  },
-});
+  // runs when creating item in selectize control
+  // used for adding non encompass users which will be added to studentNames array
+  @action
+  addStudentName(input, cb) {
+    if (typeof input !== 'string') {
+      return;
+    }
+    let trimmed = input.trim();
+
+    return cb({
+      username: trimmed,
+      id: trimmed,
+    });
+  }
+}
