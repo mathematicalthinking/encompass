@@ -7,7 +7,6 @@ export default class StudentMatchingAnswerComponent extends Component {
   @service('utility-methods') utils;
 
   @tracked isExpanded = false;
-  @tracked selectedIds = [];
 
   get answer() {
     return this.args.answer;
@@ -86,11 +85,10 @@ export default class StudentMatchingAnswerComponent extends Component {
     }
 
     const options = [];
-    const selectedIds = this.selectedIds || [];
 
     Object.values(this.args.studentMap).forEach((student) => {
       const id = this.getRecordId(student);
-      if (!id || selectedIds.includes(id)) {
+      if (!id) {
         return;
       }
 
@@ -188,7 +186,7 @@ export default class StudentMatchingAnswerComponent extends Component {
       }
       set(submission, 'studentNames', creators);
     }
-    // check if all answers have been assigned at least one student
+    // keep Step 4 status in sync after any student/name mutation
     if (typeof this.args.checkStatus === 'function') {
       this.args.checkStatus();
     }
@@ -200,17 +198,7 @@ export default class StudentMatchingAnswerComponent extends Component {
     if (!val) {
       return;
     }
-    let doRemove;
-    if (this.utils.isNullOrUndefined(item)) {
-      this.selectedIds = (this.selectedIds || []).filter((id) => id !== val);
-      doRemove = true;
-    } else {
-      if (!(this.selectedIds || []).includes(val)) {
-        this.selectedIds = [...(this.selectedIds || []), val];
-      }
-      doRemove = false;
-    }
-
+    const doRemove = this.utils.isNullOrUndefined(item);
     this.updateAnswer(val, doRemove);
   }
 
