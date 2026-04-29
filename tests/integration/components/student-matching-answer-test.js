@@ -187,9 +187,9 @@ module('Integration | Component | student-matching-answer', function (hooks) {
     );
     assert
       .dom('.stub-options')
-      .doesNotIncludeText(
+      .includesText(
         `${MONGO_ID}:existing_student`,
-        'selected student is excluded from options'
+        'selected student option remains available after selection'
       );
 
     await click('.stub-remove-student');
