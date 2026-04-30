@@ -1,6 +1,11 @@
 FROM node:20@sha256:c11ae157cdd9f8b522d5a65e7f3f5f5c34cf45a8bd883c15e8f2028a2673dec7
 RUN apt update -y && apt upgrade -y && apt install -y curl wget bash iputils-ping net-tools dnsutils imagemagick ghostscript
 
+# Allow ImageMagick to read/write PDFs (default Debian policy blocks them).
+# Ghostscript ≥ 9.24 already fixes the underlying CVE-2016-3714 class of issues.
+RUN find /etc/ImageMagick-* -name policy.xml -exec \
+    sed -i 's|rights="none" pattern="PDF"|rights="read\|write" pattern="PDF"|' {} \;
+
 # install ember
 RUN npm install -g ember-cli
 
