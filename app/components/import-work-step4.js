@@ -40,6 +40,33 @@ export default Component.extend({
     return [];
   },
 
+  getRecordId(record) {
+    if (!record) {
+      return null;
+    }
+    return (
+      record.id ||
+      record._id ||
+      record.userId ||
+      (typeof record.get === 'function' ? record.get('id') : null)
+    );
+  },
+
+  areArraysEqual(left, right) {
+    if (!Array.isArray(left) || !Array.isArray(right)) {
+      return false;
+    }
+    if (left.length !== right.length) {
+      return false;
+    }
+    for (let i = 0; i < left.length; i++) {
+      if (left[i] !== right[i]) {
+        return false;
+      }
+    }
+    return true;
+  },
+
   getStudentById(id) {
     if (!id || !this.studentMap) {
       return null;
@@ -67,7 +94,9 @@ export default Component.extend({
     answers.forEach((answer) => {
       const image =
         answer?.explanationImage ||
-        (typeof answer?.get === 'function' ? answer.get('explanationImage') : null);
+        (typeof answer?.get === 'function'
+          ? answer.get('explanationImage')
+          : null);
       const imageId = image?.id || image?._id;
       const inputId = `select-add-student${imageId || ''}`;
       const inputEl =
@@ -80,7 +109,10 @@ export default Component.extend({
         values = inputEl.selectize.items.slice();
       } else if (inputEl && Array.isArray(inputEl.value)) {
         values = inputEl.value;
-      } else if (typeof inputEl?.value === 'string' && inputEl.value.length > 0) {
+      } else if (
+        typeof inputEl?.value === 'string' &&
+        inputEl.value.length > 0
+      ) {
         values = inputEl.value.split(',');
       }
 
@@ -105,8 +137,28 @@ export default Component.extend({
         studentNames.push(trimmed);
       });
 
-      set(answer, 'students', students);
-      set(answer, 'studentNames', studentNames);
+      let currentStudents = this.normalizeArray(answer.students);
+      let currentStudentIds = currentStudents
+        .map((student) => this.getRecordId(student))
+        .filter(Boolean);
+      let nextStudentIds = students
+        .map((student) => this.getRecordId(student))
+        .filter(Boolean);
+
+      if (!this.areArraysEqual(currentStudentIds, nextStudentIds)) {
+        set(answer, 'students', students);
+      }
+
+      let currentStudentNames = this.normalizeArray(answer.studentNames).map(
+        (name) => (typeof name === 'string' ? name.trim() : name)
+      );
+      let nextStudentNames = studentNames.map((name) =>
+        typeof name === 'string' ? name.trim() : name
+      );
+
+      if (!this.areArraysEqual(currentStudentNames, nextStudentNames)) {
+        set(answer, 'studentNames', studentNames);
+      }
     });
   },
 
@@ -135,6 +187,23 @@ export default Component.extend({
   },
 
   actions: {
+    addAddedStudentName(name) {
+      if (typeof name !== 'string') {
+        return;
+      }
+
+      let trimmed = name.trim();
+      if (!trimmed) {
+        return;
+      }
+
+      let names = this.normalizeArray(this.addedStudentNames);
+      if (names.includes(trimmed)) {
+        return;
+      }
+
+      this.set('addedStudentNames', [...names, trimmed]);
+    },
     checkStatus: function () {
       return this.updateMatchingStatus();
     },
