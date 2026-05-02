@@ -28,7 +28,7 @@ export default class AnswerNew extends Component {
 
   quillEditorId = 'answer-new-editor';
   @tracked quillText = '';
-  singleFileSizeLimit = 10485760; // 10MB
+  singleFileSizeLimit = 15728640; // 15MB
   explanationLengthLimit = 14680064; // `14MB
 
   constraints = {
