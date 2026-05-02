@@ -21,22 +21,6 @@ export default class StudentMatchingAnswerComponent extends Component {
     return `select-add-student${id}`;
   }
 
-  ensureSubmissionCollections() {
-    const submission = this.answer;
-    if (!submission) {
-      return null;
-    }
-
-    if (!Array.isArray(submission.students)) {
-      set(submission, 'students', []);
-    }
-    if (!Array.isArray(submission.studentNames)) {
-      set(submission, 'studentNames', []);
-    }
-
-    return submission;
-  }
-
   normalizeArray(val) {
     if (Array.isArray(val)) {
       return val;
@@ -66,7 +50,7 @@ export default class StudentMatchingAnswerComponent extends Component {
   }
 
   get initialStudentItems() {
-    const submission = this.ensureSubmissionCollections();
+    const submission = this.answer;
     if (!submission) {
       return [];
     }
@@ -148,7 +132,7 @@ export default class StudentMatchingAnswerComponent extends Component {
       return;
     }
 
-    const submission = this.ensureSubmissionCollections();
+    const submission = this.answer;
     if (!submission) {
       return;
     }
@@ -180,9 +164,13 @@ export default class StudentMatchingAnswerComponent extends Component {
         this.removeValue(creators, userId);
       } else {
         this.addUnique(creators, userId);
-        // keep track of which string name items have been added
-        // once user creates item for one answer, it should be available on other answers to select
-        this.addUnique(this.args.addedStudentNames, userId);
+        // Parent owns addedStudentNames; update via callback so arg identity changes
+        // and selectize options refresh immediately.
+        if (typeof this.args.onAddStudentName === 'function') {
+          this.args.onAddStudentName(userId);
+        } else {
+          this.addUnique(this.args.addedStudentNames, userId);
+        }
       }
       set(submission, 'studentNames', creators);
     }
