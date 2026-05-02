@@ -16,7 +16,7 @@ export default class ImageUploadComponent extends Component {
   @tracked missingFilesError = false;
   @tracked acceptMultiple = false;
   @tracked uploadErrors = [];
-  @tracked singleFileSizeLimit = 10485760; // 10MB
+  @tracked singleFileSizeLimit = 15728640; // 15MB
   @tracked totalPdfSizeLimit = 52428800; // 50MB
   @tracked totalImageSizeLimit = 52428800; // 50MB
   @tracked acceptableFileTypes = this.args.isPdfOnly
@@ -63,24 +63,54 @@ export default class ImageUploadComponent extends Component {
     return `Sorry, the total size of your image uploads (${actualDisplay}) exceeds the maximum of ${limitDisplay}`;
   }
 
+  getUploadErrorMessage(status, errorBody) {
+    if (status === 413) {
+      return 'Upload is too large for the server limit. Try fewer/smaller files, or ask an admin to increase the upload limit.';
+    }
+
+    let errorMessage = `Upload failed with status ${status}`;
+    if (!errorBody) {
+      return errorMessage;
+    }
+
+    try {
+      let parsed = JSON.parse(errorBody);
+      return parsed?.errors?.[0]?.detail || errorBody;
+    } catch (_err) {
+      return errorBody;
+    }
+  }
+
   uploadImage(formData) {
     return fetch('/image', {
       method: 'POST',
       body: formData,
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          let errorBody = await response.text();
+          let errorMessage = this.getUploadErrorMessage(
+            response.status,
+            errorBody
+          );
+          throw new Error(errorMessage);
         }
         return response.json();
       })
       .then((res) => {
-        let images = res.images;
+        let images = res?.images;
+        if (!Array.isArray(images) || images.length === 0) {
+          this.setShowLoadingMessage(false);
+          this.uploadErrors = [
+            'No supported image files were accepted. Please upload PNG or JPEG files.',
+          ];
+          return null;
+        }
         this.uploadedImages = images;
         this.uploadErrors = [];
         this.store.pushPayload({ images });
 
-        return res.images;
+        return images;
       })
       .catch((err) => {
         this.setShowLoadingMessage(false);
@@ -102,22 +132,23 @@ export default class ImageUploadComponent extends Component {
       });
 
       if (!response.ok) {
-        // Read the error body to provide a meaningful message
         let errorBody = await response.text();
-        let errorMessage = `Upload failed with status ${response.status}`;
-        if (errorBody) {
-          try {
-            let parsed = JSON.parse(errorBody);
-            errorMessage = parsed?.errors?.[0]?.detail || errorBody;
-          } catch (_err) {
-            errorMessage = errorBody;
-          }
-        }
+        let errorMessage = this.getUploadErrorMessage(
+          response.status,
+          errorBody
+        );
         throw new Error(errorMessage);
       }
 
       let data = await response.json();
       let { images } = data;
+      if (!Array.isArray(images) || images.length === 0) {
+        this.setShowLoadingMessage(false);
+        this.uploadErrors = [
+          'No PDF pages were converted. Please verify the PDF format and try again.',
+        ];
+        return null;
+      }
       this.uploadedPdfs = images;
       this.uploadErrors = [];
       this.store.pushPayload({ images });
@@ -251,11 +282,13 @@ export default class ImageUploadComponent extends Component {
     if (imageCount > 0) {
       return this.uploadImage(formData).then((images) => {
         if (!Array.isArray(images) || images.length === 0) {
+          this.setShowLoadingMessage(false);
           return;
         }
         if (pdfCount > 0) {
           return this.uploadPdf(pdfFormData).then((pdfs) => {
             if (!Array.isArray(pdfs) || pdfs.length === 0) {
+              this.setShowLoadingMessage(false);
               return;
             }
             let results = pdfs.concat(images);
@@ -297,6 +330,7 @@ export default class ImageUploadComponent extends Component {
     } else if (pdfCount > 0) {
       return this.uploadPdf(pdfFormData).then((pdfs) => {
         if (!Array.isArray(pdfs) || pdfs.length === 0) {
+          this.setShowLoadingMessage(false);
           return;
         }
         this.setShowLoadingMessage(false);

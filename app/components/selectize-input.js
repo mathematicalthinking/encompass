@@ -89,7 +89,8 @@ export default class SelectizeInputComponent extends Component {
       return;
     }
 
-    this.selectizeInstance.clearOptions();
+    // Silent refresh prevents selectize sync from firing remove/add callbacks
+    this.selectizeInstance.clearOptions(true);
     this.selectizeInstance.addOption(this.options || []);
 
     if (this.items) {
