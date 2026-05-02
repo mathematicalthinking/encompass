@@ -14,7 +14,16 @@
 
   <div class="matching-container">
     {{#each this.answers as |answer|}}
-      <StudentMatchingAnswer @store={{this.store}} @answer={{answer}} @selectedSection={{this.selectedSection}} @checkStatus={{action "checkStatus"}} @studentMap={{this.studentMap}} @addedStudentNames={{this.addedStudentNames}} @newNameFilter={{this.newNameFilter}} />
+      <StudentMatchingAnswer
+        @store={{this.store}}
+        @answer={{answer}}
+        @selectedSection={{this.selectedSection}}
+        @checkStatus={{action "checkStatus"}}
+        @studentMap={{this.studentMap}}
+        @addedStudentNames={{this.addedStudentNames}}
+        @newNameFilter={{this.newNameFilter}}
+        @onAddStudentName={{action "addAddedStudentName"}}
+      />
     {{/each}}
   </div>
 </div>
