@@ -1,9 +1,16 @@
 {{#if (greater-equal @currentStep @associatedStep)}}
-<li>
+<li class='details-list-item'>
   <h3 class="detail-header">
     {{@label}}
     {{#if this.doShowRemoveIcon}}
-      <i {{action "editValue" }} class="far fa-edit" aria-hidden="true" title="Edit"></i>
+      <button
+        type='button'
+        class='detail-edit-button'
+        {{on 'click' this.editValue}}
+        title='Edit'
+      >
+        <i class='far fa-edit' aria-hidden='true'></i>
+      </button>
     {{/if}}
   </h3>
   {{#if @displayValue}}
