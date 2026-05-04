@@ -41,17 +41,21 @@ module('Unit | Component | workspace-submission', function (hooks) {
     };
 
     // Mock current-user service
-    this.owner.register(
-      'service:current-user',
-      class extends Service {
-        user = {
-          id: 'user-1',
-          username: 'testuser',
-          accountType: 'T',
-          isAdmin: false,
-        };
-      }
-    );
+    class CurrentUserService extends Service {
+      id = 'user-1';
+      user = {
+        id: 'user-1',
+        username: 'testuser',
+        accountType: 'T',
+        isAdmin: false,
+      };
+      isAdmin = false;
+      isStudent = false;
+    }
+    this.owner.unregister('service:current-user');
+    this.owner.unregister('service:currentUser');
+    this.owner.register('service:current-user', CurrentUserService);
+    this.owner.register('service:currentUser', CurrentUserService);
 
     this.owner.register(
       'service:utility-methods',
@@ -128,7 +132,9 @@ module('Unit | Component | workspace-submission', function (hooks) {
       id,
       text: `Selection ${id}`,
       isTrashed,
+      createdBy: { id: 'user-1' },
       submission: submissionId,
+      workspace: { id: 'ws-1' },
       get(prop) {
         return this[prop];
       },
@@ -179,6 +185,27 @@ module('Unit | Component | workspace-submission', function (hooks) {
       addSelection: args.addSelection || (() => {}),
       deleteSelection: args.deleteSelection || (() => {}),
     };
+
+    // Initialize tracked state explicitly for Object.create-based unit setup.
+    component.makingSelection = true;
+    component.showingSelections = false;
+    component.isTransitioning = false;
+    component.isDirty = false;
+    component.wasShowingBeforeResizing = false;
+    component.isSelectionsBoxExpanded = false;
+    component.isMessageListenerAttached = false;
+    component.areSelectionsHidden = false;
+    component.wsSaveErrors = [];
+    component.vmtReplayerInfo = null;
+    component.vmtScreenshot = null;
+    component.vmtListener = null;
+    // Keep unit fixtures focused on submission filtering unless a test opts in.
+    component.thisSubmissionOnly = true;
+    component.thisWorkspaceOnly = false;
+    component.mySelectionsOnly = false;
+    component.showSelectionFilterMenu = false;
+    component.selectionFilterMenuElement = null;
+    component.selectionFilterMenuOutsideHandler = null;
 
     return component;
   }
@@ -239,7 +266,7 @@ module('Unit | Component | workspace-submission', function (hooks) {
       );
     });
 
-    test('areNoSelections considers trashed selections as selections', function (assert) {
+    test('areNoSelections treats trashed selections as hidden from active list', function (assert) {
       const submission = createSubmission('sub-3');
       const trashedSelection = createSelection('sel-trash-1', 'sub-3', true);
       const workspace = createWorkspace('ws-3');
@@ -250,7 +277,7 @@ module('Unit | Component | workspace-submission', function (hooks) {
         selections: [trashedSelection],
       });
 
-      // workspaceSelections includes trashed items (filtered by submission ID only)
+      // workspaceSelections excludes trashed items.
       const result = component.areNoSelections;
 
       assert.strictEqual(
@@ -261,8 +288,8 @@ module('Unit | Component | workspace-submission', function (hooks) {
 
       assert.strictEqual(
         result,
-        false,
-        'areNoSelections should be false when trashed selections exist'
+        true,
+        'areNoSelections should be true when only trashed selections exist'
       );
     });
 
@@ -324,7 +351,7 @@ module('Unit | Component | workspace-submission', function (hooks) {
       );
     });
 
-    test('workspaceSelections includes both trashed and non-trashed', function (assert) {
+    test('workspaceSelections excludes trashed selections', function (assert) {
       const submission = createSubmission('sub-6');
       const activeSelection = createSelection('sel-active', 'sub-6', false);
       const trashedSelection = createSelection('sel-trashed', 'sub-6', true);
@@ -340,8 +367,16 @@ module('Unit | Component | workspace-submission', function (hooks) {
 
       assert.strictEqual(
         filtered.length,
-        2,
-        'workspaceSelections should include both trashed and non-trashed'
+        1,
+        'workspaceSelections should exclude trashed selections'
+      );
+      assert.ok(
+        filtered.includes(activeSelection),
+        'workspaceSelections should include active selections'
+      );
+      assert.notOk(
+        filtered.includes(trashedSelection),
+        'workspaceSelections should not include trashed selections'
       );
     });
 
