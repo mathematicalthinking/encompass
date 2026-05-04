@@ -10,9 +10,22 @@ module('Integration | Component | workspace-submission', function (hooks) {
 
   hooks.beforeEach(function () {
     let canEditImpl = () => true;
+    let currentUserState = {
+      id: 'u1',
+      username: 'test-user',
+      isAdmin: false,
+      isStudent: false,
+    };
 
     this.setCanEdit = (fn) => {
       canEditImpl = fn;
+    };
+
+    this.setCurrentUser = (overrides = {}) => {
+      currentUserState = {
+        ...currentUserState,
+        ...overrides,
+      };
     };
 
     this.owner.register(
@@ -51,25 +64,55 @@ module('Integration | Component | workspace-submission', function (hooks) {
       }
     );
 
-    this.owner.register(
-      'service:current-user',
-      class extends Service {
-        id = 'u1';
-        user = { id: 'u1', username: 'test-user' };
+    class CurrentUserService extends Service {
+      get id() {
+        return currentUserState.id;
       }
-    );
-    this.owner.register(
-      'service:currentUser',
-      class extends Service {
-        id = 'u1';
-        user = { id: 'u1', username: 'test-user' };
+
+      get user() {
+        return {
+          id: currentUserState.id,
+          username: currentUserState.username,
+        };
       }
-    );
+
+      get isAdmin() {
+        return currentUserState.isAdmin;
+      }
+
+      get isStudent() {
+        return currentUserState.isStudent;
+      }
+    }
+
+    this.owner.unregister('service:current-user');
+    this.owner.unregister('service:currentUser');
+    this.owner.register('service:current-user', CurrentUserService);
+    this.owner.register('service:currentUser', CurrentUserService);
 
     this.owner.register(
       'service:current-selection',
       class extends Service {
         selection = null;
+
+        isCurrentSelection(selectionId) {
+          return this.selection?.id === selectionId;
+        }
+
+        setSelection(selection) {
+          this.selection = selection;
+        }
+      }
+    );
+    this.owner.unregister('service:currentSelection');
+    this.owner.register(
+      'service:currentSelection',
+      class extends Service {
+        selection = null;
+
+        isCurrentSelection(selectionId) {
+          return this.selection?.id === selectionId;
+        }
 
         setSelection(selection) {
           this.selection = selection;
@@ -85,50 +128,51 @@ module('Integration | Component | workspace-submission', function (hooks) {
       }
     );
 
+    this.owner.unregister('service:sweet-alert');
+    this.owner.register(
+      'service:sweet-alert',
+      class extends Service {
+        showModal() {
+          return Promise.resolve({ value: true });
+        }
+        showToast() {}
+      }
+    );
+
+    // Keep selectable-area lightweight for this integration suite.
+    this.owner.unregister('component:selectable-area');
+    this.owner.unregister('template:components/selectable-area');
+
     this.owner.register(
       'component:selectable-area',
       class extends Component {
         static template = hbs`<div class='selectable-area-stub'>{{yield}}</div>`;
       }
     );
-
-    this.owner.register(
-      'component:draggable-selection',
-      class extends Component {
-        static template = hbs`<div
-          class='draggable-selection-stub'
-          data-selection-id={{@selection.id}}
-          data-can-delete={{if @canDeleteSelections 'true' 'false'}}
-        >
-          <button
-            type='button'
-            class='trigger-delete-selection'
-            {{on 'click' (fn @deleteSelection @selection)}}
-          >
-            Delete Selection
-          </button>
-        </div>`;
-      }
-    );
-
-    this.owner.register(
-      'component:undraggable-selection',
-      class extends Component {
-        static template = hbs`<div
-          class='undraggable-selection-stub'
-        >Undraggable Selection</div>`;
-      }
-    );
   });
 
   async function renderWorkspaceSubmission(context, overrides = {}) {
+    const buildWorkspaceRef = (workspace = {}) => {
+      const normalized = {
+        workspaceType: 'individual',
+        ...workspace,
+      };
+      if (typeof normalized.get !== 'function') {
+        normalized.get = function (key) {
+          return this[key];
+        };
+      }
+      return normalized;
+    };
+
     const defaultSelection = {
       id: 'sel-1',
       text: 'x + 1',
       isTrashed: false,
+      createDate: new Date().toISOString(),
       createdBy: { id: 'u1' },
       submission: { id: 'sub-1' },
-      workspace: { id: 'ws-1' },
+      workspace: buildWorkspaceRef({ id: 'ws-1' }),
     };
 
     context.setProperties({
@@ -143,6 +187,9 @@ module('Integration | Component | workspace-submission', function (hooks) {
       currentWorkspace: {
         id: 'ws-1',
         workspaceType: 'individual',
+        get(key) {
+          return this[key];
+        },
         save() {
           return Promise.resolve(this);
         },
@@ -169,29 +216,61 @@ module('Integration | Component | workspace-submission', function (hooks) {
   }
 
   function selection(overrides = {}) {
-    return {
+    const buildWorkspaceRef = (workspace = {}) => {
+      const normalized = {
+        workspaceType: 'individual',
+        ...workspace,
+      };
+      if (typeof normalized.get !== 'function') {
+        normalized.get = function (key) {
+          return this[key];
+        };
+      }
+      return normalized;
+    };
+
+    const record = {
       id: 'sel-default',
       text: 'selection text',
       isTrashed: false,
+      createDate: new Date().toISOString(),
       createdBy: { id: 'u1' },
       submission: { id: 'sub-1' },
-      workspace: { id: 'ws-1' },
+      workspace: buildWorkspaceRef({ id: 'ws-1' }),
       ...overrides,
     };
+
+    record.workspace = buildWorkspaceRef(record.workspace);
+    return record;
   }
 
   test('passes canDeleteSelections=true to DraggableSelection when delete permission is granted', async function (assert) {
+    this.setCurrentUser({ id: 'admin-1', isAdmin: true, isStudent: false });
     this.setCanEdit(() => true);
 
-    await renderWorkspaceSubmission(this);
+    await renderWorkspaceSubmission(this, {
+      selections: [
+        selection({
+          id: 'sel-other-user',
+          text: 'other-user-selection',
+          createdBy: { id: 'owner-2' },
+        }),
+      ],
+    });
 
-    assert.dom('.draggable-selection-stub').exists();
+    await click('[title="Filter selections"]');
+    await click('input[name="mySelectionsOnly"]');
+
+    assert.dom('.draggable-selection').exists();
     assert
-      .dom('.draggable-selection-stub')
-      .hasAttribute('data-can-delete', 'true');
+      .dom('.draggable-selection .fa-minus-circle')
+      .exists(
+        'admin can see delete control when level-4 permission is granted'
+      );
   });
 
   test('passes canDeleteSelections=false to DraggableSelection when delete permission is denied', async function (assert) {
+    this.setCurrentUser({ id: 'admin-1', isAdmin: true, isStudent: false });
     this.setCanEdit((workspace, area, level) => {
       if (area === 'selections' && level === 4) {
         return false;
@@ -199,37 +278,47 @@ module('Integration | Component | workspace-submission', function (hooks) {
       return true;
     });
 
-    await renderWorkspaceSubmission(this);
+    await renderWorkspaceSubmission(this, {
+      selections: [
+        selection({
+          id: 'sel-other-user',
+          text: 'other-user-selection',
+          createdBy: { id: 'owner-2' },
+        }),
+      ],
+    });
 
-    assert.dom('.draggable-selection-stub').exists();
+    await click('[title="Filter selections"]');
+    await click('input[name="mySelectionsOnly"]');
+
+    assert.dom('.draggable-selection').exists();
     assert
-      .dom('.draggable-selection-stub')
-      .hasAttribute('data-can-delete', 'false');
+      .dom('.draggable-selection .fa-minus-circle')
+      .doesNotExist(
+        'admin cannot see delete control when level-4 permission is denied'
+      );
   });
 
   test('wires child delete action to parent deleteSelection callback', async function (assert) {
     let deletedSelection = null;
-    const selection = {
+    const deleteCandidate = selection({
       id: 'sel-2',
       text: 'delete me',
-      isTrashed: false,
       createdBy: { id: 'u1' },
-      submission: { id: 'sub-1' },
-      workspace: { id: 'ws-1' },
-    };
+    });
 
     await renderWorkspaceSubmission(this, {
-      selections: [selection],
+      selections: [deleteCandidate],
       deleteSelection: (sel) => {
         deletedSelection = sel;
       },
     });
 
-    await click('.trigger-delete-selection');
+    await click('.draggable-selection .fa-minus-circle');
 
     assert.strictEqual(
       deletedSelection,
-      selection,
+      deleteCandidate,
       'deleteSelection callback receives the selected record from child action'
     );
   });
@@ -244,86 +333,86 @@ module('Integration | Component | workspace-submission', function (hooks) {
 
     await renderWorkspaceSubmission(this);
 
-    assert.dom('.draggable-selection-stub').doesNotExist();
-    assert.dom('.undraggable-selection-stub').exists();
+    assert.dom('.draggable-selection').doesNotExist();
+    assert.dom('.unundraggable-selection').exists();
   });
 
   test('mySelectionsOnly filter hides non-owner selections by default and shows them after toggle', async function (assert) {
     await renderWorkspaceSubmission(this, {
       selections: [
-        selection({ id: 'sel-owner', createdBy: { id: 'u1' } }),
-        selection({ id: 'sel-other', createdBy: { id: 'u2' } }),
+        selection({
+          id: 'sel-owner',
+          text: 'owner-selection',
+          createdBy: { id: 'u1' },
+        }),
+        selection({
+          id: 'sel-other',
+          text: 'other-selection',
+          createdBy: { id: 'u2' },
+        }),
       ],
     });
 
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-owner"]')
-      .exists();
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-other"]')
-      .doesNotExist();
+    assert.dom('#submission_selections').includesText('owner-selection');
+    assert.dom('#submission_selections').doesNotIncludeText('other-selection');
 
     await click('[title="Filter selections"]');
     await click('input[name="mySelectionsOnly"]');
 
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-owner"]')
-      .exists();
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-other"]')
-      .exists();
+    assert.dom('#submission_selections').includesText('owner-selection');
+    assert.dom('#submission_selections').includesText('other-selection');
   });
 
   test('thisSubmissionOnly filter excludes other submission selections until toggled off', async function (assert) {
     await renderWorkspaceSubmission(this, {
       selections: [
-        selection({ id: 'sel-sub-1', submission: { id: 'sub-1' } }),
-        selection({ id: 'sel-sub-2', submission: { id: 'sub-2' } }),
+        selection({
+          id: 'sel-sub-1',
+          text: 'submission-one',
+          submission: { id: 'sub-1' },
+        }),
+        selection({
+          id: 'sel-sub-2',
+          text: 'submission-two',
+          submission: { id: 'sub-2' },
+        }),
       ],
     });
 
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-sub-1"]')
-      .exists();
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-sub-2"]')
-      .doesNotExist();
+    assert.dom('#submission_selections').includesText('submission-one');
+    assert.dom('#submission_selections').doesNotIncludeText('submission-two');
 
     await click('[title="Filter selections"]');
     await click('input[name="thisSubmissionOnly"]');
 
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-sub-1"]')
-      .exists();
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-sub-2"]')
-      .exists();
+    assert.dom('#submission_selections').includesText('submission-one');
+    assert.dom('#submission_selections').includesText('submission-two');
   });
 
   test('thisWorkspaceOnly filter excludes other workspace selections until toggled off', async function (assert) {
     await renderWorkspaceSubmission(this, {
       selections: [
-        selection({ id: 'sel-ws-1', workspace: { id: 'ws-1' } }),
-        selection({ id: 'sel-ws-2', workspace: { id: 'ws-2' } }),
+        selection({
+          id: 'sel-ws-1',
+          text: 'workspace-one',
+          workspace: { id: 'ws-1' },
+        }),
+        selection({
+          id: 'sel-ws-2',
+          text: 'workspace-two',
+          workspace: { id: 'ws-2' },
+        }),
       ],
     });
 
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-ws-1"]')
-      .exists();
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-ws-2"]')
-      .doesNotExist();
+    assert.dom('#submission_selections').includesText('workspace-one');
+    assert.dom('#submission_selections').doesNotIncludeText('workspace-two');
 
     await click('[title="Filter selections"]');
     await click('input[name="thisWorkspaceOnly"]');
 
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-ws-1"]')
-      .exists();
-    assert
-      .dom('.draggable-selection-stub[data-selection-id="sel-ws-2"]')
-      .exists();
+    assert.dom('#submission_selections').includesText('workspace-one');
+    assert.dom('#submission_selections').includesText('workspace-two');
   });
 
   test('parent workspace renders non-selectable view and hides mySelectionsOnly filter option', async function (assert) {
