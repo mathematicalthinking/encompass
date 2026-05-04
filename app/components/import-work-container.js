@@ -338,7 +338,10 @@ export default class ImportWorkComponent extends Component {
   }
 
   @action
-  setSelectedProblem() {
+  setSelectedProblem(problem) {
+    if (problem) {
+      this.selectedProblem = problem;
+    }
     this.currentStep = this.steps[2];
   }
 
