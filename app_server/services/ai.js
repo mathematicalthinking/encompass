@@ -59,8 +59,8 @@ const normalizeApiPath = (path = '') => {
 };
 
 const STAGE_NAMES = new Set(['prod', 'dev', 'test', 'stage', 'staging']);
-const AI_DRAFT_HTTP_TIMEOUT_MS = 120000;
-const AI_DRAFT_POLL_MAX_MS = 120000 * 4;
+const AI_DRAFT_HTTP_TIMEOUT_MS = 300000;
+const AI_DRAFT_POLL_MAX_MS = 300000 * 4;
 const AI_DRAFT_POLL_INTERVAL_MS = 1000;
 
 const getStagePrefix = (path = '') => {
