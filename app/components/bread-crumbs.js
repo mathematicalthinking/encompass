@@ -6,7 +6,7 @@ export default class BreadCrumbsComponent extends Component {
   @tracked doTruncate = true;
 
   get lastItemValue() {
-    return this.itemsList.length - 1 || 1;
+    return this.itemsList.length || 1;
   }
 
   get itemsList() {

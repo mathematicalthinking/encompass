@@ -11,7 +11,9 @@ export default class BreadCumbsItemComponent extends Component {
   }
 
   get isStarredItem() {
-    return this.args.starredItemsList.includes(this.item);
+    return (this.args.starredItemsList ?? []).some((item) =>
+      isEqual(item, this.args.item)
+    );
   }
 
   get titleText() {

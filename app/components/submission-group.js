@@ -236,6 +236,10 @@ export default class SubmissionGroupComponent extends Component {
   @action
   onStudentSelect(submissionId) {
     const match = this.submissionThreadHeads.find((s) => s.id === submissionId);
+    if (match?.student === this.currentStudent) {
+      return;
+    }
+
     if (match) {
       this.navigation.toSubmission(match.id, this.args.currentWorkspace?.id);
     }

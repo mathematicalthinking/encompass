@@ -25,7 +25,7 @@
         </abbr>
         {{#let this.itemsList.lastObject as |lastItem|}}
           <BreadCrumbsItem
-            @item={{this.lastItem}}
+            @item={{lastItem}}
             @displayValue={{this.lastItemValue}}
             @onSelect={{this.onItemSelect}}
             @selectedItem={{@selectedItem}}
