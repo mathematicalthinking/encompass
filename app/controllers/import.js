@@ -3,7 +3,13 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class ImportController extends Controller {
-  queryParams = ['step', 'problemId', 'sectionId', 'useClass'];
+  queryParams = [
+    'step',
+    'problemId',
+    'sectionId',
+    'useClass',
+    'uploadedFileIds',
+  ];
 
   @tracked isCompDirty = false;
   @tracked confirmLeaving = false;
@@ -11,6 +17,7 @@ export default class ImportController extends Controller {
   @tracked problemId = null;
   @tracked sectionId = null;
   @tracked useClass = null;
+  @tracked uploadedFileIds = null;
 
   @action
   toWorkspaces(workspace) {

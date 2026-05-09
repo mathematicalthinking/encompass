@@ -72,6 +72,7 @@
             @selectedProblem={{this.selectedProblem}}
             @selectedSection={{this.selectedSection}}
             @selectedValue={{this.selectedValue}}
+            @uploadedFileIdsParam={{this.uploadedFileIdsParam}}
             @onProceed={{this.setSelectedProblem}}
           />
         {{/if}}
@@ -82,6 +83,7 @@
             @selectedProblem={{this.selectedProblem}}
             @selectedSection={{this.selectedSection}}
             @selectedValue={{this.selectedValue}}
+            @uploadedFileIdsParam={{this.uploadedFileIdsParam}}
             @onBack={{this.changeStep}}
             @onProceed={{this.setSelectedSection}}
           />
@@ -94,7 +96,6 @@
             @selectedSection={{this.selectedSection}}
             @onBack={{this.changeStep}}
             @onProceed={{this.setUploadedFiles}}
-            @existingAnswers={{this.answers}}
             @uploadedFiles={{this.uploadedFiles}}
           />
         {{/if}}
@@ -107,9 +108,13 @@
             @selectedProblem={{this.selectedProblem}}
             @studentMap={{this.studentMap}}
             @selectedSection={{this.selectedSection}}
+            @selectedValue={{this.selectedValue}}
+            @uploadedFileIdsParam={{this.uploadedFileIdsParam}}
             @onBack={{this.changeStep}}
             @onProceed={{this.setMatchedStudents}}
             @goToStep={{this.goToStep}}
+            @onRefreshStudents={{this.refreshSelectedSectionStudents}}
+            @isFetchingSectionStudents={{this.isFetchingSectionStudents}}
           />
         {{/if}}
 

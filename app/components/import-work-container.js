@@ -117,7 +117,40 @@ export default class ImportWorkComponent extends Component {
     return null;
   }
 
-  restoreInitialStateFromQuery() {
+  parseDelimitedIds(value) {
+    if (typeof value !== 'string') {
+      return [];
+    }
+    return value
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+  }
+
+  async restoreUploadedFilesFromQuery(uploadedFileIds) {
+    const ids = this.parseDelimitedIds(uploadedFileIds);
+    if (!ids.length) {
+      return [];
+    }
+
+    const records = await Promise.all(
+      ids.map(async (id) => {
+        const fromStore = this.store.peekRecord('image', id);
+        if (fromStore) {
+          return fromStore;
+        }
+        try {
+          return await this.store.findRecord('image', id);
+        } catch (_err) {
+          return null;
+        }
+      })
+    );
+
+    return records.filter(Boolean);
+  }
+
+  async restoreInitialStateFromQuery() {
     const maxStep = this.steps.length - 1;
     const parsedStep = Number.parseInt(this.args.initialStep, 10);
     let targetStep =
@@ -149,6 +182,8 @@ export default class ImportWorkComponent extends Component {
       if (selectedSection) {
         this.selectedSection = selectedSection;
       }
+      // If a section was requested in query params, class matching must be on.
+      this.selectedValue = true;
     }
 
     const initialUseClass = this.parseQueryBoolean(this.args.initialUseClass);
@@ -156,11 +191,25 @@ export default class ImportWorkComponent extends Component {
       this.selectedValue = initialUseClass;
     }
 
+    const restoredUploadedFiles = await this.restoreUploadedFilesFromQuery(
+      this.args.initialUploadedFileIds
+    );
+    if (restoredUploadedFiles.length > 0) {
+      this.uploadedFiles = restoredUploadedFiles;
+    }
+
     if (targetStep > 1 && !this.selectedProblem) {
       targetStep = 1;
     }
     if (targetStep > 2 && this.selectedValue && !this.selectedSection) {
       targetStep = 2;
+    }
+    if (targetStep > 3 && this.uploadedFiles.length === 0) {
+      targetStep = 3;
+    }
+    if (targetStep > 3 && this.uploadedFiles.length > 0) {
+      this.loadStudentMatching();
+      return;
     }
 
     this.currentStep = this.steps[targetStep];
@@ -234,7 +283,7 @@ export default class ImportWorkComponent extends Component {
   constructor(owner, args) {
     super(owner, args);
     this.sections = this.args.model?.sections || [];
-    this.restoreInitialStateFromQuery();
+    this.restoreInitialStateFromQuery().catch(() => null);
   }
 
   get users() {
@@ -243,6 +292,23 @@ export default class ImportWorkComponent extends Component {
 
   get folderSets() {
     return this.args.model?.folderSets || [];
+  }
+
+  get uploadedFileIdsParam() {
+    if (!Array.isArray(this.uploadedFiles) || this.uploadedFiles.length === 0) {
+      return null;
+    }
+
+    const ids = this.uploadedFiles
+      .map((file) => this.getRecordId(file))
+      .filter(Boolean)
+      .map((id) => String(id));
+
+    if (ids.length === 0) {
+      return null;
+    }
+
+    return ids.join(',');
   }
 
   doConfirmLeaving(value) {
@@ -350,9 +416,15 @@ export default class ImportWorkComponent extends Component {
     const section = this.selectedSection;
 
     // get section info needed for matching
+    let students;
     this.isFetchingSectionStudents = true;
-    const students = await this.getSectionStudents(section);
-    this.isFetchingSectionStudents = false;
+    try {
+      students = await this.getSectionStudents(section);
+    } catch (_err) {
+      return;
+    } finally {
+      this.isFetchingSectionStudents = false;
+    }
 
     const asArray =
       typeof students?.toArray === 'function'
@@ -366,6 +438,37 @@ export default class ImportWorkComponent extends Component {
     });
     this.studentMap = hash;
     this.currentStep = this.steps[3];
+  }
+
+  @action
+  async refreshSelectedSectionStudents() {
+    const section = this.selectedSection;
+    if (!section) {
+      return;
+    }
+
+    let students;
+    this.isFetchingSectionStudents = true;
+    try {
+      students = await this.getSectionStudents(section);
+    } catch (_err) {
+      return;
+    } finally {
+      this.isFetchingSectionStudents = false;
+    }
+
+    const asArray =
+      typeof students?.toArray === 'function'
+        ? students.toArray()
+        : Array.isArray(students)
+        ? students
+        : [];
+
+    const hash = {};
+    asArray.forEach((user) => {
+      hash[user.id] = user;
+    });
+    this.studentMap = hash;
   }
 
   @action
@@ -409,20 +512,27 @@ export default class ImportWorkComponent extends Component {
   @action
   async loadStudentMatching() {
     const images = Array.isArray(this.uploadedFiles) ? this.uploadedFiles : [];
-    const answers = images.map((image) => {
-      const record = this.store.peekRecord('image', image._id);
-      const url = `/api/images/file/${image._id}`;
-      const imgStr = `<img src='${url}'>`;
-      return {
-        explanation: imgStr,
-        explanationImage: record || image,
-        problem: this.selectedProblem,
-        section: this.selectedSection,
-        isSubmitted: true,
-        students: [],
-        studentNames: [],
-      };
-    });
+    const answers = images
+      .map((image) => {
+        const imageId = this.getRecordId(image);
+        if (!imageId) {
+          return null;
+        }
+
+        const record = this.store.peekRecord('image', imageId);
+        const url = `/api/images/file/${imageId}`;
+        const imgStr = `<img src='${url}'>`;
+        return {
+          explanation: imgStr,
+          explanationImage: record || image,
+          problem: this.selectedProblem,
+          section: this.selectedSection,
+          isSubmitted: true,
+          students: [],
+          studentNames: [],
+        };
+      })
+      .filter(Boolean);
 
     this.answers = answers;
     this.currentStep = this.steps[4];
