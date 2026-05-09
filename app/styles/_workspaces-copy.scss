@@ -68,6 +68,12 @@
     }
     .detail-header {
       font-weight: $bold-font-weight;
+      .detail-edit-button {
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+      }
       i {
         position: relative;
         left: 5px;
