@@ -17,7 +17,8 @@ export default class StudentMatchingAnswerComponent extends Component {
   }
 
   get selectizeInputId() {
-    const id = this.image?.id || this.answer?.id || '';
+    const id =
+      this.getRecordId(this.image) || this.getRecordId(this.answer) || '';
     return `select-add-student${id}`;
   }
 
@@ -92,6 +93,16 @@ export default class StudentMatchingAnswerComponent extends Component {
     return options;
   }
 
+  get allowCustomNameEntry() {
+    return !this.args.selectedSection;
+  }
+
+  get selectizePlaceholder() {
+    return this.allowCustomNameEntry
+      ? 'Search students or type a name'
+      : 'Search class students by username';
+  }
+
   addUnique(arrayRef, value) {
     if (!Array.isArray(arrayRef) || !value) {
       return;
@@ -159,6 +170,12 @@ export default class StudentMatchingAnswerComponent extends Component {
       set(submission, 'students', creators);
       // add or remove string name from studentNames array on answer object
     } else {
+      // In class mode, block new free-text names but still allow removing
+      // previously stored name entries.
+      if (!this.allowCustomNameEntry && !doRemove) {
+        return;
+      }
+
       let creators = this.normalizeArray(submission.studentNames);
       if (doRemove) {
         this.removeValue(creators, userId);
@@ -199,6 +216,9 @@ export default class StudentMatchingAnswerComponent extends Component {
   // used for adding non encompass users which will be added to studentNames array
   @action
   addStudentName(input, cb) {
+    if (!this.allowCustomNameEntry) {
+      return;
+    }
     if (typeof input !== 'string') {
       return;
     }
