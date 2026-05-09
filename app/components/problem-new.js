@@ -61,8 +61,9 @@ export default class ProblemNewComponent extends Component {
   }
 
   get importQueryParams() {
+    const parsedStep = Number.parseInt(this.args.returnStep, 10);
     const queryParams = {
-      step: 1,
+      step: Number.isInteger(parsedStep) ? parsedStep : 1,
     };
     if (this.args.importSectionId) {
       queryParams.sectionId = this.args.importSectionId;
@@ -76,6 +77,9 @@ export default class ProblemNewComponent extends Component {
     }
     if (this.args.importProblemId) {
       queryParams.problemId = this.args.importProblemId;
+    }
+    if (this.args.importUploadedFileIds) {
+      queryParams.uploadedFileIds = this.args.importUploadedFileIds;
     }
     return queryParams;
   }

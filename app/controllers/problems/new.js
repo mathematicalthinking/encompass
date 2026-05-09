@@ -4,13 +4,17 @@ import { tracked } from '@glimmer/tracking';
 export default class ProblemsNewController extends Controller {
   queryParams = [
     'returnTo',
+    'returnStep',
     'importProblemId',
     'importSectionId',
     'importUseClass',
+    'importUploadedFileIds',
   ];
 
   @tracked returnTo = null;
+  @tracked returnStep = null;
   @tracked importProblemId = null;
   @tracked importSectionId = null;
   @tracked importUseClass = null;
+  @tracked importUploadedFileIds = null;
 }
