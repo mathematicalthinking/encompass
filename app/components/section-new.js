@@ -72,8 +72,9 @@ export default class SectionNewComponent extends Component {
   }
 
   get importQueryParams() {
+    const parsedStep = Number.parseInt(this.args.returnStep, 10);
     const queryParams = {
-      step: this.args.returnStep || 1,
+      step: Number.isInteger(parsedStep) ? parsedStep : 1,
     };
     if (this.args.importProblemId) {
       queryParams.problemId = this.args.importProblemId;
@@ -87,6 +88,9 @@ export default class SectionNewComponent extends Component {
       this.args.importUseClass !== ''
     ) {
       queryParams.useClass = this.args.importUseClass;
+    }
+    if (this.args.importUploadedFileIds) {
+      queryParams.uploadedFileIds = this.args.importUploadedFileIds;
     }
     return queryParams;
   }
@@ -149,12 +153,14 @@ export default class SectionNewComponent extends Component {
         null
       );
       if (this.showBackToImport) {
-        this.router.transitionTo('import', {
+        this.router.transitionTo('sections.section', section.id, {
           queryParams: {
-            ...this.importQueryParams,
-            step: 2,
-            sectionId: section.id,
-            useClass: true,
+            returnTo: 'import',
+            returnStep: this.args.returnStep || 2,
+            importProblemId: this.args.importProblemId || null,
+            importSectionId: section.id,
+            importUseClass: true,
+            importUploadedFileIds: this.args.importUploadedFileIds || null,
           },
         });
         return;

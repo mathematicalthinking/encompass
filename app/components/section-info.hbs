@@ -220,7 +220,6 @@
           <p class='error-message'>{{error}}</p>
         {{/each}}
       </div>
-
       <div class='section-info-detail groups'>
         <label for='groups'>Groups:
           {{#unless this.cantEdit}}
@@ -334,3 +333,21 @@
     />
   {{/if}}
 </div>
+{{#if this.showDoneToImport}}
+  <div class='section-info-detail import-return'>
+    <div class='import-spacer' aria-hidden='true'></div>
+    <div class='section-info-import-return'>
+      {{#unless this.canReturnToImport}}
+        <p class='info'>Add at least one student before returning to import.</p>
+      {{/unless}}
+      <button
+        class='primary-button'
+        type='button'
+        disabled={{not this.canReturnToImport}}
+        {{on 'click' this.doneToImport}}
+      >
+        Done Adding Students
+      </button>
+    </div>
+  </div>
+{{/if}}

@@ -1,7 +1,7 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 
-export default class SectionsNewController extends Controller {
+export default class SectionsSectionController extends Controller {
   queryParams = [
     'returnTo',
     'returnStep',

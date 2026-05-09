@@ -106,6 +106,39 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     return !this.canEdit;
   }
 
+  get showDoneToImport() {
+    return this.args.returnTo === 'import';
+  }
+
+  get studentCount() {
+    return this.studentList?.length || this.args.section?.students?.length || 0;
+  }
+
+  get canReturnToImport() {
+    if (!this.showDoneToImport) {
+      return true;
+    }
+    return this.studentCount > 0;
+  }
+
+  get importReturnQueryParams() {
+    const parsedStep = Number.parseInt(this.args.returnStep, 10);
+    const queryParams = {
+      step: Number.isInteger(parsedStep) ? parsedStep : 2,
+      sectionId: this.args.section?.id || this.args.importSectionId || null,
+      useClass: true,
+    };
+
+    if (this.args.importProblemId) {
+      queryParams.problemId = this.args.importProblemId;
+    }
+    if (this.args.importUploadedFileIds) {
+      queryParams.uploadedFileIds = this.args.importUploadedFileIds;
+    }
+
+    return queryParams;
+  }
+
   clearSelectizeInput(id) {
     if (!id) {
       return;
@@ -254,7 +287,6 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       return;
     }
 
-    const originalName = group.name;
     const originalStudents = group.students.toArray();
 
     group.name = name;
@@ -287,7 +319,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     if (!user) return;
     try {
       group.students.removeObject(user);
-      const res = await group.save();
+      await group.save();
       this.alert.showToast(
         'success',
         `${user.username} removed`,
@@ -331,9 +363,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       );
     }
   }
-  @action updateGroupDraft(student) {
-    return this.newGroup.students.removeObject(student);
-  }
+
   @action removeStudent(user) {
     if (!user) {
       return;
@@ -347,7 +377,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
 
     section
       .save()
-      .then((section) => {
+      .then(() => {
         this.alert.showToast(
           'success',
           'Student Removed',
@@ -379,7 +409,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
 
     section
       .save()
-      .then((section) => {
+      .then(() => {
         this.alert.showToast(
           'success',
           'Teacher Removed',
@@ -478,7 +508,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         this.handleErrors(err, 'updateSectionErrors', section);
       });
   }
-  @action addTeacher(val, $item) {
+  @action addTeacher(val) {
     if (!val) {
       return;
     }
@@ -512,5 +542,16 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
           this.handleErrors(err, 'updateSectionErrors', section);
         });
     }
+  }
+
+  @action
+  doneToImport() {
+    if (!this.canReturnToImport) {
+      return;
+    }
+
+    this.router.transitionTo('import', {
+      queryParams: this.importReturnQueryParams,
+    });
   }
 }
