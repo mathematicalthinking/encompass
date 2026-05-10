@@ -14,7 +14,9 @@
     @route='problems.new'
     @query={{hash
       returnTo='import'
+      returnStep=1
       importProblemId=this.selectedProblem.id
+      importUploadedFileIds=this.uploadedFileIdsParam
       importSectionId=@selectedSection.id
       importUseClass=@selectedValue
     }}

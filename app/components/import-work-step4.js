@@ -48,7 +48,9 @@ export default Component.extend({
       record.id ||
       record._id ||
       record.userId ||
-      (typeof record.get === 'function' ? record.get('id') : null)
+      (typeof record.get === 'function'
+        ? record.get('id') || record.get('_id') || record.get('userId')
+        : null)
     );
   },
 
@@ -71,18 +73,15 @@ export default Component.extend({
     if (!id || !this.studentMap) {
       return null;
     }
-    if (this.studentMap[id]) {
-      return this.studentMap[id];
+    const normalizedId = String(id);
+    if (this.studentMap[normalizedId]) {
+      return this.studentMap[normalizedId];
     }
     let mapKeys = Object.keys(this.studentMap);
     for (let key of mapKeys) {
       let student = this.studentMap[key];
-      let candidateId =
-        student?.id ||
-        student?._id ||
-        student?.userId ||
-        (typeof student?.get === 'function' ? student.get('id') : null);
-      if (candidateId === id) {
+      let candidateId = this.getRecordId(student);
+      if (String(candidateId) === normalizedId) {
         return student;
       }
     }
@@ -97,7 +96,7 @@ export default Component.extend({
         (typeof answer?.get === 'function'
           ? answer.get('explanationImage')
           : null);
-      const imageId = image?.id || image?._id;
+      const imageId = this.getRecordId(image);
       const inputId = `select-add-student${imageId || ''}`;
       const inputEl =
         typeof document !== 'undefined'
@@ -187,6 +186,11 @@ export default Component.extend({
   },
 
   actions: {
+    refreshStudents() {
+      if (typeof this.onRefreshStudents === 'function') {
+        this.onRefreshStudents();
+      }
+    },
     addAddedStudentName(name) {
       if (typeof name !== 'string') {
         return;

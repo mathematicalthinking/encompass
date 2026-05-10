@@ -26,9 +26,9 @@
       @searchField='username'
       @valueField='id'
       @model='user'
-      @placeholder='Search students by username'
-      @create={{this.addStudentName}}
-      @createFilter={{this.newNameFilter}}
+      @placeholder={{this.selectizePlaceholder}}
+      @create={{if this.allowCustomNameEntry this.addStudentName null}}
+      @createFilter={{if this.allowCustomNameEntry this.newNameFilter null}}
     />
   </div>
 </div>

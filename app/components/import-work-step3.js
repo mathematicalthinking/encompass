@@ -3,18 +3,6 @@ import Component from '@ember/component';
 export default Component.extend({
   elementId: 'import-work-step3',
 
-  didReceiveAttrs() {
-    if (this.existingAnswers) {
-      this.set('existingAnswers', []);
-    }
-
-    // if (!this.uploadedFiles) {
-    //   this.set('uploadedFiles', []);
-    // }
-
-    this._super(...arguments);
-  },
-
   actions: {
     next() {
       if (this.get('uploadedFiles.length') > 0) {
@@ -45,8 +33,14 @@ export default Component.extend({
       this.uploadedFiles.removeObject(file);
 
       // destroy unnecessary image record
-
-      let peeked = this.store.peekRecord('image', file._id);
+      const fileId =
+        file.id ||
+        file._id ||
+        (typeof file.get === 'function' ? file.get('id') : null);
+      if (!fileId) {
+        return;
+      }
+      let peeked = this.store.peekRecord('image', fileId);
       if (peeked) {
         peeked.destroyRecord();
       }

@@ -8,6 +8,7 @@ export default class SectionsNewController extends Controller {
     'importProblemId',
     'importSectionId',
     'importUseClass',
+    'importUploadedFileIds',
   ];
 
   @tracked returnTo = null;
@@ -15,4 +16,5 @@ export default class SectionsNewController extends Controller {
   @tracked importProblemId = null;
   @tracked importSectionId = null;
   @tracked importUseClass = null;
+  @tracked importUploadedFileIds = null;
 }
