@@ -93,8 +93,23 @@ export default class SelectizeInputComponent extends Component {
     this.selectizeInstance.clearOptions(true);
     this.selectizeInstance.addOption(this.options || []);
 
-    if (this.items) {
-      this.selectizeInstance.setValue(this.items, true);
+    let nextItems = this.items;
+    if (!Array.isArray(nextItems)) {
+      nextItems = nextItems ? [nextItems] : [];
+    }
+    if (
+      this.args.preserveCurrentItemsOnOptionsUpdate &&
+      nextItems.length === 0
+    ) {
+      nextItems = Array.isArray(this.selectizeInstance.items)
+        ? this.selectizeInstance.items.slice()
+        : [];
+    }
+
+    if (nextItems.length > 0) {
+      this.selectizeInstance.setValue(nextItems, true);
+    } else {
+      this.selectizeInstance.clear(true);
     }
 
     this.selectizeInstance.refreshOptions(false);
@@ -115,6 +130,7 @@ export default class SelectizeInputComponent extends Component {
       maxItems: this.args.maxItems || null,
       maxOptions: this.args.maxOptions || 1000,
       items: this.items || [],
+      closeAfterSelect: this.args.closeAfterSelect === true,
       create: this.args.create || false,
       persist: this.args.persist || false,
       createFilter: this.args.createFilter || null,

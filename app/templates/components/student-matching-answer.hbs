@@ -27,6 +27,8 @@
       @valueField='id'
       @model='user'
       @placeholder={{this.selectizePlaceholder}}
+      @closeAfterSelect={{true}}
+      @preserveCurrentItemsOnOptionsUpdate={{true}}
       @create={{if this.allowCustomNameEntry this.addStudentName null}}
       @createFilter={{if this.allowCustomNameEntry this.newNameFilter null}}
     />
