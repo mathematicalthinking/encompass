@@ -239,6 +239,59 @@ function getImageData(src) {
     });
 }
 
+function toFiniteNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function buildSafeCropRect(
+  relativeCoords,
+  relativeSize,
+  imageWidth,
+  imageHeight
+) {
+  if (!(imageWidth > 0 && imageHeight > 0)) {
+    return null;
+  }
+
+  const leftPctRaw = toFiniteNumber(relativeCoords?.tagLeftPct);
+  const topPctRaw = toFiniteNumber(relativeCoords?.tagTopPct);
+  const widthPctRaw = toFiniteNumber(relativeSize?.widthPct);
+  const heightPctRaw = toFiniteNumber(relativeSize?.heightPct);
+
+  if (
+    leftPctRaw === null ||
+    topPctRaw === null ||
+    widthPctRaw === null ||
+    heightPctRaw === null
+  ) {
+    return null;
+  }
+
+  const leftPct = clamp(leftPctRaw, 0, 1);
+  const topPct = clamp(topPctRaw, 0, 1);
+  const widthPct = clamp(widthPctRaw, 0, 1);
+  const heightPct = clamp(heightPctRaw, 0, 1);
+
+  let left = Math.floor(leftPct * imageWidth);
+  let top = Math.floor(topPct * imageHeight);
+  let width = Math.floor(widthPct * imageWidth);
+  let height = Math.floor(heightPct * imageHeight);
+
+  left = clamp(left, 0, Math.max(0, imageWidth - 1));
+  top = clamp(top, 0, Math.max(0, imageHeight - 1));
+
+  // Ensure extraction region is always valid and non-zero.
+  width = clamp(width, 1, imageWidth - left);
+  height = clamp(height, 1, imageHeight - top);
+
+  return { left, top, width, height };
+}
+
 /**
  * @public
  * @method postSelection
@@ -274,7 +327,7 @@ async function postSelection(req, res, next) {
     selection.createDate = Date.now();
 
     let coordinates = selection.coordinates;
-    let splitCoords = coordinates.split(' ');
+    let splitCoords = coordinates.trim().split(/\s+/);
 
     let selectionType = splitCoords.length === 5 ? 'image' : 'text';
 
@@ -303,24 +356,23 @@ async function postSelection(req, res, next) {
         let { width, height } = sharpMetadata;
 
         let { relativeSize, relativeCoords } = selection;
+        let cropRect = buildSafeCropRect(
+          relativeCoords,
+          relativeSize,
+          width,
+          height
+        );
 
-        let croppedLeft = Math.floor(relativeCoords.tagLeftPct * width);
-        let croppedTop = Math.floor(relativeCoords.tagTopPct * height);
+        if (!cropRect) {
+          return utils.sendError.InvalidContentError(
+            'Invalid image tag coordinates.',
+            res
+          );
+        }
 
-        let croppedWidth = Math.floor(relativeSize.widthPct * width);
-        let croppedHeight = Math.floor(relativeSize.heightPct * height);
-
-        let extraction = await sharp(bytes)
-          .extract({
-            left: croppedLeft,
-            top: croppedTop,
-            width: croppedWidth,
-            height: croppedHeight,
-          })
-          .toBuffer();
+        let extraction = await sharp(bytes).extract(cropRect).toBuffer();
 
         let newMetadata = await sharp(extraction).metadata();
-        console.log('new tag metadata', newMetadata);
         let croppedImageData = extraction.toString('base64');
 
         let croppedImage = new models.Image({
