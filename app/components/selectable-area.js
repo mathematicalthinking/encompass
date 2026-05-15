@@ -60,6 +60,14 @@ export default class SelectableAreaComponent extends Component {
       targetContainer: containerId,
       isCompSelectionMode: this.args.makingSelection,
       scrollableContainer,
+      autoScrollTriggerPadding: 6,
+      autoScrollStep: 2,
+      selectionBorder: '2px dashed #1D4ED8',
+      selectionContrastDark: 'rgba(17, 24, 39, 0.95)',
+      selectionContrastLight: 'rgba(255, 255, 255, 0.95)',
+      selectionIndicatorBorderColor: '#1D4ED8',
+      selectionIndicatorFillColor: '#FFFFFF',
+      selectionIndicatorSize: 10,
     });
 
     this.imageTagging.onSave((id, isUpdateOnly) => {
@@ -169,7 +177,7 @@ export default class SelectableAreaComponent extends Component {
       const coordsStr = selection.coordinates;
       if (!coordsStr) return;
 
-      const coordsArray = coordsStr.split(' ');
+      const coordsArray = coordsStr.trim().split(/\s+/);
 
       switch (coordsArray.length) {
         case 6: {
