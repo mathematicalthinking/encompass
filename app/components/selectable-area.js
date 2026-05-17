@@ -9,6 +9,7 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class SelectableAreaComponent extends Component {
+  maxInitRetries = 60;
   @tracked currSubId = this.args.model?.id || null;
   @tracked selecting = this.args.makingSelection || false;
   @tracked showing = this.args.showingSelections || false;
@@ -26,15 +27,45 @@ export default class SelectableAreaComponent extends Component {
     this.setupTagging();
   }
 
+  scheduleInitRetry(nextRetryCount) {
+    if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+      window.requestAnimationFrame(() =>
+        this.tryInitializeSelectionTools(nextRetryCount)
+      );
+      return;
+    }
+
+    setTimeout(() => this.tryInitializeSelectionTools(nextRetryCount), 16);
+  }
+
   @action
   initializeSelectionTools() {
+    this.tryInitializeSelectionTools(0);
+  }
+
+  tryInitializeSelectionTools(retryCount = 0) {
     if (this._toolsInitialized) return;
 
     const containerId = 'submission_container';
     const scrollableContainer = 'al_submission';
     const container = document.getElementById(containerId);
+    const currentImageCount = container?.querySelectorAll('img').length || 0;
+    const shouldWaitForImageNodes =
+      this.args.makingSelection &&
+      currentImageCount === 0 &&
+      retryCount < this.maxInitRetries;
+
+    if (!container && retryCount < this.maxInitRetries) {
+      this.scheduleInitRetry(retryCount + 1);
+      return;
+    }
 
     if (!container) return;
+
+    if (shouldWaitForImageNodes) {
+      this.scheduleInitRetry(retryCount + 1);
+      return;
+    }
 
     this._toolsInitialized = true;
 
