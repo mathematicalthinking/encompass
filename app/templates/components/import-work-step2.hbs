@@ -8,9 +8,9 @@
   </span>
 </p>
 <Ui::RadioGroup
-  @options={{this.useClass}}
+  @options={{this.useClassOptions}}
   @selectedValue={{this.selectedValue}}
-  @updateValue={{action 'updateSelectedValue'}}
+  @updateValue={{this.updateSelectedValue}}
 />
 
 <p class='sub-input-label'>If you want, you can create a new class
@@ -19,10 +19,10 @@
     @query={{hash
       returnTo='import'
       returnStep=2
-      importProblemId=this.selectedProblem.id
+      importProblemId=@selectedProblem.id
       importSectionId=this.selectedSection.id
       importUseClass=true
-      importUploadedFileIds=this.uploadedFileIdsParam
+      importUploadedFileIds=@uploadedFileIdsParam
     }}
     class='new-link'
   >here</LinkTo></p>
@@ -39,13 +39,12 @@
   </p>
   {{!-- <p class="sub-input-label">If this work was completed by members of a class, select the existing class you would like to use or you can create one {{#link-to 'sections.new' classNames='new-link'}}here{{/link-to}}.</p> --}}
   <SelectizeInput
-    @store={{this.store}}
     @inputId='select-class'
     @isAsync={{true}}
     @maxItems={{1}}
     @initialItems={{this.initialSectionItem}}
-    @onItemAdd={{action 'setSelectedSection'}}
-    @onItemRemove={{action 'setSelectedSection'}}
+    @onItemAdd={{this.setSelectedSection}}
+    @onItemRemove={{this.setSelectedSection}}
     @labelField='name'
     @searchField='name'
     @valueField='id'
@@ -61,16 +60,12 @@
 {{#if this.missingSection}}
   <Ui::ErrorBox
     @error='Please select a class or no class'
-    @resetError={{action (mut this.missingSection) null}}
+    @resetError={{this.resetMissingSection}}
     @showDismiss={{true}}
   />
 {{/if}}
 
 <div class='nav-btn-container'>
-  <button
-    class='primary-button cancel-button'
-    type='button'
-    {{action 'back'}}
-  >Back</button>
-  <button class='primary-button' type='button' {{action 'next'}}>Next</button>
+  <button class='primary-button cancel-button' type='button' {{on 'click' this.back}}>Back</button>
+  <button class='primary-button' type='button' {{on 'click' this.next}}>Next</button>
 </div>
