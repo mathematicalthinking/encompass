@@ -412,8 +412,20 @@ export default class ImportWorkComponent extends Component {
   }
 
   @action
-  async setSelectedSection() {
-    const section = this.selectedSection;
+  updateStep2Selection(step2Selection = null) {
+    if (!this.utils.isNonEmptyObject(step2Selection)) {
+      return;
+    }
+
+    const { selectedSection = null, selectedValue = false } = step2Selection;
+    this.selectedSection = selectedSection;
+    this.selectedValue = selectedValue === true;
+  }
+
+  @action
+  async setSelectedSection(step2Selection = null) {
+    this.updateStep2Selection(step2Selection);
+    const section = this.selectedValue ? this.selectedSection : null;
 
     // get section info needed for matching
     let students;
