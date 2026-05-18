@@ -551,10 +551,8 @@
 
       &.selections-hidden {
         #submission_selections {
-          display: none;
-        }
-        #al_submission {
-          height: calc(100% - 56px - 28px - 27px);
+          visibility: hidden;
+          pointer-events: none;
         }
       }
     }
