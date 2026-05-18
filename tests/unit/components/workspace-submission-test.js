@@ -540,7 +540,7 @@ module('Unit | Component | workspace-submission', function (hooks) {
       );
     });
 
-    test('selectionBoxClass returns "expanded" when selections box is expanded', function (assert) {
+    test('selectionBoxClass returns "collapsed" when selections box is toggled closed', function (assert) {
       const selection = createSelection('sel-1', 'sub-1', false);
       const component = setupComponent(this, {
         selections: [selection],
@@ -550,8 +550,8 @@ module('Unit | Component | workspace-submission', function (hooks) {
 
       assert.strictEqual(
         component.selectionBoxClass,
-        'expanded',
-        'should return "expanded" class when box is expanded'
+        'collapsed',
+        'should return "collapsed" class when box is hidden'
       );
     });
 
@@ -625,10 +625,14 @@ module('Unit | Component | workspace-submission', function (hooks) {
       );
       assert.strictEqual(
         info.className,
-        'shrink-selection-box',
-        'className should be shrink'
+        'expand-selection-box',
+        'className should be expand'
       );
-      assert.strictEqual(info.title, 'collapse', 'title should be collapse');
+      assert.strictEqual(
+        info.title,
+        'show selections',
+        'title should be show selections'
+      );
     });
 
     test('toggleSelectionInfo returns correct info when collapsed', function (assert) {
@@ -644,10 +648,14 @@ module('Unit | Component | workspace-submission', function (hooks) {
       );
       assert.strictEqual(
         info.className,
-        'expand-selection-box',
-        'className should be expand'
+        'shrink-selection-box',
+        'className should be shrink'
       );
-      assert.strictEqual(info.title, 'expand', 'title should be expand');
+      assert.strictEqual(
+        info.title,
+        'hide selections',
+        'title should be hide selections'
+      );
     });
 
     test('showExpandSelections returns true when selections exist and not hidden', function (assert) {

@@ -134,7 +134,7 @@ export default class WorkspaceSubmissionComponent extends Component {
       return 'no-selections';
     }
     if (this.isSelectionsBoxExpanded) {
-      return 'expanded';
+      return 'collapsed';
     }
     return '';
   }
@@ -143,16 +143,16 @@ export default class WorkspaceSubmissionComponent extends Component {
     if (this.isSelectionsBoxExpanded) {
       return {
         imgName: 'chevrons-down.svg',
-        className: 'shrink-selection-box',
-        title: 'collapse',
-        alt: 'Collapse',
+        className: 'expand-selection-box',
+        title: 'show selections',
+        alt: 'Show Selections',
       };
     }
     return {
       imgName: 'chevrons-up.svg',
-      className: 'expand-selection-box',
-      title: 'expand',
-      alt: 'Expand',
+      className: 'shrink-selection-box',
+      title: 'hide selections',
+      alt: 'Hide Selections',
     };
   }
 

@@ -539,16 +539,6 @@
         }
       }
 
-      &.expanded-selections {
-        #submission_selections {
-          height: calc(100% - 40% - 35px - 56px);
-        }
-
-        #al_submission {
-          height: calc(40%);
-        }
-      }
-
       &.selections-hidden {
         #submission_selections {
           visibility: hidden;
@@ -609,6 +599,15 @@
 
       &.no-selections {
         height: 75px;
+      }
+
+      &.collapsed {
+        height: 0;
+        min-height: 0;
+        border-top-width: 0;
+        overflow: hidden;
+        visibility: hidden;
+        pointer-events: none;
       }
 
       .draggable-selection {
