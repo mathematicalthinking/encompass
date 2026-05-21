@@ -79,11 +79,11 @@
 
         {{#if this.showSelectClass}}
           <ImportWorkStep2
-            @store={{this.store}}
             @selectedProblem={{this.selectedProblem}}
             @selectedSection={{this.selectedSection}}
             @selectedValue={{this.selectedValue}}
             @uploadedFileIdsParam={{this.uploadedFileIdsParam}}
+            @onSelectionChange={{this.updateStep2Selection}}
             @onBack={{this.changeStep}}
             @onProceed={{this.setSelectedSection}}
           />
