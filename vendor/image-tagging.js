@@ -81,6 +81,8 @@ var ImageTagging = function(args) {
     taggingContainer,
     containerX,
     containerY,
+    _touchEventListenerOptions = false,
+    _touchCaptureEventListenerOptions = true,
 
 NoteInput = function() {
   var input = this,
@@ -120,7 +122,7 @@ NoteInput = function() {
     if (event.target.id !== _tagIdPrefix + tmpId) {
       if (_currentlyResizingOrPlacing) {
         window.removeEventListener('mousemove', _mouseMove, true);
-        window.removeEventListener('touchmove', _mouseMove , true);
+        window.removeEventListener('touchmove', _mouseMove, _touchCaptureEventListenerOptions);
         _currentlyResizingOrPlacing = false;
         return;
       }
@@ -237,6 +239,31 @@ NoteInput = function() {
   };
 };
 
+  function _configureTouchEventListenerOptions() {
+    var supportsPassive = false;
+    var noopListener = function() {};
+
+    try {
+      var options = Object.defineProperty({}, 'passive', {
+        get: function() {
+          supportsPassive = true;
+          return false;
+        },
+      });
+      window.addEventListener('passive-listener-test', noopListener, options);
+      window.removeEventListener('passive-listener-test', noopListener, options);
+    } catch (e) {
+      supportsPassive = false;
+    }
+
+    if (supportsPassive) {
+      _touchEventListenerOptions = { passive: false };
+      _touchCaptureEventListenerOptions = { capture: true, passive: false };
+    }
+  }
+
+  _configureTouchEventListenerOptions();
+
   function _handleMouseMove(event) {
     event.preventDefault();
     if (_currentlyMakingSelection) {
@@ -249,14 +276,14 @@ NoteInput = function() {
     window.addEventListener('mouseup', _handleMouseUp, false);
     window.addEventListener('mousemove', _handleMouseMove, false);
     window.addEventListener('touchend', _handleMouseUp, false);
-    window.addEventListener('touchmove', _handleMouseMove, false);
+    window.addEventListener('touchmove', _handleMouseMove, _touchEventListenerOptions);
   }
 
   function _removeSelectionDragListeners() {
     window.removeEventListener('mouseup', _handleMouseUp, false);
     window.removeEventListener('mousemove', _handleMouseMove, false);
     window.removeEventListener('touchend', _handleMouseUp, false);
-    window.removeEventListener('touchmove', _handleMouseMove, false);
+    window.removeEventListener('touchmove', _handleMouseMove, _touchEventListenerOptions);
   }
 
   function _handleMouseUp(event) {
@@ -790,7 +817,7 @@ NoteInput = function() {
       _selectionContrastLight;
     _ensureSelectionResizeIndicators(box);
     box.addEventListener('mousedown', _initiateSelection, false);
-    box.addEventListener('touchstart', _initiateSelection, false);
+    box.addEventListener('touchstart', _initiateSelection, _touchEventListenerOptions);
     return box;
   }
 
@@ -883,7 +910,7 @@ NoteInput = function() {
       // }
       targetImages[targetImages.length] = img;
       img.addEventListener('mousedown', _initiateSelection, false);
-      img.addEventListener('touchstart', _initiateSelection, false);
+      img.addEventListener('touchstart', _initiateSelection, _touchEventListenerOptions);
     }
 
     var images, i;
@@ -1369,7 +1396,7 @@ NoteInput = function() {
     _currentlyResizingOrPlacing = true;
 
     window.addEventListener('mousemove', _mouseMove, true);
-    window.addEventListener('touchmove', _mouseMove, true);
+    window.addEventListener('touchmove', _mouseMove, _touchCaptureEventListenerOptions);
 
 
     event.preventDefault();
@@ -1387,7 +1414,7 @@ NoteInput = function() {
     _currentlyResizingOrPlacing = false;
 
     window.removeEventListener('mousemove', _mouseMove, true);
-    window.removeEventListener('touchmove', _mouseMove, true);
+    window.removeEventListener('touchmove', _mouseMove, _touchCaptureEventListenerOptions);
 
     event.stopPropagation();
   }
@@ -1929,7 +1956,7 @@ NoteInput = function() {
     tagging.removeAllTags();
     for (i = 0; i < targetImages.length; i++) {
       targetImages[i].removeEventListener('mousedown', _initiateSelection, false);
-      targetImages[i].removeEventListener('touchstart', _initiateSelection, false);
+      targetImages[i].removeEventListener('touchstart', _initiateSelection, _touchEventListenerOptions);
 
     }
   };
