@@ -1,44 +1,58 @@
-import Component from '@ember/component';
-import { computed, set } from '@ember/object';
+import Component from '@glimmer/component';
+import { action, set } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
-export default Component.extend({
-  elementId: 'import-work-step4',
-  utils: service('utility-methods'),
-  alert: service('sweet-alert'),
+export default class ImportWorkStep4Component extends Component {
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
 
-  addedStudentNames: [],
+  @tracked addedStudentNames = [];
+  @tracked isMatchingIncompleteError = null;
+  @tracked isReadyToReviewAnswers = false;
 
-  init() {
-    this._super(...arguments);
-    this.set('newNameFilter', this.addStudentNameFilter.bind(this));
-  },
+  get answers() {
+    return Array.isArray(this.args.answers) ? this.args.answers : [];
+  }
 
-  displayList: computed('studentMap', function () {
+  get selectedSection() {
+    return this.args.selectedSection || null;
+  }
+
+  get selectedValue() {
+    return this.args.selectedValue === true;
+  }
+
+  get studentMap() {
+    return this.args.studentMap || null;
+  }
+
+  get displayList() {
     if (!this.studentMap) {
       return [];
     }
     return Object.keys(this.studentMap).map((key) => this.studentMap[key]);
-  }),
+  }
 
-  addStudentNameFilter: function (name) {
+  @action
+  addStudentNameFilter(name) {
     if (typeof name !== 'string') {
-      return;
+      return false;
     }
     let trimmed = name.trim();
     let names = this.addedStudentNames;
     return trimmed.length > 1 && !names.includes(trimmed);
-  },
+  }
 
   normalizeArray(val) {
     if (Array.isArray(val)) {
       return val;
     }
-    if (typeof val?.toArray === 'function') {
-      return val.toArray();
+    if (typeof val?.slice === 'function') {
+      return val.slice();
     }
     return [];
-  },
+  }
 
   getRecordId(record) {
     if (!record) {
@@ -52,7 +66,7 @@ export default Component.extend({
         ? record.get('id') || record.get('_id') || record.get('userId')
         : null)
     );
-  },
+  }
 
   areArraysEqual(left, right) {
     if (!Array.isArray(left) || !Array.isArray(right)) {
@@ -67,7 +81,7 @@ export default Component.extend({
       }
     }
     return true;
-  },
+  }
 
   getStudentById(id) {
     if (!id || !this.studentMap) {
@@ -86,11 +100,10 @@ export default Component.extend({
       }
     }
     return null;
-  },
+  }
 
   syncAnswerMatchesFromUI() {
-    let answers = Array.isArray(this.answers) ? this.answers : [];
-    answers.forEach((answer) => {
+    this.answers.forEach((answer) => {
       const image =
         answer?.explanationImage ||
         (typeof answer?.get === 'function'
@@ -159,81 +172,94 @@ export default Component.extend({
         set(answer, 'studentNames', studentNames);
       }
     });
-  },
+  }
 
   isReadyToProceed() {
-    let answers = this.answers;
     return (
-      Array.isArray(answers) &&
-      answers.length > 0 &&
-      answers.every((ans) => {
+      this.answers.length > 0 &&
+      this.answers.every((ans) => {
         return (
           this.normalizeArray(ans.students).length > 0 ||
           this.normalizeArray(ans.studentNames).length > 0
         );
       })
     );
-  },
+  }
 
   updateMatchingStatus() {
     this.syncAnswerMatchesFromUI();
     let isReady = this.isReadyToProceed();
     if (isReady && this.isMatchingIncompleteError) {
-      this.set('isMatchingIncompleteError', null);
+      this.isMatchingIncompleteError = null;
     }
-    this.set('isReadyToReviewAnswers', isReady);
+    this.isReadyToReviewAnswers = isReady;
     return isReady;
-  },
+  }
 
-  actions: {
-    refreshStudents() {
-      if (typeof this.onRefreshStudents === 'function') {
-        this.onRefreshStudents();
-      }
-    },
-    addAddedStudentName(name) {
-      if (typeof name !== 'string') {
-        return;
-      }
+  @action
+  resetMatchingIncompleteError() {
+    this.isMatchingIncompleteError = null;
+  }
 
-      let trimmed = name.trim();
-      if (!trimmed) {
-        return;
-      }
+  @action
+  refreshStudents() {
+    if (typeof this.args.onRefreshStudents === 'function') {
+      this.args.onRefreshStudents();
+    }
+  }
 
-      let names = this.normalizeArray(this.addedStudentNames);
-      if (names.includes(trimmed)) {
-        return;
-      }
+  @action
+  addAddedStudentName(name) {
+    if (typeof name !== 'string') {
+      return;
+    }
 
-      this.set('addedStudentNames', [...names, trimmed]);
-    },
-    checkStatus: function () {
-      return this.updateMatchingStatus();
-    },
-    next() {
-      let isReady = this.updateMatchingStatus();
-      if (isReady) {
-        if (typeof this.onProceed === 'function') {
-          this.onProceed();
-        }
-        if (typeof this.goToStep === 'function') {
-          this.goToStep(5);
-        }
-      } else {
-        this.set('isMatchingIncompleteError', true);
-        this.alert.showToast(
-          'error',
-          'Please match at least one student/name for each submission',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
+    let trimmed = name.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    let names = this.normalizeArray(this.addedStudentNames);
+    if (names.includes(trimmed)) {
+      return;
+    }
+
+    this.addedStudentNames = [...names, trimmed];
+  }
+
+  @action
+  checkStatus() {
+    return this.updateMatchingStatus();
+  }
+
+  @action
+  next() {
+    let isReady = this.updateMatchingStatus();
+    if (isReady) {
+      if (typeof this.args.onProceed === 'function') {
+        this.args.onProceed();
       }
-    },
-    back() {
-      this.onBack(-1);
-    },
-  },
-});
+      if (typeof this.args.goToStep === 'function') {
+        this.args.goToStep(5);
+      }
+      return;
+    }
+
+    this.isMatchingIncompleteError = true;
+    this.alert.showToast(
+      'error',
+      'Please match at least one student/name for each submission',
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+  }
+
+  @action
+  back() {
+    if (typeof this.args.onBack === 'function') {
+      this.args.onBack(-1);
+    }
+  }
+}

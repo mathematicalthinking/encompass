@@ -1,80 +1,81 @@
-<p class="input-label">Match Students</p>
+<div id='import-work-step4'>
+  <p class="input-label">Match Students</p>
 
-{{#if @selectedSection}}
-  <p class="sub-input-label">
-    Need to add students to this class?
-    <LinkTo
-      @route='sections.section'
-      @model={{@selectedSection.id}}
-      @query={{hash
-        returnTo='import'
-        returnStep=4
-        importProblemId=@selectedProblem.id
-        importSectionId=@selectedSection.id
-        importUseClass=true
-        importUploadedFileIds=@uploadedFileIdsParam
-      }}
-      class='new-link'
-    >Open class roster</LinkTo>, Continue the flow, come back and then click Refresh Students.
-  </p>
-  <div class='nav-btn-container'>
-    <button
-      class='primary-button cancel-button'
-      type='button'
-      disabled={{@isFetchingSectionStudents}}
-      {{action 'refreshStudents'}}
-    >
-      {{if @isFetchingSectionStudents 'Refreshing...' 'Refresh Students'}}
-    </button>
-  </div>
-{{else if @selectedValue}}
-  <p class="sub-input-label">
-    No class is selected right now. Go back to Step 2, pick a class, then return here.
-  </p>
-{{/if}}
+  {{#if @selectedSection}}
+    <p class="sub-input-label">
+      Need to add students to this class?
+      <LinkTo
+        @route='sections.section'
+        @model={{@selectedSection.id}}
+        @query={{hash
+          returnTo='import'
+          returnStep=4
+          importProblemId=@selectedProblem.id
+          importSectionId=@selectedSection.id
+          importUseClass=true
+          importUploadedFileIds=@uploadedFileIdsParam
+        }}
+        class='new-link'
+      >Open class roster</LinkTo>, Continue the flow, come back and then click Refresh Students.
+    </p>
+    <div class='nav-btn-container'>
+      <button
+        class='primary-button cancel-button'
+        type='button'
+        disabled={{@isFetchingSectionStudents}}
+        {{on 'click' this.refreshStudents}}
+      >
+        {{if @isFetchingSectionStudents 'Refreshing...' 'Refresh Students'}}
+      </button>
+    </div>
+  {{else if @selectedValue}}
+    <p class="sub-input-label">
+      No class is selected right now. Go back to Step 2, pick a class, then return here.
+    </p>
+  {{/if}}
 
-<div class="flex-container">
-  <div class="student-list">
-    {{#if @selectedSection}}
-      <h4 class="section-name">Class: {{@selectedSection.name}}</h4>
-      <p class="student-name">Students:</p>
-      {{#if this.displayList.length}}
-        {{#each this.displayList as |student|}}
-          <p class="student-name">{{student.username}}</p>
-        {{/each}}
+  <div class="flex-container">
+    <div class="student-list">
+      {{#if @selectedSection}}
+        <h4 class="section-name">Class: {{@selectedSection.name}}</h4>
+        <p class="student-name">Students:</p>
+        {{#if this.displayList.length}}
+          {{#each this.displayList as |student|}}
+            <p class="student-name">{{student.username}}</p>
+          {{/each}}
+        {{else}}
+          <p class="student-name">No students in this class yet.</p>
+        {{/if}}
       {{else}}
-        <p class="student-name">No students in this class yet.</p>
+        <p>Not using class for matching.</p>
       {{/if}}
-    {{else}}
-      <p>Not using class for matching.</p>
-    {{/if}}
+    </div>
+
+    <div class="matching-container">
+      {{#each this.answers as |answer|}}
+        <StudentMatchingAnswer
+          @answer={{answer}}
+          @selectedSection={{this.selectedSection}}
+          @checkStatus={{this.checkStatus}}
+          @studentMap={{this.studentMap}}
+          @addedStudentNames={{this.addedStudentNames}}
+          @newNameFilter={{this.addStudentNameFilter}}
+          @onAddStudentName={{this.addAddedStudentName}}
+        />
+      {{/each}}
+    </div>
   </div>
 
-  <div class="matching-container">
-    {{#each this.answers as |answer|}}
-      <StudentMatchingAnswer
-        @store={{this.store}}
-        @answer={{answer}}
-        @selectedSection={{this.selectedSection}}
-        @checkStatus={{action "checkStatus"}}
-        @studentMap={{this.studentMap}}
-        @addedStudentNames={{this.addedStudentNames}}
-        @newNameFilter={{this.newNameFilter}}
-        @onAddStudentName={{action "addAddedStudentName"}}
-      />
-    {{/each}}
+  <div class="nav-btn-container">
+    <button class="primary-button cancel-button" type="button" {{on 'click' this.back}}>Back</button>
+    <button class="primary-button" type="button" {{on 'click' this.next}}>Next</button>
   </div>
-</div>
 
-<div class="nav-btn-container">
-  <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
-  <button class="primary-button" type="button" {{action "next"}}>Next</button>
+  {{#if this.isMatchingIncompleteError}}
+    <Ui::ErrorBox
+      @error='Please match at least one student/name for each submission before continuing'
+      @showDismiss={{true}}
+      @resetError={{this.resetMatchingIncompleteError}}
+    />
+  {{/if}}
 </div>
-
-{{#if this.isMatchingIncompleteError}}
-  <Ui::ErrorBox
-    @error='Please match at least one student/name for each submission before continuing'
-    @showDismiss={{true}}
-    @resetError={{action (mut this.isMatchingIncompleteError) null}}
-  />
-{{/if}}
