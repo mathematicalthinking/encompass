@@ -9,9 +9,9 @@
   </span>
   </p>
   <Ui::RadioGroup
-    @options={{this.createWs}}
+    @options={{this.createWsOptions}}
     @selectedValue={{this.doCreateWs}}
-    @updateValue={{action 'updateDoCreateWs'}}
+    @updateValue={{this.updateDoCreateWs}}
   />
 
   {{#if this.creatingWs}}
@@ -41,7 +41,7 @@
             <Ui::ErrorBox
               @error={{this.missingNameError}}
               @showDismiss={{true}}
-              @resetError={{action (mut this.missingNameError) null}}
+              @resetError={{this.resetMissingNameError}}
             />
           </div>
         {{/if}}
@@ -60,13 +60,12 @@
           </span>
         </p>
         <SelectizeInput
-          @store={{this.store}}
           @inputId='owner-select'
           @initialOptions={{this.ownerOptions}}
           @initialItems={{this.initialOwnerItem}}
           @maxItems={{1}}
-          @onItemAdd={{action 'updateSelectizeSingle'}}
-          @onItemRemove={{action 'updateSelectizeSingle'}}
+          @onItemAdd={{this.updateSelectizeSingle}}
+          @onItemRemove={{this.updateSelectizeSingle}}
           @labelField='username'
           @valueField='id'
           @searchField='username'
@@ -79,7 +78,7 @@
             <Ui::ErrorBox
               @error={{this.missingOwnerError}}
               @showDismiss={{true}}
-              @resetError={{action (mut this.missingOwnerError) null}}
+              @resetError={{this.resetMissingOwnerError}}
             />
           </div>
         {{/if}}
@@ -98,7 +97,7 @@
         <Ui::RadioGroup
           @options={{this.modeInputs}}
           @selectedValue={{this.selectedMode}}
-          @updateValue={{action 'updateSelectedMode'}}
+          @updateValue={{this.updateSelectedMode}}
         />
       </div>
 
@@ -113,13 +112,12 @@
           </span>
         </p>
         <SelectizeInput
-          @store={{this.store}}
           @inputId='folderset-select'
           @initialOptions={{this.folderSetOptions}}
           @maxItems={{1}}
           @initialItems={{this.initialFolderSetItem}}
-          @onItemAdd={{action 'updateSelectizeSingle'}}
-          @onItemRemove={{action 'updateSelectizeSingle'}}
+          @onItemAdd={{this.updateSelectizeSingle}}
+          @onItemRemove={{this.updateSelectizeSingle}}
           @labelField='name'
           @valueField='id'
           @searchField='name'
@@ -146,9 +144,9 @@
           </span>
         </p>
         <Ui::RadioGroup
-          @options={{this.createAssignment}}
+          @options={{this.createAssignmentOptions}}
           @selectedValue={{this.createAssignmentValue}}
-          @updateValue={{action 'updateCreateAssignmentValue'}}
+          @updateValue={{this.updateCreateAssignmentValue}}
         />
       </div>
     {{/if}}
@@ -180,7 +178,7 @@
             <Ui::ErrorBox
               @error={{this.missingAssignmentError}}
               @showDismiss={{true}}
-              @resetError={{action (mut this.missingAssignmentError) null}}
+              @resetError={{this.resetMissingAssignmentError}}
             />
           </div>
         {{/if}}
@@ -192,13 +190,13 @@
     <button
       class='primary-button cancel-button'
       type='button'
-      {{action 'back'}}
+      {{on 'click' this.back}}
     >Back</button>
     <button
       class='primary-button'
       data-test='next'
       type='button'
-      {{action 'next'}}
+      {{on 'click' this.next}}
     >Next</button>
   </div>
 </div>
