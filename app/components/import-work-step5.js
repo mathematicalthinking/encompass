@@ -1,71 +1,107 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { equal } from '@ember/object/computed';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { service } from '@ember/service';
 
-export default Component.extend({
-  tagName: '',
-  creatingWs: equal('doCreateWs', true),
-  creatingAssignment: equal('createAssignmentValue', true),
-  utils: service('utility-methods'),
-  alert: service('sweet-alert'),
-  workspaceOwner: null,
-  workspaceMode: null,
-  folderSet: null,
-  assignmentName: null,
-  createWs: computed(function () {
-    return {
-      groupName: 'createWs',
-      required: true,
-      inputs: [
-        {
-          value: true,
-          label: 'Yes',
-        },
-        {
-          value: false,
-          label: 'No',
-        },
-      ],
-    };
-  }),
-  createAssignment: computed(function () {
-    return {
-      groupName: 'createAssignment',
-      required: true,
-      inputs: [
-        {
-          value: true,
-          label: 'Yes',
-        },
-        {
-          value: false,
-          label: 'No',
-        },
-      ],
-    };
-  }),
-  ownerOptions: computed('users.[]', function () {
-    if (this.users) {
-      return this.users.map((user) => {
-        const getValue =
-          typeof user?.get === 'function'
-            ? (prop) => user.get(prop)
-            : (prop) => user?.[prop];
-        return {
-          id: getValue('id') || getValue('_id') || getValue('userId'),
-          username: getValue('username') || '',
-        };
-      });
-    }
-    return [];
-  }),
+export default class ImportWorkStep5Component extends Component {
+  @service store;
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
 
-  folderSetOptions: computed('folderSets.[]', function () {
-    if (!Array.isArray(this.folderSets)) {
+  @tracked doCreateWs = false;
+  @tracked createAssignmentValue = false;
+  @tracked selectedOwner = null;
+  @tracked selectedFolderSet = null;
+  @tracked selectedMode = 'private';
+  @tracked workspaceName = null;
+  @tracked assignmentName = null;
+  @tracked missingNameError = null;
+  @tracked missingOwnerError = null;
+  @tracked missingAssignmentError = null;
+  @tracked createWorkspaceError = null;
+
+  createWsOptions = {
+    groupName: 'createWs',
+    required: true,
+    inputs: [
+      {
+        value: true,
+        label: 'Yes',
+      },
+      {
+        value: false,
+        label: 'No',
+      },
+    ],
+  };
+
+  createAssignmentOptions = {
+    groupName: 'createAssignment',
+    required: true,
+    inputs: [
+      {
+        value: true,
+        label: 'Yes',
+      },
+      {
+        value: false,
+        label: 'No',
+      },
+    ],
+  };
+
+  constructor(owner, args) {
+    super(owner, args);
+    this.doCreateWs = this.normalizeBooleanValue(args.doCreateWs);
+    this.createAssignmentValue = this.normalizeBooleanValue(
+      args.createAssignmentValue
+    );
+    this.selectedOwner = args.selectedOwner || null;
+    this.selectedFolderSet = args.selectedFolderSet || null;
+    this.selectedMode = args.selectedMode || 'private';
+    this.workspaceName = this.normalizeTextValue(args.workspaceName);
+    this.assignmentName = this.normalizeTextValue(args.assignmentName);
+  }
+
+  get creatingWs() {
+    return this.doCreateWs === true;
+  }
+
+  get creatingAssignment() {
+    return this.createAssignmentValue === true;
+  }
+
+  get currentUser() {
+    return this.args.currentUser || null;
+  }
+
+  get selectedSection() {
+    return this.args.selectedSection || null;
+  }
+
+  get ownerOptions() {
+    let users = this.args.users;
+    if (!users) {
       return [];
     }
-    return this.folderSets.map((folderSet) => {
+    return users.map((user) => {
+      const getValue =
+        typeof user?.get === 'function'
+          ? (prop) => user.get(prop)
+          : (prop) => user?.[prop];
+      return {
+        id: getValue('id') || getValue('_id') || getValue('userId'),
+        username: getValue('username') || '',
+      };
+    });
+  }
+
+  get folderSetOptions() {
+    let folderSets = this.args.folderSets;
+    if (!Array.isArray(folderSets)) {
+      return [];
+    }
+    return folderSets.map((folderSet) => {
       const getValue =
         typeof folderSet?.get === 'function'
           ? (prop) => folderSet.get(prop)
@@ -75,9 +111,10 @@ export default Component.extend({
         name: getValue('name') || '',
       };
     });
-  }),
-  modeInputs: computed('currentUser.{isStudent,isAdmin}', function () {
-    let res = {
+  }
+
+  get modeInputs() {
+    const base = {
       groupName: 'mode',
       required: true,
       inputs: [
@@ -102,37 +139,65 @@ export default Component.extend({
     };
 
     if (this.currentUser?.isStudent || !this.currentUser?.isAdmin) {
-      return res;
+      return base;
     }
 
-    res.inputs.push({
-      value: 'internet',
-      label: 'Internet',
-      moreInfo:
-        'Workspace will be accesible to any user with a link to the workspace',
-    });
-    return res;
-  }),
+    return {
+      ...base,
+      inputs: [
+        ...base.inputs,
+        {
+          value: 'internet',
+          label: 'Internet',
+          moreInfo:
+            'Workspace will be accesible to any user with a link to the workspace',
+        },
+      ],
+    };
+  }
 
-  initialOwnerItem: computed('selectedOwner', 'utils', function () {
-    const selectedOwner = this.selectedOwner;
-    if (selectedOwner && this.utils.isNonEmptyObject(selectedOwner)) {
-      return [selectedOwner.id];
-    }
-    return [];
-  }),
-
-  initialFolderSetItem: computed('selectedFolderSet', 'utils', function () {
-    const selectedFolderSet = this.selectedFolderSet;
-    if (this.utils.isNonEmptyObject(selectedFolderSet)) {
-      return [selectedFolderSet.id];
+  get initialOwnerItem() {
+    if (this.utils.isNonEmptyObject(this.selectedOwner)) {
+      const id = this.getRecordId(this.selectedOwner);
+      return id ? [id] : [];
     }
     return [];
-  }),
+  }
+
+  get initialFolderSetItem() {
+    if (this.utils.isNonEmptyObject(this.selectedFolderSet)) {
+      const id = this.getRecordId(this.selectedFolderSet);
+      return id ? [id] : [];
+    }
+    return [];
+  }
+
+  getRecordId(record) {
+    if (!record) {
+      return null;
+    }
+    return (
+      record.id ||
+      record._id ||
+      record.userId ||
+      (typeof record.get === 'function'
+        ? record.get('id') || record.get('_id') || record.get('userId')
+        : null)
+    );
+  }
+
+  isSameRecord(left, right) {
+    const leftId = this.getRecordId(left);
+    const rightId = this.getRecordId(right);
+    if (leftId && rightId) {
+      return String(leftId) === String(rightId);
+    }
+    return left === right;
+  }
 
   normalizeTextValue(value) {
     return typeof value === 'string' ? value.trim() : value;
-  },
+  }
 
   normalizeBooleanValue(value) {
     if (typeof value === 'boolean') {
@@ -148,7 +213,7 @@ export default Component.extend({
       );
     }
     return false;
-  },
+  }
 
   buildReviewPayload(overrides = {}) {
     const doCreateWs =
@@ -195,120 +260,161 @@ export default Component.extend({
       folderSet: doCreateWs ? selectedFolderSet || null : null,
       assignmentName: createAssignmentValue ? assignmentName || null : null,
     };
-  },
+  }
 
-  actions: {
-    updateDoCreateWs: function (val) {
-      this.set('doCreateWs', val);
-    },
-    updateSelectedMode: function (val) {
-      this.set('selectedMode', val);
-    },
-    updateCreateAssignmentValue: function (val) {
-      this.set('createAssignmentValue', val);
-    },
-    updateSelectizeSingle(val, $item, propToUpdate, model) {
-      if (this.utils.isNullOrUndefined($item)) {
-        this.set(propToUpdate, null);
+  setSelectionProp(propToUpdate, value) {
+    if (propToUpdate === 'selectedOwner') {
+      if (this.isSameRecord(this.selectedOwner, value)) {
         return;
       }
-      let record = this.store.peekRecord(model, val);
-      if (!record) {
+      this.selectedOwner = value;
+      return;
+    }
+
+    if (propToUpdate === 'selectedFolderSet') {
+      if (this.isSameRecord(this.selectedFolderSet, value)) {
         return;
       }
-      this.set(propToUpdate, record);
-    },
-    createWorkspace() {
-      const workspaceName = this.normalizeTextValue(this.workspaceName);
-      this.set('workspaceName', workspaceName);
-      this.set('workspaceOwner', this.selectedOwner || null);
-      this.set('workspaceMode', this.selectedMode || 'private');
-      this.set('folderSet', this.selectedFolderSet || null);
-      if (!workspaceName || !this.selectedOwner) {
-        if (!workspaceName) {
-          this.set(
-            'missingNameError',
-            'Please provide a name for your workspace'
-          );
-        } else {
-          this.set('missingNameError', null);
-        }
-        if (!this.selectedOwner) {
-          this.set(
-            'missingOwnerError',
-            'Please provide an owner for your workspace'
-          );
-        } else {
-          this.set('missingOwnerError', null);
-        }
-        this.alert.showToast(
-          'error',
-          'Workspace name and owner are required to continue',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-        return;
+      this.selectedFolderSet = value;
+    }
+  }
+
+  @action
+  updateDoCreateWs(val) {
+    this.doCreateWs = this.normalizeBooleanValue(val);
+  }
+
+  @action
+  updateSelectedMode(val) {
+    this.selectedMode = val || 'private';
+  }
+
+  @action
+  updateCreateAssignmentValue(val) {
+    this.createAssignmentValue = this.normalizeBooleanValue(val);
+  }
+
+  @action
+  updateSelectizeSingle(val, item, propToUpdate, model) {
+    const isRemoval = this.utils.isNullOrUndefined(item);
+    if (isRemoval) {
+      this.setSelectionProp(propToUpdate, null);
+      return;
+    }
+
+    if (!model || !val) {
+      return;
+    }
+
+    const record = this.store.peekRecord(model, val);
+    if (!record) {
+      return;
+    }
+
+    this.setSelectionProp(propToUpdate, record);
+  }
+
+  @action
+  resetMissingNameError() {
+    this.missingNameError = null;
+  }
+
+  @action
+  resetMissingOwnerError() {
+    this.missingOwnerError = null;
+  }
+
+  @action
+  resetMissingAssignmentError() {
+    this.missingAssignmentError = null;
+  }
+
+  @action
+  createWorkspace() {
+    const workspaceName = this.normalizeTextValue(this.workspaceName);
+    this.workspaceName = workspaceName;
+    this.createWorkspaceError = null;
+
+    if (this.selectedOwner) {
+      this.missingOwnerError = null;
+    }
+    if (workspaceName) {
+      this.missingNameError = null;
+    }
+
+    if (!workspaceName || !this.selectedOwner) {
+      if (!workspaceName) {
+        this.missingNameError = 'Please provide a name for your workspace';
+      }
+      if (!this.selectedOwner) {
+        this.missingOwnerError = 'Please provide an owner for your workspace';
+      }
+
+      this.alert.showToast(
+        'error',
+        'Workspace name and owner are required to continue',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      return;
+    }
+
+    if (typeof this.args.onProceed === 'function') {
+      this.args.onProceed(this.buildReviewPayload({ doCreateWs: true }));
+    }
+  }
+
+  @action
+  next() {
+    let hasAssignmentError = false;
+
+    if (this.createAssignmentValue) {
+      let assignmentName = this.normalizeTextValue(this.assignmentName);
+      this.assignmentName = assignmentName;
+
+      if (!assignmentName) {
+        this.missingAssignmentError =
+          'Please provide a name for your assignment';
+        hasAssignmentError = true;
       } else {
-        this.set('missingNameError', null);
-        this.set('missingOwnerError', null);
-        this.set('createWorkspaceError', null);
-        if (typeof this.onProceed === 'function') {
-          this.onProceed(this.buildReviewPayload({ doCreateWs: true }));
-        }
+        this.missingAssignmentError = null;
       }
-    },
+    } else {
+      this.assignmentName = null;
+      this.missingAssignmentError = null;
+    }
 
-    next() {
-      let hasAssignmentError = false;
-      if (this.createAssignmentValue) {
-        let assignmentName =
-          typeof this.assignmentName === 'string'
-            ? this.assignmentName.trim()
-            : this.assignmentName;
+    if (hasAssignmentError) {
+      this.alert.showToast(
+        'error',
+        'Assignment name is required to continue',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      return;
+    }
 
-        if (!assignmentName) {
-          this.set(
-            'missingAssignmentError',
-            'Please provide a name for your assignment'
-          );
-          hasAssignmentError = true;
-        } else {
-          this.set('missingAssignmentError', null);
-        }
-        this.set('assignmentName', assignmentName);
-      } else {
-        this.set('missingAssignmentError', null);
-        this.set('assignmentName', null);
-      }
+    if (this.doCreateWs) {
+      this.createWorkspace();
+      return;
+    }
 
-      if (hasAssignmentError) {
-        this.alert.showToast(
-          'error',
-          'Assignment name is required to continue',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-        return;
-      }
+    this.missingNameError = null;
+    this.missingOwnerError = null;
+    this.createWorkspaceError = null;
+    if (typeof this.args.onProceed === 'function') {
+      this.args.onProceed(this.buildReviewPayload({ doCreateWs: false }));
+    }
+  }
 
-      if (this.doCreateWs) {
-        this.send('createWorkspace');
-      } else {
-        this.set('missingNameError', null);
-        this.set('missingOwnerError', null);
-        this.set('createWorkspaceError', null);
-        if (typeof this.onProceed === 'function') {
-          this.onProceed(this.buildReviewPayload({ doCreateWs: false }));
-        }
-      }
-      //check for assignment and set assignmentName
-    },
-    back() {
-      this.onBack(-1);
-    },
-  },
-});
+  @action
+  back() {
+    if (typeof this.args.onBack === 'function') {
+      this.args.onBack(-1);
+    }
+  }
+}
