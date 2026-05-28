@@ -8,7 +8,7 @@
       <p class="input-label">Import Summary</p>
       {{#if this.uploadedAnswers}}
         <p class="success-info animated fadeIn"><b>{{this.submissionCount}} submissions</b> have successfully been created as answers for <b>{{this.selectedProblem.title}}</b></p>
-        <p class="info  animated fadeIn">You can create a workspace from these submissions <LinkTo @route="workspaces.new" target="_blank" rel="noopener noreferrer">here</LinkTo></p>
+        <p class="info animated fadeIn">You can create a workspace from these submissions <LinkTo @route="workspaces.new" target="_blank" rel="noopener noreferrer">here</LinkTo></p>
       {{else}}
         <p class="info"><b>{{this.submissionCount}} submissions</b> will be created in EnCoMPASS as answers for <b>{{this.selectedProblem.title}}</b></p>
         <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
@@ -29,7 +29,7 @@
           <Ui::ErrorBox
             @error={{this.createWorkspaceError}}
             @showDismiss={{true}}
-            @resetError={{this.onResetWorkspaceError}}
+            @resetError={{@onResetWorkspaceError}}
           />
         </div>
       {{/if}}
@@ -47,7 +47,7 @@
             <div class="item-card privacy">
               <span class="privacy-icon">
                 <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip={{this.workspaceMode}}>
-                  {{{public-private this.workspaceMode}}}
+                  {{public-private this.workspaceMode}}
                 </span>
               </span>
               <span class="date">{{format-date this.createDate 'L'}}</span>
@@ -134,8 +134,8 @@
 
   {{#unless this.shouldHideButtons}}
     <div class="nav-btn-container">
-      <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
-      <button class="primary-button" type="button" {{action "next"}}>Create</button>
+      <button class="primary-button cancel-button" type="button" {{on "click" this.back}}>Back</button>
+      <button class="primary-button" type="button" {{on "click" this.next}}>Create</button>
     </div>
   {{/unless}}
 </div>
