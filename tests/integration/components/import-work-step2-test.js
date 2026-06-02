@@ -323,4 +323,21 @@ module('Integration | Component | import-work-step2', function (hooks) {
     );
     assert.dom('.error-box-stub').exists();
   });
+
+  test('it ignores duplicate add callbacks for the already selected section', async function (assert) {
+    await renderComponent(this, {
+      selectedValue: true,
+      selectedSection: this.sectionRecord,
+    });
+
+    assert.strictEqual(this.selectionPayloads.length, 0);
+
+    await click('.stub-add-section');
+
+    assert.strictEqual(
+      this.selectionPayloads.length,
+      0,
+      'duplicate add with same section id is ignored'
+    );
+  });
 });
