@@ -89,6 +89,13 @@ export default class SelectizeInputComponent extends Component {
       return;
     }
 
+    if (
+      this.args.preserveCurrentItemsOnOptionsUpdate &&
+      this.selectizeInstance.isOpen
+    ) {
+      return;
+    }
+
     // Silent refresh prevents selectize sync from firing remove/add callbacks
     this.selectizeInstance.clearOptions(true);
     this.selectizeInstance.addOption(this.options || []);
@@ -157,6 +164,10 @@ export default class SelectizeInputComponent extends Component {
 
     if (this.args.isAsync) {
       hash.load = this.addItemsSelectize.bind(this);
+    }
+
+    if (this.args.preserveCurrentItemsOnOptionsUpdate) {
+      hash.onDropdownClose = () => this.updateSelectizeOptions();
     }
 
     return hash;
