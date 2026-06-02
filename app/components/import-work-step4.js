@@ -10,6 +10,7 @@ export default class ImportWorkStep4Component extends Component {
   @tracked addedStudentNames = [];
   @tracked isMatchingIncompleteError = null;
   @tracked isReadyToReviewAnswers = false;
+  @tracked isRosterExpanded = false;
 
   get answers() {
     return Array.isArray(this.args.answers) ? this.args.answers : [];
@@ -32,6 +33,10 @@ export default class ImportWorkStep4Component extends Component {
       return [];
     }
     return Object.keys(this.studentMap).map((key) => this.studentMap[key]);
+  }
+
+  get studentCount() {
+    return this.displayList.length;
   }
 
   @action
@@ -230,6 +235,11 @@ export default class ImportWorkStep4Component extends Component {
   @action
   checkStatus() {
     return this.updateMatchingStatus();
+  }
+
+  @action
+  toggleRoster() {
+    this.isRosterExpanded = !this.isRosterExpanded;
   }
 
   @action
