@@ -146,10 +146,12 @@ module('Integration | Component | import-work-step4', function (hooks) {
     });
 
     assert.dom('.section-name').hasText('Class: Algebra 1');
-    assert.dom('.student-list').includesText('amy_student');
-    assert
-      .dom('.primary-button.cancel-button')
-      .includesText('Refresh Students');
+    assert.dom('.student-count').hasText('1 students');
+    assert.dom('.student-list-actions').includesText('Refresh Students');
+    assert.dom('.student-list-actions').includesText('Show Student List');
+
+    await click('.roster-toggle');
+    assert.dom('.student-roster-scroll').includesText('amy_student');
   });
 
   test('it shows no-class guidance when class mode is enabled but no class is selected', async function (assert) {
@@ -168,9 +170,46 @@ module('Integration | Component | import-work-step4', function (hooks) {
       selectedSection: { id: 'section-1', name: 'Algebra 1' },
     });
 
-    await click('.primary-button.cancel-button');
+    const refreshButton = document.querySelector(
+      '.student-list-actions .primary-button.cancel-button'
+    );
+    await click(refreshButton);
 
     assert.strictEqual(this.refreshCount, 1, 'refresh callback is invoked');
+  });
+
+  test('it toggles roster visibility and aria-expanded state', async function (assert) {
+    await renderComponent(this, {
+      selectedSection: { id: 'section-1', name: 'Algebra 1' },
+      studentMap: {
+        [MONGO_ID]: { id: MONGO_ID, username: 'amy_student' },
+        another: { id: 'another', username: 'brian_student' },
+      },
+    });
+
+    assert.dom('.student-roster-scroll').doesNotExist();
+    assert.dom('.roster-toggle').hasAttribute('aria-expanded', 'false');
+
+    await click('.roster-toggle');
+
+    assert.dom('.roster-toggle').hasAttribute('aria-expanded', 'true');
+    assert.dom('.student-roster-list li').exists({ count: 2 });
+
+    await click('.roster-toggle');
+    assert.dom('.student-roster-scroll').doesNotExist();
+  });
+
+  test('it shows refreshing label/disabled state while fetching section students', async function (assert) {
+    await renderComponent(this, {
+      selectedSection: { id: 'section-1', name: 'Algebra 1' },
+      isFetchingSectionStudents: true,
+    });
+
+    const refreshButton = document.querySelector(
+      '.student-list-actions .primary-button.cancel-button'
+    );
+    assert.dom(refreshButton).hasText('Refreshing...');
+    assert.true(refreshButton.disabled, 'refresh button is disabled');
   });
 
   test('it calls onBack with -1 from Back button', async function (assert) {
