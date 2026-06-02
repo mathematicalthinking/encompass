@@ -15,11 +15,11 @@
         {{#if this.isImage}}
           <img
             class='img-tag-thmb'
-            src={{@selection.imageTagLink}}
+            src={{this.imageSource}}
             alt={{@selection.text}}
           />
           <div class='overlay'>
-            <button type='button' {{action 'expandImage'}}><i
+            <button type='button' {{on 'click' this.expandImage}}><i
                 class={{this.overlayIcon}}
               ></i></button>
           </div>
@@ -32,8 +32,10 @@
 
   {{#if this.isExpanded}}
     <div class='full-image'>
-      <i class='fas fa-times' {{action 'expandImage'}}></i>
-      <img src={{@selection.imageTagLink}} alt={{@selection.text}} />
+      <button type='button' {{on 'click' this.expandImage}}>
+        <i class='fas fa-times'></i>
+      </button>
+      <img src={{this.imageSource}} alt={{@selection.text}} />
     </div>
   {{/if}}
 </div>
