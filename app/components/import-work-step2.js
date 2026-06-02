@@ -43,6 +43,28 @@ export default class ImportWorkStep2Component extends Component {
     return [];
   }
 
+  getRecordId(record) {
+    if (!record) {
+      return null;
+    }
+    return (
+      record.id ||
+      record._id ||
+      (typeof record.get === 'function'
+        ? record.get('id') || record.get('_id')
+        : null)
+    );
+  }
+
+  isSameSection(left, right) {
+    const leftId = this.getRecordId(left);
+    const rightId = this.getRecordId(right);
+    if (leftId && rightId) {
+      return String(leftId) === String(rightId);
+    }
+    return left === right;
+  }
+
   notifySelectionChanged() {
     if (typeof this.args.onSelectionChange === 'function') {
       this.args.onSelectionChange({
@@ -77,6 +99,10 @@ export default class ImportWorkStep2Component extends Component {
 
     const section = this.store.peekRecord('section', val);
     if (this.utils.isNullOrUndefined(section)) {
+      return;
+    }
+
+    if (this.isSameSection(this.selectedSection, section)) {
       return;
     }
 

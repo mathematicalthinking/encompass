@@ -205,7 +205,7 @@ export default class ImportWorkComponent extends Component {
       targetStep = 2;
     }
     if (targetStep > 3 && this.uploadedFiles.length === 0) {
-      targetStep = 3;
+      targetStep = 1;
     }
     if (targetStep > 3 && this.uploadedFiles.length > 0) {
       this.loadStudentMatching();

@@ -61,8 +61,14 @@ export default class UndraggableSelectionComponent extends Component {
   }
 
   get isImage() {
-    const imageTagLink = this.args.selection.imageTagLink;
-    return imageTagLink ? imageTagLink.length > 0 : false;
+    const source = this.imageSource;
+    return typeof source === 'string' && source.length > 0;
+  }
+
+  get imageSource() {
+    return (
+      this.args.selection.imageTagLink || this.args.selection.imageSrc || ''
+    );
   }
 
   get isText() {
@@ -162,7 +168,9 @@ export default class UndraggableSelectionComponent extends Component {
   }
 
   @action
-  expandImage() {
+  expandImage(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
     if (!this.isVmtClip) {
       this.isExpanded = !this.isExpanded;
     }
