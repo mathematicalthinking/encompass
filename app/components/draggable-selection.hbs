@@ -15,7 +15,7 @@
         {{#if this.isImage}}
           <img
             class='img-tag-thmb'
-            src={{@selection.imageTagLink}}
+            src={{this.imageSource}}
             alt={{@selection.text}}
           />
           <div class='overlay'>
@@ -48,7 +48,7 @@
   {{#if this.isExpanded}}
     <div class='full-image'>
       <i class='fas fa-times' {{on 'click' this.expandImage}}></i>
-      <img src={{@selection.imageTagLink}} alt={{@selection.text}} />
+      <img src={{this.imageSource}} alt={{@selection.text}} />
     </div>
   {{/if}}
 </div>

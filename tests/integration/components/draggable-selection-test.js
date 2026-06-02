@@ -244,4 +244,24 @@ module('Integration | Component | draggable-selection', function (hooks) {
     assert.strictEqual(alert.modalCalls[0][3], 'Yes, delete it');
     assert.strictEqual(deletedSelection, selection);
   });
+
+  test('renders image from imageSrc fallback when imageTagLink is missing', async function (assert) {
+    const fallbackSrc = 'https://example.com/fallback-image.png';
+
+    await renderSelection(this, {
+      selection: createSelection({
+        text: 'image selection',
+        imageTagLink: '',
+        imageSrc: fallbackSrc,
+        workspace: { id: 'ws-1' },
+        submission: { id: 'sub-1' },
+      }),
+      canDeleteSelections: true,
+    });
+
+    assert.dom('.img-tag-thmb').hasAttribute('src', fallbackSrc);
+
+    await click('.overlay button');
+    assert.dom('.full-image img').hasAttribute('src', fallbackSrc);
+  });
 });
