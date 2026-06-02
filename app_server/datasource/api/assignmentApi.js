@@ -325,17 +325,21 @@ const postAssignment = async (req, res, next) => {
     let linkedWorkspaces;
     let parentWorkspace;
     let parentWorkspaceError;
-
-    const [err, teacherWorkspaces] = await generateTeacherWorkspace(
-      assignment,
-      user
-    );
-
-    if (err) {
-      console.log(err);
-    }
+    let teacherWorkspaces = [];
 
     if (doCreateLinkedWorkspaces) {
+      const [teacherWorkspacesErr, createdTeacherWorkspaces] =
+        await generateTeacherWorkspace(assignment, user);
+
+      if (teacherWorkspacesErr) {
+        logger.error(
+          'generateTeacherWorkspaceErr: ',
+          teacherWorkspacesErr?.message || teacherWorkspacesErr
+        );
+      } else if (isNonEmptyArray(createdTeacherWorkspaces)) {
+        teacherWorkspaces = createdTeacherWorkspaces;
+      }
+
       // create a linked workspace for each student in assignment
       await assignment
         .populate('students')
