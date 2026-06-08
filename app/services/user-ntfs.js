@@ -1,276 +1,185 @@
-import { computed } from '@ember/object';
-import Service, { inject as service } from '@ember/service';
-import { map } from 'rsvp';
+import Service, { service } from '@ember/service';
+import { cached, tracked } from '@glimmer/tracking';
 
-export default Service.extend({
-  store: service(),
-  utils: service('utility-methods'),
+export default class UserNtfsService extends Service {
+  @service store;
+  @service('utility-methods') utils;
 
-  init() {
-    this._super(...arguments);
-  },
+  @tracked user = null;
+  @tracked responses = [];
+  @tracked notifications = [];
+  @tracked areNtfsLoaded = false;
 
-  setupProperties(user) {
-    this.set('user', user);
-    this.set('responses', this.store.peekAll('response'));
+  async setupProperties(user) {
+    this.user = user;
+    this.responses = this.store.peekAll('response');
+    this.notifications = await user.notifications;
+    this.areNtfsLoaded = true;
+  }
 
-    this.get('user.notifications').then((ntfs) => {
-      this.set('notifications', ntfs);
-      this.set('areNtfsLoaded', true);
-    });
-  },
-
-  doesArrayContainObjectById(arr, id) {
-    if (!arr || !id) {
+  doesArrayContainObjectById(records, id) {
+    if (!records || !id) {
       return false;
     }
-    let foundObject = arr.find((obj) => {
-      return obj.get('id') === id;
-    });
-    return foundObject !== undefined;
-  },
 
-  trashedResponses: computed('responses.@each.isTrashed', function () {
-    let responses = this.responses.filterBy('isTrashed');
-    let relatedNtfs = this.findRelatedNtfs('response', 'response');
+    return records.some((record) => record.id === id);
+  }
 
-    relatedNtfs.forEach((ntf) => {
-      let responseId = this.utils.getBelongsToId(ntf, 'response');
+  clearNotificationsForResponses(notifications, responses) {
+    notifications.forEach((notification) => {
+      const responseId = this.utils.getBelongsToId(notification, 'response');
 
       if (this.doesArrayContainObjectById(responses, responseId)) {
-        // clear ntf
-        ntf.set('isTrashed', true);
-        ntf.set('wasSeen', true);
-        ntf.save();
+        notification.isTrashed = true;
+        notification.wasSeen = true;
+        notification.save();
       }
     });
+  }
+
+  @cached
+  get trashedResponses() {
+    const responses = this.responses.filter((response) => response.isTrashed);
+    this.clearNotificationsForResponses(this.responseNotifications, responses);
     return responses;
-  }),
+  }
 
-  nonTrashedResponses: computed('responses.@each.isTrashed', function () {
-    return this.responses.rejectBy('isTrashed');
-  }),
+  get nonTrashedResponses() {
+    return this.responses.filter((response) => !response.isTrashed);
+  }
 
-  mentorResponses: computed(
-    'nonTrashedResponses.@each.responseType',
-    function () {
-      return this.nonTrashedResponses.filterBy('responseType', 'mentor');
-    }
-  ),
-
-  supercededReponses: computed('responses.@each.status', function () {
-    let responses = this.nonTrashedResponses.filterBy('status', 'superceded');
-    let relatedNtfs = this.findRelatedNtfs('response', 'response');
-
-    relatedNtfs.forEach((ntf) => {
-      let responseId = this.utils.getBelongsToId(ntf, 'response');
-
-      if (this.doesArrayContainObjectById(responses, responseId)) {
-        // clear ntf
-        ntf.set('isTrashed', true);
-        ntf.set('wasSeen', true);
-        ntf.save();
-      }
-    });
-    return responses;
-  }),
-
-  readByRecipientResponses: computed(
-    'responses.@each.wasReadByRecipient',
-    function () {
-      let responses = this.nonTrashedResponses.filterBy('wasReadByRecipient');
-
-      let relatedNtfs = this.findRelatedNtfs(
-        'response',
-        'response',
-        null,
-        null,
-        'newReplyNotifications'
-      );
-
-      // clear any new reply ntfs for responses that have been read
-
-      relatedNtfs.forEach((ntf) => {
-        let responseId = this.utils.getBelongsToId(ntf, 'response');
-
-        if (this.doesArrayContainObjectById(responses, responseId)) {
-          // clear ntf
-          ntf.set('isTrashed', true);
-          ntf.set('wasSeen', true);
-          ntf.save();
-        }
-      });
-      return responses;
-    }
-  ),
-
-  approvedMentorReponses: computed('responses.@each.status', function () {
-    let responses = this.mentorResponses.filterBy('status', 'approved');
-
-    let relatedNtfs = this.findRelatedNtfs(
-      'response',
-      'response',
-      'mentorReplyRequiresApproval',
-      'response',
-      'requiresApprovalNotifications'
+  get mentorResponses() {
+    return this.nonTrashedResponses.filter(
+      (response) => response.responseType === 'mentor'
     );
+  }
 
-    // if a response is approved now, clear any old ntfs relating to the response being pending
-    relatedNtfs.forEach((ntf) => {
-      let responseId = this.utils.getBelongsToId(ntf, 'response');
-
-      if (this.doesArrayContainObjectById(responses, responseId)) {
-        // clear ntf
-        ntf.set('isTrashed', true);
-        ntf.set('wasSeen', true);
-        ntf.save();
-      }
-    });
+  @cached
+  get supercededReponses() {
+    const responses = this.nonTrashedResponses.filter(
+      (response) => response.status === 'superceded'
+    );
+    this.clearNotificationsForResponses(this.responseNotifications, responses);
     return responses;
-  }),
+  }
 
-  responseNotifications: computed('newNotifications.[]', function () {
-    return this.notifications.filterBy('primaryRecordType', 'response');
-  }),
+  @cached
+  get readByRecipientResponses() {
+    const responses = this.nonTrashedResponses.filter(
+      (response) => response.wasReadByRecipient
+    );
+    this.clearNotificationsForResponses(this.newReplyNotifications, responses);
+    return responses;
+  }
+
+  @cached
+  get approvedMentorReponses() {
+    const responses = this.mentorResponses.filter(
+      (response) => response.status === 'approved'
+    );
+    this.clearNotificationsForResponses(
+      this.requiresApprovalNotifications,
+      responses
+    );
+    return responses;
+  }
+
+  get responseNotifications() {
+    return this.notifications.filter(
+      (notification) => notification.primaryRecordType === 'response'
+    );
+  }
 
   findRelatedNtfs(
     primaryRecordType,
     relatedRecord,
-    ntfType,
+    notificationType,
     belongsToType,
     propertyName
   ) {
     if (!primaryRecordType || !relatedRecord) {
       return [];
     }
-    let propName = propertyName || `${primaryRecordType}Notifications`;
-    let baseNtfs = this.get(propName);
 
-    if (!baseNtfs) {
+    const resolvedPropertyName =
+      propertyName || `${primaryRecordType}Notifications`;
+    const notifications = this[resolvedPropertyName];
+
+    if (!notifications) {
       return [];
     }
 
-    let relationshipType = belongsToType || primaryRecordType;
-    return baseNtfs.filter((ntf) => {
-      let belongsToId = this.utils.getBelongsToId(ntf, relationshipType);
+    const relationshipType = belongsToType || primaryRecordType;
+    return notifications.filter((notification) => {
+      const belongsToId = this.utils.getBelongsToId(
+        notification,
+        relationshipType
+      );
 
-      if (ntfType) {
+      if (notificationType) {
         return (
-          ntf.get('notificationType') === ntfType &&
-          belongsToId === relatedRecord.get('id')
+          notification.notificationType === notificationType &&
+          belongsToId === relatedRecord.id
         );
       }
-      return belongsToId === relatedRecord.get('id');
+      return belongsToId === relatedRecord.id;
     });
-  },
+  }
 
-  newNotifications: computed(
-    'notifications.@each.{isTrashed,wasSeen}',
-    function () {
-      let base = this.notifications || [];
-      return base.filter((ntf) => {
-        return !ntf.get('wasSeen') && !ntf.get('isTrashed');
-      });
-    }
-  ),
+  get newNotifications() {
+    return this.notifications.filter((notification) => {
+      return !notification.wasSeen && !notification.isTrashed;
+    });
+  }
 
-  newReplyNotifications: computed(
-    'responseNotifications.@each.notificationType',
-    function () {
-      return this.responseNotifications.filter((ntf) => {
-        let ntfType = ntf.get('notificationType');
-        let isNewReply =
-          ntfType === 'newMentorReply' ||
-          ntfType === 'newApproverReply' ||
-          'newlyApprovedReply';
-        return isNewReply;
-      });
-    }
-  ),
-
-  requiresApprovalNotifications: computed(
-    'responseNotifications.@each.notificationType',
-    function () {
-      return this.responseNotifications.filterBy(
-        'notificationType',
-        'mentorReplyRequiresApproval'
+  get newReplyNotifications() {
+    return this.responseNotifications.filter((notification) => {
+      const notificationType = notification.notificationType;
+      return (
+        notificationType === 'newMentorReply' ||
+        notificationType === 'newApproverReply' ||
+        notificationType === 'newlyApprovedReply'
       );
-    }
-  ),
+    });
+  }
 
-  needsRevisionNotifications: computed(
-    'responseNotifications.@each.notificationType',
-    function () {
-      return this.responseNotifications.filterBy(
-        'notificationType',
-        'mentorReplyNeedsRevisions'
-      );
-    }
-  ),
+  get requiresApprovalNotifications() {
+    return this.responseNotifications.filter(
+      (notification) =>
+        notification.notificationType === 'mentorReplyRequiresApproval'
+    );
+  }
 
-  updatedResponseNotifications: computed(
-    'responseNotifications.[]',
-    function () {
-      let updatedNtfs = map(this.responseNotifications, (ntf) => {
-        let ntfType = ntf.get('notificationType');
-        if (ntfType === 'newWorkToMentor') {
-          return ntf;
+  get needsRevisionNotifications() {
+    return this.responseNotifications.filter(
+      (notification) =>
+        notification.notificationType === 'mentorReplyNeedsRevisions'
+    );
+  }
+
+  @cached
+  get updatedResponseNotifications() {
+    return Promise.all(
+      this.responseNotifications.map(async (notification) => {
+        if (notification.notificationType === 'newWorkToMentor') {
+          return notification;
         }
 
-        let responseId = this.utils.getBelongsToId(ntf, 'response');
+        const responseId = this.utils.getBelongsToId(notification, 'response');
         if (!responseId) {
-          // should not happen, but if does clear ntf
-          ntf.set('wasSeen', true);
-          return ntf.save();
+          notification.wasSeen = true;
+          return notification.save();
         }
 
-        return ntf.get('response').then((response) => {
-          let status = response.get('status');
+        const response = await notification.response;
 
-          if (response.get('isTrashed') || status === 'superceded') {
-            ntf.set('wasSeen', true);
-            return ntf.save();
-          }
-        });
-      });
+        if (response.isTrashed || response.status === 'superceded') {
+          notification.wasSeen = true;
+          return notification.save();
+        }
 
-      return window.DS.PromiseArray.create({
-        promise: updatedNtfs,
-      });
-    }
-  ),
-
-  // observeNtfResponses: function() {
-  //   console.log('observing ntf responses');
-  //   this.get('ntfResponses').forEach((response))
-  // }.observes('ntfResponses')
-
-  // updateResponseNtfs: function() {
-  //   console.log('observed change to responses');
-  //   let ntfsToClear = [];
-
-  //   this.get('trashedResponses').forEach((response) => {
-  //     let relatedNtfs = this.findRelatedNtfs('response', response);
-  //     relatedNtfs.forEach((ntf) => {
-  //       ntfsToClear.addObject(ntf);
-  //     });
-  //   });
-
-  //   this.get('supercededResponses').forEach((response) => {
-  //     let relatedNtfs = this.findRelatedNtfs('response', response);
-  //     relatedNtfs.forEach((ntf) => {
-  //       ntfsToClear.addObject(ntf);
-  //     });
-  //   });
-
-  //   this.get('readByRecipientResponses').forEach((response) => {
-  //     let relatedNtfs = this.findRelatedNtfs('response', response);
-  //     relatedNtfs.forEach((ntf) => {
-  //       ntfsToClear.addObject(ntf);
-  //     });
-  //   });
-
-  //   console.log('ntfsToClear!', ntfsToClear);
-
-  // }.observes('responses.@each.{isTrashed,status,wasReadByRecipient}'),
-});
+        return undefined;
+      })
+    );
+  }
+}

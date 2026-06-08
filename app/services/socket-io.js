@@ -1,59 +1,56 @@
 import Service, { service } from '@ember/service';
-import io from 'socket.io-client';
+import { tracked } from '@glimmer/tracking';
 import each from 'lodash-es/each';
 import isEqual from 'lodash-es/isEqual';
+import io from 'socket.io-client';
 
-export default Service.extend({
-  currentUser: service('current-user').user,
-  store: service(),
-  alert: service('sweet-alert'),
-  utils: service('utility-methods'),
+export default class SocketIoService extends Service {
+  @service store;
+  @service('sweet-alert') alert;
+  @service('utility-methods') utils;
 
-  init() {
-    this._super(...arguments);
-  },
+  @tracked socket = null;
 
   setupListeners() {
     const socket = this.socket;
-    const utils = this.utils;
 
     if (!socket) {
       return;
     }
 
     socket.on('NEW_NOTIFICATION', (data) => {
-      each(data, (val, key) => {
-        if (val) {
+      each(data, (value, key) => {
+        if (value) {
           this.store.pushPayload({
-            [key]: val,
+            [key]: value,
           });
         }
       });
 
-      let ntf = data.notifications[0];
-      if (!ntf) {
+      const notification = data.notifications[0];
+      if (!notification) {
         return;
       }
 
-      let recordType = ntf.primaryRecordType;
-
-      if (recordType === 'response') {
-        if (ntf.notificationType === 'newWorkToMentor') {
-          // special case, associated submission, not response
+      if (notification.primaryRecordType === 'response') {
+        if (notification.notificationType === 'newWorkToMentor') {
           if (data.submissions && data.submissions[0]) {
-            let subId = data.submissions[0]._id;
+            const submissionId = data.submissions[0]._id;
 
-            if (subId) {
-              let newRevision = this.store.peekRecord('submission', subId);
+            if (submissionId) {
+              const newRevision = this.store.peekRecord(
+                'submission',
+                submissionId
+              );
 
               if (newRevision) {
-                let uniqueId = ntf.workspace + ntf.createdBy;
-                let existingThread = this.findExistingResponseThread(
+                const uniqueId =
+                  notification.workspace + notification.createdBy;
+                const existingThread = this.findExistingResponseThread(
                   'mentor',
                   uniqueId
                 );
 
-                // should always be existing thread
                 if (existingThread) {
                   existingThread.get('submissions').addObject(newRevision);
                 }
@@ -61,154 +58,152 @@ export default Service.extend({
             }
           }
         } else if (data.responses && data.responses[0]) {
-          this.handleResponseNtf(ntf, data.responses[0], data.workspaceName);
+          this.handleResponseNtf(
+            notification,
+            data.responses[0],
+            data.workspaceName
+          );
         }
       }
-      // check if we need to clear any now outdated notifications
 
-      this.triggerToast(ntf);
+      this.triggerToast(notification);
     });
 
     socket.on('CLEAR_NOTIFICATION', (data) => {
-      /*
-      data {
-        notificationId,
-        doTrash,
-        doSetAsSeen
+      if (!this.utils.isValidMongoId(data.notificationId)) {
+        return;
       }
-      */
-      if (this.utils.isValidMongoId(data.notificationId)) {
-        let peeked = this.store.peekRecord('notification', data.notificationId);
-        if (!peeked) {
-          return;
-        }
 
-        let doSave = data.doTrash || data.doSetAsSeen;
-
-        if (!doSave) {
-          this.store.unloadRecord(peeked);
-          return;
-        }
-        if (data.doTrash) {
-          peeked.set('isTrashed', true);
-        }
-        if (data.doSetAsSeen) {
-          peeked.set('wasSeen', true);
-        }
-        peeked.save();
+      const notification = this.store.peekRecord(
+        'notification',
+        data.notificationId
+      );
+      if (!notification) {
+        return;
       }
+
+      const shouldSave = data.doTrash || data.doSetAsSeen;
+
+      if (!shouldSave) {
+        this.store.unloadRecord(notification);
+        return;
+      }
+      if (data.doTrash) {
+        notification.isTrashed = true;
+      }
+      if (data.doSetAsSeen) {
+        notification.wasSeen = true;
+      }
+      notification.save();
     });
 
     socket.on('CLEAR_RECORD', (data) => {
-      if (!utils.isNonEmptyObject(data)) {
+      if (!this.utils.isNonEmptyObject(data)) {
         return;
       }
-      let { recordIdToClear, recordType } = data;
+
+      const { recordIdToClear, recordType } = data;
 
       if (
-        !utils.isValidMongoId(recordIdToClear) ||
-        !utils.isNonEmptyString(recordType)
+        !this.utils.isValidMongoId(recordIdToClear) ||
+        !this.utils.isNonEmptyString(recordType)
       ) {
         return;
       }
 
-      let peeked = this.store.peekRecord(data.recordType, data.recordIdToClear);
+      const record = this.store.peekRecord(recordType, recordIdToClear);
 
-      if (!peeked) {
+      if (!record) {
         return;
       }
 
       if (recordType === 'response') {
         this.store.peekAll('response-thread').forEach((thread) => {
-          let responseIds = utils.getHasManyIds(thread, 'responses');
-          let doesContainResponse = responseIds.includes(peeked.get('id'));
+          const responseIds = this.utils.getHasManyIds(thread, 'responses');
+          const containsResponse = responseIds.includes(record.id);
 
-          if (doesContainResponse && responseIds.get('length') === 1) {
-            // thread will be empty after unloading record, so trash thread
-            thread.set('isTrashed', true);
+          if (containsResponse && responseIds.length === 1) {
+            thread.isTrashed = true;
           }
         });
       }
 
-      this.store.unloadRecord(peeked);
+      this.store.unloadRecord(record);
     });
+
     socket.on('UPDATED_RECORD', (data) => {
       if (data) {
-        let recordType = data.recordType;
-
         this.store.pushPayload({
-          [recordType]: data.updatedRecord,
+          [data.recordType]: data.updatedRecord,
         });
       }
     });
-  },
+  }
 
-  setupSocket: function (user) {
-    let windowHref = window.location.href;
-    let hashIndex = windowHref.indexOf('#');
-    let url = windowHref.slice(0, hashIndex);
+  setupSocket(user) {
+    const windowHref = window.location.href;
+    const hashIndex = windowHref.indexOf('#');
+    const url = hashIndex === -1 ? windowHref : windowHref.slice(0, hashIndex);
 
-    const socket = io.connect(url);
-    this.set('socket', socket);
+    this.socket = io.connect(url);
 
-    user.set('socketId', socket.id);
+    user.socketId = this.socket.id;
     user.save().then(() => {
       this.setupListeners();
     });
-  },
+  }
 
-  triggerToast(ntf) {
-    if (!ntf) {
+  triggerToast(notification) {
+    if (!notification) {
       return;
     }
-    let ntfText = ntf.text;
-    let toastText;
-    if (ntfText) {
-      toastText = ntfText;
-    } else {
-      let notificationType = ntf.notificationType;
-      toastText = `You have received a ${notificationType} notification.`;
-    }
-    this.alert.showToast('info', toastText, 'top-end', 3000, false, null);
-    return;
-  },
 
-  handleResponseNtf(ntf, newResponseObj, workspaceName) {
-    let { notificationType } = ntf;
-    let workspaceId = newResponseObj.workspace;
-    let newResponse = this.store.peekRecord('response', newResponseObj._id);
-    let submission = this.store.peekRecord(
+    const toastText =
+      notification.text ||
+      `You have received a ${notification.notificationType} notification.`;
+
+    this.alert.showToast('info', toastText, 'top-end', 3000, false, null);
+  }
+
+  handleResponseNtf(notification, newResponseObject, workspaceName) {
+    const { notificationType } = notification;
+    const workspaceId = newResponseObject.workspace;
+    const newResponse = this.store.peekRecord(
+      'response',
+      newResponseObject._id
+    );
+    const submission = this.store.peekRecord(
       'submission',
-      newResponseObj.submission
+      newResponseObject.submission
     );
 
-    let responseCreatorId = this.utils.getBelongsToId(newResponse, 'createdBy');
+    const responseCreatorId = this.utils.getBelongsToId(
+      newResponse,
+      'createdBy'
+    );
     let problemTitle;
-    let studentIdentifier; // encUserId or pows username
+    let studentIdentifier;
     let studentDisplay;
 
     if (submission) {
       problemTitle = submission.get('publication.puzzle.title');
       studentDisplay = submission.get('creator.username');
-
-      if (submission.get('creator.studentId')) {
-        studentIdentifier = submission.get('creator.studentId');
-      } else {
-        studentIdentifier = submission.get('creator.username');
-      }
+      studentIdentifier =
+        submission.get('creator.studentId') ||
+        submission.get('creator.username');
     }
 
     if (notificationType === 'newMentorReply') {
-      let uniqueId = `srt${workspaceId}`;
-      let existingThread = this.findExistingResponseThread(
+      const uniqueId = `srt${workspaceId}`;
+      const existingThread = this.findExistingResponseThread(
         'submitter',
         uniqueId
       );
+
       if (existingThread) {
         existingThread.get('responses').addObject(newResponse);
       } else {
-        // create new thread
-        let newThread = this.store.createRecord('response-thread', {
+        const newThread = this.store.createRecord('response-thread', {
           threadType: 'submitter',
           uniqueIdentifier: workspaceId,
           workspaceName,
@@ -224,29 +219,28 @@ export default Service.extend({
     }
 
     if (notificationType === 'newApproverReply') {
-      // identifier is object with workspaceId and studentId
+      const uniqueId = workspaceId + studentIdentifier;
+      const existingThread = this.findExistingResponseThread(
+        'mentor',
+        uniqueId
+      );
 
-      let uniqueId = workspaceId + studentIdentifier;
-
-      let existingThread = this.findExistingResponseThread('mentor', uniqueId);
       if (existingThread) {
         existingThread.get('responses').addObject(newResponse);
-      } else {
-        // should always be existing mentoring thread
       }
     }
-    if (notificationType === 'mentorReplyRequiresApproval') {
-      let uniqueId = workspaceId + studentIdentifier + responseCreatorId;
 
-      let existingThread = this.findExistingResponseThread(
+    if (notificationType === 'mentorReplyRequiresApproval') {
+      const uniqueId = workspaceId + studentIdentifier + responseCreatorId;
+      const existingThread = this.findExistingResponseThread(
         'approver',
         uniqueId
       );
+
       if (existingThread) {
         existingThread.get('responses').addObject(newResponse);
       } else {
-        // create new approver thread
-        let newThread = this.store.createRecord('response-thread', {
+        const newThread = this.store.createRecord('response-thread', {
           threadType: 'approver',
           id: uniqueId,
           workspaceName,
@@ -259,19 +253,16 @@ export default Service.extend({
         newThread.get('responses').addObject(newResponse);
       }
     }
-  },
+  }
 
   findExistingResponseThread(threadType, uniqueIdentifier) {
-    let peekedResponseThreads = this.store.peekAll('response-thread').toArray();
-    if (!peekedResponseThreads) {
-      return;
-    }
+    const responseThreads = this.store.peekAll('response-thread').toArray();
 
-    return peekedResponseThreads.find((thread) => {
+    return responseThreads.find((thread) => {
       return (
         thread.get('threadType') === threadType &&
         isEqual(thread.get('id'), uniqueIdentifier)
       );
     });
-  },
-});
+  }
+}

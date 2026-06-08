@@ -1,167 +1,142 @@
-import { computed } from '@ember/object';
-import { not } from '@ember/object/computed';
 import Service from '@ember/service';
 import { isEmpty } from '@ember/utils';
+import { tracked } from '@glimmer/tracking';
 import $ from 'jquery';
 
-export default Service.extend({
-  formId: null,
-  inputs: [],
-  requiredInputs: null,
-  invalidInputs: null,
-  isPristine: null, // if user has not interacted with form yet
-  isDirty: not('isPristine'), // if user has interacted
-  isSubmitted: null, // true if user has tried to submit form
+export default class FormValidatorService extends Service {
+  @tracked formId = null;
+  @tracked inputs = [];
+  @tracked requiredInputs = null;
+  @tracked invalidInputs = null;
+  @tracked isPristine = null;
+  @tracked isSubmitted = null;
 
-  setupListeners: function (formId) {
-    var that = this;
-    const $reqs = this.getRequiredInputs(formId);
-    $reqs.each(function () {
-      $(this).change(function () {
-        that.reqInputOnChange($(this));
-      });
-    });
-  },
+  checkForm = () => {};
 
-  reqInputOnChange: function ($el) {
-    const id = this.formId;
-    const $invalidInputs = this.getInvalidInputs(id);
-    this.set('invalidInputs', $invalidInputs);
+  get isDirty() {
+    return !this.isPristine;
+  }
+
+  get isValid() {
     if (this.isPristine) {
-      this.set('isPristine', false);
+      return false;
     }
-    this.isValid;
+
+    const invalidInputs = this.getInvalidInputs(this.formId);
+    return this.isDirty && invalidInputs.length === 0;
+  }
+
+  get isInvalid() {
+    return this.isDirty && !this.isValid;
+  }
+
+  setupListeners(formId) {
+    const requiredInputs = this.getRequiredInputs(formId);
+
+    requiredInputs
+      .off('change.form-validator')
+      .on('change.form-validator', (event) => {
+        this.reqInputOnChange($(event.currentTarget));
+      });
+  }
+
+  reqInputOnChange($element) {
+    this.invalidInputs = this.getInvalidInputs(this.formId);
+
+    if (this.isPristine) {
+      this.isPristine = false;
+    }
+
     if (this.isSubmitted) {
-      this.handleRequiredInputErrors($el);
+      this.handleRequiredInputErrors($element);
     }
-  },
+  }
 
-  handleRequiredInputErrors: function ($el) {
-    let isElInvalid;
+  handleRequiredInputErrors($element) {
+    if ($element.is(':radio')) {
+      const name = $element.attr('name');
+      const $radioSet = $(`input[name=${name}]`);
+      const isSetInvalid = $(`input[name=${name}]:checked`).length === 0;
 
-    if ($el.is(':radio')) {
-      let name = $el.attr('name');
-      let $radioSet = $(`input[name=${name}]`);
-      let isSetInvalid = $(`input[name=${name}]:checked`).length === 0;
-
-      if (isSetInvalid) {
-        $radioSet.toggleClass('required-error', true);
-      } else {
-        $radioSet.toggleClass('required-error', false);
-      }
+      $radioSet.toggleClass('required-error', isSetInvalid);
     } else {
-      isElInvalid = isEmpty($el.val());
-      if (isElInvalid) {
-        $el.toggleClass('required-error', true);
-      } else {
-        $el.toggleClass('required-error', false);
-      }
+      $element.toggleClass('required-error', isEmpty($element.val()));
     }
 
     this.checkForm();
-  },
+  }
 
-  init() {
-    this._super(...arguments);
-  },
-
-  initialize: function (formId, isMissing) {
-    this.set('formId', formId);
-    this.set('isPristine', true);
-    this.set('isSubmitted', false);
-    this.set('checkForm', isMissing);
+  initialize(formId, checkForm) {
+    this.formId = formId;
+    this.isPristine = true;
+    this.isSubmitted = false;
+    this.checkForm = checkForm || (() => {});
     this.setupListeners(formId);
-  },
+  }
 
-  isValid: computed(
-    'formId',
-    'invalidInputs.[]',
-    'isDirty',
-    'isPristine',
-    function () {
-      if (this.isPristine) {
-        return false;
-      }
-      const id = this.formId;
-      const $invalids = this.getInvalidInputs(id);
+  isMissingRequiredFields(formId) {
+    return this.getInvalidInputs(formId).length > 0;
+  }
 
-      return this.isDirty && isEmpty($invalids);
-    }
-  ),
+  getInputs(formId) {
+    return $(formId).find('input');
+  }
 
-  isInvalid: computed('isDirty', 'isValid', function () {
-    return this.isDirty && !this.isValid;
-  }),
+  getRequiredInputs(formId) {
+    const requiredInputs = $(formId).find('input[required]');
+    this.requiredInputs = requiredInputs;
+    return requiredInputs;
+  }
 
-  isMissingRequiredFields: function (id) {
-    return this.getInvalidInputs(id).length > 0;
-  },
-
-  getInputs: function (formId) {
-    const $form = $(formId);
-    let $inputs = $form.find('input');
-    return $inputs;
-  },
-
-  getRequiredInputs: function (formId) {
-    const $form = $(formId);
-    if (!$form) {
-      return;
-    }
-    let reqs = $form.find('input[required]');
-
-    this.set('requiredInputs', reqs);
-    return reqs;
-  },
-
-  getInvalidInputs: function (formId) {
-    let $invalids = this.getRequiredInputs(formId).filter(function (ix, inp) {
-      let val = $(this).val();
-      return isEmpty(val);
+  getInvalidInputs(formId) {
+    const invalidInputs = this.getRequiredInputs(formId).filter(function () {
+      return isEmpty($(this).val());
     });
-    this.set('invalidInputs', $invalids);
-    return $invalids;
-  },
-  // run on form submit
-  validate: function (formId) {
-    var that = this;
-    // eslint-disable-next-line no-undef
+
+    this.invalidInputs = invalidInputs;
+    return invalidInputs;
+  }
+
+  validate(formId) {
     return new Promise((resolve, reject) => {
-      let ret = {};
       if (!formId) {
-        return reject(new Error('Invalid form id!'));
+        reject(new Error('Invalid form id!'));
+        return;
       }
 
-      if (!this.isSubmitted) {
-        this.set('isSubmitted', true);
+      this.isSubmitted = true;
+
+      const result = {
+        isValid: this.isValid,
+      };
+
+      if (result.isValid) {
+        resolve(result);
+        return;
       }
 
-      ret.isValid = this.isValid;
-
-      if (ret.isValid) {
-        return resolve(ret);
-      }
-      // else form is Invalid; handle errors
-      ret.invalidInputs = this.getInvalidInputs(formId);
-      ret.invalidInputs.each(function () {
-        that.handleRequiredInputErrors($(this));
+      result.invalidInputs = this.getInvalidInputs(formId);
+      result.invalidInputs.each((_index, element) => {
+        this.handleRequiredInputErrors($(element));
       });
 
-      return resolve(ret);
+      resolve(result);
     });
-  },
+  }
 
-  clearForm: function () {
-    this.set('isPristine', true);
-    let $inputs = this.getInputs(this.formId);
-    $inputs.each(function () {
-      if ($(this).is(':radio') || $(this).is(':checkbox')) {
-        $(this).prop('checked', false);
-      } else if ($(this).is(':text')) {
-        $(this).val('');
+  clearForm() {
+    this.isPristine = true;
+
+    this.getInputs(this.formId).each(function () {
+      const $input = $(this);
+
+      if ($input.is(':radio') || $input.is(':checkbox')) {
+        $input.prop('checked', false);
+      } else if ($input.is(':text')) {
+        $input.val('');
       } else {
-        $(this).val(null);
+        $input.val(null);
       }
     });
-  },
-});
+  }
+}
