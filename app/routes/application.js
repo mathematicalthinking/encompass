@@ -17,7 +17,7 @@ export default class Application extends Route {
   @service store;
   @service router;
   @service currentUser;
-  @service('guiders-create') guider;
+
   beforeModel() {
     let that = this;
     window.addEventListener(
@@ -68,45 +68,6 @@ export default class Application extends Route {
     }
   }
 
-  // TODO: Remove all the modal stuff
-  @action
-  openModal(modalName, model) {
-    return this.render(modalName, {
-      into: 'application',
-      outlet: 'modal',
-      model,
-    });
-  }
-  @action
-  closeModal() {
-    return this.disconnectOutlet({
-      outlet: 'modal',
-      parentView: 'application',
-    });
-  }
-  @action
-  openPanel(panelName, model) {
-    return this.render(panelName, {
-      into: 'application',
-      outlet: 'modal',
-      model,
-    });
-  }
-
-  @action
-  closePanel() {
-    return this.disconnectOutlet({
-      outlet: 'modal',
-      parentView: 'application',
-    });
-  }
-  @action
-  doneTour() {
-    var user = this.model;
-    user.set('seenTour', new Date());
-    user.save();
-    this.guider.hideAll();
-  }
   @action
   reloadPage() {
     window.location.reload();

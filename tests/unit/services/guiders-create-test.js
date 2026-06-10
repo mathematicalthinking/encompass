@@ -61,6 +61,28 @@ module('Unit | Service | guiders-create', function (hooks) {
     });
   });
 
+  test('createGuider removes an existing guider with the same id', function (assert) {
+    const existingGuider = document.createElement('div');
+    existingGuider.id = 'intro';
+    document.body.appendChild(existingGuider);
+
+    this.service.createGuider(
+      'intro',
+      null,
+      'Welcome',
+      'Description',
+      null,
+      null,
+      null,
+      [{ name: 'Next' }],
+      true,
+      null,
+      null
+    );
+
+    assert.notOk(document.getElementById('intro'));
+  });
+
   test('hideAll delegates to the guider library', function (assert) {
     assert.strictEqual(this.service.hideAll(), 'hidden');
     assert.strictEqual(this.hideAllCalls, 1);

@@ -42,6 +42,8 @@ export default class GuidersCreateService extends Service {
     width,
     onClose
   ) {
+    document.getElementById(id)?.remove();
+
     return window.guiders.createGuider({
       id,
       next,

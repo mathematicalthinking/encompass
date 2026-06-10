@@ -335,7 +335,7 @@ export default class WorkspaceSubmissionController extends Controller {
       this.doneTour
     );
     this.guider.createGuider(
-      'folders.counts',
+      'fileSelection',
       'done',
       'Folder Counts',
       'To file a selection, drag it to a folder',
@@ -355,7 +355,7 @@ export default class WorkspaceSubmissionController extends Controller {
       '#takeTour',
       null,
       9,
-      [{ name: 'Close', onclick: this.doneTour }],
+      [{ name: 'Close' }],
       true,
       null,
       this.doneTour
