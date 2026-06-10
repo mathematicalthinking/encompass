@@ -1,6 +1,6 @@
 import Service from '@ember/service';
 
-export default Service.extend({
+export default class GuidersCreateService extends Service {
   /*
     attachTo: (optional) selector of the html element you want to attach the guider to
     autoFocus: (optional) if you want the browser to scroll to the position of the guider, set this to true
@@ -29,7 +29,7 @@ export default Service.extend({
     xButton: (optional) if true, a X will appear in the top right corner of the guider, as another way to close the guider
   */
 
-  createGuider: function (
+  createGuider(
     id,
     next,
     title,
@@ -42,6 +42,8 @@ export default Service.extend({
     width,
     onClose
   ) {
+    document.getElementById(id)?.remove();
+
     return window.guiders.createGuider({
       id,
       next,
@@ -59,5 +61,9 @@ export default Service.extend({
       autoFocus: true,
       classString: 'guide-item',
     });
-  },
-});
+  }
+
+  hideAll() {
+    return window.guiders.hideAll();
+  }
+}

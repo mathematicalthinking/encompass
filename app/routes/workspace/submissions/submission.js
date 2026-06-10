@@ -70,18 +70,16 @@ export default class WorkspaceSubmissionRoute extends Route {
 
   resetController(controller, isExiting, transition) {
     if (isExiting && transition.targetName !== 'error') {
-      controller.set('itemsToDisplay', 'all');
+      controller.itemsToDisplay = 'all';
     }
   }
 
-  renderTemplate(controller, model) {
-    this.render('workspace/submission');
-
-    let user = this.modelFor('application');
+  setupController(controller, model) {
+    super.setupController(controller, model);
 
     schedule('afterRender', () => {
       if (!this.currentUser.user.seenTour) {
-        controller.send('startTour', 'workspace');
+        controller.startTour();
       }
     });
   }

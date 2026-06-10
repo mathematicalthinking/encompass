@@ -13,8 +13,7 @@ export default class WorkspaceSubmissionController extends Controller {
   @service router;
   @tracked queryParams = ['vmtRoomId'];
   @service('workspace-permissions') permissions;
-  // Tracked properties
-  @tracked guider = this.guider;
+  @service('guiders-create') guider;
 
   @tracked showOptions = true;
   @tracked areFoldersHidden = false;
@@ -215,7 +214,7 @@ export default class WorkspaceSubmissionController extends Controller {
         [{ name: 'Next' }],
         true,
         null,
-        this.send('doneTour')
+        this.doneTour
       )
       .show();
     this.guider.createGuider(
@@ -229,7 +228,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       '250px',
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'submissions.nav',
@@ -242,7 +241,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       null,
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'submissions.text',
@@ -255,7 +254,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       null,
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'submissions.selection',
@@ -268,7 +267,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       '200px',
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'submissions.selections',
@@ -281,7 +280,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       '300px',
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'comments',
@@ -294,7 +293,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       '250px',
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'comments.comment',
@@ -307,7 +306,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       null,
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'folders',
@@ -320,7 +319,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       null,
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'folders.counts',
@@ -333,10 +332,10 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       null,
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
-      'folders.counts',
+      'fileSelection',
       'done',
       'Folder Counts',
       'To file a selection, drag it to a folder',
@@ -346,7 +345,7 @@ export default class WorkspaceSubmissionController extends Controller {
       [{ name: 'Next' }],
       true,
       null,
-      this.send('doneTour')
+      this.doneTour
     );
     this.guider.createGuider(
       'done',
@@ -356,10 +355,10 @@ export default class WorkspaceSubmissionController extends Controller {
       '#takeTour',
       null,
       9,
-      [{ name: 'Close', onclick: this.send('doneTour') }],
+      [{ name: 'Close' }],
       true,
       null,
-      this.send('doneTour')
+      this.doneTour
     );
   }
 
@@ -482,7 +481,7 @@ export default class WorkspaceSubmissionController extends Controller {
           null
         );
 
-        window.guiders.hideAll();
+        controller.guider.hideAll();
 
         if (!user.get('seenTour')) {
           //guiders._highlightElement('#al_center'); //shouldn't need to do this...
