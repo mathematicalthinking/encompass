@@ -27,17 +27,17 @@
     <aside class='submission-display-options'>
       {{#if this.showOptions}}
         <label for='display-options'>Work to display:</label>
-        <select id='display-options' onchange={{action 'updateDisplayInput'}}>
+        <select id='display-options' {{on 'change' this.updateDisplayInput}}>
           <option value='all'>All work</option>
           <option value='individual'>Individual work only</option>
           <option value='group'>Group work only</option>
         </select>
       {{/if}}
-      <button
+<button
         id='takeTour'
         class='primary-button'
         type='button'
-        {{action 'startTour'}}
+        {{on 'click' this.startTour}}
       >Take Tour</button>
       {{!-- <a id='doneTour' class='hidden' {{action 'doneTour'}}>Done Tour</a> --}}
     </aside>
@@ -53,9 +53,11 @@
     {{! <div id="al_left" class="workspace-flex-item folders"> }}
     {{#if this.showFoldersToggle}}
       <div title='Show Folders' class='toggle-display'>
-        <button type='button' {{action 'toggleFolderDisplay'}}><img
+<button type='button' {{on 'click' this.toggleFolderDisplay}}>
+          <img
             src='/assets/images/chevrons-right.svg'
-          /></button>
+          />
+        </button>
       </div>
     {{/if}}
     <FolderList
@@ -91,9 +93,11 @@
     />
     {{#if this.showCommentsToggle}}
       <div title='Show Comments' class='toggle-display comments'>
-        <button type='button' {{action 'toggleCommentDisplay'}}><img
+<button type='button' {{on 'click' this.toggleCommentDisplay}}>
+          <img
             src='/assets/images/chevrons-left.svg'
-          /></button>
+          />
+        </button>
       </div>
     {{/if}}
     <CommentList
@@ -114,10 +118,11 @@
 </div>
 {{#if this.showOverlay}}
   <div class='clear'></div>
-  <div
-    {{action 'popupMaskClicked'}}
-    id='al_popup_mask'
-    class='al_popup_close'
-    style='height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;'
-  ></div>
+<div
+        {{on 'click' this.popupMaskClicked}}
+        id='al_popup_mask'
+        class='al_popup_close'
+        style='height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;'
+      >
+      </div>
 {{/if}}

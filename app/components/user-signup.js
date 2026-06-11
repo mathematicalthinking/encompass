@@ -98,8 +98,8 @@ export default class UserSignupComponent extends Component {
   }
 
   @action passwordValidate(event) {
-    const password = event?.target?.value || event || this.password; 
-    
+    const password = event?.target?.value || event || this.password;
+
     function hasWhiteSpace(string) {
       return /\s/g.test(string);
     }

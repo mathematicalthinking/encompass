@@ -1,5 +1,4 @@
 import Service from '@ember/service';
-import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 
 export default class NotificationService extends Service {
@@ -7,62 +6,67 @@ export default class NotificationService extends Service {
   @service userNtfs;
   @service currentUser;
 
-  @tracked newNotifications = [];
-
-  constructor() {
-    super(...arguments);
-    this.updateNotifications();
-  }
-
-  updateNotifications() {
-    if (this.areNtfsLoaded) {
-      this.newNotifications = this.userNtfs.newNotifications;
-    }
-  }
-
   get areNtfsLoaded() {
     return this.userNtfs.areNtfsLoaded;
   }
 
+  get newNotifications() {
+    return this.userNtfs.newNotifications;
+  }
+
   get responseNotifications() {
-    return this.newNotifications.filter(
-      (ntf) => ntf.primaryRecordType === 'response'
+    return (
+      this.newNotifications?.filter(
+        (ntf) => ntf.primaryRecordType === 'response'
+      ) || []
     );
   }
 
   get workspaceNotifications() {
-    return this.newNotifications.filter(
-      (ntf) => ntf.primaryRecordType === 'workspace'
+    return (
+      this.newNotifications?.filter(
+        (ntf) => ntf.primaryRecordType === 'workspace'
+      ) || []
     );
   }
 
   get assignmentNotifications() {
-    return this.newNotifications.filter(
-      (ntf) => ntf.primaryRecordType === 'workspace'
+    return (
+      this.newNotifications?.filter(
+        (ntf) => ntf.primaryRecordType === 'workspace'
+      ) || []
     );
   }
 
   get sectionNotifications() {
-    return this.newNotifications.filter(
-      (ntf) => ntf.primaryRecordType === 'section'
+    return (
+      this.newNotifications?.filter(
+        (ntf) => ntf.primaryRecordType === 'section'
+      ) || []
     );
   }
 
   get problemNotifications() {
-    return this.newNotifications.filter(
-      (ntf) => ntf.primaryRecordType === 'problem'
+    return (
+      this.newNotifications?.filter(
+        (ntf) => ntf.primaryRecordType === 'problem'
+      ) || []
     );
   }
 
   get organizationNotifications() {
-    return this.newNotifications.filter(
-      (ntf) => ntf.primaryRecordType === 'organization'
+    return (
+      this.newNotifications?.filter(
+        (ntf) => ntf.primaryRecordType === 'organization'
+      ) || []
     );
   }
 
   get userNotifications() {
-    return this.newNotifications.filter(
-      (ntf) => ntf.primaryRecordType === 'user'
+    return (
+      this.newNotifications?.filter(
+        (ntf) => ntf.primaryRecordType === 'user'
+      ) || []
     );
   }
 
