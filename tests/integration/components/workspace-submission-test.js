@@ -461,4 +461,33 @@ module('Integration | Component | workspace-submission', function (hooks) {
       .dom('#submission_selections .info')
       .includesText('No selections have been made yet.');
   });
+
+  test('keeps an uploaded image inside the active submission view', async function (assert) {
+    await renderWorkspaceSubmission(this, {
+      currentSubmission: {
+        id: 'sub-1',
+        puzzle: { title: 'Test Assignment' },
+        answer: { answer: '', explanation: '' },
+        shortAnswer: 'short answer',
+        longAnswer: 'long answer',
+        uploadedFile: { savedFileName: 'student-work.png' },
+        imageUrl: 'https://example.com/student-work.png',
+      },
+    });
+
+    assert
+      .dom('#submission_container #submission_images img')
+      .hasAttribute('src', 'https://example.com/student-work.png');
+    assert
+      .dom('#submission_container #submission_images a')
+      .hasAttribute('rel', 'noopener noreferrer');
+    assert.dom('#submission_images').exists({ count: 1 });
+
+    await click('input[name="is-selecting"]');
+
+    assert
+      .dom('.non-selectable-sub #submission_images img')
+      .hasAttribute('src', 'https://example.com/student-work.png');
+    assert.dom('#submission_images').exists({ count: 1 });
+  });
 });
