@@ -126,6 +126,11 @@
                       src={{selection.imageTagLink}}
                       alt={{selection.text}}
                     />
+                  {{else if selection.imageSrc}}
+                    <img
+                      src={{selection.imageSrc}}
+                      alt={{selection.text}}
+                    />
                   {{else}}
                     {{selection.text}}
                   {{/if}}
