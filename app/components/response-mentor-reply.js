@@ -627,13 +627,13 @@ export default class ResponseMentorReplyComponent extends Component {
     this.variantFilteredSelections.forEach((selection) => {
       const who = this.variantWho;
       const selectionText = selection.text || '';
-      const imageTagLink = selection.imageTagLink;
+      const imageSource = selection.imageTagLink || selection.imageSrc;
       let quoteInput = selectionText;
       let isImageTag = false;
 
-      if (imageTagLink) {
+      if (imageSource) {
         isImageTag = true;
-        quoteInput = `<img src="${imageTagLink}" alt="${selectionText}"><br>`;
+        quoteInput = `<img src="${imageSource}" alt="${selectionText}"><br>`;
       }
 
       text += `<p>${who} wrote:</p><br>`;

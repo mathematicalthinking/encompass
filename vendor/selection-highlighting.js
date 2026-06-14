@@ -1,12 +1,14 @@
 (function() {
 var SelectionHighlighting = function(args) {
 
-  // Don't let an instance be created without a valid selectable container
-  if (!args || !args.selectableContainerId ||
-      !document.getElementById(args.selectableContainerId)
-  ) {
-    console.log('The id for the selectable container must be supplied to this object.');
-    console.log('Please try again with: new SelectionHighlighting({ selectableContainerId: "theID" });');
+  var suppliedContainer = args && (
+    args.selectableContainer ||
+    document.getElementById(args.selectableContainerId)
+  );
+
+  // Don't let an instance be created without a valid selectable container.
+  if (!suppliedContainer) {
+    console.log('A selectable container must be supplied to this object.');
     return null;
   }
 
@@ -30,9 +32,7 @@ var SelectionHighlighting = function(args) {
     /*
      * Id of the container element whose text can be selected
      */
-    selectableContainerId = args.selectableContainerId,
-
-    selectableContainer, // the element whose text can be selected
+    selectableContainer = suppliedContainer,
     nodeCoords = [], // array of coordinates of children of container
     textCoords = [], // array of coordinates of text within container
     textCoord = 0, // holds the length of the textCoords array
@@ -690,7 +690,7 @@ var SelectionHighlighting = function(args) {
       width: coords.w + 'px'
     };
     for (style in highlightStyles) {
-      if (highlightStyles.hasOwnProperty(style)) {
+      if (Object.prototype.hasOwnProperty.call(highlightStyles, style)) {
         highlight.style[style] = highlightStyles[style];
       }
     }
@@ -857,8 +857,7 @@ var SelectionHighlighting = function(args) {
    */
   this.init = function(onCreate) {
 
-    // reset selectableContainer and coordinates arrays
-    selectableContainer = document.getElementById(selectableContainerId);
+    // reset coordinate arrays
     selections = [];
     nodeCoords = [];
     textCoords = [];
@@ -914,7 +913,7 @@ var SelectionHighlighting = function(args) {
     if (automaticallyRegisterEvent) {
       selectableContainer.removeEventListener('mouseup', selectableMouseup, false);
     }
-    selectableContainer.removeEventListener('selectionchange', handleSelectionChange, false);
+    document.removeEventListener('selectionchange', handleSelectionChange, false);
 
     highlighting = null;
   };

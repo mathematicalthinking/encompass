@@ -3,7 +3,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { isEmpty } from '@ember/utils';
-import $ from 'jquery';
 
 export default class WorkspaceSubmissionComponent extends Component {
   @service currentUser;
@@ -30,6 +29,8 @@ export default class WorkspaceSubmissionComponent extends Component {
   @tracked showSelectionFilterMenu = false;
   selectionFilterMenuElement = null;
   selectionFilterMenuOutsideHandler = null;
+  resizeHandler = null;
+  resizeTimeout = null;
 
   get currentSelection() {
     return this.currentSelectionService.selection;
@@ -175,36 +176,41 @@ export default class WorkspaceSubmissionComponent extends Component {
 
   @action
   setupResizeHandler() {
-    let doneResizing;
+    this.removeResizeHandler();
 
     let handleResize = () => {
       if (this.showingSelections) {
         this.showingSelections = false;
         this.wasShowingBeforeResizing = true;
-
-        clearTimeout(doneResizing);
-
-        doneResizing = setTimeout(() => {
-          if (this.wasShowingBeforeResizing) {
-            this.showingSelections = true;
-            this.wasShowingBeforeResizing = false;
-          }
-        }, 500);
       }
 
       if (this.wasShowingBeforeResizing) {
-        clearTimeout(doneResizing);
+        clearTimeout(this.resizeTimeout);
 
-        doneResizing = setTimeout(() => {
+        this.resizeTimeout = setTimeout(() => {
           if (this.wasShowingBeforeResizing) {
             this.showingSelections = true;
             this.wasShowingBeforeResizing = false;
           }
+          this.resizeTimeout = null;
         }, 500);
       }
     };
 
-    $(window).on('resize.selectableArea', handleResize);
+    this.resizeHandler = handleResize;
+    window.addEventListener('resize', handleResize);
+  }
+
+  @action
+  removeResizeHandler() {
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = null;
+    this.wasShowingBeforeResizing = false;
+
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
   }
 
   @action
@@ -529,6 +535,8 @@ export default class WorkspaceSubmissionComponent extends Component {
     if (this.vmtListener) {
       window.removeEventListener('message', this.vmtListener);
     }
+
+    this.removeResizeHandler();
 
     let workspace = this.args.currentWorkspace;
     if (!workspace) return;

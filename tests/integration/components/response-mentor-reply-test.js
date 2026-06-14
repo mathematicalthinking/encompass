@@ -3,6 +3,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render, findAll } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
+import { setOwner } from '@ember/application';
 
 const createServiceMock = () => class extends Service {};
 
@@ -11,6 +12,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
   hooks.beforeEach(function () {
     class CurrentUserService extends Service {
+      id = 'user1';
       user = { id: 'user1', username: 'testuser' };
     }
     this.owner.register('service:current-user', CurrentUserService);
@@ -124,6 +126,37 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
 
     assert.dom('.info').exists();
     assert.dom('.info').includesText('No Mentor Feedback');
+  });
+
+  test('variant response composition falls back to imageSrc', function (assert) {
+    const ComponentClass = this.owner.factoryFor(
+      'component:response-mentor-reply'
+    ).class;
+    const component = Object.create(ComponentClass.prototype);
+    setOwner(component, this.owner);
+    component.args = {
+      isCreating: true,
+      response: {
+        student: 'Test Student',
+        selections: [
+          {
+            id: 'selection-1',
+            text: 'Fallback image description',
+            imageSrc: 'https://example.com/fallback-image.jpg',
+            createdBy: 'user1',
+          },
+        ],
+        comments: [],
+      },
+    };
+
+    const text = component.preFormatVariantText();
+
+    assert.true(
+      text.includes(
+        '<img src="https://example.com/fallback-image.jpg" alt="Fallback image description"><br>'
+      )
+    );
   });
 
   test('renders component with approved response', async function (assert) {

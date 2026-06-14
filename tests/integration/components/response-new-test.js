@@ -81,6 +81,13 @@ module('Integration | Component | response-new', function (hooks) {
     text: 'Math diagram showing triangles',
   };
 
+  const mockImageSrcSelection = {
+    ...mockSelection,
+    id: 'selection3',
+    imageSrc: 'https://example.com/fallback-image.jpg',
+    text: 'Fallback image description',
+  };
+
   const mockOtherUserSelection = {
     id: 'selection3',
     text: 'Other user selection',
@@ -328,6 +335,30 @@ module('Integration | Component | response-new', function (hooks) {
       .doesNotContainText(
         'Math diagram showing triangles',
         'Alt text is not redundantly displayed as visible content'
+      );
+  });
+
+  test('image selections fall back to imageSrc when imageTagLink is missing', async function (assert) {
+    await renderResponseNew(this, {
+      student: 'Test Student',
+      selections: [mockImageSrcSelection],
+      comments: [],
+    });
+
+    await click('.selections .response-header');
+
+    assert
+      .dom('.selections-list img')
+      .hasAttribute('src', 'https://example.com/fallback-image.jpg');
+    assert
+      .dom('.selections-list img')
+      .hasAttribute('alt', 'Fallback image description');
+    assert
+      .dom('.ql-editor img')
+      .hasAttribute(
+        'src',
+        'https://example.com/fallback-image.jpg',
+        'the composed response also uses the fallback image'
       );
   });
 
