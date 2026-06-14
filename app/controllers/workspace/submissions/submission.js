@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -540,5 +541,10 @@ export default class WorkspaceSubmissionController extends Controller {
   @action
   toggleCommentDisplay() {
     this.areCommentsHidden = !this.areCommentsHidden;
+  }
+
+  @action
+  popupMaskClicked() {
+    this.router.transitionTo('workspace.submissions.submission', this.currentWorkspace.id, this.model?.submission?.id);
   }
 }
