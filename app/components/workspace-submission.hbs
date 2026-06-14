@@ -92,6 +92,7 @@
 
   <div
     id='al_submission'
+    data-selection-scroll-container
     class='{{if this.makingSelection "is-selecting"}}'
   >
     {{#if this.makingSelection}}
@@ -107,8 +108,9 @@
         @sels={{this.workspaceSelections}}
         @trashed={{this.trashedSelections}}
         @setupResizeHandler={{this.setupResizeHandler}}
+        @removeResizeHandler={{this.removeResizeHandler}}
       >
-        <div id='submission_container'>
+        <div id='submission_container' data-selection-container>
           <div class='submission-short {{if this.isVmt "vmt-summary"}}'>
             {{#if this.isVmt}}
               {{#let @currentSubmission.vmtRoomInfo as |room|}}
@@ -152,6 +154,20 @@
               {{make-html-safe @currentSubmission.longAnswer}}
             {{/if}}
           </div>
+          {{#if @currentSubmission.uploadedFile.savedFileName}}
+            <div id='submission_images'>
+              <a
+                target='_blank'
+                href={{@currentSubmission.imageUrl}}
+                rel='noopener noreferrer'
+              >
+                <img
+                  src={{@currentSubmission.imageUrl}}
+                  alt='Uploaded submission'
+                />
+              </a>
+            </div>
+          {{/if}}
         </div>
       </SelectableArea>
     {{else}}
@@ -203,19 +219,22 @@
             {{make-html-safe @currentSubmission.longAnswer}}
           {{/if}}
         </div>
+        {{#if @currentSubmission.uploadedFile.savedFileName}}
+          <div id='submission_images'>
+            <a
+              target='_blank'
+              href={{@currentSubmission.imageUrl}}
+              rel='noopener noreferrer'
+            >
+              <img
+                src={{@currentSubmission.imageUrl}}
+                alt='Uploaded submission'
+              />
+            </a>
+          </div>
+        {{/if}}
       </div>
 
-    {{/if}}
-
-    {{#if @currentSubmission.uploadedFile.savedFileName}}
-      <div id='submission_images'>
-        <a target='_blank' href={{@currentSubmission.imageUrl}}>
-          <img
-            src='{{@currentSubmission.imageUrl}}'
-            alt='Login to the PoWs to see image'
-          />
-        </a>
-      </div>
     {{/if}}
   </div>{{!/al_submission}}
   <h5 id='selections-header' class='submission-header selections'>
