@@ -78,6 +78,7 @@ var ImageTagging = function(args) {
     _disabled = false,
     _onSave = function() { /* empty until a function is provided */ },
     targetImages,
+    targetImageState = [],
     taggingContainer,
     containerX,
     containerY,
@@ -147,7 +148,9 @@ NoteInput = function() {
       note.preventEdit();
     }
 
-    tagging.removeTag(tmpId);
+    if (_tags[tmpId]) {
+      tagging.removeTag(_tags[tmpId].id);
+    }
   }
 
   function _textKeyPress(event) {
@@ -728,7 +731,13 @@ NoteInput = function() {
   }
 
   function _scrollIfNeeded(scrollDiv, img, selection, dragDirection) {
-    var container = document.getElementById(scrollDiv);
+    var container = typeof scrollDiv === 'string'
+      ? document.getElementById(scrollDiv)
+      : scrollDiv;
+
+    if (!container) {
+      return;
+    }
 
     var [containerX, containerY] = _findPosition(container);
     var [imgX, imgY] = _findPosition(img);
@@ -904,10 +913,16 @@ NoteInput = function() {
   (function() {
 
     function addEventListener(img) {
-      // this was getting in the way of proper setup
-      // if (!img.id) {
-      //   return;
-      // }
+      var generatedId = false;
+      if (!img.id) {
+        img.id = _tagIdPrefix + 'target-' + targetImages.length;
+        generatedId = true;
+      }
+      targetImageState[targetImages.length] = {
+        border: img.style.border,
+        draggable: img.getAttribute('draggable'),
+        generatedId: generatedId,
+      };
       targetImages[targetImages.length] = img;
       img.addEventListener('mousedown', _initiateSelection, false);
       img.addEventListener('touchstart', _initiateSelection, _touchEventListenerOptions);
@@ -917,7 +932,12 @@ NoteInput = function() {
     targetImages = [];
 
     if (args.targetContainer) {
-      taggingContainer = document.getElementById(args.targetContainer);
+      taggingContainer = typeof args.targetContainer === 'string'
+        ? document.getElementById(args.targetContainer)
+        : args.targetContainer;
+      if (!taggingContainer) {
+        return;
+      }
       images = taggingContainer.getElementsByTagName('img');
       for (i = 0; i < images.length; i++) {
         addEventListener(images[i]);
@@ -958,12 +978,75 @@ NoteInput = function() {
   }
 
 
+  function _getTagIndex(id) {
+    var i;
+
+    for (i = 0; i < _tags.length; i++) {
+      if (_tags[i] && _tags[i].id === id) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function _getTagElementIndex(tagElement) {
+    var indexString;
+    var parsedIndex;
+
+    if (!tagElement || typeof tagElement.id !== 'string') {
+      return -1;
+    }
+
+    indexString = tagElement.id.replace(_tagIdPrefix, '');
+    if (!/^\d+$/.test(indexString)) {
+      return -1;
+    }
+
+    parsedIndex = Number(indexString);
+    return _tags[parsedIndex] ? parsedIndex : -1;
+  }
+
   /**
    * Private function _getTagId()
-   * Returns the internal id of the tag associated with a tag element
+   * Returns the internal index of the tag associated with a tag element
    */
   function _getTagId(tagElement) {
-    return parseInt(tagElement.id.replace(_tagIdPrefix, ''), 10);
+    return _getTagElementIndex(tagElement);
+  }
+
+  function _getImageForTagInfo(tagInfo) {
+    var image;
+    var imageSrc;
+    var i;
+
+    if (!tagInfo) {
+      return null;
+    }
+
+    image = document.getElementById(tagInfo.parent);
+    if (image && taggingContainer.contains(image)) {
+      return image;
+    }
+
+    imageSrc = tagInfo.imageSrc;
+    if (imageSrc) {
+      for (i = 0; i < targetImages.length; i++) {
+        if (
+          targetImages[i].getAttribute('src') === imageSrc ||
+          targetImages[i].src === imageSrc
+        ) {
+          tagInfo.parent = targetImages[i].id;
+          return targetImages[i];
+        }
+      }
+    }
+
+    if (targetImages.length === 1) {
+      tagInfo.parent = targetImages[0].id;
+      return targetImages[0];
+    }
+
+    return null;
   }
 
   /**
@@ -973,10 +1056,12 @@ NoteInput = function() {
   function _saveTag(tagElement) {
     var id = _getTagId(tagElement),
       tagInfo = _tags[id],
-      imageCoords = _imageTrueCoords(document.getElementById(tagInfo.parent));
-    if (!tagInfo) {
+      image = _getImageForTagInfo(tagInfo),
+      imageCoords;
+    if (!tagInfo || !image) {
       return;
     }
+    imageCoords = _imageTrueCoords(image);
 
     // shift the tag coordinates to be relative to the image
     tagInfo.coords.left = parseInt(tagElement.style.left, 10) - imageCoords.left;
@@ -995,8 +1080,7 @@ NoteInput = function() {
    */
   function _getImageFor(tag) {
     var id = _getTagId(tag);
-
-    return document.getElementById(_tags[id].parent);
+    return _getImageForTagInfo(_tags[id]);
   }
 
   /**
@@ -1435,7 +1519,9 @@ NoteInput = function() {
     _currentlyEditing = -1;
     window.removeEventListener('mouseup', _stopEditingTag, false);
     window.removeEventListener('touchend', _stopEditingTag, false);
-    tagging.removeTag(tmpId);
+    if (_tags[tmpId]) {
+      tagging.removeTag(_tags[tmpId].id);
+    }
   }
 
   /**
@@ -1443,7 +1529,8 @@ NoteInput = function() {
    * Marks the given tag as needing to be saved
    */
   this.setDirty = function(tagElement) {
-    var tag = tagging.getTag(_getTagId(tagElement));
+    var tagIndex = _getTagId(tagElement);
+    var tag = tagIndex >= 0 ? _tags[tagIndex] : null;
     if (tag) {
       tag.isDirty = true;
     }
@@ -1522,25 +1609,29 @@ NoteInput = function() {
    */
   this.showTag = function(id) {
     var tag, note, tagInfo, tagWidth, tagHeight, tagLeft, tagTop,
-      imageCoords, styles, style, borderWidth;
+      image, imageCoords, styles, style, borderWidth, tagIndex;
 
-    id = parseInt(id, 10);
-    if (id >= _tags.length) {
+    tagIndex = _getTagIndex(id);
+    if (tagIndex < 0) {
       return tagging;
     }
-    if (_tags[id] === null) {
-      return tagging;
-    }
+
+    id = tagIndex;
     if (_currentlyEditing >= 0) {
       return tagging;
     }
 
-    tagging.removeTag(id);
+    tagInfo = _tags[id];
+    tagging.removeTag(tagInfo.id);
 
     tag = document.createElement('div');
     tag.id = _tagIdPrefix + id;
 
-    tagInfo = _tags[id];
+    image = _getImageForTagInfo(tagInfo);
+    if (!image || !(image.clientWidth > 0) || !(image.clientHeight > 0)) {
+      return tagging;
+    }
+
     tagInfo.isDirty = false;
     tagWidth = parseInt(tagInfo.size.width, 10);
     tagHeight = parseInt(tagInfo.size.height, 10);
@@ -1548,18 +1639,16 @@ NoteInput = function() {
     // shift the tag to match the image's actual coordinates
 
     if (tagInfo.relativeCoords) {
-      imageCoords = _imageTrueCoords(_getImageFor(tag));
+      imageCoords = _imageTrueCoords(image);
       tagLeft = parseInt(tagInfo.coords.left, 10) + imageCoords.left;
       tagTop = parseInt(tagInfo.coords.top, 10) + imageCoords.top;
     } else {
       // for old tags
-      imageCoords = _imageTrueCoords(_getImageFor(tag));
+      imageCoords = _imageTrueCoords(image);
       tagLeft = parseInt(tagInfo.coords.left, 10);
       tagTop = parseInt(tagInfo.coords.top, 10);
     }
 
-
-    let image = _getImageFor(tag);
     let imageHeight = image.height;
     let imageWidth = image.width;
 
@@ -1665,7 +1754,9 @@ NoteInput = function() {
   this.showAllTags = function() {
     var i;
     for (i = 0; i < _tags.length; i++) {
-      tagging.showTag(i);
+      if (_tags[i]) {
+        tagging.showTag(_tags[i].id);
+      }
     }
   };
 
@@ -1675,23 +1766,31 @@ NoteInput = function() {
    * This tag element gets all the normal event handlers
    */
   this.editTag = function(id) {
-    var tmpId, tag, note, container, image, item;
+    var tmpId, tag, note, container, image, item, tagIndex;
 
-    id = parseInt(id, 10);
+    tagIndex = _getTagIndex(id);
+    if (tagIndex < 0) {
+      return tagging;
+    }
+
+    id = tagIndex;
     window.removeEventListener('mouseup', _stopEditingTag, false);
     window.removeEventListener('touchend', _stopEditingTag, false);
     if (_currentlyEditing >= 0) {
       tmpId = _currentlyEditing;
       _currentlyEditing = -1;
-      tagging.removeTag(tmpId);
+      tagging.removeTag(_tags[tmpId].id);
       if (tmpId === id) {
         return tagging;
       }
     }
 
-    tagging.showTag(id);
+    tagging.showTag(_tags[id].id);
 
     tag = document.getElementById(_tagIdPrefix + id);
+    if (!tag) {
+      return tagging;
+    }
     tag.addEventListener('mousedown', _mouseDown, true);
     tag.addEventListener('mouseup', _mouseUp, true);
     tag.addEventListener('mousemove', _setCursor, true);
@@ -1704,7 +1803,10 @@ NoteInput = function() {
       note.allowEdit();
     }
 
-    image = document.getElementById(_tags[id].parent);
+    image = _getImageForTagInfo(_tags[id]);
+    if (!image) {
+      return tagging;
+    }
     _enforceImageBoundaries(image, tag, false);
 
     if (_tagListContainer) {
@@ -1722,9 +1824,9 @@ NoteInput = function() {
         } else {
           item = document.createElement('div');
           item.id = _tagListIdPrefix + id;
-          item.addEventListener('mouseover', function() { tagging.showTag(id); }, true);
-          item.addEventListener('mouseout', function() { tagging.removeTag(id); }, true);
-          item.addEventListener('click', function() { tagging.editTag(id); }, true);
+          item.addEventListener('mouseover', function() { tagging.showTag(_tags[id].id); }, true);
+          item.addEventListener('mouseout', function() { tagging.removeTag(_tags[id].id); }, true);
+          item.addEventListener('click', function() { tagging.editTag(_tags[id].id); }, true);
           if (_tags[id].note) {
             item.appendChild(document.createTextNode(_tags[id].note));
           } else {
@@ -1743,9 +1845,14 @@ NoteInput = function() {
    * Removes the tag element from the DOM if it's there
    * unless that tag is being edited
    */
-  this.removeTag = function(id) {
-    var tag, note;
-    id = parseInt(id, 10);
+  this.removeTag = function(id, skipSave) {
+    var tag, note, tagIndex;
+    tagIndex = _getTagIndex(id);
+    if (tagIndex < 0) {
+      return tagging;
+    }
+
+    id = tagIndex;
 
     if (_currentlyEditing === id) {
       return tagging;
@@ -1753,7 +1860,9 @@ NoteInput = function() {
 
     tag = document.getElementById(_tagIdPrefix + id);
     if (tag) {
-      _saveTag(tag);
+      if (!skipSave) {
+        _saveTag(tag);
+      }
       if (tag.parentNode) {
         tag.parentNode.removeChild(tag);
       } else {
@@ -1775,16 +1884,20 @@ NoteInput = function() {
    * Public function removeAllTags()
    * Removes all tag elements from the DOM, even if editing
    */
-  this.removeAllTags = function() {
+  this.removeAllTags = function(skipSave) {
     var i;
 
     if (_currentlyEditing !== -1) {
-      _saveTag(document.getElementById(_tagIdPrefix + _currentlyEditing));
+      if (!skipSave) {
+        _saveTag(document.getElementById(_tagIdPrefix + _currentlyEditing));
+      }
       _currentlyEditing = -1;
     }
 
     for (i = 0; i < _tags.length; i++) {
-      tagging.removeTag(i);
+      if (_tags[i]) {
+        tagging.removeTag(_tags[i].id, skipSave);
+      }
     }
   };
 
@@ -1794,8 +1907,14 @@ NoteInput = function() {
    * and removes the tag element from the DOM
    */
   this.deleteTag = function(id) {
-    id = parseInt(id, 10);
-    tagging.removeTag(id);
+    var tagIndex;
+    tagIndex = _getTagIndex(id);
+    if (tagIndex < 0) {
+      return tagging;
+    }
+
+    id = tagIndex;
+    tagging.removeTag(_tags[id].id);
     _tags[id] = null;
 
     if (_notes[id]) {
@@ -1850,6 +1969,9 @@ NoteInput = function() {
     }
     let imageWidth = parseInt(image.width, 10);
     let imageHeight = parseInt(image.height, 10);
+    if (!(imageWidth > 0) || !(imageHeight > 0)) {
+      return tagging;
+    }
 
     let imageSrc = image.getAttribute('src');
 
@@ -1891,13 +2013,8 @@ NoteInput = function() {
    * Returns the tag information associated with the given id
    */
   this.getTag = function(id) {
-    var i;
-    for (i = 0; i < _tags.length; i++) {
-      if (_tags[i] && _tags[i].id === id) {
-        return _tags[i];
-      }
-    }
-    return null;
+    var tagIndex = _getTagIndex(id);
+    return tagIndex >= 0 ? _tags[tagIndex] : null;
   };
 
   /**
@@ -1952,13 +2069,38 @@ NoteInput = function() {
    * Remove all traces of this object having been on the page
    */
   this.destroy = function() {
-    var i;
-    tagging.removeAllTags();
+    var i, state;
+    _disabled = true;
+    _removeSelectionDragListeners();
+    window.removeEventListener('mousemove', _mouseMove, true);
+    window.removeEventListener('touchmove', _mouseMove, _touchCaptureEventListenerOptions);
+    window.removeEventListener('mouseup', _stopEditingTag, false);
+    window.removeEventListener('touchend', _stopEditingTag, false);
+    _currentlyMakingSelection = false;
+    _currentlyConfirmingSelection = false;
+    _currentlyResizingOrPlacing = false;
+    _currentlyEditing = -1;
+    tagging.removeAllTags(true);
+    _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
+
     for (i = 0; i < targetImages.length; i++) {
       targetImages[i].removeEventListener('mousedown', _initiateSelection, false);
       targetImages[i].removeEventListener('touchstart', _initiateSelection, _touchEventListenerOptions);
-
+      state = targetImageState[i];
+      if (state) {
+        targetImages[i].style.border = state.border;
+        if (state.draggable === null) {
+          targetImages[i].removeAttribute('draggable');
+        } else {
+          targetImages[i].setAttribute('draggable', state.draggable);
+        }
+        if (state.generatedId) {
+          targetImages[i].removeAttribute('id');
+        }
+      }
     }
+    targetImages = [];
+    targetImageState = [];
   };
 };
 
