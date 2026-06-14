@@ -455,12 +455,12 @@ export default class ResponseNewComponent extends Component {
         let who = this.who;
         let quoteInput;
         let selText = s.text;
-        let imageTagLink = s.imageTagLink;
+        let imageSource = s.imageTagLink || s.imageSrc;
         let isImageTag = false;
 
-        if (imageTagLink) {
+        if (imageSource) {
           isImageTag = true;
-          quoteInput = `<img src="${imageTagLink}" alt="${selText}"><br>`;
+          quoteInput = `<img src="${imageSource}" alt="${selText}"><br>`;
         } else {
           quoteInput = selText;
         }
