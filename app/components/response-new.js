@@ -310,7 +310,7 @@ export default class ResponseNewComponent extends Component {
     if (!this.hasSubmission)
       return 'AI draft generation requires a valid submission';
     if (!this.aiDraft.hasStudentWork(this.actualSubmission))
-      return 'AI draft generation requires student work (answers or explanations)';
+      return 'AI draft generation requires student text or worksheet images';
     return 'Generate AI draft based on student work';
   }
 
@@ -752,7 +752,7 @@ export default class ResponseNewComponent extends Component {
     ) {
       this.alert.showToast(
         'info',
-        'Cannot generate AI draft: No student work found. AI drafts require student answers or explanations to analyze.',
+        'Cannot generate AI draft: No student text or worksheet images were found.',
         'bottom-end',
         6000,
         false,
