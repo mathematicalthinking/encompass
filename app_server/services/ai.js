@@ -3,7 +3,10 @@
 // AI SERVICE MODIFIED FOR A/B TESTING - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
 const https = require('https');
 const http = require('http');
+const crypto = require('crypto');
 const he = require('he');
+const sharp = require('sharp');
+const { Parser } = require('htmlparser2');
 const logger = require('log4js').getLogger('ai');
 const models = require('../datasource/schemas');
 
@@ -62,6 +65,8 @@ const STAGE_NAMES = new Set(['prod', 'dev', 'test', 'stage', 'staging']);
 const AI_DRAFT_HTTP_TIMEOUT_MS = 300000;
 const AI_DRAFT_POLL_MAX_MS = 300000 * 4;
 const AI_DRAFT_POLL_INTERVAL_MS = 1000;
+const DEFAULT_OCR_CONSENSUS_N = 1;
+const MAX_OCR_SOURCE_BYTES = 20 * 1024 * 1024;
 
 const getStagePrefix = (path = '') => {
   const segments = normalizeApiPath(path).split('/').filter(Boolean);
@@ -80,6 +85,269 @@ const buildStatusPath = (requestPath, ticketId) => {
 };
 
 const extractDraft = (payload = {}) => payload.draft_feedback || null;
+
+const extractImageSources = (...htmlValues) => {
+  const sources = [];
+
+  htmlValues.forEach((html) => {
+    if (typeof html !== 'string' || !html.includes('<')) {
+      return;
+    }
+
+    const parser = new Parser({
+      onopentag(name, attributes) {
+        if (name === 'img' && attributes.src) {
+          sources.push(attributes.src);
+        }
+      },
+    });
+    parser.write(html);
+    parser.end();
+  });
+
+  return sources;
+};
+
+const imageDataToBase64 = (imageData) => {
+  if (typeof imageData !== 'string' || imageData.length === 0) {
+    return null;
+  }
+
+  const marker = 'base64,';
+  const markerIndex = imageData.indexOf(marker);
+  return markerIndex >= 0
+    ? imageData.slice(markerIndex + marker.length)
+    : imageData;
+};
+
+const imageSourceKey = (source) => {
+  if (typeof source !== 'string' || source.length === 0) {
+    return null;
+  }
+
+  if (source.startsWith('data:')) {
+    return `data:${crypto.createHash('sha256').update(source).digest('hex')}`;
+  }
+
+  try {
+    const url = new URL(source, 'http://encompass.local');
+    return `${url.pathname}${url.search}`;
+  } catch (error) {
+    return source;
+  }
+};
+
+const imageIdFromSource = (source) => {
+  if (typeof source !== 'string') {
+    return null;
+  }
+
+  const match = source.match(/\/api\/images\/file\/([a-f0-9]{24})(?:[/?#]|$)/i);
+  return match ? match[1] : null;
+};
+
+const fetchBinary = (source, redirectCount = 0) =>
+  new Promise((resolve, reject) => {
+    let url;
+    try {
+      url = new URL(source);
+    } catch (error) {
+      reject(new Error(`Invalid image URL: ${source}`));
+      return;
+    }
+
+    const protocol = url.protocol === 'http:' ? http : https;
+    const request = protocol.get(url, (response) => {
+      if (
+        response.statusCode >= 300 &&
+        response.statusCode < 400 &&
+        response.headers.location &&
+        redirectCount < 3
+      ) {
+        response.resume();
+        resolve(
+          fetchBinary(
+            new URL(response.headers.location, url).toString(),
+            redirectCount + 1
+          )
+        );
+        return;
+      }
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        response.resume();
+        reject(
+          new Error(
+            `Image request failed (${
+              response.statusCode
+            }) for ${url.toString()}`
+          )
+        );
+        return;
+      }
+
+      const chunks = [];
+      let totalBytes = 0;
+      response.on('data', (chunk) => {
+        totalBytes += chunk.length;
+        if (totalBytes > MAX_OCR_SOURCE_BYTES) {
+          request.destroy(
+            new Error(`Image exceeds ${MAX_OCR_SOURCE_BYTES} byte OCR limit`)
+          );
+          return;
+        }
+        chunks.push(chunk);
+      });
+      response.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+
+    request.on('error', reject);
+    request.setTimeout(AI_DRAFT_HTTP_TIMEOUT_MS, () => {
+      request.destroy(new Error('Image request timed out'));
+    });
+  });
+
+const imagePageFromBuffer = async (buffer, key, pageNumber = null) => {
+  if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
+    return null;
+  }
+
+  const metadata = await sharp(buffer).metadata();
+  if (!(metadata.width > 0) || !(metadata.height > 0)) {
+    return null;
+  }
+
+  return {
+    key,
+    base64: buffer.toString('base64'),
+    width: metadata.width,
+    height: metadata.height,
+    pageNumber,
+  };
+};
+
+const imagePageFromDocument = async (image, key = null) => {
+  if (!image?.imageData) {
+    return null;
+  }
+
+  const base64 = imageDataToBase64(image.imageData);
+  if (!base64) {
+    return null;
+  }
+
+  const buffer = Buffer.from(base64, 'base64');
+  const page = await imagePageFromBuffer(
+    buffer,
+    key || `image:${String(image._id)}`,
+    image.pdfPageNum || null
+  );
+
+  if (page && image.width > 0 && image.height > 0) {
+    page.width = image.width;
+    page.height = image.height;
+  }
+
+  return page;
+};
+
+const resolveImagePage = async (source) => {
+  if (typeof source !== 'string' || source.length === 0) {
+    return null;
+  }
+
+  const key = imageSourceKey(source);
+  const imageId = imageIdFromSource(source);
+  if (imageId) {
+    const image = await models.Image.findById(imageId).lean().exec();
+    return imagePageFromDocument(image, key);
+  }
+
+  if (source.startsWith('data:')) {
+    const base64 = imageDataToBase64(source);
+    return imagePageFromBuffer(Buffer.from(base64, 'base64'), key);
+  }
+
+  if (/^https?:\/\//i.test(source)) {
+    return imagePageFromBuffer(await fetchBinary(source), key);
+  }
+
+  return null;
+};
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+const buildSelectedBox = (selection, page, pageIndex) => {
+  if (!selection || !page || !Number.isInteger(pageIndex)) {
+    return null;
+  }
+
+  const relativeCoords = selection.relativeCoords || {};
+  const relativeSize = selection.relativeSize || {};
+  const relativeValues = [
+    relativeCoords.tagLeftPct,
+    relativeCoords.tagTopPct,
+    relativeSize.widthPct,
+    relativeSize.heightPct,
+  ].map(Number);
+
+  let x;
+  let y;
+  let width;
+  let height;
+
+  if (relativeValues.every(Number.isFinite)) {
+    x = Math.round(clamp(relativeValues[0], 0, 1) * page.width);
+    y = Math.round(clamp(relativeValues[1], 0, 1) * page.height);
+    width = Math.round(clamp(relativeValues[2], 0, 1) * page.width);
+    height = Math.round(clamp(relativeValues[3], 0, 1) * page.height);
+  } else {
+    const coordinates = String(selection.coordinates || '')
+      .trim()
+      .split(/\s+/);
+    if (coordinates.length !== 5) {
+      return null;
+    }
+    [x, y, width, height] = coordinates.slice(1).map(Number);
+    if (![x, y, width, height].every(Number.isFinite)) {
+      return null;
+    }
+  }
+
+  x = clamp(x, 0, page.width - 1);
+  y = clamp(y, 0, page.height - 1);
+  width = clamp(width, 1, page.width - x);
+  height = clamp(height, 1, page.height - y);
+
+  return { x, y, width, height, page: pageIndex };
+};
+
+const buildOcrRequestBody = ({
+  images,
+  variant,
+  problemStatement,
+  studentWork,
+  studentName,
+  requestRows,
+  consensusN = DEFAULT_OCR_CONSENSUS_N,
+}) => ({
+  images,
+  variant,
+  async_ticket: true,
+  ocr_consensus_n: consensusN,
+  problem: {
+    statement: problemStatement,
+  },
+  student_work: studentWork || {
+    short_answer: '',
+    long_answer: '',
+    student_name: studentName,
+  },
+  student_name: studentName,
+  mentor_teacher_context: {
+    selections_and_observations: requestRows,
+  },
+});
 
 const summarizeResponseBody = (value, maxLength = 400) => {
   if (value === null || value === undefined) {
@@ -155,12 +423,24 @@ const generateDraft = async (
   const targetSubmission = await models.Submission.findById(targetSubmissionId)
     .populate({
       path: 'answer',
-      populate: {
-        path: 'assignment',
-        populate: { path: 'problem', select: 'text title' },
-      },
+      populate: [
+        {
+          path: 'assignment',
+          populate: { path: 'problem', select: 'text title' },
+        },
+        {
+          path: 'explanationImage',
+          select: 'imageData width height pdfPageNum',
+        },
+        {
+          path: 'additionalImage',
+          select: 'imageData width height pdfPageNum',
+        },
+      ],
     })
-    .select('shortAnswer longAnswer answer creator clazz publication pdSet')
+    .select(
+      'shortAnswer longAnswer answer creator clazz publication pdSet uploadedFile'
+    )
     .lean()
     .exec();
 
@@ -172,8 +452,12 @@ const generateDraft = async (
   const problemStatement = await resolveProblemText(targetSubmission, models);
 
   // Step 3: Extract and clean student work
-  let shortAnswer = stripHtml(targetSubmission.shortAnswer || '');
-  let longAnswer = stripHtml(targetSubmission.longAnswer || '');
+  const rawShortAnswer = targetSubmission.shortAnswer || '';
+  const rawLongAnswer = targetSubmission.longAnswer || '';
+  const rawAnswer = targetSubmission.answer?.answer || '';
+  const rawExplanation = targetSubmission.answer?.explanation || '';
+  let shortAnswer = stripHtml(rawShortAnswer);
+  let longAnswer = stripHtml(rawLongAnswer);
 
   // If no direct student work, check the answer relationship (for VMT submissions)
   if (
@@ -181,20 +465,11 @@ const generateDraft = async (
     (!longAnswer || longAnswer.trim().length === 0)
   ) {
     if (targetSubmission.answer) {
-      shortAnswer = stripHtml(targetSubmission.answer.answer || '');
-      longAnswer = stripHtml(targetSubmission.answer.explanation || '');
+      shortAnswer = stripHtml(rawAnswer);
+      longAnswer = stripHtml(rawExplanation);
     }
   }
 
-  // If still no student work found, throw error
-  if (
-    (!shortAnswer || shortAnswer.trim().length === 0) &&
-    (!longAnswer || longAnswer.trim().length === 0)
-  ) {
-    throw new Error(
-      'No student work found. Students must provide a short or long answer.'
-    );
-  }
   // Step 4: Determine student name
   const studentName = resolveStudentName(targetSubmission);
 
@@ -217,15 +492,47 @@ const generateDraft = async (
     },
   };
 
-  const { requestRows, sentAnnotations } = await buildSelectionsAndObservations(
+  const { rows, sentAnnotations } = await buildSelectionsAndObservations(
     targetSubmissionId,
     inputType,
     workspaceId,
     teacherId
   );
-  requestBody.mentor_teacher_context.selections_and_observations = requestRows;
+  const ocrContext = await buildOcrContext(targetSubmission, rows, [
+    rawShortAnswer,
+    rawLongAnswer,
+    rawAnswer,
+    rawExplanation,
+  ]);
+  const hasTextWork = Boolean(shortAnswer.trim() || longAnswer.trim());
 
-  const aiResult = await makeAIRequest(requestBody);
+  if (!hasTextWork && ocrContext.images.length === 0) {
+    throw new Error(
+      'No student work found. Students must provide text or an image.'
+    );
+  }
+  const loggedAnnotations = sentAnnotations.map((annotation, index) => ({
+    ...annotation,
+    selectedBox: ocrContext.selectedBoxes[index] || null,
+  }));
+
+  let aiResult;
+  if (ocrContext.images.length > 0) {
+    const ocrRequestBody = buildOcrRequestBody({
+      images: ocrContext.images,
+      variant,
+      problemStatement: cleanProblemStatement,
+      studentWork: requestBody.student_work,
+      consensusN: getOcrConsensusN(),
+      studentName,
+      requestRows: ocrContext.requestRows,
+    });
+    aiResult = await makeAIRequest(ocrRequestBody, getOcrEndpointConfig());
+  } else {
+    requestBody.mentor_teacher_context.selections_and_observations =
+      rows.map(toTextRequestRow);
+    aiResult = await makeAIRequest(requestBody);
+  }
   const draft =
     typeof aiResult === 'object' && aiResult?.draft ? aiResult.draft : aiResult;
   const responseTime =
@@ -235,7 +542,7 @@ const generateDraft = async (
 
   return {
     draft,
-    sentAnnotations,
+    sentAnnotations: loggedAnnotations,
     responseTime,
   };
 };
@@ -261,12 +568,18 @@ const getTeacherSelections = async (submissionId, workspaceId, teacherId) => {
     }
     const selections = await models.Selection.find(selectionQuery)
       .populate('createdBy', 'username')
-      .select('text createDate createdBy')
+      .select(
+        'text coordinates relativeCoords relativeSize imageSrc imageTagLink createDate createdBy'
+      )
       .lean()
       .exec();
     return selections.map((sel) => ({
       selection_id: String(sel._id),
       selected_text: stripHtml(sel.text),
+      coordinates: sel.coordinates || '',
+      relativeCoords: sel.relativeCoords || null,
+      relativeSize: sel.relativeSize || null,
+      imageSrc: sel.imageSrc || null,
       selector_username: sel.createdBy?.username || '',
       selector_date: sel.createDate || null,
       comments: [],
@@ -297,7 +610,10 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
       commentQuery.workspace = workspaceId;
     }
     const comments = await models.Comment.find(commentQuery)
-      .populate('selection', 'text')
+      .populate(
+        'selection',
+        'text coordinates relativeCoords relativeSize imageSrc imageTagLink'
+      )
       .populate('createdBy', 'username')
       .select('text label selection createDate createdBy')
       .lean()
@@ -309,6 +625,10 @@ const getTeacherComments = async (submissionId, workspaceId, teacherId) => {
         ? String(comment.selection)
         : null,
       selected_text: stripHtml(comment.selection?.text || ''),
+      coordinates: comment.selection?.coordinates || '',
+      relativeCoords: comment.selection?.relativeCoords || null,
+      relativeSize: comment.selection?.relativeSize || null,
+      imageSrc: comment.selection?.imageSrc || null,
       type: comment.label, // notice, wonder, feedback
       text: stripHtml(comment.text),
       annotator_username: comment.createdBy?.username || '',
@@ -352,6 +672,10 @@ const buildSelectionsAndObservations = async (
     const row = {
       selection_id: selection.selection_id || null,
       selected_text: selection.selected_text || '',
+      coordinates: selection.coordinates || '',
+      relativeCoords: selection.relativeCoords || null,
+      relativeSize: selection.relativeSize || null,
+      imageSrc: selection.imageSrc || null,
       selector_username: selection.selector_username || '',
       selector_date: selection.selector_date || null,
       comments: [],
@@ -368,6 +692,10 @@ const buildSelectionsAndObservations = async (
       row = {
         selection_id: comment.selection_id || null,
         selected_text: comment.selected_text || '',
+        coordinates: comment.coordinates || '',
+        relativeCoords: comment.relativeCoords || null,
+        relativeSize: comment.relativeSize || null,
+        imageSrc: comment.imageSrc || null,
         selector_username: '',
         selector_date: null,
         comments: [],
@@ -385,15 +713,10 @@ const buildSelectionsAndObservations = async (
   });
 
   return {
-    requestRows: list.map((row) => ({
-      selected_text: row.selected_text || '',
-      comments: row.comments.map((comment) => ({
-        type: comment.type || '',
-        text: comment.text || '',
-      })),
-    })),
+    rows: list,
     sentAnnotations: list.map((row) => ({
       selectedText: row.selected_text || '',
+      selectedBox: null,
       selectorUsername: row.selector_username || '',
       selectorDate: row.selector_date || null,
       comments: row.comments.map((comment) => ({
@@ -406,17 +729,191 @@ const buildSelectionsAndObservations = async (
   };
 };
 
+const toRequestComments = (comments = []) =>
+  comments.map((comment) => ({
+    type: comment.type || '',
+    text: comment.text || '',
+  }));
+
+const toTextRequestRow = (row) => ({
+  selected_text: row.selected_text || '',
+  comments: toRequestComments(row.comments),
+});
+
+const getOcrConsensusN = () => {
+  const value = Number.parseInt(process.env.AI_DRAFT_OCR_CONSENSUS_N, 10);
+  return Number.isInteger(value) && value > 0 ? value : DEFAULT_OCR_CONSENSUS_N;
+};
+
+const getTextEndpointConfig = () => ({
+  hostname: process.env.AI_DRAFT_HOST,
+  port: process.env.AI_DRAFT_PORT,
+  path: process.env.AI_DRAFT_PATH,
+  apiKey: process.env.AI_DRAFT_API_KEY,
+  protocol: process.env.AI_DRAFT_HOST === 'localhost' ? 'http:' : 'https:',
+});
+
+const buildOcrEndpointConfig = ({
+  endpointUrl,
+  endpointPath,
+  apiKey,
+  fallbackApiKey,
+  hostname,
+  port,
+}) => {
+  if (endpointUrl) {
+    let url;
+    try {
+      url = new URL(endpointUrl);
+    } catch (error) {
+      throw new Error('AI_DRAFT_OCR_URL must be a valid absolute URL.');
+    }
+
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw new Error('AI_DRAFT_OCR_URL must use HTTP or HTTPS.');
+    }
+
+    const path = endpointPath || `${url.pathname}${url.search}`;
+    if (!path || path === '/') {
+      throw new Error(
+        'OCR endpoint path is not configured. Set AI_DRAFT_OCR_PATH or include the path in AI_DRAFT_OCR_URL.'
+      );
+    }
+
+    return {
+      hostname: url.hostname,
+      port: url.port,
+      path: normalizeApiPath(path),
+      apiKey: apiKey || fallbackApiKey,
+      protocol: url.protocol,
+    };
+  }
+
+  const config = {
+    hostname,
+    port,
+    path: normalizeApiPath(endpointPath),
+    apiKey: apiKey || fallbackApiKey,
+    protocol: hostname === 'localhost' ? 'http:' : 'https:',
+  };
+
+  if (!config.hostname || !config.path) {
+    throw new Error(
+      'OCR endpoint is not configured. Set AI_DRAFT_OCR_URL or AI_DRAFT_OCR_HOST and AI_DRAFT_OCR_PATH.'
+    );
+  }
+
+  return config;
+};
+
+const getOcrEndpointConfig = () =>
+  buildOcrEndpointConfig({
+    endpointUrl: process.env.AI_DRAFT_OCR_URL,
+    endpointPath: process.env.AI_DRAFT_OCR_PATH,
+    apiKey: process.env.AI_DRAFT_OCR_API_KEY,
+    fallbackApiKey: process.env.AI_DRAFT_API_KEY,
+    hostname: process.env.AI_DRAFT_OCR_HOST,
+    port: process.env.AI_DRAFT_OCR_PORT,
+  });
+
+const buildOcrContext = async (
+  targetSubmission,
+  rows,
+  studentWorkHtml = []
+) => {
+  const pages = [];
+  const pagesByKey = new Map();
+
+  const addPage = (page) => {
+    if (!page?.key || pagesByKey.has(page.key)) {
+      return;
+    }
+    pagesByKey.set(page.key, page);
+    pages.push(page);
+  };
+
+  const directImages = [
+    targetSubmission.answer?.explanationImage,
+    targetSubmission.answer?.additionalImage,
+  ].filter(Boolean);
+
+  for (const image of directImages) {
+    try {
+      addPage(
+        await imagePageFromDocument(
+          image,
+          imageSourceKey(`/api/images/file/${String(image._id)}`)
+        )
+      );
+    } catch (error) {
+      logger.warn('Unable to prepare answer image for OCR:', error.message);
+    }
+  }
+
+  const sources = extractImageSources(...studentWorkHtml);
+  rows.forEach((row) => {
+    if (row.imageSrc) {
+      sources.push(row.imageSrc);
+    }
+  });
+
+  const savedFileName = targetSubmission.uploadedFile?.savedFileName;
+  if (savedFileName) {
+    sources.push(
+      `http://mathforum.org/encpows/uploaded-images/${encodeURIComponent(
+        savedFileName
+      )}`
+    );
+  }
+
+  for (const source of sources) {
+    const key = imageSourceKey(source);
+    if (!key || pagesByKey.has(key)) {
+      continue;
+    }
+
+    try {
+      addPage(await resolveImagePage(source));
+    } catch (error) {
+      logger.warn(`Unable to prepare OCR image ${key}:`, error.message);
+    }
+  }
+
+  const requestRows = rows.map((row) => {
+    const comments = toRequestComments(row.comments);
+    const pageKey = imageSourceKey(row.imageSrc);
+    const page = pageKey ? pagesByKey.get(pageKey) : null;
+    const pageIndex = page ? pages.indexOf(page) : -1;
+    const selectedBox = buildSelectedBox(row, page, pageIndex);
+
+    if (selectedBox) {
+      return { selected_box: selectedBox, comments };
+    }
+
+    return { selected_text: row.selected_text || '', comments };
+  });
+
+  return {
+    images: pages.map((page) => page.base64),
+    requestRows,
+    selectedBoxes: requestRows.map((row) => row.selected_box || null),
+  };
+};
+
 /**
  * Makes an HTTP POST request to the AI service
  * @param {Object} requestBody - The structured request body
  * @returns {Promise<string>} The draft text from AI service
  */
-const makeAIRequest = async (requestBody) => {
+const makeAIRequest = async (
+  requestBody,
+  endpointConfig = getTextEndpointConfig()
+) => {
   const postData = JSON.stringify(requestBody);
   const options = {
-    hostname: process.env.AI_DRAFT_HOST,
-    port: process.env.AI_DRAFT_PORT,
-    path: process.env.AI_DRAFT_PATH,
+    hostname: endpointConfig.hostname,
+    port: endpointConfig.port,
+    path: endpointConfig.path,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -425,12 +922,12 @@ const makeAIRequest = async (requestBody) => {
   };
 
   // Add API key if provided
-  if (process.env.AI_DRAFT_API_KEY) {
-    options.headers['x-api-key'] = process.env.AI_DRAFT_API_KEY;
+  if (endpointConfig.apiKey) {
+    options.headers['x-api-key'] = endpointConfig.apiKey;
   }
 
   return new Promise((resolve, reject) => {
-    const protocol = options.hostname === 'localhost' ? http : https;
+    const protocol = endpointConfig.protocol === 'http:' ? http : https;
     const requestJson = (requestOptions, body = null) =>
       new Promise((resolveRequest, rejectRequest) => {
         const req = protocol.request(requestOptions, (res) => {
@@ -514,8 +1011,8 @@ const makeAIRequest = async (requestBody) => {
           },
         };
 
-        if (process.env.AI_DRAFT_API_KEY) {
-          statusOptions.headers['x-api-key'] = process.env.AI_DRAFT_API_KEY;
+        if (endpointConfig.apiKey) {
+          statusOptions.headers['x-api-key'] = endpointConfig.apiKey;
         }
 
         const poll = () => {
@@ -562,3 +1059,12 @@ const makeAIRequest = async (requestBody) => {
 };
 
 module.exports.generateDraft = generateDraft;
+module.exports._test = {
+  buildOcrEndpointConfig,
+  buildOcrRequestBody,
+  buildSelectedBox,
+  buildStatusPath,
+  extractImageSources,
+  imageDataToBase64,
+  imageSourceKey,
+};
