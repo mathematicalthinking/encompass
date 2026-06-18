@@ -7,6 +7,7 @@ import { service } from '@ember/service';
 // TEMPORARY A/B TEST CODE
 export default class AiVariantComparisonComponent extends Component {
   @service('ai-draft') aiDraft;
+  @service('sweet-alert') alert;
   @tracked isLoading = false;
   @tracked error = null;
 
@@ -236,6 +237,24 @@ export default class AiVariantComparisonComponent extends Component {
     }
   }
 
+  // The upstream AI service returns HTTP 429 "Limit Exceeded" when our AWS tier
+  // monthly request quota is used up. Surface that to the user clearly instead
+  // of only writing "Error: ..." into the draft panels.
+  _isQuotaError(error) {
+    const message = (error?.message || '').toLowerCase();
+    return message.includes('limit exceeded') || message.includes('429');
+  }
+
+  _notifyDraftError(errors = []) {
+    const list = errors.filter(Boolean);
+    const message = list.some((error) => this._isQuotaError(error))
+      ? 'AI usage limit reached for this billing period. Draft generation is temporarily unavailable. Please try again later or contact an administrator.'
+      : list[0]?.message || 'Failed to generate AI draft. Please try again.';
+
+    this.error = message;
+    this.alert.showToast('error', message, 'bottom-end', 8000, false, null);
+  }
+
   _canLogReview(variantCode) {
     const draft = this._getDraft(variantCode);
     const rating = this._getRating(variantCode);
@@ -293,19 +312,27 @@ export default class AiVariantComparisonComponent extends Component {
   }
 
   get variantAButtonText() {
-    return this.loadingVariant === 'A' ? 'Generating...' : 'Generate A';
+    return this.isLoading || this.loadingVariant === 'A'
+      ? 'Generating...'
+      : 'Generate A';
   }
 
   get variantBButtonText() {
-    return this.loadingVariant === 'B' ? 'Generating...' : 'Generate B';
+    return this.isLoading || this.loadingVariant === 'B'
+      ? 'Generating...'
+      : 'Generate B';
   }
 
   get variantEButtonText() {
-    return this.loadingVariant === 'E' ? 'Generating...' : 'Generate E';
+    return this.isLoading || this.loadingVariant === 'E'
+      ? 'Generating...'
+      : 'Generate E';
   }
 
   get variantFButtonText() {
-    return this.loadingVariant === 'F' ? 'Generating...' : 'Generate F';
+    return this.isLoading || this.loadingVariant === 'F'
+      ? 'Generating...'
+      : 'Generate F';
   }
 
   get canBringDownA() {
@@ -415,7 +442,7 @@ export default class AiVariantComparisonComponent extends Component {
       );
     } catch (error) {
       console.error(`Error generating variant ${variantCode}:`, error);
-      this.error = `Failed to generate variant ${variantCode}: ${error.message}`;
+      this._notifyDraftError([error]);
     } finally {
       this.loadingVariant = null;
     }
@@ -427,38 +454,46 @@ export default class AiVariantComparisonComponent extends Component {
     this.error = null;
     try {
       const workspaceId = this.args.workspace?.id;
-      const results = await Promise.all(
-        this.variants.map(async (v) => {
+      // Generate all variants concurrently. Each panel fills in as soon as its
+      // own request resolves, and per-variant failures are isolated so one bad
+      // variant does not block the others.
+      const failures = [];
+      await Promise.all(
+        this.variants.map(async (variant) => {
           try {
             const result = await this.aiDraft.generateDraft(
               submission.id,
-              v.code,
+              variant.code,
               workspaceId,
               { includeMeta: true }
             );
-            return { variantCode: v.code, result };
+            this._applyGeneratedVariant(
+              variant.code,
+              result.draft,
+              result.variantLogId || null,
+              result.requestId || null
+            );
           } catch (error) {
-            console.error(`Error generating variant ${v.code}:`, error);
-            return { variantCode: v.code, error: error.message };
+            console.error(`Error generating variant ${variant.code}:`, error);
+            failures.push(error);
+            this._applyGeneratedVariant(
+              variant.code,
+              `Error: ${error.message}`,
+              null,
+              null
+            );
           }
         })
       );
 
-      results.forEach(({ variantCode, result, error }) => {
-        const draftText = error ? `Error: ${error}` : result?.draft;
-        const variantLogId = result?.variantLogId || null;
-        const requestId = result?.requestId || null;
-        this._applyGeneratedVariant(
-          variantCode,
-          draftText,
-          variantLogId,
-          requestId
-        );
-      });
+      if (failures.length) {
+        this._notifyDraftError(failures);
+      }
     } catch (e) {
       console.error('Overall error:', e);
       this.error = e.message || 'Failed to generate drafts';
     } finally {
+      this.loadingVariant = null;
       this.isLoading = false;
     }
   }

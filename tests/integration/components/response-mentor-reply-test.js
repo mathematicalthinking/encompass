@@ -128,6 +128,25 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     assert.dom('.info').includesText('No Mentor Feedback');
   });
 
+  test('enables Draft From AI for an uploaded worksheet', async function (assert) {
+    const store = this.owner.lookup('service:store');
+    this.submission = store.createRecord('submission', {
+      id: 'image-submission',
+      creator: { username: 'Test Student', safeName: 'Test Student' },
+      uploadedFile: { savedFileName: 'worksheet.png' },
+    });
+
+    await renderMentorReply(this, {
+      displayResponse: null,
+      submissionResponses: [],
+      canSend: true,
+    });
+
+    assert
+      .dom('.ai-draft')
+      .isNotDisabled('Button is enabled for image-only student work');
+  });
+
   test('variant response composition falls back to imageSrc', function (assert) {
     const ComponentClass = this.owner.factoryFor(
       'component:response-mentor-reply'

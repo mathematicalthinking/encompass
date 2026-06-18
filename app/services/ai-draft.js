@@ -1,6 +1,22 @@
 import Service from '@ember/service';
 import { service } from '@ember/service';
 
+const relationshipId = (record, relationshipName) => {
+  try {
+    return record?.belongsTo?.(relationshipName)?.id?.() || null;
+  } catch (error) {
+    return null;
+  }
+};
+
+const relationshipValue = (record, relationshipName) => {
+  try {
+    return record?.belongsTo?.(relationshipName)?.value?.() || null;
+  } catch (error) {
+    return null;
+  }
+};
+
 /**
  * AI Draft Service
  *
@@ -14,9 +30,7 @@ export default class AiDraftService extends Service {
   /**
    * Checks if a submission has student work available for AI analysis
    *
-   * Supports two data sources:
-   * 1. Direct properties: submission.shortAnswer and submission.longAnswer (regular submissions)
-   * 2. Answer relationship: answer.answer and answer.explanation (VMT submissions)
+   * Supports direct submission text/images and answer-linked text/images.
    *
    * @param {Object} submission
    * @returns {Boolean}
@@ -27,20 +41,27 @@ export default class AiDraftService extends Service {
     // Check direct submission properties first
     let shortAnswer = submission.shortAnswer?.trim();
     let longAnswer = submission.longAnswer?.trim();
+    const hasUploadedImage = Boolean(submission.uploadedFile?.savedFileName);
+    const answerId = relationshipId(submission, 'answer');
+    const answer =
+      relationshipValue(submission, 'answer') ||
+      (answerId ? this.store.peekRecord('answer', answerId) : null);
 
-    // Fall back to answer relationship for VMT submissions
-    if (!shortAnswer && !longAnswer) {
-      const answerId = submission.belongsTo('answer').id();
-      if (answerId) {
-        const answer = this.store.peekRecord('answer', answerId);
-        if (answer) {
-          shortAnswer = answer.answer?.trim();
-          longAnswer = answer.explanation?.trim();
-        }
-      }
+    if (answer) {
+      shortAnswer ||= answer.answer?.trim();
+      longAnswer ||= answer.explanation?.trim();
     }
 
-    return Boolean(shortAnswer || longAnswer);
+    const hasAnswerImage = Boolean(
+      relationshipId(answer, 'explanationImage') ||
+        relationshipId(answer, 'additionalImage') ||
+        answer?.explanationImage?.id ||
+        answer?.additionalImage?.id
+    );
+
+    return Boolean(
+      shortAnswer || longAnswer || hasUploadedImage || hasAnswerImage
+    );
   }
 
   /**
@@ -49,8 +70,8 @@ export default class AiDraftService extends Service {
    * A/B TEST MODIFICATION - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
    * A/B TEST MODIFICATION - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
    *
-   * Makes API call to backend AI service which analyzes student work
-   * and generates appropriate feedback.
+   * The browser sends only the submission ID. The Encompass backend chooses
+   * generate-draft or generate-draft-ocr and keeps the OCR API key server-side.
    *
    * @param {String} submissionId - The ID of the submission to generate feedback for
    * @param {String} variant - Variant key ('A', 'B', 'E', or 'F'); legacy aliases C/D are accepted server-side
@@ -83,7 +104,11 @@ export default class AiDraftService extends Service {
       let errMessage = 'Failed to generate AI draft';
       try {
         const parsed = JSON.parse(raw);
-        errMessage = parsed.message || parsed.error || errMessage;
+        errMessage =
+          parsed.message ||
+          parsed.error ||
+          parsed.errors?.[0]?.detail ||
+          errMessage;
       } catch (e) {
         // Upstream errors may return HTML/plain text (e.g., 502), preserve status.
         errMessage = `Failed to generate AI draft (${response.status})`;

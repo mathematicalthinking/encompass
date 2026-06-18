@@ -707,7 +707,7 @@ module('Integration | Component | response-new', function (hooks) {
       id: 'submission1',
       shortAnswer: 'Student answer here',
       longAnswer: 'Detailed explanation',
-      belongsTo(relationshipName) {
+      belongsTo() {
         return {
           id() {
             return null;
@@ -747,7 +747,7 @@ module('Integration | Component | response-new', function (hooks) {
     const mockSubmission = {
       id: 'submission1',
       // No shortAnswer or longAnswer
-      belongsTo(relationshipName) {
+      belongsTo() {
         return {
           id() {
             return null;
@@ -772,5 +772,38 @@ module('Integration | Component | response-new', function (hooks) {
     assert
       .dom('.ai-draft')
       .isDisabled('Button is disabled when no student work');
+  });
+
+  test('enables Draft From AI button for an uploaded worksheet', async function (assert) {
+    const mockSubmission = {
+      id: 'submission1',
+      uploadedFile: { savedFileName: 'worksheet.png' },
+      belongsTo() {
+        return {
+          id() {
+            return null;
+          },
+          value() {
+            return null;
+          },
+        };
+      },
+    };
+
+    await renderResponseNew(
+      this,
+      {
+        student: 'Test Student',
+        selections: [],
+        comments: [],
+      },
+      {
+        submission: mockSubmission,
+      }
+    );
+
+    assert
+      .dom('.ai-draft')
+      .isNotDisabled('Button is enabled for image-only student work');
   });
 });
