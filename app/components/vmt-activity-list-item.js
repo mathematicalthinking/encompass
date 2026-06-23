@@ -1,25 +1,24 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  classNames: ['vmt-activity-list-item'],
+export default class VmtActivityListItemComponent extends Component {
+  @tracked isExpanded = false;
+  @tracked areRoomsExpanded = false;
 
-  isExpanded: false,
-  areRoomsExpanded: false,
+  get isSelected() {
+    let ids = this.args.selectedActivityIds || [];
+    return ids.includes(this.args.activity?._id);
+  }
 
-  isSelected: computed('activity._id', 'selectedActivityIds.[]', function () {
-    let ids = this.selectedActivityIds || [];
-    return ids.includes(this.get('activity._id'));
-  }),
-
-  encodedImageUri: computed('activity.image', function () {
-    if (!this.get('activity.image')) {
+  get encodedImageUri() {
+    if (!this.args.activity?.image) {
       return '';
     }
-    return encodeURI(this.get('activity.image'));
-  }),
+    return encodeURI(this.args.activity.image);
+  }
 
-  expandHideRoomsIcon: computed('areRoomsExpanded', function () {
+  get expandHideRoomsIcon() {
     if (this.areRoomsExpanded) {
       return {
         className: 'far fa-minus-square',
@@ -30,21 +29,29 @@ export default Component.extend({
       className: 'far fa-plus-square',
       title: 'Show rooms',
     };
-  }),
+  }
 
-  actions: {
-    expandImage() {
-      this.set('isExpanded', !this.isExpanded);
-    },
+  @action
+  expandImage() {
+    this.isExpanded = !this.isExpanded;
+  }
 
-    onSelect() {
-      this.onSelect(this.activity);
-    },
-    onRoomSelect(room) {
-      this.onRoomSelect(room);
-    },
-    toggleRooms() {
-      this.toggleProperty('areRoomsExpanded');
-    },
-  },
-});
+  @action
+  handleSelect() {
+    if (typeof this.args.onSelect === 'function') {
+      this.args.onSelect(this.args.activity);
+    }
+  }
+
+  @action
+  handleRoomSelect(room) {
+    if (typeof this.args.onRoomSelect === 'function') {
+      this.args.onRoomSelect(room);
+    }
+  }
+
+  @action
+  toggleRooms() {
+    this.areRoomsExpanded = !this.areRoomsExpanded;
+  }
+}
