@@ -531,13 +531,19 @@ const resolveGroupWorkspaces = async (selection, type) => {
           childCopy.submission.answer
         );
       });
+      // No matching submission in this group workspace. Skip it rather than
+      // dereferencing undefined — an unhandled throw here crashes the whole
+      // Node process (it runs in a fire-and-forget post-save hook).
+      if (!parentSub) {
+        return null;
+      }
       childCopy.submission = parentSub._id;
       childCopy.workspace = workspace._id;
       const newSelection = await models.Selection.create(childCopy);
       return newSelection;
     })
   );
-  return createdSelections;
+  return createdSelections.filter(Boolean);
 };
 
 const deleteGroupLevelSelections = async (selection) => {
