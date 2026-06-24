@@ -23,6 +23,8 @@ export default class ImageUploadComponent extends Component {
     ? 'application/pdf'
     : 'image/png,image/jpeg,application/pdf';
   @tracked showLoadingMessage = false;
+  @tracked overSizedFileError = null;
+  @tracked isOverSizeLimit = false;
   loadingMessageTimer = null;
   _fileInputEl = null;
 
