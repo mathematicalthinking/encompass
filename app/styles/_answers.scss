@@ -4,8 +4,22 @@
 
 #answer-info {
   .info-detail {
-    display: flex;
-    align-items: center;
+    margin-bottom: 1em;
+
+    .detail-label,
+    summary {
+      font-weight: 700;
+      color: $info-value-color;
+    }
+    summary {
+      cursor: pointer;
+    }
+    p {
+      margin: 0.25em 0;
+      // override the blue `.info-detail p` rule leaking in from the parent
+      // #assignment-info-student so values read as normal body text
+      color: $dark-font-color;
+    }
 
     &.brief-summary,
     &.explanation {
@@ -31,20 +45,51 @@
       }
     }
   }
+  // show the embedded image large on the page (fills the panel up to 40em),
+  // and hint that clicking opens the full-size lightbox
+  .explanation-body img {
+    max-width: 40em;
+    width: 100%;
+    height: auto;
+    border-radius: 0.4em;
+    cursor: zoom-in;
+  }
+  // full-screen lightbox for an expanded image
+  .image-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.75);
+    border: 0;
+    cursor: zoom-out;
+    padding: 2vmin;
+
+    img {
+      // fill the viewport box and scale up/down to it, keeping aspect ratio,
+      // so the zoom is genuinely full-page regardless of the source size
+      width: 96vw;
+      height: 96vh;
+      object-fit: contain;
+    }
+  }
   i {
     padding: 5px;
+  }
+  .hide-answer-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
   }
   .info-header {
     text-align: center;
   }
   .list-header {
     border-bottom: 1px solid;
-  }
-  label {
-    width: 65%;
-    font-size: 1em;
-    padding: 12px 20px;
-    color: $dark-font-color;
   }
 }
 
