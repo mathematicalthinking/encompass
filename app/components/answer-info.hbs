@@ -2,7 +2,12 @@
   <header class="info-header" id="answer-info-header">
     <h3>Answer Details
       {{#if @showHideButton}}
-        <i {{action (mut @answer) null}} class="far fa-eye-slash"></i>
+        <button
+          type="button"
+          class="hide-answer-btn"
+          aria-label="Hide answer"
+          {{on "click" @onHide}}
+        ><i class="far fa-eye-slash"></i></button>
       {{/if}}
       </h3>
 
@@ -10,16 +15,27 @@
   </header>
 
   <section class="answer-details">
-    <div class="info-detail brief-summary">
-      <label>Brief Summary:</label>
-      <p>{{@answer.answer}}</p>
-    </div>
-    <div class="info-detail explanation">
-      <label>Explanation:</label>
-      {{{@answer.explanation}}}
-    </div>
+    {{#if @answer.answer}}
+      <div class="info-detail brief-summary">
+        <span class="detail-label">Brief Summary</span>
+        <p>{{@answer.answer}}</p>
+      </div>
+    {{/if}}
+
+    {{#if @answer.explanation}}
+      <details class="info-detail explanation" open>
+        <summary>Explanation</summary>
+        {{! embedded submission images open the lightbox (delegated click) }}
+        {{! template-lint-disable no-invalid-interactive }}
+        <div class="explanation-body" {{on "click" this.enlarge}}>
+          {{make-html-safe @answer.explanation}}
+        </div>
+        {{! template-lint-enable no-invalid-interactive }}
+      </details>
+    {{/if}}
+
     <div class="info-detail students">
-      <label>Contributors:</label>
+      <span class="detail-label">Contributors</span>
       <ul>
         {{#each @answer.students as |student|}}
           <li>{{student.username}}</li>
@@ -31,10 +47,14 @@
     </div>
   </section>
 
-  {{#if @answer.additionalImage}}
-  <div class="assignmentImage info-detail">
-    <label>Additional Upload:</label>
-    <img src="{{{@answer.additionalImage.imageData}}}" alt={{{format-date @answer.createDate 'MMMM Do YYYY'}}} />
-  </div>
+  {{#if this.enlargedSrc}}
+    <button
+      type="button"
+      class="image-overlay"
+      aria-label="Close enlarged submission"
+      {{on "click" this.closeEnlarge}}
+    >
+      <img src={{this.enlargedSrc}} alt="Enlarged submission" />
+    </button>
   {{/if}}
 </div>
