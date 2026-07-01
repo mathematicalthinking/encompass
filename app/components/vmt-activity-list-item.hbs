@@ -1,0 +1,50 @@
+<div class='vmt-activity-list-item' ...attributes>
+  {{#if @showCheckbox}}
+    <input
+      type='checkbox'
+      checked={{this.isSelected}}
+      name='selectedActivities'
+      value={{@activity._id}}
+      {{on 'click' this.handleSelect}}
+    />
+  {{/if}}
+  <i
+    {{on 'click' this.toggleRooms}}
+    title={{this.expandHideRoomsIcon.title}}
+    class={{this.expandHideRoomsIcon.className}}
+  ></i>
+
+  <div class='card-container'>
+    <div class='card-title'>
+      <p class='card-heading'>{{@activity.name}}</p>
+    </div>
+    <div
+      class='card-image'
+      style='background: url({{this.encodedImageUri}}) no-repeat scroll center'
+    >
+      <div class='overlay'>
+        <button type='button' {{on 'click' this.expandImage}}><i
+            class='fas fa-expand'
+          ></i></button>
+      </div>
+    </div>
+  </div>
+
+  {{#if this.areRoomsExpanded}}
+    <VmtRoomList
+      @rooms={{@activity.rooms}}
+      @showCheckbox={{@showCheckbox}}
+      @selectedRoomIds={{@selectedRoomIds}}
+      @onItemSelect={{this.handleRoomSelect}}
+      @isSubList={{true}}
+      @parentActivity={{@activity}}
+    />
+  {{/if}}
+
+  {{#if this.isExpanded}}
+    <div class='full-image'>
+      <i class='fas fa-times' {{on 'click' this.expandImage}}></i>
+      <img src={{@activity.image}} alt={{@activity.name}} />
+    </div>
+  {{/if}}
+</div>
