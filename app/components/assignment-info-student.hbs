@@ -1,4 +1,7 @@
-<div id='assignment-info-student'>
+<div
+  id='assignment-info-student'
+  {{did-update this.handleAssignmentChange @assignment}}
+>
   <section class='assignment-info-student'>
     {{#if @assignment.name}}
       <div class='info-detail info-name'>
@@ -123,6 +126,7 @@
             @assignment={{@assignment}}
             @problem={{@problem}}
             @showHideButton={{true}}
+            @onHide={{this.hideAnswer}}
           />
         {{/if}}
       </section>

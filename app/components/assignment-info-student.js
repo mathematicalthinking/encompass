@@ -61,6 +61,18 @@ export default class AssignmentInfoStudentComponent extends Component {
     this.scroll.toBottomAfterRender();
   }
 
+  @action hideAnswer() {
+    this.displayedAnswer = null;
+  }
+
+  // Reset transient view state when navigating to a different assignment so the
+  // previous assignment's open answer / compose form doesn't linger.
+  @action handleAssignmentChange() {
+    this.displayedAnswer = null;
+    this.isRevising = false;
+    this.isResponding = false;
+  }
+
   @action handleCreatedAnswer(answer) {
     this.toggleResponse();
     this.args.onAnswerCreated?.(answer);
