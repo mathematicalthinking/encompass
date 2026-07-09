@@ -57,7 +57,7 @@
     </ul>
 
   {{#if showCustomSubmissions}}
-    <CustomSubmissionViewerList @submissions={{workspace.submissions.content}} @selectedSubmissionIds={{customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @showView={{showCustomSubmissionViewer}} />
+    <CustomSubmissionViewerList @submissions={{workspace.submissions.content}} @selectedSubmissionIds={{customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @onDone={{action "setDoneSelecting"}} />
   {{/if}}
   {{#if noSubmissionsToCopy}}
     <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
