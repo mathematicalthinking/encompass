@@ -9,6 +9,7 @@ export default Component.extend(CurrentUserMixin, {
   elementId: 'ws-copy-owner-settings',
   utils: service('utility-methods'),
   strSimilarity: service('string-similarity'),
+  store: service(),
 
   constraints: computed('validModeValues', 'doCreateFolderSet', function () {
     let res = {

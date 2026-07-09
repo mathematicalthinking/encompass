@@ -13,6 +13,7 @@ export default Component.extend(CurrentUserMixin, {
   elementId: 'workspace-new-copy',
   newWsConfig: null,
   errorHandling: service('error-handling'),
+  store: service(),
   workspaceToCopy: null,
   isUsingCustomConfig: false,
   customConfig: null,

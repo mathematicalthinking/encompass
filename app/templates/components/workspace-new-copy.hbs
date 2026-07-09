@@ -66,7 +66,6 @@
           <WsCopyWorkspace
             @showLoadingSubmissions={{showLoadingSubmissions}}
             @loadSubmissionErrors={{loadSubmissionErrors}}
-            @store={{this.store}}
             @workspaceToCopy={{workspaceToCopy}}
             @selectedWorkspace={{selectedWorkspace}}
             @fromWorkspaceList={{fromWorkspaceList}}
@@ -92,7 +91,6 @@
             @newWsName={{newWsName}}
             @newFolderSetOptions={{newFolderSetOptions}}
             @workspace={{selectedWorkspace}}
-            @store={{this.store}}
             @modeInputs={{modeInputs}}
             @onProceed={{action 'setOwnerSettings'}}
             @folderSetInputs={{folderSetInputs}}
@@ -108,7 +106,6 @@
             @submissionsPool={{submissionsPool}}
             @workspace={{workspaceToCopy}}
             @newWsPermissions={{newWsPermissions}}
-            @store={{this.store}}
             @newWsOwner={{newWsOwner}}
             @onProceed={{action 'setPermissions'}}
             @onBack={{action 'changeStep'}}
