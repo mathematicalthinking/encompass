@@ -1,178 +1,178 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { service } from '@ember/service';
 import isArray from 'lodash-es/isArray';
 import isString from 'lodash-es/isString';
 import isObject from 'lodash-es/isObject';
 import isNull from 'lodash-es/isNull';
 
-export default Component.extend({
-  elementId: 'ws-copy-permissions',
-  utils: service('utility-methods'),
-  alert: service('sweet-alert'),
+export default class WsCopyPermissionsComponent extends Component {
+  @service('utility-methods') utils;
+  @service('sweet-alert') alert;
+  @service store;
 
-  didReceiveAttrs() {
-    // set already saved permissions in case user went back to previous step and then came back to permissions
-    const newWsPermissions = this.newWsPermissions;
-    if (isArray(newWsPermissions)) {
-      let copy = [...newWsPermissions];
-      // find record in store based off id in order to display username in collab list
-      copy.forEach((obj) => {
-        let user = obj.user;
-        if (isString(user)) {
-          let record = this.store.peekRecord('user', user);
-          if (record) {
-            obj.user = record;
-          }
-        }
-      });
-      this.set('permissions', copy);
-    } else {
-      this.set('permissions', []);
+  @tracked permissions = [];
+  @tracked selectedCollaborator = null;
+  // set by ws-permissions-new via @onSubViewChange; hides Back/Next while the
+  // custom submission viewer is open
+  @tracked doHideNavButtons = false;
+
+  constructor() {
+    super(...arguments);
+    // seed already-saved permissions (e.g. user went to a later step and came
+    // back). This step is re-rendered fresh on each entry, so the constructor is
+    // enough — no didReceiveAttrs needed.
+    this.prefillPermissions();
+  }
+
+  prefillPermissions() {
+    const newWsPermissions = this.args.newWsPermissions;
+    if (!isArray(newWsPermissions)) {
+      this.permissions = [];
+      return;
     }
-    this._super(...arguments);
-  },
+    let copy = [...newWsPermissions];
+    // resolve the user record from the store so the collaborator list can show
+    // a username
+    copy.forEach((obj) => {
+      let user = obj.user;
+      if (isString(user)) {
+        let record = this.store.peekRecord('user', user);
+        if (record) {
+          obj.user = record;
+        }
+      }
+    });
+    this.permissions = copy;
+  }
 
-  willDestroyElement() {
-    // clearing permissions as potential fix to issue of phantom collaborators displaying
-    this.set('permissions', []);
-    this._super(...arguments);
-  },
-
-  initialCollabOptions: computed('selectedCollaborators', 'store', function () {
+  get initialCollabOptions() {
     let peeked = this.store.peekAll('user');
     let collabs = this.selectedCollaborators;
 
     if (!isObject(peeked)) {
       return [];
     }
-    let filtered = peeked.reject((record) => {
-      return collabs[record.get('id')];
-    });
-    return filtered.map((obj) => {
-      return {
-        id: obj.get('id'),
-        username: obj.get('username'),
-      };
-    });
-  }),
+    let filtered = peeked.reject((record) => collabs[record.get('id')]);
+    return filtered.map((obj) => ({
+      id: obj.get('id'),
+      username: obj.get('username'),
+    }));
+  }
 
-  selectedCollaborators: computed(
-    'newWsOwner.id',
-    'permissions.[]',
-    function () {
-      let hash = {};
-      let newWsOwnerId = this.get('newWsOwner.id');
+  get selectedCollaborators() {
+    let hash = {};
+    let newWsOwnerId = this.args.newWsOwner?.id;
 
-      // no reason to set owner as a collaborator
-      if (newWsOwnerId) {
-        hash[newWsOwnerId] = true;
-      }
-      const permissions = this.permissions;
+    // no reason to set the owner as a collaborator
+    if (newWsOwnerId) {
+      hash[newWsOwnerId] = true;
+    }
 
-      if (!this.utils.isNonEmptyArray(permissions)) {
-        return hash;
-      }
-      permissions.forEach((permission) => {
-        let user = permission.user;
-        if (isString(user)) {
-          hash[user] = true;
-        } else if (isObject(user)) {
-          hash[user.get('id')] = true;
-        }
-      });
+    const permissions = this.permissions;
+    if (!this.utils.isNonEmptyArray(permissions)) {
       return hash;
     }
-  ),
-  actions: {
-    setCollaborator(val, $item) {
-      if (!val) {
-        return;
+    permissions.forEach((permission) => {
+      let user = permission.user;
+      if (isString(user)) {
+        hash[user] = true;
+      } else if (isObject(user)) {
+        hash[user.get('id')] = true;
       }
+    });
+    return hash;
+  }
 
-      const isRemoval = isNull($item);
-      if (isRemoval) {
-        this.set('selectedCollaborator', null);
-        return;
+  // clears the selectize collaborator input without jQuery (see the DOM select
+  // that selectize keeps by its id). Option B (a SelectizeInput clear api) is
+  // documented in docs/selectize-clear-api-optionB.md.
+  clearCollabSelect() {
+    document.querySelector('select#collab-select')?.selectize?.clear();
+  }
+
+  @action setCollaborator(val, item) {
+    if (!val) {
+      return;
+    }
+    if (isNull(item)) {
+      // removal
+      this.selectedCollaborator = null;
+      return;
+    }
+    this.selectedCollaborator = this.store.peekRecord('user', val);
+  }
+
+  @action removeCollab(permissionObj) {
+    if (
+      this.utils.isNonEmptyObject(permissionObj) &&
+      Array.isArray(this.permissions)
+    ) {
+      this.permissions = this.permissions.filter((p) => p !== permissionObj);
+    }
+  }
+
+  @action editCollab(permissionObj) {
+    const utils = this.utils;
+    if (utils.isNonEmptyObject(permissionObj)) {
+      const user = permissionObj.user;
+      if (utils.isNonEmptyObject(user)) {
+        this.selectedCollaborator = user;
       }
-      const user = this.store.peekRecord('user', val);
-      this.set('selectedCollaborator', user);
-    },
-    removeCollab(permissionObj) {
-      if (this.utils.isNonEmptyObject(permissionObj)) {
-        if (Array.isArray(this.permissions)) {
-          this.permissions = this.permissions.filter(
-            (p) => p !== permissionObj
-          );
+    }
+  }
+
+  @action savePermissions(permissionsObject) {
+    if (!this.utils.isNonEmptyObject(permissionsObject)) {
+      return;
+    }
+    const permissions = this.permissions;
+    // replace an existing entry for this user, if any
+    let existingObj = Array.isArray(permissions)
+      ? permissions.find((p) => p.user === permissionsObject.user)
+      : null;
+    let updatedPermissions = existingObj
+      ? permissions.filter((p) => p !== existingObj)
+      : permissions;
+
+    this.permissions = [...updatedPermissions, permissionsObject];
+    this.selectedCollaborator = null;
+    this.clearCollabSelect();
+  }
+
+  @action stopEditing() {
+    this.selectedCollaborator = null;
+    this.clearCollabSelect();
+  }
+
+  @action next() {
+    const selectedCollaborator = this.selectedCollaborator;
+    if (!selectedCollaborator) {
+      this.args.onProceed(this.permissions);
+      return;
+    }
+    let title = 'Are you sure you want to proceed?';
+    let text = `You are currently in the process of editing permissions for ${selectedCollaborator.get(
+      'username'
+    )}. You will lose any unsaved changes if you continue.`;
+
+    return this.alert
+      .showModal('warning', title, text, 'Proceed')
+      .then((result) => {
+        if (result.value) {
+          this.selectedCollaborator = null;
+          this.clearCollabSelect();
+          this.args.onProceed(this.permissions);
         }
-      }
-    },
-    editCollab(permissionObj) {
-      const utils = this.utils;
-      if (utils.isNonEmptyObject(permissionObj)) {
-        const user = permissionObj.user;
-        if (utils.isNonEmptyObject(user)) {
-          this.set('selectedCollaborator', user);
-        }
-      }
-    },
-    savePermissions(permissionsObject) {
-      if (!this.utils.isNonEmptyObject(permissionsObject)) {
-        return;
-      }
-      const permissions = this.permissions;
-      // check if user already is in array
-      let existingObj = Array.isArray(permissions)
-        ? permissions.find((p) => p.user === permissionsObject.user)
-        : null;
+      });
+  }
 
-      // remove existing permissions obj and add modified one
-      let updatedPermissions = existingObj
-        ? permissions.filter((p) => p !== existingObj)
-        : permissions;
+  @action back() {
+    this.args.onBack(-1);
+  }
 
-      this.permissions = [...updatedPermissions, permissionsObject];
-
-      // clear selectedCollaborator
-      // clear selectize input
-
-      this.set('selectedCollaborator', null);
-      $('select#collab-select')[0].selectize.clear();
-    },
-    stopEditing() {
-      this.set('selectedCollaborator', null);
-      $('select#collab-select')[0].selectize.clear();
-    },
-    next() {
-      // check if user is in middle of editing a collab
-      const selectedCollaborator = this.selectedCollaborator;
-      if (!selectedCollaborator) {
-        this.onProceed(this.permissions);
-        return;
-      }
-      let title = 'Are you sure you want to proceed?';
-      let text = `You are currently in the process of editing permissions for ${selectedCollaborator.get(
-        'username'
-      )}. You will lose any unsaved changes if you continue.`;
-
-      return this.alert
-        .showModal('warning', title, text, 'Proceed')
-        .then((result) => {
-          if (result.value) {
-            // clear values and then proceed
-            this.set('selectedCollaborator', null);
-            $('select#collab-select')[0].selectize.clear();
-            this.onProceed(this.permissions);
-            return;
-          }
-        });
-    },
-
-    back() {
-      this.onBack(-1);
-    },
-    isShowingCustom: function () {
-      console.log('is showing custom function called');
-    },
-  },
-});
+  @action setSubViewState(isShowing) {
+    this.doHideNavButtons = isShowing;
+  }
+}
