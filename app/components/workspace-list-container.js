@@ -7,9 +7,8 @@ import { htmlSafe } from '@ember/template';
 
 /**
  * <WorkspaceListContainer
-  @workspaces={{this.model.workspaces}}
-  @organizations={{this.model.organizations}}
-  @toCopyWorkspace={{this.toCopyWorkspace}}
+  @workspaces={{@model.workspaces}}
+  @organizations={{@model.organizations}}
 />
 */
 export default class WorkspaceListContainerComponent extends Component {
