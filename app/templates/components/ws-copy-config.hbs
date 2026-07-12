@@ -8,34 +8,34 @@
   </span>
 </p>
 <Ui::RadioGroup
-  @options={{copyConfig}}
+  @options={{this.copyConfig}}
   @selectedValue={{this.selectedConfig}}
   @updateValue={{action 'updateSelectedConfig'}}
 />
 
-{{#if showCustomConfig}}
+{{#if this.showCustomConfig}}
   <WsCopyCustomConfig
-    @workspace={{workspace}}
-    @submissionThreads={{submissionThreads}}
+    @workspace={{this.workspace}}
+    @submissionThreads={{this.submissionThreads}}
     @onProceed={{action 'nextCustom'}}
     @onBack={{action 'back'}}
-    @insufficientSubmissions={{insufficientSubmissions}}
+    @insufficientSubmissions={{this.insufficientSubmissions}}
   />
 
-  {{#if insufficientSubmissions}}
+  {{#if this.insufficientSubmissions}}
     <Ui::ErrorBox
       @error='Please choose a configuration that includes at least 1 submission.'
       @showDismiss={{true}}
-      @resetError={{action (mut insufficientSubmissions) null}}
+      @resetError={{action (mut this.insufficientSubmissions) null}}
     />
   {{/if}}
 {{else}}
 
-  {{#if invalidOrMissingConfig}}
+  {{#if this.invalidOrMissingConfig}}
     <Ui::ErrorBox
       @showDismiss={{true}}
       @error='Please select a valid configuration option.'
-      @resetError={{action (mut invalidOrMissingConfig) null}}
+      @resetError={{action (mut this.invalidOrMissingConfig) null}}
     />
   {{/if}}
 

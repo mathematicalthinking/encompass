@@ -13,15 +13,15 @@
       id='folderset-name'
       class='single-text-input'
       @type='text'
-      @value={{name}}
+      @value={{this.name}}
       placeholder='Provide a name for the new folder set'
     />
   </div>
-  {{#each nameErrors as |error|}}
+  {{#each this.nameErrors as |error|}}
     <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
-      @resetError={{action (mut nameErrors) null}}
+      @resetError={{action (mut this.nameErrors) null}}
     />
   {{/each}}
 </div>
@@ -37,15 +37,15 @@
     </span>
   </p>
   <Ui::RadioGroup
-    @options={{privacyInputs}}
+    @options={{this.privacyInputs}}
     @selectedValue={{this.privacySetting}}
     @updateValue={{action 'updatePrivacySetting'}}
   />
-  {{#each privacyErrors as |error|}}
+  {{#each this.privacyErrors as |error|}}
     <Ui::ErrorBox
       @error={{error}}
       @showDismiss={{true}}
-      @resetError={{action (mut privacyErrors) null}}
+      @resetError={{action (mut this.privacyErrors) null}}
     />
   {{/each}}
 </div>
