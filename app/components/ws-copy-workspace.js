@@ -6,6 +6,7 @@ import isNull from 'lodash-es/isNull';
 export default Component.extend({
   elementId: 'ws-copy-workspace',
   utils: service('utility-methods'),
+  store: service(),
 
   didReceiveAttrs() {
     this._super(...arguments);

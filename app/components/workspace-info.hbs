@@ -40,7 +40,7 @@
         @onSelect={{action 'updateCustomSubs'}}
         @onSelectAll={{action 'selectAllSubmissions'}}
         @onUnselectAll={{action 'deselectAllSubmissions'}}
-        @showView={{this.isShowingCustomViewer}}
+        @onDone={{this.toggleIsShowingCustomViewer}}
       />
     {{/if}}
   </div>

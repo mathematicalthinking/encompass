@@ -8,26 +8,26 @@
     </span>
   </p>
   <p class="sub-input-label">
-    {{#if selectedAllSubmissions}}
-      You have selected {{submissionCount.length}} submissions to copy
+    {{#if this.selectedAllSubmissions}}
+      You have selected {{this.submissionCount.length}} submissions to copy
     {{/if}}
-    {{#if showStudentSubmissionInput}}
-      Based off selected students, you have selected {{submissionsFromStudents.length}} submissions to copy
+    {{#if this.showStudentSubmissionInput}}
+      Based off selected students, you have selected {{this.submissionsFromStudents.length}} submissions to copy
     {{/if}}
-    {{#if selectedCustomSubmission}}
-      You have selected {{customSubmissionIds.length}} submissions to copy
+    {{#if this.selectedCustomSubmission}}
+      You have selected {{this.customSubmissionIds.length}} submissions to copy
     {{/if}}
   </p>
     <ul class="radio-list">
       <li class="radio-group-item">
         <label>
-          <input type="radio" checked={{submissionOptions.all}} required="true" name="submissionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "submissionOptions"}}>
+          <input type="radio" checked={{this.submissionOptions.all}} required="true" name="this.submissionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "this.submissionOptions"}}>
           <span>All</span>
         </label>
       </li>
       <li class="radio-group-item">
         <label>
-          <input type="radio" checked={{submissionOptions.byStudent}} required="true" name="submissionOptions" value="byStudent" onclick={{action "updateCollectionOptions" "byStudent" "submissionOptions"}}>
+          <input type="radio" checked={{this.submissionOptions.byStudent}} required="true" name="this.submissionOptions" value="byStudent" onclick={{action "updateCollectionOptions" "byStudent" "this.submissionOptions"}}>
           <span>
             By Student
             <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy submissions from a selected student or students">
@@ -35,31 +35,31 @@
             </span>
           </span>
         </label>
-        {{#if showStudentSubmissionInput}}
-          <SelectizeInput @inputId="submissions-by-student" @initialOptions={{studentSelectOptions}} @maxItems={{studentSelectOptions.length}} @onItemAdd={{action "updateMultiSelect"}} @onItemRemove={{action "updateMultiSelect"}} @labelField="label" @valueField="value" @searchField="label" @propToUpdate="submissionStudents" @placeholder="Add students" />
+        {{#if this.showStudentSubmissionInput}}
+          <SelectizeInput @inputId="submissions-by-student" @initialOptions={{this.studentSelectOptions}} @maxItems={{this.studentSelectOptions.length}} @onItemAdd={{action "updateMultiSelect"}} @onItemRemove={{action "updateMultiSelect"}} @labelField="label" @valueField="value" @searchField="label" @propToUpdate="submissionStudents" @placeholder="Add students" />
         {{/if}}
       </li>
       <li class="radio-group-item">
         <label>
-          <input type="radio" checked={{submissionOptions.custom}} required="true" name="submissionOptions" value="custom"
-            onclick={{action "updateCollectionOptions" "custom" "submissionOptions"}}>
+          <input type="radio" checked={{this.submissionOptions.custom}} required="true" name="this.submissionOptions" value="custom"
+            onclick={{action "updateCollectionOptions" "custom" "this.submissionOptions"}}>
           <span>
             Custom
             <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="View submission list and select desired submissions">
               <i class="far fa-question-circle info-icon"></i>
             </span>
-            {{#if closedCustomView}}
-              <span class="show-viewer" {{action (mut showCustomSubmissionViewer) true}}>Show Viewer</span>
+            {{#if this.closedCustomView}}
+              <span class="show-viewer" {{action (mut this.showCustomSubmissionViewer) true}}>Show Viewer</span>
             {{/if}}
           </span>
         </label>
       </li>
     </ul>
 
-  {{#if showCustomSubmissions}}
-    <CustomSubmissionViewerList @submissions={{workspace.submissions.content}} @selectedSubmissionIds={{customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @showView={{showCustomSubmissionViewer}} />
+  {{#if this.showCustomSubmissions}}
+    <CustomSubmissionViewerList @submissions={{workspace.submissions.content}} @selectedSubmissionIds={{this.customSubmissionIds}} @onSelect={{action "updateCustomSubs"}} @onSelectAll={{action "selectAllSubmissions"}} @onUnselectAll={{action "deselectAllSubmissions"}} @onDone={{action "setDoneSelecting"}} />
   {{/if}}
-  {{#if noSubmissionsToCopy}}
+  {{#if this.noSubmissionsToCopy}}
     <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
   {{/if}}
 </div>
@@ -71,17 +71,17 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  <p class="sub-input-label">Based on your selected submissions, there are {{selectionsFromSubmissions.length}} selections to choose from</p>
+  <p class="sub-input-label">Based on your selected submissions, there are {{this.selectionsFromSubmissions.length}} selections to choose from</p>
   <ul class="radio-list">
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{selectionOptions.all}} required="true" name="selectionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
+        <input type="radio" checked={{this.selectionOptions.all}} required="true" name="this.selectionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "this.selectionOptions"}}>
         <span>All</span>
       </label>
     </li>
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{selectionOptions.none}} required="true" name="selectionOptions" value="none" onclick={{action "updateCollectionOptions" "none" "selectionOptions"}}>
+        <input type="radio" checked={{this.selectionOptions.none}} required="true" name="this.selectionOptions" value="none" onclick={{action "updateCollectionOptions" "none" "this.selectionOptions"}}>
         <span>None</span>
       </label>
     </li>
@@ -95,11 +95,11 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  <p class="sub-input-label">There are {{foldersCount.length}} folders available to copy</p>
+  <p class="sub-input-label">There are {{this.foldersCount.length}} folders available to copy</p>
   <ul class="radio-list">
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{folderOptions.all}} required="true" name="folderOptions" value="all" onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
+        <input type="radio" checked={{this.folderOptions.all}} required="true" name="this.folderOptions" value="all" onclick={{action "updateCollectionOptions" "all" "this.folderOptions"}}>
         <span>
           All with Content
           <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy all the folders along with all applicable taggings">
@@ -110,7 +110,7 @@
     </li>
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{folderOptions.includeStructureOnly}} required="true" name="folderOptions" value="includeStructureOnly" onclick={{action "updateCollectionOptions" "includeStructureOnly" "folderOptions"}}>
+        <input type="radio" checked={{this.folderOptions.includeStructureOnly}} required="true" name="this.folderOptions" value="includeStructureOnly" onclick={{action "updateCollectionOptions" "includeStructureOnly" "this.folderOptions"}}>
         <span>
           Just Structure
           <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy only the folders structure without the taggings">
@@ -121,7 +121,7 @@
     </li>
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{folderOptions.none}} required="true" name="folderOptions" value="none" onclick={{action "updateCollectionOptions" "none" "folderOptions"}}>
+        <input type="radio" checked={{this.folderOptions.none}} required="true" name="this.folderOptions" value="none" onclick={{action "updateCollectionOptions" "none" "this.folderOptions"}}>
         <span>None</span>
       </label>
     </li>
@@ -135,17 +135,17 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  <p class="sub-input-label">Based on your selected submissions, there are {{commentsFromSelections.length}} comments to choose from</p>
+  <p class="sub-input-label">Based on your selected submissions, there are {{this.commentsFromSelections.length}} comments to choose from</p>
   <ul class="radio-list">
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all" onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
+        <input type="radio" checked={{this.commentOptions.all}} required="true" name="this.commentOptions" value="all" onclick={{action "updateCollectionOptions" "all" "this.commentOptions"}}>
         <span>All</span>
       </label>
     </li>
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{commentOptions.none}} required="true" name="commentOptions" value="none" onclick={{action "updateCollectionOptions" "none" "commentOptions"}}>
+        <input type="radio" checked={{this.commentOptions.none}} required="true" name="this.commentOptions" value="none" onclick={{action "updateCollectionOptions" "none" "this.commentOptions"}}>
         <span>None</span>
       </label>
     </li>
@@ -159,17 +159,17 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  <p class="sub-input-label">Based on your selected submissions, there are {{responsesFromSubmissions.length}} responses to choose from</p>
+  <p class="sub-input-label">Based on your selected submissions, there are {{this.responsesFromSubmissions.length}} responses to choose from</p>
   <ul class="radio-list">
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{responseOptions.all}} required="true" name="responseOptions" value="all" onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
+        <input type="radio" checked={{this.responseOptions.all}} required="true" name="this.responseOptions" value="all" onclick={{action "updateCollectionOptions" "all" "this.responseOptions"}}>
         <span>All</span>
       </label>
     </li>
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{responseOptions.none}} required="true" name="responseOptions" value="none" onclick={{action "updateCollectionOptions" "none" "responseOptions"}}>
+        <input type="radio" checked={{this.responseOptions.none}} required="true" name="this.responseOptions" value="none" onclick={{action "updateCollectionOptions" "none" "this.responseOptions"}}>
         <span>None</span>
       </label>
     </li>
@@ -186,7 +186,7 @@
   </ul>
 </div> --}}
 
-{{#unless showCustomSubmissions}}
+{{#unless this.showCustomSubmissions}}
   <div class="nav-btn-container">
     <button class="primary-button cancel-button" type="button" {{action "back"}}>Back</button>
     <button class="primary-button" type="button" {{action "next"}}>Next</button>

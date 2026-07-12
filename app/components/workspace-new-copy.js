@@ -13,6 +13,7 @@ export default Component.extend(CurrentUserMixin, {
   elementId: 'workspace-new-copy',
   newWsConfig: null,
   errorHandling: service('error-handling'),
+  store: service(),
   workspaceToCopy: null,
   isUsingCustomConfig: false,
   customConfig: null,
@@ -700,10 +701,12 @@ export default Component.extend(CurrentUserMixin, {
             this.set('copyWorkspaceError', error);
             return;
           }
-          const createdWorkspace = result.get('createdWorkspace');
+          const createdWorkspaceId = result
+            .belongsTo('createdWorkspace')
+            .id();
 
-          if (createdWorkspace) {
-            this.sendAction('toWorkspace', createdWorkspace);
+          if (createdWorkspaceId) {
+            this.toWorkspace(createdWorkspaceId);
           } else {
             // something went wrong?
             this.set(
