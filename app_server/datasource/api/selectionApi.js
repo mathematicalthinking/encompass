@@ -497,6 +497,11 @@ async function putSelection(req, res, next) {
 
 const resolveGroupWorkspaces = async (selection, type) => {
   const sourceWorkspace = await models.Workspace.findById(selection.workspace);
+  //nothing to propagate if the source workspace isn't in the db yet (e.g. during a
+  //workspace copy, selections are saved before the new workspace is persisted)
+  if (!sourceWorkspace) {
+    return;
+  }
   //this is only supposed to add selections to group workspaces from individual workspaces
   if (sourceWorkspace.group || sourceWorkspace.workspaceType === 'parent') {
     return;
