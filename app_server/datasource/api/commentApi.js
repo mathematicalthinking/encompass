@@ -398,6 +398,11 @@ async function putComment(req, res, next) {
 
 const resolveGroupUpdates = async (comment, type) => {
   const sourceWorkspace = await models.Workspace.findById(comment.workspace);
+  //nothing to propagate if the source workspace isn't in the db yet (e.g. during a
+  //workspace copy, comments are saved before the new workspace is persisted)
+  if (!sourceWorkspace) {
+    return;
+  }
   //this is only supposed to add selections to group workspaces from individual workspaces
   if (sourceWorkspace.group || sourceWorkspace.workspaceType === 'parent') {
     return;

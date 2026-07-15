@@ -1,0 +1,66 @@
+<div id='ws-copy-workspace' ...attributes>
+  {{#unless @fromWorkspaceList}}
+    <div class='select-workspace-container'>
+      <p class='input-label'>
+        Choose a workspace to copy
+        <span
+          class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+          data-tooltip='Start typing or use the drop down to select the name of the workspace you would like to copy'
+        >
+          <i class='fas fa-info-circle info-icon'></i>
+        </span>
+      </p>
+      <SelectizeInput
+        @inputId='select-workspace'
+        @isAsync={{true}}
+        @maxItems={{1}}
+        @initialOptions={{this.initialWorkspaceOptions}}
+        @initialItems={{this.initialWorkspaceItem}}
+        @onItemAdd={{this.setSelectedWorkspace}}
+        @onItemRemove={{this.setSelectedWorkspace}}
+        @labelField='name'
+        @searchField='name'
+        @valueField='id'
+        @model='workspace'
+        @queryParamsKey='query'
+        @searchCriterion='name'
+        @topLevelQueryParams='searchBy'
+        @placeholder='Search for workspaces by name...'
+        @preload='focus'
+      />
+      {{#if this.missingWorkspace}}
+        <Ui::ErrorBox
+          @error='Please select a workspace.'
+          @resetError={{this.resetMissingWorkspace}}
+          @showDismiss={{true}}
+        />
+      {{/if}}
+    </div>
+  {{/unless}}
+
+  {{#if @selectedWorkspace}}
+    <WorkspaceInfoSummary @workspace={{@selectedWorkspace}} />
+  {{/if}}
+
+  {{#if this.tooFewSubmissions}}
+    <Ui::ErrorBox
+      @error='Please select a workspace with at least 1 submission.'
+      @resetError={{this.resetTooFewSubmissions}}
+      @showDismiss={{true}}
+    />
+  {{/if}}
+  {{#if @showLoadingSubmissions}}
+    <p class='loading-message'>Loading submissions... Thank you for your
+      patience.</p>
+  {{/if}}
+  {{#each @loadSubmissionErrors as |error|}}
+    <p class='error-message'>{{error}}</p>
+  {{/each}}
+  <div class='nav-btn-container'>
+    <button
+      class='primary-button'
+      type='button'
+      {{on 'click' this.next}}
+    >Next</button>
+  </div>
+</div>

@@ -545,6 +545,10 @@ export default Component.extend(CurrentUserMixin, {
         this.set('currentStep', this.steps[currentStep - 1]);
       }
     },
+    setSelectedWorkspace(workspace) {
+      this.set('selectedWorkspace', workspace);
+    },
+
     setOriginalWorkspace() {
       const workspace = this.selectedWorkspace;
 
