@@ -14,6 +14,7 @@ export default Component.extend(CurrentUserMixin, {
   newWsConfig: null,
   errorHandling: service('error-handling'),
   store: service(),
+  router: service(),
   workspaceToCopy: null,
   isUsingCustomConfig: false,
   customConfig: null,
@@ -706,7 +707,7 @@ export default Component.extend(CurrentUserMixin, {
             .id();
 
           if (createdWorkspaceId) {
-            this.toWorkspace(createdWorkspaceId);
+            this.router.transitionTo('workspace.work', createdWorkspaceId);
           } else {
             // something went wrong?
             this.set(

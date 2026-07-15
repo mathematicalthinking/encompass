@@ -7,6 +7,7 @@ export default Component.extend({
   classNames: ['workspace-list-item'],
   alert: service('sweet-alert'),
   permissions: service('workspace-permissions'),
+  router: service(),
   menuOptions: [
     {
       label: 'Copy',
@@ -310,8 +311,10 @@ export default Component.extend({
     },
 
     copyWorkspace: function () {
-      let workspace = this.workspace;
-      this.toCopyWorkspace(workspace);
+      let workspaceId = this.workspace.get('id');
+      this.router.transitionTo('workspaces.copy', {
+        queryParams: { workspace: workspaceId },
+      });
     },
   },
 });
