@@ -66,9 +66,9 @@
           <WsCopyWorkspace
             @showLoadingSubmissions={{this.showLoadingSubmissions}}
             @loadSubmissionErrors={{this.loadSubmissionErrors}}
-            @workspaceToCopy={{this.workspaceToCopy}}
             @selectedWorkspace={{this.selectedWorkspace}}
             @fromWorkspaceList={{this.fromWorkspaceList}}
+            @onSelectWorkspace={{action 'setSelectedWorkspace'}}
             @onProceed={{action 'setOriginalWorkspace'}}
           />
         {{/if}}
