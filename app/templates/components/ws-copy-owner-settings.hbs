@@ -133,6 +133,8 @@
         @privacyErrors={{this.folderSetPrivacySettingErrors}}
         @name={{this.folderSetName}}
         @privacySetting={{this.folderSetPrivacy}}
+        @onNameChange={{action 'updateFolderSetName'}}
+        @onPrivacyChange={{action 'updateFolderSetPrivacy'}}
       />
       {{#if this.duplicateFolderSetName}}
         <Ui::ErrorBox

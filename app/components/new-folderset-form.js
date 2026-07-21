@@ -1,19 +1,8 @@
-import { inject as service } from '@ember/service';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  elementId: 'new-folderset-form',
-  privacySetting: 'M',
-  utils: service('utility-methods'),
-
-  didReceiveAttrs() {
-    if (this.utils.isNullOrUndefined(this.privacySetting)) {
-      this.set('privacySetting', 'M');
-    }
-    this._super(...arguments);
-  },
-
-  privacyInputs: {
+export default class NewFoldersetFormComponent extends Component {
+  privacyInputs = {
     groupName: 'privacySetting',
     required: true,
     inputs: [
@@ -38,10 +27,20 @@ export default Component.extend({
           'All Encompass users will be able to see and reuse this folder set',
       },
     ],
-  },
-  actions: {
-    updatePrivacySetting: function (val) {
-      this.set('privacySetting', val);
-    },
-  },
-});
+  };
+
+  // the parent owns the value; default the displayed selection to Private ('M')
+  get privacySetting() {
+    return this.args.privacySetting ?? 'M';
+  }
+
+  @action
+  updateName(event) {
+    this.args.onNameChange(event.target.value);
+  }
+
+  @action
+  updatePrivacySetting(val) {
+    this.args.onPrivacyChange(val);
+  }
+}

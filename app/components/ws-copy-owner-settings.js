@@ -215,7 +215,8 @@ export default Component.extend(CurrentUserMixin, {
         doCreateFolderSet: doCreateFolderSet,
         existingFolderSetToUse: this.get('existingFolderSetToUse.id'),
         name: folderSetName,
-        privacySetting: folderSetPrivacySetting,
+        // default privacy to Private ('M'), matching the form's default selection
+        privacySetting: folderSetPrivacySetting || 'M',
       };
 
       this.onProceed(name, owner, mode, folderSetOptions);
@@ -247,6 +248,12 @@ export default Component.extend(CurrentUserMixin, {
 
     toggleCreateFolderset(val) {
       this.set('doCreateFolderSet', val);
+    },
+    updateFolderSetName(value) {
+      this.set('folderSetName', value);
+    },
+    updateFolderSetPrivacy(value) {
+      this.set('folderSetPrivacy', value);
     },
     back() {
       this.onBack(-1);
