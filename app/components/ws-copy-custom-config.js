@@ -1,469 +1,311 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { alias, equal } from '@ember/object/computed';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { service } from '@ember/service';
 import without from 'lodash-es/without';
 import chain from 'lodash-es/chain';
 import isNull from 'lodash-es/isNull';
 
-export default Component.extend({
-  elementId: 'ws-copy-custom-config',
-  submissionStudents: [],
-  utils: service('utility-methods'),
+export default class WsCopyCustomConfigComponent extends Component {
+  @service('utility-methods') utils;
 
-  SubmissionIds: alias('customConfig.SubmissionIds'),
-  submissionOptions: alias('customConfig.submissionOptions'),
-  selectionOptions: alias('customConfig.selectionOptions'),
-  commentOptions: alias('customConfig.commentOptions'),
-  responseOptions: alias('customConfig.responseOptions'),
-  folderOptions: alias('customConfig.folderOptions'),
-  showStudentSubmissionInput: equal('submissionOptions.byStudent', true),
-  selectedAllSubmissions: equal('submissionOptions.all', true),
-  selectedCustomSubmission: equal('submissionOptions.custom', true),
-  customSubmissionIds: [],
+  @tracked submissionStudents = [];
+  @tracked customSubmissionIds = [];
+  @tracked showCustomSubmissionViewer = true;
+  // referenced by the template; only ever set by the (now removed) dead
+  // setSubmissions path, so it stays false
+  @tracked noSubmissionsToCopy = false;
 
-  showCustomSubmissions: computed(
-    'submissionOptions.custom',
-    'showCustomSubmissionViewer',
-    function () {
-      return (
-        this.get('submissionOptions.custom') === true &&
-        this.showCustomSubmissionViewer
-      );
-    }
-  ),
-  showCustomSubmissionViewer: true,
-  closedCustomView: computed(
-    'showCustomSubmissionViewer',
-    'submissionOptions.custom',
-    function () {
-      return (
-        this.get('submissionOptions.custom') === true &&
-        !this.showCustomSubmissionViewer
-      );
-    }
-  ),
+  // the per-aspect option groups. Each is a @tracked object reassigned wholesale
+  // on change (updateCollectionOptions) so toggling a flag stays reactive.
+  @tracked submissionOptions = {
+    all: true,
+    byStudent: false,
+    custom: false,
+    submissionIds: [],
+  };
+  @tracked folderOptions = {
+    all: true,
+    includeStructureOnly: false,
+    none: false,
+    folderIds: [],
+  };
+  @tracked selectionOptions = { all: true, none: false, selectionIds: [] };
+  @tracked commentOptions = { all: true, none: false, commentIds: [] };
+  @tracked responseOptions = { all: true, none: false, responseIds: [] };
 
-  didReceiveAttrs() {
-    // console.log('did receive attra ws-copy-custom-config');
-    this._super(...arguments);
-  },
-  willDestroyElement() {
-    this._super(...arguments);
-    if (this.insufficientSubmissions) {
-      this.set('insufficientSubmissions', null);
-    }
-  },
+  get showStudentSubmissionInput() {
+    return this.submissionOptions.byStudent === true;
+  }
+  get selectedAllSubmissions() {
+    return this.submissionOptions.all === true;
+  }
+  get selectedCustomSubmission() {
+    return this.submissionOptions.custom === true;
+  }
+  get showCustomSubmissions() {
+    return (
+      this.submissionOptions.custom === true && this.showCustomSubmissionViewer
+    );
+  }
+  get closedCustomView() {
+    return (
+      this.submissionOptions.custom === true && !this.showCustomSubmissionViewer
+    );
+  }
 
-  formattedSubmissionOptions: computed(
-    'customSubmissionIds.[]',
-    'submissionOptions.{all,byStudent,custom}',
-    'submissionsFromStudents.[]',
-    function () {
-      let submissionOptions = {
-        all: true,
-      };
+  get workspaceSubmissions() {
+    return this.args.workspace.get('submissions');
+  }
 
-      if (this.get('submissionOptions.all')) {
-        return submissionOptions;
-      }
-      delete submissionOptions.all;
-
-      if (this.get('submissionOptions.byStudent')) {
-        submissionOptions.submissionIds =
-          this.submissionsFromStudents.mapBy('id');
-
-        return submissionOptions;
-      }
-
-      if (this.get('submissionOptions.custom')) {
-        const customIds = this.customSubmissionIds;
-        if (this.utils.isNonEmptyArray(customIds)) {
-          submissionOptions.submissionIds = customIds;
-        } else {
-          submissionOptions.submissionIds = [];
-        }
-        return submissionOptions;
-      }
-    }
-  ),
-
-  formattedFolderOptions: computed(
-    'folderOptions.{IncludeStructureOnly,all,includeStructureOnly,none}',
-    function () {
-      let folderOptions = {
-        all: true,
-      };
-
-      if (this.get('folderOptions.all')) {
-        folderOptions.includeStructureOnly = false;
-        return folderOptions;
-      }
-
-      if (this.get('folderOptions.includeStructureOnly')) {
-        folderOptions.includeStructureOnly = true;
-        return folderOptions;
-      }
-      delete folderOptions.all;
-      delete folderOptions.includeStructureOnly;
-      folderOptions.none = true;
-      return folderOptions;
-    }
-  ),
-
-  formattedSelectionOptions: computed(
-    'selectionOptions.all',
-    'selectionOptions.none',
-    'selectionOptions.custom',
-    'selectionsFromSubmissions.[]',
-    function () {
-      let selectionOptions = {
-        all: true,
-      };
-
-      if (this.get('selectionOptions.all')) {
-        return selectionOptions;
-      }
-
-      if (this.get('selectionOptions.none')) {
-        selectionOptions.none = true;
-        delete selectionOptions.all;
-
-        return selectionOptions;
-      }
-
-      delete selectionOptions.all;
-      selectionOptions.selectionIds =
-        this.selectionsFromSubmissions.mapBy('id');
-
-      return selectionOptions;
-    }
-  ),
-
-  formattedCommentOptions: computed(
-    'commentsFromSelections.[]',
-    'commentOptions.all',
-    'commentOptions.none',
-    'commentOptions.custom',
-    function () {
-      let commentOptions = {
-        all: true,
-      };
-
-      if (this.get('commentOptions.all')) {
-        return commentOptions;
-      }
-
-      if (this.get('commentOptions.none')) {
-        commentOptions.none = true;
-        delete commentOptions.all;
-
-        return commentOptions;
-      }
-
-      delete commentOptions.all;
-      commentOptions.commentIds = this.commentsFromSelections.mapBy('id');
-
-      return commentOptions;
-    }
-  ),
-
-  formattedResponseOptions: computed(
-    'responsesFromSubmissions.[]',
-    'responseOptions.all',
-    'responseOptions.none',
-    'responseOptions.custom',
-    function () {
-      let responseOptions = {
-        all: true,
-      };
-
-      if (this.get('responseOptions.all')) {
-        return responseOptions;
-      }
-
-      if (this.get('responseOptions.none')) {
-        responseOptions.none = true;
-        delete responseOptions.all;
-
-        return responseOptions;
-      }
-      delete responseOptions.all;
-      responseOptions.responseIds = this.responsesFromSubmissions.mapBy('id');
-
-      return responseOptions;
-    }
-  ),
-
-  formattedConfig: computed(
-    'formattedSubmissionOptions.@each{all,none,custom}',
-    'formattedSelectionOptions.@each{all,none,custom}',
-    'formattedCommentOptions.@each{all,none,custom}',
-    'formattedResponseOptions.@each{all,none,custom}',
-    'formattedFolderOptions.@each{all,none,includeStructureOnly}',
-    function () {
-      return {
-        submissionOptions: this.formattedSubmissionOptions,
-        folderOptions: this.formattedFolderOptions,
-        selectionOptions: this.formattedSelectionOptions,
-        commentOptions: this.formattedCommentOptions,
-        responseOptions: this.formattedResponseOptions,
-      };
-    }
-  ),
-
-  customConfig: {
-    submissionOptions: {
-      all: true,
-      byStudent: false,
-      custom: false,
-      submissionIds: [],
-    },
-    folderOptions: {
-      all: true,
-      includeStructureOnly: false,
-      none: false,
-      folderIds: [],
-    },
-    selectionOptions: {
-      all: true,
-      none: false,
-      // custom: false,
-      selectionIds: [],
-    },
-    commentOptions: {
-      all: true,
-      none: false,
-      commentIds: [],
-    },
-    responseOptions: {
-      all: true,
-      none: false,
-      responseIds: [],
-    },
-  },
-
-  studentSelectOptions: computed('submissionThreads', function () {
+  get studentSelectOptions() {
     const options = [];
-    const threads = this.submissionThreads;
-
+    const threads = this.args.submissionThreads;
     if (!threads) {
       return [];
     }
     threads.forEach((val, key) => {
-      //key is student name,
-      options.pushObject({
-        label: key,
-        value: key,
-      });
+      // key is the student name
+      options.push({ label: key, value: key });
     });
-
     return options;
-  }),
+  }
 
-  submissionsFromStudents: computed(
-    'customSubmissionIds.[]',
-    'doDeselectAll',
-    'doSelectAll',
-    'submissionOptions.{all,byStudent,custom}',
-    'submissionStudents.[]',
-    'submissionThreads',
-    'workspace.{id,submissions}',
-    function () {
-      if (this.get('submissionOptions.all')) {
-        return this.get('workspace.submissions');
-      }
-      if (this.get('submissionOptions.custom')) {
-        const customIds = this.customSubmissionIds;
-        if (!this.utils.isNonEmptyArray(customIds)) {
-          return [];
-        }
-        return this.get('workspace.submissions').filter((sub) => {
-          return customIds.includes(sub.get('id'));
-        });
-      }
-      const threads = this.submissionThreads;
-      const students = this.submissionStudents;
-      if (!threads || !this.utils.isNonEmptyArray(students)) {
+  get submissionsFromStudents() {
+    if (this.submissionOptions.all) {
+      return this.args.workspace.get('submissions');
+    }
+    if (this.submissionOptions.custom) {
+      const customIds = this.customSubmissionIds;
+      if (!this.utils.isNonEmptyArray(customIds)) {
         return [];
       }
-      return chain(students)
-        .map((student) => threads.get(student))
-        .flatten()
-        .value();
+      return this.args.workspace
+        .get('submissions')
+        .filter((sub) => customIds.includes(sub.get('id')));
     }
-  ),
-
-  submissionCount: computed(
-    'customSubmissionIds.[]',
-    'submissionsFromStudents.[]',
-    'workspace.submissions',
-    function () {
-      return this.get('workspace.submissions').map((sub) => {
-        return sub.id;
-      });
+    const threads = this.args.submissionThreads;
+    const students = this.submissionStudents;
+    if (!threads || !this.utils.isNonEmptyArray(students)) {
+      return [];
     }
-  ),
+    return chain(students)
+      .map((student) => threads.get(student))
+      .flatten()
+      .value();
+  }
 
-  foldersCount: computed(
-    'customSubmissionIds.[]',
-    'submissionsFromStudents.[]',
-    'workspace.folders',
-    function () {
-      return this.get('workspace.folders').map((folder) => {
-        return folder.id;
-      });
-    }
-  ),
+  get submissionIdsFromStudents() {
+    return this.submissionsFromStudents.mapBy('id');
+  }
 
-  selectionsFromSubmissions: computed(
-    'customSubmissionIds.[]',
-    'submissionIdsFromStudents',
-    'submissionsFromStudents.[]',
-    'workspace.selections',
-    function () {
-      return this.get('workspace.selections').filter((selection) => {
-        return this.submissionIdsFromStudents.includes(
-          selection.get('submission.content.id')
-        );
-      });
-    }
-  ),
+  get submissionCount() {
+    return this.args.workspace.get('submissions').map((sub) => sub.id);
+  }
 
-  commentsFromSelections: computed(
-    'selectionOptions.none',
-    'selectionsFromSubmissions.[]',
-    'workspace.comments',
-    function () {
-      if (this.get('selectionOptions.none') === true) {
-        return [];
-      }
+  get foldersCount() {
+    return this.args.workspace.get('folders').map((folder) => folder.id);
+  }
 
-      return this.get('workspace.comments').filter((comment) => {
-        return this.selectionsFromSubmissions.includes(
-          comment.get('selection.content')
-        );
-      });
-    }
-  ),
-
-  responsesFromSubmissions: computed(
-    'submissionsFromStudents.[]',
-    'workspace.responses',
-    function () {
-      return this.get('workspace.responses').filter((response) => {
-        return this.submissionsFromStudents.includes(
-          response.get('submission.content')
-        );
-      });
-    }
-  ),
-
-  submissionIdsFromStudents: computed(
-    'submissionsFromStudents.[]',
-    function () {
-      const subs = this.submissionsFromStudents;
-
-      return subs.mapBy('id');
-    }
-  ),
-
-  actions: {
-    updateMultiSelect(val, $item, propToUpdate) {
-      if (!val) {
-        return;
-      }
-      // removal
-      if (isNull($item)) {
-        this.get(propToUpdate).removeObject(val);
-        return;
-      }
-      this.get(propToUpdate).pushObject(val);
-    },
-
-    setSubmissions() {
-      if (this.showStudentSubmissionInput) {
-        const submissionIds = this.submissionIdsFromStudents;
-        if (this.utils.isNonEmptyArray(submissionIds)) {
-          this.set('submissionIds', [...submissionIds]);
-          this.set('showSelectionInputs', true);
-          return;
-        }
-        this.set('noSubmissionsToCopy', true);
-        return;
-      }
-      this.set('showSelectionInputs', true);
-    },
-
-    updateCollectionOptions(val, propName) {
-      let keys = ['all', 'none', 'custom'];
-
-      if (propName === 'submissionOptions') {
-        keys = ['all', 'byStudent', 'custom'];
-      }
-      if (propName === 'folderOptions') {
-        keys = ['all', 'includeStructureOnly', 'none'];
-      }
-
-      if (!keys.includes(val)) {
-        return;
-      }
-      const propToToggle = `${propName}.${val}`;
-      if (!this.get(propToToggle)) {
-        this.set(propToToggle, true);
-      }
-
-      const newList = without(keys, val);
-
-      newList.forEach((key) => {
-        let prop = `${propName}.${key}`;
-        if (this.get(prop)) {
-          this.set(prop, false);
-        }
-      });
-    },
-
-    toggleIncludeStructureOnly() {
-      this.toggleProperty('folderOptions.includeStructureOnly');
-    },
-    next() {
-      this.onProceed(this.formattedConfig);
-    },
-    back() {
-      this.onBack(-1);
-    },
-    updateCustomSubs(id) {
-      if (!this.utils.isNonEmptyArray(this.customSubmissionIds)) {
-        this.set('customSubmissionIds', []);
-      }
-
-      const customSubmissionIds = this.customSubmissionIds;
-
-      const isIn = customSubmissionIds.includes(id);
-      if (isIn) {
-        // remove
-        customSubmissionIds.removeObject(id);
-      } else {
-        //add
-        customSubmissionIds.addObject(id);
-      }
-    },
-    selectAllSubmissions: function () {
-      this.set(
-        'customSubmissionIds',
-        this.get('workspace.submissions').mapBy('id')
+  get selectionsFromSubmissions() {
+    return this.args.workspace.get('selections').filter((selection) => {
+      return this.submissionIdsFromStudents.includes(
+        selection.get('submission.content.id')
       );
-    },
-    deselectAllSubmissions: function () {
-      this.set('customSubmissionIds', []);
-    },
-    setDoneSelecting: function () {
-      this.set('showCustomSubmissionViewer', false);
-      this.set('closedCustomView', true);
-    },
-    showCustomSelect: function () {
-      this.set('showCustomSubmissionViewer', true);
-      this.set('closedCustomView', false);
-    },
-  },
-});
+    });
+  }
+
+  get commentsFromSelections() {
+    if (this.selectionOptions.none === true) {
+      return [];
+    }
+    return this.args.workspace.get('comments').filter((comment) => {
+      return this.selectionsFromSubmissions.includes(
+        comment.get('selection.content')
+      );
+    });
+  }
+
+  get responsesFromSubmissions() {
+    return this.args.workspace.get('responses').filter((response) => {
+      return this.submissionsFromStudents.includes(
+        response.get('submission.content')
+      );
+    });
+  }
+
+  get formattedSubmissionOptions() {
+    let submissionOptions = { all: true };
+
+    if (this.submissionOptions.all) {
+      return submissionOptions;
+    }
+    delete submissionOptions.all;
+
+    if (this.submissionOptions.byStudent) {
+      submissionOptions.submissionIds =
+        this.submissionsFromStudents.mapBy('id');
+      return submissionOptions;
+    }
+
+    if (this.submissionOptions.custom) {
+      const customIds = this.customSubmissionIds;
+      submissionOptions.submissionIds = this.utils.isNonEmptyArray(customIds)
+        ? customIds
+        : [];
+      return submissionOptions;
+    }
+    return submissionOptions;
+  }
+
+  get formattedFolderOptions() {
+    let folderOptions = { all: true };
+
+    if (this.folderOptions.all) {
+      folderOptions.includeStructureOnly = false;
+      return folderOptions;
+    }
+    if (this.folderOptions.includeStructureOnly) {
+      folderOptions.includeStructureOnly = true;
+      return folderOptions;
+    }
+    delete folderOptions.all;
+    delete folderOptions.includeStructureOnly;
+    folderOptions.none = true;
+    return folderOptions;
+  }
+
+  get formattedSelectionOptions() {
+    let selectionOptions = { all: true };
+
+    if (this.selectionOptions.all) {
+      return selectionOptions;
+    }
+    if (this.selectionOptions.none) {
+      selectionOptions.none = true;
+      delete selectionOptions.all;
+      return selectionOptions;
+    }
+    delete selectionOptions.all;
+    selectionOptions.selectionIds = this.selectionsFromSubmissions.mapBy('id');
+    return selectionOptions;
+  }
+
+  get formattedCommentOptions() {
+    let commentOptions = { all: true };
+
+    if (this.commentOptions.all) {
+      return commentOptions;
+    }
+    if (this.commentOptions.none) {
+      commentOptions.none = true;
+      delete commentOptions.all;
+      return commentOptions;
+    }
+    delete commentOptions.all;
+    commentOptions.commentIds = this.commentsFromSelections.mapBy('id');
+    return commentOptions;
+  }
+
+  get formattedResponseOptions() {
+    let responseOptions = { all: true };
+
+    if (this.responseOptions.all) {
+      return responseOptions;
+    }
+    if (this.responseOptions.none) {
+      responseOptions.none = true;
+      delete responseOptions.all;
+      return responseOptions;
+    }
+    delete responseOptions.all;
+    responseOptions.responseIds = this.responsesFromSubmissions.mapBy('id');
+    return responseOptions;
+  }
+
+  get formattedConfig() {
+    return {
+      submissionOptions: this.formattedSubmissionOptions,
+      folderOptions: this.formattedFolderOptions,
+      selectionOptions: this.formattedSelectionOptions,
+      commentOptions: this.formattedCommentOptions,
+      responseOptions: this.formattedResponseOptions,
+    };
+  }
+
+  @action
+  updateMultiSelect(val, item, propToUpdate) {
+    if (!val) {
+      return;
+    }
+    if (isNull(item)) {
+      // removal
+      this[propToUpdate] = without(this[propToUpdate], val);
+      return;
+    }
+    this[propToUpdate] = [...this[propToUpdate], val];
+  }
+
+  @action
+  updateCollectionOptions(val, propName) {
+    let keys = ['all', 'none', 'custom'];
+    if (propName === 'submissionOptions') {
+      keys = ['all', 'byStudent', 'custom'];
+    }
+    if (propName === 'folderOptions') {
+      keys = ['all', 'includeStructureOnly', 'none'];
+    }
+    if (!keys.includes(val)) {
+      return;
+    }
+
+    // reassign the whole group object so the @tracked property is reactive
+    const updated = { ...this[propName], [val]: true };
+    without(keys, val).forEach((key) => {
+      updated[key] = false;
+    });
+    this[propName] = updated;
+  }
+
+  @action
+  next() {
+    this.args.onProceed(this.formattedConfig);
+  }
+
+  @action
+  back() {
+    this.args.onBack(-1);
+  }
+
+  @action
+  updateCustomSubs(id) {
+    const isIn = this.customSubmissionIds.includes(id);
+    if (isIn) {
+      this.customSubmissionIds = without(this.customSubmissionIds, id);
+    } else {
+      this.customSubmissionIds = [...this.customSubmissionIds, id];
+    }
+  }
+
+  @action
+  selectAllSubmissions() {
+    this.customSubmissionIds = this.args.workspace
+      .get('submissions')
+      .mapBy('id');
+  }
+
+  @action
+  deselectAllSubmissions() {
+    this.customSubmissionIds = [];
+  }
+
+  @action
+  setDoneSelecting() {
+    this.showCustomSubmissionViewer = false;
+  }
+
+  @action
+  showCustomSelect() {
+    this.showCustomSubmissionViewer = true;
+  }
+}

@@ -1,0 +1,340 @@
+<div id='ws-copy-custom-config' ...attributes>
+  <p class='input-label custom-header'>Custom Copy Settings</p>
+
+  <div class='custom-config-content submissions'>
+    <p class='input-label-custom'>
+      Submissions
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Decide which submissions to copy to your new workspace'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
+      </span>
+    </p>
+    <p class='sub-input-label'>
+      {{#if this.selectedAllSubmissions}}
+        You have selected
+        {{this.submissionCount.length}}
+        submissions to copy
+      {{/if}}
+      {{#if this.showStudentSubmissionInput}}
+        Based off selected students, you have selected
+        {{this.submissionsFromStudents.length}}
+        submissions to copy
+      {{/if}}
+      {{#if this.selectedCustomSubmission}}
+        You have selected
+        {{this.customSubmissionIds.length}}
+        submissions to copy
+      {{/if}}
+    </p>
+    <ul class='radio-list'>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.submissionOptions.all}}
+            required='true'
+            name='submissionOptions'
+            value='all'
+            {{on 'click' (fn this.updateCollectionOptions 'all' 'submissionOptions')}}
+          />
+          <span>All</span>
+        </label>
+      </li>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.submissionOptions.byStudent}}
+            required='true'
+            name='submissionOptions'
+            value='byStudent'
+            {{on 'click' (fn this.updateCollectionOptions 'byStudent' 'submissionOptions')}}
+          />
+          <span>
+            By Student
+            <span
+              class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+              data-tooltip='Copy submissions from a selected student or students'
+            >
+              <i class='far fa-question-circle info-icon'></i>
+            </span>
+          </span>
+        </label>
+        {{#if this.showStudentSubmissionInput}}
+          <SelectizeInput
+            @inputId='submissions-by-student'
+            @initialOptions={{this.studentSelectOptions}}
+            @maxItems={{this.studentSelectOptions.length}}
+            @onItemAdd={{this.updateMultiSelect}}
+            @onItemRemove={{this.updateMultiSelect}}
+            @labelField='label'
+            @valueField='value'
+            @searchField='label'
+            @propToUpdate='submissionStudents'
+            @placeholder='Add students'
+          />
+        {{/if}}
+      </li>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.submissionOptions.custom}}
+            required='true'
+            name='submissionOptions'
+            value='custom'
+            {{on 'click' (fn this.updateCollectionOptions 'custom' 'submissionOptions')}}
+          />
+          <span>
+            Custom
+            <span
+              class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+              data-tooltip='View submission list and select desired submissions'
+            >
+              <i class='far fa-question-circle info-icon'></i>
+            </span>
+            {{#if this.closedCustomView}}
+              <span
+                class='show-viewer'
+                {{on 'click' this.showCustomSelect}}
+              >Show Viewer</span>
+            {{/if}}
+          </span>
+        </label>
+      </li>
+    </ul>
+
+    {{#if this.showCustomSubmissions}}
+      <CustomSubmissionViewerList
+        @submissions={{this.workspaceSubmissions}}
+        @selectedSubmissionIds={{this.customSubmissionIds}}
+        @onSelect={{this.updateCustomSubs}}
+        @onSelectAll={{this.selectAllSubmissions}}
+        @onUnselectAll={{this.deselectAllSubmissions}}
+        @onDone={{this.setDoneSelecting}}
+      />
+    {{/if}}
+    {{#if this.noSubmissionsToCopy}}
+      <p class='error-message'>Your current configuration would result in 0
+        submissions. Please modify your criteria.</p>
+    {{/if}}
+  </div>
+
+  <div class='custom-config-content selections'>
+    <p class='input-label-custom'>
+      Selections
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Decide which selections to copy to your new workspace. Selections are tied to the submissions you selected'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
+      </span>
+    </p>
+    <p class='sub-input-label'>Based on your selected submissions, there are
+      {{this.selectionsFromSubmissions.length}}
+      selections to choose from</p>
+    <ul class='radio-list'>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.selectionOptions.all}}
+            required='true'
+            name='selectionOptions'
+            value='all'
+            {{on 'click' (fn this.updateCollectionOptions 'all' 'selectionOptions')}}
+          />
+          <span>All</span>
+        </label>
+      </li>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.selectionOptions.none}}
+            required='true'
+            name='selectionOptions'
+            value='none'
+            {{on 'click' (fn this.updateCollectionOptions 'none' 'selectionOptions')}}
+          />
+          <span>None</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+
+  <div class='custom-config-content selections'>
+    <p class='input-label-custom'>
+      Folders
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Decide which folders to copy to your workspace, taggings are determined by submissions and selections'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
+      </span>
+    </p>
+    <p class='sub-input-label'>There are
+      {{this.foldersCount.length}}
+      folders available to copy</p>
+    <ul class='radio-list'>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.folderOptions.all}}
+            required='true'
+            name='folderOptions'
+            value='all'
+            {{on 'click' (fn this.updateCollectionOptions 'all' 'folderOptions')}}
+          />
+          <span>
+            All with Content
+            <span
+              class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+              data-tooltip='Copy all the folders along with all applicable taggings'
+            >
+              <i class='far fa-question-circle info-icon'></i>
+            </span>
+          </span>
+        </label>
+      </li>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.folderOptions.includeStructureOnly}}
+            required='true'
+            name='folderOptions'
+            value='includeStructureOnly'
+            {{on 'click' (fn this.updateCollectionOptions 'includeStructureOnly' 'folderOptions')}}
+          />
+          <span>
+            Just Structure
+            <span
+              class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+              data-tooltip='Copy only the folders structure without the taggings'
+            >
+              <i class='far fa-question-circle info-icon'></i>
+            </span>
+          </span>
+        </label>
+      </li>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.folderOptions.none}}
+            required='true'
+            name='folderOptions'
+            value='none'
+            {{on 'click' (fn this.updateCollectionOptions 'none' 'folderOptions')}}
+          />
+          <span>None</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+
+  <div class='custom-config-content selections'>
+    <p class='input-label-custom'>
+      Comments
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Decide which comments to copy. Comments are tied to the selections and submissions'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
+      </span>
+    </p>
+    <p class='sub-input-label'>Based on your selected submissions, there are
+      {{this.commentsFromSelections.length}}
+      comments to choose from</p>
+    <ul class='radio-list'>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.commentOptions.all}}
+            required='true'
+            name='commentOptions'
+            value='all'
+            {{on 'click' (fn this.updateCollectionOptions 'all' 'commentOptions')}}
+          />
+          <span>All</span>
+        </label>
+      </li>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.commentOptions.none}}
+            required='true'
+            name='commentOptions'
+            value='none'
+            {{on 'click' (fn this.updateCollectionOptions 'none' 'commentOptions')}}
+          />
+          <span>None</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+
+  <div class='custom-config-content selections'>
+    <p class='input-label-custom'>
+      Responses
+      <span
+        class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+        data-tooltip='Decide which responses to copy. Resposnes are tied to selected submissions'
+      >
+        <i class='fas fa-info-circle info-icon'></i>
+      </span>
+    </p>
+    <p class='sub-input-label'>Based on your selected submissions, there are
+      {{this.responsesFromSubmissions.length}}
+      responses to choose from</p>
+    <ul class='radio-list'>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.responseOptions.all}}
+            required='true'
+            name='responseOptions'
+            value='all'
+            {{on 'click' (fn this.updateCollectionOptions 'all' 'responseOptions')}}
+          />
+          <span>All</span>
+        </label>
+      </li>
+      <li class='radio-group-item'>
+        <label>
+          <input
+            type='radio'
+            checked={{this.responseOptions.none}}
+            required='true'
+            name='responseOptions'
+            value='none'
+            {{on 'click' (fn this.updateCollectionOptions 'none' 'responseOptions')}}
+          />
+          <span>None</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+
+  {{#unless this.showCustomSubmissions}}
+    <div class='nav-btn-container'>
+      <button
+        class='primary-button cancel-button'
+        type='button'
+        {{on 'click' this.back}}
+      >Back</button>
+      <button
+        class='primary-button'
+        type='button'
+        {{on 'click' this.next}}
+      >Next</button>
+    </div>
+  {{/unless}}
+</div>
