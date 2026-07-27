@@ -1,0 +1,155 @@
+<div class='workspace-list-item' ...attributes>
+  {{#if @isList}}
+    <div class='item-container' id='container'>
+      <div class='item-section mode'>
+        {{{public-private @workspace.mode}}}
+      </div>
+      <div class='item-section info-item'>
+        <LinkTo @route='workspace.info' @model={{@workspace.id}}>
+          <i class='fa fa-info-circle workspace_info' aria-hidden='true'></i>
+        </LinkTo>
+      </div>
+      <div class='item-section name'>
+        <LinkTo
+          @route='workspace.work'
+          @model={{@workspace.id}}
+          class='workspace-name'
+        >
+          <span
+            class={{if @workspace.isTrashed 'strikethrough'}}
+          >{{{@workspace.name}}}</span>
+        </LinkTo>
+      </div>
+      <div class='item-section last-viewed'>
+        <LinkTo
+          @route='workspace.work'
+          @model={{@workspace.id}}
+          class='workspace-last-viewed'
+        >
+          {{format-date @workspace.lastModifiedDateComp 'L'}}
+        </LinkTo>
+      </div>
+      <div class='item-section submissions'>
+        {{@workspace.submissionsLength}}
+      </div>
+      <div class='item-section selections'>
+        {{@workspace.selectionsLength}}
+      </div>
+      <div class='item-section comments'>
+        {{@workspace.commentsLength}}
+      </div>
+      <div class='item-section responses'>
+        {{@workspace.responsesLength}}
+      </div>
+      <div class='item-section owner'>
+        {{@workspace.owner.username}}
+      </div>
+      <div class='item-section editors'>
+        {{@workspace.collaborators.length}}
+      </div>
+      <div class='item-section more' {{on 'click' this.toggleShowMoreMenu}}>
+        <i class='fas fa-ellipsis-v more-menu'></i>
+        {{#if this.showMoreMenu}}
+          <span class='click-menu'>
+            <ul>
+              {{#if this.ellipsisMenuOptions}}
+                {{#each this.ellipsisMenuOptions as |option|}}
+                  <li {{on 'click' (fn this.runMenuOption option)}}>
+                    <label>
+                      <span class='icon-text'>{{option.label}}</span>
+                      <i class={{option.icon}}></i>
+                    </label>
+                  </li>
+                {{/each}}
+              {{else}}
+                <li>No options</li>
+              {{/if}}
+            </ul>
+          </span>
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if @isGrid}}
+    <div class='item-card-container'>
+      <div class='item-card row-1'>
+        <div class='item-card privacy'>
+          <span class='privacy-icon'>{{{public-private @workspace.mode}}}</span>
+          <span class='date'>{{format-date
+              @workspace.lastModifiedDateComp
+              'L'
+            }}</span>
+        </div>
+        <div class='item-card more' {{on 'click' this.toggleShowMoreMenu}}>
+          <i class='fas fa-ellipsis-v more-menu'></i>
+          {{#if this.showMoreMenu}}
+            <span class='click-menu'>
+              <ul>
+                {{#if this.ellipsisMenuOptions}}
+                  {{#each this.ellipsisMenuOptions as |option|}}
+                    <li {{on 'click' (fn this.runMenuOption option)}}>
+                      <label>
+                        <span class='icon-text'>{{option.label}}</span>
+                        <i class={{option.icon}}></i>
+                      </label>
+                    </li>
+                  {{/each}}
+                {{else}}
+                  <li>No options</li>
+                {{/if}}
+              </ul>
+            </span>
+          {{/if}}
+        </div>
+      </div>
+      <div class='item-card row-2'>
+        <div class='item-card name'>
+          <LinkTo
+            @route='workspace.work'
+            @model={{@workspace.id}}
+            class='workspace-name'
+          >
+            <span
+              class={{if @workspace.isTrashed 'strikethrough'}}
+            >{{{@workspace.name}}}</span>
+          </LinkTo>
+          <LinkTo @route='workspace.info' @model={{@workspace.id}}>
+            <i class='fa fa-info-circle workspace_info' aria-hidden='true'></i>
+          </LinkTo>
+        </div>
+      </div>
+      <div class='item-card row-3'>
+        <div class='item-card description'>
+          {{{@workspace.owner.username}}}
+        </div>
+      </div>
+      <div class='item-card row-4'>
+        <div class='item-card status'>
+          <ul class='workspace-stats'>
+            <li>
+              <p class='stat-header'>Submissions</p>
+              <p class='stat-number'>{{@workspace.submissionsLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Selections</p>
+              <p class='stat-number'>{{@workspace.selectionsLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Comments</p>
+              <p class='stat-number'>{{@workspace.commentsLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Responses</p>
+              <p class='stat-number'>{{@workspace.responsesLength}}</p>
+            </li>
+            <li>
+              <p class='stat-header'>Collaborators</p>
+              <p class='stat-number'>{{@workspace.editorsLength}}</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>
