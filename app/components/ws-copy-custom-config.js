@@ -3,7 +3,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import without from 'lodash-es/without';
-import chain from 'lodash-es/chain';
 import isNull from 'lodash-es/isNull';
 
 export default class WsCopyCustomConfigComponent extends Component {
@@ -61,7 +60,7 @@ export default class WsCopyCustomConfigComponent extends Component {
   get studentSelectOptions() {
     const options = [];
     const threads = this.args.submissionThreads;
-    if (!threads) {
+    if (!threads || typeof threads.forEach !== 'function') {
       return [];
     }
     threads.forEach((val, key) => {
@@ -86,13 +85,21 @@ export default class WsCopyCustomConfigComponent extends Component {
     }
     const threads = this.args.submissionThreads;
     const students = this.submissionStudents;
-    if (!threads || !this.utils.isNonEmptyArray(students)) {
+    if (
+      !threads ||
+      typeof threads.get !== 'function' ||
+      !this.utils.isNonEmptyArray(students)
+    ) {
       return [];
     }
-    return chain(students)
-      .map((student) => threads.get(student))
-      .flatten()
-      .value();
+    const result = [];
+    students.forEach((student) => {
+      const subs = threads.get(student);
+      if (subs) {
+        result.push(...subs);
+      }
+    });
+    return result;
   }
 
   get submissionIdsFromStudents() {
