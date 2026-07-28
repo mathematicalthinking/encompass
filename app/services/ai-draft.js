@@ -70,8 +70,8 @@ export default class AiDraftService extends Service {
    * A/B TEST MODIFICATION - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
    * A/B TEST MODIFICATION - NEEDS TWEAKING ONCE PREFERRED VARIANT IS FINALIZED
    *
-   * The browser sends only the submission ID. The Encompass backend chooses
-   * generate-draft or generate-draft-ocr and keeps the OCR API key server-side.
+   * The browser sends only the submission ID. The Encompass backend calls the
+   * generate-draft endpoint and keeps the API key server-side.
    *
    * @param {String} submissionId - The ID of the submission to generate feedback for
    * @param {String} variant - Variant key ('A', 'B', 'E', or 'F'); legacy aliases C/D are accepted server-side
