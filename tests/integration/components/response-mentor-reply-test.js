@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, findAll } from '@ember/test-helpers';
+import { render, findAll, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 import { setOwner } from '@ember/application';
@@ -128,24 +128,10 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     assert.dom('.info').includesText('No Mentor Feedback');
   });
 
-  test('enables Draft From AI for an uploaded worksheet', async function (assert) {
-    const store = this.owner.lookup('service:store');
-    this.submission = store.createRecord('submission', {
-      id: 'image-submission',
-      creator: { username: 'Test Student', safeName: 'Test Student' },
-      uploadedFile: { savedFileName: 'worksheet.png' },
-    });
-
-    await renderMentorReply(this, {
-      displayResponse: null,
-      submissionResponses: [],
-      canSend: true,
-    });
-
-    assert
-      .dom('.ai-draft')
-      .isNotDisabled('Button is enabled for image-only student work');
-  });
+  // NOTE: The "Draft From AI" button for a new mentor reply lived in the
+  // <ResponseNew> block, which is currently commented out in
+  // response-mentor-reply.hbs (new replies use <AiVariantComparison>). The
+  // enable-for-uploaded-worksheet behavior is covered by response-new-test.js.
 
   test('variant response composition falls back to imageSrc', function (assert) {
     const ComponentClass = this.owner.factoryFor(
@@ -326,7 +312,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     assert.dom('.response-mentor-container').exists();
   });
 
-  test('renders final edit history in ascending order by savedAt', async function (assert) {
+  test('renders final edit history in descending order by savedAt', async function (assert) {
     const store = this.owner.lookup('service:store');
     const submission = store.createRecord('submission', {
       id: 'sub-final-history',
@@ -357,22 +343,27 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     assert
       .dom('.final-edit-history-section')
       .exists('Final edit history section renders');
+
+    // History is collapsed by default (only the most recent entry shows);
+    // expand it to reveal all entries.
+    await click('.history-toggle-button');
+
     assert
       .dom('.final-edit-history-item')
       .exists({ count: 2 }, 'Two final edit history entries render');
 
-    const renderedTexts = findAll('.final-edit-history-text').map((el) =>
-      el.textContent.replace(/\s+/g, ' ').trim()
-    );
+    const renderedTexts = findAll(
+      '.final-edit-history-item .response-text'
+    ).map((el) => el.textContent.replace(/\s+/g, ' ').trim());
     assert.strictEqual(
       renderedTexts[0],
-      'Oldest final edit',
-      'Oldest entry appears first'
+      'Newest final edit',
+      'Newest entry appears first'
     );
     assert.strictEqual(
       renderedTexts[1],
-      'Newest final edit',
-      'Newest entry appears second'
+      'Oldest final edit',
+      'Oldest entry appears second'
     );
   });
 
@@ -409,17 +400,20 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       canSend: false,
     });
 
+    // Expand to reveal every current-user entry (collapsed shows only the most recent).
+    await click('.history-toggle-button');
+
     assert
       .dom('.final-edit-history-item')
       .exists({ count: 2 }, 'Only current user entries are shown');
 
-    const renderedTexts = findAll('.final-edit-history-text').map((el) =>
-      el.textContent.replace(/\s+/g, ' ').trim()
-    );
+    const renderedTexts = findAll(
+      '.final-edit-history-item .response-text'
+    ).map((el) => el.textContent.replace(/\s+/g, ' ').trim());
     assert.deepEqual(
       renderedTexts,
-      ['My older edit', 'My newer edit'],
-      'Only current user history is rendered in ascending order'
+      ['My newer edit', 'My older edit'],
+      'Only current user history is rendered in descending order'
     );
   });
 
@@ -478,7 +472,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       .dom('.final-edit-history-item')
       .exists({ count: 1 }, 'One legacy fallback entry renders');
     assert
-      .dom('.final-edit-history-text')
+      .dom('.final-edit-history-item .response-text')
       .includesText(
         'Legacy final edit snapshot',
         'Legacy final edit text is displayed'
@@ -534,7 +528,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     });
 
     assert
-      .dom('.final-edit-history-saved-by')
+      .dom('.saved-by-inline')
       .includesText('testuser', 'Saved By shows resolved username');
   });
 
@@ -562,16 +556,16 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     });
 
     assert
-      .dom('.final-edit-history-text strong')
+      .dom('.final-edit-history-item .response-text strong')
       .exists('Safe formatting tags are preserved');
     assert
-      .dom('.final-edit-history-text')
+      .dom('.final-edit-history-item .response-text')
       .includesText('Safe format', 'Visible text is preserved');
     assert
-      .dom('.final-edit-history-text script')
+      .dom('.final-edit-history-item .response-text script')
       .doesNotExist('Script tags are stripped');
 
-    const historyHtml = findAll('.final-edit-history-text')
+    const historyHtml = findAll('.final-edit-history-item .response-text')
       .map((el) => el.innerHTML)
       .join(' ');
     assert.notOk(
@@ -604,13 +598,13 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
     });
 
     assert
-      .dom('.final-edit-history-text')
+      .dom('.final-edit-history-item .response-text')
       .includesText('Line one', 'First line is rendered');
     assert
-      .dom('.final-edit-history-text')
+      .dom('.final-edit-history-item .response-text')
       .includesText('Line two', 'Second line is rendered');
 
-    const historyHtml = findAll('.final-edit-history-text')
+    const historyHtml = findAll('.final-edit-history-item .response-text')
       .map((el) => el.innerHTML)
       .join(' ');
     assert.ok(
@@ -1550,7 +1544,7 @@ module('Integration | Component | response-mentor-reply', function (hooks) {
       .doesNotExist('New Response button should be hidden for older revisions');
     assert
       .dom('.info')
-      .exists('No replies message remains visible for older revisions');
+      .doesNotExist('No-replies message is hidden for older revisions');
   });
 
   test('shows New Response button when isOlderRevision is false', async function (assert) {
