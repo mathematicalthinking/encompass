@@ -2,7 +2,6 @@
 const { expect } = require('chai');
 
 const {
-  buildOcrEndpointConfig,
   buildOcrRequestBody,
   buildSelectedBox,
   buildStatusPath,
@@ -12,36 +11,6 @@ const {
 } = require('../../../app_server/services/ai')._test;
 
 describe('AI OCR request helpers', function () {
-  it('combines the OCR base URL with its configured Lambda path', function () {
-    expect(
-      buildOcrEndpointConfig({
-        endpointUrl: 'https://example.execute-api.us-east-2.amazonaws.com',
-        endpointPath: '/prod/api/generate-draft-ocr',
-        apiKey: 'ocr-key',
-      })
-    ).to.deep.equal({
-      hostname: 'example.execute-api.us-east-2.amazonaws.com',
-      port: '',
-      path: '/prod/api/generate-draft-ocr',
-      apiKey: 'ocr-key',
-      protocol: 'https:',
-    });
-  });
-
-  it('uses a complete OCR URL when a separate path is not configured', function () {
-    expect(
-      buildOcrEndpointConfig({
-        endpointUrl:
-          'https://example.execute-api.us-east-2.amazonaws.com/prod/api/generate-draft-ocr',
-        fallbackApiKey: 'shared-key',
-      })
-    ).to.include({
-      path: '/prod/api/generate-draft-ocr',
-      apiKey: 'shared-key',
-      protocol: 'https:',
-    });
-  });
-
   it('polls ticket status in the same API stage as the OCR endpoint', function () {
     expect(
       buildStatusPath('/prod/api/generate-draft-ocr', 'ticket 123')

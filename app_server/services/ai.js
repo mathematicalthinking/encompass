@@ -479,6 +479,7 @@ const generateDraft = async (
   const requestBody = {
     variant,
     use_rag: useRag,
+    async_ticket: true,
     problem: {
       statement: cleanProblemStatement,
     },
@@ -518,6 +519,8 @@ const generateDraft = async (
 
   let aiResult;
   if (ocrContext.images.length > 0) {
+    // Image submissions still send the OCR-shaped payload (images + selected_box
+    // coordinates), but to the default generate-draft endpoint — no OCR URL.
     const ocrRequestBody = buildOcrRequestBody({
       images: ocrContext.images,
       variant,
@@ -527,7 +530,7 @@ const generateDraft = async (
       studentName,
       requestRows: ocrContext.requestRows,
     });
-    aiResult = await makeAIRequest(ocrRequestBody, getOcrEndpointConfig());
+    aiResult = await makeAIRequest(ocrRequestBody);
   } else {
     requestBody.mentor_teacher_context.selections_and_observations =
       rows.map(toTextRequestRow);
@@ -752,69 +755,6 @@ const getTextEndpointConfig = () => ({
   apiKey: process.env.AI_DRAFT_API_KEY,
   protocol: process.env.AI_DRAFT_HOST === 'localhost' ? 'http:' : 'https:',
 });
-
-const buildOcrEndpointConfig = ({
-  endpointUrl,
-  endpointPath,
-  apiKey,
-  fallbackApiKey,
-  hostname,
-  port,
-}) => {
-  if (endpointUrl) {
-    let url;
-    try {
-      url = new URL(endpointUrl);
-    } catch (error) {
-      throw new Error('AI_DRAFT_OCR_URL must be a valid absolute URL.');
-    }
-
-    if (!['http:', 'https:'].includes(url.protocol)) {
-      throw new Error('AI_DRAFT_OCR_URL must use HTTP or HTTPS.');
-    }
-
-    const path = endpointPath || `${url.pathname}${url.search}`;
-    if (!path || path === '/') {
-      throw new Error(
-        'OCR endpoint path is not configured. Set AI_DRAFT_OCR_PATH or include the path in AI_DRAFT_OCR_URL.'
-      );
-    }
-
-    return {
-      hostname: url.hostname,
-      port: url.port,
-      path: normalizeApiPath(path),
-      apiKey: apiKey || fallbackApiKey,
-      protocol: url.protocol,
-    };
-  }
-
-  const config = {
-    hostname,
-    port,
-    path: normalizeApiPath(endpointPath),
-    apiKey: apiKey || fallbackApiKey,
-    protocol: hostname === 'localhost' ? 'http:' : 'https:',
-  };
-
-  if (!config.hostname || !config.path) {
-    throw new Error(
-      'OCR endpoint is not configured. Set AI_DRAFT_OCR_URL or AI_DRAFT_OCR_HOST and AI_DRAFT_OCR_PATH.'
-    );
-  }
-
-  return config;
-};
-
-const getOcrEndpointConfig = () =>
-  buildOcrEndpointConfig({
-    endpointUrl: process.env.AI_DRAFT_OCR_URL,
-    endpointPath: process.env.AI_DRAFT_OCR_PATH,
-    apiKey: process.env.AI_DRAFT_OCR_API_KEY,
-    fallbackApiKey: process.env.AI_DRAFT_API_KEY,
-    hostname: process.env.AI_DRAFT_OCR_HOST,
-    port: process.env.AI_DRAFT_OCR_PORT,
-  });
 
 const buildOcrContext = async (
   targetSubmission,
@@ -1060,7 +1000,6 @@ const makeAIRequest = async (
 
 module.exports.generateDraft = generateDraft;
 module.exports._test = {
-  buildOcrEndpointConfig,
   buildOcrRequestBody,
   buildSelectedBox,
   buildStatusPath,
