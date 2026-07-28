@@ -170,7 +170,7 @@ module('Integration | Component | response-new', function (hooks) {
         />`);
 
     // Button should show the current direct-send label.
-    assert.dom('.save-response').hasText('Submit');
+    assert.dom('.save-response').hasText('Send');
   });
 
   test('displays selections when available', async function (assert) {
