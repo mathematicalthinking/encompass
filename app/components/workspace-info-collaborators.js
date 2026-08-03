@@ -148,8 +148,8 @@ export default class WorkspaceInfoCollaborators extends Component {
   }
 
   get workspacePermissions() {
-    let permissions = this.args.workspace.get('permissions');
-    let collabs = this.args.originalCollaborators;
+    const permissions = this.args.workspace.permissions;
+    const collabs = this.args.originalCollaborators;
 
     if (!this.utils.isNonEmptyArray(permissions)) {
       return [];
@@ -266,6 +266,22 @@ export default class WorkspaceInfoCollaborators extends Component {
     this.globalPermissionValue = val;
   }
 
+  @action setSubmissions(val) {
+    this.submissions = val;
+  }
+  @action setSelections(val) {
+    this.selections = val;
+  }
+  @action setComments(val) {
+    this.comments = val;
+  }
+  @action setFolders(val) {
+    this.folders = val;
+  }
+  @action setFeedback(val) {
+    this.feedback = val;
+  }
+
   @action editCollab(collaborator) {
     this.isEditing = true;
     if (!this.utils.isNonEmptyObject(collaborator)) {
@@ -295,7 +311,7 @@ export default class WorkspaceInfoCollaborators extends Component {
     if (!this.utils.isNonEmptyObject(permissionsObject)) {
       return;
     }
-    const permissions = this.args.workspace.get('permissions');
+    const permissions = this.args.workspace.permissions;
     let existingObj = Array.isArray(permissions)
       ? permissions.find((p) => p.user === permissionsObject.user)
       : null;
@@ -381,13 +397,13 @@ export default class WorkspaceInfoCollaborators extends Component {
       updatedPermissions = [newObj];
     }
 
-    ws.set('permissions', updatedPermissions);
+    ws.permissions = updatedPermissions;
 
     ws.save().then(() => {
       this.globalPermissionValue = null;
       this.alert.showToast(
         'success',
-        `Permissions set for ${permissionsObject.userObj.get('username')}`,
+        `Permissions set for ${permissionsObject.userObj.username}`,
         'bottom-end',
         3000,
         null,
@@ -405,15 +421,15 @@ export default class WorkspaceInfoCollaborators extends Component {
     if (!utils.isNonEmptyObject(user)) {
       return;
     }
-    const permissions = this.args.workspace.get('permissions');
+    const permissions = this.args.workspace.permissions;
 
     if (utils.isNonEmptyArray(permissions)) {
-      const objToRemove = permissions.find((p) => p.user === user.get('id'));
+      const objToRemove = permissions.find((p) => p.user === user.id);
       if (objToRemove) {
-        let userDisplay = user.get('username');
+        let userDisplay = user.username;
         let pronoun = 'their';
 
-        let isSelf = user.get('id') === this.currentUser.user.id;
+        let isSelf = user.id === this.currentUser.user.id;
 
         if (isSelf) {
           userDisplay = 'yourself';
@@ -433,12 +449,12 @@ export default class WorkspaceInfoCollaborators extends Component {
               const updatedPermissions = Array.isArray(permissions)
                 ? permissions.filter((p) => p !== objToRemove)
                 : [];
-              workspace.set('permissions', updatedPermissions);
+              workspace.permissions = updatedPermissions;
 
               workspace.save().then(() => {
                 this.alert.showToast(
                   'success',
-                  `${user.get('username')} removed`,
+                  `${user.username} removed`,
                   'bottom-end',
                   3000,
                   null,
