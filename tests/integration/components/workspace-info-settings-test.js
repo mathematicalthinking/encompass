@@ -288,6 +288,7 @@ module('Integration | Component | workspace-info-settings', function (hooks) {
         return {
           save() {
             return Promise.resolve({
+              wereNoAnswersToUpdate: true,
               get(key) {
                 if (key === 'wereNoAnswersToUpdate') return true;
                 return null;

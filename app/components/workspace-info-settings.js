@@ -46,15 +46,17 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
 
   get initialOwnerItem() {
-    const owner = this.args.workspace.get('owner');
-    if (this.utils.isNonEmptyObject(owner)) {
-      return [owner.get('id')];
+    const ownerId = this.args.workspace.belongsTo('owner').id();
+    if (ownerId) {
+      return [ownerId];
     }
     return [];
   }
 
   get initialLinkedAssignmentItem() {
-    let linkedAssignmentId = this.args.linkedAssignment.get('id');
+    const linkedAssignmentId = this.args.workspace
+      .belongsTo('linkedAssignment')
+      .id();
 
     if (linkedAssignmentId) {
       return [linkedAssignmentId];
@@ -85,6 +87,19 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
     return boolean ? 'Yes' : 'No';
   }
 
+  @action setSelectedMode(val) {
+    this.selectedMode = val;
+  }
+  @action setSelectedAutoUpdateSetting(val) {
+    this.selectedAutoUpdateSetting = val;
+  }
+  @action clearMissingLinkedAssignment() {
+    this.missingLinkedAssignment = null;
+  }
+  @action clearMissingChildWorkspaces() {
+    this.missingChildWorkspaces = null;
+  }
+
   @action editWorkspaceInfo() {
     this.isEditing = true;
     let workspace = this.args.workspace;
@@ -107,13 +122,13 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
 
     const user = this.store.peekRecord('user', val);
     if (this.utils.isNonEmptyObject(user)) {
-      workspace.set('owner', user);
-      let ownerOrg = user.get('organization');
-      let ownerOrgName = ownerOrg.get('name');
-      let ownerOrgId = ownerOrg.get('id');
-      let workspaceOrg = workspace.get('organization');
-      let workspaceOrgName = workspaceOrg.get('name');
-      let workspaceOrgId = workspaceOrg.get('id');
+      workspace.owner = user;
+      const ownerOrg = user.belongsTo('organization').value();
+      const ownerOrgName = ownerOrg?.name;
+      const ownerOrgId = ownerOrg?.id;
+      const workspaceOrg = workspace.belongsTo('organization').value();
+      const workspaceOrgName = workspaceOrg?.name;
+      const workspaceOrgId = workspaceOrg?.id;
 
       if (workspaceOrgId) {
         if (workspaceOrgId !== ownerOrgId) {
@@ -127,19 +142,19 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
             )
             .then((results) => {
               if (results.value) {
-                workspace.set('organization', ownerOrg);
+                workspace.organization = ownerOrg;
                 this.saveOwner = user;
               } else {
-                workspace.set('organization', workspaceOrg);
+                workspace.organization = workspaceOrg;
                 this.saveOwner = user;
               }
             });
         } else {
-          workspace.set('organization', ownerOrg);
+          workspace.organization = ownerOrg;
           this.saveOwner = user;
         }
       } else {
-        workspace.set('organization', ownerOrg);
+        workspace.organization = ownerOrg;
         this.saveOwner = user;
       }
     }
@@ -163,7 +178,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
     let assignment = this.store.peekRecord('assignment', val);
 
     if (assignment) {
-      if (assignment.get('id') !== linkedAssignmentId) {
+      if (assignment.id !== linkedAssignmentId) {
         this.selectedLinkedAssignment = assignment;
         this.didLinkedAssignmentChange = true;
       }
@@ -171,13 +186,13 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
 
   @action checkWorkspace() {
-    let workspace = this.args.workspace;
-    let workspaceOrg = workspace.get('organization.content');
-    let workspaceOwner = workspace.get('owner');
-    let ownerOrg = workspaceOwner.get('organization');
-    let ownerOrgName = ownerOrg.get('name');
-    let mode = this.selectedMode;
-    workspace.set('mode', mode);
+    const workspace = this.args.workspace;
+    const workspaceOrg = workspace.belongsTo('organization').value();
+    const workspaceOwner = workspace.belongsTo('owner').value();
+    const ownerOrg = workspaceOwner?.belongsTo('organization').value();
+    const ownerOrgName = ownerOrg?.name;
+    const mode = this.selectedMode;
+    workspace.mode = mode;
     if (mode === 'org' && workspaceOrg === null) {
       this.alert
         .showModal(
@@ -189,7 +204,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         )
         .then((results) => {
           if (results.value) {
-            workspace.set('organization', ownerOrg);
+            workspace.organization = ownerOrg;
             this.saveWorkspace();
           }
         });
@@ -217,17 +232,17 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         ? 'doAutoUpdateFromChildren'
         : 'doAllowSubmissionUpdates';
 
-      if (updateSettingBool !== workspace.get(updateProp)) {
-        workspace.set(updateProp, updateSettingBool);
+      if (updateSettingBool !== workspace[updateProp]) {
+        workspace[updateProp] = updateSettingBool;
       }
     }
 
     if (this.didLinkedAssignmentChange) {
-      workspace.set('linkedAssignment', this.selectedLinkedAssignment);
+      workspace.linkedAssignment = this.selectedLinkedAssignment;
     }
 
     if (
-      workspace.get('hasDirtyAttributes') ||
+      workspace.hasDirtyAttributes ||
       this.saveOwner ||
       this.didLinkedAssignmentChange
     ) {
@@ -328,7 +343,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         this.isUpdateRequestInProgress = false;
 
         if (isParentUpdate) {
-          if (results.get('wasNoDataToUpdate') === true) {
+          if (results.wasNoDataToUpdate === true) {
             console.log('[UPDATE WORKSPACE] Parent workspace up to date');
             this.alert.showToast(
               'info',
@@ -359,7 +374,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
           }
         }
 
-        if (results.get('wereNoAnswersToUpdate') === true) {
+        if (results.wereNoAnswersToUpdate === true) {
           this.alert.showToast(
             'info',
             'Workspace Up to Date',
@@ -370,7 +385,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
           );
           return;
         }
-        if (this.utils.isNonEmptyArray(results.get('updateErrors'))) {
+        if (this.utils.isNonEmptyArray(results.updateErrors)) {
           this.updateErrors = results.updateErrors;
           return;
         }

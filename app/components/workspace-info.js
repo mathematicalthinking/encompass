@@ -1,6 +1,5 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
-// import { inject as controller } from '@ember/controller';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import isObject from 'lodash-es/isObject';
@@ -8,7 +7,6 @@ import isString from 'lodash-es/isString';
 
 export default class WorkspaceInfoComponent extends ErrorHandlingComponent {
   @service('current-user') currentUser;
-  // comments: controller(),
   @service('sweet-alert') alert;
   @service store;
   @service('utility-methods') utils;
@@ -17,14 +15,11 @@ export default class WorkspaceInfoComponent extends ErrorHandlingComponent {
   @tracked customSubmissionIds = [];
 
   get canEdit() {
-    let workspace = this.args.workspace;
-    // let ownerId = workspace.get('owner.id');
-    let creatorId = workspace.get('createdBy.id');
-    let currentUser = this.currentUser.user;
-    let accountType = currentUser.accountType;
-    let isAdmin = accountType === 'A';
-    // let isOwner = ownerId === currentUser.id;
-    let isCreator = creatorId === currentUser.id;
+    const workspace = this.args.workspace;
+    const creatorId = workspace.belongsTo('createdBy').id();
+    const currentUser = this.currentUser.user;
+    const isAdmin = currentUser.accountType === 'A';
+    const isCreator = creatorId === currentUser.id;
 
     return isAdmin || isCreator;
   }
@@ -33,38 +28,32 @@ export default class WorkspaceInfoComponent extends ErrorHandlingComponent {
     if (this.canEdit) {
       return true;
     }
-    return this.args.workspace
-      .get('feedbackAuthorizers')
-      .includes(this.currentUser.user.id);
+    return this.args.workspace.feedbackAuthorizers.includes(
+      this.currentUser.user.id
+    );
   }
 
   get initialCollabOptions() {
-    let peeked = this.store.peekAll('user');
-    let collabs = this.selectedCollaborators;
+    const peeked = this.store.peekAll('user');
+    const collabs = this.selectedCollaborators;
 
     if (!isObject(peeked)) {
       return [];
     }
-    let filtered = peeked.reject((record) => {
-      return collabs[record.get('id')];
-    });
-    return filtered.map((obj) => {
-      return {
-        id: obj.get('id'),
-        username: obj.get('username'),
-      };
-    });
+    return [...peeked]
+      .filter((record) => !collabs[record.id])
+      .map((obj) => ({ id: obj.id, username: obj.username }));
   }
 
   get selectedCollaborators() {
-    let hash = {};
-    let wsOwnerId = this.args.workspace.get('owner.id');
+    const hash = {};
+    const wsOwnerId = this.args.workspace.belongsTo('owner').id();
 
     // no reason to set owner as a collaborator
     if (wsOwnerId) {
       hash[wsOwnerId] = true;
     }
-    const originalCollaborators = this.originalCollaborators;
+    const originalCollaborators = this.args.originalCollaborators;
 
     if (!this.utils.isNonEmptyArray(originalCollaborators)) {
       return hash;
@@ -73,40 +62,42 @@ export default class WorkspaceInfoComponent extends ErrorHandlingComponent {
       if (isString(user)) {
         hash[user] = true;
       } else if (isObject(user)) {
-        hash[user.get('id')] = true;
+        hash[user.id] = true;
       }
     });
     return hash;
   }
 
-  @action removeErrorString(arrayPropName, errorString) {
-    let errors = this[arrayPropName];
+  @action
+  removeErrorString(arrayPropName, errorString) {
+    const errors = this[arrayPropName];
     if (Array.isArray(errors)) {
-      errors.removeObject(errorString);
+      this[arrayPropName] = errors.filter((e) => e !== errorString);
     }
   }
-  @action updateCustomSubs(id) {
-    if (!this.utils.isNonEmptyArray(this.customSubmissionIds)) {
-      this.customSubmissionIds = [];
-    }
-    const customSubmissionIds = this.customSubmissionIds;
 
-    const isIn = customSubmissionIds.includes(id);
-    if (isIn) {
-      customSubmissionIds.removeObject(id);
-    } else {
-      customSubmissionIds.addObject(id);
-    }
+  @action
+  updateCustomSubs(id) {
+    const current = Array.isArray(this.customSubmissionIds)
+      ? this.customSubmissionIds
+      : [];
+    this.customSubmissionIds = current.includes(id)
+      ? current.filter((x) => x !== id)
+      : [...current, id];
   }
-  @action selectAllSubmissions() {
-    this.customSubmissionIds = this.args.workspace
-      .get('submissions')
-      .mapBy('id');
+
+  @action
+  selectAllSubmissions() {
+    this.customSubmissionIds = this.args.workspace.hasMany('submissions').ids();
   }
-  @action deselectAllSubmissions() {
+
+  @action
+  deselectAllSubmissions() {
     this.customSubmissionIds = [];
   }
-  @action toggleIsShowingCustomViewer() {
+
+  @action
+  toggleIsShowingCustomViewer() {
     this.isShowingCustomViewer = !this.isShowingCustomViewer;
   }
 }

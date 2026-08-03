@@ -19,7 +19,7 @@
       @workspace={{@workspace}}
       @originalCollaborators={{@originalCollaborators}}
       @isShowingCustomViewer={{this.isShowingCustomViewer}}
-      @toggleIsShowingCustomViewer={{action 'toggleIsShowingCustomViewer'}}
+      @toggleIsShowingCustomViewer={{this.toggleIsShowingCustomViewer}}
       @customSubmissionIds={{this.customSubmissionIds}}
       @initialCollabOptions={{this.initialCollabOptions}}
       @selectedCollaborators={{this.selectedCollaborators}}
@@ -37,9 +37,9 @@
       <CustomSubmissionViewerList
         @submissions={{@workspace.submissions.content}}
         @selectedSubmissionIds={{this.customSubmissionIds}}
-        @onSelect={{action 'updateCustomSubs'}}
-        @onSelectAll={{action 'selectAllSubmissions'}}
-        @onUnselectAll={{action 'deselectAllSubmissions'}}
+        @onSelect={{this.updateCustomSubs}}
+        @onSelectAll={{this.selectAllSubmissions}}
+        @onUnselectAll={{this.deselectAllSubmissions}}
         @onDone={{this.toggleIsShowingCustomViewer}}
       />
     {{/if}}

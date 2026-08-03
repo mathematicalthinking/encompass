@@ -7,7 +7,7 @@
           <span
             class='heading-icon'
             data-test='ws-settings-edit'
-            {{action 'editWorkspaceInfo'}}
+            {{on 'click' this.editWorkspaceInfo}}
           >
             <i class='fas fa-edit'></i>
           </span>
@@ -61,8 +61,8 @@
               @inputId='owner-select'
               @maxItems={{1}}
               @initialItems={{this.initialOwnerItem}}
-              @onItemAdd={{action 'setOwner'}}
-              @onItemRemove={{action 'setOwner'}}
+              @onItemAdd={{this.setOwner}}
+              @onItemRemove={{this.setOwner}}
               @labelField='username'
               @valueField='id'
               @searchField='username'
@@ -90,7 +90,7 @@
               @cannotBeNull={{true}}
               @selectedValue={{this.selectedMode}}
               @content={{this.modes}}
-              @action={{action (mut this.selectedMode)}}
+              @action={{this.setSelectedMode}}
             />
           {{else}}
             {{@workspace.mode}}
@@ -108,8 +108,8 @@
                 @inputId='linked-assignment-select'
                 @maxItems={{1}}
                 @initialItems={{this.initialLinkedAssignmentItem}}
-                @onItemAdd={{action 'setLinkedAssignment'}}
-                @onItemRemove={{action 'setLinkedAssignment'}}
+                @onItemAdd={{this.setLinkedAssignment}}
+                @onItemRemove={{this.setLinkedAssignment}}
                 @labelField='name'
                 @valueField='id'
                 @searchField='name'
@@ -143,7 +143,7 @@
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}
-                @action={{action (mut this.selectedAutoUpdateSetting)}}
+                @action={{this.setSelectedAutoUpdateSetting}}
               />
             {{else}}
               {{yes-no @workspace.doAllowSubmissionUpdates}}
@@ -155,22 +155,22 @@
             <button
               class='primary-button'
               type='button'
-              {{action 'updateWithExistingWork'}}
+              {{on 'click' this.updateWithExistingWork}}
             >Update Workspace</button>
             <div class='update-results'>
               {{#if this.missingLinkedAssignment}}
                 <Ui::ErrorBox
                   @error='Please link an assignment first.'
                   @showDismiss={{true}}
-                  @resetError={{action (mut this.missingLinkedAssignment) null}}
+                  @resetError={{this.clearMissingLinkedAssignment}}
                 />
               {{/if}}
               {{#each this.updateErrors as |error|}}
                 <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'updateErrors'
                     error
                   }}
@@ -180,8 +180,8 @@
                 <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'serverErrors'
                     error
                   }}
@@ -223,10 +223,10 @@
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}
-                @action={{action (mut this.selectedAutoUpdateSetting)}}
+                @action={{this.setSelectedAutoUpdateSetting}}
               />
             {{else}}
-              {{yes-no this.workspace.doAutoUpdateFromChildren}}
+              {{yes-no @workspace.doAutoUpdateFromChildren}}
             {{/if}}
           </div>
         </div>
@@ -236,22 +236,22 @@
               class='primary-button'
               data-test='parent-ws-update'
               type='button'
-              {{action 'updateWithExistingWork'}}
+              {{on 'click' this.updateWithExistingWork}}
             >Update Parent Workspace</button>
             <div class='update-results'>
               {{#if this.missingChildWorkspaces}}
                 <Ui::ErrorBox
                   @error='No child workspaces to update from'
                   @showDismiss={{true}}
-                  @resetError={{action (mut this.missingChildWorkspaces) null}}
+                  @resetError={{this.clearMissingChildWorkspaces}}
                 />
               {{/if}}
               {{#each this.updateErrors as |error|}}
                 <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'updateErrors'
                     error
                   }}
@@ -261,8 +261,8 @@
                 <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'serverErrors'
                     error
                   }}
@@ -294,12 +294,12 @@
           <button
             class='primary-button cancel-button'
             type='button'
-            {{action 'stopEditing'}}
+            {{on 'click' this.stopEditing}}
           >Cancel</button>
           <button
             class='primary-button'
             type='button'
-            {{action 'checkWorkspace'}}
+            {{on 'click' this.checkWorkspace}}
           >Save</button>
         </div>
       {{/if}}
