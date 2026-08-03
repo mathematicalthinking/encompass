@@ -37,7 +37,7 @@ export default class SubmissionViewerListComponent extends Component {
 
     answers.forEach((answer) => {
       let isSelected = selectedAnswers.includes(answer);
-      hash[answer.get('id')] = isSelected;
+      hash[answer.id] = isSelected;
     });
     return hash;
   }
