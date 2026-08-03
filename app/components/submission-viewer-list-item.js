@@ -142,7 +142,7 @@ export default class SubmissionViewerListItemComponent extends Component {
     );
 
     if (result.value) {
-      answer.set('isTrashed', true);
+      answer.isTrashed = true;
       await answer.save();
 
       const toastResult = await this.alert.showToast(
@@ -155,7 +155,7 @@ export default class SubmissionViewerListItemComponent extends Component {
       );
 
       if (toastResult.value) {
-        answer.set('isTrashed', false);
+        answer.isTrashed = false;
         await answer.save();
 
         this.alert.showToast(
@@ -182,7 +182,7 @@ export default class SubmissionViewerListItemComponent extends Component {
     );
 
     if (result.value) {
-      answer.set('isTrashed', false);
+      answer.isTrashed = false;
       await answer.save();
 
       const toastResult = await this.alert.showToast(
@@ -195,7 +195,7 @@ export default class SubmissionViewerListItemComponent extends Component {
       );
 
       if (toastResult.value) {
-        answer.set('isTrashed', true);
+        answer.isTrashed = true;
         await answer.save();
 
         this.alert.showToast(
