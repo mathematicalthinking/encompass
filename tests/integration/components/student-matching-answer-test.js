@@ -21,6 +21,7 @@ class UtilityMethodsStub extends Service {
 
 class SelectizeInputStub extends Component {
   @tracked createdOption = null;
+  @tracked filterOutcome = null;
 
   @action
   invokeCreate() {
@@ -30,6 +31,15 @@ class SelectizeInputStub extends Component {
     this.args.create('  Added Name  ', (option) => {
       this.createdOption = option;
     });
+  }
+
+  @action
+  runFilter(name) {
+    if (typeof this.args.createFilter !== 'function') {
+      this.filterOutcome = 'no-filter';
+      return;
+    }
+    this.filterOutcome = String(this.args.createFilter(name));
   }
 }
 
@@ -87,6 +97,25 @@ module('Integration | Component | student-matching-answer', function (hooks) {
             <p class='created-option'>
               {{this.createdOption.username}}|{{this.createdOption.id}}
             </p>
+          {{/if}}
+
+          <span class='filter-present'>{{if @createFilter 'yes' 'no'}}</span>
+          <button
+            type='button'
+            class='stub-filter-valid'
+            {{on 'click' (fn this.runFilter 'Valid Name')}}
+          >
+            Filter Valid
+          </button>
+          <button
+            type='button'
+            class='stub-filter-dupe'
+            {{on 'click' (fn this.runFilter 'Dupe')}}
+          >
+            Filter Dupe
+          </button>
+          {{#if this.filterOutcome}}
+            <span class='filter-outcome'>{{this.filterOutcome}}</span>
           {{/if}}
 
           <ul class='stub-options'>
@@ -151,6 +180,39 @@ module('Integration | Component | student-matching-answer', function (hooks) {
     assert
       .dom('.selectize-input-stub')
       .hasAttribute('data-input-id', 'select-add-studentimg-1');
+  });
+
+  test('wires @newNameFilter through to the selectize createFilter when custom names are allowed', async function (assert) {
+    this.newNameFilter = (name) => {
+      const trimmed = (name || '').trim();
+      return trimmed.length > 1 && trimmed !== 'Dupe';
+    };
+    // no selectedSection => allowCustomNameEntry is true
+    await renderComponent(this);
+
+    assert
+      .dom('.filter-present')
+      .hasText('yes', 'createFilter receives the passed newNameFilter');
+
+    await click('.stub-filter-valid');
+    assert
+      .dom('.filter-outcome')
+      .hasText('true', 'a valid new name passes the filter');
+
+    await click('.stub-filter-dupe');
+    assert
+      .dom('.filter-outcome')
+      .hasText('false', 'a rejected name fails the filter');
+  });
+
+  test('drops the createFilter when a section is selected (class mode)', async function (assert) {
+    this.newNameFilter = () => true;
+    this.selectedSection = { id: 'sec-1', name: 'Section A' };
+    await renderComponent(this);
+
+    assert
+      .dom('.filter-present')
+      .hasText('no', 'no createFilter is passed in class mode');
   });
 
   test('it toggles full-image preview open and closed', async function (assert) {

@@ -30,7 +30,7 @@
       @closeAfterSelect={{true}}
       @preserveCurrentItemsOnOptionsUpdate={{true}}
       @create={{if this.allowCustomNameEntry this.addStudentName null}}
-      @createFilter={{if this.allowCustomNameEntry this.newNameFilter null}}
+      @createFilter={{if this.allowCustomNameEntry @newNameFilter null}}
     />
   </div>
 </div>
