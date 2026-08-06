@@ -2,6 +2,8 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import { next } from '@ember/runloop';
+import { registerDestructor } from '@ember/destroyable';
 import { format, subYears } from 'date-fns';
 
 export default class SubmissionsFilterComponent extends Component {
@@ -10,6 +12,15 @@ export default class SubmissionsFilterComponent extends Component {
   @service('utility-methods') utils;
   @service store;
   @service('current-user') currentUser;
+
+  _isDestroyed = false;
+
+  constructor() {
+    super(...arguments);
+    registerDestructor(this, () => {
+      this._isDestroyed = true;
+    });
+  }
 
   findRecordErrors = [];
   wsRequestErrors = [];
@@ -228,10 +239,14 @@ export default class SubmissionsFilterComponent extends Component {
     if (!this.selectedTeacher) {
       return [];
     }
+    // Read the related ids off the relationship reference (no network load), so
+    // an assignment pointing at a deleted section/teacher doesn't 404.
     return this.baseAssignments.filter((assignment) => {
       return (
-        assignment.get('createdBy.id') === this.selectedTeacher.id ||
-        this.selectedTeacherSectionIds.includes(assignment.get('section.id'))
+        assignment.belongsTo('createdBy').id() === this.selectedTeacher.id ||
+        this.selectedTeacherSectionIds.includes(
+          assignment.belongsTo('section').id()
+        )
       );
     });
   }
@@ -240,7 +255,10 @@ export default class SubmissionsFilterComponent extends Component {
     if (!this.selectedProblem) {
       return [];
     }
-    return this.baseAssignments.filterBy('problem.id', this.selectedProblem.id);
+    return this.baseAssignments.filter(
+      (assignment) =>
+        assignment.belongsTo('problem').id() === this.selectedProblem.id
+    );
   }
 
   get selectedSectionAssignments() {
@@ -512,17 +530,33 @@ export default class SubmissionsFilterComponent extends Component {
     this.args.onSearch(criteria);
   }
 
+  // SelectizeInput fires @onItemAdd/@onItemRemove from a did-update modifier
+  // (to sync its initial selection), i.e. during render — so we schedule the
+  // tracked write for after render to avoid a read-then-write backtracking
+  // assertion, and skip no-op re-syncs so the sync loop settles.
+  _setSelectionLater(prop, value) {
+    if (this[prop] === value) {
+      return;
+    }
+    next(this, () => {
+      if (this._isDestroyed) {
+        return;
+      }
+      this[prop] = value;
+    });
+  }
+
   @action
   updateSelectizeSingle(val, $item, propToUpdate, model) {
     if ($item === null) {
-      this[propToUpdate] = null;
+      this._setSelectionLater(propToUpdate, null);
       return;
     }
     const record = this.store.peekRecord(model, val);
     if (!record) {
       return;
     }
-    this[propToUpdate] = record;
+    this._setSelectionLater(propToUpdate, record);
   }
 
   @action
@@ -537,15 +571,20 @@ export default class SubmissionsFilterComponent extends Component {
         (student) => student.id === val
       );
       if (studentToRemove) {
-        this.selectedStudents = selectedStudents.filter(
-          (student) => student !== studentToRemove
+        this._setSelectionLater(
+          'selectedStudents',
+          selectedStudents.filter((student) => student !== studentToRemove)
         );
       }
       return;
     }
     const record = this.store.peekRecord('user', val);
-    if (record) {
-      this.selectedStudents = [...selectedStudents, record];
+    // skip re-syncs for a student that is already selected
+    if (record && !selectedStudents.includes(record)) {
+      this._setSelectionLater('selectedStudents', [
+        ...selectedStudents,
+        record,
+      ]);
     }
   }
 
