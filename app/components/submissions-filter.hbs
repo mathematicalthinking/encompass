@@ -1,0 +1,227 @@
+<div id='submissions-filter' ...attributes>
+  <div class='filter-items'>
+    <h2>Filter Criteria</h2>
+    <ul class='primary-filter-list'>
+      <li>
+        <label title={{this.tooltips.teacher}}>Teacher</label>
+        <SelectizeInput
+          @inputId='select-add-teacher'
+          @maxItems={{1}}
+          @initialItems={{this.initialTeacherItem}}
+          @initialOptions={{this.teacherPoolOptions}}
+          @onItemAdd={{this.updateSelectizeSingle}}
+          @onItemRemove={{this.updateSelectizeSingle}}
+          @labelField='username'
+          @searchField='username'
+          @valueField='id'
+          @propToUpdate='selectedTeacher'
+          @model='user'
+          @placeholder='Search teachers by username'
+          @isDisabled={{this.isTeacher}}
+        />
+        {{#each this.teacherFormErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
+      </li>
+      <li>
+        <label title={{this.tooltips.assignment}}>Assignment</label>
+        <SelectizeInput
+          @inputId='select-add-assignment'
+          @maxItems={{1}}
+          @initialOptions={{this.assignmentOptions}}
+          @initialItems={{this.initialAssignmentItem}}
+          @onItemAdd={{this.updateSelectizeSingle}}
+          @onItemRemove={{this.updateSelectizeSingle}}
+          @labelField='name'
+          @searchField='name'
+          @valueField='id'
+          @model='assignment'
+          @propToUpdate='selectedAssignment'
+          @placeholder='Search assignments by name'
+        />
+
+        {{#each this.assignmentFormErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
+      </li>
+      <li>
+        <label title={{this.tooltips.problem}}>Problem</label>
+        <SelectizeInput
+          @inputId='select-add-problem'
+          @isAsync={{true}}
+          @maxItems={{1}}
+          @initialItems={{this.initialProblemItem}}
+          @onItemAdd={{this.updateSelectizeSingle}}
+          @onItemRemove={{this.updateSelectizeSingle}}
+          @labelField='title'
+          @searchField='title'
+          @valueField='id'
+          @model='problem'
+          @propToUpdate='selectedProblem'
+          @queryParamsKey='title'
+          @topLevelQueryParams='filterBy'
+          @placeholder='Search problems by title'
+          @preload='focus'
+          @secondaryFilters={{this.problemFilters}}
+        />
+
+        {{#each this.problemFormErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
+      </li>
+      <li>
+        <label title={{this.tooltips.class}}>Class</label>
+        <SelectizeInput
+          @inputId='select-add-section'
+          @maxItems={{1}}
+          @initialOptions={{this.sectionPoolOptions}}
+          @initialItems={{this.initialSectionItem}}
+          @onItemAdd={{this.updateSelectizeSingle}}
+          @onItemRemove={{this.updateSelectizeSingle}}
+          @labelField='name'
+          @searchField='name'
+          @valueField='id'
+          @model='section'
+          @propToUpdate='selectedSection'
+          @placeholder='Search classes by name'
+        />
+        {{#each this.sectionFormErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
+      </li>
+      <li>
+        <label>Student</label>
+        <SelectizeInput
+          @inputId='select-add-student'
+          @maxItems={{20}}
+          @initialOptions={{this.studentPoolOptions}}
+          @initialItems={{this.initialStudentItem}}
+          @onItemAdd={{this.updateSelectedStudents}}
+          @onItemRemove={{this.updateSelectedStudents}}
+          @labelField='username'
+          @searchField='username'
+          @valueField='id'
+          @propToUpdate='selectedStudents'
+          @model='user'
+          @placeholder='Search students by username'
+        />
+        {{#each this.studentFormErrors as |error|}}
+          <p class='error-message'>{{error}}</p>
+        {{/each}}
+      </li>
+      <li>
+        <label title={{this.tooltips.dateRange}}>Date Range</label>
+        <div class='single-text-input-container'>
+          <Input
+            class='single-text-input'
+            id='startDate'
+            name='startDate'
+            @type='date'
+            @value={{this.startDate}}
+          />
+          <span class='seperator'> - </span>
+          <Input
+            class='single-text-input'
+            id='endDate'
+            name='endDate'
+            @type='date'
+            @value={{this.endDate}}
+          />
+        </div>
+      </li>
+      <li class='include-pows-input'>
+        <Input
+          @type='checkbox'
+          @checked={{this.doIncludeOldPows}}
+          name='doIncludeOldPows'
+        />
+        <label>Include Old Pows Work</label>
+      </li>
+
+      {{#if this.currentUser.isAdmin}}
+        <li class='include-trashed-input'>
+          <Input
+            @type='checkbox'
+            @checked={{this.isTrashedOnly}}
+            name='isTrashedOnly'
+          />
+          <label>Only Trashed Answers</label>
+        </li>
+      {{/if}}
+
+      <h3 {{on 'click' this.toggleVmtFilters}} class='vmt-header'>
+        <i
+          class='fas
+            {{if this.showVmtFilters "fa-chevron-down"}}{{unless
+              this.showVmtFilters
+              "fa-chevron-right"
+            }}'
+        ></i>
+        Vmt
+      </h3>
+
+      {{#if this.showVmtFilters}}
+        <ul class='vmt-filter-list'>
+          <li class='vmt-only-input'>
+            <Input
+              @type='checkbox'
+              @checked={{this.isVmtOnly}}
+              name='isVmtOnly'
+            />
+            <label>Include Only VMT Work</label>
+          </li>
+          <li>
+            <div class='vmt-search'>
+              <label>Search by room, activity, or username</label>
+              <Input
+                class='single-text-input vmt-search'
+                name='vmt-search'
+                @type='text'
+                @value={{this.vmtSearchText}}
+              />
+            </div>
+          </li>
+        </ul>
+      {{/if}}
+
+      {{#if this.isMissingCriteria}}
+        <Ui::ErrorBox
+          @error={{this.missingCriteriaMessage}}
+          @showDismiss={{true}}
+          @resetError={{this.resetMissingCriteria}}
+        />
+      {{/if}}
+
+      {{#if this.isInvalidDateRange}}
+        <Ui::ErrorBox
+          @error={{this.invalidDateRangeMessage}}
+          @showDismiss={{true}}
+          @resetError={{this.resetInvalidDateRange}}
+        />
+      {{/if}}
+
+      <li>
+        <div class='search-action'>
+          <button
+            class='primary-button search-answers'
+            type='button'
+            {{on 'click' this.buildCriteria}}
+          >Search</button>
+        </div>
+      </li>
+      <li>
+        <div class='import-action'>
+          <LinkTo
+            @route='import'
+            class='primary-button search-answers'
+          >Import Assignment</LinkTo>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  {{#if this.isRequestInProgress}}
+    <p class='info'>Workspace creation is in progress... Thank you for your
+      patience.</p>
+  {{/if}}
+</div>
