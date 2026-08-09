@@ -88,27 +88,38 @@ export default class ParentWsCollabNewComponent extends Component {
   collabsToAdd = [];
 
   get childWorkspaceOwners() {
-    let workspaces = this.args.childWorkspaces || [];
-    return workspaces.map((ws) => {
-      return ws.get('owner.content');
-    });
+    const workspaces = this.args.childWorkspaces || [];
+    return workspaces.map((ws) => ws.belongsTo('owner').value());
   }
 
   get usersToAdd() {
-    let existingCollabs = this.args.workspace.get('collaborators') || [];
-    let users = this.combinedUsers || [];
-    let ownerId = this.args.workspace.get('owner.id');
-    let creatorId = this.args.workspace.get('creator.id');
+    const existingCollabs = this.args.workspace.collaborators || [];
+    const users = this.combinedUsers || [];
+    const ownerId = this.args.workspace.belongsTo('owner').id();
+    // NOTE: the workspace model has no `creator` relationship, so this stays
+    // undefined — preserving the original `.get('creator.id')` behavior (the
+    // creator check was always a no-op). belongsTo('creator') would throw.
+    const creatorId = this.args.workspace.creator?.id;
     return users.filter((user) => {
-      if (ownerId === user.get('id') || creatorId === user.get('id')) {
+      if (ownerId === user.id || creatorId === user.id) {
         return false;
       }
-      return !existingCollabs.includes(user.get('id'));
+      return !existingCollabs.includes(user.id);
     });
   }
 
+  // Combine passed students with child-workspace owners without mutating the
+  // students arg (the classic version called addObjects on it in place).
   get combinedUsers() {
-    return this.args.students.addObjects(this.childWorkspaceOwners);
+    const students = this.args.students || [];
+    const owners = this.childWorkspaceOwners || [];
+    const combined = [...students];
+    owners.forEach((owner) => {
+      if (owner && !combined.includes(owner)) {
+        combined.push(owner);
+      }
+    });
+    return combined;
   }
 
   @action updateAddType(val) {
@@ -117,13 +128,19 @@ export default class ParentWsCollabNewComponent extends Component {
   @action updateGlobalPermissionValue(val) {
     this.globalPermissionValue = val;
   }
+  @action clearMissingUserError() {
+    this.missingUserError = false;
+  }
+  @action clearExistingUserError() {
+    this.existingUserError = false;
+  }
   @action setCollab(val) {
     if (!val) {
       return;
     }
-    let existingCollab = this.args.workspace.get('collaborators') || [];
+    const existingCollab = this.args.workspace.collaborators || [];
     const user = this.store.peekRecord('user', val);
-    let alreadyCollab = existingCollab.includes(user.get('id'));
+    const alreadyCollab = existingCollab.includes(user.id);
 
     if (alreadyCollab) {
       this.existingUserError = true;
@@ -135,23 +152,19 @@ export default class ParentWsCollabNewComponent extends Component {
   }
 
   @action saveCollab() {
-    let collabs = this.collabsToAdd;
+    const collabs = this.collabsToAdd;
     if (!this.utils.isNonEmptyArray(collabs)) {
       return (this.missingUserError = true);
     }
-    let ws = this.args.workspace;
-    let permissions = ws.get('permissions');
+    const ws = this.args.workspace;
+    const permissions = ws.permissions;
 
     // Create new permissions array with new collaborators
-    let newPermissions = Array.isArray(permissions) ? [...permissions] : [];
-    let newCollaborators = Array.isArray(this.args.originalCollaborators)
-      ? [...this.args.originalCollaborators]
-      : [];
+    const newPermissions = Array.isArray(permissions) ? [...permissions] : [];
 
     collabs.forEach((collab) => {
-      newCollaborators.push(collab);
       newPermissions.push({
-        user: collab.get('id'),
+        user: collab.id,
         global: 'custom',
         submissions: { all: true, userOnly: false, submissionIds: [] },
         folders: 1,
@@ -160,9 +173,12 @@ export default class ParentWsCollabNewComponent extends Component {
       });
     });
 
-    // Update permissions using set instead of mutating
-    ws.set('permissions', newPermissions);
-    this.args.originalCollaborators = newCollaborators;
+    ws.permissions = newPermissions;
+    // Update the parent-owned collaborators array in place (the arg is
+    // read-only, so we can't reassign it).
+    if (Array.isArray(this.args.originalCollaborators)) {
+      this.args.originalCollaborators.addObjects(collabs);
+    }
 
     ws.save().then(() => {
       this.alert.showToast(
