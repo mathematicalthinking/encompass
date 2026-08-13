@@ -1,9 +1,11 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import $ from 'jquery';
+import { service } from '@ember/service';
 
 export default class LogInComponent extends ErrorHandlingComponent {
+  @service navigation;
+
   @tracked incorrectPassword = false;
   @tracked incorrectUsername = false;
   @tracked missingCredentials = false;
@@ -44,22 +46,24 @@ export default class LogInComponent extends ErrorHandlingComponent {
       username: this.username.trim(),
       password: this.password,
     };
-    $.post({
-      url: '/auth/login',
-      data: createUserData,
-    })
-      .then((res) => {
-        console.log(res);
-        if (res.message === 'Incorrect password') {
-          this.incorrectPassword = true;
-        } else if (res.message === 'Incorrect username') {
-          this.incorrectUsername = true;
-        } else {
-          window.location.href = '/';
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'postErrors');
+    try {
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        body: new URLSearchParams(createUserData),
       });
+      if (!response.ok) {
+        throw new Error(`Login failed (${response.status})`);
+      }
+      const res = await response.json();
+      if (res.message === 'Incorrect password') {
+        this.incorrectPassword = true;
+      } else if (res.message === 'Incorrect username') {
+        this.incorrectUsername = true;
+      } else {
+        this.navigation.toHome({ fullReload: true });
+      }
+    } catch (err) {
+      this.handleErrors(err, 'postErrors');
+    }
   }
 }
