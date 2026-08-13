@@ -1,7 +1,6 @@
 import ErrorHandlingComponent from './error-handling';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import $ from 'jquery';
 
 export default class ForgotPasswordComponent extends ErrorHandlingComponent {
   @tracked postErrors = [];
@@ -40,7 +39,7 @@ export default class ForgotPasswordComponent extends ErrorHandlingComponent {
     }
   }
 
-  @action handleRequest() {
+  @action async handleRequest() {
     const email = this.email;
     const username = this.username;
 
@@ -58,21 +57,24 @@ export default class ForgotPasswordComponent extends ErrorHandlingComponent {
       username,
     };
 
-    return $.post({
-      url: '/auth/forgot',
-      data: forgotPasswordData,
-    })
-      .then((res) => {
-        if (res.isSuccess) {
-          this.clearFields();
-          this.resetEmailSent = true;
-        } else {
-          this.forgotPasswordErr = res.info;
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'postErrors');
+    try {
+      const response = await fetch('/auth/forgot', {
+        method: 'POST',
+        body: new URLSearchParams(forgotPasswordData),
       });
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status})`);
+      }
+      const res = await response.json();
+      if (res.isSuccess) {
+        this.clearFields();
+        this.resetEmailSent = true;
+      } else {
+        this.forgotPasswordErr = res.info;
+      }
+    } catch (err) {
+      this.handleErrors(err, 'postErrors');
+    }
   }
   @action resetMessages() {
     const messages = [
