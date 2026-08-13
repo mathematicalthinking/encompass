@@ -22,14 +22,14 @@ class MockSweetAlertService extends Service {
   }
 }
 
-// Stub jQuery GET request
-function mockJQueryGet(url) {
+// Stub the resend-confirmation fetch so the failure path surfaces the errors
+function mockFetch(url) {
   if (url === '/auth/resend/confirm') {
     return Promise.reject({
       errors: [{ detail: 'Email not found' }, { detail: 'Invalid request' }],
     });
   }
-  return Promise.resolve();
+  return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
 }
 
 module('Integration | Component | unconfirmed-email', function (hooks) {
@@ -39,17 +39,17 @@ module('Integration | Component | unconfirmed-email', function (hooks) {
     // Register mock CurrentUser service
     this.owner.register('service:current-user', MockCurrentUserService);
 
-    // Stub jQuery
-    this.originalJQueryGet = window.$.get;
-    window.$.get = mockJQueryGet;
+    // Stub fetch
+    this.originalFetch = window.fetch;
+    window.fetch = mockFetch;
 
     // Register mock SweetAlert service
     this.owner.register('service:sweet-alert', MockSweetAlertService);
   });
 
   hooks.afterEach(function () {
-    // Restore original jQuery
-    window.$.get = this.originalJQueryGet;
+    // Restore original fetch
+    window.fetch = this.originalFetch;
   });
 
   test('it uses the real ErrorHandlingService and displays errors correctly', async function (assert) {
