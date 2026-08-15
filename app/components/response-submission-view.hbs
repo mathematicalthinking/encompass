@@ -46,9 +46,9 @@
         {{#if this.isShortExpanded}}
           <div class='submission-content-short'>
             {{#if this.answerContent.answer}}
-              {{{this.answerContent.answer}}}
+              {{make-html-safe this.answerContent.answer}}
             {{else}}
-              {{{@submission.shortAnswer}}}
+              {{make-html-safe @submission.shortAnswer}}
             {{/if}}
           </div>
         {{/if}}
@@ -64,10 +64,10 @@
         {{#if this.isLongExpanded}}
           <div class='submission-content-container submission-content-long'>
             {{#if this.answerContent.explanation}}
-              {{{this.answerContent.explanation}}}
+              {{make-html-safe this.answerContent.explanation}}
             {{/if}}
             {{#if @submission.longAnswer}}
-              {{{@submission.longAnswer}}}
+              {{make-html-safe @submission.longAnswer}}
             {{/if}}
           </div>
         {{/if}}

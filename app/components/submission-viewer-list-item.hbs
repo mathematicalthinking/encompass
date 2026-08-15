@@ -47,7 +47,7 @@
         </ul>
       {{/let}}
     {{else}}
-      {{{@answer.explanation}}}
+      {{make-html-safe @answer.explanation}}
     {{/if}}
   </div>
   <div class="item-section section">

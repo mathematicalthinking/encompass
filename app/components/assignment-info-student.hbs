@@ -38,12 +38,12 @@
     </div>
     <div class='info-detail problem-text'>
       <label>Problem Statement:</label>
-      <p>{{{@problem.text}}}</p>
+      <p>{{make-html-safe @problem.text}}</p>
     </div>
     {{#if @problem.image}}
       <div class='assignmentImage info-detail'>
         <label>Problem Image:</label>
-        <img src='{{{@problem.image.imageData}}}' alt={{@problem.title}} />
+        <img src='{{@problem.image.imageData}}' alt={{@problem.title}} />
       </div>
     {{/if}}
   </section>
