@@ -205,8 +205,8 @@ export default class AssignmentNewComponent extends Component {
       return this.selectedSection.students.content;
     } else {
       return [
-        ...this.sectionGroups.toArray(),
-        ...this.selectedSection.students.content.toArray(),
+        ...this.sectionGroups.slice(),
+        ...this.selectedSection.students.content.slice(),
       ];
     }
   }
@@ -327,7 +327,7 @@ export default class AssignmentNewComponent extends Component {
   get problemOptions() {
     let cachedProblems = this.args.cachedProblems;
     if (cachedProblems) {
-      let toArray = cachedProblems.toArray();
+      let toArray = cachedProblems.slice();
       return toArray.map((cachedProblem) => {
         return {
           id: cachedProblem.id,
@@ -339,7 +339,7 @@ export default class AssignmentNewComponent extends Component {
   }
   get sectionOptions() {
     let sectionList = this.args.sectionList || [];
-    let toArray = sectionList.toArray();
+    let toArray = sectionList.slice();
     return toArray.map((section) => {
       return {
         id: section.id,
