@@ -62,7 +62,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   // ── computed ─────────────────────────────────────────────────────────────
 
   get initialStudentOptions() {
-    const allUsers = this.store.peekAll('user').toArray();
+    const allUsers = this.store.peekAll('user').slice();
     const currentStudentIds = new Set(this.args.students.map((s) => s.id));
     return allUsers
       .filter((u) => !currentStudentIds.has(u.id))

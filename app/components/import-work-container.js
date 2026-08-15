@@ -5,6 +5,7 @@ import { service } from '@ember/service';
 
 export default class ImportWorkComponent extends Component {
   @service store;
+  @service navigation;
   @service('sweet-alert') alert;
   @service('error-handling') errorHandling;
   @service('utility-methods') utils;
@@ -92,7 +93,7 @@ export default class ImportWorkComponent extends Component {
     const normalizedId = String(id);
     const asArray =
       typeof collection.toArray === 'function'
-        ? collection.toArray()
+        ? collection.slice()
         : Array.isArray(collection)
         ? collection
         : [];
@@ -329,10 +330,10 @@ export default class ImportWorkComponent extends Component {
 
     const firstSubmissionId = workspace.submissions?.[0];
     if (firstSubmissionId) {
-      window.location.href = `#/workspaces/${workspace._id}/submissions/${firstSubmissionId}`;
+      this.navigation.toSubmission(firstSubmissionId, workspace._id);
       return;
     }
-    window.location.href = `#/workspaces/${workspace._id}/work`;
+    this.navigation.toWorkspace(workspace._id);
   }
 
   @action
@@ -440,7 +441,7 @@ export default class ImportWorkComponent extends Component {
 
     const asArray =
       typeof students?.toArray === 'function'
-        ? students.toArray()
+        ? students.slice()
         : Array.isArray(students)
         ? students
         : [];
@@ -471,7 +472,7 @@ export default class ImportWorkComponent extends Component {
 
     const asArray =
       typeof students?.toArray === 'function'
-        ? students.toArray()
+        ? students.slice()
         : Array.isArray(students)
         ? students
         : [];

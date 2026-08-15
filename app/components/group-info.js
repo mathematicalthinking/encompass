@@ -23,12 +23,12 @@ export default class GroupInfoComponent extends Component {
       return this.draftStudents;
     }
 
-    return this.args.group.students.toArray();
+    return this.args.group.students.slice();
   }
 
   syncDraftGroup() {
     this.draftName = this.args.group.name;
-    this.draftStudents = [...this.args.group.students.toArray()];
+    this.draftStudents = [...this.args.group.students.slice()];
     this.studentsChanged = false;
   }
 

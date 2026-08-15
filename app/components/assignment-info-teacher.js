@@ -242,8 +242,8 @@ export default class AssignmentInfoTeacherComponent extends Component {
       return this.studentsWithoutWorkspaces;
     }
     return [
-      ...this.groupsWithoutWorkspaces.toArray(),
-      ...this.studentsWithoutWorkspaces.toArray(),
+      ...this.groupsWithoutWorkspaces.slice(),
+      ...this.studentsWithoutWorkspaces.slice(),
     ];
   }
 

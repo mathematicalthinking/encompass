@@ -2,7 +2,7 @@
   {{#if @isList}}
     <div class='item-container' id='container'>
       <div class='item-section mode'>
-        {{{public-private @workspace.mode}}}
+        {{make-html-safe (public-private @workspace.mode)}}
       </div>
       <div class='item-section info-item'>
         <LinkTo @route='workspace.info' @model={{@workspace.id}}>
@@ -17,7 +17,7 @@
         >
           <span
             class={{if @workspace.isTrashed 'strikethrough'}}
-          >{{{@workspace.name}}}</span>
+          >{{make-html-safe @workspace.name}}</span>
         </LinkTo>
       </div>
       <div class='item-section last-viewed'>
@@ -75,7 +75,7 @@
     <div class='item-card-container'>
       <div class='item-card row-1'>
         <div class='item-card privacy'>
-          <span class='privacy-icon'>{{{public-private @workspace.mode}}}</span>
+          <span class='privacy-icon'>{{make-html-safe (public-private @workspace.mode)}}</span>
           <span class='date'>{{format-date
               @workspace.lastModifiedDateComp
               'L'
@@ -112,7 +112,7 @@
           >
             <span
               class={{if @workspace.isTrashed 'strikethrough'}}
-            >{{{@workspace.name}}}</span>
+            >{{make-html-safe @workspace.name}}</span>
           </LinkTo>
           <LinkTo @route='workspace.info' @model={{@workspace.id}}>
             <i class='fa fa-info-circle workspace_info' aria-hidden='true'></i>
@@ -121,7 +121,7 @@
       </div>
       <div class='item-card row-3'>
         <div class='item-card description'>
-          {{{@workspace.owner.username}}}
+          {{make-html-safe @workspace.owner.username}}
         </div>
       </div>
       <div class='item-card row-4'>

@@ -45,7 +45,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   get groupedStudents() {
     return this.groups
       .filter((group) => !group.isTrashed)
-      .map((group) => group.students.toArray().map((student) => student.id))
+      .map((group) => group.students.slice().map((student) => student.id))
       .flat();
   }
   @tracked newGroupName = '';
@@ -160,8 +160,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   };
 
   get initialTeacherOptions() {
-    let peeked = this.store.peekAll('user').toArray();
-    let currentTeachers = this.teacherList.toArray();
+    let peeked = this.store.peekAll('user').slice();
+    let currentTeachers = this.teacherList.slice();
     let filtered = [];
 
     if (peeked && currentTeachers) {
@@ -287,7 +287,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       return;
     }
 
-    const originalStudents = group.students.toArray();
+    const originalStudents = group.students.slice();
 
     group.name = name;
     group.students.setObjects(students);

@@ -1,7 +1,7 @@
 {{#if @isList}}
   <div class='item-container' id='container'>
     <div class='item-section privacy'>
-      {{{public-private @problem.privacySetting}}}
+      {{make-html-safe (public-private @problem.privacySetting)}}
     </div>
 
     <div class='item-section name'>
@@ -12,7 +12,7 @@
       >
         <span
           class={{if @problem.isTrashed 'strikethrough'}}
-        >{{{@problem.title}}}</span>
+        >{{make-html-safe @problem.title}}</span>
         {{#if this.isRecommended}}
           <span><i class='fas fa-star star-icon'></i></span>
         {{/if}}
@@ -24,7 +24,7 @@
         @model={{@problem.id}}
         class='problem-title'
       >
-        {{{@problem.text}}}
+        {{make-html-safe @problem.text}}
       </LinkTo>
     </div>
     <div class='item-section date'>
@@ -82,9 +82,9 @@
   <div class='item-card-container'>
     <div class='item-card row-1'>
       <div class='item-card privacy'>
-        <span class='privacy-icon'>{{{public-private
-            @problem.privacySetting
-          }}}</span>
+        <span class='privacy-icon'>{{make-html-safe
+            (public-private @problem.privacySetting)
+          }}</span>
         <span class='date'>{{format-date @problem.createDate 'MM/DD/YY'}}</span>
       </div>
       <div class='item-card more' {{on 'click' this.toggleShowMoreMenu}}>
@@ -118,7 +118,7 @@
         >
           <span
             class={{if @problem.isTrashed 'strikethrough'}}
-          >{{{@problem.title}}}</span>
+          >{{make-html-safe @problem.title}}</span>
           {{#if this.isRecommended}}
             <span><i class='fas fa-star star-icon'></i></span>
           {{/if}}
@@ -132,7 +132,7 @@
           @model={{@problem.id}}
           class='problem-title'
         >
-          {{{@problem.text}}}
+          {{make-html-safe @problem.text}}
         </LinkTo>
       </div>
     </div>

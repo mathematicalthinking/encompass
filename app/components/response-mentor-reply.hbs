@@ -124,7 +124,7 @@
                       <div
                         class='response-text'
                       >
-                        {{{reply.text}}}
+                        {{make-html-safe reply.text}}
                       </div>
                     </div>
                   </div>
@@ -250,7 +250,7 @@
                   {{/if}}
 
                   <div class='response-text'>
-                    {{{entry.html}}}
+                    {{make-html-safe entry.html}}
                   </div>
 
                   {{#if @isCreating}}
@@ -304,7 +304,7 @@
                     {{/if}}
 
                     <div class='response-text'>
-                      {{{entry.html}}}
+                      {{make-html-safe entry.html}}
                     </div>
 
                     {{#if @isCreating}}
