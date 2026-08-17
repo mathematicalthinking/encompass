@@ -169,7 +169,7 @@ export default class WorkspaceNewContainerComponent extends Component {
     // clear selectize input
 
     this.selectedCollaborator = null;
-    $('select#collab-select')[0].selectize.clear();
+    document.querySelector('select#collab-select')?.selectize?.clear();
     this.isEditing = false;
   }
 }
