@@ -1,4 +1,4 @@
-FROM node:14.21.3-alpine@sha256:4e84c956cd276af9ed14a8b2939a734364c2b0042485e90e1b97175e73dfd548 AS appbuild
+FROM node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 AS appbuild
 RUN apk update
 
 # install ember
