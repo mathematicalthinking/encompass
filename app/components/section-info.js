@@ -1,15 +1,16 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
 import { service } from '@ember/service';
 
-export default class SectionInfoComponent extends ErrorHandlingComponent {
+export default class SectionInfoComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
   @service router;
   @service store;
   @service currentUser;
+  @service('error-handling') errorHandling;
   @tracked removeTeacherError = null;
   @tracked isEditingStudents = false;
   @tracked isEditingTeachers = false;
@@ -21,13 +22,21 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   @tracked showAssignment = false;
   @tracked problemList = null;
   @tracked sectionList = [];
-  @tracked dataLoadErrors = [];
-  @tracked updateSectionErrors = [];
+  // Service-backed error arrays (populated via handleErrors)
+  get dataLoadErrors() {
+    return this.errorHandling.getErrors('dataLoadErrors') || [];
+  }
+  get updateSectionErrors() {
+    return this.errorHandling.getErrors('updateSectionErrors') || [];
+  }
+  get problemLoadErrors() {
+    return this.errorHandling.getErrors('problemLoadErrors') || [];
+  }
+  // Read in the template but never populated (kept local)
   @tracked updateTeacherErrors = [];
   @tracked updateStudentErrors = [];
   @tracked queryErrors = [];
   @tracked findRecordErrors = [];
-  @tracked problemLoadErrors = [];
   @tracked addGroup = false;
   @tracked isEditingName = false;
   @tracked editedSectionName = '';
@@ -64,7 +73,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       this.teacherList = await section.teachers;
       this.organization = await section.organization;
     } catch (err) {
-      this.handleErrors(err, 'dataLoadErrors');
+      this.errorHandling.handleErrors(err, 'dataLoadErrors');
     }
   }
 
@@ -388,7 +397,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors', section);
+        this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
       });
   }
 
@@ -420,7 +429,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors');
+        this.errorHandling.handleErrors(err, 'updateSectionErrors');
       });
   }
 
@@ -456,7 +465,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         this.router.transitionTo('sections');
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors', section);
+        this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
       });
   }
 
@@ -476,7 +485,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         }, 100);
       })
       .catch((err) => {
-        this.handleErrors(err, 'problemLoadErrors');
+        this.errorHandling.handleErrors(err, 'problemLoadErrors');
       });
   }
 
@@ -505,7 +514,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors', section);
+        this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
       });
   }
   @action addTeacher(val) {
@@ -539,7 +548,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
           this.clearSelectizeInput('select-add-teacher');
         })
         .catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
+          this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
         });
     }
   }
