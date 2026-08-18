@@ -1,32 +1,28 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
-import moment from 'moment';
+import { service } from '@ember/service';
+import validate from 'validate.js';
+import { format, parse, parseISO } from 'date-fns';
 
-export default class AssignmentNewComponent extends ErrorHandlingComponent {
+export default class AssignmentNewComponent extends Component {
   @service router;
   @service store;
   @service('sweet-alert') alert;
-  @tracked createAssignmentError = null;
+  @service currentUser;
+  @service errorHandling;
   @tracked isMissingRequiredFields = null;
   @tracked selectedSection = null;
   @tracked selectedProblem = null;
   @tracked problemList = null;
   @tracked formId = null;
-  @tracked createRecordErrors = [];
-  @tracked queryErrors = [];
   @tracked linkedWorkspacesMode = 'individual';
   @tracked doCreateLinkedWorkspaces = false;
   @tracked doCreateParentWorkspace = false;
-  @tracked fromProblemInfo = false;
   @tracked parentWorkspaceAccess = false;
   @tracked allSelected = true;
-  @tracked problemFormErrors = [];
-  @tracked sectionFormErrors = [];
   @tracked invalidDateRange = false;
-  @tracked assignedDate = moment(new Date()).format('YYYY-MM-DD');
+  @tracked assignedDate = format(new Date(), 'yyyy-MM-dd');
   tooltips = {
     class: 'Select which class you want to assign the problem',
     problem: 'Select which problem you want to assign',
@@ -53,7 +49,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       presence: false,
     },
   };
-  nameDate = moment().format('MMM Do YYYY');
+  nameDate = format(new Date(), 'MMM do yyyy');
 
   linkedWsOptions = {
     groupName: 'linkedWorkspaces',
@@ -118,8 +114,9 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
   @tracked sectionGroups = [];
   @tracked groupWorkspacesToMake = [];
-  @tracked studentWorkspacesToMake = this.selectedSection.students.mapBy('id');
-  //TODO: refactor
+  @tracked studentWorkspacesToMake =
+    this.selectedSection?.students?.map((student) => student.id) ?? [];
+
   @action updateLists(record) {
     this.allSelected = false;
     if (record.constructor.modelName === 'user') {
@@ -152,6 +149,10 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
         isTrashed: false,
       });
     }
+  }
+
+  get user() {
+    return this.currentUser.user;
   }
 
   get hasSelectedSection() {
@@ -194,7 +195,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     }
     let title = this.selectedProblem.title;
 
-    return `${title} / ${moment(this.assignedDate).format('MMM Do YYYY')}`;
+    return `${title} / ${format(parseISO(this.assignedDate), 'MMM do yyyy')}`;
   }
   //for the 'workspaces to be created' list
   get workspacesList() {
@@ -204,46 +205,34 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       return this.selectedSection.students.content;
     } else {
       return [
-        ...this.sectionGroups.toArray(),
-        ...this.selectedSection.students.content.toArray(),
+        ...this.sectionGroups.slice(),
+        ...this.selectedSection.students.content.slice(),
       ];
     }
   }
 
+  get errors() {
+    return this.errorHandling.getErrors('createRecordErrors');
+  }
+
   constructor() {
     super(...arguments);
-    let selectedProblem = this.args.selectedProblem;
-    if (selectedProblem && selectedProblem.isForAssignment) {
-      this.fromProblemInfo = true;
-      this.selectedProblem = selectedProblem;
-    }
+    if (this.args.fromProbleInfo)
+      this.selectedProblem = this.args.selectedProblem;
     if (this.args.fromSectionInfo) {
       this.fromSectionInfo = true;
       this.selectedSection = this.args.selectedSection;
     }
   }
 
-  willDestroy() {
-    super.willDestroy(...arguments);
-    let problem = this.selectedProblem;
-    if (problem && problem.isForAssignment) {
-      problem.isForAssignment = false;
-    }
-  }
-
   createAssignment(formValues) {
     let { section, problem, assignedDate, dueDate, name } = formValues;
-    const createdBy = this.args.currentUser;
+    const createdBy = this.user;
 
     if (!name) {
-      // let nameDate = $('#assignedDate')
-      //   .data('daterangepicker')
-      //   .startDate.format('MMM Do YYYY');
       let nameDate = assignedDate
-        ? moment(new Date(assignedDate.replace(/-/g, '/'))).format(
-            'MMM Do YYYY'
-          )
-        : moment(new Date()).format('MMM Do YYYY');
+        ? format(new Date(assignedDate.replace(/-/g, '/')), 'MMM do yyyy')
+        : format(new Date(), 'MMM do yyyy');
       let problemTitle = problem.get('title');
       name = `${problemTitle} / ${nameDate}`;
     }
@@ -269,18 +258,18 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
     const doCreateLinkedWorkspaces = this.doCreateLinkedWorkspaces;
     const doCreateParentWorkspace = this.doCreateParentWorkspace;
 
-    let linkedFormatInput = $('#linked-ws-new-name');
+    let linkedFormatInput = document.getElementById('linked-ws-new-name');
     let linkedNameFormat;
 
     if (linkedFormatInput) {
-      linkedNameFormat = linkedFormatInput.val();
+      linkedNameFormat = linkedFormatInput.value;
     }
 
-    let parentFormatInput = $('#parent-ws-new-name');
+    let parentFormatInput = document.getElementById('parent-ws-new-name');
     let parentNameFormat;
 
     if (parentFormatInput) {
-      parentNameFormat = parentFormatInput.val();
+      parentNameFormat = parentFormatInput.value;
     }
 
     createAssignmentData.linkedWorkspacesRequest = {
@@ -315,33 +304,30 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'createRecordErrors', createAssignmentData);
+        this.errorHandling.handleErrors(
+          err,
+          'createRecordErrors',
+          createAssignmentData
+        );
       });
   }
 
   getMongoDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    return new Date(dateMoment);
+    if (typeof htmlDateString !== 'string') return;
+    return parse(htmlDateString, 'yyyy-MM-dd', new Date());
   }
 
   getEndDate(htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD HH:mm';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    let date = new Date(dateMoment);
-    date.setHours(23, 59, 59);
-    return date;
+    if (typeof htmlDateString !== 'string') return;
+    const parsed = parse(htmlDateString, 'yyyy-MM-dd HH:mm', new Date());
+    parsed.setHours(23, 59, 59);
+    return parsed;
   }
+
   get problemOptions() {
     let cachedProblems = this.args.cachedProblems;
     if (cachedProblems) {
-      let toArray = cachedProblems.toArray();
+      let toArray = cachedProblems.slice();
       return toArray.map((cachedProblem) => {
         return {
           id: cachedProblem.id,
@@ -353,7 +339,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
   get sectionOptions() {
     let sectionList = this.args.sectionList || [];
-    let toArray = sectionList.toArray();
+    let toArray = sectionList.slice();
     return toArray.map((section) => {
       return {
         id: section.id,
@@ -380,8 +366,8 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   @action validate() {
     const section = this.selectedSection;
     const problem = this.selectedProblem;
-    let assignedDate = $('#assignedDate').val();
-    let dueDate = $('#dueDate').val();
+    let assignedDate = document.getElementById('assignedDate')?.value;
+    let dueDate = document.getElementById('dueDate')?.value;
     const name = this.name;
 
     const values = {
@@ -394,7 +380,7 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
 
     const constraints = this.constraints;
 
-    let errors = window.validate(values, constraints);
+    let errors = validate(values, constraints);
     if (errors) {
       // errors
       for (let key of Object.keys(errors)) {
@@ -422,17 +408,20 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
       return;
     }
     if (this.linkedWorkspacesMode === 'individual') {
-      this.studentWorkspacesToMake = this.workspacesList.mapBy('id');
+      this.studentWorkspacesToMake =
+        this.workspacesList?.map((workspace) => workspace.id) ?? [];
       this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'group') {
-      this.groupWorkspacesToMake = this.workspacesList.mapBy('id');
+      this.groupWorkspacesToMake =
+        this.workspacesList?.map((workspace) => workspace.id) ?? [];
       this.allSelected = true;
     }
     if (this.linkedWorkspacesMode === 'both') {
       this.studentWorkspacesToMake =
-        this.selectedSection.students.content.mapBy('id');
-      this.groupWorkspacesToMake = this.sectionGroups.mapBy('id');
+        this.selectedSection?.students?.map((student) => student.id) ?? [];
+      this.groupWorkspacesToMake =
+        this.sectionGroups?.map((group) => group.id) ?? [];
       this.allSelected = true;
     }
   }
@@ -459,5 +448,12 @@ export default class AssignmentNewComponent extends ErrorHandlingComponent {
   }
   @action cancelDateError() {
     this.invalidDateRange = false;
+  }
+
+  @action
+  scrollIntoView(element) {
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }

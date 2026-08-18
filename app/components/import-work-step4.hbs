@@ -1,0 +1,96 @@
+<div id='import-work-step4'>
+  <p class="input-label">Match Students</p>
+
+  {{#if @selectedSection}}
+    <p class="sub-input-label">
+      Need to add students to this class?
+      <LinkTo
+        @route='sections.section'
+        @model={{@selectedSection.id}}
+        @query={{hash
+          returnTo='import'
+          returnStep=4
+          importProblemId=@selectedProblem.id
+          importSectionId=@selectedSection.id
+          importUseClass=true
+          importUploadedFileIds=@uploadedFileIdsParam
+        }}
+        class='new-link'
+      >Open class roster</LinkTo>, Continue the flow, come back and then click Refresh Students.
+    </p>
+  {{else if @selectedValue}}
+    <p class="sub-input-label">
+      No class is selected right now. Go back to Step 2, pick a class, then return here.
+    </p>
+  {{/if}}
+
+  <div class="flex-container">
+    <div class="student-list">
+      {{#if @selectedSection}}
+        <h4 class="section-name">Class: {{@selectedSection.name}}</h4>
+        <p class="student-count">{{this.studentCount}} students</p>
+        <div class='student-list-actions'>
+          <button
+            class='primary-button cancel-button'
+            type='button'
+            disabled={{@isFetchingSectionStudents}}
+            {{on 'click' this.refreshStudents}}
+          >
+            {{if @isFetchingSectionStudents 'Refreshing...' 'Refresh Students'}}
+          </button>
+          <button
+            class='primary-button cancel-button roster-toggle'
+            type='button'
+            aria-expanded={{if this.isRosterExpanded 'true' 'false'}}
+            {{on 'click' this.toggleRoster}}
+          >
+            {{if this.isRosterExpanded 'Hide Student List' 'Show Student List'}}
+          </button>
+        </div>
+
+        {{#if this.isRosterExpanded}}
+          <div class='student-roster-scroll'>
+            {{#if this.displayList.length}}
+              <ul class='student-roster-list'>
+                {{#each this.displayList as |student|}}
+                  <li class='student-name'>{{student.username}}</li>
+                {{/each}}
+              </ul>
+            {{else}}
+              <p class='student-name'>No students in this class yet.</p>
+            {{/if}}
+          </div>
+        {{/if}}
+      {{else}}
+        <p>Not using class for matching.</p>
+      {{/if}}
+    </div>
+
+    <div class="matching-container">
+      {{#each this.answers as |answer|}}
+        <StudentMatchingAnswer
+          @answer={{answer}}
+          @selectedSection={{this.selectedSection}}
+          @checkStatus={{this.checkStatus}}
+          @studentMap={{this.studentMap}}
+          @addedStudentNames={{this.addedStudentNames}}
+          @newNameFilter={{this.addStudentNameFilter}}
+          @onAddStudentName={{this.addAddedStudentName}}
+        />
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="nav-btn-container">
+    <button class="primary-button cancel-button" type="button" {{on 'click' this.back}}>Back</button>
+    <button class="primary-button" type="button" {{on 'click' this.next}}>Next</button>
+  </div>
+
+  {{#if this.isMatchingIncompleteError}}
+    <Ui::ErrorBox
+      @error='Please match at least one student/name for each submission before continuing'
+      @showDismiss={{true}}
+      @resetError={{this.resetMatchingIncompleteError}}
+    />
+  {{/if}}
+</div>

@@ -1,0 +1,226 @@
+// Extend existing response-mentor-thread styles for edit history
+.final-edit-history-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+
+  .response-header {
+    // Reusing existing .response-header styles
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .history-toggle-button {
+    padding: 0.4rem 0.8rem;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #e8e8e8;
+      border-color: #999;
+    }
+
+    i {
+      margin-left: 0.3rem;
+    }
+  }
+}
+
+// Use mentor-thread-container styling for consistency
+.final-edit-history-item {
+  // Reuse mentor-thread-container base styles (border, radius, shadow)
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f8f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &.history-collapsed {
+    display: none;
+  }
+
+  &.history-most-recent {
+    border-left: 4px solid #4a90e2;
+    background-color: #f8fbff;
+  }
+
+  // Compact header showing date + rating inline
+  .history-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .history-summary-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .response-time {
+        font-weight: 600;
+        color: #444;
+        font-size: 14px;
+      }
+
+      .saved-by-inline {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+
+    .history-summary-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .star-rating-inline {
+        display: flex;
+        gap: 0.2em;
+        align-items: center;
+
+        .fa-star {
+          font-size: 14px;
+          
+          &.star-filled {
+            color: #f5af4e;
+          }
+          
+          &.star-empty {
+            color: #ddd;
+          }
+        }
+      }
+
+      .feedback-indicator {
+        color: #4a90e2;
+        font-size: 14px;
+        opacity: 0.7;
+        
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      .expand-icon {
+        font-size: 12px;
+        color: #666;
+        transition: transform 0.2s;
+        margin-left: 0.25rem;
+        
+        &.expanded {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  // Full content (hidden by default in compact mode)
+  .history-item-content {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e0e0e0;
+
+    &.collapsed {
+      display: none;
+    }
+
+    .history-feedback-only {
+      margin-bottom: 0.75rem;
+      padding: 0.75rem;
+      background-color: #f9f9f9;
+      border-left: 3px solid #f5af4e;
+      border-radius: 3px;
+
+      .feedback-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #555;
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      .feedback-text {
+        font-size: 12px;
+        font-style: italic;
+        color: #666;
+        line-height: 1.4;
+        max-height: 120px;
+        overflow-y: auto;
+        word-break: break-word;
+      }
+    }
+
+    // Reuse response-text styles
+    .response-text {
+      // Base styles from _response-mentor-thread.scss
+      padding: 0.8em;
+      background-color: #fff;
+      border-radius: 4px;
+      border: 1px solid #e0e0e0;
+      line-height: 1.5;
+      font-size: 14px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .final-edit-history-actions {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: flex-end;
+
+      .primary-button {
+        padding: 0.5rem 1rem;
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: #357abd;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .final-edit-history-item {
+    .history-item-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+
+      .history-summary-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  }
+}

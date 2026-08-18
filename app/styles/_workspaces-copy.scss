@@ -68,6 +68,12 @@
     }
     .detail-header {
       font-weight: $bold-font-weight;
+      .detail-edit-button {
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+      }
       i {
         position: relative;
         left: 5px;
@@ -335,6 +341,17 @@
   .selectize-comp {
     margin-bottom: 25px;
     margin-top: 15px;
+  }
+  // edit/remove icons are now real <button>s — strip the default chrome so they
+  // read as the bare icons they were
+  .icon-button {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+    font-size: inherit;
+    vertical-align: baseline;
   }
   .fa-edit {
     margin-left: 15px;

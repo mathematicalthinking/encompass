@@ -1,22 +1,25 @@
-<div id='assignment-info-student'>
+<div
+  id='assignment-info-student'
+  {{did-update this.handleAssignmentChange @assignment}}
+>
   <section class='assignment-info-student'>
     {{#if @assignment.name}}
-      <div class='info-detail'>
+      <div class='info-detail info-name'>
         <label for='assignment'>Assignment Name:</label>
         <p>{{@assignment.name}}</p>
       </div>
     {{/if}}
-    <div class='info-detail'>
+    <div class='info-detail problem-title'>
       <label>Problem Name:</label>
-      <p>{{@assignment.problem.title}}</p>
+      <p>{{@problem.title}}</p>
     </div>
-    <div class='info-detail'>
+    <div class='info-detail class-name'>
       <label>Class:</label>
-      <a><LinkTo @route='sections.section' @model={{@assignment.section.id}}>
-          {{@assignment.section.name}}</LinkTo></a>
+      <a><LinkTo @route='sections.section' @model={{@section.id}}>
+          {{@section.name}}</LinkTo></a>
     </div>
 
-    <div class='info-detail'>
+    <div class='info-detail assigned-date'>
       <label>Assigned Date:</label>
       {{#if @assignment.assignedDate}}
         <p>{{format-date @assignment.assignedDate 'MMM Do YYYY'}}</p>
@@ -25,7 +28,7 @@
       {{/if}}
     </div>
 
-    <div class='info-detail'>
+    <div class='info-detail due-date'>
       <label>Due Date:</label>
       {{#if @assignment.dueDate}}
         <p>{{format-date @assignment.dueDate 'MMM Do YYYY'}}</p>
@@ -33,34 +36,24 @@
         <p>N/A</p>
       {{/if}}
     </div>
-    <div class='info-detail'>
+    <div class='info-detail problem-text'>
       <label>Problem Statement:</label>
-      <p>{{{@assignment.problem.text}}}</p>
+      <p>{{make-html-safe @problem.text}}</p>
     </div>
-    {{#if @assignment.problem.image}}
+    {{#if @problem.image}}
       <div class='assignmentImage info-detail'>
         <label>Problem Image:</label>
-        <img
-          src='{{{@assignment.problem.image.imageData}}}'
-          alt={{@problem.title}}
-        />
+        <img src='{{@problem.image.imageData}}' alt={{@problem.title}} />
       </div>
     {{/if}}
   </section>
-  {{#each this.loadAnswerErrors as |error|}}
-    <ErrorBox
-      @error={{error}}
-      @showDismiss={{true}}
-      @resetError={{action 'removeErrorFromArray' 'loadAnswerErrors' error}}
-    />
-  {{/each}}
   {{#if this.isResponding}}
     <AnswerNew
       @assignment={{@assignment}}
-      @cancelResponse={{action 'cancelResponse'}}
+      @cancelResponse={{this.cancelResponse}}
       @section={{@section}}
       @problem={{@problem}}
-      @handleCreatedAnswer={{action 'handleCreatedAnswer'}}
+      @handleCreatedAnswer={{this.handleCreatedAnswer}}
       @workspacesToUpdateIds={{this.workspacesToUpdateIds}}
     />
   {{/if}}
@@ -73,20 +66,24 @@
       @priorAnswer={{this.priorAnswer}}
       @section={{@section}}
       @problem={{@problem}}
-      @cancelResponse={{action 'cancelResponse'}}
-      @handleCreatedAnswer={{action 'handleCreatedAnswer'}}
+      @cancelResponse={{this.cancelResponse}}
+      @handleCreatedAnswer={{this.handleCreatedAnswer}}
       @workspacesToUpdateIds={{this.workspacesToUpdateIds}}
     />
   {{/if}}
   {{#if this.showReviseButton}}
     <button
       class='edit-assignment-button'
-      {{action 'reviseAssignmentResponse'}}
+      type='button'
+      {{on 'click' this.reviseAssignmentResponse}}
     >Revise <i class='fas fa-edit'></i></button>
   {{/if}}
   {{#if this.showRespondButton}}
-    <button class='save-assign-btn' {{action 'beginAssignmentResponse'}}>Share
-      Your Ideas
+    <button
+      class='save-assign-btn'
+      type='button'
+      {{on 'click' this.beginAssignmentResponse}}
+    >Share Your Ideas
       <i class='fas fa-lightbulb'></i></button>
   {{/if}}
 
@@ -114,10 +111,10 @@
           {{#each this.sortedList as |answer|}}
             <li
               class={{if
-                (is-equal answer.answerId displayedAnswer.answerId)
+                (is-equal answer.answerId this.displayedAnswer.answerId)
                 'highlight'
               }}
-              {{action 'displayAnswer' answer}}
+              {{on 'click' (fn this.displayAnswer answer)}}
             >{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}</li>
           {{/each}}
         </ol>
@@ -129,6 +126,7 @@
             @assignment={{@assignment}}
             @problem={{@problem}}
             @showHideButton={{true}}
+            @onHide={{this.hideAnswer}}
           />
         {{/if}}
       </section>

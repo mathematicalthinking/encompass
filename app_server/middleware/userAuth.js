@@ -30,7 +30,6 @@ function requireUser(req) {
   } else {
     return user;
   }
-
 }
 
 function determineStudentAccess(user, path, method) {
@@ -38,13 +37,20 @@ function determineStudentAccess(user, path, method) {
     return;
   }
 
-  const {accountType, actingRole} = user;
+  const { accountType, actingRole } = user;
 
   if (accountType !== 'S' && actingRole !== 'student') {
     return true;
   }
   const forbiddenGetPaths = [];
-  const forbiddenPostPutPaths = ['sections', 'assignments', 'organizations', 'categories', 'copyWorkspaceRequests', 'problems'];
+  const forbiddenPostPutPaths = [
+    'sections',
+    'assignments',
+    'organizations',
+    'categories',
+    'copyWorkspaceRequests',
+    'problems',
+  ];
 
   if (method === 'GET') {
     // students currently cannot make any requests related to workspaces
@@ -52,7 +58,6 @@ function determineStudentAccess(user, path, method) {
       return path.includes(p);
     });
     return !isForbiddenPath;
-
   } else {
     // students currently can only make POST/PUT requests to /answers, /image
     let isForbiddenPath = _.any(forbiddenPostPutPaths, (p) => {
@@ -74,33 +79,36 @@ function protect(options) {
 
     let user = getUser(req);
 
-
     let openPaths = ['/api/users', '/api/organizations'];
     // /api/user - people need this to login; allows new users to see the user list
     // /api/organizations - need to see existing orgs when signing up
 
     let openRequest = _.contains(openPaths, req.path);
     //var newOrgRequest = req.path === 'api.organizations' && req.method === 'POST';
-    if ((openRequest && req.method === 'GET')) {
+    if (openRequest && req.method === 'GET') {
       return next();
     }
 
     let isAuthenticated = user !== null;
 
     if (!isAuthenticated) {
-      return utils.sendError.InvalidCredentialsError('You are not Authenticated.', res);
+      return utils.sendError.InvalidCredentialsError(
+        'You are not Authenticated.',
+        res
+      );
     }
 
     if (user.accountType === 'S' || user.actingRole === 'student') {
-     let isAllowed = determineStudentAccess(user, req.path, req.method);
-     if (isAllowed) {
-      return next();
-     }
-     return utils.sendError.NotAuthorizedError('You are not Authorized.', res);
+      let isAllowed = determineStudentAccess(user, req.path, req.method);
+      if (isAllowed) {
+        return next();
+      }
+      return utils.sendError.NotAuthorizedError('You are not Authorized.', res);
     }
 
     // will only reach here if non-student
-    let userAuthorized = (isAuthenticated && (user.accountType === 'A' || user.isAuthorized));
+    let userAuthorized =
+      isAuthenticated && (user.accountType === 'A' || user.isAuthorized);
 
     let notAuthorized = !userAuthorized;
     let isGoogleUser = !!user.googleId;
@@ -113,7 +121,7 @@ function protect(options) {
     return next();
   }
 
-  return (_protect);
+  return _protect;
 }
 
 function getEmailAuth() {
@@ -131,15 +139,18 @@ function getEmailAuth() {
       console.error(`Missing TEST_GMAIL_PASSWORD .env variable`);
     }
   }
-  return ({"username": emailUsername, "password": emailPassword});
+  return { username: emailUsername, password: emailPassword };
 }
 
 function getUserOrg(userId) {
-  return models.User.findById(userId).lean().exec().then((user) => {
-    if (user) {
-      return user.organization;
-    }
-  });
+  return models.User.findById(userId)
+    .lean()
+    .exec()
+    .then((user) => {
+      if (user) {
+        return user.organization;
+      }
+    });
 }
 
 function generateRandomColor(luminosity, hue, format, count, alpha) {
@@ -153,7 +164,7 @@ function generateRandomColor(luminosity, hue, format, count, alpha) {
 }
 
 function splitName(name) {
-  return name.split(" ").join("+");
+  return name.split(' ').join('+');
 }
 
 function createUserAvatar(name) {

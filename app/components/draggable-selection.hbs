@@ -1,0 +1,54 @@
+<div class='draggable-selection'>
+  <div
+    class='selectionLink selection-tooltip
+      {{if this.isImage "image-tag"}}
+      {{if this.isSelected "is-selected"}}'
+    data-selection-tooltip={{this.selectionTooltip}}
+  >
+
+    {{#if this.modelIdsReady}}
+      <LinkTo
+        @route='workspace.submissions.submission.selections.selection'
+        @models={{this.selectionModelIds}}
+        class={{this.linkToClassName}}
+      >
+        {{#if this.isImage}}
+          <img
+            class='img-tag-thmb'
+            src={{this.imageSource}}
+            alt={{@selection.text}}
+          />
+          <div class='overlay'>
+            <button type='button' {{on 'click' this.expandImage}}><i
+                class={{this.overlayIcon}}
+              ></i></button>
+          </div>
+        {{else}}
+          {{@selection.text}}
+        {{/if}}
+      </LinkTo>
+    {{/if}}
+    {{#unless this.isImage}}
+      {{#if this.canDelete}}
+        <span {{on 'click' (fn this.deleteSelection @selection)}}><i
+            class='fas fa-minus-circle'
+          ></i></span>
+      {{/if}}
+    {{/unless}}
+  </div>
+  {{#if this.isImage}}
+    <div class='selection-actions'>
+      {{#if this.canDelete}}
+        <span {{on 'click' (fn this.deleteSelection @selection)}}><i
+            class='fas fa-minus-circle'
+          ></i></span>
+      {{/if}}
+    </div>
+  {{/if}}
+  {{#if this.isExpanded}}
+    <div class='full-image'>
+      <i class='fas fa-times' {{on 'click' this.expandImage}}></i>
+      <img src={{this.imageSource}} alt={{@selection.text}} />
+    </div>
+  {{/if}}
+</div>

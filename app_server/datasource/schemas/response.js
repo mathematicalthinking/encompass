@@ -12,31 +12,44 @@ const { isValidMongoId } = require('../../utils/mongoose');
 const { resolveParentUpdates } = require('../api/parentWorkspaceApi');
 
 /**
-  * @public
-  * @class Response
-  * @description Responses are text documents based on selections and comments
-  */
-var ResponseSchema = new Schema({
-//== Shared properties (Because Mongoose doesn't support schema inheritance)
+ * @public
+ * @class Response
+ * @description Responses are text documents based on selections and comments
+ */
+var ResponseSchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
     createdBy: { type: ObjectId, ref: 'User', required: true },
-    createDate: { type: Date, 'default': Date.now() },
-    isTrashed: { type: Boolean, 'default': false },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
-    lastModifiedDate: { type: Date, 'default': Date.now() },
-//====
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
     text: { type: String, required: true },
     source: { type: String, required: true }, // submission, workspace, etc - what triggered this?
     original: { type: String },
     recipient: { type: ObjectId, ref: 'User' },
-    selections: [{type: ObjectId, ref:'Selection'}],
-    comments: [{type: ObjectId, ref:'Comment'}],
-    workspace: {type:ObjectId, ref:'Workspace'},
-    submission: {type:ObjectId, ref:'Submission'},
-    responseType: {type: String, enum: ['mentor', 'approver', 'student', 'note', 'newRevisionNotice']},
-    status: { type: String, enum: ['approved', 'pendingApproval', 'needsRevisions', 'superceded', 'draft'] },
-    priorRevision : {type: ObjectId, ref: 'Response'}, // previous mentor reply if responding to an approver reply
-    reviewedResponse: {type: ObjectId, ref: 'Response'}, // mentor reply that was source of approver reply
-    note: {type: String },
+    selections: [{ type: ObjectId, ref: 'Selection' }],
+    comments: [{ type: ObjectId, ref: 'Comment' }],
+    workspace: { type: ObjectId, ref: 'Workspace' },
+    submission: { type: ObjectId, ref: 'Submission' },
+    responseType: {
+      type: String,
+      enum: ['mentor', 'approver', 'student', 'note', 'newRevisionNotice'],
+    },
+    status: {
+      type: String,
+      enum: [
+        'approved',
+        'pendingApproval',
+        'needsRevisions',
+        'superceded',
+        'draft',
+      ],
+    },
+    priorRevision: { type: ObjectId, ref: 'Response' }, // previous mentor reply if responding to an approver reply
+    reviewedResponse: { type: ObjectId, ref: 'Response' }, // mentor reply that was source of approver reply
+    note: { type: String },
     approvedBy: { type: ObjectId, ref: 'User' },
     unapprovedBy: { type: ObjectId, ref: 'User' },
     powsRecipient: { type: String },
@@ -48,33 +61,34 @@ var ResponseSchema = new Schema({
     /*
     For post save hook use only
     */
-   isNewlyApproved: { type: Boolean, default: false, select: false },
-   isNewApproved: { type: Boolean, default : false, select: false },
-   isNewPending: { type: Boolean, default: false, select: false },
-   isNewlyNeedsRevisions: { type: Boolean, default: false, select: false },
-   isNewlySuperceded: { type: Boolean, default: false, select: false},
-   isNewlyRead: { type: Boolean, default: false, select: false},
-   wasUnapproved: {type: Boolean, default: false, select: false},
-   wasNew: { type: Boolean, default: false, select: false },
-   updatedFields: [ { type: String , select: false } ],
-
-  }, {versionKey: false});
+    isNewlyApproved: { type: Boolean, default: false, select: false },
+    isNewApproved: { type: Boolean, default: false, select: false },
+    isNewPending: { type: Boolean, default: false, select: false },
+    isNewlyNeedsRevisions: { type: Boolean, default: false, select: false },
+    isNewlySuperceded: { type: Boolean, default: false, select: false },
+    isNewlyRead: { type: Boolean, default: false, select: false },
+    wasUnapproved: { type: Boolean, default: false, select: false },
+    wasNew: { type: Boolean, default: false, select: false },
+    updatedFields: [{ type: String, select: false }],
+  },
+  { versionKey: false }
+);
 
 /**
-  * ## Pre-Validation
-  * Before saving we must verify (synchonously) that:
-  */
+ * ## Pre-Validation
+ * Before saving we must verify (synchonously) that:
+ */
 ResponseSchema.pre('save', function (next) {
-  var toObjectId = function(elem, ind, arr) {
-    if( !(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
+  var toObjectId = function (elem, ind, arr) {
+    if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
       arr[ind] = mongoose.Types.ObjectId(elem);
     }
   };
 
   /** + Every ID reference in our object is properly typed.
-    *   This needs to be done BEFORE any other operation so
-    *   that native lookups and updates don't fail.
-    */
+   *   This needs to be done BEFORE any other operation so
+   *   that native lookups and updates don't fail.
+   */
   try {
     this.selections.forEach(toObjectId);
     this.comments.forEach(toObjectId);
@@ -95,38 +109,49 @@ ResponseSchema.pre('save', function (next) {
     }
     let didStatusChange = modifiedFields.includes('status');
 
-    let isNewlyRead = !isNew && (modifiedFields.includes('wasReadByRecipient') && this.wasReadByRecipient);
+    let isNewlyRead =
+      !isNew &&
+      modifiedFields.includes('wasReadByRecipient') &&
+      this.wasReadByRecipient;
     let isNewApproved = this.isNew && isApproved;
     let isNewPending = this.isNew && this.status === 'pendingApproval';
 
     // for when a draft is saved
-    let statusChangedToPending = this.status === 'pendingApproval' && didStatusChange;
+    let statusChangedToPending =
+      this.status === 'pendingApproval' && didStatusChange;
 
-    let isNewlyNeedsRevisions = !isNew && this.status === 'needsRevisions' && didStatusChange;
+    let isNewlyNeedsRevisions =
+      !isNew && this.status === 'needsRevisions' && didStatusChange;
 
     let wasApproved = isValidMongoId(this.approvedBy);
 
     // not newly approved if user saved one of their drafts
-    let isNewlyApproved = !isNew && (isApproved && didStatusChange && wasApproved);
+    let isNewlyApproved =
+      !isNew && isApproved && didStatusChange && wasApproved;
 
-    let isNewlySuperceded = !isNew && this.status === 'superceded' && didStatusChange;
+    let isNewlySuperceded =
+      !isNew && this.status === 'superceded' && didStatusChange;
 
     // when a response is unapproved, approvedBy is set to null && unapprovedBy is set
     let didUnapprovedByChange = modifiedFields.includes('unapprovedBy');
-    let wasUnapproved = didUnapprovedByChange && isValidMongoId(this.unapprovedBy) && didStatusChange && !isApproved;
+    let wasUnapproved =
+      didUnapprovedByChange &&
+      isValidMongoId(this.unapprovedBy) &&
+      didStatusChange &&
+      !isApproved;
 
     // send ntf to recipient after save
     this.isNewApproved = isNewApproved;
     this.isNewlyApproved = isNewlyApproved;
-    this.isNewPending = isNewPending || ( statusChangedToPending && !wasUnapproved);
+    this.isNewPending =
+      isNewPending || (statusChangedToPending && !wasUnapproved);
     this.isNewlyNeedsRevisions = isNewlyNeedsRevisions;
     this.isNewlySuperceded = isNewlySuperceded;
     this.isNewlyRead = isNewlyRead;
     this.wasUnapproved = wasUnapproved;
 
     next();
-  }
-  catch(err) {
+  } catch (err) {
     next(new Error(err.message));
   }
 });
@@ -140,7 +165,7 @@ async function emitResponseReadEvent(response) {
   let userIds = [];
 
   if (isValidMongoId(response.createdBy)) {
-      userIds.push(response.createdBy);
+    userIds.push(response.createdBy);
   }
 
   if (isValidMongoId(response.approvedBy)) {
@@ -151,57 +176,70 @@ async function emitResponseReadEvent(response) {
     return;
   }
 
-  let users = await models.User.find({_id: {$in: userIds}, isTrashed: false}, {socketId: 1}).lean().exec();
+  let users = await models.User.find(
+    { _id: { $in: userIds }, isTrashed: false },
+    { socketId: 1 }
+  )
+    .lean()
+    .exec();
 
   users.forEach((user) => {
     let socketId = user.socketId;
 
     if (socketId) {
-      let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+      let socket = _.propertyOf(sockets)([
+        'io',
+        'sockets',
+        'sockets',
+        socketId,
+      ]);
 
       if (socket) {
         let data = {
           updatedRecord: response,
-          recordType: 'response'
+          recordType: 'response',
         };
         socket.emit('UPDATED_RECORD', data);
       }
     }
   });
-
 }
 
 /**
-  * ## Post-Validation
-  * After saving we must ensure (synchonously) that:
-  */
+ * ## Post-Validation
+ * After saving we must ensure (synchonously) that:
+ */
 ResponseSchema.post('save', function (response) {
-  var update = { $addToSet: { 'responses': response } };
+  var update = { $addToSet: { responses: response } };
   let isParentResponse = isValidMongoId(response.originalResponse);
 
-  if( response.isTrashed ) {
-    var responseIdObj = mongoose.Types.ObjectId( response._id );
+  if (response.isTrashed) {
+    var responseIdObj = mongoose.Types.ObjectId(response._id);
     /* + If deleted, all references are also deleted */
-    update = { $pull: { 'responses': responseIdObj } };
+    update = { $pull: { responses: responseIdObj } };
   }
-  if(response.workspace){
-    mongoose.models.Workspace.update({'_id': response.workspace},
+  if (response.workspace) {
+    mongoose.models.Workspace.update(
+      { _id: response.workspace },
       update,
       function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
         }
-      });
+      }
+    );
   }
 
-  if(response.submission){
-    mongoose.models.Submission.update({'_id': response.submission},
+  if (response.submission) {
+    mongoose.models.Submission.update(
+      { _id: response.submission },
       update,
       function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
         }
-      });
+      }
+    );
   }
   // do not send ntfs if parent response
 
@@ -226,7 +264,7 @@ ResponseSchema.post('save', function (response) {
           response: response._id,
           primaryRecordType: 'response',
           notificationType: ntfType,
-          text
+          text,
         });
 
         newReplyNtf.save();
@@ -239,7 +277,7 @@ ResponseSchema.post('save', function (response) {
             response: response._id,
             primaryRecordType: 'response',
             notificationType: 'newlyApprovedReply',
-            text: 'One of your mentor replies was recently approved.'
+            text: 'One of your mentor replies was recently approved.',
           });
           newlyApprovedNtf.save();
 
@@ -248,8 +286,9 @@ ResponseSchema.post('save', function (response) {
             notificationType: 'mentorReplyRequiresApproval',
             response: response._id,
             wasSeen: false,
-            isTrashed: false
-          }).exec()
+            isTrashed: false,
+          })
+            .exec()
             .then((ntfs) => {
               ntfs.forEach((ntf) => {
                 ntf.wasSeen = true;
@@ -262,7 +301,9 @@ ResponseSchema.post('save', function (response) {
 
     if (response.isNewPending) {
       // send ntf to owner of workspace and any approvers
-      return models.Workspace.findById(response.workspace).lean().exec()
+      return models.Workspace.findById(response.workspace)
+        .lean()
+        .exec()
         .then((workspace) => {
           if (!workspace) {
             return null;
@@ -285,7 +326,7 @@ ResponseSchema.post('save', function (response) {
               response: response._id,
               primaryRecordType: 'response',
               notificationType: 'mentorReplyRequiresApproval',
-              text: 'There is a new mentor reply waiting to be approved.'
+              text: 'There is a new mentor reply waiting to be approved.',
             });
             ntf.save();
           });
@@ -299,7 +340,7 @@ ResponseSchema.post('save', function (response) {
           response: response._id,
           primaryRecordType: 'response',
           notificationType: 'mentorReplyNeedsRevisions',
-          text: 'One of your mentor replies needs revisions.'
+          text: 'One of your mentor replies needs revisions.',
         });
         ntf.save();
       }
@@ -311,14 +352,19 @@ ResponseSchema.post('save', function (response) {
     emitResponseReadEvent(response);
   }
 
-  if (response.isNewlySuperceded || response.isTrashed || response.wasUnapproved) {
+  if (
+    response.isNewlySuperceded ||
+    response.isTrashed ||
+    response.wasUnapproved
+  ) {
     // clear any notification relevant to this response
     models.Notification.find({
       primaryRecordType: 'response',
       response: response._id,
       wasSeen: false,
-      isTrashed: false
-    }).exec()
+      isTrashed: false,
+    })
+      .exec()
       .then((ntfs) => {
         ntfs.forEach((ntf) => {
           ntf.isTrashed = true;
@@ -326,46 +372,55 @@ ResponseSchema.post('save', function (response) {
         });
       });
 
-      if (response.wasUnapproved) {
-        // emit CLEAR_RECORD event to recipient
-        models.User.findById(response.recipient).exec()
-          .then((recipient) => {
-            if (recipient) {
-              let socketId = recipient.socketId;
-              if (socketId) {
-                let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
-                if (socket) {
-
-                  let data = {
-                    recordIdToClear: response._id,
-                    recordType: 'response'
-                  };
-                  socket.emit('CLEAR_RECORD', data);
-                }
+    if (response.wasUnapproved) {
+      // emit CLEAR_RECORD event to recipient
+      models.User.findById(response.recipient)
+        .exec()
+        .then((recipient) => {
+          if (recipient) {
+            let socketId = recipient.socketId;
+            if (socketId) {
+              let socket = _.propertyOf(sockets)([
+                'io',
+                'sockets',
+                'sockets',
+                socketId,
+              ]);
+              if (socket) {
+                let data = {
+                  recordIdToClear: response._id,
+                  recordType: 'response',
+                };
+                socket.emit('CLEAR_RECORD', data);
               }
             }
+          }
+        });
 
-          });
-
-          // emit UPDATED_RECORD event to creator of response
-          models.User.findById(response.createdBy).exec()
-            .then((creator) => {
-              if (creator) {
-                let socketId = creator.socketId;
-                if (socketId) {
-                  let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
-                  if (socket) {
-                    let data = {
-                      updatedRecord: response,
-                      recordType: 'response'
-                    };
-                    socket.emit('UPDATED_RECORD', data);
-                  }
-                }
+      // emit UPDATED_RECORD event to creator of response
+      models.User.findById(response.createdBy)
+        .exec()
+        .then((creator) => {
+          if (creator) {
+            let socketId = creator.socketId;
+            if (socketId) {
+              let socket = _.propertyOf(sockets)([
+                'io',
+                'sockets',
+                'sockets',
+                socketId,
+              ]);
+              if (socket) {
+                let data = {
+                  updatedRecord: response,
+                  recordType: 'response',
+                };
+                socket.emit('UPDATED_RECORD', data);
               }
-
-            });
-      }
+            }
+          }
+        });
+    }
   }
 
   let { updatedFields, wasNew } = response;
@@ -379,7 +434,7 @@ ResponseSchema.post('save', function (response) {
       response,
       'response',
       'create'
-    ).catch(err => {
+    ).catch((err) => {
       console.log('error creating new parent response: ', err);
     });
   } else if (wereUpdatedFields) {
@@ -393,10 +448,10 @@ ResponseSchema.post('save', function (response) {
       'wasReadByRecipient',
       'wasReadByApprover',
       'reviewedResponse',
-      'priorRevision'
+      'priorRevision',
     ];
 
-    let parentFieldsToUpdate = updatedFields.filter(field => {
+    let parentFieldsToUpdate = updatedFields.filter((field) => {
       return allowedParentUpdateFields.includes(field);
     });
 
@@ -410,11 +465,10 @@ ResponseSchema.post('save', function (response) {
       'response',
       'update',
       parentFieldsToUpdate
-    ).catch(err => {
+    ).catch((err) => {
       console.log('err resolving parent response update', err);
     });
   }
-
 });
 
 module.exports.Response = mongoose.model('Response', ResponseSchema);

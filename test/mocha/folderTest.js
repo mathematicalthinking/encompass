@@ -9,27 +9,32 @@ const userFixtures = require('./userFixtures');
 
 const expect = chai.expect;
 const host = helpers.host;
-const baseUrl = "/api/folders/";
+const baseUrl = '/api/folders/';
 
 chai.use(chaiHttp);
 
-describe('Folder CRUD operations by Account Type',
- async function() {
+describe('Folder CRUD operations by Account Type', async function () {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Folder CRUD operations as ${user.details.testDescriptionTitle}`, function(){
+    describe(`Folder CRUD operations as ${user.details.testDescriptionTitle}`, function () {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
-      const { accessibleFolderCount, inaccessibleFolder,  accessibleFolder, validFolder, modifiableFolder } = user.folders;
+      const {
+        accessibleFolderCount,
+        inaccessibleFolder,
+        accessibleFolder,
+        validFolder,
+        modifiableFolder,
+      } = user.folders;
 
       const isStudent = accountType === 'S' || actingRole === 'student';
 
-      before(async function(){
+      before(async function () {
         try {
           await helpers.setup(agent, username, password);
-        }catch(err) {
+        } catch (err) {
           console.log(err);
         }
       });
@@ -39,10 +44,8 @@ describe('Folder CRUD operations by Account Type',
       });
 
       describe('/GET Folders', () => {
-        it('should get all folders', done => {
-          agent
-          .get(baseUrl)
-          .end((err, res) => {
+        it('should get all folders', (done) => {
+          agent.get(baseUrl).end((err, res) => {
             if (err) {
               console.error(err);
             }
@@ -57,11 +60,9 @@ describe('Folder CRUD operations by Account Type',
       });
       if (accountType !== 'A') {
         describe('/GET inaccessible folder by id', () => {
-          it('should return 403 error', done => {
+          it('should return 403 error', (done) => {
             const url = baseUrl + inaccessibleFolder._id;
-            agent
-            .get(url)
-            .end((err, res) => {
+            agent.get(url).end((err, res) => {
               if (err) {
                 console.log(err);
               }
@@ -73,10 +74,8 @@ describe('Folder CRUD operations by Account Type',
       }
       if (!isStudent) {
         describe('/GET accessible folder by ID', () => {
-          it('should one folder with matching id', done => {
-            agent
-            .get(baseUrl + accessibleFolder._id)
-            .end((err, res) => {
+          it('should one folder with matching id', (done) => {
+            agent.get(baseUrl + accessibleFolder._id).end((err, res) => {
               if (err) {
                 console.error(err);
               }
@@ -96,24 +95,24 @@ describe('Folder CRUD operations by Account Type',
         if (isStudent) {
           msg = 'should return 403 error';
         }
-        it(msg, done => {
+        it(msg, (done) => {
           agent
-          .post(baseUrl)
-          .send({folder: validFolder})
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-            }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
-              expect(res.body.folder).to.have.any.keys('name', 'workspace');
-              expect(res.body.folder.name).to.eql(validFolder.name);
-              done();
-            }
-          });
+            .post(baseUrl)
+            .send({ folder: validFolder })
+            .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.folder).to.have.any.keys('name', 'workspace');
+                expect(res.body.folder.name).to.eql(validFolder.name);
+                done();
+              }
+            });
         });
       });
 
@@ -127,29 +126,29 @@ describe('Folder CRUD operations by Account Type',
           msg = 'should return 403 error';
         }
 
-        it(msg, done => {
+        it(msg, (done) => {
           let url = baseUrl + folder._id;
           agent
-          .put(url)
-          .send({
-                folder: {
-                  name: newName,
-                }
-              })
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-            }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
-              expect(res.body.folder).to.have.any.keys('name', );
-              expect(res.body.folder.name).to.eql(newName);
-              done();
-            }
-          });
+            .put(url)
+            .send({
+              folder: {
+                name: newName,
+              },
+            })
+            .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.folder).to.have.any.keys('name');
+                expect(res.body.folder.name).to.eql(newName);
+                done();
+              }
+            });
         });
       });
     });

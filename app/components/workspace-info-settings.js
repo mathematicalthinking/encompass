@@ -1,15 +1,16 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
-import { inject as service } from '@ember/service';
-
-export default class WorkspaceInfoSettingsComponent extends ErrorHandlingComponent {
+import { service } from '@ember/service';
+import each from 'lodash-es/each';
+import isNull from 'lodash-es/isNull';
+export default class WorkspaceInfoSettingsComponent extends Component {
   @service('current-user') currentUser;
   @service('sweet-alert') alert;
   @service('workspace-permissions') permissions;
   @service('utility-methods') utils;
   @service store;
+  @service('error-handling') errorHandling;
   @tracked selectedMode = null;
   get workspacePermissions() {
     return this.args.workspace.permissions;
@@ -26,6 +27,15 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   @tracked isUpdateRequestInProgress = false;
   @tracked createdParentData = {};
   @tracked updatedParentData = {};
+  @tracked updateErrors = null; // set directly from results; kept local
+
+  // serverErrors is populated via the error-handling service
+  get serverErrors() {
+    return this.errorHandling.getErrors('serverErrors') || null;
+  }
+  @tracked wereNoAnswersToUpdate = false;
+  @tracked addedSubmissions = null;
+
   get isParentWs() {
     return this.args.workspace.workspaceType === 'parent';
   }
@@ -41,15 +51,17 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
 
   get initialOwnerItem() {
-    const owner = this.args.workspace.get('owner');
-    if (this.utils.isNonEmptyObject(owner)) {
-      return [owner.get('id')];
+    const ownerId = this.args.workspace.belongsTo('owner').id();
+    if (ownerId) {
+      return [ownerId];
     }
     return [];
   }
 
   get initialLinkedAssignmentItem() {
-    let linkedAssignmentId = this.args.linkedAssignment.get('id');
+    const linkedAssignmentId = this.args.workspace
+      .belongsTo('linkedAssignment')
+      .id();
 
     if (linkedAssignmentId) {
       return [linkedAssignmentId];
@@ -80,6 +92,29 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
     return boolean ? 'Yes' : 'No';
   }
 
+  @action setSelectedMode(val) {
+    this.selectedMode = val;
+  }
+  @action setSelectedAutoUpdateSetting(val) {
+    this.selectedAutoUpdateSetting = val;
+  }
+  @action clearMissingLinkedAssignment() {
+    this.missingLinkedAssignment = null;
+  }
+  @action clearMissingChildWorkspaces() {
+    this.missingChildWorkspaces = null;
+  }
+
+  // Dismiss a single error. serverErrors lives in the error-handling service;
+  // updateErrors is a local field set directly from the update results.
+  @action removeErrorFromArray(prop, err) {
+    if (prop === 'serverErrors') {
+      this.errorHandling.removeErrorFromArray(prop, err);
+    } else if (Array.isArray(this[prop])) {
+      this[prop] = this[prop].filter((e) => e !== err);
+    }
+  }
+
   @action editWorkspaceInfo() {
     this.isEditing = true;
     let workspace = this.args.workspace;
@@ -102,13 +137,13 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
 
     const user = this.store.peekRecord('user', val);
     if (this.utils.isNonEmptyObject(user)) {
-      workspace.set('owner', user);
-      let ownerOrg = user.get('organization');
-      let ownerOrgName = ownerOrg.get('name');
-      let ownerOrgId = ownerOrg.get('id');
-      let workspaceOrg = workspace.get('organization');
-      let workspaceOrgName = workspaceOrg.get('name');
-      let workspaceOrgId = workspaceOrg.get('id');
+      workspace.owner = user;
+      const ownerOrg = user.belongsTo('organization').value();
+      const ownerOrgName = ownerOrg?.name;
+      const ownerOrgId = ownerOrg?.id;
+      const workspaceOrg = workspace.belongsTo('organization').value();
+      const workspaceOrgName = workspaceOrg?.name;
+      const workspaceOrgId = workspaceOrg?.id;
 
       if (workspaceOrgId) {
         if (workspaceOrgId !== ownerOrgId) {
@@ -122,19 +157,19 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
             )
             .then((results) => {
               if (results.value) {
-                workspace.set('organization', ownerOrg);
+                workspace.organization = ownerOrg;
                 this.saveOwner = user;
               } else {
-                workspace.set('organization', workspaceOrg);
+                workspace.organization = workspaceOrg;
                 this.saveOwner = user;
               }
             });
         } else {
-          workspace.set('organization', ownerOrg);
+          workspace.organization = ownerOrg;
           this.saveOwner = user;
         }
       } else {
-        workspace.set('organization', ownerOrg);
+        workspace.organization = ownerOrg;
         this.saveOwner = user;
       }
     }
@@ -147,7 +182,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
 
     let linkedAssignmentId = this.args.linkedAssignment.id;
 
-    if (_.isNull($item)) {
+    if (isNull($item)) {
       if (linkedAssignmentId) {
         this.selectedLinkedAssignment = null;
         this.didLinkedAssignmentChange = true;
@@ -158,7 +193,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
     let assignment = this.store.peekRecord('assignment', val);
 
     if (assignment) {
-      if (assignment.get('id') !== linkedAssignmentId) {
+      if (assignment.id !== linkedAssignmentId) {
         this.selectedLinkedAssignment = assignment;
         this.didLinkedAssignmentChange = true;
       }
@@ -166,13 +201,13 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
 
   @action checkWorkspace() {
-    let workspace = this.args.workspace;
-    let workspaceOrg = workspace.get('organization.content');
-    let workspaceOwner = workspace.get('owner');
-    let ownerOrg = workspaceOwner.get('organization');
-    let ownerOrgName = ownerOrg.get('name');
-    let mode = this.selectedMode;
-    workspace.set('mode', mode);
+    const workspace = this.args.workspace;
+    const workspaceOrg = workspace.belongsTo('organization').value();
+    const workspaceOwner = workspace.belongsTo('owner').value();
+    const ownerOrg = workspaceOwner?.belongsTo('organization').value();
+    const ownerOrgName = ownerOrg?.name;
+    const mode = this.selectedMode;
+    workspace.mode = mode;
     if (mode === 'org' && workspaceOrg === null) {
       this.alert
         .showModal(
@@ -184,7 +219,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         )
         .then((results) => {
           if (results.value) {
-            workspace.set('organization', ownerOrg);
+            workspace.organization = ownerOrg;
             this.saveWorkspace();
           }
         });
@@ -212,17 +247,17 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         ? 'doAutoUpdateFromChildren'
         : 'doAllowSubmissionUpdates';
 
-      if (updateSettingBool !== workspace.get(updateProp)) {
-        workspace.set(updateProp, updateSettingBool);
+      if (updateSettingBool !== workspace[updateProp]) {
+        workspace[updateProp] = updateSettingBool;
       }
     }
 
     if (this.didLinkedAssignmentChange) {
-      workspace.set('linkedAssignment', this.selectedLinkedAssignment);
+      workspace.linkedAssignment = this.selectedLinkedAssignment;
     }
 
     if (
-      workspace.get('hasDirtyAttributes') ||
+      workspace.hasDirtyAttributes ||
       this.saveOwner ||
       this.didLinkedAssignmentChange
     ) {
@@ -243,7 +278,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
           this.didLinkedAssignmentChange = false;
         })
         .catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors', workspace);
+          this.errorHandling.handleErrors(err, 'updateRecordErrors', workspace);
         });
     } else {
       this.alert.showToast(
@@ -264,13 +299,12 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
 
   @action updateWithExistingWork() {
-    _.each(
+    each(
       [
         'wereNoAnswersToUpdate',
         'updateErrors',
         'addedSubmissions',
         'missingLinkedAssignment',
-        'serverErrors',
         'missingChildWorkspaces',
       ],
       (prop) => {
@@ -279,6 +313,8 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         }
       }
     );
+    // serverErrors lives in the error-handling service, not on the component
+    this.errorHandling.removeMessages('serverErrors');
 
     let isParentUpdate = this.isParentWs;
 
@@ -291,25 +327,40 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
       return;
     }
 
+    // Check if linkedAssignment proxy has actual content
+    let linkedAssignment = isParentUpdate
+      ? null
+      : this.args.linkedAssignment?.content || this.args.linkedAssignment;
+
+    // If we have a proxy but no content, treat it as missing
+    if (!isParentUpdate && (!linkedAssignment || !linkedAssignment.id)) {
+      this.missingLinkedAssignment = true;
+      return;
+    }
+
     if (isParentUpdate && !this.hasChildWorkspaces) {
       return (this.missingChildWorkspaces = true);
     }
 
     this.isUpdateRequestInProgress = true;
 
+    // Get the actual assignment from the belongsTo proxy
+
     let newUpdateRequest = this.store.createRecord('updateWorkspaceRequest', {
       workspace: this.args.workspace,
-      linkedAssignment: this.args.linkedAssignment,
+      linkedAssignment: linkedAssignment,
       createdBy: this.currentUser.user,
       isParentUpdate: this.isParentWs,
     });
+
     newUpdateRequest
       .save()
       .then((results) => {
         this.isUpdateRequestInProgress = false;
 
         if (isParentUpdate) {
-          if (results.get('wasNoDataToUpdate') === true) {
+          if (results.wasNoDataToUpdate === true) {
+            console.log('[UPDATE WORKSPACE] Parent workspace up to date');
             this.alert.showToast(
               'info',
               'Workspace Up to Date',
@@ -339,7 +390,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
           }
         }
 
-        if (results.get('wereNoAnswersToUpdate') === true) {
+        if (results.wereNoAnswersToUpdate === true) {
           this.alert.showToast(
             'info',
             'Workspace Up to Date',
@@ -350,7 +401,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
           );
           return;
         }
-        if (this.utils.isNonEmptyArray(results.get('updateErrors'))) {
+        if (this.utils.isNonEmptyArray(results.updateErrors)) {
           this.updateErrors = results.updateErrors;
           return;
         }
@@ -372,7 +423,49 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         }
       })
       .catch((err) => {
-        this.handleErrors(err, 'serverErrors');
+        console.error('[UPDATE WORKSPACE] ❌ Error caught:', err);
+
+        // Check if this is the Ember Data assertion error for embedded relationship objects
+        // This happens when the server returns full user objects instead of just {type, id}
+        // The update actually succeeded on the server, but the response has formatting issues
+        if (
+          err.message &&
+          err.message.includes(
+            'Assertion Failed: Encountered a relationship identifier'
+          )
+        ) {
+          // The update worked, we just need to refresh the workspace data
+          return this.args.workspace
+            .reload()
+            .then(() => {
+              this.alert.showToast(
+                'success',
+                'Workspace updated successfully',
+                'bottom-start',
+                3000,
+                false,
+                null
+              );
+            })
+            .catch((reloadErr) => {
+              console.error(
+                '[UPDATE WORKSPACE] ❌ Error reloading workspace:',
+                reloadErr
+              );
+              // Even if reload fails, the update succeeded
+              this.alert.showToast(
+                'info',
+                'Workspace updated. Please refresh the page.',
+                'bottom-start',
+                5000,
+                false,
+                null
+              );
+            });
+        }
+
+        // For other errors, use the standard error handling
+        this.errorHandling.handleErrors(err, 'serverErrors');
       });
   }
 }

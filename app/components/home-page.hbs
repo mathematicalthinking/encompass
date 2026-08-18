@@ -5,7 +5,7 @@
       @scrollIndicators='all'
       @widthConstraint='eq-container'
       @sorts={{this.sorts}}
-      @onUpdateSorts={{action (mut this.sorts)}}
+      @onUpdateSorts={{this.updateSorts}}
     />
     <t.body @rows={{@details}} as |b|>
       <b.row as |r|>

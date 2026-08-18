@@ -1,27 +1,21 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+export default class AuthIndex extends Component {
+  @tracked shouldShowLogin = null;
 
+  constructor() {
+    super(...arguments);
+    this.shouldShowLogin = null;
+    this.init();
+  }
 
-
-
-
-
-export default Component.extend({
-  shouldShowLogin: null,
-
-
-  init: function () {
-    this._super(...arguments);
-    this.set('shouldShowLogin', true);
-  },
-
-  actions: {
-    changeComponent: function () {
-      if (this.shouldShowLogin) {
-        this.set('shouldShowLogin', false);
-      } else {
-        this.set('shouldShowLogin', true);
-      }
+  @action
+  changeComponent() {
+    if (this.shouldShowLogin) {
+      this.shouldShowLogin = false;
+    } else {
+      this.shouldShowLogin = true;
     }
   }
-});
-
+}

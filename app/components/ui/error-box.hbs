@@ -1,0 +1,8 @@
+<div class='{{this.classNames}}' {{did-insert this.registerElement}}>
+  <span class='error-text'>{{@error}}</span>
+  {{#if @showDismiss}}
+    <button class='dismiss' type='button' {{on 'click' this.closeError}}>
+      <i class='fas fa-times'></i>
+    </button>
+  {{/if}}
+</div>

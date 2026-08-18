@@ -7,7 +7,7 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
-const moment = require('moment');
+const { parse, isValid, startOfDay } = require('date-fns');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -22,6 +22,17 @@ const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
+
+function sanitizeCommentRefs(comment) {
+  if (!comment) return comment;
+  if (Array.isArray(comment.children)) {
+    comment.children = comment.children.filter(Boolean);
+  }
+  if (Array.isArray(comment.ancestors)) {
+    comment.ancestors = comment.ancestors.filter(Boolean);
+  }
+  return comment;
+}
 
 /**
  * @public
@@ -74,10 +85,11 @@ async function getComments(req, res, next) {
 
   let sinceDate = req.query.sinceDate;
   if (sinceDate) {
-    let startMoment = moment(sinceDate, 'L').startOf('day');
-    let startDateObj = new Date(startMoment);
-
-    criteria.createDate = { $gte: startDateObj };
+    const parsedDate = parse(sinceDate, 'P', new Date());
+    if (isValid(parsedDate)) {
+      const startDateObj = startOfDay(parsedDate);
+      criteria.createDate = { $gte: startDateObj };
+    }
   }
 
   let workspaces = req.query.workspaces;
@@ -166,7 +178,7 @@ async function getComments(req, res, next) {
       }
     });
     if (!hasMissingRelationship) {
-      data.comments.push(comment);
+      data.comments.push(sanitizeCommentRefs(comment));
     }
   });
 
@@ -328,9 +340,32 @@ async function putComment(req, res, next) {
       return utils.sendResponse(res, null);
     }
 
+    let comment = await models.Comment.findById(req.params.id).exec();
+
+    if (!comment) {
+      logger.info(
+        `${user.username} attempted to modify missing comment ${req.params.id} for workspace ${workspaceId}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    const isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
+    const isCommentCreator = areObjectIdsEqual(user._id, comment.createdBy);
+    const isDeleteAttempt =
+      req.body.comment?.isTrashed === true && comment.isTrashed !== true;
+
+    if (isDeleteAttempt && !isCommentCreator && !isAdmin) {
+      logger.info(
+        `Permission denied: ${user.username} attempted to delete comment ${req.params.id} created by another user`
+      );
+      return utils.sendError.NotAuthorizedError(
+        'You can only delete your own comments.',
+        res
+      );
+    }
+
     let canModifyCommentInWs =
-      _.isEqual(user._id, req.body.comment.createdBy) ||
-      wsAccess.canModify(user, popWs, 'comments', 3);
+      isCommentCreator || wsAccess.canModify(user, popWs, 'comments', 3);
 
     if (!canModifyCommentInWs) {
       logger.info(
@@ -340,15 +375,6 @@ async function putComment(req, res, next) {
         `You don't have permission to modify comments in this workspace`,
         res
       );
-    }
-
-    let comment = await models.Comment.findById(req.params.id).exec();
-
-    if (!comment) {
-      logger.info(
-        `${user.username} attempted to modify missing comment ${req.params.id} for workspace ${workspaceId}`
-      );
-      return utils.sendResponse(res, null);
     }
 
     for (let field in req.body.comment) {
@@ -372,6 +398,11 @@ async function putComment(req, res, next) {
 
 const resolveGroupUpdates = async (comment, type) => {
   const sourceWorkspace = await models.Workspace.findById(comment.workspace);
+  //nothing to propagate if the source workspace isn't in the db yet (e.g. during a
+  //workspace copy, comments are saved before the new workspace is persisted)
+  if (!sourceWorkspace) {
+    return;
+  }
   //this is only supposed to add selections to group workspaces from individual workspaces
   if (sourceWorkspace.group || sourceWorkspace.workspaceType === 'parent') {
     return;

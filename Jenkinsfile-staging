@@ -60,8 +60,13 @@ pipeline {
                         sh """
                             # setup the /mtdocker folder on remote host (for manual manipulation of stack)
                             ssh ${deploymentHost} 'mkdir -p /mtdocker'
-                            scp DevOpsTemp/mt/docker-compose*.yml DevOpsTemp/mt/swarm-monitoring/docker-compose*.yml DevOpsTemp/mt/.env* jenkins@${deploymentHost}:/mtdocker
-                            ssh ${deploymentHost} 'chown -R :docker /mtdocker && chmod -R 770 /mtdocker'    
+                            # all flat in /mtdocker: stack files, traefik.yml, and the shared monitoring
+                            # stack (relative mounts, so its prometheus*.yml must sit alongside)
+                            scp DevOpsTemp/mt/docker-compose*.yml DevOpsTemp/mt/traefik.yml DevOpsTemp/monitoring/docker-compose-monitoring.yml DevOpsTemp/monitoring/prometheus.yml DevOpsTemp/monitoring/prometheus-web-config.yml DevOpsTemp/mt/.env* jenkins@${deploymentHost}:/mtdocker
+                            # 644 files / 755 dirs: traefik.yml and prometheus*.yml are bind-mounted and
+                            # read by non-root container users. .env-* stay group-only — secrets,
+                            # and only the docker CLI reads them.
+                            ssh ${deploymentHost} 'chown -R :docker /mtdocker && chmod -R u=rwX,go=rX /mtdocker && chmod 640 /mtdocker/.env*'    
 
                             # set the docker remote host context
                             docker context use ${deploymentHost}
@@ -75,8 +80,8 @@ pipeline {
                             # redeploy the app service                            
                             docker stack deploy --compose-file DevOpsTemp/mt/docker-compose-mt-apps-test.yml mt-test
 
-                            # restart nginx (clears the cache and reconnects the backend service)
-                            docker service update --force mt-test_nginx
+                            # traefik needs no restart; nudge prom, which can miss a recreated service
+                            docker service update --force monitoring_prom
 
                             # set the docker build context back to local
                             docker context use default

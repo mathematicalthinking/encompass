@@ -110,6 +110,30 @@
     margin: 10px 5px;
   }
 
+  .section-info-import-return {
+    flex: 1 0 150px;
+    margin: 8px 0;
+    padding: 12px 20px;
+    text-align: left;
+
+    .info {
+      margin: 0 0 10px;
+      text-align: left;
+    }
+  }
+
+  .section-info-detail.import-return {
+    margin-top: 0;
+    margin-bottom: 0;
+    align-items: flex-start;
+
+    .import-spacer {
+      width: 20%;
+      margin: 8px 0;
+      padding: 5px 20px;
+    }
+  }
+
   label {
     width: 20%;
     margin: 8px 0;

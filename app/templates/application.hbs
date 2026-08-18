@@ -1,12 +1,27 @@
-{{page-title "EnCoMPASS" prepend=false}}
-<div class="ember-view">
-  {{!--outlet header--}}
+{{page-title 'EnCoMPASS' prepend=false}}
+<div class='ember-view'>
+  {{!outlet header}}
 
-  <TopBar @store={{this.store}} @user={{this.currentUser}} @currentUser={{this.currentUser}} @isHidden={{this.isHidden}} @toHome="toHome" />
-  <SocketLoader @store={{this.store}} />
-  <section id="al_body">
+  <TopBar @toHome={{action 'toHome'}} />
+
+  {{!start al_body}}
+  {{#if this.isLoading}}
+    <div class='loading-indicator'>
+      <LoadingIndicator />
+    </div>
+  {{/if}}
+
+  {{#if this.errorMessage}}
+    <div class='error-message'>
+      <p>{{this.errorMessage}}</p>
+    </div>
+  {{/if}}
+
+  {{#if this.isAuthenticated}}
+    <NavBar @toHome={{action 'toHome'}} />
+  {{/if}}
+  <section id='al_body'>
     {{outlet}}
-
-  </section> 
-  {{!--end al_body--}}
+  </section>
+  {{!end al_body}}
 </div>

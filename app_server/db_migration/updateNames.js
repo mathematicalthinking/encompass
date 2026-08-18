@@ -43,12 +43,13 @@ async function convertToFirstNameLastName() {
       user.firstName = firstName;
       user.lastName = lastName;
       return user.save();
-
     });
     await Promise.all(updatedUsers);
-    console.log(`Updated ${updatedActingRoleCount} users who did not have an acting role previously`);
+    console.log(
+      `Updated ${updatedActingRoleCount} users who did not have an acting role previously`
+    );
     mongoose.connection.close();
-  }catch(err) {
+  } catch (err) {
     console.log('error conver names: ', err);
     mongoose.connection.close();
   }
@@ -64,7 +65,9 @@ async function updateMissingNames() {
   let updatedVmtCount = 0;
 
   try {
-    ssoDb = await mongoose.createConnection('mongodb://localhost:27017/mtlogin');
+    ssoDb = await mongoose.createConnection(
+      'mongodb://localhost:27017/mtlogin'
+    );
     vmtDb = await mongoose.createConnection('mongodb://localhost:27017/vmt');
     let encUsers = await models.User.find({});
 
@@ -76,44 +79,51 @@ async function updateMissingNames() {
         return;
       }
       if (ssoId) {
-        let ssoUserUpdateFilter = {_id: ssoId, firstName: null, lastName: null};
-        let ssoUserUpdate = {$set: {firstName, lastName}};
+        let ssoUserUpdateFilter = {
+          _id: ssoId,
+          firstName: null,
+          lastName: null,
+        };
+        let ssoUserUpdate = { $set: { firstName, lastName } };
 
-        let ssoUserUpdateResults = await ssoDb.collection('users').findOneAndUpdate(ssoUserUpdateFilter, ssoUserUpdate);
+        let ssoUserUpdateResults = await ssoDb
+          .collection('users')
+          .findOneAndUpdate(ssoUserUpdateFilter, ssoUserUpdate);
 
-        let vmtUserUpdateFilter = {ssoId: ssoId, firstName: null, lastName: null};
-        let vmtUserUpdate = {$set: {firstName, lastName}};
+        let vmtUserUpdateFilter = {
+          ssoId: ssoId,
+          firstName: null,
+          lastName: null,
+        };
+        let vmtUserUpdate = { $set: { firstName, lastName } };
 
-        let vmtUserUpdateResults = await vmtDb.collection('users').findOneAndUpdate(vmtUserUpdateFilter, vmtUserUpdate);
+        let vmtUserUpdateResults = await vmtDb
+          .collection('users')
+          .findOneAndUpdate(vmtUserUpdateFilter, vmtUserUpdate);
 
+        if (ssoUserUpdateResults.lastErrorObject.updatedExisting) {
+          updatedSsoCount++;
+        }
 
-         if (ssoUserUpdateResults.lastErrorObject.updatedExisting) {
-           updatedSsoCount++;
-         }
-
-         if (vmtUserUpdateResults.lastErrorObject.updatedExisting) {
-           updatedVmtCount++;
-         }
-
+        if (vmtUserUpdateResults.lastErrorObject.updatedExisting) {
+          updatedVmtCount++;
+        }
       }
       return user;
     });
     await Promise.all(updated);
-    console.log({numSsoUpdate: updatedSsoCount});
-    console.log({numVmtUpdated: updatedVmtCount});
+    console.log({ numSsoUpdate: updatedSsoCount });
+    console.log({ numVmtUpdated: updatedVmtCount });
 
     ssoDb.close();
     vmtDb.close();
     mongoose.connection.close();
-  }catch(err) {
-    console.log({err});
+  } catch (err) {
+    console.log({ err });
     ssoDb.close();
     vmtDb.close();
     mongoose.connection.close();
-
   }
-
 }
-
 
 // updateMissingNames();

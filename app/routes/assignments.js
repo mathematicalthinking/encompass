@@ -1,21 +1,18 @@
 import AuthenticatedRoute from './_authenticated_route';
 import { hash } from 'rsvp';
+import { service } from '@ember/service';
+
 /**
  * # Assignments Route
  * @description Route for dealing with all assignment objects
  */
 export default class AssignmentsRoute extends AuthenticatedRoute {
-  async model() {
-    let currentUser = this.modelFor('application');
-    let assignments = await this.store.findAll('assignment');
-    let filtered = assignments.filter((assignment) => {
-      return assignment.id && !assignment.get('isTrashed');
-    });
-    filtered = filtered.sortBy('createDate').reverse();
+  @service store;
+  @service currentUser;
+  model() {
     return hash({
-      currentUser,
-      assignments,
-      filtered,
+      isStudent: this.currentUser.isStudent,
+      assignments: this.store.findAll('assignment'),
     });
   }
 }

@@ -81,6 +81,14 @@
       gap: 1em;
     }
 
+    .mentor-reply-actions {
+      margin-left: 5em;
+    }
+
+    .edit-draft-compose {
+      margin-left: 5em;
+    }
+
     /* Add transition property to the container */
     .mentor-thread-container {
       margin-left: 5em;
@@ -156,12 +164,234 @@
     gap: 0.5em;
     background-color: #f8f8f8;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 200%;
+    max-width: calc(100% - 5em);
 
     p {
       font-weight: 400;
     }
   }
+
+  .ab-draft-editor-section {
+    margin: 1em 0 1.5em 5em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1em;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: calc(100% - 5em);
+  }
+
+  .ab-draft-editor-actions {
+    margin-top: 0.75em;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  // AI Draft Section Styles(Read_Only)
+  .ai-draft-section {
+    margin-bottom: 1.5em;
+    padding: 1em;
+    background-color: #ffffff;
+    border-radius: 8px;
+    
+    .response-header {
+      font-weight: 600;
+      margin-bottom: 0.8em;
+      color: #333;
+      font-size: 1.05em;
+    }
+    
+    .ai-draft-readonly-box {
+      background-color: #f9f9f9;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 1em;
+      margin-bottom: 1em;
+      max-height: 400px;
+      overflow-y: auto;
+      
+      // Hide the Quill toolbar for read-only
+      .ql-toolbar {
+        display: none !important;
+      }
+      // Just disable editing - keep all other default Quill styles
+      .ql-editor {
+        pointer-events: none;
+        user-select: text;
+        cursor: default;
+      }
+    }
+    
+    // Star Rating and Button Row
+    .ai-draft-actions-wrap {
+      position: relative;
+    }
+
+    .ai-draft-actions {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+
+      &.is-hidden {
+        display: none;
+      }
+    }
+    
+    .star-rating-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5em;
+      
+      .star-rating-label {
+        font-weight: 500;
+        margin: 0;
+        font-size: 13px;
+        white-space: nowrap;
+        
+        .required-asterisk {
+          color: #d9534f;
+        }
+      }
+      
+      .star-rating-stars {
+        display: flex;
+        gap: 0.3em;
+        
+        .star-icon {
+          font-size: 24px;
+          cursor: pointer;
+          position: relative;
+          
+          &.star-filled {
+            color: #f5af4e;
+          }
+          
+          &.star-empty {
+            color: #ddd;
+          }
+          
+          &:hover {
+            color: #f5af4e;
+            
+            &::after {
+              content: attr(title);
+              position: absolute;
+              bottom: 100%;
+              left: 50%;
+              transform: translateX(-50%);
+              padding: 8px 12px;
+              background-color: #8BC34A;
+              color: white;
+              font-size: 13px;
+              white-space: nowrap;
+              border-radius: 4px;
+              margin-bottom: 5px;
+              z-index: 1000;
+              pointer-events: none;
+            }
+          }
+        }
+      }
+    }
+
+    .ai-feedback-container {
+      flex: 1 1 auto;
+      max-width: 720px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5em;
+      
+      .ai-feedback-label {
+        font-weight: 500;
+        margin: 0;
+        font-size: 13px;
+        white-space: nowrap;
+        
+        .required-asterisk {
+          color: #d9534f;
+        }
+      }
+      
+      textarea {
+        min-height: 54px;
+        height: auto;
+        padding: 4px 8px;
+        font-size: 13px;
+        resize: vertical;
+        width: 100%;
+      }
+    }
+    
+    .ai-bring-down-btn {
+      @extend .primary-button;
+      
+      &:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+  
+    // Usage Checkboxes
+    .ai-usage-checkboxes {
+      position: absolute !important;
+      left: 50%;
+      transform: translateX(-50%);
+      top: calc(100% - 4px);
+      width: 360px;
+      max-width: 92vw;
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 1em;
+      background-color: #f9f9f9;
+      border-radius: 6px;
+      border: 2px solid #e0e0e0;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+      z-index: 5;
+
+      .usage-prompt {
+        font-weight: 600;
+        margin-bottom: 1em;
+        color: #333;
+
+        .required-asterisk {
+          color: #d9534f;
+        }
+      }
+
+      .usage-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin-bottom: 0.8em;
+        cursor: pointer;
+        font-size: 0.95em;
+
+        input[type='checkbox'] {
+          cursor: pointer;
+        }
+      }
+
+      .ai-continue-btn {
+        margin-top: 1em;
+      }
+    }
+
+    .ai-draft-actions.is-hidden + .ai-usage-checkboxes {
+      top: -10px;
+    }
+
+    @media (max-width: 520px) {
+      .ai-usage-checkboxes {
+        left: 0;
+        transform: none;
+        width: 100%;
+      }
+    }
+  }
+
   .new-response-header {
     display: flex;
     justify-content: space-between;
@@ -173,6 +403,65 @@
     flex-direction: column;
     gap: 0.5em;
   }
-  .response-existing {
+
+  .ai-action-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+
+    .radio-group {
+      display: flex;
+      align-items: center;
+      gap: 2em;
+      flex-wrap: wrap;
+    }
+
+    .radio-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      overflow: visible;
+    }
+
+    .radio-group-item {
+      margin: 0;
+      overflow: visible;
+
+      label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+      }
+
+      span {
+        position: static;
+      }
+    }
+
+    .checkbox-list {
+      margin-top: 6px;
+    }
+
+    .regeneration-prompt {
+      max-width: 720px;
+
+      .approver-note {
+        width: 100%;
+        min-height: 80px;
+        resize: vertical;
+      }
+    }
   }
+}
+
+
+.previous-responses-header {
+  margin: 2em 0 1em 0;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+  font-size: 1.1em;
+  font-weight: 500;
 }

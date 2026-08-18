@@ -1,0 +1,42 @@
+{{#if (greater-equal @currentStep @associatedStep)}}
+<li class='details-list-item'>
+  <h3 class="detail-header">
+    {{@label}}
+    {{#if this.doShowRemoveIcon}}
+      <button
+        type='button'
+        class='detail-edit-button'
+        {{on 'click' this.editValue}}
+        title='Edit'
+      >
+        <i class='far fa-edit' aria-hidden='true'></i>
+      </button>
+    {{/if}}
+  </h3>
+  {{#if @displayValue}}
+    {{#if @isArray}}
+    <ul class="sub-list">
+      {{#each @displayValue as |val|}}
+        <li class="sub-content-child">{{val}}</li>
+      {{/each}}
+    </ul>
+    {{else}}
+      <p class="display-info">{{@displayValue}}</p>
+    {{/if}}
+  {{else}}
+    <p class="display-info">{{@emptyValue}}</p>
+  {{/if}}
+  {{#if @children}}
+    <ul class="sub-list">
+      {{#each @children as |child|}}
+        <li class="sub-header">{{child.label}}</li>
+        {{#if child.displayValue}}
+          <li class="sub-content">{{child.displayValue}}</li>
+        {{else}}
+          <li class="sub-content">{{child.emptyValue}}</li>
+        {{/if}}
+      {{/each}}
+    </ul>
+  {{/if}}
+</li>
+{{/if}}

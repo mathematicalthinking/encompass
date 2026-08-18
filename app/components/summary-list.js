@@ -17,7 +17,7 @@ export default class SummaryList extends Component {
         username = '';
       }
 
-      const currentDate = submission.get('createDate');
+      const currentDate = submission.createDate;
 
       let studentData = studentDataMap.get(username);
       if (!studentData) {
@@ -31,7 +31,7 @@ export default class SummaryList extends Component {
 
       if (
         !studentData.newestSubmission ||
-        currentDate > studentData.newestSubmission.get('createDate')
+        currentDate > studentData.newestSubmission.createDate
       ) {
         studentData.newestSubmission = submission;
       }
@@ -43,7 +43,7 @@ export default class SummaryList extends Component {
       }
 
       studentData.responsesCount += responses.filter(
-        (response) => !response.get('isTrashed')
+        (response) => !response.isTrashed
       ).length;
       studentData.numOfRevisions++;
       studentData.id = submission.id;
@@ -75,7 +75,7 @@ export default class SummaryList extends Component {
     const assignment = this.args.workspaces.get('linkedAssignment.name');
     const workspaceOwner = this.args.workspaces.get('createdBy.username');
     const problem = this.args.workspaces.get('linkedAssignment.problem.title');
-    const submissionId = this.args.workspaces.submissions.toArray()[0].id;
+    const submissionId = this.args.workspaces.submissions.slice()[0].id;
 
     if (assignment) {
       workspaceData.assignment = assignment;

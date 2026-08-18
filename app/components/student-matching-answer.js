@@ -1,150 +1,232 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
-import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import Component from '@glimmer/component';
+import { action, set } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
 
-export default Component.extend(ErrorHandlingMixin, {
-  classNames: ['student-matching-answer'],
-  utils: service('utility-methods'),
+export default class StudentMatchingAnswerComponent extends Component {
+  @service('utility-methods') utils;
 
-  section: null,
-  submission: null,
-  isExpanded: false,
-  selectedIds: [],
+  @tracked isExpanded = false;
 
-  selectizeInputId: computed('answer.id', function () {
-    let id = this.get('answer.explanationImage.id') || '';
+  get answer() {
+    return this.args.answer;
+  }
+
+  get image() {
+    return this.answer?.explanationImage;
+  }
+
+  get selectizeInputId() {
+    const id =
+      this.getRecordId(this.image) || this.getRecordId(this.answer) || '';
     return `select-add-student${id}`;
-  }),
+  }
 
-  didReceiveAttrs: function () {
-    const section = this.selectedSection;
-    const answer = this.answer;
-    const image = answer.explanationImage;
-    this.set('image', image);
-
-    this.set('section', section);
-    this.set('submission', answer);
-
-    if (!Array.isArray(this.get('submission.students'))) {
-      this.set('submission.students', []);
+  normalizeArray(val) {
+    if (Array.isArray(val)) {
+      return val;
     }
-    if (!Array.isArray(this.get('submission.studentNames'))) {
-      this.set('submission.studentNames', []);
+    if (typeof val?.slice === 'function') {
+      return val.slice();
     }
-  },
+    return [];
+  }
 
-  initialStudentItems: computed(
-    'submission.students.[]',
-    'submission.studentNames.[]',
-    function () {
-      let userItems = this.get('submission.students').mapBy('id');
-      let nameItems = this.get('submission.studentNames');
-      return userItems.pushObjects(nameItems);
+  getRecordValue(record, prop) {
+    if (!record) {
+      return null;
     }
-  ),
+    if (typeof record.get === 'function') {
+      return record.get(prop);
+    }
+    return record[prop];
+  }
 
-  studentOptions: computed(
-    'selectedIds.[]',
-    'studentMap',
-    'addedStudentNames.[]',
-    function () {
-      if (!this.studentMap) {
-        return [];
+  getRecordId(record) {
+    return (
+      this.getRecordValue(record, 'id') ||
+      this.getRecordValue(record, '_id') ||
+      null
+    );
+  }
+
+  get initialStudentItems() {
+    const submission = this.answer;
+    if (!submission) {
+      return [];
+    }
+
+    const userItems = this.normalizeArray(submission.students)
+      .map((student) => this.getRecordId(student))
+      .filter(Boolean);
+    const nameItems = this.normalizeArray(submission.studentNames);
+
+    return [...userItems, ...nameItems];
+  }
+
+  get studentOptions() {
+    if (!this.args.studentMap) {
+      return [];
+    }
+
+    const options = [];
+
+    Object.values(this.args.studentMap).forEach((student) => {
+      const id = this.getRecordId(student);
+      if (!id) {
+        return;
       }
-      let options = [];
-      let selectedIds = this.selectedIds || [];
 
-      _.each(this.studentMap, (val, key) => {
-        if (!selectedIds.includes(val)) {
-          options.addObject({
-            id: val.get('id'),
-            username: val.get('username'),
-          });
-        }
+      options.push({
+        id,
+        username: this.getRecordValue(student, 'username') || '',
       });
-      _.each(this.addedStudentNames, (name) => {
-        options.addObject({
-          id: name,
-          username: name,
-        });
+    });
+
+    (this.args.addedStudentNames || []).forEach((name) => {
+      options.push({
+        id: name,
+        username: name,
       });
-      return options;
+    });
+
+    return options;
+  }
+
+  get allowCustomNameEntry() {
+    return !this.args.selectedSection;
+  }
+
+  get selectizePlaceholder() {
+    return this.allowCustomNameEntry
+      ? 'Search students or type a name'
+      : 'Search class students by username';
+  }
+
+  addUnique(arrayRef, value) {
+    if (!Array.isArray(arrayRef) || !value) {
+      return;
     }
-  ),
+    if (typeof arrayRef.addObject === 'function') {
+      arrayRef.addObject(value);
+      return;
+    }
+    if (!arrayRef.includes(value)) {
+      arrayRef.push(value);
+    }
+  }
+
+  removeValue(arrayRef, value, matcher = null) {
+    if (!Array.isArray(arrayRef)) {
+      return;
+    }
+
+    if (typeof arrayRef.removeObject === 'function' && !matcher) {
+      arrayRef.removeObject(value);
+      return;
+    }
+
+    const index = arrayRef.findIndex((item) => {
+      if (matcher) {
+        return matcher(item);
+      }
+      return item === value;
+    });
+
+    if (index > -1) {
+      arrayRef.splice(index, 1);
+    }
+  }
 
   updateAnswer(userId, doRemove) {
     if (!userId) {
       return;
     }
 
-    let isMongoId = this.utils.isValidMongoId(userId);
+    const submission = this.answer;
+    if (!submission) {
+      return;
+    }
 
-    let creators;
-    let userObj;
+    let isMongoId = this.utils.isValidMongoId(userId);
 
     // add or remove encompass user from students array on answer object
     if (isMongoId) {
-      creators = this.get('submission.students');
-      userObj = creators.findBy('id', userId);
+      let creators = this.normalizeArray(submission.students);
+      const userObj = (this.args.studentMap || {})[userId];
+
       if (doRemove) {
-        creators.removeObject(userObj);
-      } else {
-        creators.addObject(this.studentMap[userId]);
+        this.removeValue(creators, userObj, (student) => {
+          return this.getRecordId(student) === userId;
+        });
+      } else if (userObj) {
+        const existing = creators.find((student) => {
+          return this.getRecordId(student) === userId;
+        });
+        if (!existing) {
+          this.addUnique(creators, userObj);
+        }
       }
+      set(submission, 'students', creators);
       // add or remove string name from studentNames array on answer object
     } else {
-      creators = this.get('submission.studentNames');
-      userObj = creators.find((name) => {
-        return name === userObj;
-      });
+      // In class mode, block new free-text names but still allow removing
+      // previously stored name entries.
+      if (!this.allowCustomNameEntry && !doRemove) {
+        return;
+      }
+
+      let creators = this.normalizeArray(submission.studentNames);
       if (doRemove) {
-        creators.removeObject(userObj);
+        this.removeValue(creators, userId);
       } else {
-        creators.addObject(userId);
-        // keep track of which string name items have been added
-        // once user creates item for one answer, it should be available on other answers to select
-        this.addedStudentNames.addObject(userId);
+        this.addUnique(creators, userId);
+        // Parent owns addedStudentNames; update via callback so arg identity changes
+        // and selectize options refresh immediately.
+        if (typeof this.args.onAddStudentName === 'function') {
+          this.args.onAddStudentName(userId);
+        } else {
+          this.addUnique(this.args.addedStudentNames, userId);
+        }
       }
+      set(submission, 'studentNames', creators);
     }
-    // check if all answers have been assigned at least one student
-    this.checkStatus();
-  },
+    // keep Step 4 status in sync after any student/name mutation
+    if (typeof this.args.checkStatus === 'function') {
+      this.args.checkStatus();
+    }
+  }
 
-  actions: {
-    //val will either be mongo objectId of encompass user or string name added by user
-    updateSelectedIds: function (val, $item) {
-      if (!val) {
-        return;
-      }
-      let doRemove;
-      if (_.isNull($item)) {
-        this.selectedIds.removeObject(val);
-        doRemove = true;
-      } else {
-        this.selectedIds.addObject(val);
-        doRemove = false;
-      }
+  // val will either be mongo objectId of encompass user or string name added by user
+  @action
+  updateSelectedIds(val, item) {
+    if (!val) {
+      return;
+    }
+    const doRemove = this.utils.isNullOrUndefined(item);
+    this.updateAnswer(val, doRemove);
+  }
 
-      this.updateAnswer(val, doRemove);
-    },
-    expandImage: function () {
-      this.set('isExpanded', !this.isExpanded);
-    },
+  @action
+  expandImage() {
+    this.isExpanded = !this.isExpanded;
+  }
 
-    // runs when creating item in selectize control
-    // used for adding non encompass users which will be added to studentNames array
-    addStudentName: function (input, cb) {
-      if (typeof input !== 'string') {
-        return;
-      }
-      let trimmed = input.trim();
+  // runs when creating item in selectize control
+  // used for adding non encompass users which will be added to studentNames array
+  @action
+  addStudentName(input, cb) {
+    if (!this.allowCustomNameEntry) {
+      return;
+    }
+    if (typeof input !== 'string') {
+      return;
+    }
+    let trimmed = input.trim();
 
-      return cb({
-        username: trimmed,
-        id: trimmed,
-      });
-    },
-  },
-});
+    return cb({
+      username: trimmed,
+      id: trimmed,
+    });
+  }
+}

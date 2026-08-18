@@ -1,0 +1,264 @@
+{{! /**
+ * #
+ * @description 
+  Response-new is a subcompoennt of response-mentor-reply.hbs. Users are able to craft new responses here
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */ }}
+
+<div class='new-response-container'>
+  {{! Header for container }}
+  <div class='new-response-header'>
+    <p>Craft Response</p>
+    <p class='response-date'>{{format-date this.todaysDate 'MMMM Do YYYY'}}</p>
+  </div>
+  {{! Info in header }}
+  <div class='new-response-header-info'>
+    <p>To: {{@responseData.student}}</p>
+    <p>From:
+      {{this.currentUser.username}}
+    </p>
+  </div>
+  {{! Main content }}
+  <section class='new-response-content'>
+  
+  {{#if this.showAiDraftSection}}
+    <div class='ai-draft-section'>
+      <p class='response-header'>AI-Generated Suggestion</p>
+      
+      <div class='ai-draft-readonly-box'>
+        <Ui::QuillContainer
+          @startingText={{this.aiGeneratedText}}
+          @attrSectionId='ai-draft-readonly'
+          @readOnly={{true}}
+          @showErrors={{false}}
+        />
+      </div>
+      
+      {{! Star Rating and Button Row }}
+      <div class='ai-draft-actions-wrap'>
+        <div class='ai-draft-actions {{if this.showUsageCheckboxes "is-hidden"}}'>
+          {{#if this.showRatingControls}}
+            <div class='star-rating-container'>
+              <label class='star-rating-label'>Rate AI Draft <span class='required-asterisk'>*</span></label>
+              <div class='star-rating-stars'>
+                {{#each this.starDefinitions as |star|}}
+                  <i
+                    class='fas fa-star star-icon {{if (this.isStarFilled star.value) "star-filled" "star-empty"}}'
+                    title={{star.tooltip}}
+                    {{on 'click' (fn this.setStarRating star.value)}}
+                    role='button'
+                    tabindex='0'
+                  ></i>
+                {{/each}}
+              </div>
+            </div>
+            
+            <div class='ai-feedback-container'>
+              <label for='ai-written-feedback' class='ai-feedback-label'>Written Feedback <span class='required-asterisk'>*</span></label>
+              <Textarea
+                id='ai-written-feedback'
+                placeholder='Share your thoughts on this AI-generated draft...'
+                rows={{3}}
+                @value={{this.aiWrittenFeedback}}
+                {{on 'input' this.updateAiWrittenFeedback}}
+              />
+            </div>
+            
+            <button
+              type='button'
+              class='ai-bring-down-btn'
+              disabled={{not this.canBringDown}}
+              {{on 'click' this.bringAiDraftDown}}
+            >
+              Bring it Down
+            </button>
+          {{/if}}
+        </div>
+        {{! Usage Checkboxes }}
+        {{#if this.showUsageCheckboxes}}
+          <div class='ai-usage-checkboxes'>
+            <p class='usage-prompt'>How will you use this AI draft? <span class='required-asterisk'>*</span> (Check all that apply)</p>
+            {{#each this.usageOptions as |option|}}
+              <label class='usage-option'>
+                <Input @type='checkbox' @checked={{get this option.key}} />
+                {{option.label}}
+              </label>
+            {{/each}}
+            <button
+              type='button'
+              class='ai-continue-btn primary-button'
+              {{on 'click' this.continueWithAIDraft}}
+            >
+              Continue
+            </button>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{! Selections and Comments }}
+    {{#if this.filteredSelections.length}}
+
+      <section class='selections'>
+        <p class='response-header' {{on 'click' (fn this.toggleProperty 'showSelections')}}>
+          Selections
+          <i
+            class='fas
+              {{if this.showSelections "fa-chevron-down" "fa fa-expand"}}'
+          ></i>
+        </p>
+        {{#if this.showSelections}}
+          <ul class='selections-list'>
+            {{#each this.filteredSelections as |selection|}}
+              <li class='selections-list-item'>
+                <LinkTo
+                  @route='workspace.submissions.submission.selections.selection'
+                  @models={{array
+                    selection.workspace.id
+                    selection.submission.id
+                    selection.id
+                  }}
+                >
+                  {{#if selection.imageTagLink}}
+                    <img
+                      src={{selection.imageTagLink}}
+                      alt={{selection.text}}
+                    />
+                  {{else if selection.imageSrc}}
+                    <img
+                      src={{selection.imageSrc}}
+                      alt={{selection.text}}
+                    />
+                  {{else}}
+                    {{selection.text}}
+                  {{/if}}
+                </LinkTo>
+              </li>
+            {{/each}}
+          </ul>
+        {{/if}}
+      </section>
+      <section class='comments'>
+        <p class='response-header' {{on 'click' (fn this.toggleProperty 'showComments')}}>
+          Comments
+          <i
+            class='fas
+              {{if this.showComments "fa-chevron-down" "fa-chevron-left"}}'
+          ></i>
+        </p>
+        {{#if this.showComments}}
+          <ul class='comments-list'>
+            {{#each this.filteredComments as |comment|}}
+              <li class='comments-list-item'>
+                <LinkTo
+                  @route='workspace.submissions.submission.selections.selection'
+                  @models={{array
+                    comment.workspace.id
+                    comment.submission.id
+                    comment.selection.id
+                  }}
+                >
+                  "{{comment.text}}"</LinkTo>
+              </li>
+            {{/each}}
+          </ul>
+        {{/if}}
+      </section>
+    {{/if}}
+
+    {{! Empty state message }}
+    <div class='response-info'>
+      {{#if this.explainEmptiness}}
+        <p class='response-prefill'>
+          It looks like
+          {{#if this.doUseOnlyOwnMarkup}} 
+            you haven't made
+          {{else}}
+            there aren't
+          {{/if}}
+          any selections or comments for this submission. You can go back to the
+          <LinkTo
+            @route='workspace.submissions.submission'
+            @models={{array @responseData.workspace @responseData.submission}}
+          >submission</LinkTo>
+          and create some selections and comments.
+        </p>
+      {{/if}}
+    </div>
+    {{! Main Message Editor }}
+    <div class='response-compose'>
+      <p class='response-header'>Message</p>
+
+      <Ui::QuillContainer
+        @onEditorChange={{this.updateQuillText}}
+        @attrSectionId='response-new-editor'
+        @startingText={{this.replyText}}
+        @maxLength={{this.maxResponseLength}}
+        @showErrors={{true}}
+        @emptyErrorMessage='Message body cannot be blank'
+        key={{this.quillEditorKey}}
+      />
+
+      {{#if this.showNoteField}}
+        <div class='approve-note'>
+          <p class='response-header'>Note to Approver</p>
+          <Textarea
+            class='approver-note'
+            id='response-note'
+            @value={{this.replyNote}}
+          />
+        </div>
+      {{/if}}
+    </div>
+
+    {{#if this.showAiActionSection}}
+      <div class='ai-action-section'>
+        <Ui::RadioGroup
+          @options={{this.aiActionOptions}}
+          @selectedValue={{this.aiActionSelection}}
+          @updateValue={{this.updateAiActionSelection}}
+        />
+
+        {{#if this.showRegenerationPrompt}}
+          <div class='regeneration-prompt'>
+            <p class='response-header'>Regeneration Prompt</p>
+            <Textarea
+              class='approver-note'
+              @value={{this.aiRegenerationPrompt}}
+              placeholder='Describe what should change in the regenerated draft...'
+            />
+          </div>
+        {{/if}}
+
+          {{!-- Final action options are now handled via the radio group --}}
+      </div>
+    {{/if}}
+
+    {{#if this.doShowLoadingMessage}}
+      <LoadingElem />
+    {{/if}}
+    <div class='submit-buttons button-row'>
+      <button
+        class='primary-button save-response'
+        type='button'
+        {{on 'click' this.handleSubmitAction}}
+      >{{this.submitButtonText}}</button>
+        {{#unless this.showAiActionSection}}
+          <button
+            class='primary-button ai-draft'
+            type='button'
+            disabled={{this.aiButtonDisabled}}
+            title={{this.aiButtonTooltip}}
+            {{on 'click' this.generateAIDraft}}
+          >Draft From AI</button>
+          <button
+            class='primary-button save-draft'
+            type='button'
+            {{on 'click' (fn this.saveResponse true)}}
+          >Save as Draft</button>
+        {{/unless}}
+    </div>
+  </section>
+</div>

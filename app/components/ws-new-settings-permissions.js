@@ -1,17 +1,30 @@
-/*global _:false */
-import { inject as service } from '@ember/service';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
+import { action } from '@ember/object';
+import isNull from 'lodash-es/isNull';
+import { tracked } from '@glimmer/tracking';
 
-import Component from '@ember/component';
+/**
+ *   <WsNewSettingsPermissions
+    @permissions={{workspacePermissions}}
+    @users={{users}}
+    @isEditing={{isEditingPermissions}}
+    @selectedCollaborator={{unsavedCollaborator}}
+    @initialCollabOptions={{initialCollabOptions}}
+    @selectedCollaborators={{selectedCollaborators}}
+  />
+ */
 
-export default Component.extend({
-  elementId: 'ws-new-settings-permissions',
-  utils: service('utility-methods'),
-  globalPermissionValue: 'viewOnly',
-  globalItems: {
+export default class WorkspaceNewContainerComponent extends Component {
+  @service('utility-methods') utils;
+  @service store;
+  @tracked isEditing = false;
+  @tracked selectedCollaborator = this.args.selectedCollaborator || null;
+  globalPermissionValue = 'viewOnly';
+  globalItems = {
     groupName: 'globalPermissionValue',
     groupLabel: 'Workspace Permissions',
-    info:
-      'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       {
@@ -45,18 +58,16 @@ export default Component.extend({
           'This user can add, delete or modify selections, comments, and folders. They can directly send their own feedback and approve feedback created by other users',
       },
     ],
-  },
+  };
   buildPermissionsObject() {
     const user = this.selectedCollaborator;
     const globalSetting = this.globalPermissionValue;
 
-    let submissionOptions = {
-      all: true,
-    };
-
     const results = {
       user,
-      submissions: submissionOptions,
+      submissions: {
+        all: true,
+      },
       global: globalSetting,
     };
 
@@ -104,64 +115,61 @@ export default Component.extend({
 
       return results;
     }
-  },
-  actions: {
-    updateGlobalPermissionValue: function (val) {
-      this.set('globalPermissionValue', val);
-    },
-    setCollaborator(val, $item) {
-      if (!val) {
-        return;
+  }
+
+  @action
+  updateGlobalPermissionValue(val) {
+    this.globalPermissionValue = val;
+  }
+  @action
+  setCollaborator(val, $item) {
+    if (!val) {
+      return;
+    }
+
+    const isRemoval = isNull($item);
+    if (isRemoval) {
+      this.selectedCollaborator = null;
+      return;
+    }
+    const user = this.store.peekRecord('user', val);
+    this.selectedCollaborator = user;
+    this.isEditing = true;
+  }
+  @action
+  removeCollab(permissionObj) {
+    if (this.utils.isNonEmptyObject(permissionObj)) {
+      this.args.onRemovePermission?.(permissionObj);
+    }
+  }
+  @action
+  editCollab(permissionObj) {
+    const utils = this.utils;
+    if (utils.isNonEmptyObject(permissionObj)) {
+      const user = permissionObj.user;
+      if (utils.isNonEmptyObject(user)) {
+        this.selectedCollaborator = user;
+        this.isEditing = true;
       }
+    }
+  }
 
-      const isRemoval = _.isNull($item);
-      if (isRemoval) {
-        this.set('selectedCollaborator', null);
-        return;
-      }
-      const user = this.store.peekRecord('user', val);
-      this.set('selectedCollaborator', user);
-      this.set('isEditing', true);
-    },
-    removeCollab(permissionObj) {
-      if (this.utils.isNonEmptyObject(permissionObj)) {
-        this.permissions.removeObject(permissionObj);
-      }
-    },
-    editCollab(permissionObj) {
-      const utils = this.utils;
-      if (utils.isNonEmptyObject(permissionObj)) {
-        const user = permissionObj.user;
-        if (utils.isNonEmptyObject(user)) {
-          this.set('selectedCollaborator', user);
-          this.set('isEditing', true);
-        }
-      }
-    },
+  @action
+  savePermissions() {
+    const permissionsObject = this.buildPermissionsObject();
 
-    savePermissions() {
-      const permissionsObject = this.buildPermissionsObject();
+    if (!this.utils.isNonEmptyObject(permissionsObject)) {
+      return;
+    }
 
-      if (!this.utils.isNonEmptyObject(permissionsObject)) {
-        return;
-      }
-      const permissions = this.permissions;
-      // check if user already is in array
-      let existingObj = permissions.findBy('user', permissionsObject.user);
+    // Notify parent of save action
+    this.args.onSavePermission?.(permissionsObject);
 
-      // remove existing permissions obj and add modified one
-      if (existingObj) {
-        permissions.removeObject(existingObj);
-      }
+    // clear selectedCollaborator
+    // clear selectize input
 
-      this.permissions.addObject(permissionsObject);
-
-      // clear selectedCollaborator
-      // clear selectize input
-
-      this.set('selectedCollaborator', null);
-      this.$('select#collab-select')[0].selectize.clear();
-      this.set('isEditing', false);
-    },
-  },
-});
+    this.selectedCollaborator = null;
+    document.querySelector('select#collab-select')?.selectize?.clear();
+    this.isEditing = false;
+  }
+}

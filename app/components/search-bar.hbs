@@ -1,0 +1,47 @@
+<div class='search-bar-comp'>
+  {{#if @showFilter}}
+    <div class='select-bar'>
+      <Ui::MySelect
+        @content={{@searchOptions}}
+        @cannotBeNull={{true}}
+        @selectedValue={{@selectedCriterion}}
+        @action={{this.updateCriterion}}
+      />
+    </div>
+  {{/if}}
+  <span class='clear-field'>
+    <Input
+      class='search-field'
+      @type='text'
+      @value={{@inputValue}}
+      placeholder={{this.placeholder}}
+      {{on 'input' this.onInputChange}}
+    />
+
+    {{#if this.showClear}}
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='14'
+        height='14'
+        viewBox='0 0 96 96'
+        class='clear'
+        {{on 'click' this.clearResults}}
+      >
+        <path
+          d='M53.7 48l25.2-25.2c1.6-1.6 1.6-4.1 0-5.7 -1.6-1.6-4.1-1.6-5.7 0L48 42.3 22.8 17.2c-1.6-1.6-4.1-1.6-5.7 0 -1.6 1.6-1.6 4.1 0 5.7L42.3 48 17.2 73.2c-1.6 1.6-1.6 4.1 0 5.7C18 79.6 19 80 20 80s2-0.4 2.8-1.2L48 53.7l25.2 25.2C74 79.6 75 80 76 80s2-0.4 2.8-1.2c1.6-1.6 1.6-4.1 0-5.7L53.7 48z'
+        ></path>
+      </svg>
+    {{/if}}
+  </span>
+  {{#unless @doSearchOnInputChange}}
+    <div class='submit'>
+      <i class='fa fa-search' aria-hidden='true' {{on 'click' this.searchAction}}></i>
+    </div>
+  {{/unless}}
+
+  <div class='error-messages'>
+    {{#each this.queryErrors as |error|}}
+      <Ui::ErrorBox @error={{error}} @showDismiss={{true}} />
+    {{/each}}
+  </div>
+</div>

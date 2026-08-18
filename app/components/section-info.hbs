@@ -7,7 +7,7 @@
   {{#each this.dataLoadErrors as |error|}}
     <p class='error-message'>{{error}}</p>
   {{/each}}
-  <form data-test='section-info-form' id='sectioninfo'>
+  <form data-test='section-info-form' id='sectioninfo' {{on 'submit' this.handleFormSubmit}}>
     <fieldset>
       <div class='section-info-detail name'>
         <label for='name'>Class Name
@@ -15,32 +15,30 @@
             {{#if this.isEditingName}}
               <i
                 title='Done'
-                {{action 'updateSectionName'}}
+                {{on 'click' this.updateSectionName}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 title='Edit'
-                {{action (mut this.isEditingName) true}}
+                {{on 'click' this.startEditingName}}
                 class='far fa-edit'
               ></i>
             {{/if}}
           {{/unless}}
         </label>
 
-        {{#if this.isEditingName}}
-          <Input
-            @name='name'
-            @id='name'
-            @type='text'
-            @value={{this.currentSection.name}}
-          />
-        {{else}}
-          <p
-            data-test='section-name-display'
-            class='section-info'
-          >{{@section.name}}</p>
-        {{/if}}
+        <Ui::FormField
+          data-test='section-name-display'
+          @id='name'
+          @name='name'
+          @type='text'
+          @isEditing={{this.isEditingName}}
+          @value={{if this.isEditingName this.editedSectionName @section.name}}
+          @className='section-info'
+          @onChange={{this.handleSectionNameInput}}
+          @onKeydown={{this.handleSectionNameKeydown}}
+        />
       </div>
       <div class='section-info-detail assignments'>
         <label for='assignments'>Assignments
@@ -48,13 +46,13 @@
             {{#if this.isEditingAssignments}}
               <i
                 title='Done'
-                {{action (mut this.isEditingAssignments) false}}
+                {{on 'click' (fn this.setIsEditingAssignments false)}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 title='Edit'
-                {{action (mut this.isEditingAssignments) true}}
+                {{on 'click' (fn this.setIsEditingAssignments true)}}
                 class='far fa-edit'
               ></i>
             {{/if}}
@@ -76,8 +74,11 @@
       </div>
       {{#if this.isEditingAssignments}}
         <div class='btn-container'>
-          <button class='action_button' {{action 'updateShowAssignment'}}>New
-            Assignment</button>
+          <button
+            class='action_button'
+            type='button'
+            {{on 'click' this.updateShowAssignment}}
+          >New Assignment</button>
         </div>
       {{/if}}
       <div class='section-info-detail teachers'>
@@ -86,13 +87,13 @@
             {{#if this.isEditingTeachers}}
               <i
                 title='Done'
-                {{action (mut this.isEditingTeachers) false}}
+                {{on 'click' (fn this.setIsEditingTeachers false)}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 title='Edit'
-                {{action (mut this.isEditingTeachers) true}}
+                {{on 'click' (fn this.setIsEditingTeachers true)}}
                 class='far fa-edit'
               ></i>
             {{/if}}
@@ -101,7 +102,7 @@
         <ul class='listing'>
           {{#each @section.teachers as |teacher|}}
             <li>
-              {{#if @currentUser.isStudent}}
+              {{#if this.currentUser.isStudent}}
                 {{teacher.username}}
               {{else}}
                 <LinkTo @route='users.user' @model={{teacher.id}}>
@@ -113,7 +114,8 @@
                 {{#if this.isEditingTeachers}}
                   <button
                     class='trash-button'
-                    {{action 'removeTeacher' teacher}}
+                    type='button'
+                    {{on 'click' (fn this.removeTeacher teacher)}}
                   >
                     <i
                       title='remove'
@@ -139,11 +141,10 @@
                 class='fas fa-info-circle fa-sm'
               ></i></label>
             <SelectizeInput
-              @store={{this.store}}
               @inputId='select-add-teacher'
               @maxItems={{1}}
               @initialOptions={{this.initialTeacherOptions}}
-              @onItemAdd={{action 'addTeacher'}}
+              @onItemAdd={{this.addTeacher}}
               @model='user'
               @isAsync={{true}}
               @labelField='username'
@@ -165,14 +166,14 @@
             {{#if this.isEditingStudents}}
               <i
                 title='Done'
-                {{action (mut this.isEditingStudents) false}}
+                {{on 'click' (fn this.setIsEditingStudents false)}}
                 class='fa fa-check'
               ></i>
             {{else}}
               <i
                 data-test='edit-students'
                 title='Edit'
-                {{action (mut this.isEditingStudents) true}}
+                {{on 'click' (fn this.setIsEditingStudents true)}}
                 class='far fa-edit'
               ></i>
             {{/if}}
@@ -181,7 +182,7 @@
         <ul class='listing'>
           {{#each @section.students as |student|}}
             <li>
-              {{#if @currentUser.isStudent}}
+              {{#if this.currentUser.isStudent}}
                 {{student.username}}
               {{else}}
                 <LinkTo @route='users.user' @model={{student.id}}>
@@ -193,7 +194,8 @@
                 {{#if this.isEditingStudents}}
                   <button
                     class='trash-button'
-                    {{action 'removeStudent' student}}
+                    type='button'
+                    {{on 'click' (fn this.removeStudent student)}}
                   >
                     <i class='far fa-times-circle' aria-hidden='true'></i>
                   </button>
@@ -209,7 +211,6 @@
       <div class='update-students'>
         {{#if this.isEditingStudents}}
           <AddCreateStudent
-            @currentUser={{@currentUser}}
             @section={{this.currentSection}}
             @students={{this.studentList}}
             @sectionPassword={{@section.sectionPassword}}
@@ -219,7 +220,6 @@
           <p class='error-message'>{{error}}</p>
         {{/each}}
       </div>
-
       <div class='section-info-detail groups'>
         <label for='groups'>Groups:
           {{#unless this.cantEdit}}
@@ -240,47 +240,58 @@
         </label>
         {{#if this.addGroup}}
           <div class='update-students'>
-            <Input
+            <Ui::FormField
+              @name='new-group-name'
+              @type='text'
+              @isEditing={{true}}
               @value={{this.newGroupName}}
               @placeholder='New Group Name'
-              class='new-group-name'
+              @className='new-group-name'
+              @onChange={{this.handleNewGroupNameInput}}
             />
             <ul class='listing group-options'>
               {{#each this.studentList as |student|}}
                 <li>
-                  <label><Input
-                      @type='checkbox'
-                      {{on 'input' (fn this.placeStudent student)}}
-                      @checked={{is-in this.newGroupStudents student}}
-                    />{{student.username}}
-                    <i
-                      class={{if
-                        (is-in this.groupedStudents student.id)
-                        'fa fa-check'
-                      }}
-                    ></i></label>
+                  <Ui::FormField
+                    @id={{concat 'group-student-' student.id}}
+                    @name={{concat 'group-student-' student.id}}
+                    @type='checkbox'
+                    @isEditing={{true}}
+                    @label={{student.username}}
+                    @value={{is-in this.newGroupStudents student}}
+                    @onChange={{fn this.placeStudent student}}
+                  />
+                  <i
+                    class={{if
+                      (is-in this.groupedStudents student.id)
+                      'fa fa-check'
+                    }}
+                  ></i>
                 </li>
               {{/each}}
             </ul>
             <button
               class='primary-button save-group'
+              type='button'
               {{on 'click' this.saveGroup}}
             >Save New Group</button>
             <button
               class='primary-button cancel-button'
+              type='button'
               {{on 'click' this.toggleAddGroup}}
             >Done</button>
           </div>
         {{/if}}
-        <ul class='listing {{if this.addGroup 'groups'}}'>
-          {{#each @groups as |group|}}
+        <ul class='listing {{if this.addGroup "groups"}}'>
+          {{#each this.groups as |group|}}
             {{#unless group.isTrashed}}
               <GroupInfo
                 @group={{group}}
                 @addGroup={{this.addGroup}}
                 @students={{this.studentList}}
-                @updateGroup={{action 'updateGroup'}}
-                @deleteGroup={{action 'deleteGroup'}}
+                @saveGroup={{this.saveGroupChanges}}
+                @updateGroup={{this.updateGroup}}
+                @deleteGroup={{this.deleteGroup}}
               />
             {{/unless}}
           {{/each}}
@@ -299,10 +310,12 @@
     {{/each}}
   </form>
   {{#unless this.cantEdit}}
-    <button id='deleteSection' class='right' {{action 'confirmDelete'}}><i
-        class='fa fa-trash'
-        aria-hidden='true'
-      ></i></button>
+    <button
+      id='deleteSection'
+      class='right'
+      type='button'
+      {{on 'click' this.confirmDelete}}
+    ><i class='fa fa-trash' aria-hidden='true'></i></button>
 
   {{/unless}}
 
@@ -311,14 +324,30 @@
   {{/each}}
   {{#if this.showAssignment}}
     <AssignmentNew
-      @currentUser={{@currentUser}}
-      @cachedProblems={{this.cachedProblems}}
-      @cancel={{action (mut this.showAssignment) null}}
+      @cachedProblems={{@cachedProblems}}
+      @cancel={{this.hideAssignmentEditor}}
       @fromSectionInfo={{true}}
       @problems={{this.problemList}}
       @selectedSection={{@section}}
       @sections={{this.sectionList}}
-      @store={{this.store}}
     />
   {{/if}}
 </div>
+{{#if this.showDoneToImport}}
+  <div class='section-info-detail import-return'>
+    <div class='import-spacer' aria-hidden='true'></div>
+    <div class='section-info-import-return'>
+      {{#unless this.canReturnToImport}}
+        <p class='info'>Add at least one student before returning to import.</p>
+      {{/unless}}
+      <button
+        class='primary-button'
+        type='button'
+        disabled={{not this.canReturnToImport}}
+        {{on 'click' this.doneToImport}}
+      >
+        Done Adding Students
+      </button>
+    </div>
+  </div>
+{{/if}}

@@ -8,26 +8,32 @@ const userFixtures = require('./userFixtures');
 
 const expect = chai.expect;
 const host = helpers.host;
-const baseUrl = "/api/comments/";
+const baseUrl = '/api/comments/';
 
 chai.use(chaiHttp);
 
-describe('Comment CRUD operations by account type', async function() {
+describe('Comment CRUD operations by account type', async function () {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Comment CRUD operations as ${user.details.testDescriptionTitle}`, function(){
+    describe(`Comment CRUD operations as ${user.details.testDescriptionTitle}`, function () {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
-      const { accessibleCommentCount, inaccessibleComment,  accessibleComment, validComment, modifiableComment } = user.comments;
+      const {
+        accessibleCommentCount,
+        inaccessibleComment,
+        accessibleComment,
+        validComment,
+        modifiableComment,
+      } = user.comments;
 
       const isStudent = accountType === 'S' || actingRole === 'student';
 
-      before(async function(){
+      before(async function () {
         try {
           await helpers.setup(agent, username, password);
-        }catch(err) {
+        } catch (err) {
           console.log(err);
         }
       });
@@ -36,12 +42,9 @@ describe('Comment CRUD operations by account type', async function() {
         agent.close();
       });
 
-
       describe('/GET comments', () => {
-        it('should get all comments', done => {
-          agent
-          .get(baseUrl)
-          .end((err, res) => {
+        it('should get all comments', (done) => {
+          agent.get(baseUrl).end((err, res) => {
             if (err) {
               console.log(err);
             }
@@ -49,7 +52,12 @@ describe('Comment CRUD operations by account type', async function() {
             expect(res.body.comments).to.be.a('array');
             expect(res.body.comments).to.have.lengthOf(accessibleCommentCount);
             if (accessibleCommentCount > 0) {
-              expect(res.body.comments[0]).to.have.any.keys('label', 'ancestors', 'children', 'text');
+              expect(res.body.comments[0]).to.have.any.keys(
+                'label',
+                'ancestors',
+                'children',
+                'text'
+              );
             }
             done();
           });
@@ -57,11 +65,9 @@ describe('Comment CRUD operations by account type', async function() {
       });
       if (accountType !== 'A') {
         describe('/GET inaccessible comment by id', () => {
-          it('should return 403 error', done => {
+          it('should return 403 error', (done) => {
             const url = baseUrl + inaccessibleComment._id;
-            agent
-            .get(url)
-            .end((err, res) => {
+            agent.get(url).end((err, res) => {
               if (err) {
                 console.log(err);
               }
@@ -74,16 +80,19 @@ describe('Comment CRUD operations by account type', async function() {
 
       if (!isStudent) {
         describe('/GET accessible comment by id', () => {
-          it('should get one comment with matching id', done => {
+          it('should get one comment with matching id', (done) => {
             const url = baseUrl + accessibleComment._id;
-            agent
-            .get(url)
-            .end((err, res) => {
+            agent.get(url).end((err, res) => {
               if (err) {
                 console.log(err);
               }
               expect(res).to.have.status(200);
-              expect(res.body.comment).to.have.any.keys('label', 'text', 'submission', 'workspace');
+              expect(res.body.comment).to.have.any.keys(
+                'label',
+                'text',
+                'submission',
+                'workspace'
+              );
               expect(res.body.comment._id).to.eql(accessibleComment._id);
               done();
             });
@@ -91,18 +100,17 @@ describe('Comment CRUD operations by account type', async function() {
         });
       }
 
+      /** POST **/
 
-       /** POST **/
-
-        describe('/POST valid comment', () => {
-          let msg = 'should post a new comment';
-          if (isStudent) {
-            msg = 'should return 403 error';
-          }
-          it(msg, done => {
-            agent
+      describe('/POST valid comment', () => {
+        let msg = 'should post a new comment';
+        if (isStudent) {
+          msg = 'should return 403 error';
+        }
+        it(msg, (done) => {
+          agent
             .post(baseUrl)
-            .send({comment: validComment})
+            .send({ comment: validComment })
             .end((err, res) => {
               if (err) {
                 console.log(err);
@@ -116,34 +124,35 @@ describe('Comment CRUD operations by account type', async function() {
                 done();
               }
             });
-          });
         });
+      });
 
-        xdescribe('/PUT update comment text', () => {
-          let changeTextMsg = 'should change the text field to "this is a test"';
-          let failMissingFieldsMsg= 'should fail to update because of missing required fields';
-          let commentId;
+      xdescribe('/PUT update comment text', () => {
+        let changeTextMsg = 'should change the text field to "this is a test"';
+        let failMissingFieldsMsg =
+          'should fail to update because of missing required fields';
+        let commentId;
 
+        if (isStudent) {
+          changeTextMsg = 'should return 403 error';
+          failMissingFieldsMsg = 'should return 403 error';
+          commentId = '53e37a4ab48b12793f00104c';
+        } else {
+          commentId = accessibleComment._id;
+        }
+        it(changeTextMsg, (done) => {
+          const url = baseUrl + commentId;
+          let body;
           if (isStudent) {
-            changeTextMsg = 'should return 403 error';
-            failMissingFieldsMsg = 'should return 403 error';
-            commentId = '53e37a4ab48b12793f00104c';
+            body = validComment;
           } else {
-            commentId = accessibleComment._id;
+            body = modifiableComment;
+            body.text = 'new test text';
           }
-          it(changeTextMsg, done => {
-            const url = baseUrl + commentId;
-            let body;
-            if (isStudent) {
-              body = validComment;
-            } else {
-              body = modifiableComment;
-              body.text = 'new test text';
-            }
-            // copy the comment and update it
-            agent
+          // copy the comment and update it
+          agent
             .put(url)
-            .send({comment: body})
+            .send({ comment: body })
             .end((err, res) => {
               if (err) {
                 console.log(err);
@@ -157,25 +166,27 @@ describe('Comment CRUD operations by account type', async function() {
                 done();
               }
             });
-          });
-          it(failMissingFieldsMsg, done => {
-            let commentId;
-            if (isStudent) {
-              commentId = '53e37a4ab48b12793f00104c';
-            } else {
-              commentId = modifiableComment._id;
-            }
-            const url = baseUrl + commentId;
+        });
+        it(failMissingFieldsMsg, (done) => {
+          let commentId;
+          if (isStudent) {
+            commentId = '53e37a4ab48b12793f00104c';
+          } else {
+            commentId = modifiableComment._id;
+          }
+          const url = baseUrl + commentId;
 
-            // copy the comment and update it
-            agent
+          // copy the comment and update it
+          agent
             .put(url)
-            .send({comment: {
-              workspace: validComment.workspace,
-              // Missing submission field will cause the failure as expected
-              selection: validComment.workspace,
-              text: 'new test text'
-            }})
+            .send({
+              comment: {
+                workspace: validComment.workspace,
+                // Missing submission field will cause the failure as expected
+                selection: validComment.workspace,
+                text: 'new test text',
+              },
+            })
             .end((err, res) => {
               if (err) {
                 console.log(err);
@@ -183,17 +194,14 @@ describe('Comment CRUD operations by account type', async function() {
 
               expect(res).to.have.status(400);
               done();
-
             });
-          });
         });
       });
-
-}
-for (let user of Object.keys(testUsers)) {
-  let testUser = testUsers[user];
-  // eslint-disable-next-line no-await-in-loop
-  await runTests(testUser);
-}
+    });
+  }
+  for (let user of Object.keys(testUsers)) {
+    let testUser = testUsers[user];
+    // eslint-disable-next-line no-await-in-loop
+    await runTests(testUser);
+  }
 });
-

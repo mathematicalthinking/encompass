@@ -8,7 +8,7 @@ const { isNonEmptyArray, isNil } = require('../utils/objects');
  * @returns {boolean}
  */
 const isValidMongoId = (val) => {
-  let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+  let checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
   return checkForHexRegExp.test(val);
 };
 
@@ -62,7 +62,7 @@ const areObjectIdsEqual = (a, b) => {
  * @param {boolean} [doConvert=false] - whether or not to convert to ObjectIds
  * @returns {array}
  */
-function cleanObjectIdArray(arr, doConvert=false) {
+function cleanObjectIdArray(arr, doConvert = false) {
   if (!isNonEmptyArray(arr)) {
     return [];
   }
@@ -73,14 +73,14 @@ function cleanObjectIdArray(arr, doConvert=false) {
     return filtered;
   }
 
-  return _.map(filtered, val => mongoose.Types.ObjectId(val));
+  return _.map(filtered, (val) => mongoose.Types.ObjectId(val));
 }
 
 const doesObjectIdSetContainObjectId = (objectIds, objectIdToAdd) => {
   if (!Array.isArray(objectIds) || !isValidMongoId(objectIdToAdd)) {
     return false;
   }
-  let existingId = _.find(objectIds, id => {
+  let existingId = _.find(objectIds, (id) => {
     return areObjectIdsEqual(id, objectIdToAdd);
   });
 
@@ -100,11 +100,11 @@ const addToObjectIdSet = (objectIds, objectIdToAdd) => {
 };
 /** Returns 0 if values did not change, 1 if value was added, -1 if value
  * was removed
-*
-* @param {any} originalValue - value of field before update
-* @param {any} newValue - value of field after update
-* @returns {0 | 1 | -1 }
-*/
+ *
+ * @param {any} originalValue - value of field before update
+ * @param {any} newValue - value of field after update
+ * @returns {0 | 1 | -1 }
+ */
 const auditObjectIdField = (originalValue, newValue) => {
   let isOrigValidId = isValidMongoId(originalValue);
   let isNewValidId = isValidMongoId(newValue);
@@ -162,7 +162,7 @@ const didObjectIdArrayFieldChange = (originalValues, newValues) => {
     originalValuesMap[val] = true;
   });
 
-  for(let newValue of newValues) {
+  for (let newValue of newValues) {
     // iterate over newValues, and if we find a value that does not
     // exist in the originalValuesMap, we can return early with true
     if (!originalValuesMap[newValue]) {
@@ -172,13 +172,12 @@ const didObjectIdArrayFieldChange = (originalValues, newValues) => {
 
   // all values in newValues are in oldValues
   return false;
-
 };
 
-  module.exports.isValidMongoId = isValidMongoId;
-  module.exports.areObjectIdsEqual = areObjectIdsEqual;
-  module.exports.cleanObjectIdArray = cleanObjectIdArray;
-  module.exports.addToObjectIdSet = addToObjectIdSet;
-  module.exports.doesObjectIdSetContainObjectId = doesObjectIdSetContainObjectId;
-  module.exports.auditObjectIdField = auditObjectIdField;
-  module.exports.didObjectIdArrayFieldChange = didObjectIdArrayFieldChange;
+module.exports.isValidMongoId = isValidMongoId;
+module.exports.areObjectIdsEqual = areObjectIdsEqual;
+module.exports.cleanObjectIdArray = cleanObjectIdArray;
+module.exports.addToObjectIdSet = addToObjectIdSet;
+module.exports.doesObjectIdSetContainObjectId = doesObjectIdSetContainObjectId;
+module.exports.auditObjectIdField = auditObjectIdField;
+module.exports.didObjectIdArrayFieldChange = didObjectIdArrayFieldChange;

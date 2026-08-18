@@ -250,7 +250,9 @@ CommentSchema.post('save', function (comment) {
         console.log('Error creating parent comment: ', err);
       }
     );
-    resolveGroupUpdates(comment, 'create');
+    resolveGroupUpdates(comment, 'create').catch((err) => {
+      console.log('Error creating group comment: ', err);
+    });
   } else if (wereUpdatedFields) {
     let allowedParentUpdateFields = [
       'isTrashed',
@@ -277,7 +279,9 @@ CommentSchema.post('save', function (comment) {
       console.log('Error updating parent comment: ', err);
     });
     if (parentFieldsToUpdate.includes('isTrashed')) {
-      resolveGroupUpdates(comment, 'delete');
+      resolveGroupUpdates(comment, 'delete').catch((err) => {
+        console.log('Error updating group comment: ', err);
+      });
     }
   }
 });

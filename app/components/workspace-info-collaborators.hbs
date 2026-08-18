@@ -3,7 +3,7 @@
     <div class='heading'>
       Collaborators
       {{#if @canEdit}}
-        <span class='heading-icon' {{action 'addCollaborator'}}>
+        <span class='heading-icon' {{on 'click' this.addCollaborator}}>
           <i class='fas fa-plus'></i>
         </span>
       {{/if}}
@@ -14,7 +14,7 @@
           <ParentWsCollabNew
             @workspace={{@workspace}}
             @createNewCollaborator={{this.createNewCollaborator}}
-            @cancelEditCollab={{action 'cancelEditCollab'}}
+            @cancelEditCollab={{this.cancelEditCollab}}
             @originalCollaborators={{@originalCollaborators}}
             @initialCollabOptions={{@initialCollabOptions}}
             @selectedCollaborators={{@selectedCollaborators}}
@@ -26,7 +26,7 @@
           <WorkspaceInfoCollaboratorsNew
             @workspace={{@workspace}}
             @createNewCollaborator={{this.createNewCollaborator}}
-            @cancelEditCollab={{action 'cancelEditCollab'}}
+            @cancelEditCollab={{this.cancelEditCollab}}
             @isShowingCustomViewer={{@isShowingCustomViewer}}
             @customSubmissionIds={{@customSubmissionIds}}
             @originalCollaborators={{@originalCollaborators}}
@@ -54,12 +54,12 @@
                     }}
                       <i
                         class='fas fa-minus-circle'
-                        {{action 'removeCollab' collaborator.userObj}}
+                        {{on 'click' (fn this.removeCollab collaborator.userObj)}}
                       ></i>
                     {{else}}
                       <i
                         class='fas fa-edit'
-                        {{action 'editCollab' collaborator}}
+                        {{on 'click' (fn this.editCollab collaborator)}}
                       ></i>
                     {{/if}}
                   </span>
@@ -80,7 +80,8 @@
                   <div class='button-row'>
                     <button
                       class='primary-button cancel-button'
-                      {{action 'cancelEditCollab'}}
+                      type='button'
+                      {{on 'click' this.cancelEditCollab}}
                     >Cancel</button>
                   </div>
                 {{/if}}
@@ -102,12 +103,12 @@
                     }}
                       <i
                         class='fas fa-minus-circle'
-                        {{action 'removeCollab' collaborator.userObj}}
+                        {{on 'click' (fn this.removeCollab collaborator.userObj)}}
                       ></i>
                     {{else}}
                       <i
                         class='fas fa-edit'
-                        {{action 'editCollab' collaborator}}
+                        {{on 'click' (fn this.editCollab collaborator)}}
                       ></i>
                     {{/if}}
                   </span>
@@ -115,25 +116,27 @@
               </div>
               <div class='collab-settings'>
                 <div class='card-row'>
-                  {{#unless
-                    (is-equal collaborator.userObj this.selectedCollaborator)
+                  {{#if
+                    (not
+                      (is-equal collaborator.userObj this.selectedCollaborator)
+                    )
                   }}
                     <div class='row-label'>
                       Permissions Type
                     </div>
-                  {{/unless}}
+                  {{/if}}
                   <div class='row-value'>
                     {{#if
                       (is-equal collaborator.userObj this.selectedCollaborator)
                     }}
-                      <RadioGroup
+                      <Ui::RadioGroup
                         @options={{this.globalItems}}
-                        @selectedValue={{globalPermissionValue}}
-                        @updateValue={{action 'updateGlobalPermissionValue'}}
+                        @selectedValue={{this.globalPermissionValue}}
+                        @updateValue={{this.updateGlobalPermissionValue}}
                       />
                     {{else}}
                       {{collab-permissions collaborator.global}}
-                      {{#unless (is-equal collaborator.global 'custom')}}
+                      {{#if (not (is-equal collaborator.global 'custom'))}}
                         <span
                           class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
                           data-tooltip={{collab-global-tooltip
@@ -142,25 +145,24 @@
                         >
                           <i class='far fa-question-circle info-icon'></i>
                         </span>
-                      {{/unless}}
+                      {{/if}}
                     {{/if}}
                   </div>
                 </div>
                 {{#if
                   (is-equal collaborator.userObj this.selectedCollaborator)
                 }}
-                  {{#if showCustom}}
+                  {{#if this.showCustom}}
                     <div class='card-row'>
                       <div class='row-label'>
                         Submissions
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.submissions}}
                           @content={{this.submissionPermissions}}
-                          @optionLabelPath='display'
-                          @action={{action (mut this.submissions)}}
+                          @action={{this.setSubmissions}}
                         />
                         {{#if (is-equal this.submissions.value 'custom')}}
                           <span
@@ -170,12 +172,12 @@
                           {{#if @isShowingCustomViewer}}
                             <span
                               class='viewer-toggle'
-                              {{action 'toggleSubmissionView'}}
+                              {{on 'click' this.toggleSubmissionView}}
                             >Hide Submission Viewer</span>
                           {{else}}
                             <span
                               class='viewer-toggle'
-                              {{action 'toggleSubmissionView'}}
+                              {{on 'click' this.toggleSubmissionView}}
                             >Show Submission Viewer</span>
                           {{/if}}
                         {{/if}}
@@ -186,12 +188,11 @@
                         Selections
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.selections}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
-                          @action={{action (mut this.selections)}}
+                          @action={{this.setSelections}}
                         />
                       </div>
                     </div>
@@ -200,12 +201,11 @@
                         Comments
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.comments}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
-                          @action={{action (mut this.comments)}}
+                          @action={{this.setComments}}
                         />
                       </div>
                     </div>
@@ -214,12 +214,11 @@
                         Folders
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.folders}}
                           @content={{this.mainPermissions}}
-                          @optionLabelPath='display'
-                          @action={{action (mut this.folders)}}
+                          @action={{this.setFolders}}
                         />
                       </div>
                     </div>
@@ -228,12 +227,11 @@
                         Feedback
                       </div>
                       <div class='row-value'>
-                        <MySelect
+                        <Ui::MySelect
                           @cannotBeNull={{true}}
                           @selectedValue={{this.feedback}}
-                          @content={{this.feedbackPermissions}}
-                          @optionLabelPath='display'
-                          @action={{action (mut this.feedback)}}
+                          @content={{this.feedbackPermission}}
+                          @action={{this.setFeedback}}
                         />
                       </div>
                     </div>
@@ -251,12 +249,11 @@
                             collaborator.userObj this.selectedCollaborator
                           )
                         }}
-                          <MySelect
+                          <Ui::MySelect
                             @cannotBeNull={{true}}
                             @selectedValue={{this.submissions}}
                             @content={{this.submissionPermissions}}
-                            @optionLabelPath='display'
-                            @action={{action (mut this.submissions)}}
+                            @action={{this.setSubmissions}}
                           />
                           {{#if (is-equal this.submissions.value 'custom')}}
                             <span
@@ -265,7 +262,7 @@
                               submissions selected</span>
                             <span
                               class='viewer-toggle'
-                              {{action 'toggleSubmissionView'}}
+                              {{on 'click' this.toggleSubmissionView}}
                             >
                               {{if @isShowingCustomViewer 'Hide' 'Show'}}
                               Submission Viewer</span>
@@ -322,11 +319,13 @@
                   <div class='button-row'>
                     <button
                       class='primary-button cancel-button'
-                      {{action 'cancelEditCollab'}}
+                      type='button'
+                      {{on 'click' this.cancelEditCollab}}
                     >Cancel</button>
                     <button
                       class='primary-button'
-                      {{action 'savePermissions' collaborator}}
+                      type='button'
+                      {{on 'click' (fn this.savePermissions collaborator)}}
                     >Save</button>
                   </div>
                 {{/if}}

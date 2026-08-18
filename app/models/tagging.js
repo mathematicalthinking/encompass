@@ -1,23 +1,16 @@
-import Model, { belongsTo } from '@ember-data/model';
-import Ember from 'ember';
-import Auditable from '../models/_auditable_mixin';
+import { belongsTo } from '@ember-data/model';
 
+import AuditableModel from './auditable';
 
+export default class TaggingModel extends AuditableModel {
+  @belongsTo('workspace', { inverse: 'taggings', async: false }) workspace;
+  @belongsTo('selection', { inverse: 'taggings', async: true }) selection;
+  @belongsTo('folder', { inverse: 'taggings', async: true }) folder;
+  @belongsTo('tagging', { inverse: null, async: true }) originalTagging;
 
-
-
-
-
-export default Model.extend(Ember.Copyable, Auditable, {
-  workspace: belongsTo('workspace', { async: false }),
-  selection: belongsTo('selection'),
-  folder: belongsTo('folder'),
-  originalTagging: belongsTo('tagging', { inverse: null }),
-
-  copy: function (deep) {
-    var clone = this.toJSON();
-
+  copy() {
+    let clone = this.toJSON();
     delete clone.id;
     return this.store.createRecord('tagging', clone).save();
   }
-});
+}

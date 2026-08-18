@@ -9,17 +9,17 @@ const host = `http://localhost:${port}`;
 
 const admin = {
   username: 'rick',
-  password: 'sanchez'
+  password: 'sanchez',
 };
 
 const regUser = {
   username: 'morty',
-  password: 'smith'
+  password: 'smith',
 };
 
 const pdAdmin = {
   username: 'pdadmin',
-  password: 'pdadmin'
+  password: 'pdadmin',
 };
 
 // const student = {
@@ -29,24 +29,25 @@ const pdAdmin = {
 
 const loginUrl = '/auth/login';
 
-const setup = async function(agent, user=admin.username, pass=admin.password, url=loginUrl) {
+const setup = async function (
+  agent,
+  user = admin.username,
+  pass = admin.password,
+  url = loginUrl
+) {
   try {
     await dbSetup.prepTestDb();
-    await agent.post(url)
-      .send({ username: user, password: pass });
-  }catch(err) {
+    await agent.post(url).send({ username: user, password: pass });
+  } catch (err) {
     console.log(err);
   }
 };
-
 
 function putApiResourceById(agent, resource, id, body) {
   let url = `/api/${resource}/${id}`;
 
   let model = resource.slice(0, resource.length - 1);
-  return agent
-    .put(url)
-    .send({[model]: body});
+  return agent.put(url).send({ [model]: body });
 }
 
 function getApiResourceById(agent, resource, id) {

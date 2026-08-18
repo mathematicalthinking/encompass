@@ -1,81 +1,80 @@
-import Component from '@ember/component';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import { inject as service } from '@ember/service';
 
+export default class SignupGoogleComponent extends Component {
+  @service('current-user') currentUser;
+  @service('error-handling') errorHandling;
 
+  @tracked missingCredentials = false;
+  @tracked noTermsAndConditions = false;
+  @tracked agreedToTerms = false;
+  @tracked org = null;
+  @tracked location = null;
+  @tracked requestReason = null;
 
+  typeaheadHeader = '<label class="tt-header">Popular Organizations:</label>';
 
+  get updateUserErrors() {
+    return this.errorHandling.getErrors('updateUserErrors') || [];
+  }
 
+  // The typeahead reports the typed string (on input) or the selected org
+  // record (on pick) via @onSelect; submit handles both.
+  @action
+  setOrg(value) {
+    this.org = value;
+  }
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
-  elementId: 'signup-google',
-  missingCredentials: false,
-  noTermsAndConditions: false,
-  agreedToTerms: false,
-  org: null,
-  updateUserErrors: [],
+  @action
+  resetErrors() {
+    this.missingCredentials = false;
+    this.noTermsAndConditions = false;
+  }
 
-  init: function () {
-    this._super(...arguments);
-    this.set('typeaheadHeader', '<label class="tt-header">Popular Organizations:</label>');
-  },
+  @action
+  submit() {
+    let organization = this.org;
+    const location = this.location;
+    const requestReason = this.requestReason;
 
-  actions: {
-    submit: function () {
-      let organization = this.org;
-      const location = this.location;
-      const requestReason = this.requestReason;
+    if (!organization || !location || !requestReason) {
+      this.missingCredentials = true;
+      return;
+    }
 
-      if (!organization || !location || !requestReason) {
-        this.set('missingCredentials', true);
-        return;
-      }
+    if (!this.agreedToTerms) {
+      this.noTermsAndConditions = true;
+      return;
+    }
 
-      if (!this.agreedToTerms) {
-        this.set('noTermsAndConditions', true);
-        return;
-      }
+    const user = this.currentUser.user;
+    let orgRequest;
 
-      let user = this.currentUser;
-      let orgRequest;
-
-      // make sure user did not type in existing org
-      if (typeof organization === 'string') {
-        let orgs = this.organizations;
-        let matchingOrg = orgs.findBy('name', organization);
-        if (matchingOrg) {
-          organization = matchingOrg;
-        } else {
-          orgRequest = organization;
-        }
-      }
-
-      if (orgRequest) {
-        user.set('organizationRequest', orgRequest);
+    // make sure user did not type in an existing org
+    if (typeof organization === 'string') {
+      const orgs = this.args.organizations;
+      const matchingOrg = orgs.findBy('name', organization);
+      if (matchingOrg) {
+        organization = matchingOrg;
       } else {
-        user.set('organization', organization);
+        orgRequest = organization;
       }
+    }
 
-      user.set('location', location);
-      user.set('requestReason', requestReason);
-      user.set('createdBy', user);
+    if (orgRequest) {
+      user.organizationRequest = orgRequest;
+    } else {
+      user.organization = organization;
+    }
 
-      user.save().then((res) => {
-        // handle success
-      }).catch((err) => {
-        this.handleErrors(err, 'updateUserErrors', user);
-      });
-    },
-    resetErrors(e) {
-      const errors = ['missingCredentials', 'noTermsAndConditions'];
+    user.location = location;
+    user.requestReason = requestReason;
+    user.createdBy = user;
 
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
-        }
-      }
-    },
-  },
-
-
-});
+    user.save().catch((err) => {
+      this.errorHandling.handleErrors(err, 'updateUserErrors', user);
+    });
+  }
+}

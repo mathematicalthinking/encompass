@@ -52,7 +52,7 @@ function toSubmission(obj, index, arr) {
     delete json.Id;
 
     for (var property in json) {
-      if (json.hasOwnProperty(property)) {
+      if (Object.prototype.hasOwnProperty.call(json, property)) {
         model.set(property, json[property]);
       }
     }
@@ -86,7 +86,7 @@ function toPDSubmission(obj, index, arr) {
     delete json.Id;
 
     for (var property in json) {
-      if (json.hasOwnProperty(property)) {
+      if (Object.prototype.hasOwnProperty.call(json, property)) {
         model.set(property, json[property]);
       }
     }
@@ -396,10 +396,31 @@ function putSubmission(req, res, next) {
       return utils.sendError.InternalError(err, res);
     }
 
-    for (var field in req.body.submission) {
-      if (field !== '_id' && field !== undefined) {
-        doc[field] = req.body.submission[field];
+    const submissionPayload = req.body.submission || {};
+    for (var field in submissionPayload) {
+      if (field === 'appendAiFinalEditVersion') {
+        continue;
       }
+      if (field !== '_id' && field !== undefined) {
+        doc[field] = submissionPayload[field];
+      }
+    }
+
+    const appendAiFinalEditVersion = submissionPayload.appendAiFinalEditVersion;
+    if (appendAiFinalEditVersion) {
+      if (!Array.isArray(doc.aiFinalEditVersions)) {
+        doc.aiFinalEditVersions = [];
+      }
+      doc.aiFinalEditVersions.push({
+        text: appendAiFinalEditVersion.text || '',
+        savedAt: appendAiFinalEditVersion.savedAt || new Date(),
+        savedBy: appendAiFinalEditVersion.savedBy || null,
+        sourceVariantLogId: appendAiFinalEditVersion.sourceVariantLogId || null,
+        sourceRequestId: appendAiFinalEditVersion.sourceRequestId || null,
+        sourceVariantKey: appendAiFinalEditVersion.sourceVariantKey || null,
+        rating: appendAiFinalEditVersion.rating || null,
+        writtenFeedback: appendAiFinalEditVersion.writtenFeedback || null,
+      });
     }
 
     doc.save(function (err, submission) {

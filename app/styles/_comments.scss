@@ -187,6 +187,30 @@
         cursor: pointer;
         font-weight: 900;
       }
+
+      // Style buttons to look like links
+      .reuse_button,
+      .delete_button {
+        background: none;
+        border: none;
+        padding: 0;
+        color: $accent-color;
+        font-weight: 900;
+        cursor: pointer;
+        display: inline-block;
+        margin-left: 5px;
+        font-size: inherit;
+        font-family: inherit;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        &:focus {
+          outline: 2px solid $accent-color;
+          outline-offset: 2px;
+        }
+      }
     }
   }
 

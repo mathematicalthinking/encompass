@@ -1,25 +1,30 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import moment from 'moment';
-import _ from 'underscore';
+import formatDate from 'encompass/helpers/format-date';
+import isEqual from 'lodash-es/isEqual';
+import isString from 'lodash-es/isString';
+import isObject from 'lodash-es/isObject';
 
 export default class BreadCumbsItemComponent extends Component {
   get isSelected() {
-    return _.isEqual(this.args.item, this.args.selectedItem);
+    return isEqual(this.args.item, this.args.selectedItem);
   }
 
   get isStarredItem() {
-    return this.args.starredItemsList.includes(this.item);
+    return (this.args.starredItemsList ?? []).some((item) =>
+      isEqual(item, this.args.item)
+    );
   }
 
   get titleText() {
-    if (_.isString(this.args.itemTitleText)) {
+    if (isString(this.args.itemTitleText)) {
       return this.args.itemTitleText;
     }
-    if (this.args.item && this.args.item.createDate) {
-      return moment(this.args.item.createDate).format('MMM Do YYYY h:mm A');
+    if (this.args.item?.createDate) {
+      const date = new Date(this.args.item.createDate);
+      return formatDate(date, 'MMM Do YYYY h:mm A');
     }
-    if (_.isString(this.args.titleTextPath) && _.isObject(this.args.item)) {
+    if (isString(this.args.titleTextPath) && isObject(this.args.item)) {
       return this.args.item[this.args.titleTextPath];
     }
     return '';

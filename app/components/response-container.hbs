@@ -1,0 +1,76 @@
+{{! /**
+ * #
+ * @description 
+ Parent component under /responses/submission/:submissionId. 
+ Subchild components are response-mentor-thread.hbs
+ Structure is as follows:
+  - response-container.hbs
+    - response-mentor-thread.hbs
+      - response-submission-view.hbs
+      - response-mentor-reply.hbs
+  Purpose of this component is render a students submission and every mentors response to that submission.
+ * @author Yousof Wakili
+ * @since 3.6.2
+ */ }}
+<div class='response-container'>
+  <div class='response-header-container'>
+    {{! showing mentor thread for problems...... for workspace "x" and "y" }}
+    {{#if this.isCreatingNewMentorReply}}
+      <div class='problem-link-container'>
+        <p>
+          Crafting a new response for
+          <a
+            {{on 'click' this.openSubmission}}
+            class='link'
+          >{{@workspace.name}}</a>, problem:
+          <a {{on 'click' this.openProblem}} class='problem-link'>
+            {{@submission.puzzle.title}}
+          </a>
+        </p>
+      </div>
+    {{else}}
+      {{! I would like it to be: Displaying feedback re: “problem_name” from “”workspace_name” }}
+      <div class='problem-link-container'>
+        <p>Displaying feedback re:
+          <a {{on 'click' this.openProblem}} class='problem-link'>
+            {{@submission.puzzle.title}}
+          </a>
+        </p>
+        from:
+        <a
+          {{on 'click' this.openSubmission}}
+          class='link'
+        >{{@workspace.name}}</a>
+      </div>
+    {{/if}}
+  </div>
+  {{#each this.sortedSubmissions as |submission index|}}
+    <ResponseMentorThread
+      @response={{@response}}
+      @submission={{submission}}
+      @workspace={{@workspace}}
+      @wsResponses={{this.cleanWorkspaceResponses}}
+      @studentSubmissions={{this.submissions}}
+      @onSubChange={{this.onSubmissionChange}}
+      @sendRevisionNotices={{this.sendSubmissionRevisionNotices}}
+      @isParentWorkspace={{this.isParentWorkspace}}
+      @isCreating={{this.isCreatingNewMentorReply}}
+      @mentorReplies={{submission.responses}}
+      @responseToApprove={{this.responseToApprove}}
+      @displayResponse={{this.mentorReplyDisplayResponse}}
+      @canDirectSend={{this.canDirectSend}}
+      @canApprove={{this.canApprove}}
+      @isOwnMentorReply={{this.isOwnMentorReply}}
+      @onSaveSuccess={{this.onSaveSuccess}}
+      @onMentorReplySwitch={{this.onMentorReplySwitch}}
+      @submissionResponses={{submission.responses}}
+      @canSend={{this.canSend}}
+      @isMentorRecipient={{this.isMentorRecipient}}
+      @isOwnSubmission={{this.isOwnSubmission}}
+      @priorMentorRevision={{this.priorMentorRevision}}
+      @iconFillOptions={{this.iconFillOptions}}
+      @handleResponseThread={{this.handleResponseThread}}
+      @isOlderRevision={{if index true false}}
+    />
+  {{/each}}
+</div>

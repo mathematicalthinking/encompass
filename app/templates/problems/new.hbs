@@ -1,4 +1,12 @@
-{{page-title "New Problem"}}
-<div id="problem-new" class="side-info">
-  <ProblemNew @store={{this.store}} @currentUser={{this.model.currentUser}} @toProblemInfo="toProblemInfo" @organizations={{this.model.organizations}} @toProblemList="toProblemList" />
+{{page-title 'New Problem'}}
+<div id='problem-new' class='side-info'>
+  <ProblemNew
+    @organizations={{@model.organizations}}
+    @returnTo={{this.returnTo}}
+    @returnStep={{this.returnStep}}
+    @importProblemId={{this.importProblemId}}
+    @importSectionId={{this.importSectionId}}
+    @importUseClass={{this.importUseClass}}
+    @importUploadedFileIds={{this.importUploadedFileIds}}
+  />
 </div>

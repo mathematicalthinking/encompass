@@ -1,0 +1,369 @@
+<div id="response-mentor-reply">
+{{#unless @isOlderRevision}}
+  {{#if @isCreating}}
+    {{!-- TEMPORARY A/B TEST CODE - REMOVE AFTER TESTING PERIOD --}}
+    <AiVariantComparison
+      @submission={{@submission}}
+      @workspace={{@workspace}}
+      @onVariantGenerated={{this.handleVariantGenerated}}
+      @onDraftSelected={{this.handleVariantDraftSelected}}
+    />
+    <div class='ab-draft-editor-section'>
+      <p class='response-header'>Draft Editor</p>
+      <Ui::QuillContainer
+        @attrSectionId='variant-draft-editor'
+        @onEditorChange={{this.updateVariantComposeText}}
+        @onQuillReady={{this.onVariantQuillReady}}
+        @startingText={{this.variantEditorStartingText}}
+        @maxLength={{10000}}
+        @showErrors={{true}}
+        @emptyErrorMessage='Message body cannot be blank'
+      />
+      <div class='ab-draft-editor-actions'>
+        <button
+          type='button'
+          class='primary-button'
+          disabled={{not this.canSaveFinalEditVersion}}
+          {{on 'click' this.saveFinalEditVersion}}
+        >
+          {{this.saveFinalEditButtonText}}
+        </button>
+      </div>
+    </div>
+    {{!-- END TEMPORARY A/B TEST CODE --}}
+    {{!-- Temporarily hidden: new response area below A/B testing --}}
+    {{!--
+    <ResponseNew
+      @isCreating={{@isCreating}}
+      @submission={{@submission}}
+      @responseData={{this.responseNewModel}}
+      @recipient={{@response.recipient}}
+      @newReplyStatus={{this.newReplyStatus}}
+      @newReplyType='mentor'
+      @onSaveSuccess={{this.onSaveSuccess}}
+      @canDirectSend={{@canDirectSend}}
+      @submissionResponses={{@submissionResponses}}
+      @handleResponseThread={{this.handleNewMentorReply}}
+      @aiGeneratedText={{this.aiGeneratedText}}
+    />
+    --}}
+  {{/if}}
+{{/unless}}
+
+  {{#if this.hasPreviousConversation}}
+    {{#unless @isOlderRevision}}
+      {{#if @isCreating}}
+        <h3 class='previous-responses-header'>Previous Conversation</h3>
+      {{/if}}
+    {{/unless}}
+    {{#each this.sortedMentorReplies as |reply|}}
+      {{#if reply.createdBy.username}}
+      <div class='response-mentor-container'>
+        <div class='response-mentor-info'>
+          {{#if @isParentWorkspace}}
+                <div class='response-users'>
+                  <p>
+                    <span class='response-label'>To:</span>
+                    <span
+                      class='response-value recipient'
+                    >{{reply.recipient.username}}
+                    </span>
+                    {{#if this.showRecipientReadUnread}}
+                      <span class='response-read-unread'><i
+                          title={{this.recipientReadUnreadIcon.title}}
+                          class={{this.recipientReadUnreadIcon.className}}
+                        ></i></span>
+                    {{/if}}
+                  </p>
+                  <p>
+                    <span class='response-label'>Mentor:</span>
+                    <span class='response-value'>
+                      {{#if @isParentWorkspace}}
+                        {{reply.originalResponse.createdBy.username}}
+                      {{else}}
+                        {{reply.createdBy.username}}
+                      {{/if}}
+                    </span>
+                  </p>
+                  <span class='response-time'>{{format-date
+                      reply.originalResponse.createDate
+                      'MMMM Do YYYY'
+                    }}
+                    {{format-date
+                      reply.originalResponse.createDate
+                      'h:mm a'
+                    }}</span>
+                </div>
+                {{! if not in parent workspace }}
+              {{else}}
+                <div class='response-users'>
+                  <div class='mentor-thread-container'>
+                    <div class='mentor-header-thread'>
+                      <p>Mentor: {{reply.createdBy.username}} {{#if (this.isDraftReply reply)}}<span style="background: #778899; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-left: 8px;">DRAFT</span>{{/if}}</p>
+                      <p class='response-time'>{{format-date
+                          reply.createDate
+                          'MMMM Do, YYYY'
+                        }}
+                        {{format-date
+                          reply.createDate
+                          'h:mm a'
+                        }}</p></div>
+
+                    <p>
+                      To:
+                      {{reply.recipient.username}}
+                      {{#if this.showRecipientReadUnread}}
+                        <i
+                          title={{this.recipientReadUnreadIcon.title}}
+                          class={{this.recipientReadUnreadIcon.className}}
+                        ></i>
+                      {{/if}}
+                    </p>
+
+                    <div class='response-text-container'>
+                      <div
+                        class='response-text'
+                      >
+                        {{make-html-safe reply.text}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class='response-content'>
+                    {{!-- {{#if this.showEdit}}
+              <i {{action "handleComposeAction" "isEditing" true false}} class="far fa-edit"></i>
+            {{/if}} --}}
+                    {{#if reply.note}}
+                      <div class='response-note-container'>
+                        <p class='response-header'>Note for Approver</p>
+                        <div class='response-note'>
+                          {{reply.note}}
+                        </div>
+                      </div>
+                    {{/if}}
+                  </div>
+                </div>
+          {{/if}}
+        </div>
+        <div class="mentor-reply-actions button-row">
+          {{#if (this.showResumeDraftForReply reply)}}
+            <button {{on 'click' (fn this.editDraft reply)}} class="primary-button" type="button">Edit Draft</button>
+          {{/if}}
+          {{#if (this.canTrashReply reply)}}
+            <button {{on 'click' (fn this.confirmTrash reply)}} class="primary-button" type="button">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          {{/if}}
+        </div>
+        {{#if (this.isEditingThisDraft reply)}}
+          <div class='response-compose edit-draft-compose'>
+            <p class='response-header'>Edit Draft</p>
+            <Ui::QuillContainer
+              @key={{this.quillKey}}
+              @onEditorChange={{this.updateQuillText}}
+              @attrSectionId='draft-editor'
+              @startingText={{this.editRevisionText}}
+              @maxLength={{5000}}
+              @showErrors={{true}}
+              @emptyErrorMessage='Message body cannot be blank'
+            />
+            {{#if this.showApproverNoteInput}}
+              <div class='approve-note'>
+                <p class='response-header'>Note to Approver</p>
+                <Textarea
+                  class='approver-note'
+                  @value={{this.editRevisionNote}}
+                />
+              </div>
+            {{/if}}
+            {{#if this.doShowLoadingMessage}}
+              <LoadingElem />
+            {{/if}}
+            <div class='submit-buttons button-row'>
+              <button class='primary-button' type='button' {{on 'click' (fn this.saveResponse false)}}>{{this.saveButtonText}}</button>
+              <button class='primary-button ai-draft' type='button' disabled={{this.aiButtonDisabled}} title={{this.aiButtonTooltip}} {{on 'click' this.generateAIDraft}}>Draft From AI</button>
+              <button class='primary-button' type='button' {{on 'click' (fn this.saveResponse true)}}>Save Draft</button>
+              <button class='primary-button' type='button' {{on 'click' this.cancelCompose}}>Cancel</button>
+            </div>
+          </div>
+        {{/if}}
+
+      </div>
+      {{/if}}
+    {{/each}}
+
+    {{#if this.finalEditHistoryEntries.length}}
+      <div class='final-edit-history-section'>
+        <h4 class='response-header'>
+          <span>Final Edit History ({{this.finalEditHistoryEntries.length}})</span>
+          {{#if this.hasMultipleHistoryEntries}}
+            <button {{on 'click' this.toggleHistoryExpansion}} class='history-toggle-button' type='button'>
+              {{#if this.isHistoryExpanded}}
+                Show Recent Only
+                <i class='fas fa-chevron-up'></i>
+              {{else}}
+                Show All ({{this.finalEditHistoryEntries.length}})
+                <i class='fas fa-chevron-down'></i>
+              {{/if}}
+            </button>
+          {{/if}}
+        </h4>
+        {{#each this.finalEditHistoryEntries as |entry index|}}
+          {{#let (is-equal index 0) as |isFirst|}}
+            {{#if this.isHistoryExpanded}}
+              <div class='final-edit-history-item {{if isFirst "history-most-recent" ""}}'>
+                {{! Compact header - always visible }}
+                <div class='history-item-header' {{on 'click' (fn this.toggleHistoryItem entry.id)}}>
+                  <div class='history-summary-left'>
+                    <span class='response-time'>
+                      {{#if entry.savedAt}}
+                        {{format-date entry.savedAt 'MMM d, yyyy h:mm a'}}
+                      {{else}}
+                        Date unavailable
+                      {{/if}}
+                    </span>
+                    {{#if entry.savedBy}}
+                      <span class='saved-by-inline'>by {{entry.savedBy}}</span>
+                    {{/if}}
+                  </div>
+                  <div class='history-summary-right'>
+                    {{#if entry.rating}}
+                      <div class='star-rating-inline'>
+                        {{#each (array 1 2 3 4 5) as |starNum|}}
+                          <i class='fas fa-star {{if (this.isHistoryStarFilled starNum entry.rating) "star-filled" "star-empty"}}'></i>
+                        {{/each}}
+                      </div>
+                    {{/if}}
+                    {{#if entry.writtenFeedback}}
+                      <i class='fas fa-comment-dots feedback-indicator' title='Has feedback'></i>
+                    {{/if}}
+                    <i class='fas fa-chevron-down expand-icon {{if (this.isHistoryItemExpanded entry.id) "expanded" ""}}'></i>
+                  </div>
+                </div>
+
+                {{! Full content - shown when expanded }}
+                <div class='history-item-content {{unless (this.isHistoryItemExpanded entry.id) "collapsed" ""}}'>
+                  {{#if entry.writtenFeedback}}
+                    <div class='history-feedback-only'>
+                      <span class='feedback-label'>AI Draft Feedback:</span>
+                      <div class='feedback-text'>{{entry.writtenFeedback}}</div>
+                    </div>
+                  {{/if}}
+
+                  <div class='response-text'>
+                    {{make-html-safe entry.html}}
+                  </div>
+
+                  {{#if @isCreating}}
+                    <div class='final-edit-history-actions'>
+                      <button {{on 'click' (fn this.copyHistoryEntryToEditor entry)}} class='primary-button' type='button'>
+                        Copy to Editor
+                      </button>
+                    </div>
+                  {{/if}}
+                </div>
+              </div>
+            {{else}}
+              {{#if isFirst}}
+                <div class='final-edit-history-item history-most-recent'>
+                  {{! Compact header - always visible }}
+                  <div class='history-item-header' {{on 'click' (fn this.toggleHistoryItem entry.id)}}>
+                    <div class='history-summary-left'>
+                      <span class='response-time'>
+                        {{#if entry.savedAt}}
+                          {{format-date entry.savedAt 'MMM d, yyyy h:mm a'}}
+                        {{else}}
+                          Date unavailable
+                        {{/if}}
+                      </span>
+                      {{#if entry.savedBy}}
+                        <span class='saved-by-inline'>by {{entry.savedBy}}</span>
+                      {{/if}}
+                    </div>
+                    <div class='history-summary-right'>
+                      {{#if entry.rating}}
+                        <div class='star-rating-inline'>
+                          {{#each (array 1 2 3 4 5) as |starNum|}}
+                            <i class='fas fa-star {{if (this.isHistoryStarFilled starNum entry.rating) "star-filled" "star-empty"}}'></i>
+                          {{/each}}
+                        </div>
+                      {{/if}}
+                      {{#if entry.writtenFeedback}}
+                        <i class='fas fa-comment-dots feedback-indicator' title='Has feedback'></i>
+                      {{/if}}
+                      <i class='fas fa-chevron-down expand-icon {{if (this.isHistoryItemExpanded entry.id) "expanded" ""}}'></i>
+                    </div>
+                  </div>
+
+                  {{! Full content - shown when expanded }}
+                  <div class='history-item-content {{unless (this.isHistoryItemExpanded entry.id) "collapsed" ""}}'>
+                    {{#if entry.writtenFeedback}}
+                      <div class='history-feedback-only'>
+                        <span class='feedback-label'>AI Draft Feedback:</span>
+                        <div class='feedback-text'>{{entry.writtenFeedback}}</div>
+                      </div>
+                    {{/if}}
+
+                    <div class='response-text'>
+                      {{make-html-safe entry.html}}
+                    </div>
+
+                    {{#if @isCreating}}
+                      <div class='final-edit-history-actions'>
+                        <button {{on 'click' (fn this.copyHistoryEntryToEditor entry)}} class='primary-button' type='button'>
+                          Copy to Editor
+                        </button>
+                      </div>
+                    {{/if}}
+                  </div>
+                </div>
+              {{/if}}
+            {{/if}}
+          {{/let}}
+        {{/each}}
+      </div>
+    {{/if}}
+
+    {{! Show "New Response" button after responses when no drafts exist }}
+    {{! Removed @isOlderRevision check - allow responding to any revision }}
+      {{#unless this.hasDrafts}}
+        {{#unless @isCreating}}
+          <div class="new-response-section">
+            <p class='info'>Ready to send another response?</p>
+            {{#if this.canSendNew}}
+              <div class="submit-buttons button-row">
+                <LinkTo
+                  @route="responses.new.submission"
+                  @model={{@submission.id}}
+                  class="primary-button"
+                >
+                  New Response
+                </LinkTo>
+              </div>
+            {{/if}}
+          </div>
+        {{/unless}}
+      {{/unless}}
+
+  {{else}}
+    {{#unless @isOlderRevision}}
+      <p class='info'>No Mentor Feedback for this revision yet.</p>
+      <img src='/assets/images/no-message.svg' alt='No Replies' />
+      {{#if this.canSendNew}}
+        Click 'New Response' to begin composing a new Mentor Reply.
+        <div class="submit-buttons button-row">
+          <LinkTo
+            @route="responses.new.submission"
+            @model={{@submission.id}}
+            class="primary-button"
+          >
+            New Response
+          </LinkTo>
+        </div>
+      {{/if}}
+    {{/unless}}
+  {{/if}}
+  {{! page pagination for mentor replies }}
+  {{!-- <div class="mentor-replies">
+      <BreadCrumbs @items={{sortedMentorReplies}} @onSelect={{action "setDisplayMentorReply"}} @titleTextPath="shortText" @selectedItem={{displayResponse}} @infoToolTipText={{revisionsToolTip}} />
+    </div> --}}
+</div>

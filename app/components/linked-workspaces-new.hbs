@@ -1,4 +1,4 @@
-<div id='linked-workspaces-new'>
+<div id='linked-workspaces-new' {{did-insert this.initialSelectAll}}>
   {{#unless @isDisplayOnly}}
     <p class='info'>
       Clicking "Create Workspaces" will generate a private workspace for each
@@ -20,7 +20,7 @@
     </p>
     <div class='info-flex-item'>
       <Input
-        @id='linked-ws-new-name'
+        id='linked-ws-new-name'
         class='single-text-input'
         @type='text'
         @value={{this.workspaceName}}
@@ -35,7 +35,7 @@
         <li><label class='no-width'><Input
               @type='checkbox'
               {{on 'input' this.selectAll}}
-              @checked={{this.showAllSelected}}
+              checked={{this.showAllSelected}}
               class='select-all'
             />Select All</label></li>
         {{#each @students as |student|}}
@@ -48,22 +48,15 @@
         {{/each}}
       </ul>
     </div>
-    {{#each this.workspaceNameErrors as |error|}}
-      <ErrorBox
-        @error={{error}}
-        @showDismiss={{true}}
-        @resetError={{action (mut this.workspaceNameErrors) null}}
-      />
-    {{/each}}
   </div>
 
   {{#unless @isDisplayOnly}}
     <div class='create-ws-error'>
       {{#if this.createWorkspaceError}}
-        <ErrorBox
+        <Ui::ErrorBox
           @error={{createWorkspaceError}}
           @showDismiss={{true}}
-          @resetError={{action (mut this.createWorkspaceError) null}}
+          @resetError={{this.resetCreateWorkspaceError}}
         />
       {{/if}}
     </div>
@@ -78,12 +71,14 @@
         <button
           class='primary-button create-ws'
           data-test='add-linked-ws-create'
-          {{action 'create'}}
+          type='button'
+          {{on 'click' this.create}}
         >Create Workspaces</button>
         <button
           class='primary-button cancel-button'
           data-test='add-linked-ws-cancel'
-          {{action 'cancel'}}
+          type='button'
+          {{on 'click' this.cancel}}
         >Cancel</button>
       </div>
     {{/unless}}

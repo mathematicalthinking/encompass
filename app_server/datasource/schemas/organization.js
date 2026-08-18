@@ -1,43 +1,47 @@
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 const User = require('../schemas/user').User;
 
-
 /**
-  * @public
-  * @class Organization
-  * @description Organizations are used to categorize problems
-  * @todo Create or use external organizations for problem?
-  */
-var OrganizationSchema = new Schema({
-  //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
-  createDate: { type: Date, 'default': Date.now() },
-  isTrashed: { type: Boolean, 'default': false },
-  lastModifiedBy: { type: ObjectId, ref: 'User' },
-  lastModifiedDate: { type: Date, 'default': Date.now() },
-  //====
-  name: { type: String, required: true },
-  recommendedProblems: [{type: ObjectId, ref: 'Problem'}]
-}, { versionKey: false });
+ * @public
+ * @class Organization
+ * @description Organizations are used to categorize problems
+ * @todo Create or use external organizations for problem?
+ */
+var OrganizationSchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
+    lastModifiedBy: { type: ObjectId, ref: 'User' },
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
+    name: { type: String, required: true },
+    recommendedProblems: [{ type: ObjectId, ref: 'Problem' }],
+  },
+  { versionKey: false }
+);
 
-OrganizationSchema.methods.getMemberCount = function(id) {
-  return User.find({isTrashed: false, organization: id}).lean().exec().then((users) => {
-    return users.length;
-  })
-  .catch((err) => {
-    console.error('err org member count', err);
-    console.trace();
-    return new Error(err);
-  });
+OrganizationSchema.methods.getMemberCount = function (id) {
+  return User.find({ isTrashed: false, organization: id })
+    .lean()
+    .exec()
+    .then((users) => {
+      return users.length;
+    })
+    .catch((err) => {
+      console.error('err org member count', err);
+      console.trace();
+      return new Error(err);
+    });
 };
 
 /**
-  * ## Pre-Validation
-  * Before saving we must verify (synchonously) that:
-  */
+ * ## Pre-Validation
+ * Before saving we must verify (synchonously) that:
+ */
 // OrganizationSchema.pre('save', function (next) {
 //   var toObjectId = function (elem, ind, arr) {
 //     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
@@ -60,9 +64,9 @@ OrganizationSchema.methods.getMemberCount = function(id) {
 // });
 
 /**
-  * ## Post-Validation
-  * After saving we must ensure (synchonously) that:
-  */
+ * ## Post-Validation
+ * After saving we must ensure (synchonously) that:
+ */
 // OrganizationSchema.post('save', function (Organization) {
 //   var update = { $addToSet: { 'Organizations': Organization } };
 //   if (Organization.isTrashed) {
@@ -93,4 +97,7 @@ OrganizationSchema.methods.getMemberCount = function(id) {
 
 // });
 
-module.exports.Organization = mongoose.model('Organization', OrganizationSchema);
+module.exports.Organization = mongoose.model(
+  'Organization',
+  OrganizationSchema
+);

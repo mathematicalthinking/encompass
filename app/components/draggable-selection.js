@@ -1,119 +1,229 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { alias, equal } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
-import moment from 'moment';
-import Encompass from '../app';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-import './Draggable';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
 
-export default Component.extend(
-  Encompass.DragNDrop.Draggable,
-  CurrentUserMixin,
-  {
-    alert: service('sweet-alert'),
-    utils: service('utility-methods'),
-    isExpanded: false,
-    classNames: ['draggable-selection'],
-    classNameBindings: ['isSelected:is-selected'],
+const SELECTION_DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  dateStyle: 'short',
+  timeStyle: 'short',
+});
+const SELECTION_TOOLTIP_CACHE = new WeakMap();
 
-    workspaceType: alias('selection.workspace.workspaceType'),
-
-    isParentWorkspace: equal('workspaceType', 'parent'),
-
-    dragStart: function (event) {
-      this._super(event);
-      var dataTransfer = event.originalEvent.dataTransfer;
-      // stringify just returns the non-ember properties, so the id isn't included
-      var data = JSON.stringify(this.selection);
-      var dataWithId =
-        '{"id": "' + this.selection.get('id') + '",' + data.substring(1);
-      dataTransfer.setData('application/json', dataWithId);
-      dataTransfer.setData('text/plain', 'selection');
-    },
-    dragEnd: function (event) {
-      // Let the controller know this view is done dragging
-      this.set('selection.isDragging', false);
-    },
-
-    canDelete: computed(
-      'canDeleteSelections',
-      'selection.createdBy.id',
-      'currentUser.id',
-      function () {
-        const currentUserId = this.get('currentUser.id');
-        const creatorId = this.get('selection.createdBy.id');
-        return currentUserId === creatorId || this.canDeleteSelections;
-      }
-    ),
-
-    isImage: computed('selection.imageTagLink', function () {
-      return this.get('selection.imageTagLink.length') > 0;
-    }),
-
-    linkToClassName: computed('isImage', function () {
-      if (this.isImage) {
-        return 'selection-image';
-      }
-      return 'selection_text';
-    }),
-
-    isSelected: computed('selection', 'currentSelection', function () {
-      return this.get('selection.id') === this.get('currentSelection.id');
-    }),
-    isVmtClip: computed('selection.vmtInfo.{startTime,endTime}', function () {
-      return (
-        this.get('selection.vmtInfo.startTime') >= 0 &&
-        this.get('selection.vmtInfo.endTime') >= 0
-      );
-    }),
-
-    titleText: computed('isVmtClip', 'createDate', function () {
-      if (!this.isVmtClip) {
-        let createDate = this.get('selection.createDate');
-
-        let displayDate = moment(createDate).format('l h:mm');
-        return `Created ${displayDate}`;
-      }
-      let startTime = this.get('selection.vmtInfo.startTime');
-      let endTime = this.get('selection.vmtInfo.endTime');
-
-      return `${this.utils.getTimeStringFromMs(startTime)} -
-            ${this.utils.getTimeStringFromMs(endTime)}`;
-    }),
-
-    overlayIcon: computed('isVmtClip}', 'isImage', function () {
-      if (!this.isImage) {
-        return '';
-      }
-
-      if (this.isVmtClip) {
-        return 'fas fa-play';
-      }
-      return 'fas fa-expand';
-    }),
-
-    actions: {
-      deleteSelection(selection) {
-        this.alert
-          .showModal(
-            'warning',
-            'Are you sure you want to delete this selection?',
-            null,
-            'Yes, delete it'
-          )
-          .then((result) => {
-            if (result.value) {
-              this.sendAction('deleteSelection', selection);
-            }
-          });
-      },
-      expandImage() {
-        if (this.isVmtClip) {
-          return;
-        }
-        this.set('isExpanded', !this.isExpanded);
-      },
-    },
+function readPath(obj, path) {
+  if (!obj || !path) {
+    return undefined;
   }
-);
+
+  if (typeof obj.get === 'function') {
+    try {
+      return obj.get(path);
+    } catch (_error) {
+      return undefined;
+    }
+  }
+
+  return path.split('.').reduce((current, segment) => {
+    if (current == null) {
+      return undefined;
+    }
+    return current[segment];
+  }, obj);
+}
+
+export default class DraggableSelectionComponent extends Component {
+  @service('sweet-alert') alert;
+  @service('utility-methods') utils;
+  @service currentUser;
+  @service currentSelection;
+
+  @tracked isExpanded = false;
+  @tracked isDragging = false;
+
+  get modelIdsReady() {
+    return (
+      this.args.selection &&
+      this.args.selection.workspace &&
+      this.args.selection.submission
+    );
+  }
+
+  get selectionModelIds() {
+    return [
+      this.args.selection.workspace?.id,
+      this.args.selection.submission?.id,
+      this.args.selection?.id,
+    ];
+  }
+
+  get workspaceType() {
+    return this.args.selection.workspace.get('workspaceType');
+  }
+
+  get isParentWorkspace() {
+    return this.workspaceType === 'parent';
+  }
+
+  get canDelete() {
+    const currentUserId = this.currentUser.id;
+    const creatorId = this.selectionCreatorId;
+    const isAdmin = this.currentUser.isAdmin && !this.currentUser.isStudent;
+    return (
+      currentUserId === creatorId || (isAdmin && this.args.canDeleteSelections)
+    );
+  }
+
+  get selectionCreatorId() {
+    return (
+      this.utils.getBelongsToId(this.args.selection, 'createdBy') ||
+      readPath(this.args.selection, 'createdBy.id')
+    );
+  }
+
+  get isOwnSelection() {
+    return this.currentUser.id === this.selectionCreatorId;
+  }
+
+  get isAdminDeletingOthersSelection() {
+    const isAdmin = this.currentUser.isAdmin && !this.currentUser.isStudent;
+    return isAdmin && !this.isOwnSelection;
+  }
+
+  get isImage() {
+    const source = this.imageSource;
+    return typeof source === 'string' && source.length > 0;
+  }
+
+  get imageSource() {
+    return (
+      this.args.selection.imageTagLink || this.args.selection.imageSrc || ''
+    );
+  }
+
+  get linkToClassName() {
+    return this.isImage ? 'selection-image' : 'selection_text';
+  }
+
+  get isSelected() {
+    return this.currentSelection.isCurrentSelection(this.args.selection?.id);
+  }
+
+  get isVmtClip() {
+    const { startTime, endTime } = this.args.selection.vmtInfo || {};
+    return startTime >= 0 && endTime >= 0;
+  }
+
+  get titleText() {
+    if (!this.isVmtClip) {
+      const createDate = new Date(
+        this.args.selection?.createDate ?? Date.now()
+      );
+      const displayDate = SELECTION_DATE_FORMATTER.format(createDate);
+      return `Created ${displayDate}`;
+    }
+    const { startTime, endTime } = this.args.selection.vmtInfo;
+    return `${this.utils.getTimeStringFromMs(
+      startTime
+    )} - ${this.utils.getTimeStringFromMs(endTime)}`;
+  }
+
+  get selectionCreatorName() {
+    const selection = this.args.selection;
+    if (!selection) {
+      return '';
+    }
+
+    const directCreator =
+      readPath(selection, 'createdBy.username') ||
+      readPath(selection, 'originalSelection.createdBy.username');
+    if (directCreator) {
+      return directCreator;
+    }
+
+    return '';
+  }
+
+  get selectionTooltip() {
+    const selection = this.args.selection;
+    if (!selection) {
+      return '';
+    }
+
+    const cachedTooltip = SELECTION_TOOLTIP_CACHE.get(selection);
+    if (cachedTooltip) {
+      return cachedTooltip;
+    }
+
+    const creatorName = this.selectionCreatorName;
+    const tooltip = creatorName
+      ? `${this.titleText} by ${creatorName}`
+      : `${this.titleText}`;
+    SELECTION_TOOLTIP_CACHE.set(selection, tooltip);
+    return tooltip;
+  }
+
+  get overlayIcon() {
+    if (!this.isImage) {
+      return '';
+    }
+    return this.isVmtClip ? 'fas fa-play' : 'fas fa-expand';
+  }
+
+  @action
+  dragStart(event) {
+    const dataTransfer = event.dataTransfer;
+    const data = JSON.stringify(this.args.selection);
+    const dataWithId = `{"id": "${this.args.selection.id}",${data.substring(
+      1
+    )}`;
+    dataTransfer.setData('application/json', dataWithId);
+    dataTransfer.setData('text/plain', 'selection');
+    this.isDragging = true;
+  }
+
+  @action
+  dragEnd() {
+    this.isDragging = false;
+  }
+
+  @action
+  deleteSelection() {
+    if (!this.canDelete) {
+      this.alert.showToast('error', 'You can only delete your own selections.');
+      return;
+    }
+
+    const isAdminDeletingOthers = this.isAdminDeletingOthersSelection;
+    const title = isAdminDeletingOthers
+      ? 'This selection belongs to another user. Delete it anyway?'
+      : 'Are you sure you want to delete this selection?';
+    const confirmText = isAdminDeletingOthers
+      ? 'Yes, delete another user selection'
+      : 'Yes, delete it';
+
+    this.alert.showModal('warning', title, null, confirmText).then((result) => {
+      if (result.value) {
+        this.args.deleteSelection(this.args.selection);
+      }
+    });
+  }
+
+  @action
+  expandImage(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    if (!this.isVmtClip) {
+      this.isExpanded = !this.isExpanded;
+    }
+  }
+
+  // Add the draggable attribute directly
+  get draggable() {
+    return 'true';
+  }
+
+  @action
+  setupDrag(event) {
+    const dataTransfer = event.dataTransfer;
+    dataTransfer.setData('text/plain', this.elementId);
+  }
+}

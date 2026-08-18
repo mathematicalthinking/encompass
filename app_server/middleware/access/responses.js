@@ -6,11 +6,17 @@ const objectUtils = require('../../utils/objects');
 const wsAccess = require('./workspaces');
 
 const { isValidMongoId, areObjectIdsEqual } = mongooseUtils;
-const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+const { isNonEmptyObject, isNonEmptyArray } = objectUtils;
 
 module.exports.get = {};
 
-const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, isAdminActingPd) {
+const accessibleResponsesQuery = async function (
+  user,
+  ids,
+  workspace,
+  filterBy,
+  isAdminActingPd
+) {
   try {
     if (!isNonEmptyObject(user)) {
       return;
@@ -21,17 +27,15 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
     const isStudent = accountType === 'S' || actingRole === 'student';
 
     let filter = {
-      $and: [
-        { isTrashed: false }
-      ]
+      $and: [{ isTrashed: false }],
     };
 
     // used to narrow down search when looking up approver workspaces
     let workspaceFilter = {};
 
     if (isNonEmptyArray(ids)) {
-      filter.$and.push({ _id: { $in : ids } });
-    } else if(isValidMongoId(ids)) {
+      filter.$and.push({ _id: { $in: ids } });
+    } else if (isValidMongoId(ids)) {
       filter.$and.push({ _id: ids });
     }
 
@@ -50,19 +54,19 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
           if (key === 'submissions') {
             if (isNonEmptyArray(val)) {
               filter.$and.push({
-                submission: { $in: val }
+                submission: { $in: val },
               });
-              workspaceFilter.submissions = { $elemMatch: {$in: val } };
+              workspaceFilter.submissions = { $elemMatch: { $in: val } };
             }
           } else {
-            filter.$and.push({[key]: val});
+            filter.$and.push({ [key]: val });
           }
         }
       });
     }
 
     if (isValidMongoId(workspace)) {
-      filter.$and.push({workspace});
+      filter.$and.push({ workspace });
       workspaceFilter._id = workspace;
     }
     let isAdmin = accountType === 'A' && !isStudent && !isAdminActingPd;
@@ -71,56 +75,65 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
       return filter;
     }
 
-    let isPdAdmin = accountType === 'P' || (isAdminActingPd === 'true' || isAdminActingPd === true);
+    let isPdAdmin =
+      accountType === 'P' ||
+      isAdminActingPd === 'true' ||
+      isAdminActingPd === true;
 
     const orFilter = { $or: [] };
 
     // can access direct feedback addressed to user only if status is approved
-      orFilter.$or.push({
-        recipient: user._id,
-        status: { $nin: ['superceded', 'draft'] },
-        $or: [
-          { status: 'approved' },
-          { responseType: 'approver' }
-        ]
-      });
+    orFilter.$or.push({
+      recipient: user._id,
+      status: { $nin: ['superceded', 'draft'] },
+      $or: [{ status: 'approved' }, { responseType: 'approver' }],
+    });
 
-      orFilter.$or.push({ createdBy: user._id });
+    orFilter.$or.push({ createdBy: user._id });
 
-      let promises = [
-        utils.getCollabFeedbackWorkspaceIds(user, workspaceFilter),
-        utils.getRestrictedWorkspaceData(user, 'responses')
-      ];
+    let promises = [
+      utils.getCollabFeedbackWorkspaceIds(user, workspaceFilter),
+      utils.getRestrictedWorkspaceData(user, 'responses'),
+    ];
 
-      if (isPdAdmin && isValidMongoId(organization)) {
-        promises.push(utils.getModelIds('User', { organization }));
-      }
-    let [ collabWorkspaceIds, restrictedRecords, orgUserIds ] = await Promise.all(promises);
+    if (isPdAdmin && isValidMongoId(organization)) {
+      promises.push(utils.getModelIds('User', { organization }));
+    }
+    let [collabWorkspaceIds, restrictedRecords, orgUserIds] = await Promise.all(
+      promises
+    );
 
     let approverWorkspaceIds = collabWorkspaceIds[1];
     if (isNonEmptyArray(approverWorkspaceIds)) {
-      orFilter.$or.push({workspace: {$in: approverWorkspaceIds}, status: { $ne: 'draft'} });
+      orFilter.$or.push({
+        workspace: { $in: approverWorkspaceIds },
+        status: { $ne: 'draft' },
+      });
     }
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }
 
     if (isNonEmptyArray(orgUserIds)) {
-      orFilter.$or.push({createdBy : {$in : orgUserIds}});
-      orFilter.$or.push({$and: [ {recipient: {$ne: user._id }}, {recipient: {$in: orgUserIds}} ]});
+      orFilter.$or.push({ createdBy: { $in: orgUserIds } });
+      orFilter.$or.push({
+        $and: [
+          { recipient: { $ne: user._id } },
+          { recipient: { $in: orgUserIds } },
+        ],
+      });
     }
 
     filter.$and.push(orFilter);
     return filter;
-
-  }catch(err) {
+  } catch (err) {
     console.trace();
     console.error(`error building accessible responses critera: ${err}`);
   }
 };
 
 // popWs is passed in when this function is called from workspace api
-const canGetResponse = function(user, response, popWs) {
+const canGetResponse = function (user, response, popWs) {
   try {
     if (!isNonEmptyObject(user) || !isNonEmptyObject(response)) {
       return false;
@@ -138,7 +151,6 @@ const canGetResponse = function(user, response, popWs) {
     if (isAdmin) {
       return true; // admins currently can get all responses
     }
-
 
     let { status, workspace, approvedBy } = response;
 
@@ -189,9 +201,8 @@ const canGetResponse = function(user, response, popWs) {
 
     let workspaceArg = popWs ? popWs : workspace;
 
-   return wsAccess.canModify(user, workspaceArg, 'feedback', 3);
-
-  } catch(err) {
+    return wsAccess.canModify(user, workspaceArg, 'feedback', 3);
+  } catch (err) {
     console.error(`Error canGetResponse: ${err}`);
   }
 };

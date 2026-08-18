@@ -1,11 +1,10 @@
 {{page-title 'Assignments'}}
 <div id='assignment-home' class='home-view'>
-  {{#if this.model.currentUser.isStudent}}
-    <h1>Welcome to the Assignments Page <i class='fas fa-pen'></i></h1>
-    <p>Click on an assignment to submit an answer, new revision, or review an
+  <h1>Welcome to the Assignments Page</h1>
+  {{#if @model.isStudent}}
+    <p>Click on an assignment to submit an answer, make a revision, or review an
       earlier submission.</p>
   {{else}}
-    <h1>Welcome to the Assignments Page</h1>
     <p>Click on an assignment to display more information.</p>
     <LinkTo @route='assignments.new' id='assignment-new-link'>
       <span class='new-link-btn'>Create New Assignment

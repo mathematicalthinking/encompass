@@ -24,10 +24,7 @@ function removeExtraSpacesFromStr(str) {
   let trimmed = copy.trim();
   let words = trimmed.split(' ');
 
-  return _.chain(words)
-    .without('')
-    .join(' ')
-    .value();
+  return _.chain(words).without('').join(' ').value();
 }
 
 function getNthWordOfStr(str, n, doRemoveExtraSpaces) {
@@ -92,13 +89,9 @@ function capitalizeString(str, doRemoveExtraSpaces) {
     copy = removeExtraSpacesFromStr(copy);
   }
 
-
   let words = copy.split(' ');
 
-  return _.chain(words)
-    .map(capitalizeWord)
-    .join(' ')
-    .value();
+  return _.chain(words).map(capitalizeWord).join(' ').value();
 }
 
 module.exports.getFirstCharOfStr = getFirstCharOfStr;

@@ -1,36 +1,32 @@
-import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
-import { later } from '@ember/runloop';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
-import CurrentUserMixin from '../mixins/current_user_mixin';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { later, cancel } from '@ember/runloop';
+export default class ImageUploadComponent extends Component {
+  @service('sweet-alert') alert;
+  @service store;
+  @service currentUser;
+  @service errorHandling;
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
-  elementId: 'image-upload',
-
-  alert: service('sweet-alert'),
-  store: service(),
-
-  isHidden: false,
-  //uploadedFiles: null,
-  filesToBeUploaded: null,
-  uploadResults: null,
-  uploadError: null,
-  missingFilesError: false,
-  acceptMultiple: false,
-  uploadErrors: [],
-  singleFileSizeLimit: 10485760, // 10MB
-  totalPdfSizeLimit: 52428800, // 50MB
-  totalImageSizeLimit: 52428800, // 50MB
-
-  didReceiveAttrs() {
-    let acceptableFileTypes = 'image/png,image/jpeg,application/pdf';
-    if (this.isPdfOnly) {
-      acceptableFileTypes = 'application/pdf';
-    }
-    this.set('acceptableFileTypes', acceptableFileTypes);
-  },
+  @tracked isHidden = false;
+  @tracked filesToBeUploaded = null;
+  @tracked uploadResults = null;
+  @tracked uploadError = null;
+  @tracked missingFilesError = false;
+  @tracked acceptMultiple = false;
+  @tracked uploadErrors = [];
+  @tracked singleFileSizeLimit = 15728640; // 15MB
+  @tracked totalPdfSizeLimit = 52428800; // 50MB
+  @tracked totalImageSizeLimit = 52428800; // 50MB
+  @tracked acceptableFileTypes = this.args.isPdfOnly
+    ? 'application/pdf'
+    : 'image/png,image/jpeg,application/pdf';
+  @tracked showLoadingMessage = false;
+  @tracked overSizedFileError = null;
+  @tracked isOverSizeLimit = false;
+  loadingMessageTimer = null;
+  _fileInputEl = null;
 
   returnSizeDisplay(bytes) {
     if (bytes < 1024) {
@@ -40,7 +36,7 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     } else if (bytes >= 1048576) {
       return (bytes / 1048576).toFixed(1) + 'MB';
     }
-  },
+  }
 
   getOverSizedFileMsg(fileSize, fileName) {
     let limit = this.singleFileSizeLimit;
@@ -49,90 +45,145 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
     let limitDisplay = this.returnSizeDisplay(limit);
 
     return `The file ${fileName} (${actualDisplay}) was not accepted due to exceeding the size limit of ${limitDisplay}`;
-  },
+  }
 
-  overPdfLimitMsg: computed('totalPdfSizeLimit', 'totalPdfSize', function () {
+  get overPdfLimitMsg() {
     let limit = this.totalPdfSizeLimit;
     let actual = this.totalPdfSize;
     let actualDisplay = this.returnSizeDisplay(actual);
     let limitDisplay = this.returnSizeDisplay(limit);
 
     return `Sorry, the total size of your PDF uploads (${actualDisplay}) exceeds the maximum of ${limitDisplay}`;
-  }),
+  }
 
-  overImageLimitMsg: computed(
-    'totalImageSizeLimit',
-    'totalImageSize',
-    function () {
-      let limit = this.totalImageSizeLimit;
-      let actual = this.totalImageSize;
-      let actualDisplay = this.returnSizeDisplay(actual);
-      let limitDisplay = this.returnSizeDisplay(limit);
+  get overImageLimitMsg() {
+    let limit = this.totalImageSizeLimit;
+    let actual = this.totalImageSize;
+    let actualDisplay = this.returnSizeDisplay(actual);
+    let limitDisplay = this.returnSizeDisplay(limit);
 
-      return `Sorry, the total size of your image uploads (${actualDisplay}) exceeds the maximum of ${limitDisplay}`;
+    return `Sorry, the total size of your image uploads (${actualDisplay}) exceeds the maximum of ${limitDisplay}`;
+  }
+
+  getUploadErrorMessage(status, errorBody) {
+    if (status === 413) {
+      return 'Upload is too large for the server limit. Try fewer/smaller files, or ask an admin to increase the upload limit.';
     }
-  ),
 
-  handleLoadingMessage: observer('isUploading', function () {
-    const that = this;
-    if (!this.isUploading) {
-      this.set('showLoadingMessage', false);
-      return;
+    let errorMessage = `Upload failed with status ${status}`;
+    if (!errorBody) {
+      return errorMessage;
     }
-    later(function () {
-      if (that.isDestroyed || that.isDestroying) {
-        return;
-      }
-      that.set('showLoadingMessage', that.get('isUploading'));
-    }, 500);
-  }),
 
-  uploadImage: function (currentUser, formData) {
-    const that = this;
-    return $.post({
-      url: '/image',
-      processData: false,
-      contentType: false,
-      // createdBy: currentUser,
-      data: formData,
+    try {
+      let parsed = JSON.parse(errorBody);
+      return parsed?.errors?.[0]?.detail || errorBody;
+    } catch (_err) {
+      return errorBody;
+    }
+  }
+
+  uploadImage(formData) {
+    return fetch('/image', {
+      method: 'POST',
+      body: formData,
     })
+      .then(async (response) => {
+        if (!response.ok) {
+          let errorBody = await response.text();
+          let errorMessage = this.getUploadErrorMessage(
+            response.status,
+            errorBody
+          );
+          throw new Error(errorMessage);
+        }
+        return response.json();
+      })
       .then((res) => {
-        let images = res.images;
-        that.set('uploadedImages', images);
-        that.get('store').pushPayload({ images });
+        let images = res?.images;
+        if (!Array.isArray(images) || images.length === 0) {
+          this.setShowLoadingMessage(false);
+          this.uploadErrors = [
+            'No supported image files were accepted. Please upload PNG or JPEG files.',
+          ];
+          return null;
+        }
+        this.uploadedImages = images;
+        this.uploadErrors = [];
+        this.store.pushPayload({ images });
 
-        return res.images;
+        return images;
       })
       .catch((err) => {
-        that.set('isUploading', false);
-        that.handleErrors(err, 'uploadErrors', err);
-        return err;
+        this.setShowLoadingMessage(false);
+        this.uploadErrors = [err?.message || 'Image upload failed'];
+        this.errorHandling.handleErrors(err, 'uploadErrors');
+        return null;
       });
-  },
+  }
 
-  uploadPdf: function (currentUser, formData) {
-    const that = this;
-    return $.post({
-      url: '/pdf',
-      processData: false,
-      contentType: false,
-      data: formData,
-      // createdBy: currentUser
-    })
-      .then(function (res) {
-        let images = res.images;
-        that.set('uploadedPdfs', images);
-        that.get('store').pushPayload({ images });
-        return res.images;
-      })
-      .catch((err) => {
-        that.set('isUploading', false);
-        that.handleErrors(err, 'uploadErrors', err);
-        return;
+  @action
+  async uploadPdf(formData) {
+    // Show a loading state if needed
+    this.setShowLoadingMessage(true);
+
+    try {
+      let response = await fetch('/pdf', {
+        method: 'POST',
+        body: formData,
       });
-  },
 
-  totalPdfSize: computed('filesToBeUploaded', function () {
+      if (!response.ok) {
+        let errorBody = await response.text();
+        let errorMessage = this.getUploadErrorMessage(
+          response.status,
+          errorBody
+        );
+        throw new Error(errorMessage);
+      }
+
+      let data = await response.json();
+      let { images } = data;
+      if (!Array.isArray(images) || images.length === 0) {
+        this.setShowLoadingMessage(false);
+        this.uploadErrors = [
+          'No PDF pages were converted. Please verify the PDF format and try again.',
+        ];
+        return null;
+      }
+      this.uploadedPdfs = images;
+      this.uploadErrors = [];
+      this.store.pushPayload({ images });
+      return images;
+    } catch (err) {
+      this.setShowLoadingMessage(false);
+      this.uploadErrors = [err?.message || 'PDF upload failed'];
+      this.errorHandling.handleErrors(err, 'uploadErrors');
+      return null;
+    }
+  }
+
+  setShowLoadingMessage(shouldShow) {
+    if (shouldShow) {
+      // Schedule a delayed toggle to show the message after 500 ms
+      this.loadingMessageTimer = later(
+        this,
+        () => {
+          this.showLoadingMessage = true;
+        },
+        500
+      );
+    } else {
+      // Hide immediately and cancel any pending timer
+      this.showLoadingMessage = false;
+      if (this.loadingMessageTimer) {
+        cancel(this.loadingMessageTimer);
+        this.loadingMessageTimer = null;
+      }
+    }
+  }
+
+  get totalPdfSize() {
     let total = 0;
     let files = this.filesToBeUploaded;
     if (!files) {
@@ -145,9 +196,9 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       }
     }
     return total;
-  }),
+  }
 
-  totalImageSize: computed('filesToBeUploaded', function () {
+  get totalImageSize() {
     let total = 0;
     let files = this.filesToBeUploaded;
     if (!files) {
@@ -160,105 +211,93 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
       }
     }
     return total;
-  }),
+  }
 
-  isOverPdfLimit: computed('totalPdfSize', 'totalPdfSizeLimit', function () {
+  get isOverPdfLimit() {
     return this.totalPdfSize > this.totalPdfSizeLimit;
-  }),
+  }
 
-  isOverImageLimit: computed(
-    'totalImageSize',
-    'totalImageSizeLimit',
-    function () {
-      return this.totalImageSize > this.totalImageSizeLimit;
-    }
-  ),
+  get isOverImageLimit() {
+    return this.totalImageSize > this.totalImageSizeLimit;
+  }
 
   resetFileInput() {
-    let input = this.$('input.image-upload');
-    if (input) {
-      this.set('filesToBeUploaded', null);
-      input.val('');
+    if (this._fileInputEl) {
+      this.filesToBeUploaded = null;
+      this._fileInputEl.value = ''; // Clear the real DOM input
     }
-  },
+  }
 
-  actions: {
-    uploadImages: function () {
-      const that = this;
-      const currentUser = that.get('currentUser');
-      const uploadData = that.get('filesToBeUploaded');
-      if (!uploadData) {
-        this.set('isUploading', false);
-        this.set('missingFilesError', true);
+  @action
+  storeFileInputEl(el) {
+    this._fileInputEl = el;
+  }
+
+  @action
+  resetMissingFilesError() {
+    this.missingFilesError = false;
+  }
+
+  @action
+  resetOverSizedFileError() {
+    this.overSizedFileError = null;
+  }
+
+  @action
+  uploadImages() {
+    this.uploadErrors = [];
+    const uploadData = this.filesToBeUploaded;
+    if (!uploadData) {
+      this.setShowLoadingMessage(false);
+      this.missingFilesError = true;
+      return;
+    }
+    if (this.isOverPdfLimit || this.isOverImageLimit) {
+      this.setShowLoadingMessage(false);
+      this.isOverSizeLimit = true;
+      return;
+    }
+    this.setShowLoadingMessage(true);
+
+    let formData = new FormData();
+    let pdfFormData = new FormData();
+
+    let imageCount = 0;
+    let pdfCount = 0;
+
+    for (let f of uploadData) {
+      let fileSize = f.size;
+      if (fileSize > this.singleFileSizeLimit) {
+        this.setShowLoadingMessage(false);
+        this.overSizedFileError = this.getOverSizedFileMsg(f.size, f.name);
+        this.filesToBeUploaded = null;
         return;
+      } else if (f.type === 'application/pdf') {
+        pdfFormData.append('photo', f);
+        pdfCount++;
+      } else {
+        formData.append('photo', f);
+        imageCount++;
       }
-      if (this.isOverPdfLimit || this.isOverImageLimit) {
-        this.set('isUploading', false);
-        this.set('isOverSizeLimit', true);
-        return;
-      }
-      this.set('isUploading', true);
+    }
 
-      let formData = new FormData();
-      let pdfFormData = new FormData();
-
-      let imageCount = 0;
-      let pdfCount = 0;
-
-      for (let f of uploadData) {
-        let fileSize = f.size;
-        if (fileSize > this.singleFileSizeLimit) {
-          this.set('isUploading', false);
-          this.set(
-            'overSizedFileError',
-            this.getOverSizedFileMsg(f.size, f.name)
-          );
-          this.set('filesToBeUploaded', null);
+    if (imageCount > 0) {
+      return this.uploadImage(formData).then((images) => {
+        if (!Array.isArray(images) || images.length === 0) {
+          this.setShowLoadingMessage(false);
           return;
-        } else if (f.type === 'application/pdf') {
-          pdfFormData.append('photo', f);
-          pdfCount++;
-        } else {
-          formData.append('photo', f);
-          imageCount++;
         }
-      }
+        if (pdfCount > 0) {
+          return this.uploadPdf(pdfFormData).then((pdfs) => {
+            if (!Array.isArray(pdfs) || pdfs.length === 0) {
+              this.setShowLoadingMessage(false);
+              return;
+            }
+            let results = pdfs.concat(images);
+            this.setShowLoadingMessage(false);
+            let fileModifier = results.length === 1 ? 'file' : 'files';
 
-      if (imageCount > 0) {
-        return this.uploadImage(currentUser, formData).then((res) => {
-          if (pdfCount > 0) {
-            return this.uploadPdf(currentUser, pdfFormData).then((res) => {
-              let results;
-              if (this.uploadedPdfs && this.uploadedImages) {
-                results = this.uploadedPdfs.concat(this.uploadedImages);
-                this.set('isUploading', false);
-                let fileModifier = results.length === 1 ? 'file' : 'files';
-
-                let msg = `Uploaded ${results.length} ${fileModifier} successfully`;
-                this.alert.showToast(
-                  'success',
-                  msg,
-                  'bottom-end',
-                  3000,
-                  false,
-                  null
-                );
-                if (this.handleUploadResults) {
-                  this.handleUploadResults(results);
-                }
-                this.set('uploadResults', results);
-                if (this.doResetFilesAfterUpload) {
-                  this.resetFileInput();
-                }
-              }
-            });
-          } else {
-            this.set('isUploading', false);
-
-            let images = this.uploadedImages;
-            let fileModifier = images.length === 1 ? 'file' : 'files';
-
-            let msg = `Uploaded ${images.length} ${fileModifier} successfully`;
+            let msg = `Uploaded ${results.length} ${fileModifier} successfully`;
             this.alert.showToast(
               'success',
               msg,
@@ -267,45 +306,60 @@ export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
               false,
               null
             );
-            if (this.handleUploadResults) {
-              this.handleUploadResults(images);
+            if (typeof this.args.handleUploadResults === 'function') {
+              this.args.handleUploadResults(results);
             }
-            this.set('uploadResults', this.uploadedImages);
-            if (this.doResetFilesAfterUpload) {
+            this.uploadResults = results;
+            if (this.args.doResetFilesAfterUpload) {
               this.resetFileInput();
             }
-          }
-        });
-      } else if (pdfCount > 0) {
-        return this.uploadPdf(currentUser, pdfFormData).then((res) => {
-          this.set('isUploading', false);
+          });
+        } else {
+          this.setShowLoadingMessage(false);
+          let fileModifier = images.length === 1 ? 'file' : 'files';
 
-          let pdfs = this.uploadedPdfs;
-
-          let fileModifier = pdfs.length === 1 ? 'file' : 'files';
-
-          let msg = `Uploaded ${pdfs.length} ${fileModifier} successfully`;
+          let msg = `Uploaded ${images.length} ${fileModifier} successfully`;
           this.alert.showToast('success', msg, 'bottom-end', 3000, false, null);
-          if (this.handleUploadResults) {
-            this.handleUploadResults(pdfs);
+          if (typeof this.args.handleUploadResults === 'function') {
+            this.args.handleUploadResults(images);
           }
-          this.set('uploadResults', this.uploadedPdfs);
-          if (this.doResetFilesAfterUpload) {
+          this.uploadResults = images;
+          if (this.args.doResetFilesAfterUpload) {
             this.resetFileInput();
           }
-        });
-      }
-    },
+        }
+      });
+    } else if (pdfCount > 0) {
+      return this.uploadPdf(pdfFormData).then((pdfs) => {
+        if (!Array.isArray(pdfs) || pdfs.length === 0) {
+          this.setShowLoadingMessage(false);
+          return;
+        }
+        this.setShowLoadingMessage(false);
+        let fileModifier = pdfs.length === 1 ? 'file' : 'files';
 
-    updateFiles(event) {
-      if (this.missingFilesError) {
-        this.set('missingFilesError', false);
-      }
+        let msg = `Uploaded ${pdfs.length} ${fileModifier} successfully`;
+        this.alert.showToast('success', msg, 'bottom-end', 3000, false, null);
+        if (typeof this.args.handleUploadResults === 'function') {
+          this.args.handleUploadResults(pdfs);
+        }
+        this.uploadResults = pdfs;
+        if (this.args.doResetFilesAfterUpload) {
+          this.resetFileInput();
+        }
+      });
+    }
+  }
 
-      this.set('filesToBeUploaded', event.target.form.firstElementChild.files);
-      if (this.storeFiles) {
-        this.storeFiles(event.target.form.firstElementChild.files);
-      }
-    },
-  },
-});
+  @action
+  updateFiles(event) {
+    if (this.missingFilesError) {
+      this.missingFilesError = false;
+    }
+
+    this.filesToBeUploaded = event.target.form.firstElementChild.files;
+    if (typeof this.args.storeFiles === 'function') {
+      this.args.storeFiles(event.target.form.firstElementChild.files);
+    }
+  }
+}

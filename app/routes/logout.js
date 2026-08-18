@@ -1,16 +1,19 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+
 export default class LogoutRoute extends Route {
   @service sweetAlert;
+  @service router;
+  @service navigation;
+
   async beforeModel() {
     try {
       await fetch('/auth/logout');
-      window.location.href = '/';
       this.sweetAlert.showToast('success', 'Logged Out');
-      return;
+      this.navigation.toHome({ fullReload: true });
     } catch (err) {
       this.sweetAlert.showToast('error', 'Error Logging Out');
-      console.log(err);
+      console.error(err);
     }
   }
 }

@@ -2,25 +2,24 @@
  * # Workspace Controller
  * @description This controller for the workspace assists in linking between submissions
  * @todo Linking between submissions should really be moved to workspace_submissions_index_controller
- * @author Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>
  * @since 1.0.0
  */
 import Controller from '@ember/controller';
-import { computed } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+export default class WorkspaceController extends Controller {
+  @service router;
 
-export default Controller.extend({
-  // comments: controller(),
+  @tracked makingSelection = false;
+  @tracked taggingSelection = false;
 
-  currentSelection: null, //ENC-397, ENC-398
-
-  showOverlay: computed('makingSelection', 'taggingSelection', function () {
+  get showOverlay() {
     return this.makingSelection || this.taggingSelection;
-  }),
+  }
 
-  actions: {
-    popupMaskClicked: function () {
-      this.transitionToRoute('workspace.submission', this.currentSubmission);
-    },
-    tagSelection: function (selection, tags) {},
-  },
-});
+  @action
+  popupMaskClicked() {
+    this.router.transitionTo('workspace.submission', this.currentSubmission);
+  }
+}

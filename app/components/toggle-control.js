@@ -1,62 +1,57 @@
-/*global _:false */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  classNames: [],
-  currentValue: null,
+export default class ToggleControlComponent extends Component {
+  @tracked classNames = [];
+  @tracked currentValue = null;
+  @tracked currentToggleState;
 
-  iconClass: computed('isActive', 'currentValue', 'currentState', function () {
-    let isActive = this.isActive;
-    let options = this.options;
-    if (!isActive) {
-      return options[0].icon;
-    }
-    return this.get('currentValue.icon');
-  }),
+  constructor() {
+    super(...arguments);
 
-  didReceiveAttrs() {
-    if (this.classToAdd) {
-      this.set('classNames', [this.classToAdd]);
-    }
-    let activeType = this.activeType;
-    let isActive = activeType === this.type;
-    this.set('isActive', isActive);
-
-    if (
-      !_.isUndefined(this.initialState) &&
-      _.isUndefined(this.currentToggleState)
-    ) {
-      let options = this.options;
-      this.set('currentToggleState', this.initialState);
-      this.set('currentValue', options[this.initialState]);
+    if (this.args.classToAdd) {
+      this.classNames = [this.args.classToAdd];
     }
 
-    this._super(...arguments);
-  },
+    if (this.args.initialState !== undefined) {
+      this.currentToggleState = this.args.initialState;
+      this.currentValue = this.args.options?.[this.args.initialState] || null;
+    }
+  }
 
-  actions: {
-    onToggle() {
-      let currentState = this.currentToggleState;
-      let newState;
-      let newVal;
-      let options = this.options;
+  get isActive() {
+    return this.args.type === this.args.activeType;
+  }
 
-      if (currentState === 0) {
+  get iconClass() {
+    if (!this.isActive) {
+      return this.args.options[0]?.icon || '';
+    }
+    return this.currentValue?.icon || this.args.options[0]?.icon || '';
+  }
+
+  @action
+  onToggle() {
+    let newState = 1;
+
+    switch (this.currentToggleState) {
+      case 0:
         newState = 1;
-      } else if (currentState === 1) {
+        break;
+      case 1:
         newState = 2;
-      } else if (currentState === 2) {
+        break;
+      case 2:
         newState = 1;
-      }
+        break;
+    }
 
-      newVal = options[newState];
-      this.set('currentValue', newVal);
-      this.set('currentToggleState', newState);
+    this.currentValue = this.args.options?.[newState] || null;
+    this.currentToggleState = newState;
 
-      if (this.onUpdate) {
-        this.onUpdate(newVal);
-      }
-    },
-  },
-});
+    if (this.args.onUpdate) {
+      this.args.onUpdate(this.currentValue);
+    }
+  }
+}

@@ -1,0 +1,73 @@
+<div id='ws-new-settings-permissions'>
+  <p class='input-label'>
+  Collaborators
+  <span
+    class='info-text-tip simptip-position-right simptip-multiline simptip-smooth'
+    data-tooltip='Collaborators are users that can see or participate in your workspace, you can customize their permissions settings in detail after you add them'
+  >
+    <i class='fas fa-info-circle info-icon'></i>
+  </span>
+</p>
+
+<p class='sub-input-label'>Select a user to configure their permissions for this
+  workspace.</p>
+<SelectizeInput
+  @inputId='collab-select'
+  @maxItems={{1}}
+  @initialOptions={{@initialCollabOptions}}
+  @selectedItemsHash={{@selectedCollaborators}}
+  @onItemAdd={{this.setCollaborator}}
+  @onItemRemove={{this.setCollaborator}}
+  @labelField='username'
+  @valueField='id'
+  @searchField='username'
+  @model='user'
+  @placeholder='Search by username to add a collaborator'
+/>
+
+{{#if this.selectedCollaborator}}
+  <div class='global-permissions'>
+    <Ui::RadioGroup
+      @options={{this.globalItems}}
+      @selectedValue={{this.globalPermissionValue}}
+      @updateValue={{this.updateGlobalPermissionValue}}
+    />
+    <p class='sub-input-label'>You can set more custom permissions after you
+      create the workspace</p>
+
+    <div class='button-container'>
+      <button
+        class='secondary-button'
+        type='button'
+        {{on 'click' this.savePermissions}}
+      >Save Permissions</button>
+    </div>
+  </div>
+{{/if}}
+
+{{#if @permissions}}
+  <div class='added-collab'>
+    <ul>
+      <p class='input-label'>Added Collaborators</p>
+      {{#each @permissions as |permission|}}
+        <li>{{permission.user.username}}
+          -
+          {{collab-permissions permission.global}}
+          <i
+            {{on 'click' (fn this.editCollab permission)}}
+            class='far fa-edit'
+            aria-hidden='true'
+            title='Modify'
+          ></i>
+          <i
+            {{on 'click' (fn this.removeCollab permission)}}
+            class='fas fa-minus-circle'
+            aria-hidden='true'
+            title='Remove'
+          ></i>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+{{/if}}
+</div>

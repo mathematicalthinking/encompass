@@ -2,13 +2,12 @@
   <div class='collab-container'>
     <div class='collab-name'>
       <SelectizeInput
-        @store={{this.store}}
         @inputId='collab-select'
         @maxItems={{1}}
         @initialOptions={{@initialCollabOptions}}
         @selectedItemsHash={{@selectedCollaborators}}
-        @onItemAdd={{action 'setCollab'}}
-        @onItemRemove={{action 'setCollab'}}
+        @onItemAdd={{this.setCollab}}
+        @onItemRemove={{this.setCollab}}
         @labelField='username'
         @valueField='id'
         @searchField='username'
@@ -20,10 +19,10 @@
       />
     </div>
     <div class='collab-settings global'>
-      <RadioGroup
+      <Ui::RadioGroup
         @options={{@globalItems}}
         @selectedValue={{this.globalPermissionValue}}
-        @updateValue={{action 'updateGlobalPermissionValue'}}
+        @updateValue={{this.updateGlobalPermissionValue}}
       />
     </div>
 
@@ -34,17 +33,16 @@
             Submissions
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.submissions}}
               @content={{this.submissionPermissions}}
-              @optionLabelPath='display'
-              @action={{action (mut this.submissions)}}
+              @action={{this.setSubmissions}}
             />
             {{#if (is-equal this.submissions.value 'custom')}}
               <span class='submission-count'>{{@customSubmissionIds.length}}
                 submissions selected</span>
-              <span class='viewer-toggle' {{action 'toggleSubmissionView'}}>
+              <span class='viewer-toggle' {{on 'click' this.toggleSubmissionView}}>
                 {{if @isShowingCustomViewer 'Hide' 'Show'}}
                 Submission Viewer</span>
             {{/if}}
@@ -55,12 +53,11 @@
             Selections
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.selections}}
               @content={{this.mainPermissions}}
-              @optionLabelPath='display'
-              @action={{action (mut this.selections)}}
+              @action={{this.setSelections}}
             />
           </div>
         </div>
@@ -69,12 +66,11 @@
             Comments
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.comments}}
               @content={{this.mainPermissions}}
-              @optionLabelPath='display'
-              @action={{action (mut this.comments)}}
+              @action={{this.setComments}}
             />
           </div>
         </div>
@@ -83,12 +79,11 @@
             Folders
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.folders}}
-              @content={{mainPermissions}}
-              @optionLabelPath='display'
-              @action={{action (mut folders)}}
+              @content={{this.mainPermissions}}
+              @action={{this.setFolders}}
             />
           </div>
         </div>
@@ -97,30 +92,29 @@
             Feedback
           </div>
           <div class='row-value'>
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.feedback}}
               @content={{this.feedbackPermissions}}
-              @optionLabelPath='display'
-              @action={{action (mut this.feedback)}}
+              @action={{this.setFeedback}}
             />
           </div>
         </div>
       {{/if}}
       {{#if this.missingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Please select a user'
-            @resetError={{action (mut this.missingUserError) false}}
+            @resetError={{this.clearMissingUserError}}
             @showDismiss={{true}}
           />
         </div>
       {{/if}}
       {{#if this.existingUserError}}
         <div class='card-row'>
-          <ErrorBox
+          <Ui::ErrorBox
             @error='Collaborator already exists. Edit permissions below'
-            @resetError={{action (mut existingUserError) false}}
+            @resetError={{this.clearExistingUserError}}
             @showDismiss={{true}}
           />
         </div>
@@ -128,9 +122,14 @@
       <div class='button-row'>
         <button
           class='primary-button cancel-button'
-          {{action 'cancelCreateCollab'}}
+          type='button'
+          {{on 'click' this.cancelCreateCollab}}
         >Cancel</button>
-        <button class='primary-button' {{action 'saveCollab'}}>Save</button>
+        <button
+          class='primary-button'
+          type='button'
+          {{on 'click' this.saveCollab}}
+        >Save</button>
       </div>
     </div>
   </div>

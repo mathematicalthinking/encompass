@@ -1,24 +1,27 @@
 import Route from '@ember/routing/route';
 import { hash } from 'rsvp';
-import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class UsersUserRoute extends Route {
   @service store;
+  @service currentUser;
   async model(params) {
-    const user = await this.store.findRecord('user', params.user_id);
-    const userSections = await this.store.query('section', {
-      ids: user.sections.map((section) => section.sectionId),
+    const organizations = this.store.findAll('organization');
+    const user = await this.store.findRecord('user', params.user_id, {
+      reload: true,
     });
-    let currentUser = this.modelFor('application');
+    const sectionIds = (user.sections ?? [])
+      .map((section) => section.sectionId)
+      .filter(Boolean);
+    const userSections = sectionIds.length
+      ? this.store.query('section', { ids: sectionIds })
+      : [];
+
     return hash({
-      currentUser,
+      currentUser: this.currentUser.user, // @TODO: remove this and use service in component
       user,
       userSections,
-      organizations: await this.store.findAll('organization'),
+      organizations,
     });
-  }
-  @action refresh() {
-    this.refresh();
   }
 }

@@ -1,225 +1,400 @@
 //TODO: find out how Use Only Own Markup is expected to work
 
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { and, not } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
-import { hash } from 'rsvp';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
-export default Component.extend(ErrorHandlingMixin, {
-  currentUser: service('current-user'),
-  utils: service('utility-methods'),
-  loading: service('loading-display'),
+export default class ResponseNewComponent extends Component {
+  @service currentUser;
+  @service('utility-methods') utils;
+  @service('loading-display') loading;
+  @service errorHandling;
+  @service('sweet-alert') alert;
+  @service store;
+  @service router;
+  @service('ai-draft') aiDraft;
 
-  isEditing: false,
-  isCreating: false,
-  anonymous: false,
-  showExisting: false,
-  subResponses: [],
-  selections: [],
-  comments: [],
-  submission: null,
-  showSelections: false,
-  showComments: false,
-  notEditing: not('isEditing'),
-  notPersisted: not('persisted'),
-  notDirty: not('dirty'),
-  cantRespond: not('canRespond'),
-  confirmLeaving: and('isEditing', 'dirty'),
-  alert: service('sweet-alert'),
-  todaysDate: new Date(),
-  doUseOnlyOwnMarkup: true,
-  isAIDraftLoading: false,
+  @tracked isEditing = false;
+  @tracked isCreating = false;
+  @tracked anonymous = false;
+  @tracked showExisting = false;
+  @tracked subResponses = [];
+  @tracked selections = [];
+  @tracked comments = [];
+  @tracked submission = null;
+  @tracked showSelections = false;
+  @tracked showComments = false;
+  @tracked quillText = '';
+  @tracked isQuillEmpty = false;
+  @tracked isQuillTooLong = false;
 
-  quillEditorId: 'response-new-editor',
-  quillText: '',
-  maxResponseLength: 14680064,
-  errorPropsToRemove: [
-    'recordSaveErrors',
-    'emptyReplyError',
-    'quillTooLongError',
-  ],
-  commentFilter: [
-    { label: 'Notice', value: 'notice', isChecked: true },
-    { label: 'Wonder', value: 'wonder', isChecked: true },
-    { label: 'Feedback', value: 'feedback', isChecked: true },
-  ],
+  // AI Draft and Logging related tracked properties
+  @tracked originalText = '';
+  @tracked aiGeneratedText = null;
+  @tracked hasUsedAIDraft = false;
+  @tracked hasCopiedAiText = false;
+  @tracked aiActionSelection = null;
+  @tracked aiRegenerationPrompt = '';
+  @tracked allowRerate = false;
+  @tracked doShowLoadingMessage = false;
+  @tracked quillEditorKey = 0;
+  @tracked pendingContent = null;
+  @tracked aiDraftRating = null;
+  @tracked aiWrittenFeedback = '';
+  @tracked showUsageCheckboxes = false;
+  @tracked usageNotForStudents = false;
+  @tracked usageNotForSelf = false;
+  @tracked usageForStudents = false;
+  @tracked usageToThinkAbout = false;
+  @tracked usageFeedbackOnAI = false;
 
-  didReceiveAttrs() {
-    if (this.isCreating && !this.isEditing) {
-      // preformat text and set on model;
-      this.preFormatText();
+  starDefinitions = [
+    { value: 1, tooltip: 'Not usable - requires complete rewrite' },
+    {
+      value: 2,
+      tooltip: 'Has significant errors or disconnects that prevent use',
+    },
+    { value: 3, tooltip: 'Usable but requires editing before sending' },
+    { value: 4, tooltip: 'Ready to use - could be sent as is' },
+    { value: 5, tooltip: 'Exceptional quality - exceeds expectations' },
+  ];
+
+  usageOptions = [
+    {
+      key: 'usageNotForStudents',
+      label: 'I would/will not use this with students',
+    },
+    {
+      key: 'usageNotForSelf',
+      label:
+        'I will not use this for myself (learning about math, feedback, or my students)',
+    },
+    {
+      key: 'usageForStudents',
+      label: 'I would/will use this with my students',
+    },
+    {
+      key: 'usageToThinkAbout',
+      label: 'I will save this as something to think about',
+    },
+    {
+      key: 'usageFeedbackOnAI',
+      label: 'I will use this to give feedback on the AI performance',
+    },
+  ];
+
+  doUseOnlyOwnMarkup = true;
+  maxResponseLength = 14680064;
+
+  errorPropsToRemove = ['recordSaveErrors'];
+
+  get initializedText() {
+    if (this.args.isCreating && !this.isEditing) {
+      return this.preFormatText();
+    }
+    return this.originalText || this.preFormatText();
+  }
+
+  get todaysDate() {
+    return new Date();
+  }
+
+  get commentFilter() {
+    return [
+      { label: 'Notice', value: 'notice', isChecked: true },
+      { label: 'Wonder', value: 'wonder', isChecked: true },
+      { label: 'Feedback', value: 'feedback', isChecked: true },
+    ];
+  }
+
+  // Converted all computed properties to getters
+  get notEditing() {
+    return !this.isEditing;
+  }
+
+  get notPersisted() {
+    return !this.args.responseData?.persisted;
+  }
+
+  get notDirty() {
+    return !this.dirty;
+  }
+
+  get cantRespond() {
+    return !this.canRespond;
+  }
+
+  get confirmLeaving() {
+    return this.isEditing && this.dirty;
+  }
+
+  get replyNote() {
+    return this.args.replyNote;
+  }
+
+  get filteredSelections() {
+    if (!this.args.responseData?.selections) return [];
+
+    if (this.doUseOnlyOwnMarkup) {
+      return this.args.responseData.selections.filter((selection) => {
+        if (selection.isTrashed) {
+          return false;
+        }
+        let creatorId = this.utils.getBelongsToId(selection, 'createdBy');
+        return creatorId === this.currentUser.id;
+      });
+    }
+    return this.args.responseData.selections.filter(
+      (selection) => !selection.isTrashed
+    );
+  }
+
+  get hasSubmission() {
+    return Boolean(this.args.submission);
+  }
+
+  get filteredComments() {
+    if (!this.args.responseData?.comments) return [];
+
+    const chosenFilter = this.commentFilter
+      .filter((item) => item.isChecked)
+      .map((item) => item.value);
+
+    if (this.doUseOnlyOwnMarkup) {
+      return this.args.responseData.comments.filter((comment) => {
+        if (comment.isTrashed) {
+          return false;
+        }
+        let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
+        return (
+          creatorId === this.currentUser.id &&
+          chosenFilter.includes(comment.label)
+        );
+      });
     }
 
-    this._super(...arguments);
-  },
+    return this.args.responseData.comments.filter(
+      (comment) => !comment.isTrashed && chosenFilter.includes(comment.label)
+    );
+  }
 
-  filteredSelections: computed(
-    'model.selections.@each.isTrashed',
-    'doUseOnlyOwnMarkup',
-    function () {
-      // filter out trashed selections
-      // if a user deletes a selection and then immediately after
-      // goes to make a response, the trashed selection may still
-      // be associated with the workspace
-
-      if (this.doUseOnlyOwnMarkup) {
-        return this.get('model.selections').filter((selection) => {
-          if (selection.get('isTrashed')) {
-            return false;
-          }
-          let creatorId = this.utils.getBelongsToId(selection, 'createdBy');
-          return creatorId === this.get('currentUser.user.id');
-        });
-      }
-      return this.get('model.selections').rejectBy('isTrashed');
+  get submitButtonText() {
+    if (this.hasCopiedAiText && this.aiActionSelection === 'regenerate') {
+      return 'Regenerate Draft';
     }
-  ),
-
-  filteredComments: computed(
-    'model.comments.@each.isTrashed',
-    'commentFilter.@each.isChecked',
-    'doUseOnlyOwnMarkup',
-    function () {
-      // get array of strings of comment types to include
-      const chosenFilter = this.commentFilter
-        .filter((item) => item.isChecked)
-        .map((item) => item.value);
-      // include only users personal comments
-      if (this.doUseOnlyOwnMarkup) {
-        return this.get('model.comments').filter((comment) => {
-          if (comment.get('isTrashed')) {
-            return false;
-          }
-          let creatorId = this.utils.getBelongsToId(comment, 'createdBy');
-          return (
-            creatorId === this.get('currentUser.user.id') &&
-            chosenFilter.includes(comment.label)
-          );
-        });
-      }
-      // use any comment created in workspace
-      return this.get('model.comments').filter(
-        (comment) =>
-          !comment.get('isTrashed') && chosenFilter.includes(comment.label)
-      );
+    if (this.hasCopiedAiText && this.aiActionSelection === 'draft') {
+      return 'Save Draft';
     }
-  ),
-
-  willDestroyElement() {
-    if (!this.get('model.persisted')) {
-      this.model.unloadRecord();
+    if (this.hasCopiedAiText && this.aiActionSelection === 'finalize') {
+      return 'Submit';
     }
-    this._super(...arguments);
-  },
-
-  submitButtonText: computed('canDirectSend', function () {
-    if (this.canDirectSend) {
+    if (this.args.canDirectSend) {
       return 'Send';
     }
     return 'Submit for Approval';
-  }),
+  }
 
-  headingText: computed('isEditing', 'isCreating', 'isRevising', function () {
+  get headingText() {
     if (this.isEditing) {
       return 'Editing Response';
     }
     if (this.isCreating) {
       return 'Creating New Response';
     }
-    if (this.isRevising) {
-      ('New Revised Response');
+    if (this.args.isRevising) {
+      return 'New Revised Response';
     }
-  }),
+    return '';
+  }
 
-  showNoteField: computed('newReplyStatus', 'newReplyType', function () {
-    return this.newReplyType === 'mentor' && this.newReplyStatus !== 'approved';
-  }),
+  get showNoteField() {
+    return (
+      this.args.newReplyType === 'mentor' &&
+      this.args.newReplyStatus !== 'approved'
+    );
+  }
 
-  showEdit: computed('newReplyStatus', 'isEditing', function () {
-    return !this.isEditing && this.newReplyStatus !== 'approved';
-  }),
+  get showEdit() {
+    return !this.isEditing && this.args.newReplyStatus !== 'approved';
+  }
 
-  canRevise: computed(
-    'creator',
-    'model.persisted',
-    'currentUser.user',
-    function () {
-      return (
-        this.get('creator.id') === this.get('currentUser.user.id') &&
-        this.get('model.persisted')
-      );
+  get canRevise() {
+    return (
+      this.args.creator?.id === this.currentUser.id &&
+      this.args.responseData?.persisted
+    );
+  }
+
+  get showRevise() {
+    return this.canRevise && !this.args.isRevising;
+  }
+
+  get existingResponses() {
+    if (!this.args.submissionResponses || !this.args.responseData?.id)
+      return [];
+    return this.args.submissionResponses.filter(
+      (response) => response.id !== this.args.responseData.id
+    );
+  }
+
+  get dirty() {
+    if (this.args.data?.text) {
+      return this.args.text !== this.args.data.text;
     }
-  ),
-  showRevise: computed('canRevise', 'isRevising', function () {
-    return this.canRevise && !this.isRevising;
-  }),
+    return this.args.responseData?.text !== this.quillText;
+  }
 
-  existingResponses: computed('submissionResponses.[]', function () {
-    let modelId = this.get('model.id');
-    return this.submissionResponses.rejectBy('id', modelId);
-  }),
+  get canRespond() {
+    return !this.args.isStatic;
+  }
 
-  dirty: computed('model.text', 'data.text', 'response', function () {
-    if (this.get('data.text')) {
-      return this.text !== this.get('data.text');
-    }
-    return this.get('model.text') !== this.response;
-  }),
+  get explainEmptiness() {
+    return (
+      this.filteredSelections.length === 0 &&
+      !this.isEditing &&
+      !this.args.isRevising &&
+      !this.args.responseData?.text
+    );
+  }
 
-  canRespond: computed('isStatic', function () {
-    return !this.isStatic;
-  }),
+  get isToStudent() {
+    return this.args.to === this.args.student;
+  }
 
-  explainEmptiness: computed(
-    'isEditing',
-    'filteredSelections.[]',
-    'model.text',
-    'isRevising',
-    function () {
-      return (
-        this.get('filteredSelections.length') === 0 &&
-        !this.isEditing &&
-        !this.isRevising &&
-        !this.get('model.text')
-      );
-    }
-  ),
-
-  isToStudent: computed('student', 'to', function () {
-    return this.to === this.student;
-  }),
-
-  who: computed('student', 'to', 'anonymous', function () {
+  get who() {
     if (this.anonymous) {
       return 'Someone';
     }
     if (this.isToStudent) {
       return 'You';
     }
+    return this.args.responseData?.student;
+  }
 
-    return this.get('model.student');
-  }),
-
-  greeting: computed('model.student', function () {
-    let brk = this.get('model.student').indexOf(' ');
+  get greeting() {
+    if (!this.args.responseData?.student) return 'Hello,';
+    let brk = this.args.responseData.student.indexOf(' ');
     let firstname =
       brk === -1
-        ? this.get('model.student')
-        : this.get('model.student').substr(0, brk);
+        ? this.args.responseData.student
+        : this.args.responseData.student.slice(0, brk);
     return `Hello ${firstname},`;
-  }),
+  }
 
-  quote: function (string, opts, isImageTag) {
-    string = string.replace(/(\r\n|\n|\r)/gm, ' '); //normalize the string: remove new lines
+  get replyText() {
+    // If we have pending content, use it for initial render
+    if (this.pendingContent !== null) {
+      return this.pendingContent;
+    }
+    return this.preFormatText();
+  }
+
+  get shortText() {
+    if (typeof this.args.responseData?.text !== 'string') {
+      return '';
+    }
+    return this.args.responseData.text.slice(0, 150);
+  }
+
+  get moreDetailsLinkText() {
+    if (this.args.showDetails) {
+      return 'Hide Details';
+    }
+    return 'More Details';
+  }
+
+  get aiButtonTooltip() {
+    if (!this.hasSubmission)
+      return 'AI draft generation requires a valid submission';
+    if (!this.aiDraft.hasStudentWork(this.actualSubmission))
+      return 'AI draft generation requires student text or worksheet images';
+    return 'Generate AI draft based on student work';
+  }
+
+  get aiButtonDisabled() {
+    const hasSubmission = this.hasSubmission;
+    const actualSubmission = this.actualSubmission;
+    const hasWork = actualSubmission
+      ? this.aiDraft.hasStudentWork(actualSubmission)
+      : false;
+
+    return !hasSubmission || !hasWork;
+  }
+
+  get isValidQuillContent() {
+    return !this.isQuillEmpty && !this.isQuillTooLong;
+  }
+
+  get showAiDraftSection() {
+    return this.aiGeneratedText !== null;
+  }
+
+  get canBringDown() {
+    return (
+      (!this.hasUsedAIDraft || this.allowRerate) &&
+      this.aiDraftRating !== null &&
+      this.aiWrittenFeedback.trim().length >= 10
+    );
+  }
+
+  get aiActionOptions() {
+    return {
+      groupLabel: '',
+      groupName: 'ai-action-selection',
+      inputs: [
+        { label: 'Ready to Send', value: 'finalize' },
+        { label: 'Save Draft', value: 'draft' },
+        { label: 'Regenerate Draft', value: 'regenerate' },
+      ],
+    };
+  }
+
+  get showAiActionSection() {
+    return this.hasCopiedAiText;
+  }
+
+  get showRegenerationPrompt() {
+    return this.hasCopiedAiText && this.aiActionSelection === 'regenerate';
+  }
+
+  get showRatingControls() {
+    return (
+      !this.showUsageCheckboxes && (!this.hasUsedAIDraft || this.allowRerate)
+    );
+  }
+
+  get hasSelectedUsageOption() {
+    return (
+      this.usageNotForStudents ||
+      this.usageNotForSelf ||
+      this.usageForStudents ||
+      this.usageToThinkAbout ||
+      this.usageFeedbackOnAI
+    );
+  }
+
+  @action
+  isStarFilled(starNumber) {
+    return this.aiDraftRating !== null && this.aiDraftRating >= starNumber;
+  }
+
+  @action
+  updateAiWrittenFeedback(event) {
+    this.aiWrittenFeedback = event.target.value;
+  }
+
+  quote(string, opts, isImageTag) {
+    string = string.replace(/(\r\n|\n|\r)/gm, ' ');
     let defaultPrefix = '         ';
     let prefix = defaultPrefix;
     let str = '';
 
     let doWrapStringInBlockQuote = true;
 
-    if (opts && opts.hasOwnProperty('type')) {
+    if (opts && Object.prototype.hasOwnProperty.call(opts, 'type')) {
       doWrapStringInBlockQuote = false;
       if (opts.usePrefix) {
         switch (opts.type) {
@@ -253,286 +428,473 @@ export default Component.extend(ErrorHandlingMixin, {
       }
     }
     return str;
-  },
+  }
 
-  preFormatText: function () {
+  get actualSubmission() {
+    return this.args.submission;
+  }
+
+  clearErrorProps() {
+    this.args.removeMessages?.(this.errorPropsToRemove);
+  }
+
+  _getSubmissionId() {
+    return (
+      this.args.responseData?._submissionRef?.id ??
+      this.args.submission?.id ??
+      null
+    );
+  }
+
+  preFormatText() {
     let greeting = this.greeting;
     let text = `<p>${greeting}</p><br>`;
 
-    if (this.get('filteredSelections.length') > 0) {
+    if (this.filteredSelections.length > 0) {
       this.filteredSelections.forEach((s) => {
         let who = this.who;
-
         let quoteInput;
-
-        let selText = s.get('text');
-        let imageTagLink = s.get('imageTagLink');
+        let selText = s.text;
+        let imageSource = s.imageTagLink || s.imageSrc;
         let isImageTag = false;
 
-        if (imageTagLink) {
+        if (imageSource) {
           isImageTag = true;
-          quoteInput = `<img src="${imageTagLink}" alt="${selText}"><br>`;
+          quoteInput = `<img src="${imageSource}" alt="${selText}"><br>`;
         } else {
           quoteInput = selText;
         }
 
         let quoteText = this.quote(quoteInput, null, isImageTag);
-
         text += `<p>${who} wrote:</p><br>`;
         text += quoteText;
 
         this.filteredComments.forEach((comment) => {
           let selId = this.utils.getBelongsToId(comment, 'selection');
-          if (selId === s.get('id')) {
+          if (selId === s.id) {
             let opts = {
-              type: comment.get('label'),
+              type: comment.label,
               usePrefix: true,
             };
-
-            text += this.quote(comment.get('text'), opts);
+            text += this.quote(comment.text, opts);
           }
         });
       });
-
-      this.set('originalText', text);
-      return text;
     }
-  },
+    return text;
+  }
 
-  replyText: computed('filteredComments', 'doUseOnlyOwnMarkup', function () {
-    return this.preFormatText();
-  }),
-
-  shortText: computed('model.text', function () {
-    if (typeof this.get('model.text') !== 'string') {
-      return '';
-    }
-    return this.get('model.text').slice(0, 150);
-  }),
-
-  createRevision() {
+  async createRevision() {
     let record = this.store.createRecord('response', {
-      recipient: this.recipient,
+      recipient: this.args.recipient,
       createdBy: this.currentUser.user,
-      submission: this.get('submission.content'),
-      workspace: this.workspace,
-      selections: this.get('model.selections.content'),
-      comments: this.get('model.comments.content'),
-      status: this.newReplyStatus,
-      responseType: this.newReplyType,
+      submission: this.args.submission?.content,
+      workspace: this.args.workspace,
+      selections: this.args.responseData?.selections?.content,
+      comments: this.args.responseData?.comments?.content,
+      status: this.args.newReplyStatus,
+      responseType: this.args.newReplyType,
       source: 'submission',
     });
 
-    this.set('model.status', 'superceded');
-    return hash({
-      revision: record.save(),
-      original: this.model.save(),
-    }).then((hash) => {
-      this.set('isRevising', false);
-      // handle success
+    if (this.args.responseData) {
+      this.args.responseData.status = 'superceded';
+    }
+
+    const [revision, original] = await Promise.all([
+      record.save(),
+      this.args.responseData?.save(),
+    ]);
+
+    this.args.isRevising = false;
+    this.alert.showToast(
+      'success',
+      'Revision Created',
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+
+    return { revision, original };
+  }
+
+  // Actions converted to @action methods
+  @action
+  toggleProperty(p) {
+    this[p] = !this[p];
+  }
+
+  @action
+  updateAiActionSelection(value) {
+    this.aiActionSelection = value;
+  }
+
+  cleanupTrashedItems(response) {
+    response.selections?.forEach((selection) => {
+      if (selection.isTrashed) {
+        response.selections.removeObject(selection);
+      }
+    });
+
+    response.comments?.forEach((comment) => {
+      if (comment.isTrashed) {
+        response.comments.removeObject(comment);
+      }
+    });
+  }
+
+  prepareResponseData(response, isDraft) {
+    const status = isDraft ? 'draft' : this.args.newReplyStatus;
+
+    response.set('original', this.originalText);
+    response.set('status', status);
+    response.set('text', this.quillText);
+    response.set('note', this.args.replyNote);
+
+    // Set submission relationship from passed argument
+    // Check if submission content exists, not just the property
+    if (this.args.submission) {
+      console.log(
+        'Setting submission relationship to:',
+        this.args.submission.id
+      );
+      response.set('submission', this.args.submission);
+    }
+
+    if (!response.get('createdBy.content')) {
+      response.set('createdBy', this.currentUser.user);
+    }
+    if (!response.get('responseType')) {
+      response.set('responseType', this.args.newReplyType);
+    }
+  }
+
+  handleSaveSuccess(savedResponse, toastMessage, isDraft) {
+    console.log(
+      'handleSaveSuccess called - savedResponse:',
+      savedResponse.id,
+      'isDraft:',
+      isDraft
+    );
+    console.log('Saved response submission:', savedResponse.submission?.id);
+    console.log('Saved response status:', savedResponse.status);
+
+    this.loading.handleLoadingMessage(
+      this,
+      'end',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+    this.alert.showToast(
+      'success',
+      toastMessage,
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+
+    if (isDraft) {
+      // For drafts, refresh the current route to show the new draft
+      this.args.handleResponseThread?.(savedResponse, 'mentor');
+
+      // Refresh the route to reload responses including the new draft
+      this.router.transitionTo(
+        'responses.submission',
+        this.args.submission.id,
+        {
+          queryParams: { responseId: savedResponse.id },
+        }
+      );
+
+      console.log('Draft saved successfully, refreshing route');
+    } else {
+      this.args.handleResponseThread?.(savedResponse, 'mentor');
+      this.args.onSaveSuccess?.(this.args.submission, savedResponse);
+    }
+  }
+
+  handleSaveError(err, response) {
+    this.loading.handleLoadingMessage(
+      this,
+      'end',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+    this.errorHandling.handleErrors(err, 'recordSaveErrors', response);
+  }
+
+  convertPlainTextToHtml(text) {
+    if (!text) return '';
+
+    let normalized = text;
+
+    // 1. Normalize line endings
+    normalized = normalized.replace(/\r\n/g, '\n');
+
+    normalized = normalized.replace(/^ {2}(?=\d|-|\*)/gm, '    ');
+
+    normalized = normalized.replace(
+      /^(\s*\d+\..+)\n(?!\s*\d|\s*\\-|\s*$)(.*)/gm,
+      '$1 $2'
+    );
+
+    normalized = normalized.replace(/(\n\n)(?=\s*\d+\.)/g, '\n');
+
+    // 2. Configure Marked
+    const rawHtml = marked.parse(normalized, {
+      breaks: true,
+      gfm: true,
+    });
+
+    // 3. Sanitize
+    return DOMPurify.sanitize(rawHtml);
+  }
+
+  @action
+  saveDraftResponse() {
+    this.saveResponse(true);
+  }
+
+  @action
+  async handleSubmitAction() {
+    if (!this.hasCopiedAiText) {
+      this.saveResponse(false);
+      return;
+    }
+
+    if (this.hasCopiedAiText && this.aiActionSelection === 'regenerate') {
+      this.generateAIDraft({
+        preserveEditor: true,
+        preserveFinalizeState: true,
+        allowRerate: true,
+      });
+      return;
+    }
+
+    if (this.hasCopiedAiText && this.aiActionSelection === 'draft') {
+      this.saveResponse(true);
+      return;
+    }
+
+    if (this.hasCopiedAiText && this.aiActionSelection === 'finalize') {
+      this.saveResponse(false);
+      return;
+    }
+
+    this.alert.showToast(
+      'info',
+      'Please choose an action before submitting.',
+      'bottom-end',
+      3000,
+      false,
+      null
+    );
+  }
+
+  @action
+  saveResponse(isDraft = false) {
+    console.log(
+      'ResponseNew saveResponse - isDraft:',
+      isDraft,
+      'newReplyStatus:',
+      this.args.newReplyStatus
+    );
+    if (!this.isValidQuillContent) return;
+
+    const response = this.args.responseData;
+    const toastMessage = isDraft ? 'Draft Saved' : 'Response Sent';
+
+    this.cleanupTrashedItems(response);
+    this.prepareResponseData(response, isDraft);
+
+    if (this.args.workspace) {
+      this.args.workspace.rollbackAttributes();
+    }
+    if (this.args.submission) {
+      this.args.submission.rollbackAttributes();
+    }
+
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isReplySending',
+      'doShowLoadingMessage'
+    );
+
+    response
+      .save()
+      .then((savedResponse) =>
+        this.handleSaveSuccess(savedResponse, toastMessage, isDraft)
+      )
+      .catch((err) => this.handleSaveError(err, response));
+  }
+
+  @action
+  updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.quillText = content;
+    this.isQuillEmpty = isEmpty;
+    this.isQuillTooLong = isOverLengthLimit;
+  }
+
+  @action
+  async generateAIDraft(options = {}) {
+    const {
+      preserveEditor = false,
+      preserveFinalizeState = false,
+      allowRerate = false,
+    } = options;
+
+    if (
+      !this.hasSubmission ||
+      !this.aiDraft.hasStudentWork(this.actualSubmission)
+    ) {
+      this.alert.showToast(
+        'info',
+        'Cannot generate AI draft: No student text or worksheet images were found.',
+        'bottom-end',
+        6000,
+        false,
+        null
+      );
+      return;
+    }
+
+    const submissionId = this._getSubmissionId();
+    if (!submissionId) {
+      this.alert.showToast(
+        'error',
+        'Cannot generate AI draft: Submission ID not found',
+        'bottom-end',
+        5000,
+        false,
+        null
+      );
+      return;
+    }
+
+    this.loading.handleLoadingMessage(
+      this,
+      'start',
+      'isAIDraftLoading',
+      'doShowLoadingMessage'
+    );
+    try {
+      const draft = await this.aiDraft.generateDraft(
+        submissionId,
+        'B',
+        this.args.workspace?.id
+      );
+
+      if (!preserveEditor) {
+        // Clear any pending content from previous "Bring it Down"
+        this.pendingContent = null;
+      }
+
+      // Convert AI plain text to HTML immediately and store it
+      this.aiGeneratedText = this.convertPlainTextToHtml(draft);
+      this.allowRerate = allowRerate;
+      if (allowRerate) {
+        this.aiDraftRating = null;
+        this.aiWrittenFeedback = '';
+      }
+      if (!preserveFinalizeState) {
+        this.hasUsedAIDraft = false; // Reset "Bring it Down" button
+        this.aiDraftRating = null; // Reset rating for new draft
+        this.aiWrittenFeedback = ''; // Reset written feedback for new draft
+        this.hasCopiedAiText = false;
+        this.aiActionSelection = null;
+        this.showUsageCheckboxes = false;
+      } else if (allowRerate) {
+        this.showUsageCheckboxes = false;
+      }
+
       this.alert.showToast(
         'success',
-        'Revision Created',
+        'AI draft generated successfully',
         'bottom-end',
         3000,
         false,
         null
       );
-    });
-  },
-  moreDetailsLinkText: computed('showDetails', function () {
-    if (this.showDetails) {
-      return 'Hide Details';
-    }
-    return 'More Details';
-  }),
-
-  getQuillErrors() {
-    let errors = [];
-    if (this.isQuillEmpty) {
-      errors.addObject('emptyReplyError');
-    }
-    if (this.isQuillTooLong) {
-      errors.addObject('quillTooLongError');
-    }
-    return errors;
-  },
-
-  returnSizeDisplay(bytes) {
-    if (bytes < 1024) {
-      return bytes + ' bytes';
-    } else if (bytes >= 1024 && bytes < 1048576) {
-      return (bytes / 1024).toFixed(1) + 'KB';
-    } else if (bytes >= 1048576) {
-      return (bytes / 1048576).toFixed(1) + 'MB';
-    }
-  },
-
-  quillTooLongErrorMsg: computed(
-    'quillText.length',
-    'maxResponseLength',
-    function () {
-      let len = this.get('quillText.length');
-      let maxLength = this.maxResponseLength;
-      let maxSizeDisplay = this.returnSizeDisplay(maxLength);
-      let actualSizeDisplay = this.returnSizeDisplay(len);
-
-      return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
-    }
-  ),
-
-  clearErrorProps() {
-    this.removeMessages(this.errorPropsToRemove);
-  },
-
-  actions: {
-    toggleProperty: function (p) {
-      this.toggleProperty(p);
-    },
-    saveResponse(isDraft) {
-      let quillErrors = this.getQuillErrors();
-
-      if (quillErrors.length > 0) {
-        quillErrors.forEach((errorProp) => {
-          this.set(errorProp, true);
-        });
-        return;
-      }
-
-      let response = this.model;
-
-      // need to remove any trashed selections or comments
-
-      response.get('selections').forEach((selection) => {
-        if (selection.get('isTrashed')) {
-          response.get('selections').removeObject(selection);
-        }
-      });
-
-      response.get('comments').forEach((comment) => {
-        if (comment.get('isTrashed')) {
-          response.get('comments').removeObject(comment);
-        }
-      });
-
-      let toastMessage = isDraft ? 'Draft Saved' : 'Response Sent';
-      let newStatus = isDraft ? 'draft' : this.newReplyStatus;
-
-      response.setProperties({
-        original: this.originalText,
-        createdBy: this.currentUser.user,
-        status: newStatus,
-        responseType: this.newReplyType,
-        text: this.quillText,
-        note: this.replyNote,
-      });
-
-      this.loading.handleLoadingMessage(
-        this,
-        'start',
-        'isReplySending',
-        'doShowLoadingMessage'
+    } catch (error) {
+      this.alert.showToast(
+        'error',
+        error.message || 'Failed to generate AI draft',
+        'bottom-end',
+        5000,
+        false,
+        null
       );
-
-      response
-        .save()
-        .then((savedResponse) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
-
-          this.alert.showToast(
-            'success',
-            toastMessage,
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.handleResponseThread(savedResponse, 'mentor');
-          this.onSaveSuccess(this.submission, savedResponse);
-        })
-        .catch((err) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isReplySending',
-            'doShowLoadingMessage'
-          );
-
-          this.handleErrors(err, 'recordSaveErrors', response);
-        });
-    },
-
-    updateQuillText(content, isEmpty, isOverLengthLimit) {
-      this.set('quillText', content);
-      this.set('isQuillEmpty', isEmpty);
-      this.set('isQuillTooLong', isOverLengthLimit);
-    },
-
-    generateAIDraft() {
+    } finally {
       this.loading.handleLoadingMessage(
         this,
-        'start',
+        'end',
         'isAIDraftLoading',
         'doShowLoadingMessage'
       );
+    }
+  }
 
-      this.aiDraft
-        .generateDraft(this.submission)
-        .then((data) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isAIDraftLoading',
-            'doShowLoadingMessage'
-          );
+  @action
+  bringAiDraftDown() {
+    if (!this.canBringDown || !this.aiGeneratedText) {
+      return;
+    }
+    // Show usage checkboxes instead of immediately copying
+    this.showUsageCheckboxes = true;
+  }
 
-          // BELOW NEEDS TO CHANGE: TEMPORARY ONLY.
-          if (data && data.draft) {
-            // Update the quill editor content directly.
-            let quillEditor = this.element.querySelector(
-              '.quill-container .ql-editor'
-            );
+  @action
+  continueWithAIDraft() {
+    if (!this.hasSelectedUsageOption) {
+      this.alert.showToast(
+        'info',
+        'Please select at least one option before continuing',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      return;
+    }
 
-            if (quillEditor) {
-              quillEditor.innerHTML = data.draft;
+    // Preserve existing editor content and append AI text
+    const currentText = this.quillText || '';
+    const separator = currentText.trim() ? '<p><br></p>' : '';
+    const newText = currentText + separator + this.aiGeneratedText;
 
-              let isEmpty =
-                data.draft.trim() === '' || data.draft === '<p><br></p>';
-              let isOverLimit = data.draft.length > this.maxResponseLength;
+    // Set pending content and force Quill re-render
+    this.pendingContent = newText;
+    this.quillEditorKey += 1;
 
-              this.send('updateQuillText', data.draft, isEmpty, isOverLimit);
-            }
+    // Update tracked properties
+    this.quillText = newText;
+    let isEmpty = newText.trim() === '' || newText === '<p><br></p>';
+    let isOverLimit = newText.length > this.maxResponseLength;
+    this.isQuillEmpty = isEmpty;
+    this.isQuillTooLong = isOverLimit;
 
-            this.alert.showToast('success', 'AI draft generated successfully');
-          } else {
-            this.alert.showToast(
-              'error',
-              'Failed to generate AI draft - no content received'
-            );
-          }
-        })
-        .catch((error) => {
-          this.loading.handleLoadingMessage(
-            this,
-            'end',
-            'isAIDraftLoading',
-            'doShowLoadingMessage'
-          );
+    // Mark draft as used
+    this.hasUsedAIDraft = true;
+    this.showUsageCheckboxes = false;
+    this.hasCopiedAiText = true;
+    this.aiActionSelection = 'finalize';
+    this.allowRerate = false;
 
-          console.error('AI Draft Error:', error);
+    this.alert.showToast(
+      'success',
+      'AI draft copied to editor',
+      'bottom-end',
+      2000,
+      false,
+      null
+    );
+  }
 
-          let errorMessage = 'Failed to generate AI draft';
-          if (error.message) {
-            errorMessage = error.message;
-          }
-
-          this.alert.showToast('error', errorMessage);
-        });
-    },
-  },
-});
+  @action
+  setStarRating(rating) {
+    this.aiDraftRating = rating;
+  }
+}

@@ -1,12 +1,13 @@
-{{page-title this.model.problem.title}}
+{{page-title @model.problem.title}}
 <div id='problem-info' class='side-info'>
   <ProblemInfo
-    @orgList={{this.model.orgList}}
-    @recommendedProblems={{this.model.recommendedProblems}}
-    @problem={{this.model.problem}}
-    @sectionList={{this.model.sectionList}}
-    @currentUser={{this.model.currentUser}}
-    @flaggedBy={{this.model.flaggedBy}}
-    @flaggedDate={{this.model.flaggedDate}}
+    @orgList={{@model.orgList}}
+    @recommendedProblems={{@model.recommendedProblems}}
+    @problem={{@model.problem}}
+    @sectionList={{@model.sectionList}}
+    @flaggedBy={{@model.flaggedBy}}
+    @flaggedDate={{@model.flaggedDate}}
+    {{! from the query parameter, via the controller}}
+    @tab={{this.tab}}
   />
 </div>

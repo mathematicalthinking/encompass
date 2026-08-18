@@ -1,54 +1,56 @@
 import Component from '@glimmer/component';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class AssignmentListComponent extends Component {
   @service('utility-methods') utils;
+  @service currentUser;
+
+  get user() {
+    return this.currentUser.user;
+  }
+
+  get userId() {
+    return this.user.id;
+  }
 
   get yourList() {
-    let currentUser = this.args.currentUser;
-    let yourList = this.args.assignments.filter((assignment) => {
-      let userId = currentUser.get('id');
-      let assigmentCreatorId = this.utils.getBelongsToId(
+    const yourList = this.args.assignments.filter((assignment) => {
+      const assignmentCreatorId = this.utils.getBelongsToId(
         assignment,
         'createdBy'
       );
-      return userId === assigmentCreatorId && !assignment.get('isTrashed');
+      return this.userId === assignmentCreatorId && !assignment.isTrashed;
     });
     return yourList.sortBy('createDate').reverse();
   }
 
-  get adminList() {
-    let currentUser = this.args.currentUser;
-    let adminList = this.args.assignments.filter((assignment) => {
-      let userId = currentUser.get('id');
-      let assigmentCreatorId = this.utils.getBelongsToId(
+  get notYourList() {
+    const notYourList = this.args.assignments.filter((assignment) => {
+      const assignmentCreatorId = this.utils.getBelongsToId(
         assignment,
         'createdBy'
       );
-      return userId !== assigmentCreatorId && !assignment.get('isTrashed');
+      return this.userId !== assignmentCreatorId && !assignment.isTrashed;
     });
-    return adminList.sortBy('createDate').reverse();
+    return notYourList.sortBy('createDate').reverse();
+  }
+
+  get adminList() {
+    return this.notYourList;
   }
 
   get pdList() {
-    let currentUser = this.args.currentUser;
-    let pdList = this.args.assignments.filter((assignment) => {
-      let userId = currentUser.get('id');
-      let assigmentCreatorId = this.utils.getBelongsToId(
-        assignment,
-        'createdBy'
-      );
-      return userId !== assigmentCreatorId && !assignment.get('isTrashed');
-    });
-    return pdList.sortBy('createDate').reverse();
+    return this.notYourList;
   }
 
   get studentList() {
-    let currentUser = this.args.currentUser;
-    return currentUser
-      .get('assignments')
-      .toArray()
+    return this.user.assignments
+      .slice()
       .filter((assignment) => assignment.name && !assignment.isTrashed)
       .reverse();
+  }
+
+  get organizationName() {
+    return this.user.organization?.name ?? 'No Organization';
   }
 }

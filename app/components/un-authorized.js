@@ -1,11 +1,18 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import MtAuthMixin from '../mixins/mt_auth_mixin';
+import Component from '@glimmer/component';
+import { inject as service } from '@ember/service';
+export default class UnAuthorizedComponent extends Component {
+  @service mtAuth;
+  @service currentUser;
 
-export default Component.extend(MtAuthMixin, {
-  elementId: 'un-authorized',
+  get needAdditionalInfo() {
+    return this.currentUser.user.needAdditionalInfo;
+  }
 
-  contactEmail: computed(function () {
-    return this.getContactEmail();
-  }),
-});
+  get googleId() {
+    return this.currentUser.user.googleId;
+  }
+
+  get contactEmail() {
+    return this.mtAuth.getContactEmail();
+  }
+}

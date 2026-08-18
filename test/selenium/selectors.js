@@ -26,7 +26,7 @@ module.exports = {
     sectionsNew: 'a.menu.sections-new',
     usersNew: 'a.menu.users-new',
     assignments: 'a.assignments',
-    responseNtf: 'li[data-test="topbar-responses"] .circle-ntf span',
+    responseNtf: 'li[data-test="topbar-responses"] span',
     vmtImport: 'a.menu.vmt-import',
   },
   login: {

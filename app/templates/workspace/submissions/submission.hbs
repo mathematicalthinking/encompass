@@ -1,0 +1,128 @@
+<div id='workspace-container'>
+  <header class='{{this.makingSelection}} ws-header'>
+    <div class='ws-meta'>
+      <h1 class='ws-title'>{{this.currentWorkspace.name}}
+        by
+        {{this.currentWorkspace.owner.displayName}}</h1>
+
+      <div class='ws-links'>
+        <LinkTo @route='workspace.info' @model={{this.currentWorkspace.id}}>
+          <a>Workspace Stats &amp; Settings</a>
+        </LinkTo>
+        {{#if this.canSeeResponses}}<LinkTo
+            @route='workspace.summary'
+            @model={{this.model.workspace.id}}
+          >
+            <a>View All Responses</a>
+          </LinkTo>{{/if}}
+
+        {{#each this.currentWorkspace.parentWorkspaces as |ws|}}
+          <LinkTo @route='workspace.work' @model={{ws.id}}>
+            <a>{{ws.name}}</a>
+          </LinkTo>
+        {{/each}}
+      </div>
+    </div>
+
+    <aside class='submission-display-options'>
+      {{#if this.showOptions}}
+        <label for='display-options'>Work to display:</label>
+        <select id='display-options' {{on 'change' this.updateDisplayInput}}>
+          <option value='all'>All work</option>
+          <option value='individual'>Individual work only</option>
+          <option value='group'>Group work only</option>
+        </select>
+      {{/if}}
+<button
+        id='takeTour'
+        class='primary-button'
+        type='button'
+        {{on 'click' this.startTour}}
+      >Take Tour</button>
+      {{!-- <a id='doneTour' class='hidden' {{action 'doneTour'}}>Done Tour</a> --}}
+    </aside>
+  </header>
+
+  <div
+    class='workspace-flex-container
+      {{if this.cannotSeeFolders "no-folders"}}
+      {{if this.cannotSeeComments "no-comments"}}
+      {{if this.cannotSeeSelections "no-selections"}}
+      {{if this.cannotSeeResponses "no-responses"}}'
+  >
+    {{! <div id="al_left" class="workspace-flex-item folders"> }}
+    {{#if this.showFoldersToggle}}
+      <div title='Show Folders' class='toggle-display'>
+<button type='button' {{on 'click' this.toggleFolderDisplay}}>
+          <img
+            src='/assets/images/chevrons-right.svg'
+          />
+        </button>
+      </div>
+    {{/if}}
+    <FolderList
+      @folders={{this.nonTrashedFolders}}
+      @workspace={{this.currentWorkspace}}
+      @fileSelection='fileSelectionInFolder'
+      @currentSubmission={{this.model.submission}}
+      @taggings={{this.nonTrashedTaggings}}
+      @workspaceSubmissions={{this.currentWorkspace.submissions.content}}
+      @workspaceSelections={{this.nonTrashedSelections}}
+      @hideFolders={{this.toggleFolderDisplay}}
+      @isHidden={{this.areFoldersHidden}}
+      @containerLayoutClass={{this.containerLayoutClass}}
+      @hideComments={{this.toggleCommentDisplay}}
+      @areCommentsHidden={{this.areCommentsHidden}}
+    />
+    {{! </div> }}
+
+    {{!section class="submissions"}}
+    {{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
+    <SubmissionGroup
+      @canRespond={{this.canRespond}}
+      @submissions={{this.currentWorkspace.submissions.content}}
+      @submission={{this.model.submission}}
+      @addSelection={{this.addSelection}}
+      @deleteSelection={{this.deleteSelection}}
+      @currentWorkspace={{this.currentWorkspace}}
+      @selections={{this.nonTrashedSelections}}
+      @responses={{this.nonTrashedResponses}}
+      @containerLayoutClass={{this.containerLayoutClass}}
+      @canSeeSelections={{this.canSeeSelections}}
+      @isParentWorkspace={{this.isParentWorkspace}}
+    />
+    {{#if this.showCommentsToggle}}
+      <div title='Show Comments' class='toggle-display comments'>
+<button type='button' {{on 'click' this.toggleCommentDisplay}}>
+          <img
+            src='/assets/images/chevrons-left.svg'
+          />
+        </button>
+      </div>
+    {{/if}}
+    <CommentList
+      @comments={{this.nonTrashedComments}}
+      @currentWorkspace={{this.currentWorkspace}}
+      @currentSubmission={{this.model.submission}}
+      @allowedToComment={{this.permittedToComment}}
+      @resetComment={{this.cancelComment}}
+      @isHidden={{this.areCommentsHidden}}
+      @hideComments={{this.toggleCommentDisplay}}
+      @containerLayoutClass={{this.containerLayoutClass}}
+      @isParentWorkspace={{this.isParentWorkspace}}
+    />
+    {{! </div> }}
+  </div>
+
+  {{!/section}}
+</div>
+{{#if this.showOverlay}}
+  <div class='clear'></div>
+<div
+        {{on 'click' this.popupMaskClicked}}
+        id='al_popup_mask'
+        class='al_popup_close'
+        style='height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;'
+      >
+      </div>
+{{/if}}

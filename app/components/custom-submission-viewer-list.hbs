@@ -7,8 +7,7 @@
     {{! <div class="info-bar-item link">Full view <i class="fas fa-external-link-alt"></i></div> }}
     <div class='info-bar-item button'>
       <button
-        class='primary-button'
-        {{action (mut @showView) false}}
+        class='primary-button' type="button" {{on 'click' @onDone}}
       >Done</button>
     </div>
   </div>
@@ -20,6 +19,7 @@
         checked={{this.isChecked}}
         name='customIds'
         value={{this.isChecked}}
+        aria-label='Select all submissions'
         {{on 'click' this.toggleSelect}}
       />
     </div>

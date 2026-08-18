@@ -75,9 +75,8 @@ const generateParentWorkspace = async function (config, user) {
       }
     );
 
-    let { combinedSubmissions, subOldToNewMap } = combineSubmissions(
-      popChildWorkspaces
-    );
+    let { combinedSubmissions, subOldToNewMap } =
+      combineSubmissions(popChildWorkspaces);
 
     combinedWorkspace.submissions = combinedSubmissions;
     let withUpdatedRelationships = updateRelationships(
@@ -194,37 +193,38 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
 
       let defaultTaggings = [];
 
-      acc.combinedWorkspace.selections = acc.combinedWorkspace.selections.concat(
-        workspace.selections.map((oldSelection) => {
-          let copyOldSelection = { ...oldSelection };
-          let oldId = copyOldSelection._id;
-          delete copyOldSelection._id;
+      acc.combinedWorkspace.selections =
+        acc.combinedWorkspace.selections.concat(
+          workspace.selections.map((oldSelection) => {
+            let copyOldSelection = { ...oldSelection };
+            let oldId = copyOldSelection._id;
+            delete copyOldSelection._id;
 
-          copyOldSelection.originalSelection = oldId;
-          let newSelection = new models.Selection(copyOldSelection);
-          newSelection.createDate = new Date();
-          newSelection.lastModifiedDate = new Date();
-          newSelection.lastModifiedBy = parentCreator;
-          newSelection.createdBy = parentCreator;
+            copyOldSelection.originalSelection = oldId;
+            let newSelection = new models.Selection(copyOldSelection);
+            newSelection.createDate = new Date();
+            newSelection.lastModifiedDate = new Date();
+            newSelection.lastModifiedBy = parentCreator;
+            newSelection.createdBy = parentCreator;
 
-          acc.oldToNewMap.selection[oldId] = newSelection._id;
+            acc.oldToNewMap.selection[oldId] = newSelection._id;
 
-          let isNotTagged = !isNonEmptyArray(newSelection.taggings);
+            let isNotTagged = !isNonEmptyArray(newSelection.taggings);
 
-          if (isNotTagged) {
-            let defTagging = new models.Tagging({
-              selection: newSelection._id,
-              folder: newParentFolder._id,
-              workspace: parentId,
-              createdBy: newSelection.createdBy,
-              createDate: new Date(),
-              isDefaultTagging: true,
-            });
-            defaultTaggings.push(defTagging);
-          }
-          return newSelection;
-        })
-      );
+            if (isNotTagged) {
+              let defTagging = new models.Tagging({
+                selection: newSelection._id,
+                folder: newParentFolder._id,
+                workspace: parentId,
+                createdBy: newSelection.createdBy,
+                createDate: new Date(),
+                isDefaultTagging: true,
+              });
+              defaultTaggings.push(defTagging);
+            }
+            return newSelection;
+          })
+        );
 
       newParentFolder.taggings = defaultTaggings.map((t) => t._id);
       // copy comments
@@ -289,9 +289,8 @@ const combineWorkspaces = (workspaces, parentWsInfo) => {
       );
 
       // copy taggings
-      acc.combinedWorkspace.taggings = acc.combinedWorkspace.taggings.concat(
-        defaultTaggings
-      );
+      acc.combinedWorkspace.taggings =
+        acc.combinedWorkspace.taggings.concat(defaultTaggings);
 
       acc.combinedWorkspace.taggings = acc.combinedWorkspace.taggings.concat(
         workspace.taggings.map((oldTagging) => {
@@ -1870,10 +1869,8 @@ const updateParentWorkspace = async (
 
     let didUpdate = false;
 
-    let [
-      createdSubmissionsResults,
-      updatedSubmissionsResults,
-    ] = await updateSubmissions(user._id, popWorkspace, childWorkspaces);
+    let [createdSubmissionsResults, updatedSubmissionsResults] =
+      await updateSubmissions(user._id, popWorkspace, childWorkspaces);
 
     let createdSubmissions = createdSubmissionsResults
       .filter((obj) => obj.createdRecord)
@@ -1887,10 +1884,8 @@ const updateParentWorkspace = async (
       _.compact(createdSubmissions)
     );
 
-    let [
-      createdSelectionsResults,
-      updatedSelectionsResults,
-    ] = await updateSelections(user._id, popWorkspace, childWorkspaces);
+    let [createdSelectionsResults, updatedSelectionsResults] =
+      await updateSelections(user._id, popWorkspace, childWorkspaces);
 
     let createdSelections = createdSelectionsResults
       .filter((obj) => obj.createdRecord)
@@ -1922,10 +1917,8 @@ const updateParentWorkspace = async (
       _.compact(createdComments)
     );
 
-    let [
-      createdResponsesResults,
-      updatedResponsesResults,
-    ] = await updateResponses(user._id, popWorkspace, childWorkspaces);
+    let [createdResponsesResults, updatedResponsesResults] =
+      await updateResponses(user._id, popWorkspace, childWorkspaces);
 
     let createdResponses = createdResponsesResults
       .filter((obj) => obj.createdRecord)
@@ -1977,16 +1970,14 @@ const updateParentWorkspace = async (
 
     if (isNonEmptyArray(createdSubmissions)) {
       didUpdate = true;
-      updateWorkspaceRequest.createdParentData.submissions = createdSubmissions.map(
-        (submission) => submission._id
-      );
+      updateWorkspaceRequest.createdParentData.submissions =
+        createdSubmissions.map((submission) => submission._id);
     }
 
     if (isNonEmptyArray(createdSelections)) {
       didUpdate = true;
-      updateWorkspaceRequest.createdParentData.selections = createdSelections.map(
-        (selection) => selection._id
-      );
+      updateWorkspaceRequest.createdParentData.selections =
+        createdSelections.map((selection) => selection._id);
     }
 
     if (isNonEmptyArray(createdComments)) {
@@ -2020,8 +2011,8 @@ const updateParentWorkspace = async (
     if (isNonEmptyArray(updatedSubmissions)) {
       didUpdate = true;
 
-      updateWorkspaceRequest.updatedParentData.submissions = updatedSubmissions.map(
-        (obj) => {
+      updateWorkspaceRequest.updatedParentData.submissions =
+        updatedSubmissions.map((obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -2031,13 +2022,12 @@ const updateParentWorkspace = async (
             wasJustTrashed: didIsTrashedChange && isTrashed,
             wasJustRestored: didIsTrashedChange && !isTrashed,
           };
-        }
-      );
+        });
     }
     if (isNonEmptyArray(updatedSelections)) {
       didUpdate = true;
-      updateWorkspaceRequest.updatedParentData.selections = updatedSelections.map(
-        (obj) => {
+      updateWorkspaceRequest.updatedParentData.selections =
+        updatedSelections.map((obj) => {
           let isTrashed = obj.updatedRecord.isTrashed;
           let didIsTrashedChange = obj.modifiedFields.includes('isTrashed');
 
@@ -2048,8 +2038,7 @@ const updateParentWorkspace = async (
             wasJustTrashed: didIsTrashedChange && isTrashed,
             wasJustRestored: didIsTrashedChange && !isTrashed,
           };
-        }
-      );
+        });
     }
 
     if (isNonEmptyArray(updatedComments)) {

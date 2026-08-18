@@ -1,12 +1,12 @@
 import { attr, belongsTo, hasMany } from '@ember-data/model';
-import Auditable from './auditable';
+import AuditableModel from './auditable';
 
-export default class UserModel extends Auditable {
+export default class UserModel extends AuditableModel {
   @attr('string') firstName;
   @attr('string') lastName;
   @attr('string') email;
   @attr('string') avatar;
-  @belongsTo('organization') organization;
+  @belongsTo('organization', { async: true }) organization;
   @attr('string') organizationRequest;
   @attr('string') location;
   @attr('string') username;
@@ -16,7 +16,7 @@ export default class UserModel extends Auditable {
   @attr('string') accountType;
   @attr('boolean') isEmailConfirmed;
   @attr('boolean', { defaultValue: false }) isAuthorized;
-  @belongsTo('user', { inverse: null }) authorizedBy;
+  @belongsTo('user', { inverse: null, async: true }) authorizedBy;
   @attr('date') seenTour;
   @attr('date') lastImported;
   @attr('date') lastLogin;
@@ -25,7 +25,8 @@ export default class UserModel extends Auditable {
   @hasMany('assignment', { async: true, inverse: null }) assignments;
   @hasMany('answer', { async: true }) answers;
   @attr('string') actingRole;
-  @hasMany('notifications', { inverse: 'recipient' }) notifications;
+  @hasMany('notifications', { inverse: 'recipient', async: true })
+  notifications;
   get actingRoleName() {
     let actingRole = this.actingRole;
     if (this.accountType === 'P') {
@@ -47,6 +48,17 @@ export default class UserModel extends Auditable {
   }
   get isStudent() {
     return this.accountType === 'S' || this.actingRole === 'student';
+  }
+  get isPseudoStudent() {
+    return this.actingRole === 'S';
+  }
+
+  get isActingAdmin() {
+    return !this.isPseudoStudent && this.isAdmin;
+  }
+
+  get isActingPdAdmin() {
+    return !this.isPseudoStudent && this.isPdAdmin;
   }
   get isPdAdmin() {
     return this.accountType === 'P';

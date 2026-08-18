@@ -1,0 +1,104 @@
+<div id='section-list'>
+  <section class='list-side'>
+    <header class='list-header'>
+      <h1>Classes</h1>
+      {{#unless this.currentUser.isStudent}}
+        <LinkTo
+          @route='sections.new'
+          id='new-section-link'
+          class='new-link-btn'
+        ><span>Create New Class</span><i class='fas fa-plus'></i></LinkTo>
+      {{/unless}}
+      <div class='clear'></div>
+    </header>
+
+    <section>
+      <nav class='list-box'>
+        {{#unless this.currentUser.isStudent}}
+          <h2>{{this.currentUser.user.username}}'s Classes</h2>
+          <ul class='your-sections'>
+            {{#if this.yourSections.length}}
+              {{#each this.yourSections as |section|}}
+                <li><LinkTo
+                    @route='sections.section'
+                    @model={{section.id}}
+                    class='section'
+                  >{{section.name}}</LinkTo></li>
+              {{/each}}
+            {{else}}
+              <li>You have no classes</li>
+            {{/if}}
+          </ul>
+
+          <h2>Classes you belong to</h2>
+          <ul class='collab-sections'>
+            {{#if this.collabSections.length}}
+              {{#each this.collabSections as |section|}}
+                <li><LinkTo
+                    @route='sections.section'
+                    @model={{section.id}}
+                    class='section'
+                  >{{section.name}}</LinkTo></li>
+              {{/each}}
+            {{else}}
+              <li>You don't belong to any classes yet</li>
+            {{/if}}
+          </ul>
+        {{/unless}}
+
+        {{#if this.currentUser.isStudent}}
+          <h2>Your Classes</h2>
+          <ul class='your-sections'>
+            {{#if this.studentSections.length}}
+              {{#each this.studentSections as |section|}}
+                <li><LinkTo
+                    @route='sections.section'
+                    @model={{section.id}}
+                    class='section'
+                  >{{section.name}}</LinkTo></li>
+              {{/each}}
+            {{else}}
+              <li>You don't belong to any classes yet</li>
+            {{/if}}
+          </ul>
+        {{/if}}
+
+        {{#if this.currentUser.isPdAdmin}}
+          <h2>{{this.userOrgName}}'s Classes</h2>
+          <ul class='org-sections'>
+            {{#if this.orgSections.length}}
+              {{#each this.orgSections as |section|}}
+                <li><LinkTo
+                    @route='sections.section'
+                    @model={{section.id}}
+                    class='section'
+                  >{{section.name}}</LinkTo></li>
+              {{/each}}
+            {{else}}
+              <li>{{this.userOrgName}}
+                does not have any classes yet</li>
+            {{/if}}
+          </ul>
+        {{/if}}
+
+        {{#unless this.currentUser.isStudent}}
+          {{#if this.currentUser.isAdmin}}
+            <h2>All Classes</h2>
+            <ul class='all-sections'>
+              {{#if this.allSections.length}}
+                {{#each this.allSections as |section|}}
+                  <li><LinkTo
+                      @route='sections.section'
+                      @model={{section.id}}
+                      class='section'
+                    >{{section.name}}</LinkTo></li>
+                {{/each}}
+              {{/if}}
+            </ul>
+          {{/if}}
+        {{/unless}}
+
+      </nav>
+    </section>
+  </section>
+</div>

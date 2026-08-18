@@ -24,6 +24,17 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
+function sanitizeResponseRefs(response) {
+  if (!response) return response;
+  if (Array.isArray(response.comments)) {
+    response.comments = response.comments.filter(Boolean);
+  }
+  if (Array.isArray(response.selections)) {
+    response.selections = response.selections.filter(Boolean);
+  }
+  return response;
+}
+
 /**
  * @public
  * @method getResponse
@@ -63,6 +74,7 @@ function getResponse(req, res, next) {
         // recipient of mentor reply should not see note to approver
         delete response.note;
       }
+      sanitizeResponseRefs(response);
       response.depopulate('createdBy');
       response.depopulate('recipient');
       response.depopulate('workspace');
@@ -98,6 +110,7 @@ function getResponses(req, res, next) {
         .exec()
         .then((responses) => {
           responses.forEach((response) => {
+            sanitizeResponseRefs(response);
             if (
               response.responseType === 'mentor' &&
               areObjectIdsEqual(response.recipient, user._id)

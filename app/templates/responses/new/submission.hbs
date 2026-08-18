@@ -1,0 +1,11 @@
+{{#unless @model.isDraft}}
+  <ResponseContainer
+    @response={{@model.response}}
+    @submission={{@model.submission}}
+    @workspace={{@model.workspace}}
+    @submissions={{@model.submissions}}
+    @notifications={{@model.notifications}}
+    @responses={{@model.responses}}
+    @storeResponses={{@model.allResponses}}
+  />
+{{/unless}}

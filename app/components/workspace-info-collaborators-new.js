@@ -1,11 +1,9 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import _ from 'underscore';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
-  @service('current-user') currentUser;
   @service('utility-methods') utils;
   @service('sweet-alert') alert;
   @service store;
@@ -91,13 +89,34 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
   @action updateGlobalPermissionValue(val) {
     this.globalPermissionValue = val;
   }
+  @action setSubmissions(val) {
+    this.submissions = val;
+  }
+  @action setSelections(val) {
+    this.selections = val;
+  }
+  @action setComments(val) {
+    this.comments = val;
+  }
+  @action setFolders(val) {
+    this.folders = val;
+  }
+  @action setFeedback(val) {
+    this.feedback = val;
+  }
+  @action clearMissingUserError() {
+    this.missingUserError = false;
+  }
+  @action clearExistingUserError() {
+    this.existingUserError = false;
+  }
   @action setCollab(val) {
     if (!val) {
       return;
     }
-    let existingCollab = this.args.workspace.get('collaborators');
+    const existingCollab = this.args.workspace.collaborators;
     const user = this.store.peekRecord('user', val);
-    let alreadyCollab = _.contains(existingCollab, user.get('id'));
+    const alreadyCollab = existingCollab.includes(user.id);
 
     if (alreadyCollab) {
       this.existingUserError = true;
@@ -114,10 +133,10 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
       return;
     }
     let ws = this.args.workspace;
-    let permissions = ws.get('permissions');
+    let permissions = ws.permissions;
 
     let newObj = {
-      user: this.collabUser.get('id'),
+      user: this.collabUser.id,
       global: this.globalPermissionValue,
       submissions: { all: false, userOnly: false, submissionIds: [] },
     };
@@ -175,16 +194,27 @@ export default class WorkspaceInfoCollaboratorsNewComponent extends Component {
       } else if (subValue === 'userOnly') {
         newObj.submissions.userOnly = true;
       } else if (subValue === 'custom') {
-        newObj.submissions.submissionIds = this.args.customSubmissionIds;
+        // Convert Ember array to plain array to avoid circular ref
+        newObj.submissions.submissionIds = Array.isArray(
+          this.args.customSubmissionIds
+        )
+          ? [...this.args.customSubmissionIds]
+          : [];
       }
     }
     this.args.originalCollaborators.addObject(this.collabUser);
-    permissions.addObject(newObj);
+
+    // Add the new permission object to the existing permissions
+    const newPermissions = Array.isArray(permissions)
+      ? [...permissions, newObj]
+      : [newObj];
+
+    ws.permissions = newPermissions;
 
     ws.save().then(() => {
       this.alert.showToast(
         'success',
-        `${this.collabUser.get('username')} added as collaborator`,
+        `${this.collabUser.username} added as collaborator`,
         'bottom-end',
         3000,
         null,

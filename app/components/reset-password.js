@@ -1,82 +1,108 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
 
-export default Component.extend(ErrorHandlingMixin, {
-  classNames: ['reset-page'],
-  getTokenErrors: [],
-  resetPasswordErrors: [],
-  alert: service('sweet-alert'),
+export default class ResetPasswordComponent extends Component {
+  @service('sweet-alert') alert;
+  @service errorHandling;
+  @service navigation;
 
-  didReceiveAttrs: function () {
-    const token = this.token;
-    const that = this;
-    if (token) {
-      $.get({
-        url: `/auth/reset/${token}`,
-      })
-        .then((res) => {
-          if (res.isValid) {
-            that.set('isTokenValid', true);
-          } else {
-            that.set('invalidTokenError', res.info);
-          }
-        })
-        .catch((err) => {
-          that.handleErrors(err, 'getTokenErrors');
-        });
-    }
-  },
+  @tracked isTokenValid = false;
+  @tracked invalidTokenError = null;
+  @tracked password = null;
+  @tracked confirmPassword = null;
+  @tracked matchError = false;
+  @tracked missingRequiredFields = false;
+  @tracked getTokenErrors = [];
+  @tracked resetPasswordErrors = [];
 
-  doPasswordsMatch: computed('password', 'confirmPassword', function () {
+  get doPasswordsMatch() {
     return this.password === this.confirmPassword;
-  }),
+  }
 
-  actions: {
-    resetPassword: function () {
-      const password = this.password;
-      const confirmPassword = this.confirmPassword;
+  parseErrorMessage(status, body) {
+    if (!body) {
+      return `Request failed with status ${status}`;
+    }
+    try {
+      let parsed = JSON.parse(body);
+      return parsed?.errors?.[0]?.detail || parsed?.message || body;
+    } catch (_err) {
+      return body;
+    }
+  }
 
-      if (!password || !confirmPassword) {
-        this.set('missingRequiredFields', true);
-        return;
+  @action
+  async validateToken() {
+    let token = this.args.token;
+    if (!token) {
+      return;
+    }
+    try {
+      let response = await fetch(`/auth/reset/${token}`);
+      if (!response.ok) {
+        let body = await response.text();
+        throw new Error(this.parseErrorMessage(response.status, body));
       }
-      if (!this.doPasswordsMatch) {
-        this.set('matchError', true);
-        return;
+      let res = await response.json();
+      if (res.isValid) {
+        this.isTokenValid = true;
+      } else {
+        this.invalidTokenError = res.info;
       }
+    } catch (err) {
+      this.getTokenErrors = [err?.message || 'Unable to verify reset link'];
+      this.errorHandling.handleErrors(err, 'getTokenErrors');
+    }
+  }
 
-      const resetPasswordData = { password };
-      const that = this;
+  @action
+  async resetPassword() {
+    let { password, confirmPassword } = this;
 
-      return $.post({
-        url: `/auth/reset/${that.token}`,
-        data: resetPasswordData,
-      })
-        .then((res) => {
-          this.alert.showToast(
-            'success',
-            'Password Reset',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          that.sendAction('toHome');
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'resetPasswordErrors');
-        });
-    },
-    resetErrors: function (e) {
-      const errors = ['matchError', 'missingCredentials'];
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
-        }
+    if (!password || !confirmPassword) {
+      this.missingRequiredFields = true;
+      return;
+    }
+    if (!this.doPasswordsMatch) {
+      this.matchError = true;
+      return;
+    }
+
+    try {
+      let response = await fetch(`/auth/reset/${this.args.token}`, {
+        method: 'POST',
+        body: new URLSearchParams({ password }),
+      });
+      if (!response.ok) {
+        let body = await response.text();
+        throw new Error(this.parseErrorMessage(response.status, body));
       }
-    },
-  },
-});
+      this.alert.showToast(
+        'success',
+        'Password Reset',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      // Was `sendAction('toHome')`, which is dead under Ember 4.x — navigate via
+      // the navigation service (fullReload mirrors the old hard redirect to '/').
+      this.navigation.toHome({ fullReload: true });
+    } catch (err) {
+      this.resetPasswordErrors = [err?.message || 'Password reset failed'];
+      this.errorHandling.handleErrors(err, 'resetPasswordErrors');
+    }
+  }
+
+  @action
+  resetErrors() {
+    if (this.matchError) {
+      this.matchError = false;
+    }
+    if (this.missingRequiredFields) {
+      this.missingRequiredFields = false;
+    }
+  }
+}

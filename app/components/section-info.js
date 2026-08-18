@@ -1,111 +1,109 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
+import { service } from '@ember/service';
 
-export default class SectionInfoComponent extends ErrorHandlingComponent {
+export default class SectionInfoComponent extends Component {
   @service('sweet-alert') alert;
   @service('utility-methods') utils;
   @service router;
   @service store;
+  @service currentUser;
+  @service('error-handling') errorHandling;
   @tracked removeTeacherError = null;
   @tracked isEditingStudents = false;
   @tracked isEditingTeachers = false;
+  @tracked isEditingAssignments = false;
+  @tracked currentSection = null;
   @tracked organization = null;
   @tracked studentList = null;
   @tracked teacherList = null;
   @tracked showAssignment = false;
   @tracked problemList = null;
   @tracked sectionList = [];
-  @tracked dataLoadErrors = [];
-  @tracked updateSectionErrors = [];
+  // Service-backed error arrays (populated via handleErrors)
+  get dataLoadErrors() {
+    return this.errorHandling.getErrors('dataLoadErrors') || [];
+  }
+  get updateSectionErrors() {
+    return this.errorHandling.getErrors('updateSectionErrors') || [];
+  }
+  get problemLoadErrors() {
+    return this.errorHandling.getErrors('problemLoadErrors') || [];
+  }
+  // Read in the template but never populated (kept local)
   @tracked updateTeacherErrors = [];
   @tracked updateStudentErrors = [];
   @tracked queryErrors = [];
   @tracked findRecordErrors = [];
-  @tracked problemLoadErrors = [];
   @tracked addGroup = false;
   @tracked isEditingName = false;
+  @tracked editedSectionName = '';
+  @tracked createdGroups = [];
+
+  get groups() {
+    const queriedGroups = this.args.groups?.toArray?.() || [];
+
+    return [...queriedGroups, ...this.createdGroups].filter(
+      (group, index, groups) =>
+        groups.findIndex((candidate) => candidate.id === group.id) === index
+    );
+  }
+
   get groupedStudents() {
-    return this.args.groups
-      .toArray()
+    return this.groups
       .filter((group) => !group.isTrashed)
-      .map((group) => group.students.toArray().map((student) => student.id))
+      .map((group) => group.students.slice().map((student) => student.id))
       .flat();
   }
   @tracked newGroupName = '';
   @tracked newGroupStudents = [];
+
   constructor() {
     super(...arguments);
     this.setSectionAttributes();
   }
 
-  // didReceiveAttrs() {
-  //   let section = this.currentSection;
-  //   let didSectionChange = !isEqual(section, this.args.section);
-  //   this.isAddingTeacher = false;
-
-  //   if (didSectionChange) {
-  //     if (this.isEditingStudents) {
-  //       this.isEditingStudents = false;
-  //     }
-
-  //     if (this.isEditingTeachers) {
-  //       this.isEditingTeachers = false;
-  //     }
-  //     return this.setSectionAttributes();
-  //   }
-  // }
-
-  setSectionAttributes() {
-    let section = this.args.section;
+  async setSectionAttributes() {
+    const section = this.args.section;
     this.currentSection = section;
-    return Promise.resolve(section.get('students'))
-      .then((students) => {
-        this.studentList = students;
-        return section.get('teachers');
-      })
-      .then((teachers) => {
-        this.teacherList = teachers;
-        return section.get('organization');
-      })
-      .then((org) => {
-        this.organization = org;
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'dataLoadErrors');
-      });
+    try {
+      this.studentList = await section.students;
+      this.teacherList = await section.teachers;
+      this.organization = await section.organization;
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'dataLoadErrors');
+    }
   }
 
   get canEdit() {
     // can only edit if created section, admin, pdadmin, or teacher
 
-    if (this.args.currentUser.isStudent) {
+    if (this.currentUser.isStudent) {
       return false;
     }
-    if (this.args.currentUser.isAdmin) {
+    if (this.currentUser.isAdmin) {
       return true;
     }
     let creatorId = this.utils.getBelongsToId(this.args.section, 'createdBy');
 
-    if (creatorId === this.args.currentUser.id) {
+    if (creatorId === this.currentUser.id) {
       return true;
     }
 
     let teacherIds = this.args.section.hasMany('teachers').ids();
-    if (teacherIds.includes(this.args.currentUser.id)) {
+    if (teacherIds.includes(this.currentUser.id)) {
       return true;
     }
 
-    if (this.args.currentUser.isPdAdmin) {
+    if (this.currentUser.isPdAdmin) {
       let sectionOrgId = this.utils.getBelongsToId(
         this.args.section,
         'organization'
       );
       let userOrgId = this.utils.getBelongsToId(
-        this.args.currentUser,
+        this.currentUser.user,
         'organization'
       );
       return sectionOrgId === userOrgId;
@@ -117,26 +115,50 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     return !this.canEdit;
   }
 
+  get showDoneToImport() {
+    return this.args.returnTo === 'import';
+  }
+
+  get studentCount() {
+    return this.studentList?.length || this.args.section?.students?.length || 0;
+  }
+
+  get canReturnToImport() {
+    if (!this.showDoneToImport) {
+      return true;
+    }
+    return this.studentCount > 0;
+  }
+
+  get importReturnQueryParams() {
+    const parsedStep = Number.parseInt(this.args.returnStep, 10);
+    const queryParams = {
+      step: Number.isInteger(parsedStep) ? parsedStep : 2,
+      sectionId: this.args.section?.id || this.args.importSectionId || null,
+      useClass: true,
+    };
+
+    if (this.args.importProblemId) {
+      queryParams.problemId = this.args.importProblemId;
+    }
+    if (this.args.importUploadedFileIds) {
+      queryParams.uploadedFileIds = this.args.importUploadedFileIds;
+    }
+
+    return queryParams;
+  }
+
   clearSelectizeInput(id) {
     if (!id) {
       return;
     }
-    let selectize = $(`#${id}`)[0].selectize;
+    const element = document.getElementById(id);
+    const selectize = element?.selectize;
     if (!selectize) {
       return;
     }
     selectize.clear();
   }
-
-  // scrollIfEditingStudents: observer('isEditingStudents', function () {
-  //   if (this.isEditingStudents) {
-  //     later(() => {
-  //       $('html, body').animate({
-  //         scrollTop: $(document).height(),
-  //       });
-  //     }, 100);
-  //   }
-  // }),
 
   @tracked addTeacherQueryParams = {
     filterBy: {
@@ -147,8 +169,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
   };
 
   get initialTeacherOptions() {
-    let peeked = this.store.peekAll('user').toArray();
-    let currentTeachers = this.teacherList.toArray();
+    let peeked = this.store.peekAll('user').slice();
+    let currentTeachers = this.teacherList.slice();
     let filtered = [];
 
     if (peeked && currentTeachers) {
@@ -156,8 +178,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       filtered = teachersOnly.removeObjects(currentTeachers);
       return filtered.map((obj) => {
         return {
-          id: obj.get('id'),
-          username: obj.get('username'),
+          id: obj.id,
+          username: obj.username,
         };
       });
     }
@@ -170,12 +192,60 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     return (this.addGroup = !this.addGroup);
   }
+
+  @action startEditingName() {
+    this.editedSectionName = this.currentSection?.name || '';
+    this.isEditingName = true;
+  }
+
+  @action handleFormSubmit(event) {
+    event.preventDefault();
+  }
+
+  @action handleSectionNameInput(value) {
+    this.editedSectionName = value;
+  }
+
+  @action handleNewGroupNameInput(value) {
+    this.newGroupName = value;
+  }
+
+  @action handleSectionNameKeydown(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.updateSectionName();
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.editedSectionName = this.currentSection?.name || '';
+      this.isEditingName = false;
+    }
+  }
+
+  @action setIsEditingAssignments(value) {
+    this.isEditingAssignments = value;
+  }
+
+  @action setIsEditingTeachers(value) {
+    this.isEditingTeachers = value;
+  }
+
+  @action setIsEditingStudents(value) {
+    this.isEditingStudents = value;
+  }
+
+  @action hideAssignmentEditor() {
+    this.showAssignment = false;
+  }
+
   @action async saveGroup(e) {
     e.preventDefault(); //not sure why this button was causing a submit...
     if (!this.newGroupStudents.length || !this.newGroupName) {
       return this.alert.showToast('error', 'Please complete all fields');
     }
-    if (this.args.groups.mapBy('name').includes(this.newGroupName)) {
+    if (this.groups.some((group) => group.name === this.newGroupName)) {
       return this.alert.showToast(
         'error',
         'Your class already has a group with this name'
@@ -183,9 +253,9 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
     }
     const savedGroup = this.store.createRecord('group');
     savedGroup.section = this.args.section;
-    savedGroup.createdBy = this.args.currentUser;
+    savedGroup.createdBy = this.currentUser.user;
     savedGroup.createDate = new Date();
-    savedGroup.lastModifiedBy = this.args.currentUser;
+    savedGroup.lastModifiedBy = this.currentUser.user;
     savedGroup.lastModifiedDate = new Date();
     savedGroup.name = this.newGroupName;
     savedGroup.students = this.newGroupStudents;
@@ -201,23 +271,64 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         false,
         null
       );
-      this.args.groups.addObject(savedGroup);
+      this.createdGroups = [...this.createdGroups, res];
     } catch (err) {
       console.log(err);
       this.alert.showToast('error', `${err}`, 'bottom-end', 5000, false, null);
     }
   }
-  @action async placeStudent(student) {
-    if (this.newGroupStudents.includes(student)) {
-      return this.newGroupStudents.removeObject(student);
+  @action placeStudent(student, isSelected) {
+    if (!student) {
+      return;
     }
-    return this.newGroupStudents.pushObject(student);
+
+    if (isSelected) {
+      if (!this.newGroupStudents.includes(student)) {
+        this.newGroupStudents = [...this.newGroupStudents, student];
+      }
+      return;
+    }
+
+    this.newGroupStudents = this.newGroupStudents.filter((s) => s !== student);
+  }
+  @action async saveGroupChanges(group, { name, students }) {
+    if (!group) {
+      return;
+    }
+
+    const originalStudents = group.students.slice();
+
+    group.name = name;
+    group.students.setObjects(students);
+
+    try {
+      const res = await group.save();
+      this.alert.showToast(
+        'success',
+        `group "${res.name}" updated`,
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (err) {
+      group.rollbackAttributes();
+      group.students.setObjects(originalStudents);
+      this.alert.showToast(
+        'error',
+        'oops there was a problem',
+        3000,
+        false,
+        null
+      );
+      throw err;
+    }
   }
   @action async updateGroup(group, user) {
     if (!user) return;
     try {
       group.students.removeObject(user);
-      const res = await group.save();
+      await group.save();
       this.alert.showToast(
         'success',
         `${user.username} removed`,
@@ -261,23 +372,21 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       );
     }
   }
-  @action updateGroupDraft(student) {
-    return this.newGroup.students.removeObject(student);
-  }
+
   @action removeStudent(user) {
     if (!user) {
       return;
     }
 
-    let section = this.currentSection;
-    let students = section.get('students');
-    let selectedUser = user;
+    const section = this.currentSection;
+    const students = section.students;
+    const selectedUser = user;
 
     students.removeObject(selectedUser);
 
     section
       .save()
-      .then((section) => {
+      .then(() => {
         this.alert.showToast(
           'success',
           'Student Removed',
@@ -288,14 +397,14 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors', section);
+        this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
       });
   }
 
   @action removeTeacher(user) {
-    let section = this.currentSection;
-    let teachers = this.teacherList;
-    let teachersLength = teachers.get('length');
+    const section = this.currentSection;
+    const teachers = this.teacherList;
+    const teachersLength = teachers.length;
 
     if (teachersLength > 1) {
       teachers.removeObject(user);
@@ -309,7 +418,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
 
     section
       .save()
-      .then((section) => {
+      .then(() => {
         this.alert.showToast(
           'success',
           'Teacher Removed',
@@ -320,7 +429,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         );
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors');
+        this.errorHandling.handleErrors(err, 'updateSectionErrors');
       });
   }
 
@@ -341,7 +450,7 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
 
   @action deleteSection() {
     const section = this.args.section;
-    section.set('isTrashed', true);
+    section.isTrashed = true;
     return section
       .save()
       .then(() => {
@@ -356,12 +465,8 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
         this.router.transitionTo('sections');
       })
       .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors', section);
+        this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
       });
-  }
-
-  @action toAssignmentInfo(assignment) {
-    this.router.transitionTo('assignments.assignment', assignment.id);
   }
 
   @action updateShowAssignment() {
@@ -370,41 +475,49 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
       .then((problems) => {
         this.problemList = problems;
         this.showAssignment = true;
-        this.sectionList.pushObject(this.args.section);
+        this.sectionList = [...this.sectionList, this.args.section];
 
         later(() => {
-          $('html, body').animate({
-            scrollTop: $(document).height(),
+          window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth',
           });
         }, 100);
       })
       .catch((err) => {
-        this.handleErrors(err, 'problemLoadErrors');
+        this.errorHandling.handleErrors(err, 'problemLoadErrors');
       });
   }
 
   @action updateSectionName() {
+    const section = this.currentSection;
+    const newName = this.editedSectionName;
+
     this.isEditingName = false;
-    let section = this.currentSection;
-    if (section.get('hasDirtyAttributes')) {
-      this.currentSection
-        .save()
-        .then(() => {
-          this.alert.showToast(
-            'success',
-            'Class Name Updated',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
+
+    if (!section || section.name === newName) {
+      return;
     }
+
+    section.name = newName;
+
+    section
+      .save()
+      .then(() => {
+        this.alert.showToast(
+          'success',
+          'Class Name Updated',
+          'bottom-end',
+          3000,
+          false,
+          null
+        );
+      })
+      .catch((err) => {
+        this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
+      });
   }
-  @action addTeacher(val, $item) {
+  @action addTeacher(val) {
     if (!val) {
       return;
     }
@@ -435,8 +548,19 @@ export default class SectionInfoComponent extends ErrorHandlingComponent {
           this.clearSelectizeInput('select-add-teacher');
         })
         .catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
+          this.errorHandling.handleErrors(err, 'updateSectionErrors', section);
         });
     }
+  }
+
+  @action
+  doneToImport() {
+    if (!this.canReturnToImport) {
+      return;
+    }
+
+    this.router.transitionTo('import', {
+      queryParams: this.importReturnQueryParams,
+    });
   }
 }

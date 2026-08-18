@@ -11,20 +11,23 @@ import { inject as service } from '@ember/service';
 
 export default class UsersRoute extends Route {
   @service store;
+  @service router;
   beforeModel() {
     const user = this.modelFor('application');
     const isStudent = user.get('isStudent');
 
     if (isStudent) {
-      this.transitionTo('/');
+      this.router.transitionTo('/');
     }
   }
-  model() {
+  async model() {
     const currentUser = this.modelFor('application');
+    const users = await this.store.findAll('user');
     return hash({
       currentUser,
-      users: this.store.findAll('user'),
+      users,
       organizations: this.store.findAll('organization'),
+      trashedUsers: users.filter((user) => user.isTrashed),
     });
   }
 }

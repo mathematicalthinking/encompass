@@ -3,12 +3,11 @@ import Application from '@ember/application';
 import loadInitializers from 'ember-load-initializers';
 import Resolver from 'ember-resolver';
 import $ from 'jquery';
-import _ from 'lodash';
 import config from './config/environment';
 
 // export for others scripts to use
 window.$ = $;
-window._ = _;
+window.jQuery = $;
 
 $.ajaxSetup({
   xhrFields: {

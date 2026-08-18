@@ -21,11 +21,11 @@
   <div class='assigned-date'>
     {{#if this.showAssignedDateInput}}
       <Input
-        @name='daterange'
-        @id='assignedDate'
+        name='daterange'
+        id='assignedDate'
         @type='date'
         @value={{(format-date @assignment.assignedDate 'YYYY-MM-DD')}}
-        @change={{action 'updateAssignedDate'}}
+        {{on 'change' this.updateAssignedDate}}
       />
     {{else}}
       <p class='label'>
@@ -39,11 +39,11 @@
   <div class='due-date'>
     {{#if this.showDueDateInput}}
       <Input
-        @id='dueDate'
-        @name='daterange'
+        id='dueDate'
+        name='daterange'
         @type='date'
         @value={{(format-date @assignment.dueDate 'YYYY-MM-DD')}}
-        @change={{action 'updateDueDate'}}
+        {{on 'change' this.updateDueDate}}
       />
     {{else}}
       <p class='label'>
@@ -56,16 +56,12 @@
   </div>
   {{! Class, Problem }}
   <div class='section-details'>
-    {{!-- {{#if this.showSectionInput}}
-      <SelectizeInput @inputId="assn-new-section-select" @initialOptions={{this.sectionOptions}} @initialItems={{this.initialSectionItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="name" @valueField="id" @searchField="name" @propToUpdate="section" @placeholder="Search for a section by name" @model="section" @store={{this.store}} />
-    {{else}} --}}
     <p>
       Class:
       <LinkTo @route='sections.section' @model={{@section.id}}>
         <span>{{@section.name}}</span>
       </LinkTo>
     </p>
-    {{!-- {{/if}} --}}
   </div>
   <div class='section-details'>
     <p>
@@ -74,10 +70,6 @@
         <span>{{@problem.title}}</span>
       </LinkTo>
     </p>
-    {{!-- {{#if this.showProblemInput}}
-      <SelectizeInput @store={{this.store}} @inputId="assn-new-problem-select" @initialOptions={{this.problemOptions}} @initialItems={{this.initialProblemItem}} @onItemAdd={{action "updateSelectizeSingle"}} @onItemRemove={{action "updateSelectizeSingle"}} @maxItems={{1}} @labelField="title" @valueField="id" @searchField="title" @propToUpdate="problem" @placeholder="Search for a problem by title" @isAsync={{true}} @model="problem" @queryParamsKey="query" @searchCriterion="title" @topLevelQueryParams="searchBy" @preload={{this.problemsPreloadValue}} />
-    {{else}} --}}
-    {{!-- {{/if}} --}}
   </div>
   <div class='workspace-details'>
     <p class='labelP'>
@@ -110,16 +102,16 @@
         @assignment={{@assignment}}
         @section={{@section}}
         @problem={{@problem}}
-        @onCancel={{action (mut showLinkedWsForm) false}}
-        @store={{this.store}}
-        @handleResults={{action 'handleCreatedLinkedWs'}}
+        @onCancel={{this.hideLinkedWs}}
+        @handleResults={{this.handleCreatedLinkedWs}}
       />
     {{/if}}
     {{#if this.showAddLinkedWsBtn}}
       <button
         data-test='add-linked-ws'
         class='add-linkedworkspaces-btn'
-        {{action (mut showLinkedWsForm) true}}
+        type='button'
+        {{on 'click' this.showLinkedWs}}
       >
         Add Linked Workspaces
         <i class='fas fa-plus-circle'></i>
@@ -154,16 +146,16 @@
         @assignment={{@assignment}}
         @section={{@section}}
         @problem={{@problem}}
-        @onCancel={{action (mut showParentWsForm) false}}
-        @store={{this.store}}
-        @handleResults={{action 'handleCreatedParentWs'}}
+        @onCancel={{this.hideParentWs}}
+        @handleResults={{this.handleCreatedParentWs}}
       />
     {{/if}}
     {{#if this.showAddParentWsBtn}}
       <button
         data-test='add-parent-ws'
         class='add-parent-workspace-btn'
-        {{action (mut showParentWsForm) true}}
+        type='button'
+        {{on 'click' this.showParentWs}}
       >Add Parent Workspace <i class='fas fa-plus-circle'></i></button>
     {{/if}}
     {{#if this.showNoParentWsMsg}}
@@ -177,7 +169,7 @@
       Submissions
       <i
         class={{this.displayListsOptions.submissions.icon}}
-        {{action 'toggleProperty' 'areSubmissionsExpanded'}}
+        {{on 'click' (fn this.toggleProperty 'areSubmissionsExpanded')}}
       ></i>
     </p>
     {{#if this.areSubmissionsExpanded}}
@@ -193,7 +185,8 @@
       <button
         data-test='edit-assignment'
         class='edit-assignment-button'
-        {{action 'editAssignment'}}
+        type='button'
+        {{on 'click' this.editAssignment}}
       >
         Edit Assignment
         <i class='fas fa-edit'></i>
@@ -203,7 +196,8 @@
       <button
         class='save-assign-btn'
         data-test='assn-save'
-        {{action 'updateAssignment'}}
+        type='button'
+        {{on 'click' this.updateAssignment}}
       >
         Save Assignment
         <i class='fas fa-save'></i>
@@ -211,29 +205,26 @@
       <button
         class='cancelEditBtn'
         data-test='assn-cancel'
-        {{action 'stopEditing'}}
+        type='button'
+        {{on 'click' this.stopEditing}}
       >
         Cancel
         <i class='fas fa-times'></i>
       </button>
-      <button data-test='trash-assn' class='right' {{action 'showDeleteModal'}}>
+      <button
+        data-test='trash-assn'
+        class='right'
+        type='button'
+        {{on 'click' this.showDeleteModal}}
+      >
         <i class='fa fa-trash' aria-hidden='true'></i>
       </button>
     {{/if}}
   </div>
   <div class='info-flex-item errors'>
-    {{#each this.findRecordErrors as |error|}}
-      <p class='error-message'>{{error}}</p>
-    {{/each}}
     {{#each this.updateRecordErrors as |error|}}
       <p class='error-message'>{{error}}</p>
     {{/each}}
-    {{#each this.dataFetchErrors as |error|}}
-      <p class='error-message'>{{error}}</p>
-    {{/each}}
-    {{#if this.isMissingRequiredFields}}
-      <p class='error-message'>Please provide all required fields.</p>
-    {{/if}}
     {{#if this.invalidDateRange}}
       <p class='error-message'>Invalid Date Range</p>
     {{/if}}

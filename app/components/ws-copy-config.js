@@ -1,81 +1,89 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { equal } from '@ember/object/computed';
-/*global _:false */
-import { inject as service } from '@ember/service';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
+import isObject from 'lodash-es/isObject';
+import isArray from 'lodash-es/isArray';
 
-export default Component.extend({
-  elementId: 'ws-copy-config',
-  showCustomConfig: equal('selectedConfig', 'D'),
-  utils: service('utility-methods'),
+export default class WsCopyConfigComponent extends Component {
+  @service('utility-methods') utils;
 
-  validConfigValues: computed('copyConfig', function () {
-    const configInputs = this.get('copyConfig.inputs');
+  // local selection for this step; reported up via @onProceed. Seeded from
+  // @newWsConfig so the back button restores the previous choice.
+  @tracked selectedConfig = this.initialConfig;
+  @tracked invalidOrMissingConfig = false;
+  @tracked insufficientSubmissions = false;
 
+  get initialConfig() {
+    const newWsConfig = this.args.newWsConfig;
+    return this.validConfigValues.includes(newWsConfig) ? newWsConfig : 'A';
+  }
+
+  get validConfigValues() {
+    const configInputs = this.args.copyConfig?.inputs;
     if (this.utils.isNonEmptyArray(configInputs)) {
       return configInputs.map((input) => input.value);
     }
     return [];
-  }),
+  }
 
-  didReceiveAttrs() {
-    const newWsConfig = this.newWsConfig;
-    const selectedConfig = this.selectedConfig;
+  get showCustomConfig() {
+    return this.selectedConfig === 'D';
+  }
 
-    const validValues = this.validConfigValues;
-    // if reaching via back button, set selectedConfig to previously selected value
-    // else set as A
-    if (validValues.includes(newWsConfig)) {
-      this.set('selectedConfig', newWsConfig);
-    } else if (!validValues.includes(selectedConfig)) {
-      this.set('selectedConfig', 'A');
+  @action
+  updateSelectedConfig(val) {
+    this.selectedConfig = val;
+  }
+
+  @action
+  next() {
+    if (this.validConfigValues.includes(this.selectedConfig)) {
+      this.args.onProceed(this.selectedConfig);
+      return;
+    }
+    this.invalidOrMissingConfig = true;
+  }
+
+  @action
+  nextCustom(customConfig) {
+    // make sure user has chosen a configuration that has at least 1 submission
+    if (!this.utils.isNonEmptyObject(customConfig)) {
+      return;
     }
 
-    this._super(...arguments);
-  },
+    let submissionOptions = customConfig.submissionOptions;
+    let isAllSubmissions;
+    let customSubmissionsCount;
 
-  actions: {
-    updateSelectedConfig: function (val) {
-      this.set('selectedConfig', val);
-    },
-    next() {
-      const selectedConfig = this.selectedConfig;
-      const validConfigValues = this.validConfigValues;
+    if (isObject(submissionOptions)) {
+      isAllSubmissions = submissionOptions.all === true;
+      let customIds = submissionOptions.submissionIds;
 
-      if (validConfigValues.includes(selectedConfig)) {
-        this.onProceed(this.selectedConfig);
-        return;
+      if (isArray(customIds)) {
+        customSubmissionsCount = customIds.length;
       }
-      this.set('invalidOrMissingConfig', true);
-    },
+    }
+    if (isAllSubmissions || customSubmissionsCount > 0) {
+      this.args.onProceed(this.selectedConfig, customConfig);
+    } else {
+      // insufficient submissions
+      this.insufficientSubmissions = true;
+    }
+  }
 
-    nextCustom(customConfig) {
-      // make sure user has chosen a configuration that has at least 1 submission
-      if (!this.utils.isNonEmptyObject(customConfig)) {
-        return;
-      }
+  @action
+  back() {
+    this.args.onBack(-1);
+  }
 
-      let submissionOptions = customConfig.submissionOptions;
-      let isAllSubmissions;
-      let customSubmissionsCount;
+  @action
+  resetInvalidOrMissingConfig() {
+    this.invalidOrMissingConfig = false;
+  }
 
-      if (_.isObject(submissionOptions)) {
-        isAllSubmissions = submissionOptions.all === true;
-        let customIds = submissionOptions.submissionIds;
-
-        if (_.isArray(customIds)) {
-          customSubmissionsCount = customIds.length;
-        }
-      }
-      if (isAllSubmissions || customSubmissionsCount > 0) {
-        this.onProceed(this.selectedConfig, customConfig);
-      } else {
-        // insufficient submissions
-        this.set('insufficientSubmissions', true);
-      }
-    },
-    back() {
-      this.onBack(-1);
-    },
-  },
-});
+  @action
+  resetInsufficientSubmissions() {
+    this.insufficientSubmissions = false;
+  }
+}

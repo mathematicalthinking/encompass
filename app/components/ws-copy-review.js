@@ -1,21 +1,16 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
+export default class WsCopyReviewComponent extends Component {
+  createDate = Date.now();
 
-
-
-
-
-export default Component.extend({
-  elementId: 'ws-copy-review',
-  createDate: Date.now(),
-
-  actions: {
-    next() {
-      this.onProceed();
-    },
-    back() {
-      this.onBack(-1);
-    }
+  @action
+  next() {
+    this.args.onProceed();
   }
 
-});
+  @action
+  back() {
+    this.args.onBack(-1);
+  }
+}

@@ -7,7 +7,7 @@
           <span
             class='heading-icon'
             data-test='ws-settings-edit'
-            {{action 'editWorkspaceInfo'}}
+            {{on 'click' this.editWorkspaceInfo}}
           >
             <i class='fas fa-edit'></i>
           </span>
@@ -24,7 +24,7 @@
             <Input
               @type='text'
               class='text-input'
-              @id='edit-name-input'
+              id='edit-name-input'
               @value={{@workspace.name}}
             />
           {{else}}
@@ -58,12 +58,11 @@
         <div class='row-value'>
           {{#if this.isEditing}}
             <SelectizeInput
-              @store={{this.store}}
               @inputId='owner-select'
               @maxItems={{1}}
               @initialItems={{this.initialOwnerItem}}
-              @onItemAdd={{action 'setOwner'}}
-              @onItemRemove={{action 'setOwner'}}
+              @onItemAdd={{this.setOwner}}
+              @onItemRemove={{this.setOwner}}
               @labelField='username'
               @valueField='id'
               @searchField='username'
@@ -87,11 +86,11 @@
         </div>
         <div class='row-value'>
           {{#if this.isEditing}}
-            <MySelect
+            <Ui::MySelect
               @cannotBeNull={{true}}
               @selectedValue={{this.selectedMode}}
               @content={{this.modes}}
-              @action={{action (mut this.selectedMode)}}
+              @action={{this.setSelectedMode}}
             />
           {{else}}
             {{@workspace.mode}}
@@ -106,12 +105,11 @@
           <div data-test='linked-assn' class='row-value'>
             {{#if this.isEditing}}
               <SelectizeInput
-                @store={{this.store}}
                 @inputId='linked-assignment-select'
                 @maxItems={{1}}
                 @initialItems={{this.initialLinkedAssignmentItem}}
-                @onItemAdd={{action 'setLinkedAssignment'}}
-                @onItemRemove={{action 'setLinkedAssignment'}}
+                @onItemAdd={{this.setLinkedAssignment}}
+                @onItemRemove={{this.setLinkedAssignment}}
                 @labelField='name'
                 @valueField='id'
                 @searchField='name'
@@ -141,11 +139,11 @@
           </div>
           <div data-test='allow-updates' class='row-value'>
             {{#if this.isEditing}}
-              <MySelect
+              <Ui::MySelect
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}
-                @action={{action (mut this.selectedAutoUpdateSetting)}}
+                @action={{this.setSelectedAutoUpdateSetting}}
               />
             {{else}}
               {{yes-no @workspace.doAllowSubmissionUpdates}}
@@ -155,34 +153,35 @@
         {{#unless this.isEditing}}
           <div class='update-submissions'>
             <button
-              {{action 'updateWithExistingWork'}}
               class='primary-button'
+              type='button'
+              {{on 'click' this.updateWithExistingWork}}
             >Update Workspace</button>
             <div class='update-results'>
               {{#if this.missingLinkedAssignment}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error='Please link an assignment first.'
                   @showDismiss={{true}}
-                  @resetError={{action (mut this.missingLinkedAssignment) null}}
+                  @resetError={{this.clearMissingLinkedAssignment}}
                 />
               {{/if}}
               {{#each this.updateErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'updateErrors'
                     error
                   }}
                 />
               {{/each}}
               {{#each this.serverErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'serverErrors'
                     error
                   }}
@@ -220,49 +219,50 @@
           </div>
           <div data-test='allow-updates' class='row-value'>
             {{#if this.isEditing}}
-              <MySelect
+              <Ui::MySelect
                 @cannotBeNull={{true}}
                 @selectedValue={{this.selectedAutoUpdateSetting}}
                 @content={{this.yesNoMySelect}}
-                @action={{action (mut this.selectedAutoUpdateSetting)}}
+                @action={{this.setSelectedAutoUpdateSetting}}
               />
             {{else}}
-              {{yes-no this.workspace.doAutoUpdateFromChildren}}
+              {{yes-no @workspace.doAutoUpdateFromChildren}}
             {{/if}}
           </div>
         </div>
         {{#unless this.isEditing}}
           <div class='update-submissions'>
             <button
-              {{action 'updateWithExistingWork'}}
               class='primary-button'
               data-test='parent-ws-update'
+              type='button'
+              {{on 'click' this.updateWithExistingWork}}
             >Update Parent Workspace</button>
             <div class='update-results'>
               {{#if this.missingChildWorkspaces}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error='No child workspaces to update from'
                   @showDismiss={{true}}
-                  @resetError={{action (mut this.missingChildWorkspaces) null}}
+                  @resetError={{this.clearMissingChildWorkspaces}}
                 />
               {{/if}}
               {{#each this.updateErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'updateErrors'
                     error
                   }}
                 />
               {{/each}}
               {{#each this.serverErrors as |error|}}
-                <ErrorBox
+                <Ui::ErrorBox
                   @error={{error}}
                   @showDismiss={{true}}
-                  @resetError={{action
-                    'removeErrorFromArray'
+                  @resetError={{fn
+                    this.removeErrorFromArray
                     'serverErrors'
                     error
                   }}
@@ -293,11 +293,13 @@
         <div class='card-row button-row'>
           <button
             class='primary-button cancel-button'
-            {{action 'stopEditing'}}
+            type='button'
+            {{on 'click' this.stopEditing}}
           >Cancel</button>
           <button
             class='primary-button'
-            {{action 'checkWorkspace'}}
+            type='button'
+            {{on 'click' this.checkWorkspace}}
           >Save</button>
         </div>
       {{/if}}

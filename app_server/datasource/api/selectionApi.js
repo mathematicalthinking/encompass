@@ -25,6 +25,17 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 
+function sanitizeSelectionRefs(selection) {
+  if (!selection) return selection;
+  if (Array.isArray(selection.comments)) {
+    selection.comments = selection.comments.filter(Boolean);
+  }
+  if (Array.isArray(selection.taggings)) {
+    selection.taggings = selection.taggings.filter(Boolean);
+  }
+  return selection;
+}
+
 /**
  * @public
  * @method getSelections
@@ -113,6 +124,7 @@ async function getSelections(req, res, next) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    selections = selections.map((sel) => sanitizeSelectionRefs(sel));
     var data = { selections: selections };
     utils.sendResponse(res, data);
   });
@@ -159,7 +171,7 @@ async function getSelection(req, res, next) {
 
     const data = {
       // user has permission; send back record
-      selection,
+      selection: sanitizeSelectionRefs(selection),
     };
 
     return utils.sendResponse(res, data);
@@ -227,6 +239,59 @@ function getImageData(src) {
     });
 }
 
+function toFiniteNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function buildSafeCropRect(
+  relativeCoords,
+  relativeSize,
+  imageWidth,
+  imageHeight
+) {
+  if (!(imageWidth > 0 && imageHeight > 0)) {
+    return null;
+  }
+
+  const leftPctRaw = toFiniteNumber(relativeCoords?.tagLeftPct);
+  const topPctRaw = toFiniteNumber(relativeCoords?.tagTopPct);
+  const widthPctRaw = toFiniteNumber(relativeSize?.widthPct);
+  const heightPctRaw = toFiniteNumber(relativeSize?.heightPct);
+
+  if (
+    leftPctRaw === null ||
+    topPctRaw === null ||
+    widthPctRaw === null ||
+    heightPctRaw === null
+  ) {
+    return null;
+  }
+
+  const leftPct = clamp(leftPctRaw, 0, 1);
+  const topPct = clamp(topPctRaw, 0, 1);
+  const widthPct = clamp(widthPctRaw, 0, 1);
+  const heightPct = clamp(heightPctRaw, 0, 1);
+
+  let left = Math.floor(leftPct * imageWidth);
+  let top = Math.floor(topPct * imageHeight);
+  let width = Math.floor(widthPct * imageWidth);
+  let height = Math.floor(heightPct * imageHeight);
+
+  left = clamp(left, 0, Math.max(0, imageWidth - 1));
+  top = clamp(top, 0, Math.max(0, imageHeight - 1));
+
+  // Ensure extraction region is always valid and non-zero.
+  width = clamp(width, 1, imageWidth - left);
+  height = clamp(height, 1, imageHeight - top);
+
+  return { left, top, width, height };
+}
+
 /**
  * @public
  * @method postSelection
@@ -262,7 +327,7 @@ async function postSelection(req, res, next) {
     selection.createDate = Date.now();
 
     let coordinates = selection.coordinates;
-    let splitCoords = coordinates.split(' ');
+    let splitCoords = coordinates.trim().split(/\s+/);
 
     let selectionType = splitCoords.length === 5 ? 'image' : 'text';
 
@@ -291,24 +356,23 @@ async function postSelection(req, res, next) {
         let { width, height } = sharpMetadata;
 
         let { relativeSize, relativeCoords } = selection;
+        let cropRect = buildSafeCropRect(
+          relativeCoords,
+          relativeSize,
+          width,
+          height
+        );
 
-        let croppedLeft = Math.floor(relativeCoords.tagLeftPct * width);
-        let croppedTop = Math.floor(relativeCoords.tagTopPct * height);
+        if (!cropRect) {
+          return utils.sendError.InvalidContentError(
+            'Invalid image tag coordinates.',
+            res
+          );
+        }
 
-        let croppedWidth = Math.floor(relativeSize.widthPct * width);
-        let croppedHeight = Math.floor(relativeSize.heightPct * height);
-
-        let extraction = await sharp(bytes)
-          .extract({
-            left: croppedLeft,
-            top: croppedTop,
-            width: croppedWidth,
-            height: croppedHeight,
-          })
-          .toBuffer();
+        let extraction = await sharp(bytes).extract(cropRect).toBuffer();
 
         let newMetadata = await sharp(extraction).metadata();
-        console.log('new tag metadata', newMetadata);
         let croppedImageData = extraction.toString('base64');
 
         let croppedImage = new models.Image({
@@ -359,13 +423,57 @@ async function putSelection(req, res, next) {
       return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
 
-    let selection = await models.Selection.findById(req.params.id);
+    let selection = await models.Selection.findById(req.params.id).exec();
 
     if (!selection) {
       logger.info(
         `${user.username} attempted to update nonexistant selection with id ${req.params.id}`
       );
       return utils.sendResponse(res, null);
+    }
+
+    let workspaceId = selection.workspace || req.body.selection?.workspace;
+
+    let popWs = await models.Workspace.findById(workspaceId)
+      .lean()
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .exec();
+
+    if (!popWs || popWs.isTrashed) {
+      logger.info(
+        `${user.username} attempted to modify selection ${req.params.id} for missing or trashed workspace ${workspaceId}`
+      );
+      return utils.sendResponse(res, null);
+    }
+
+    const isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
+    const isSelectionCreator = areObjectIdsEqual(user._id, selection.createdBy);
+    const isDeleteAttempt =
+      req.body.selection?.isTrashed === true && selection.isTrashed !== true;
+
+    if (isDeleteAttempt && !isSelectionCreator && !isAdmin) {
+      logger.info(
+        `Permission denied: ${user.username} attempted to delete selection ${req.params.id} created by another user`
+      );
+      return utils.sendError.NotAuthorizedError(
+        'You can only delete your own selections.',
+        res
+      );
+    }
+
+    let canModifySelectionInWs =
+      isSelectionCreator || wsAccess.canModify(user, popWs, 'selections', 3);
+
+    if (!canModifySelectionInWs) {
+      logger.info(
+        `Permission denied to modify selection ${req.params.id} in workspace ${popWs.name} (id: ${popWs._id})`
+      );
+      return utils.sendError.NotAuthorizedError(
+        `You don't have permission to modify selections in this workspace`,
+        res
+      );
     }
 
     for (let field in req.body.selection) {
@@ -389,6 +497,11 @@ async function putSelection(req, res, next) {
 
 const resolveGroupWorkspaces = async (selection, type) => {
   const sourceWorkspace = await models.Workspace.findById(selection.workspace);
+  //nothing to propagate if the source workspace isn't in the db yet (e.g. during a
+  //workspace copy, selections are saved before the new workspace is persisted)
+  if (!sourceWorkspace) {
+    return;
+  }
   //this is only supposed to add selections to group workspaces from individual workspaces
   if (sourceWorkspace.group || sourceWorkspace.workspaceType === 'parent') {
     return;
@@ -423,13 +536,19 @@ const resolveGroupWorkspaces = async (selection, type) => {
           childCopy.submission.answer
         );
       });
+      // No matching submission in this group workspace. Skip it rather than
+      // dereferencing undefined — an unhandled throw here crashes the whole
+      // Node process (it runs in a fire-and-forget post-save hook).
+      if (!parentSub) {
+        return null;
+      }
       childCopy.submission = parentSub._id;
       childCopy.workspace = workspace._id;
       const newSelection = await models.Selection.create(childCopy);
       return newSelection;
     })
   );
-  return createdSelections;
+  return createdSelections.filter(Boolean);
 };
 
 const deleteGroupLevelSelections = async (selection) => {

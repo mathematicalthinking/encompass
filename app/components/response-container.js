@@ -1,554 +1,456 @@
-/* eslint-disable */
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
-import { alias, equal, gt } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
-//needed for notification functions
-import CurrentUserMixin from '../mixins/current_user_mixin';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default Component.extend(CurrentUserMixin, ErrorHandlingMixin, {
-  tagName: '',
-  currentUser: service('current-user'),
-  wsPermissions: service('workspace-permissions'),
-  store: service(),
-  submission: null,
-  subResponses: [],
-  primaryResponseType: alias('response.responseType'),
+export default class ResponseContainer extends Component {
+  @service currentUser;
+  @service('workspace-permissions') wsPermissions;
+  @service store;
+  @service errorHandling;
+  @service('utility-methods') utils;
+  @service notificationService;
+  @service navigation;
 
-  isCreatingNewMentorReply: false,
-  areMentorReplies: gt('mentorReplies.length', 0),
-  utils: service('utility-methods'),
+  @tracked subResponses = [];
+  @tracked isCreatingNewMentorReply = false;
+  @tracked reviewedResponse = null;
+  @tracked priorMentorRevision = null;
 
-  isParentWorkspace: equal('workspace.workspaceType', 'parent'),
-
-  didReceiveAttrs() {
-    this.set('subResponses', this.responses);
-    this.handleResponseViewAudit();
-
-    let relatedNtfs = this.findRelatedNtfs('response', this.response);
-
-    relatedNtfs.forEach((ntf) => {
-      let isClean = !ntf.get('wasSeen') && !ntf.get('isTrashed');
-
-      if (isClean) {
-        ntf.set('wasSeen', true);
-        ntf.set('isTrashed', true);
-        ntf.save();
-      }
-    });
-    if (this.get('response.isNew')) {
-      this.set('isCreatingNewMentorReply', true);
-      return;
-    }
-    if (this.primaryResponseType === 'approver') {
-      this.get('response.reviewedResponse').then((response) => {
-        if (!this.isDestroying && !this.isDestroyed) {
-          this.set('reviewedResponse', response);
-        }
-      });
-    }
-
-    if (!this.isMentorRecipient && this.primaryResponseType === 'mentor') {
-      return this.get('response.priorRevision').then((revision) => {
-        if (!this.isDestroying && !this.isDestroyed) {
-          this.set('priorMentorRevision', revision);
-        }
-      });
-    }
-
-    this._super(...arguments);
-  },
-
-  iconFillOptions: {
+  iconFillOptions = {
     approved: '#35A853',
     pendingApproval: '#FFD204',
     needsRevisions: '#EB5757',
     superceded: '#9b59b6',
     draft: '#778899',
-  },
+  };
 
-  handleResponseViewAudit() {
-    let newSubNotifications = this.findRelatedNtfs(
-      'response',
-      this.submission,
-      'newWorkToMentor',
-      'submission'
-    );
+  constructor() {
+    super(...arguments);
+    this.subResponses = this.args.responses || [];
+    this._cleanupNotifications();
 
-    newSubNotifications.forEach((ntf) => {
-      if (!ntf.get('wasSeen') && !ntf.get('isTrashed')) {
-        ntf.set('wasSeen', true);
-        ntf.save();
-      }
-    });
-
-    if (this.isPrimaryRecipient) {
-      if (!this.get('response.wasReadByRecipient')) {
-        this.response.set('wasReadByRecipient', true);
-        // this.response.save();
-      }
-    } else if (
-      this.get('response.status') === 'pendingApproval' &&
-      this.canApprove
-    ) {
-      if (!this.get('response.wasReadByApprover')) {
-        this.response.set('wasReadByApprover', true);
-        this.response.save();
-      }
-    }
-  },
-  cleanStoreResponses: computed('storeResponses.@each.isTrashed', function () {
-    let responses = this.storeResponses || [];
-    return responses.rejectBy('isTrashed');
-  }),
-
-  newResponses: computed(
-    'cleanStoreResponses.[]',
-    'nonTrashedResponses.[]',
-    'submission',
-    function () {
-      return this.cleanStoreResponses.filter((response) => {
-        let subId = this.utils.getBelongsToId(response, 'submission');
-
-        if (subId !== this.get('submission.id')) {
-          return false;
-        }
-        return !this.nonTrashedResponses.includes(response);
-      });
-    }
-  ),
-
-  combinedResponses: computed(
-    'newResponses.[]',
-    'nonTrashedResponses.[]',
-    function () {
-      return this.nonTrashedResponses.addObjects(this.newResponses);
-    }
-  ),
-  sortedSubmissions: computed('submissions.[]', function () {
-    return this.submissions
-      .rejectBy('isTrashed')
-      .sortBy('createDate')
-      .reverse();
-  }),
-  studentName: computed('isOwnSubmission', 'submission.student', function () {
-    return `${this.get('submission.student')}`;
-  }),
-
-  isOwnSubmission: computed(
-    'submission.creator.studentId',
-    'currentUser.user.id',
-    function () {
-      return (
-        this.get('submission.creator.studentId') ===
-        this.get('currentUser.user.id')
-      );
-    }
-  ),
-
-  nonTrashedResponses: computed('subResponses.@each.isTrashed', function () {
-    return this.subResponses.rejectBy('isTrashed');
-  }),
-
-  approverReplies: computed(
-    'primaryApproverReply',
-    'mentorReplyDisplayResponse',
-    'combinedResponses.[]',
-    function () {
-      let reviewedResponseId;
-
-      if (this.primaryApproverReply) {
-        reviewedResponseId = this.primaryApproverReply
-          .belongsTo('reviewedResponse')
-          .id();
-      } else {
-        if (this.mentorReplyDisplayResponse) {
-          reviewedResponseId = this.get('mentorReplyDisplayResponse.id');
-        }
-      }
-
-      if (!reviewedResponseId) {
-        return [];
-      }
-      return this.combinedResponses.filter((response) => {
-        let id = response.belongsTo('reviewedResponse').id();
-        return (
-          response.get('responseType') === 'approver' &&
-          reviewedResponseId === id
-        );
-      });
-    }
-  ),
-
-  mentorReplies: computed('combinedResponses.[]', function () {
-    return this.combinedResponses.filterBy('responseType', 'mentor');
-  }),
-
-  responseToApprove: computed(
-    'canApprove',
-    'primaryResponseType',
-    'isPrimaryRecipient',
-    'isCreatingNewMentorReply',
-    function () {
-      if (
-        this.primaryResponseType === 'mentor' &&
-        this.canApprove &&
-        !this.isCreatingNewMentorReply
-      ) {
-        return this.response;
-      }
-      return null;
-    }
-  ),
-  isPrimaryRecipient: computed(
-    'response.recipient.id',
-    'currentUser.user.id',
-    function () {
-      return (
-        this.get('response.recipient.id') === this.get('currentUser.user.id')
-      );
-    }
-  ),
-
-  isMentorRecipient: computed(
-    'isPrimaryRecipient',
-    'primaryResponseType',
-    function () {
-      return this.isPrimaryRecipient && this.primaryResponseType === 'mentor';
-    }
-  ),
-
-  isOwnResponse: computed(
-    'response.createdBy.id',
-    'currentUser.user.id',
-    function () {
-      return (
-        this.get('response.createdBy.id') === this.get('currentUser.user.id')
-      );
-    }
-  ),
-
-  isDisplayMentorReplyYours: computed(
-    'mentorReplyDisplayResponse',
-    function () {
-      let reply = this.mentorReplyDisplayResponse;
-      if (!reply) {
-        return false;
-      }
-      let creatorId = this.utils.getBelongsToId(reply, 'createdBy');
-      return creatorId === this.get('currentUser.user.id');
-    }
-  ),
-
-  isOwnMentorReply: computed('isDisplayMentorReplyYours', function () {
-    return this.isDisplayMentorReplyYours;
-  }),
-
-  isOwnApproverReply: computed(
-    'isOwnResponse',
-    'primaryResponseType',
-    function () {
-      return this.isOwnResponse && this.primaryResponseType === 'approver';
-    }
-  ),
-
-  primaryApproverReply: computed('primaryResponseType', function () {
-    if (this.primaryResponseType === 'approver') {
-      return this.response;
-    }
-    return null;
-  }),
-
-  menteeResponse: computed('isMentorRecipient', 'response', function () {
-    if (this.isMentorRecipient) {
-      return this.response;
-    }
-    return null;
-  }),
-
-  mentorReplyDisplayResponse: computed(
-    'menteeResponse',
-    'responseToApprove',
-    'reviewedResponse',
-    'response',
-    function () {
-      if (this.responseToApprove) {
-        return this.responseToApprove;
-      }
-      if (this.menteeResponse) {
-        return this.menteeResponse;
-      }
-      if (this.primaryResponseType === 'mentor') {
-        return this.response;
-      }
-      if (this.reviewedResponse) {
-        return this.reviewedResponse;
-      }
-
-      return null;
-    }
-  ),
-
-  canApprove: computed(
-    'workspace',
-    'currentUser.user',
-    'workspace.feedbackAuthorizers.[]',
-    function () {
-      return this.wsPermissions.canApproveFeedback(this.workspace);
-    }
-  ),
-
-  showApproverReply: computed(
-    'primaryResponseType',
-    'canApprove',
-    'isCreatingNewMentorReply',
-    'isOwnMentorReply',
-    'canDirectSend',
-    function () {
-      if (this.isCreatingNewMentorReply) {
-        return false;
-      }
-
-      if (this.isParentWorkspace) {
-        // only interested in seeing mentor replies for parent workspace?
-        return false;
-      }
-      if (this.primaryResponseType === 'approver') {
-        return true;
-      }
-      if (!this.areMentorReplies) {
-        return false;
-      }
-
-      // if you have direct send, do not show approver panel if you are viewing your own reply
-      if (this.isOwnMentorReply) {
-        return !this.canDirectSend;
-      }
-      return this.canApprove;
-    }
-  ),
-
-  canDirectSend: computed('workspace', 'currentUser.user', function () {
-    return this.wsPermissions.canEdit(this.workspace, 'feedback', 2);
-  }),
-
-  canSend: computed('workspace', 'currentUser.user', function () {
-    return this.wsPermissions.canEdit(this.workspace, 'feedback', 1);
-  }),
-
-  approvers: computed('workspace.feedbackAuthorizers.[]', function () {
-    if (!this.workspace) {
-      return [];
-    }
-    return this.get('workspace.feedbackAuthorizers');
-  }),
-
-  existingSubmissionMentors: computed(
-    'mentorReplies.@each.createdBy',
-    function () {
-      return this.mentorReplies.mapBy('createdBy.content').uniqBy('id');
-    }
-  ),
-
-  findExistingResponseThread(threadType, threadId) {
-    let peekedResponseThreads = this.store.peekAll('response-thread').toArray();
-    if (!peekedResponseThreads) {
+    if (this.args.response?.isNew) {
+      this.isCreatingNewMentorReply = true;
       return;
     }
 
-    return peekedResponseThreads.find((thread) => {
-      return (
-        thread.get('threadType') === threadType &&
-        _.isEqual(thread.get('id'), threadId)
-      );
-    });
-  },
+    this._loadAsyncRelationships();
+  }
 
-  cleanWorkspaceResponses: computed('cleanStoreResponses.[]', function () {
+  async _loadAsyncRelationships() {
+    if (this.primaryResponseType === 'approver') {
+      const response = await this.args.response.reviewedResponse;
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.reviewedResponse = response;
+      }
+    }
+
+    if (!this.isMentorRecipient && this.primaryResponseType === 'mentor') {
+      const revision = await this.args.response.priorRevision;
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.priorMentorRevision = revision;
+      }
+    }
+  }
+
+  get submissions() {
+    const subs = this.args.submissions || [];
+    // Filter out any response models that snuck in
+    return subs.filter((s) => s.constructor.modelName === 'submission');
+  }
+
+  get storeResponses() {
+    return this.args.storeResponses || [];
+  }
+
+  get primaryResponseType() {
+    return this.args.response?.responseType;
+  }
+
+  get isParentWorkspace() {
+    return this.args.workspace?.workspaceType === 'parent';
+  }
+
+  get cleanStoreResponses() {
+    return this.storeResponses.filter((r) => !r.isTrashed);
+  }
+
+  get nonTrashedResponses() {
+    return this.subResponses.filter((r) => !r.isTrashed);
+  }
+
+  get newResponses() {
     return this.cleanStoreResponses.filter((response) => {
-      return (
-        this.utils.getBelongsToId(response, 'workspace') ===
-        this.get('workspace.id')
-      );
+      const subId = this.utils.getBelongsToId(response, 'submission');
+      if (subId !== this.args.submission?.id) return false;
+      return !this.nonTrashedResponses.includes(response);
     });
-  }),
+  }
 
-  willDestroyElement() {
-    this._super(...arguments);
-  },
+  get combinedResponses() {
+    return [...this.nonTrashedResponses, ...this.newResponses];
+  }
 
-  actions: {
-    openProblem() {
-      let problemId = this.get('submission.answer.problem.id');
+  get sortedSubmissions() {
+    return this.submissions
+      .filter((s) => !s.isTrashed)
+      .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+  }
 
-      if (!problemId) {
-        return;
-      }
+  get isOwnSubmission() {
+    return (
+      this.args.submission?.creator?.studentId === this.currentUser.user?.id
+    );
+  }
 
-      var getUrl = window.location;
-      var baseUrl =
-        getUrl.protocol +
-        '//' +
-        getUrl.host +
-        '/' +
-        getUrl.pathname.split('/')[1];
+  get studentName() {
+    return `${this.args.submission?.student || ''}`;
+  }
 
-      window.open(
-        `${baseUrl}#/problems/${problemId}`,
-        'newwindow',
-        'width=1200, height=700'
-      );
-    },
-    onSaveSuccess(submission, response) {
-      let responseId = !response ? null : response.get('id');
-      this.sendAction('toResponse', submission.get('id'), responseId);
-    },
-    onMentorReplySwitch(response) {
-      let subId = response.belongsTo('submission').id();
-      this.sendAction('toResponse', subId, response.get('id'));
-    },
-    toResponses() {
-      this.sendAction('toResponses');
-    },
-    openSubmission(workspaceId, submissionId) {
-      if (!workspaceId || !submissionId) {
-        return;
-      }
+  get mentorReplies() {
+    return this.combinedResponses.filter((r) => r.responseType === 'mentor');
+  }
 
-      let getUrl = window.location;
-      let baseUrl =
-        getUrl.protocol +
-        '//' +
-        getUrl.host +
-        '/' +
-        getUrl.pathname.split('/')[1];
+  get areMentorReplies() {
+    return this.mentorReplies.length > 0;
+  }
 
-      window.open(
-        `${baseUrl}#/workspaces/${workspaceId}/submissions/${submissionId}`,
-        'newwindow',
-        'width=1200, height=700'
-      );
-    },
-    onSubmissionChange(sub) {
-      this.sendAction('toResponseSubmission', sub.get('id'));
-    },
-    toNewResponse: function () {
-      this.sendAction(
-        'toNewResponse',
-        this.get('submission.id', this.get('workspace.id'))
-      );
-    },
+  get isPrimaryRecipient() {
+    return this.args.response?.recipient?.id === this.currentUser.user?.id;
+  }
 
-    sendSubmissionRevisionNotices(oldSub, newSub) {
-      if (!this.existingSubmissionMentors) {
-        return;
-      }
-      // just send out from here for now
-      // should find better way to do in post save hook on backend
+  get isMentorRecipient() {
+    return this.isPrimaryRecipient && this.primaryResponseType === 'mentor';
+  }
 
-      // add submission to existing thread
-      this.send('handleResponseThread', null, 'submitter', newSub);
+  get isOwnResponse() {
+    return this.args.response?.createdBy?.id === this.currentUser.user?.id;
+  }
 
-      this.existingSubmissionMentors.forEach((user) => {
-        let notification = this.store.createRecord('notification', {
-          createdBy: this.currentUser.user,
-          recipient: user,
-          notificationType: 'newWorkToMentor',
-          primaryRecordType: 'response',
-          submission: newSub,
-          createDate: new Date(),
-          text: 'There is a new revision for you to mentor.',
-          workspace: this.workspace,
-        });
-        notification.save();
+  get primaryApproverReply() {
+    return this.primaryResponseType === 'approver' ? this.args.response : null;
+  }
+
+  get menteeResponse() {
+    return this.isMentorRecipient ? this.args.response : null;
+  }
+
+  get canApprove() {
+    return this.wsPermissions.canApproveFeedback(this.args.workspace);
+  }
+
+  get responseToApprove() {
+    if (
+      this.primaryResponseType === 'mentor' &&
+      this.canApprove &&
+      !this.isCreatingNewMentorReply
+    ) {
+      return this.args.response;
+    }
+    return null;
+  }
+
+  get mentorReplyDisplayResponse() {
+    if (this.responseToApprove) return this.responseToApprove;
+    if (this.menteeResponse) return this.menteeResponse;
+    if (this.primaryResponseType === 'mentor') return this.args.response;
+    if (this.reviewedResponse) return this.reviewedResponse;
+    return null;
+  }
+
+  get isOwnMentorReply() {
+    const reply = this.mentorReplyDisplayResponse;
+    if (!reply) return false;
+    const creatorId = this.utils.getBelongsToId(reply, 'createdBy');
+    return creatorId === this.currentUser.user?.id;
+  }
+
+  get isOwnApproverReply() {
+    return this.isOwnResponse && this.primaryResponseType === 'approver';
+  }
+
+  get approverReplies() {
+    let reviewedResponseId;
+
+    if (this.primaryApproverReply) {
+      reviewedResponseId = this.primaryApproverReply
+        .belongsTo('reviewedResponse')
+        .id();
+    } else if (this.mentorReplyDisplayResponse) {
+      reviewedResponseId = this.mentorReplyDisplayResponse.id;
+    }
+
+    if (!reviewedResponseId) return [];
+
+    return this.combinedResponses.filter((response) => {
+      const id = response.belongsTo('reviewedResponse').id();
+      return response.responseType === 'approver' && reviewedResponseId === id;
+    });
+  }
+
+  get canDirectSend() {
+    return this.wsPermissions.canEdit(this.args.workspace, 'feedback', 2);
+  }
+
+  get canSend() {
+    return this.wsPermissions.canEdit(this.args.workspace, 'feedback', 1);
+  }
+
+  get showApproverReply() {
+    if (this.isCreatingNewMentorReply) return false;
+    if (this.isParentWorkspace) return false;
+    if (this.primaryResponseType === 'approver') return true;
+    if (!this.areMentorReplies) return false;
+    if (this.isOwnMentorReply) return !this.canDirectSend;
+    return this.canApprove;
+  }
+
+  get approvers() {
+    return this.args.workspace?.feedbackAuthorizers || [];
+  }
+
+  get existingSubmissionMentors() {
+    return [
+      ...new Set(
+        this.mentorReplies.map((r) => r.createdBy?.content).filter(Boolean)
+      ),
+    ];
+  }
+
+  get cleanWorkspaceResponses() {
+    return this.cleanStoreResponses.filter(
+      (response) =>
+        this.utils.getBelongsToId(response, 'workspace') ===
+        this.args.workspace?.id
+    );
+  }
+
+  _cleanupNotifications() {
+    const relatedNtfs = this.notificationService.findRelatedNtfs(
+      'response',
+      this.args.response
+    );
+
+    relatedNtfs
+      .filter((ntf) => !ntf.wasSeen && !ntf.isTrashed)
+      .forEach((ntf) => {
+        ntf.wasSeen = true;
+        ntf.isTrashed = true;
+        ntf.save();
       });
-    },
-    handleResponseThread(response, threadType, submission) {
-      let studentId;
-      let mentorId;
-      let threadId;
-      let workspaceId = this.get('workspace.id');
-      let workspaceName = this.get('workspace.name');
-      // mentorThreadId is workspaceId + studentId
+  }
 
-      if (threadType === 'mentor') {
-        studentId = this.utils.getBelongsToId(response, 'recipient');
-        threadId = workspaceId + studentId;
-      } else if (threadType === 'approver') {
-        // id is workspaceId + studentId + mentorId
-        mentorId = this.utils.getBelongsToId(response, 'recipient');
+  findExistingResponseThread(threadType, threadId) {
+    return this.store
+      .peekAll('response-thread')
+      .find(
+        (thread) => thread.threadType === threadType && thread.id === threadId
+      );
+  }
 
-        let reviewedResponseId = this.utils.getBelongsToId(
-          response,
-          'reviewedResponse'
-        );
+  _generateThreadId(threadType, response, workspaceId) {
+    if (threadType === 'submitter') return `srt${workspaceId}`;
 
-        if (reviewedResponseId) {
-          let reviewedResponse = this.store.peekRecord(
-            'response',
-            reviewedResponseId
-          );
-          if (reviewedResponse) {
-            studentId = this.utils.getBelongsToId(
-              reviewedResponse,
-              'recipient'
-            );
+    if (threadType === 'mentor') {
+      const studentId = this.utils.getBelongsToId(response, 'recipient');
+      return `${workspaceId}${studentId}`;
+    }
 
-            threadId = workspaceId + studentId + mentorId;
-          }
-        }
-      } else if (threadType === 'submitter') {
-        // id is 'srt' + workspaceId
-        threadId = 'srt' + workspaceId;
-      }
-
-      let existingThread = this.findExistingResponseThread(
-        threadType,
-        threadId
+    if (threadType === 'approver') {
+      const mentorId = this.utils.getBelongsToId(response, 'recipient');
+      const reviewedResponseId = this.utils.getBelongsToId(
+        response,
+        'reviewedResponse'
       );
 
-      // should always be existing thead if creating a response from this component
-      if (existingThread) {
-        if (threadType === 'submitter') {
-          existingThread.get('submissions').addObject(submission);
-        } else {
-          existingThread.get('responses').addObject(response);
-        }
-      } else {
-        // create new thread
-        let submissionId = this.utils.getBelongsToId(response, 'submission');
+      if (!reviewedResponseId) return null;
 
-        let submission = this.store.peekRecord('submission', submissionId);
+      const reviewedResponse = this.store.peekRecord(
+        'response',
+        reviewedResponseId
+      );
+      if (!reviewedResponse) return null;
 
-        let problemTitle;
-        let studentDisplay;
+      const studentId = this.utils.getBelongsToId(
+        reviewedResponse,
+        'recipient'
+      );
+      return { threadId: `${workspaceId}${studentId}${mentorId}`, mentorId };
+    }
 
-        if (submission) {
-          problemTitle = submission.get('publication.puzzle.title');
-          studentDisplay = submission.get('creator.username');
-        }
+    return null;
+  }
 
-        let newThread = this.store.createRecord('response-thread', {
-          threadType,
-          id: threadId,
-          workspaceName,
-          problemTitle,
-          studentDisplay,
-          isNewThread: true,
-        });
+  @action
+  toggleCreatingNewMentorReply(val) {
+    this.isCreatingNewMentorReply = val ?? !this.isCreatingNewMentorReply;
+  }
 
-        if (mentorId) {
-          newThread.set('mentors', [mentorId]);
-        }
-        if (submission) {
-          newThread.get('submissions').addObject(submission);
-        }
-        if (response) {
-          newThread.get('responses').addObject(response);
-        }
-      }
-    },
-  },
-});
+  @action
+  removeResponse(response) {
+    if (!response) return;
+    this.subResponses = this.subResponses.filter(
+      (res) => res.id !== response.id
+    );
+  }
+
+  @action
+  updateResponse(response) {
+    if (!response?.id) return;
+
+    const exists = this.subResponses.find((res) => res.id === response.id);
+    if (!exists) {
+      this.subResponses = [...this.subResponses, response];
+    }
+  }
+
+  @action
+  cancelMentorReply() {
+    this.args.response?.rollbackAttributes();
+  }
+
+  @action
+  cancelApproverReply() {
+    this.primaryApproverReply?.rollbackAttributes();
+  }
+
+  @action
+  openProblem() {
+    const problemId = this.args.submission?.answer?.problem?.id;
+    this.navigation.openProblem(problemId);
+  }
+
+  @action
+  openSubmission() {
+    this.navigation.openSubmission(
+      this.args.workspace?.id,
+      this.args.submission?.id
+    );
+  }
+
+  @action
+  onSaveSuccess(submission, response) {
+    const responseId = response?.id || null;
+    this.navigation.toResponse(submission.id, responseId);
+  }
+
+  @action
+  onMentorReplySwitch(response) {
+    const subId = response.belongsTo('submission').id();
+    this.navigation.toResponse(subId, response.id);
+  }
+
+  @action
+  onSubmissionChange(sub) {
+    this.navigation.toResponseSubmission(sub.id);
+  }
+
+  /**
+   * Notifies mentors when a student submits a revised answer.
+   *
+   * Note: Marked as "broken" in response-submission-view.js.
+   * FIX: Old code accepted oldSub but never used it, relying on component state instead.
+   * Fixed to query mentor responses from oldSub parameter.
+   * TODO: Needs UI verification - test via student account at /#/assignments, submit revision
+   *
+   * @param {Object} oldSub - The old submission being revised
+   * @param {Object} newSub - The newly created submission revision
+   */
+  @action
+  async sendSubmissionRevisionNotices(oldSub, newSub) {
+    if (!oldSub || !newSub) return;
+
+    this.handleResponseThread(null, 'submitter', newSub);
+
+    // Query for all mentor responses on the old submission
+    const oldSubResponseIds = this.utils.getHasManyIds(oldSub, 'responses');
+    if (!oldSubResponseIds?.length) return;
+
+    const mentorResponses = this.store
+      .peekAll('response')
+      .filter(
+        (r) =>
+          oldSubResponseIds.includes(r.id) &&
+          r.responseType === 'mentor' &&
+          !r.isTrashed
+      );
+
+    // Get unique mentors who gave feedback
+    const mentors = [
+      ...new Set(
+        mentorResponses.map((r) => r.createdBy?.content).filter(Boolean)
+      ),
+    ];
+
+    if (!mentors.length) return;
+
+    // Create notifications for each mentor
+    mentors.forEach((user) => {
+      const notification = this.store.createRecord('notification', {
+        createdBy: this.currentUser.user,
+        recipient: user,
+        notificationType: 'newWorkToMentor',
+        primaryRecordType: 'response',
+        submission: newSub,
+        createDate: new Date(),
+        text: 'There is a new revision for you to mentor.',
+        workspace: this.args.workspace,
+      });
+      notification.save();
+    });
+  }
+
+  @action
+  handleResponseThread(response, threadType, submission) {
+    const workspaceId = this.args.workspace?.id;
+    const threadIdResult = this._generateThreadId(
+      threadType,
+      response,
+      workspaceId
+    );
+
+    const threadId =
+      typeof threadIdResult === 'object'
+        ? threadIdResult.threadId
+        : threadIdResult;
+    const mentorId =
+      typeof threadIdResult === 'object' ? threadIdResult.mentorId : null;
+
+    if (!threadId) return;
+
+    const existingThread = this.findExistingResponseThread(
+      threadType,
+      threadId
+    );
+
+    if (existingThread) {
+      const target = threadType === 'submitter' ? 'submissions' : 'responses';
+      const item = threadType === 'submitter' ? submission : response;
+      existingThread[target].addObject(item);
+      return;
+    }
+
+    const submissionId =
+      threadType === 'submitter'
+        ? submission?.id
+        : this.utils.getBelongsToId(response, 'submission');
+    const sub =
+      threadType === 'submitter'
+        ? submission
+        : this.store.peekRecord('submission', submissionId);
+
+    const newThread = this.store.createRecord('response-thread', {
+      threadType,
+      id: threadId,
+      workspaceName: this.args.workspace?.name,
+      problemTitle: sub?.publication?.puzzle?.title,
+      studentDisplay: sub?.creator?.username,
+      isNewThread: true,
+    });
+
+    if (mentorId) newThread.mentors = [mentorId];
+    if (sub) newThread.submissions.addObject(sub);
+    if (response) newThread.responses.addObject(response);
+  }
+}

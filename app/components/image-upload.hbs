@@ -1,0 +1,70 @@
+<div id='image-upload'>
+  <form enctype='multipart/form-data'>
+    <input
+      multiple={{@acceptMultiple}}
+      accept={{this.acceptableFileTypes}}
+      type='file'
+      class='image-upload'
+      {{on 'change' this.updateFiles}}
+      {{did-insert this.storeFileInputEl}}
+    />
+
+    {{#unless @hideSubmit}}
+      {{#if this.filesToBeUploaded}}
+        <input
+          type='button'
+          value='Upload Files'
+          {{on 'click' this.uploadImages}}
+        />
+      {{/if}}
+    {{/unless}}
+  </form>
+
+  {{#if this.missingFilesError}}
+    <Ui::ErrorBox
+      @error='Please select files to upload'
+      @resetError={{this.resetMissingFilesError}}
+      @showDismiss={{true}}
+    />
+  {{/if}}
+
+  {{#if this.isOverSizeLimit}}
+    {{#if this.isOverPdfLimit}}
+      <Ui::ErrorBox @error={{this.overPdfLimitMsg}} @showDismiss={{true}} />
+    {{/if}}
+    {{#if this.isOverImageLimit}}
+      <Ui::ErrorBox @error={{this.overImageLimitMsg}} @showDismiss={{true}} />
+    {{/if}}
+  {{/if}}
+
+  {{#if this.overSizedFileError}}
+    <Ui::ErrorBox
+      @error={{this.overSizedFileError}}
+      @showDismiss={{true}}
+      @resetError={{this.resetOverSizedFileError}}
+    />
+  {{/if}}
+
+  {{#unless this.uploadResults}}
+    {{#if this.showLoadingMessage}}
+      <p class='loading-message'>Uploading images... Thank you for your
+        patience.</p>
+    {{/if}}
+  {{/unless}}
+
+  {{#each this.uploadErrors as |error|}}
+    <p class='error-message'>{{error}}</p>
+  {{/each}}
+
+  {{#if this.uploadResults}}
+    <p class='upload-results'>
+      {{this.uploadResults.length}}
+      {{#if (greater-equal this.uploadResults.length 2)}}
+        files
+      {{else}}
+        file
+      {{/if}}
+      uploaded successfully!
+    </p>
+  {{/if}}
+</div>

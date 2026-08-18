@@ -1,0 +1,16 @@
+<div id='workspace-list'>
+  <div class='main-list'>
+    {{#if @isSearching}}
+      <p class='loading-message'>Searching workspaces...</p>
+    {{else}}
+      {{#each @workspaces as |workspace|}}
+        <WorkspaceListItem
+          @currentUser={{@currentUser}}
+          @workspace={{workspace}}
+          @isList={{@isList}}
+          @isGrid={{@isGrid}}
+        />
+      {{/each}}
+    {{/if}}
+  </div>
+</div>

@@ -1,13 +1,8 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import MtAuthMixin from '../mixins/mt_auth_mixin';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { inject as service } from '@ember/service';
+export default class SocialSignInComponent extends Component {
+  @service mtAuth;
 
-export default Component.extend(MtAuthMixin, {
-  content: null,
-
-  googleUrl: computed(function () {
-    return this.getSsoGoogleUrl();
-  }),
-
-  actions: {},
-});
+  @tracked googleUrl = this.mtAuth.getSsoGoogleUrl();
+}

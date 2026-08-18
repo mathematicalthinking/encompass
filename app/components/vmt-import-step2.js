@@ -14,6 +14,7 @@ export default Component.extend(CurrentUserMixin, {
   searchResults: null,
 
   didReceiveAttrs() {
+    this._super();
     if (this.existingSelectedRooms) {
       this.set('selectedRooms', this.existingSelectedRooms);
     } else if (this.selectedRooms === null) {

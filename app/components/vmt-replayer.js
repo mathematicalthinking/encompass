@@ -1,57 +1,56 @@
-import Component from '@ember/component';
-import $ from 'jquery';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
-export default Component.extend({
+export default class VmtReplayerComponent extends Component {
   getVmtHost() {
-    let hostname = window.location.hostname;
-    let vmtUrl;
+    const hostname = window.location.hostname;
 
     if (hostname === 'localhost') {
-      vmtUrl = 'http://localhost:3001';
+      return 'http://localhost:3001';
     } else if (hostname === 'enc-test.mathematicalthinking.org') {
-      vmtUrl = 'https://vmt-test.mathematicalthinking.org';
+      return 'https://vmt-test.mathematicalthinking.org';
     } else if (hostname === 'encompass.mathematicalthinking.org') {
-      vmtUrl = 'https://vmt.mathematicalthinking.org';
-    } else {
-      return;
+      return 'https://vmt.mathematicalthinking.org';
     }
-    return vmtUrl;
-  },
-  didInsertElement() {
+    return undefined;
+  }
+
+  @action
+  setupReplayer() {
     this.fetchReplayer();
     this.fetchCss();
-    this._super(...arguments);
-  },
+  }
 
-  willDestroyElement() {
-    $('#vmt-enc-replayer').remove();
-    $('#vmt-enc-replayer-css').remove();
-    this._super(...arguments);
-  },
+  @action
+  teardownReplayer() {
+    document.getElementById('vmt-enc-replayer')?.remove();
+    document.getElementById('vmt-enc-replayer-css')?.remove();
+  }
 
   fetchReplayer() {
-    let vmtUrl = this.getVmtHost();
+    const vmtUrl = this.getVmtHost();
 
     if (!vmtUrl) {
       return;
     }
 
-    let replayerUrl = `${vmtUrl}/enc/replayer/js`;
-    $('body').append(
-      `<script id="vmt-enc-replayer" src=${replayerUrl}></script>`
-    );
-  },
+    const script = document.createElement('script');
+    script.id = 'vmt-enc-replayer';
+    script.src = `${vmtUrl}/enc/replayer/js`;
+    document.body.appendChild(script);
+  }
 
   fetchCss() {
-    let vmtUrl = this.getVmtHost();
+    const vmtUrl = this.getVmtHost();
 
     if (!vmtUrl) {
       return;
     }
 
-    let cssUrl = `${vmtUrl}/enc/replayer/css`;
-    $('head').append(
-      `<link id="vmt-enc-replayer-css" href=${cssUrl} rel="stylesheet">`
-    );
-  },
-});
+    const link = document.createElement('link');
+    link.id = 'vmt-enc-replayer-css';
+    link.href = `${vmtUrl}/enc/replayer/css`;
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+}

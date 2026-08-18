@@ -1,99 +1,109 @@
 import Service from '@ember/service';
+import Swal from 'sweetalert2';
 
-export default Service.extend({
-  title: null,
-  type: null,
-  toast: true,
-  position: null,
-  timer: null,
-  showConfirmButton: null,
-  backgroundColor: null,
-  successColor: "#CBFDCB",
-  errorColor: "#ffe0e0",
-  warningColor: "#ffcd94",
-  infoColor: "#afeeee",
+export default class SweetAlertService extends Service {
+  successColor = '#CBFDCB';
+  errorColor = '#ffe0e0';
+  warningColor = '#ffcd94';
+  infoColor = '#afeeee';
 
-  setBackgroundColor: function (type) {
+  setBackgroundColor(type) {
     switch (type) {
-      case "success":
-        this.set("backgroundColor", this.successColor);
-        break;
-      case "error":
-        this.set("backgroundColor", this.errorColor);
-        break;
-      case "warning":
-        this.set("backgroundColor", this.warningColor);
-        break;
-      case "info":
-        this.set("backgroundColor", this.infoColor);
-        break;
+      case 'success':
+        return this.successColor;
+      case 'error':
+        return this.errorColor;
+      case 'warning':
+        return this.warningColor;
+      case 'info':
+        return this.infoColor;
       default:
-        this.set("backgroundColor", "#fff");
-        break;
+        return '#fff';
     }
-  },
+  }
 
-  showToast: function (
-    type = "success",
-    title = "Updated Successfully",
-    position = "bottom-end",
+  getSwalApi() {
+    if (typeof window === 'undefined') {
+      return Swal || null;
+    }
+    return window.Swal || window.swal || Swal || null;
+  }
+
+  fire(config) {
+    const api = this.getSwalApi();
+    if (!api) {
+      return Promise.resolve(null);
+    }
+    if (typeof api.fire === 'function') {
+      return api.fire(config);
+    }
+    if (typeof api === 'function') {
+      return api(config);
+    }
+    return Promise.resolve(null);
+  }
+
+  showToast(
+    type = 'success',
+    title = 'Updated Successfully',
+    position = 'bottom-end',
     timer = 4000,
     showConfirmButton = false,
     confirmButtonText = null
   ) {
-    this.setBackgroundColor(type);
-    return window.swal({
-      type: type,
+    const backgroundColor = this.setBackgroundColor(type);
+    return this.fire({
+      icon: type,
       title: title,
       position: position,
       timer: timer,
       toast: true,
       showConfirmButton: showConfirmButton,
       confirmButtonText: confirmButtonText,
-      background: this.backgroundColor,
+      background: backgroundColor,
     });
-  },
+  }
 
-  showModal: function (type, title, text, confirmText, cancelText = "Cancel") {
-    return window.swal({
-      type: type,
+  showModal(type, title, text, confirmText, cancelText = 'Cancel') {
+    return this.fire({
+      icon: type,
       title: title,
       text: text,
-      showCancelButton: true,
+      showCancelButton: cancelText !== null,
       showConfirmButton: true,
       confirmButtonText: confirmText,
       cancelButtonText: cancelText,
     });
-  },
+  }
 
-  showPrompt: function (input, title, text, confirmButtonText) {
-    return window.swal({
+  showPrompt(input, title, text, confirmButtonText) {
+    return this.fire({
       input: input,
       title: title,
       text: text,
       confirmButtonText: confirmButtonText,
       showCancelButton: true,
     });
-  },
+  }
 
-  showPromptSelect: function (
+  showPromptSelect(
     title,
     inputOptions,
     inputPlaceholder,
     text = null,
-    confirmButtonText = "OK"
+    confirmButtonText = 'OK'
   ) {
-    return window.swal({
-      input: "select",
+    return this.fire({
+      input: 'select',
       title,
       inputPlaceholder,
       inputOptions,
       showCancelButton: true,
       inputValidator: (value) => {
-        return !value && "Please choose an option.";
+        return !value && 'Please choose an option.';
       },
       text,
       confirmButtonText,
     });
-  },
-});
+  }
+}

@@ -19,18 +19,9 @@ export default class SelectionModel extends Auditable {
       .getEach('folder')
       .toArray();
   }
-  get link() {
-    return (
-      'workspaces/' +
-      this.workspace.id +
-      '/submissions/' +
-      this.submission.id +
-      '/selections/' +
-      this.id
-    );
-  }
+
   @attr('string') imageSrc;
   @attr('string') imageTagLink;
   @attr vmtInfo;
-  @belongsTo('selection', { inverse: null }) originalSelection;
+  @belongsTo('selection', { inverse: null, async: true }) originalSelection;
 }

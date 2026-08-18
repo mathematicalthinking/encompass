@@ -1,7 +1,7 @@
 import { attr } from '@ember-data/model';
-import Auditable from './auditable';
+import AuditableModel from './auditable';
 
-export default class CategoryModel extends Auditable {
+export default class CategoryModel extends AuditableModel {
   @attr('string') identifier;
   @attr('string') description;
   @attr('string') url;

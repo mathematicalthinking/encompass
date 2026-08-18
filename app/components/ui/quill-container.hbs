@@ -1,0 +1,25 @@
+{{!-- app/components/quill-container.hbs --}}
+<div class='quill-container'>
+  <section
+    {{did-insert this.setupQuill}}
+    {{did-update this.updateStartingText @startingText}}
+    {{will-destroy this.teardownQuill}}
+    id={{this.sectionId}}
+  ></section>
+  
+  {{#if this.showEmptyError}}
+    <Ui::ErrorBox
+      @error={{this.emptyErrorMsg}}
+      @showDismiss={{true}}
+      @resetError={{this.resetEmptyError}}
+    />
+  {{/if}}
+  
+  {{#if this.showTooLongError}}
+    <Ui::ErrorBox
+      @error={{this.tooLongErrorMsg}}
+      @showDismiss={{true}}
+      @resetError={{this.resetTooLongError}}
+    />
+  {{/if}}
+</div>

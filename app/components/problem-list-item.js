@@ -1,23 +1,115 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import _ from 'underscore';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+
+const ACTION_BUTTONS = {
+  Restore: (problem) => () => this.restoreProblem(problem),
+  Flag: (problem) => () =>
+    this.confirmStatusUpdate(problem, 'title', 'flagged'),
+  Approve: (problem) => () =>
+    this.confirmStatusUpdate(problem, 'title', 'approved'),
+  Assign: (problem) => () => this.assignProblem(problem),
+  Copy: (problem) => () => this.addToMyProblems(problem),
+  Delete: (problem) => () => this.deleteProblem(problem),
+};
 
 export default class ProblemListItemComponent extends Component {
+  @service('sweet-alert') alert;
+  @service('problem-permissions') permissions;
+  @service currentUser;
+  @service problemUtils;
+  @service router;
+  @service store;
+
   @tracked showAdminStatusMenu = false;
   @tracked showMoreMenu = false;
   @tracked savedProblem = null;
+
+  moreMenuOptions = [
+    {
+      label: 'Edit',
+      value: 'edit',
+      action: this.editProblem,
+      icon: 'far fa-edit',
+    },
+    {
+      label: 'Assign',
+      value: 'assign',
+      action: this.assignProblem,
+      icon: 'fas fa-list-ul',
+    },
+    {
+      label: 'Pending',
+      value: 'pending',
+      action: this.makePending,
+      icon: 'far fa-clock',
+      adminOnly: true,
+    },
+    {
+      label: 'Report',
+      value: 'flag',
+      action: this.reportProblem,
+      icon: 'fas fa-exclamation-circle',
+    },
+    {
+      label: 'Delete',
+      value: 'delete',
+      action: this.deleteProblem,
+      icon: 'fas fa-trash',
+    },
+  ];
+
+  get isAdminUser() {
+    return this.currentUser.isAdmin;
+  }
+
+  get isPdAdminUser() {
+    return this.currentUser.isPdAdmin;
+  }
+
+  get actionButtonName() {
+    const problem = this.args.problem;
+
+    if (this.isAdminUser) {
+      if (problem.isTrashed) {
+        return 'Restore';
+      } else if (problem.status === 'approved') {
+        return 'Flag';
+      } else {
+        return 'Approve';
+      }
+    }
+
+    if (this.isPdAdminUser) {
+      if (problem.privacySetting !== 'E' && problem.status !== 'approved') {
+        return 'Approve';
+      } else if (problem.status !== 'flagged') {
+        return 'Assign';
+      } else {
+        return 'Copy';
+      }
+    }
+
+    return 'Assign';
+  }
+
+  @action
+  handleActionButton() {
+    const actionName = this.actionButtonName;
+    const problem = this.args.problem;
+    const actionFunction = ACTION_BUTTONS[actionName](problem);
+
+    actionFunction.call(this); // Use `call` to ensure `this` refers to the component
+  }
+
   get privacySetting() {
     return this.args.problem.privacySetting;
   }
   get puzzleId() {
     return this.args.problem.puzzleId;
   }
-  @service('sweet-alert') alert;
-  @service('problem-permissions') permissions;
-  @service router;
-  @service store;
+
   get writePermissions() {
     return this.permissions.writePermissions(this.args.problem);
   }
@@ -66,81 +158,70 @@ export default class ProblemListItemComponent extends Component {
   }
 
   get ellipsisMenuOptions() {
-    let canDelete = this.writePermissions.canDelete;
-    let canAssign = this.writePermissions.canAssign;
-    let moreMenuOptions = this.args.moreMenuOptions;
-    let isAdmin = this.args.currentUser.isAdmin;
+    let { canDelete, canAssign } = this.writePermissions;
+    let moreMenuOptions = this.moreMenuOptions.slice();
+    let isAdmin = this.isAdminUser;
+    let { status, isTrashed: deleted } = this.args.problem;
     let options = moreMenuOptions.slice();
-    let status = this.args.problem.status;
-    let deleted = this.args.problem.isTrashed;
 
     if (!canDelete) {
-      // dont show delete or edit option
-      options = _.filter(moreMenuOptions, (option) => {
-        return option.value !== 'edit' && option.value !== 'delete';
-      });
+      // Remove 'edit' and 'delete' options if the user cannot delete
+      options = options.filter(
+        (option) => option.value !== 'edit' && option.value !== 'delete'
+      );
     }
 
     if (isAdmin) {
-      // if problem is approved, admins will have exposed Flag button so no need in more menu
+      // If problem is approved, admins will have an exposed Flag button, so no need in more menu
       if (canAssign) {
-        options = _.filter(options, (option) => {
-          return !_.contains(['flag'], option.value);
-        });
+        options = options.filter((option) => option.value !== 'flag');
       } else {
-        options = _.filter(options, (option) => {
-          return !_.contains(['assign'], option.value);
-        });
+        options = options.filter((option) => option.value !== 'assign');
       }
     }
 
     if (!isAdmin) {
-      // remove any admin only options for non admins
-      options = _.filter(options, (option) => {
-        return !option.adminOnly;
-      });
+      // Remove admin-only options for non-admins
+      options = options.filter((option) => !option.adminOnly);
+
       if (status === 'approved') {
-        options = _.filter(options, (option) => {
-          return !_.contains(['assign'], option.value);
-        });
+        options = options.filter((option) => option.value !== 'assign');
       }
     }
+
     if (status === 'pending') {
-      // dont show pend or assign option if status is pending
-      options = _.filter(options, (option) => {
-        return !_.contains(['pending', 'assign'], option.value);
-      });
+      // Don't show 'pending' or 'assign' options if status is pending
+      options = options.filter(
+        (option) => option.value !== 'pending' && option.value !== 'assign'
+      );
     }
 
     if (status === 'flagged') {
-      // dont show flag or assign if status is flagged
-      options = _.filter(options, (option) => {
-        return !_.contains(['flag', 'assign'], option.value);
-      });
+      // Don't show 'flag' or 'assign' options if status is flagged
+      options = options.filter(
+        (option) => option.value !== 'flag' && option.value !== 'assign'
+      );
     }
 
     if (deleted) {
-      options = _.filter(options, (option) => {
-        return !_.contains(['delete'], option.value);
-      });
+      // Don't show 'delete' option if the problem is deleted
+      options = options.filter((option) => option.value !== 'delete');
     }
 
     return options;
   }
 
   get actionButton() {
-    let actionBtn = {};
-    let isAdmin = this.args.currentUser.isAdmin;
-    let isPdAdmin = this.args.currentUser.isPdAdmin;
-    let problem = this.args.problem;
+    const actionBtn = {};
+    const problem = this.args.problem;
 
-    if (isAdmin) {
+    if (this.isAdmin) {
       if (problem.isTrashed) {
         actionBtn.function = 'restoreProblem';
         actionBtn.name = 'Restore';
       } else {
         actionBtn.function = 'confirmStatusUpdate';
-        if (problem.get('status') === 'approved') {
+        if (problem.status === 'approved') {
           actionBtn.name = 'Flag';
           actionBtn.argument1 = 'title';
           actionBtn.argument2 = 'flagged';
@@ -151,17 +232,14 @@ export default class ProblemListItemComponent extends Component {
         }
       }
     } else {
-      if (isPdAdmin) {
-        if (
-          problem.get('privacySetting') !== 'E' &&
-          problem.get('status') !== 'approved'
-        ) {
+      if (this.isPdAdmin) {
+        if (problem.privacySetting !== 'E' && problem.status !== 'approved') {
           actionBtn.function = 'confirmStatusUpdate';
           actionBtn.name = 'Approve';
           actionBtn.argument1 = 'title';
           actionBtn.argument2 = 'approved';
         } else {
-          if (problem.get('status') !== 'flagged') {
+          if (problem.status !== 'flagged') {
             actionBtn.function = 'assignProblem';
             actionBtn.name = 'Assign';
           } else {
@@ -180,6 +258,16 @@ export default class ProblemListItemComponent extends Component {
   @action showStatusOptions() {
     this.showAdminStatusMenu = true;
   }
+
+  @action
+  handleShowMoreMenu() {
+    this.showMoreMenu = true;
+  }
+  @action
+  handleHideMoreMenu() {
+    this.showMoreMenu = false;
+  }
+
   @action toggleShowMoreMenu() {
     let isShowing = this.showMoreMenu;
     this.showMoreMenu = !isShowing;
@@ -256,7 +344,7 @@ export default class ProblemListItemComponent extends Component {
     record.set('status', value);
     if (reason) {
       let flagReason = {
-        flaggedBy: this.args.currentUser.id,
+        flaggedBy: this.currentUser.id,
         reason: reason,
         flaggedDate: new Date(),
       };
@@ -264,7 +352,7 @@ export default class ProblemListItemComponent extends Component {
     }
     record
       .save()
-      .then((record) => {
+      .then(() => {
         this.alert.showToast('success', msg, 'bottom-end', 5000, false, null);
         if (this.showMoreMenu) {
           this.showMoreMenu = false;
@@ -324,7 +412,6 @@ export default class ProblemListItemComponent extends Component {
       .then((result) => {
         if (result.value) {
           problem.set('isTrashed', true);
-          // this.sendAction('toProblemList');
           problem
             .save()
             .then((problem) => {
@@ -352,78 +439,49 @@ export default class ProblemListItemComponent extends Component {
                         false,
                         null
                       );
-                      // window.history.back();
                     });
                   }
                 });
             })
             .catch((err) => {
-              this.handleErrors(err, 'updateProblemErrors', problem);
+              this.alert.showToast(
+                'error',
+                `${err}`,
+                'bottom-end',
+                3000,
+                false,
+                null
+              );
             });
         }
       });
   }
   @action assignProblem() {
-    // this.set('creatingAssignment', true);
-    // send to parent to handle?
-    let problem = this.args.problem;
-    problem.set('isForAssignment', true);
-    this.router.transitionTo('problems.problem', problem.id);
+    this.router.transitionTo(
+      'problems.problem.assignment',
+      this.args.problem.id
+    );
   }
   @action editProblem() {
-    // send to parent to handle?
-    let problem = this.args.problem;
-    problem.set('isForEdit', true);
-    this.router.transitionTo('problems.problem', problem.id);
+    this.router.transitionTo('problems.edit', this.args.problem.id);
   }
 
   @action addToMyProblems() {
-    let problem = this.args.problem;
-    let originalTitle = problem.title;
-    let title = 'Copy of ' + originalTitle;
-    let text = problem.text;
-    let author = problem.author;
-    let additionalInfo = problem.additionalInfo;
-    let isPublic = problem.isPublic;
-    let image = problem.image;
-    let imageUrl = problem.imageUrl;
-    let createdBy = this.args.currentUser;
-    let categories = problem.categories;
-    let status = problem.status;
-    let currentUser = this.args.currentUser;
-    let keywords = problem.keywords;
-    let organization = currentUser.get('organization');
-    let copyright = problem.copyrightNotice;
-    let sharingAuth = problem.sharingAuth;
-
-    let newProblem = this.store.createRecord('problem', {
-      title: title,
-      text: text,
-      author: author,
-      additionalInfo: additionalInfo,
-      imageUrl: imageUrl,
-      isPublic: isPublic,
-      origin: problem,
-      categories: categories,
-      createdBy: createdBy,
-      image: image,
-      organization: organization,
+    const copyProperties = {
+      title: `Copy of ${this.args.problem.title}`,
+      createdBy: this.user,
+      organization: this.user.organization,
       privacySetting: 'M',
-      copyrightNotice: copyright,
-      sharingAuth: sharingAuth,
-      status: status,
       createDate: new Date(),
-      keywords: keywords,
-    });
+    };
 
-    newProblem
-      .save()
+    this.problemUtils
+      .saveCopy(this.args.problem, copyProperties)
       .then((problem) => {
-        let name = problem.get('title');
-        this.avedProblem = problem;
+        this.savedProblem = problem;
         this.alert.showToast(
           'success',
-          `${name} added to your problems`,
+          `${problem.title} added to your problems`,
           'bottom-end',
           3000,
           false,
@@ -440,13 +498,9 @@ export default class ProblemListItemComponent extends Component {
           false,
           null
         );
-        // this.handleErrors(err, 'createRecordErrors', newProblem);
       });
   }
 
-  @action toProblemInfo(problem) {
-    this.router.transitionTo('problems.problem', problem.id);
-  }
   @action makePending() {
     this.confirmStatusUpdate(this.args.problem, 'title', 'pending');
   }

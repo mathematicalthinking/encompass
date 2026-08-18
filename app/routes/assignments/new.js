@@ -1,29 +1,18 @@
 import { hash } from 'rsvp';
-import { action } from '@ember/object';
 import AuthenticatedRoute from '../_authenticated_route';
-
+import { service } from '@ember/service';
 export default class AssignmentsNewRoute extends AuthenticatedRoute {
+  @service store;
+  @service currentUser;
+  @service router;
   beforeModel() {
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
-
-    if (isStudent) {
-      this.transitionTo('assignments');
-    }
+    if (this.currentUser.isStudent) this.router.replaceWith('assignments');
   }
-  async model() {
-    let currentUser = this.modelFor('application');
+  model() {
     return hash({
-      currentUser,
-      sections: await this.store.findAll('section'),
-      groups: await this.store.findAll('group'),
-      cachedProblems: await this.store.findAll('problem'),
+      sections: this.store.findAll('section'),
+      groups: this.store.findAll('group'),
+      cachedProblems: this.store.findAll('problem'),
     });
-  }
-  @action toAssignmentInfo(model) {
-    this.transitionTo('assignment', model);
-  }
-  @action toAssignmentsHome() {
-    this.transitionTo('assignments');
   }
 }

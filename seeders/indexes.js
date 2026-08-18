@@ -9,7 +9,7 @@ module.exports = {
         flagReason: 'text',
         copyrightNotice: 'text',
         sharingAuth: 'text',
-        author: 'text'
+        author: 'text',
       },
       options: {
         weights: {
@@ -20,42 +20,42 @@ module.exports = {
           sharingAuth: 1,
           status: 10,
           text: 100,
-          title: 300
+          title: 300,
         },
-        name: 'textSearch'
-      }
-    }
+        name: 'textSearch',
+      },
+    },
   ],
   comments: [
     {
       keys: {
         label: 'text',
-        text: 'text'
+        text: 'text',
       },
       options: {
         weights: {
           label: 1,
-          text: 10
+          text: 10,
         },
-        name: 'textSearchComments'
-      }
-    }
+        name: 'textSearchComments',
+      },
+    },
   ],
   categories: [
     {
       keys: {
         description: 'text',
         identifier: 'text',
-        url: 'text'
+        url: 'text',
       },
       options: {
         weights: {
           url: 1,
           identifier: 3,
-          description: 2
+          description: 2,
         },
-        name: 'textSearch'
-      }
-    }
-  ]
+        name: 'textSearch',
+      },
+    },
+  ],
 };

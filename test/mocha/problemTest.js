@@ -11,27 +11,34 @@ const helpers = require('./helpers');
 
 const expect = chai.expect;
 const host = helpers.host;
-const baseUrl = "/api/problems/";
+const baseUrl = '/api/problems/';
 
 chai.use(chaiHttp);
 
 /** GET **/
-describe('Problem CRUD operations by account type', function() {
+describe('Problem CRUD operations by account type', function () {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Problem CRUD operations as ${user.details.testDescriptionTitle}`, function() {
+    describe(`Problem CRUD operations as ${user.details.testDescriptionTitle}`, function () {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
-      const { accessibleProblemCount, accessibleProblem, inaccessibleProblem, validProblem, modifiableProblem , outsideOrgCollabProblem} = user.problems;
+      const {
+        accessibleProblemCount,
+        accessibleProblem,
+        inaccessibleProblem,
+        validProblem,
+        modifiableProblem,
+        outsideOrgCollabProblem,
+      } = user.problems;
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
 
-      before(async function(){
+      before(async function () {
         try {
           await helpers.setup(agent, username, password);
-        }catch(err) {
+        } catch (err) {
           console.log(err);
         }
       });
@@ -41,10 +48,8 @@ describe('Problem CRUD operations by account type', function() {
       });
 
       describe('/GET problems', () => {
-        it('should get all problems', done => {
-          agent
-          .get(baseUrl)
-          .end((err, res) => {
+        it('should get all problems', (done) => {
+          agent.get(baseUrl).end((err, res) => {
             if (err) {
               console.error(err);
             }
@@ -59,11 +64,9 @@ describe('Problem CRUD operations by account type', function() {
 
       if (accountType !== 'A') {
         describe('/GET inaccessible problem by id', () => {
-          it('should return 403 error', done => {
+          it('should return 403 error', (done) => {
             const url = baseUrl + inaccessibleProblem._id;
-            agent
-            .get(url)
-            .end((err, res) => {
+            agent.get(url).end((err, res) => {
               if (err) {
                 console.log(err);
               }
@@ -74,16 +77,19 @@ describe('Problem CRUD operations by account type', function() {
         });
       }
       describe('/GET accessible problem by id', () => {
-        it('should get one problem with matching id', done => {
+        it('should get one problem with matching id', (done) => {
           const url = baseUrl + accessibleProblem._id;
-          agent
-          .get(url)
-          .end((err, res) => {
+          agent.get(url).end((err, res) => {
             if (err) {
               console.log(err);
             }
             expect(res).to.have.status(200);
-            expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'title', 'text');
+            expect(res.body.problem).to.have.any.keys(
+              'title',
+              'privacySetting',
+              'title',
+              'text'
+            );
             expect(res.body.problem._id).to.eql(accessibleProblem._id);
             done();
           });
@@ -97,126 +103,10 @@ describe('Problem CRUD operations by account type', function() {
         if (isStudent) {
           msg = 'should return a 403 error';
         }
-        it(msg, done => {
+        it(msg, (done) => {
           agent
-          .post(baseUrl)
-          .send({problem: validProblem})
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-            }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
-            expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'categories');
-            expect(res.body.problem.title).to.eql(newName);
-            done();
-            }
-          });
-        });
-      });
-      describe('/POST problem with duplicate title', () => {
-        let description;
-          if (isStudent) {
-            description = 'should return 403 error';
-          } else {
-            description = 'should return 422 Validation error';
-          }
-          let title = fixtures.problem.duplicateTitle.title;
-
-        it(description, done => {
-          agent
-          .post(baseUrl)
-          .send({problem: {
-            title: title,
-            createdBy: user.details._id,
-            privacySetting: 'E'
-          }})
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-              done();
-            }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(422);
-              done();
-            }
-          });
-        });
-      });
-      describe('/POST public problem with title matching a non-public problem', () => {
-        let description;
-          if (isStudent) {
-            description = 'should return 403 error';
-          } else {
-            description = 'should post successfully';
-          }
-          let title = fixtures.problem.duplicateTitle.nonPublic;
-
-        it(description, done => {
-          agent
-          .post(baseUrl)
-          .send({problem: {
-            title: title,
-            createdBy: user.details._id,
-            privacySetting: 'E'
-          }})
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-              done();
-            }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
-              expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'categories');
-              expect(res.body.problem.title).to.eql(title);
-              done();
-            }
-          });
-        });
-      });
-      //TODO test with other account types
-      if (accountType === 'P') {
-        describe('Get private problem as outside-org collaborator', function() {
-          it('should be able to access', function(done) {
-            const url = baseUrl + outsideOrgCollabProblem._id;
-            agent
-            .get(url)
-            .end((err, res) => {
-              if (err) {
-                console.log(err);
-                throw(err);
-              }
-              expect(res).to.have.status(200);
-              expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'title', 'text');
-              expect(res.body.problem._id).to.eql(outsideOrgCollabProblem._id);
-              done();
-            });
-          });
-        });
-      }
-
-
-      /** PUT name**/
-      if (accountType === 'A' || isStudent) {
-        xdescribe('/PUT update problem name', () => {
-          it('should change the title to test science problem', done => {
-            let url = baseUrl + modifiableProblem._id;
-            agent
-            .put(url)
-            .send({
-                  problem: {
-                    title: 'test science problem',
-                  }
-             })
+            .post(baseUrl)
+            .send({ problem: validProblem })
             .end((err, res) => {
               if (err) {
                 console.error(err);
@@ -226,15 +116,148 @@ describe('Problem CRUD operations by account type', function() {
                 done();
               } else {
                 expect(res).to.have.status(200);
-                expect(res.body.problem).to.have.any.keys('privacySetting', 'title', 'categories');
-                expect(res.body.problem.title).to.eql('test science problem');
+                expect(res.body.problem).to.have.any.keys(
+                  'title',
+                  'privacySetting',
+                  'categories'
+                );
+                expect(res.body.problem.title).to.eql(newName);
                 done();
               }
+            });
+        });
+      });
+      describe('/POST problem with duplicate title', () => {
+        let description;
+        if (isStudent) {
+          description = 'should return 403 error';
+        } else {
+          description = 'should return 422 Validation error';
+        }
+        let title = fixtures.problem.duplicateTitle.title;
+
+        it(description, (done) => {
+          agent
+            .post(baseUrl)
+            .send({
+              problem: {
+                title: title,
+                createdBy: user.details._id,
+                privacySetting: 'E',
+              },
+            })
+            .end((err, res) => {
+              if (err) {
+                console.error(err);
+                done();
+              }
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(422);
+                done();
+              }
+            });
+        });
+      });
+      describe('/POST public problem with title matching a non-public problem', () => {
+        let description;
+        if (isStudent) {
+          description = 'should return 403 error';
+        } else {
+          description = 'should post successfully';
+        }
+        let title = fixtures.problem.duplicateTitle.nonPublic;
+
+        it(description, (done) => {
+          agent
+            .post(baseUrl)
+            .send({
+              problem: {
+                title: title,
+                createdBy: user.details._id,
+                privacySetting: 'E',
+              },
+            })
+            .end((err, res) => {
+              if (err) {
+                console.error(err);
+                done();
+              }
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.problem).to.have.any.keys(
+                  'title',
+                  'privacySetting',
+                  'categories'
+                );
+                expect(res.body.problem.title).to.eql(title);
+                done();
+              }
+            });
+        });
+      });
+      //TODO test with other account types
+      if (accountType === 'P') {
+        describe('Get private problem as outside-org collaborator', function () {
+          it('should be able to access', function (done) {
+            const url = baseUrl + outsideOrgCollabProblem._id;
+            agent.get(url).end((err, res) => {
+              if (err) {
+                console.log(err);
+                throw err;
+              }
+              expect(res).to.have.status(200);
+              expect(res.body.problem).to.have.any.keys(
+                'title',
+                'privacySetting',
+                'title',
+                'text'
+              );
+              expect(res.body.problem._id).to.eql(outsideOrgCollabProblem._id);
+              done();
             });
           });
         });
       }
 
+      /** PUT name**/
+      if (accountType === 'A' || isStudent) {
+        xdescribe('/PUT update problem name', () => {
+          it('should change the title to test science problem', (done) => {
+            let url = baseUrl + modifiableProblem._id;
+            agent
+              .put(url)
+              .send({
+                problem: {
+                  title: 'test science problem',
+                },
+              })
+              .end((err, res) => {
+                if (err) {
+                  console.error(err);
+                }
+                if (isStudent) {
+                  expect(res).to.have.status(403);
+                  done();
+                } else {
+                  expect(res).to.have.status(200);
+                  expect(res.body.problem).to.have.any.keys(
+                    'privacySetting',
+                    'title',
+                    'categories'
+                  );
+                  expect(res.body.problem.title).to.eql('test science problem');
+                  done();
+                }
+              });
+          });
+        });
+      }
     });
   }
 
@@ -244,9 +267,3 @@ describe('Problem CRUD operations by account type', function() {
     runTests(testUser);
   }
 });
-
-
-
-
-
-

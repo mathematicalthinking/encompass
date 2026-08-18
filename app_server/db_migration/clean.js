@@ -1,18 +1,19 @@
 const models = require('../datasource/schemas');
 const _ = require('underscore');
 
-const collections = ["Tagging",
-"Folder",
-"Workspace",
-"Selection",
-"Submission",
-"Comment",
-"Response",
-"User",
-"Problem",
-"Answer",
-"Section",
-"Category"
+const collections = [
+  'Tagging',
+  'Folder',
+  'Workspace',
+  'Selection',
+  'Submission',
+  'Comment',
+  'Response',
+  'User',
+  'Problem',
+  'Answer',
+  'Section',
+  'Category',
 ];
 // Criteria for deciding which workspaces to keep
 // Current buildCriteria function uses greater than these values
@@ -21,7 +22,7 @@ const workspaceMinimum = {
   comments: 0,
   taggings: 0,
   folders: 3,
-  selections: 0
+  selections: 0,
 };
 
 // builds the criteria that will be passed to the find operation
@@ -30,10 +31,12 @@ function buildCriteria(options) {
   const keys = Object.keys(options);
   for (let key of keys) {
     let minValue = options[key];
-    let criteria = {$where: `this.${key} && this.${key}.length > ${minValue}`};
+    let criteria = {
+      $where: `this.${key} && this.${key}.length > ${minValue}`,
+    };
     $andArray.push(criteria);
   }
-  return {$and: $andArray};
+  return { $and: $andArray };
 }
 
 // finds matching workspaces based on criteria and then deletes
@@ -45,9 +48,9 @@ async function pruneWorkspaces() {
   try {
     workspaces = await models.Workspace.find(buildCriteria(workspaceMinimum));
     console.log('matching workspaces', workspaces.length);
-    ids = workspaces.map(ws => ws._id);
-    deleted = await models.Workspace.deleteMany({_id: {$nin: ids}});
-  }catch(err) {
+    ids = workspaces.map((ws) => ws._id);
+    deleted = await models.Workspace.deleteMany({ _id: { $nin: ids } });
+  } catch (err) {
     console.log(err);
   }
   return deleted;
@@ -58,11 +61,11 @@ async function removeTrashedDocuments() {
   try {
     for (let collection of collections) {
       let model = models[collection];
-      trashed = await model.deleteMany({isTrashed: true});
+      trashed = await model.deleteMany({ isTrashed: true });
     }
-}catch(err) {
-  console.log(err);
-}
+  } catch (err) {
+    console.log(err);
+  }
   return trashed;
 }
 
@@ -88,13 +91,13 @@ async function removeOrphanedFromWs(collection) {
           shouldDelete = false;
         }
       }
-       if (shouldDelete) {
-          await model.deleteOne({_id: doc._id});
-          deleted++;
-        }
+      if (shouldDelete) {
+        await model.deleteOne({ _id: doc._id });
+        deleted++;
       }
-    }catch(err) {
-      console.log(err);
+    }
+  } catch (err) {
+    console.log(err);
   }
 
   console.log(`Deleted ${deleted} ${collection}s`);
@@ -130,13 +133,13 @@ async function removeOrphanedTaggings() {
           shouldDelete = false;
         }
 
-        if(shouldDelete) {
-          await model.deleteOne({_id: tagging._id});
+        if (shouldDelete) {
+          await model.deleteOne({ _id: tagging._id });
           deleted++;
         }
       }
     }
-  }catch(err) {
+  } catch (err) {
     console.log(err);
   }
   console.log(`deleted ${deleted} taggings`);
@@ -147,12 +150,15 @@ async function removeOrphanedWorkspaces() {
   let results;
   try {
     let workspaces = await models.Workspace.find({});
-    let workspaceIds = workspaces.map(ws => ws._id);
-    results = await models.Submission.updateMany({}, {$pull: {workspaces: {$nin: workspaceIds}}});
-  }catch(err) {
+    let workspaceIds = workspaces.map((ws) => ws._id);
+    results = await models.Submission.updateMany(
+      {},
+      { $pull: { workspaces: { $nin: workspaceIds } } }
+    );
+  } catch (err) {
     console.log(err);
   }
-  console.log('results for removing Orphaned workspaces',results);
+  console.log('results for removing Orphaned workspaces', results);
   return results;
 }
 
@@ -179,11 +185,11 @@ async function removeOrphanedSubs() {
         }
       }
       if (shouldDelete) {
-        await model.deleteOne({_id: sub._id});
+        await model.deleteOne({ _id: sub._id });
         deleted++;
       }
     }
-  }catch(err) {
+  } catch (err) {
     console.log(err);
   }
 
@@ -196,8 +202,8 @@ async function removeIrrelevantUsers() {
   let deleted;
   let model = models.User;
   try {
-    let regularUsers = await model.find({isAdmin: {$ne: true}});
-    let admins = await model.find({isAdmin: true});
+    let regularUsers = await model.find({ isAdmin: { $ne: true } });
+    let admins = await model.find({ isAdmin: true });
     let relevantUserIds = [];
     console.log(`there are ${regularUsers.length} regular users`);
     console.log(`there are ${admins.length} admins`);
@@ -211,20 +217,23 @@ async function removeIrrelevantUsers() {
       if (ownerId) {
         relevantUserIds.push(ownerId);
       }
-      if(editorIds) {
+      if (editorIds) {
         relevantUserIds = relevantUserIds.concat(editorIds);
       }
     }
     relevantUserIds = _.uniq(relevantUserIds);
-    console.log('relevant users: ',relevantUserIds.length);
-    deleted = await model.deleteMany({_id: {$nin: relevantUserIds}, isAdmin: {$ne:true}});
-
-  }catch(err) {
+    console.log('relevant users: ', relevantUserIds.length);
+    deleted = await model.deleteMany({
+      _id: { $nin: relevantUserIds },
+      isAdmin: { $ne: true },
+    });
+  } catch (err) {
     console.log(err);
   }
   return deleted;
 }
-async function cleaner() { // eslint-disable-line no-unused-vars
+async function cleaner() {
+  // eslint-disable-line no-unused-vars
   try {
     await removeTrashedDocuments();
     await pruneWorkspaces();
@@ -233,7 +242,7 @@ async function cleaner() { // eslint-disable-line no-unused-vars
     await removeOrphanedTaggings();
     await removeIrrelevantUsers();
     await removeOrphanedWorkspaces();
-  }catch(err) {
+  } catch (err) {
     console.log(err);
   }
   console.log('done!');

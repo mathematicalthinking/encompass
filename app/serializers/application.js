@@ -1,6 +1,27 @@
 import RESTSerializer from '@ember-data/serializer/rest';
-// The serializer is a ember formatter that can help format data from the mongo/mongoose backend.
+
+/**
+ * ApplicationSerializer
+ * Customizes the serialization for the application, ensuring compatibility with MongoDB/Mongoose by using `_id` as the primary key.
+ */
 export default class ApplicationSerializer extends RESTSerializer {
-  primaryKey = '_id'; // Fix for Ember to recognise Mongoose object ids
-  isNewSerializerAPI = true;
+  primaryKey = '_id'; // Use Mongoose's _id as the primary key
+
+  normalizeResponse(store, primaryModelClass, payload, id, requestType) {
+    if (payload && typeof payload === 'object') {
+      Object.keys(payload).forEach((key) => {
+        const value = payload[key];
+        if (Array.isArray(value)) {
+          payload[key] = value.filter(Boolean);
+        }
+      });
+    }
+    return super.normalizeResponse(
+      store,
+      primaryModelClass,
+      payload,
+      id,
+      requestType
+    );
+  }
 }

@@ -1,13 +1,40 @@
 import Controller from '@ember/controller';
-import CurrentUserMixin from "../mixins/current_user_mixin";
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
-export default Controller.extend(CurrentUserMixin, {
-  isCompDirty: false,
-  confirmLeaving: false,
+export default class ImportController extends Controller {
+  queryParams = [
+    'step',
+    'problemId',
+    'sectionId',
+    'useClass',
+    'uploadedFileIds',
+  ];
 
-  actions: {
-    doConfirmLeaving: function (value) {
-      this.set("confirmLeaving", value);
-    },
-  },
-});
+  @tracked isCompDirty = false;
+  @tracked confirmLeaving = false;
+  @tracked step = null;
+  @tracked problemId = null;
+  @tracked sectionId = null;
+  @tracked useClass = null;
+  @tracked uploadedFileIds = null;
+
+  @action
+  toWorkspaces(workspace) {
+    if (!workspace?._id) {
+      return;
+    }
+
+    const firstSubmissionId = workspace.submissions?.[0];
+    if (firstSubmissionId) {
+      window.location.href = `#/workspaces/${workspace._id}/submissions/${firstSubmissionId}`;
+      return;
+    }
+    window.location.href = `#/workspaces/${workspace._id}/work`;
+  }
+
+  @action
+  doConfirmLeaving(value) {
+    this.confirmLeaving = value;
+  }
+}

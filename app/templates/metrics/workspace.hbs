@@ -9,7 +9,7 @@
               this.model.workspace.lastModifiedDate
               'MM/DD/YYYY'
             }}</span></h2>
-        <button id='metrics-workspace-button'>
+        <button id='metrics-workspace-button' type='button'>
           <LinkTo
             @route='workspace.work'
             @model={{this.model.workspace.id}}
@@ -18,9 +18,13 @@
 
       <div class='export-buttons'>
         <a
-          href='data:text/csv;charset=utf-8,{{this.workspaceCsv}}'
-          download='workspace_report.csv'
+          href="#"
+          {{on "click" this.downloadWorkspaceReport}}
         >Export Workspace Data</a>
+        <a
+          href="#"
+          {{on "click" this.downloadAiGenerationReport}}
+        >Export AI Generation Data</a>
         <a
           href='data:text/csv;charset=utf-8,{{this.responseCsv}}'
           download='mentoring_report.csv'
@@ -65,9 +69,12 @@
 
   <div class='metrics-container'>
     <div class='controls'>
-      <button {{on 'click' (fn this.handleToggle 'showCloud')}}>Generate
-        Wordcloud</button>
       <button
+        type='button'
+        {{on 'click' (fn this.handleToggle 'showCloud')}}
+      >Generate Wordcloud</button>
+      <button
+        type='button'
         {{on 'click' (fn this.handleToggle 'showSubmissions')}}
       >Submissions: {{this.model.workspace.submissionsLength}}</button>
     </div>
@@ -82,9 +89,7 @@
         />
         <t.body @rows={{this.tableRows}} as |b|>
           <b.row as |r|>
-            <r.cell
-              as |cellValue columnValue rowValue cellMeta columnMeta rowMeta|
-            >
+            <r.cell as |cellValue columnValue rowValue|>
               {{#if (is-equal columnValue.name 'Text')}}
                 {{make-html-safe cellValue}}
               {{else if (is-equal cellValue 'submission')}}
@@ -107,7 +112,7 @@
       </EmberTable>
     {{/if}}
 
-    <WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
+    <Ui::WordcloudContainer @showCloud={{this.showCloud}} @list={{this.list}} />
   </div>
 
 </div>

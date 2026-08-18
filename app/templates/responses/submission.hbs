@@ -1,0 +1,17 @@
+{{#if @model}}
+  {{#if @model.submission}}
+    <ResponseContainer
+      @response={{@model.response}}
+      @submission={{@model.submission}}
+      @workspace={{@model.workspace}}
+      @submissions={{@model.submissions}}
+      @notifications={{@model.notifications}}
+      @responses={{@model.responses}}
+      @storeResponses={{@model.allResponses}}
+    />
+  {{else}}
+    <p>Error: No submission in model</p>
+  {{/if}}
+{{else}}
+  <p>Error: No model data</p>
+{{/if}}

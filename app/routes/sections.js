@@ -1,12 +1,14 @@
 import AuthenticatedRoute from './_authenticated_route';
 import { hash } from 'rsvp';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class SectionsRoute extends AuthenticatedRoute {
   @service store;
+  @service currentUser;
   async model() {
-    let sections = await this.store.findAll('section');
-    let currentUser = this.modelFor('application');
-    return hash({ sections, currentUser });
+    return hash({
+      isStudent: this.currentUser.isStudent, // used by index template to conditionally show "Create New Class" button
+      sections: this.store.findAll('section'),
+    });
   }
 }

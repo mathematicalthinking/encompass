@@ -34,7 +34,7 @@
     p {
       font-family: 'Quicksand', sans-serif;
       font-weight: 700;
-      color: rgb(0, 55, 128);
+      color: $info-value-color;
     }
     a {
       color: blue;
@@ -42,6 +42,33 @@
       &:hover {
         text-decoration: underline;
         font-weight: 800;
+      }
+    }
+  }
+  // Pull the Revise button up closer to the problem statement above it
+  // (overrides the shared 2em top margin on the button group).
+  .edit-assignment-button {
+    margin-top: 0.5em;
+  }
+  // Breathing room between the submissions message and the Past Submissions list
+  .past-submissions {
+    margin-top: 1.5em;
+  }
+  .submission-list {
+    li {
+      cursor: pointer;
+      padding: 0.5em 0.75em;
+      border-radius: 0.4em;
+      transition: background-color 0.15s ease;
+      // Match the dark blue used for the problem statement / info values
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      color: $info-value-color;
+      &:hover {
+        background-color: #d4e6f7;
+      }
+      &.highlight {
+        background-color: #b9d6f2;
       }
     }
   }

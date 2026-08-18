@@ -1,0 +1,41 @@
+<div class='unundraggable-selection'>
+  <div
+    class='selectionLink selection-tooltip
+      {{if this.isImage "image-tag"}}
+      {{if this.isSelected "is-selected"}}
+      {{if this.isText "selection_text"}}'
+    data-selection-tooltip={{this.selectionTooltip}}
+  >
+    {{#if this.modelIdsReady}}
+      <LinkTo
+        @route='workspace.submissions.submission.selections.selection'
+        @models={{this.selectionModelIds}}
+        class={{this.linkToClassName}}
+      >
+        {{#if this.isImage}}
+          <img
+            class='img-tag-thmb'
+            src={{this.imageSource}}
+            alt={{@selection.text}}
+          />
+          <div class='overlay'>
+            <button type='button' {{on 'click' this.expandImage}}><i
+                class={{this.overlayIcon}}
+              ></i></button>
+          </div>
+        {{else}}
+          {{@selection.text}}
+        {{/if}}
+      </LinkTo>
+    {{/if}}
+  </div>
+
+  {{#if this.isExpanded}}
+    <div class='full-image'>
+      <button type='button' {{on 'click' this.expandImage}}>
+        <i class='fas fa-times'></i>
+      </button>
+      <img src={{this.imageSource}} alt={{@selection.text}} />
+    </div>
+  {{/if}}
+</div>

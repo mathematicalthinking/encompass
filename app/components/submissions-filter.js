@@ -1,23 +1,48 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
-import { later } from '@ember/runloop';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import $ from 'jquery';
-import moment from 'moment';
-import ErrorHandlingMixin from '../mixins/error_handling_mixin';
+import { tracked } from '@glimmer/tracking';
+import { next } from '@ember/runloop';
+import { registerDestructor } from '@ember/destroyable';
+import { format, subYears } from 'date-fns';
 
-export default Component.extend(ErrorHandlingMixin, {
-  elementId: 'submissions-filter',
-  alert: service('sweet-alert'),
-  findRecordErrors: [],
-  wsRequestErrors: [],
-  utils: service('utility-methods'),
-  isVmtOnly: false,
-  showVmtFilters: false,
-  startDate: '',
-  endDate: '',
-  tooltips: {
+export default class SubmissionsFilterComponent extends Component {
+  @service('sweet-alert') alert;
+  @service('error-handling') errorHandling;
+  @service('utility-methods') utils;
+  @service store;
+  @service('current-user') currentUser;
+
+  _isDestroyed = false;
+
+  constructor() {
+    super(...arguments);
+    registerDestructor(this, () => {
+      this._isDestroyed = true;
+    });
+  }
+
+  findRecordErrors = [];
+  wsRequestErrors = [];
+
+  // Filter selections — local state seeded from args. The parent reads results
+  // back through @onSearch, not by reading these, so the component owns them.
+  @tracked selectedTeacher = this.args.selectedTeacher;
+  @tracked selectedAssignment = this.args.selectedAssignment;
+  @tracked selectedProblem = this.args.selectedProblem;
+  @tracked selectedSection = this.args.selectedSection;
+  @tracked selectedStudents = this.args.selectedStudents ?? [];
+  @tracked startDate = format(subYears(new Date(), 1), 'yyyy-MM-dd');
+  @tracked endDate = format(new Date(), 'yyyy-MM-dd');
+  @tracked doIncludeOldPows = this.args.doIncludeOldPows;
+  @tracked isVmtOnly = false;
+  @tracked isTrashedOnly = this.args.isTrashedOnly;
+  @tracked vmtSearchText;
+  @tracked showVmtFilters = false;
+  @tracked isMissingCriteria = null;
+  @tracked isInvalidDateRange = null;
+
+  tooltips = {
     teacher: 'Find all work related to this teacher',
     assignment: 'Find all work related to this assignment',
     problem: 'Find all accessibile work related to this problem',
@@ -28,193 +53,108 @@ export default Component.extend(ErrorHandlingMixin, {
     folders: 'Choose a starter folder set, you can create your own later',
     privacy:
       'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
-  },
-  init: function () {
-    this._super(...arguments);
-    this.set('startDate', moment().subtract(1, 'y').format('YYYY-MM-DD'));
-    this.set('endDate', moment().format('YYYY-MM-DD'));
-    // const that = this;
+  };
+  missingCriteriaMessage =
+    'Please select either a teacher, assignment, problem, class, or at least one student.';
+  invalidDateRangeMessage = 'Please provide a valid date range.';
 
-    // $(function () {
-    //   let startDate = that.get('startDate');
-    //   let endDate = that.get('endDate');
+  // base pools snapshotted from the passed model args (was didReceiveAttrs)
+  get baseSections() {
+    return this.args.sections ? this.args.sections.slice() : [];
+  }
+  get baseAssignments() {
+    return this.args.assignments ? this.args.assignments.slice() : [];
+  }
+  get baseUsers() {
+    return this.args.users ? this.args.users.slice() : [];
+  }
 
-    //   if (!startDate) {
-    //     startDate = moment().subtract(1, 'years');
-    //   } else if (_.isString(startDate)) {
-    //     startDate = moment(startDate);
-    //   }
-    //   if (!endDate) {
-    //     endDate = moment();
-    //   } else if (_.isString(endDate)) {
-    //     endDate = moment(endDate);
-    //   }
-
-    // $('input[name="startDate"]').daterangepicker({
-    //   singleDatePicker: true,
-    //   showDropdowns: true,
-    //   minYear: 1990,
-    //   autoUpdateInput: true,
-    //   locale: {
-    //     cancelLabel: 'Clear',
-    //   },
-    //   startDate: startDate,
-    // });
-    // $('input[name="endDate"]').daterangepicker({
-    //   singleDatePicker: true,
-    //   showDropdowns: true,
-    //   minYear: 1990,
-    //   autoUpdateInput: true,
-    //   locale: {
-    //     cancelLabel: 'Clear',
-    //   },
-    //   startDate: endDate,
-    // });
-    // $('input[name="startDate"]').on(
-    //   'apply.daterangepicker',
-    //   function (ev, picker) {
-    //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
-    //   }
-    // );
-    // $('input[name="endDate"]').on(
-    //   'apply.daterangepicker',
-    //   function (ev, picker) {
-    //     $(this).val(picker.startDate.format('MM/DD/YYYY'));
-    //   }
-    // );
-    // $('input[name="startDate"]').attr('placeholder', 'mm/dd/yyyy');
-    // $('input[name="endDate"]').attr('placeholder', 'mm/dd/yyyy');
-    // });
-  },
-  missingCriteriaMessage:
-    'Please select either a teacher, assignment, problem, class, or at least one student.',
-  invalidDateRangeMessage: 'Please provide a valid date range.',
-
-  doFetchStudents: computed(
-    'selectedAssignment',
-    'selectedSection',
-    'selectedTeacher',
-    function () {
-      return (
-        !this.selectedAssignment &&
-        !this.selectedSection &&
-        !this.selectedTeacher
-      );
-    }
-  ),
-
-  isTeacher: computed('currentUser', function () {
+  get doFetchStudents() {
     return (
-      this.get('currentUser.accountType') === 'T' &&
-      this.get('currentUser.actingRole') !== 'student'
+      !this.selectedAssignment && !this.selectedSection && !this.selectedTeacher
     );
-  }),
+  }
 
-  initialTeacherItem: computed('selectedTeacher', 'isTeacher', function () {
+  get isTeacher() {
+    const user = this.currentUser.user;
+    return user?.accountType === 'T' && user?.actingRole !== 'student';
+  }
+
+  get initialTeacherItem() {
     if (this.isTeacher) {
-      return [this.get('currentUser.id')];
+      return [this.currentUser.user?.id];
     }
     if (this.selectedTeacher) {
-      return [this.get('selectedTeacher.id')];
+      return [this.selectedTeacher.id];
     }
     return [];
-  }),
+  }
 
-  initialStudentItem: computed(
-    'currentUser',
-    'selectedStudents.[]',
-    function () {
-      if (this.get('currentUser.isStudent')) {
-        return [this.get('currentUser.id')];
-      }
-      if (_.isArray(this.selectedStudents)) {
-        return this.selectedStudents.mapBy('id');
-      }
-      return [];
+  get initialStudentItem() {
+    if (this.currentUser.isStudent) {
+      return [this.currentUser.user?.id];
     }
-  ),
+    if (Array.isArray(this.selectedStudents)) {
+      return this.selectedStudents.map((student) => student.id);
+    }
+    return [];
+  }
 
-  initialAssignmentItem: computed('selectedAssignment', function () {
+  get initialAssignmentItem() {
     if (this.selectedAssignment) {
-      return [this.get('selectedAssignment.id')];
+      return [this.selectedAssignment.id];
     }
     return [];
-  }),
+  }
 
-  initialProblemItem: computed('selectedProblem', function () {
+  get initialProblemItem() {
     if (this.selectedProblem) {
-      return [this.get('selectedProblem.id')];
+      return [this.selectedProblem.id];
     }
     return [];
-  }),
+  }
 
-  initialSectionItem: computed('selectedSection', function () {
+  get initialSectionItem() {
     if (this.selectedSection) {
-      return [this.get('selectedSection.id')];
+      return [this.selectedSection.id];
     }
     return [];
-  }),
+  }
 
-  didReceiveAttrs: function () {
-    // if (this.get('currentUser.isStudent')) {
-    //   this.set('selectedStudent', this.currentUser);
-    // } else if (this.get('currentUser.isTeacher')) {
-    //   this.set('selectedTeacher', this.currentUser);
-    // }
+  get teacherPool() {
+    const assignment = this.selectedAssignment;
+    const section = this.selectedSection;
+    const students = this.selectedStudents;
 
-    for (let attr of ['sections', 'assignments', 'users']) {
-      let modelProp = this.get(attr);
-      let newProp = `base${attr.capitalize()}`;
-      if (modelProp) {
-        this.set(newProp, modelProp.toArray());
-      } else {
-        this.set(newProp, []);
-      }
+    if (section) {
+      return section.get('teachers');
     }
-    this._super(...arguments);
-    // this.set('teacherPool', this.getTeacherPool());
-  },
+    if (assignment) {
+      return assignment.get('section.teachers');
+    }
 
-  teacherPool: computed(
-    'baseUsers.[]',
-    'selectedSection',
-    'selectedAssignment',
-    'selectedStudents.[]',
-    function () {
-      const assignment = this.selectedAssignment;
-      const section = this.selectedSection;
-      const students = this.selectedStudents;
-
-      if (section) {
-        return section.get('teachers');
-      }
-      if (assignment) {
-        return assignment.get('section.teachers');
-      }
-
-      if (this.utils.isNonEmptyArray(students)) {
-        let sections = this.selectedStudentsSections;
-        if (sections) {
-          let teachers = sections.mapBy('teachers');
-          let results = [];
-          if (teachers) {
-            teachers.forEach((arr) => {
-              results.addObjects(arr);
-            });
-            return results;
-          }
+    if (this.utils.isNonEmptyArray(students)) {
+      const sections = this.selectedStudentsSections;
+      if (sections) {
+        const teachers = sections.mapBy('teachers');
+        const results = [];
+        if (teachers) {
+          teachers.forEach((arr) => {
+            results.addObjects(arr);
+          });
+          return results;
         }
-        return [];
-      }
-
-      if (this.baseUsers) {
-        return this.baseUsers.rejectBy('accountType', 'S');
       }
       return [];
     }
-  ),
 
-  teacherPoolOptions: computed('teacherPool.[]', function () {
+    if (this.baseUsers) {
+      return this.baseUsers.rejectBy('accountType', 'S');
+    }
+    return [];
+  }
+
+  get teacherPoolOptions() {
     if (!this.teacherPool) {
       return [];
     }
@@ -224,69 +164,57 @@ export default Component.extend(ErrorHandlingMixin, {
         username: teacher.get('username'),
       };
     });
-  }),
+  }
 
-  studentPool: computed(
-    'baseUsers.[]',
-    'baseSections.[]',
-    'selectedSection',
-    'selectedAssignment',
-    'selectedTeacher',
-    function () {
-      const assignment = this.selectedAssignment;
-      const section = this.selectedSection;
-      const teacher = this.selectedTeacher;
+  get studentPool() {
+    const assignment = this.selectedAssignment;
+    const section = this.selectedSection;
+    const teacher = this.selectedTeacher;
 
-      // students can only make workspaces from their own work
-      if (this.get('currentUser.isStudent')) {
-        return [this.currentUser];
-      }
-
-      if (assignment) {
-        return assignment.get('students');
-      }
-
-      if (section) {
-        return section.get('students');
-      }
-
-      if (teacher) {
-        const sections = this.selectedTeacherSections;
-
-        const studentsBySection = sections.mapBy('students');
-        let results = [];
-        studentsBySection.forEach((students) => {
-          results.addObjects(students);
-        });
-        return results;
-      }
-      const baseUsers = this.baseUsers;
-      if (baseUsers) {
-        return baseUsers;
-      }
-      return [];
-      // const peeked = this.get('store').peekAll('user');
-      // if (peeked) {
-      //   return peeked;
-      // }
-      // return [];
+    // students can only make workspaces from their own work
+    if (this.currentUser.isStudent) {
+      return [this.currentUser.user];
     }
-  ),
 
-  problemFilters: computed('selectedAssignment', function () {
-    let results = {};
+    if (assignment) {
+      return assignment.get('students');
+    }
+
+    if (section) {
+      return section.get('students');
+    }
+
+    if (teacher) {
+      const sections = this.selectedTeacherSections;
+
+      const studentsBySection = sections.mapBy('students');
+      const results = [];
+      studentsBySection.forEach((students) => {
+        results.addObjects(students);
+      });
+      return results;
+    }
+    const baseUsers = this.baseUsers;
+    if (baseUsers) {
+      return baseUsers;
+    }
+    return [];
+  }
+
+  get problemFilters() {
+    const results = {};
     const assignment = this.selectedAssignment;
     if (assignment) {
-      let id = assignment.belongsTo('problem').id();
+      const id = assignment.belongsTo('problem').id();
       results.ids = [id];
     }
     return results;
-  }),
+  }
 
-  studentPoolOptions: computed('studentPool.[]', function () {
-    let students = this.studentPool;
+  get studentPoolOptions() {
+    const students = this.studentPool;
 
-    if (!_.isObject(students)) {
+    if (!students || typeof students !== 'object') {
       return [];
     }
     return students.map((user) => {
@@ -295,178 +223,146 @@ export default Component.extend(ErrorHandlingMixin, {
         username: user.get('username'),
       };
     });
-  }),
+  }
 
-  // doFetchProblems: function() {
-  //   return !this.get('selectedAssignment');
-  // }.property('selectedAssignment'),
-
-  selectedTeacherSectionIds: computed('selectedTeacher', function () {
-    const sectionsFromTeacher = this.get('selectedTeacher.sections');
+  get selectedTeacherSectionIds() {
+    const sectionsFromTeacher = this.selectedTeacher?.get('sections');
     if (sectionsFromTeacher) {
       return sectionsFromTeacher
-        .filter((section) => {
-          return section.role === 'teacher';
-        })
+        .filter((section) => section.role === 'teacher')
         .map((section) => section.sectionId);
     }
     return [];
-  }),
-  selectedTeacherAssignments: computed(
-    'selectedTeacher',
-    'baseAssignments.[]',
-    function () {
-      if (!this.selectedTeacher) {
-        return [];
-      }
-      return this.baseAssignments.filter((assignment) => {
-        return (
-          assignment.get('createdBy.id') === this.get('selectedTeacher.id') ||
-          this.selectedTeacherSectionIds.includes(assignment.get('section.id'))
-        );
-      });
-    }
-  ),
+  }
 
-  selectedProblemAssignments: computed(
-    'selectedProblem',
-    'baseAssignments.[]',
-    function () {
-      if (!this.selectedProblem) {
-        return [];
-      }
-      return this.baseAssignments.filterBy(
-        'problem.id',
-        this.get('selectedProblem.id')
+  get selectedTeacherAssignments() {
+    if (!this.selectedTeacher) {
+      return [];
+    }
+    // Read the related ids off the relationship reference (no network load), so
+    // an assignment pointing at a deleted section/teacher doesn't 404.
+    return this.baseAssignments.filter((assignment) => {
+      return (
+        assignment.belongsTo('createdBy').id() === this.selectedTeacher.id ||
+        this.selectedTeacherSectionIds.includes(
+          assignment.belongsTo('section').id()
+        )
       );
+    });
+  }
+
+  get selectedProblemAssignments() {
+    if (!this.selectedProblem) {
+      return [];
     }
-  ),
+    return this.baseAssignments.filter(
+      (assignment) =>
+        assignment.belongsTo('problem').id() === this.selectedProblem.id
+    );
+  }
 
-  selectedSectionAssignments: computed(
-    'selectedSection',
-    'baseAssignments.[]',
-    function () {
-      if (!this.selectedSection) {
-        return [];
-      }
-      return this.baseAssignments.filter((assignment) => {
-        return this.get('selectedSection.assignments').includes(assignment);
-      });
+  get selectedSectionAssignments() {
+    if (!this.selectedSection) {
+      return [];
     }
-  ),
+    return this.baseAssignments.filter((assignment) => {
+      return this.selectedSection.get('assignments').includes(assignment);
+    });
+  }
 
-  selectedStudentsAssignments: computed(
-    'selectedStudents.[]',
-    'baseAssignments.[]',
-    function () {
-      const utils = this.utils;
-      const students = this.selectedStudents;
-      if (!utils.isNonEmptyArray(students)) {
-        return [];
-      }
-      const assignments = students.mapBy('assignments');
-      let results = [];
-      assignments.forEach((arr) => {
-        results.addObjects(arr);
-      });
-      return results;
+  get selectedStudentsAssignments() {
+    const students = this.selectedStudents;
+    if (!this.utils.isNonEmptyArray(students)) {
+      return [];
     }
-  ),
+    const assignments = students.mapBy('assignments');
+    const results = [];
+    assignments.forEach((arr) => {
+      results.addObjects(arr);
+    });
+    return results;
+  }
 
-  assignmentOptions: computed(
-    'baseAssignments.[]',
-    'selectedTeacher',
-    'selectedProblem',
-    'selectedSection',
-    'selectedStudents.[]',
-    function () {
-      let assignments = [];
-      let teacher = this.selectedTeacher;
-      let problem = this.selectedProblem;
-      let section = this.selectedSection;
-      let students = this.selectedStudents;
-      const utils = this.utils;
+  get assignmentOptions() {
+    let assignments = [];
+    const teacher = this.selectedTeacher;
+    const problem = this.selectedProblem;
+    const section = this.selectedSection;
+    const students = this.selectedStudents;
+    const utils = this.utils;
 
-      if (!teacher && !problem && !section && !students) {
-        assignments = this.baseAssignments;
-      } else {
-        let hashMaps = [];
-        if (teacher) {
-          let teacherMap = {};
-          this.selectedTeacherAssignments.forEach((assignment) => {
-            teacherMap[assignment.get('id')] = true;
-          });
-          hashMaps.push(teacherMap);
-        }
-        if (problem) {
-          let problemMap = {};
-          this.selectedProblemAssignments.forEach((assignment) => {
-            problemMap[assignment.get('id')] = true;
-          });
-          hashMaps.push(problemMap);
-        }
-        if (section) {
-          let sectionMap = {};
-          this.selectedSectionAssignments.forEach((assignment) => {
-            sectionMap[assignment.get('id')] = true;
-          });
-          hashMaps.push(sectionMap);
-        }
-        if (utils.isNonEmptyArray(students)) {
-          let studentsMap = {};
-          this.selectedStudentsAssignments.forEach((assignment) => {
-            studentsMap[assignment.get('id')] = true;
-          });
-          hashMaps.push(studentsMap);
-        }
-        assignments = this.baseAssignments.filter((assignment) => {
-          return hashMaps.every((hashMap) => hashMap[assignment.get('id')]);
-        });
-      }
-
-      let mapped = _.map(assignments, (assignment) => {
-        return {
-          id: assignment.id,
-          name: assignment.get('name'),
-        };
-      });
-      return mapped;
-    }
-  ),
-
-  sectionPool: computed(
-    'selectedTeacher',
-    'selectedAssignment',
-    'selectedStudentsSections.[]',
-    'selectedStudents.[]',
-    function () {
-      const assignment = this.selectedAssignment;
-      const teacher = this.selectedTeacher;
-      const students = this.selectedStudents;
-      const utils = this.utils;
-      if (assignment) {
-        let section = assignment.get('section');
-        if (section) {
-          return [section];
-        }
-        return [];
-      }
-
-      if (utils.isNonEmptyArray(students)) {
-        return this.selectedStudentsSections;
-      }
-
+    if (!teacher && !problem && !section && !students) {
+      assignments = this.baseAssignments;
+    } else {
+      const hashMaps = [];
       if (teacher) {
-        return this.selectedTeacherSections;
+        const teacherMap = {};
+        this.selectedTeacherAssignments.forEach((assignment) => {
+          teacherMap[assignment.get('id')] = true;
+        });
+        hashMaps.push(teacherMap);
       }
-      if (this.baseSections) {
-        return this.baseSections;
+      if (problem) {
+        const problemMap = {};
+        this.selectedProblemAssignments.forEach((assignment) => {
+          problemMap[assignment.get('id')] = true;
+        });
+        hashMaps.push(problemMap);
+      }
+      if (section) {
+        const sectionMap = {};
+        this.selectedSectionAssignments.forEach((assignment) => {
+          sectionMap[assignment.get('id')] = true;
+        });
+        hashMaps.push(sectionMap);
+      }
+      if (utils.isNonEmptyArray(students)) {
+        const studentsMap = {};
+        this.selectedStudentsAssignments.forEach((assignment) => {
+          studentsMap[assignment.get('id')] = true;
+        });
+        hashMaps.push(studentsMap);
+      }
+      assignments = this.baseAssignments.filter((assignment) => {
+        return hashMaps.every((hashMap) => hashMap[assignment.get('id')]);
+      });
+    }
+
+    return assignments.map((assignment) => {
+      return {
+        id: assignment.id,
+        name: assignment.get('name'),
+      };
+    });
+  }
+
+  get sectionPool() {
+    const assignment = this.selectedAssignment;
+    const teacher = this.selectedTeacher;
+    const students = this.selectedStudents;
+    const utils = this.utils;
+    if (assignment) {
+      const section = assignment.get('section');
+      if (section) {
+        return [section];
       }
       return [];
     }
-  ),
 
-  sectionPoolOptions: computed('sectionPool.[]', function () {
+    if (utils.isNonEmptyArray(students)) {
+      return this.selectedStudentsSections;
+    }
+
+    if (teacher) {
+      return this.selectedTeacherSections;
+    }
+    if (this.baseSections) {
+      return this.baseSections;
+    }
+    return [];
+  }
+
+  get sectionPoolOptions() {
     const sections = this.sectionPool;
     if (sections) {
       return sections.map((section) => {
@@ -477,298 +373,233 @@ export default Component.extend(ErrorHandlingMixin, {
       });
     }
     return [];
-  }),
+  }
 
-  selectedStudentSectionIds: computed('selectedStudents.[]', function () {
+  get selectedStudentSectionIds() {
     const students = this.selectedStudents;
     if (!students) {
       return [];
     }
     const studentSections = students.mapBy('sections');
-    let sectionObjects = [];
+    const sectionObjects = [];
     studentSections.forEach((arr) => {
       sectionObjects.addObjects(arr);
     });
 
-    let filtered = sectionObjects.filterBy('role', 'student');
-    let ids = filtered.mapBy('sectionId');
-    return ids;
-  }),
+    const filtered = sectionObjects.filterBy('role', 'student');
+    return filtered.mapBy('sectionId');
+  }
 
-  selectedStudentsSections: computed(
-    'selectedStudentSectionIds.[]',
-    'baseSections.[]',
-    function () {
-      const students = this.selectedStudents;
-      const sections = this.baseSections;
-      if (!students) {
-        return [];
-      }
-      const ids = this.selectedStudentSectionIds;
-      if (sections && _.isArray(ids)) {
-        return sections.filter((section) => {
-          return ids.includes(section.get('id'));
-        });
-      }
-    }
-  ),
-
-  selectedTeacherSections: computed(
-    'selectedTeacher',
-    'baseSections.[]',
-    function () {
-      if (!this.selectedTeacher) {
-        return [];
-      }
-      const sections = this.baseSections;
-      const ids = this.selectedTeacherSectionIds;
-      if (sections && _.isArray(ids)) {
-        return sections.filter((section) => {
-          return ids.includes(section.get('id'));
-        });
-      }
+  get selectedStudentsSections() {
+    const students = this.selectedStudents;
+    const sections = this.baseSections;
+    if (!students) {
       return [];
     }
-  ),
-
-  selectedAssignmentSections: computed(
-    'baseSections.[]',
-    'selectedAssignment',
-    function () {
-      if (!this.selectedAssignment) {
-        return [];
-      }
-      return this.baseSections.filter((section) => {
-        const assignments = section.get('assignments');
-        if (assignments) {
-          return assignments.includes(this.selectedAssignment);
-        }
+    const ids = this.selectedStudentSectionIds;
+    if (sections && Array.isArray(ids)) {
+      return sections.filter((section) => {
+        return ids.includes(section.get('id'));
       });
     }
-  ),
+    return [];
+  }
 
-  sectionOptions: computed(
-    'baseSections.[]',
-    'selectedTeacher',
-    'selectedAssignment',
-    function () {
-      let sections = [];
-      let teacher = this.selectedTeacher;
-      let assignment = this.selectedAssignment;
+  get selectedTeacherSections() {
+    if (!this.selectedTeacher) {
+      return [];
+    }
+    const sections = this.baseSections;
+    const ids = this.selectedTeacherSectionIds;
+    if (sections && Array.isArray(ids)) {
+      return sections.filter((section) => {
+        return ids.includes(section.get('id'));
+      });
+    }
+    return [];
+  }
 
-      if (!teacher && !assignment) {
-        sections = this.baseSections;
-      } else {
-        let hashMaps = [];
-        if (teacher) {
-          let teacherMap = {};
-          this.selectedTeacherSections.forEach((section) => {
-            teacherMap[section.get('id')] = true;
-          });
-          hashMaps.push(teacherMap);
-        }
+  get selectedAssignmentSections() {
+    if (!this.selectedAssignment) {
+      return [];
+    }
+    return this.baseSections.filter((section) => {
+      const assignments = section.get('assignments');
+      return assignments
+        ? assignments.includes(this.selectedAssignment)
+        : false;
+    });
+  }
 
-        if (assignment) {
-          let assignmentMap = {};
-          this.selectedAssignmentSections.forEach((assignment) => {
-            assignmentMap[assignment.get('id')] = true;
-          });
-          hashMaps.push(assignmentMap);
-        }
-        sections = this.baseSections.filter((section) => {
-          return hashMaps.every((hashMap) => hashMap[section.get('id')]);
+  get sectionOptions() {
+    let sections = [];
+    const teacher = this.selectedTeacher;
+    const assignment = this.selectedAssignment;
+
+    if (!teacher && !assignment) {
+      sections = this.baseSections;
+    } else {
+      const hashMaps = [];
+      if (teacher) {
+        const teacherMap = {};
+        this.selectedTeacherSections.forEach((section) => {
+          teacherMap[section.get('id')] = true;
         });
+        hashMaps.push(teacherMap);
       }
 
-      let mapped = _.map(sections, (section) => {
-        return {
-          id: section.id,
-          name: section.get('name'),
-        };
+      if (assignment) {
+        const assignmentMap = {};
+        this.selectedAssignmentSections.forEach((assignmentSection) => {
+          assignmentMap[assignmentSection.get('id')] = true;
+        });
+        hashMaps.push(assignmentMap);
+      }
+      sections = this.baseSections.filter((section) => {
+        return hashMaps.every((hashMap) => hashMap[section.get('id')]);
       });
-      return mapped;
     }
-  ),
 
-  willDestroyElement: function () {
-    // $('.daterangepicker').remove();
-    this._super(...arguments);
-  },
+    return sections.map((section) => {
+      return {
+        id: section.id,
+        name: section.get('name'),
+      };
+    });
+  }
 
-  getMongoDate: function (htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    return new Date(dateMoment);
-  },
-
-  getEndDate: function (htmlDateString) {
-    const htmlFormat = 'YYYY-MM-DD';
-    if (typeof htmlDateString !== 'string') {
-      return;
-    }
-    let dateMoment = moment(htmlDateString, htmlFormat);
-    let date = new Date(dateMoment);
-    date.setHours(23, 59, 59);
-    return date;
-  },
-
-  isAnswerCriteriaValid: computed(
-    'selectedTeacher',
-    'selectedAssignment',
-    'selectedProblem',
-    'selectedSection',
-    'selectedStudents.[]',
-    function () {
-      const utils = this.utils;
-      const params = [
-        'selectedTeacher',
-        'selectedAssignment',
-        'selectedProblem',
-        'selectedSection',
-        'vmtSearchText',
-      ];
-      for (let param of params) {
-        if (this.get(param)) {
-          return true;
-        }
-      }
-      if (utils.isNonEmptyArray(this.selectedStudents)) {
+  get isAnswerCriteriaValid() {
+    const utils = this.utils;
+    const params = [
+      'selectedTeacher',
+      'selectedAssignment',
+      'selectedProblem',
+      'selectedSection',
+      'vmtSearchText',
+    ];
+    for (const param of params) {
+      if (this[param]) {
         return true;
       }
-      return false;
     }
-  ),
-
-  isWorkspaceSettingsValid: computed('selectedOwner', 'mode', function () {
-    const params = ['selectedOwner', 'mode'];
-    for (let param of params) {
-      if (!this.get(param)) {
-        return false;
-      }
+    if (utils.isNonEmptyArray(this.selectedStudents)) {
+      return true;
     }
-    return true;
-  }),
+    return false;
+  }
 
-  actions: {
-    buildCriteria: function () {
-      //clear errors if any
-      let errorProps = ['isMissingCriteria', 'isInvalidDateRange'];
-      _.each(errorProps, (prop) => {
-        if (this.get(prop)) {
-          this.set(prop, null);
-        }
-      });
-      const utils = this.utils;
-      if (!this.isAnswerCriteriaValid) {
-        this.set('isMissingCriteria', true);
-        return;
+  @action
+  buildCriteria() {
+    // clear errors if any
+    const errorProps = ['isMissingCriteria', 'isInvalidDateRange'];
+    errorProps.forEach((prop) => {
+      if (this[prop]) {
+        this[prop] = null;
       }
+    });
+    const utils = this.utils;
+    if (!this.isAnswerCriteriaValid) {
+      this.isMissingCriteria = true;
+      return;
+    }
 
-      // let startDate = $('#startDate')
-      //   .data('daterangepicker')
-      //   .startDate.format('YYYY-MM-DD');
-      // let endDate = $('#endDate')
-      //   .data('daterangepicker')
-      //   .startDate.format('YYYY-MM-DD');
+    const students = this.selectedStudents;
+    let studentIds;
+    if (students) {
+      studentIds = students.map((student) => student.id);
+    }
+    const criteria = {
+      teacher: this.selectedTeacher?.id,
+      assignment: this.selectedAssignment?.id,
+      problem: this.selectedProblem?.id,
+      section: this.selectedSection?.id,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      students: studentIds,
+      doIncludeOldPows: this.doIncludeOldPows,
+      isVmtOnly: this.isVmtOnly,
+      vmtSearchText: this.vmtSearchText,
+      isTrashedOnly: this.isTrashedOnly,
+    };
+    Object.keys(criteria).forEach((key) => {
+      const val = criteria[key];
+      if (utils.isNullOrUndefined(val) || val === '') {
+        delete criteria[key];
+      }
+    });
+    this.args.onSearch(criteria);
+  }
 
-      const students = this.selectedStudents;
-      let studentIds;
-      if (students) {
-        studentIds = students.mapBy('id');
+  // SelectizeInput fires @onItemAdd/@onItemRemove from a did-update modifier
+  // (to sync its initial selection), i.e. during render — so we schedule the
+  // tracked write for after render to avoid a read-then-write backtracking
+  // assertion, and skip no-op re-syncs so the sync loop settles.
+  _setSelectionLater(prop, value) {
+    if (this[prop] === value) {
+      return;
+    }
+    next(this, () => {
+      if (this._isDestroyed) {
+        return;
       }
-      const criteria = {
-        teacher: this.get('selectedTeacher.id'),
-        assignment: this.get('selectedAssignment.id'),
-        problem: this.get('selectedProblem.id'),
-        section: this.get('selectedSection.id'),
-        startDate: this.startDate,
-        endDate: this.endDate,
-        students: studentIds,
-        doIncludeOldPows: this.doIncludeOldPows,
-        isVmtOnly: this.isVmtOnly,
-        vmtSearchText: this.vmtSearchText,
-        isTrashedOnly: this.isTrashedOnly,
-      };
-      _.each(criteria, (val, key) => {
-        if (utils.isNullOrUndefined(val) || val === '') {
-          delete criteria[key];
-        }
-      });
-      this.onSearch(criteria);
-    },
-    closeError: function (error) {
-      $('.error-box').addClass('fadeOutRight');
-      later(() => {
-        $('.error-box').removeClass('fadeOutRight');
-        $('.error-box').removeClass('pulse');
-        $('.error-box').hide();
-      }, 500);
-    },
+      this[prop] = value;
+    });
+  }
 
-    updateSelectizeSingle(val, $item, propToUpdate, model) {
-      if (_.isNull($item)) {
-        this.set(propToUpdate, null);
-        return;
-      }
-      let record = this.store.peekRecord(model, val);
-      if (!record) {
-        return;
-      }
-      this.set(propToUpdate, record);
-    },
-    updateSelectedStudents(val, $item) {
-      if (!val) {
-        return;
-      }
-      let selectedStudents = this.selectedStudents;
-      if (_.isNull($item)) {
-        // removal
-        let studentToRemove = selectedStudents.findBy('id', val);
-        if (studentToRemove) {
-          selectedStudents.removeObject(studentToRemove);
-          return;
-        }
-      }
-      let record = this.store.peekRecord('user', val);
-      if (record) {
-        selectedStudents.addObject(record);
-      }
-    },
-    updateMultiSelect(val, $item, propToUpdate, model) {
-      if (!val || !propToUpdate) {
-        return;
-      }
-      let isRemoval = _.isNull($item);
-      let prop = this.get(propToUpdate);
-      let isPropArray = _.isArray(prop);
+  @action
+  updateSelectizeSingle(val, $item, propToUpdate, model) {
+    if ($item === null) {
+      this._setSelectionLater(propToUpdate, null);
+      return;
+    }
+    const record = this.store.peekRecord(model, val);
+    if (!record) {
+      return;
+    }
+    this._setSelectionLater(propToUpdate, record);
+  }
 
-      if (isRemoval) {
-        if (!isPropArray) {
-          this.set(prop, null);
-        } else {
-          // val is id and prop is array of ember records
-          let objectToRemove = prop.findBy('id', val);
-          if (objectToRemove) {
-            prop.removeObject(val);
-          }
-        }
-        return;
+  @action
+  updateSelectedStudents(val, $item) {
+    if (!val) {
+      return;
+    }
+    const selectedStudents = this.selectedStudents ?? [];
+    if ($item === null) {
+      // removal
+      const studentToRemove = selectedStudents.find(
+        (student) => student.id === val
+      );
+      if (studentToRemove) {
+        this._setSelectionLater(
+          'selectedStudents',
+          selectedStudents.filter((student) => student !== studentToRemove)
+        );
       }
-      if (!isPropArray) {
-        this.set(prop, val);
-      } else {
-        let record = this.store.peekRecord(model, val);
-        if (!record) {
-          return;
-        }
-        prop.pushObject(record);
-      }
-    },
-    toggleVmtFilters() {
-      this.toggleProperty('showVmtFilters');
-    },
-  },
-});
+      return;
+    }
+    const record = this.store.peekRecord('user', val);
+    // skip re-syncs for a student that is already selected
+    if (record && !selectedStudents.includes(record)) {
+      this._setSelectionLater('selectedStudents', [
+        ...selectedStudents,
+        record,
+      ]);
+    }
+  }
+
+  @action
+  toggleVmtFilters() {
+    this.showVmtFilters = !this.showVmtFilters;
+  }
+
+  @action
+  resetMissingCriteria() {
+    this.isMissingCriteria = null;
+  }
+
+  @action
+  resetInvalidDateRange() {
+    this.isInvalidDateRange = null;
+  }
+}

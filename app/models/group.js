@@ -1,8 +1,8 @@
-import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
-import Auditable from './_auditable_mixin';
+import { attr, hasMany, belongsTo } from '@ember-data/model';
+import AuditableModel from './auditable';
 
-export default class GroupModel extends Model.extend(Auditable) {
+export default class GroupModel extends AuditableModel {
   @attr name;
-  @belongsTo('section', { inverse: null }) section;
-  @hasMany('user', { inverse: null }) students;
+  @belongsTo('section', { inverse: null, async: true }) section;
+  @hasMany('user', { inverse: null, async: true }) students;
 }

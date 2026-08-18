@@ -13,11 +13,11 @@ import { action } from '@ember/object';
 
 export default class Application extends Route {
   //the application route can't require authentication since it's getting the user
-  @service('user-ntfs') userNtfs;
+  @service userNtfs;
   @service store;
-  @service('workspace-permissions') workspacePermissions;
-  @service('edit-permissions') editPermissions;
-  @service('current-user') currentUser;
+  @service router;
+  @service currentUser;
+
   beforeModel() {
     let that = this;
     window.addEventListener(
@@ -32,8 +32,6 @@ export default class Application extends Route {
 
   async model() {
     let user = await this.store.queryRecord('user', { alias: 'current' });
-    this.workspacePermissions.setUser(user);
-    this.editPermissions.setUser(user);
     this.currentUser.setUser(user);
     return user;
   }
@@ -62,57 +60,14 @@ export default class Application extends Route {
     // should be extending AuthenticatedRoute.
     if (!user.get('isAuthenticated')) {
       this.store.unloadAll();
-      this.transitionTo('welcome');
+      this.router.transitionTo('welcome');
     } else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
-      this.transitionTo('unconfirmed');
+      this.router.transitionTo('unconfirmed');
     } else if (!user.get('isAuthz')) {
-      this.transitionTo('unauthorized');
+      this.router.transitionTo('unauthorized');
     }
   }
 
-  // TODO: Remove all the modal stuff
-  @action
-  openModal(modalName, model) {
-    if (model) {
-      this.controllerFor(modalName).set('model', model);
-    }
-    return this.render(modalName, {
-      into: 'application',
-      outlet: 'modal',
-    });
-  }
-  @action
-  closeModal() {
-    return this.disconnectOutlet({
-      outlet: 'modal',
-      parentView: 'application',
-    });
-  }
-  @action
-  openPanel(panelName, model) {
-    if (model) {
-      this.controllerFor(panelName).set('model', model);
-    }
-    return this.render(panelName, {
-      into: 'application',
-      outlet: 'modal',
-    });
-  }
-
-  @action
-  closePanel() {
-    return this.disconnectOutlet({
-      outlet: 'modal',
-      parentView: 'application',
-    });
-  }
-  @action
-  doneTour() {
-    var user = this.model;
-    user.set('seenTour', new Date());
-    user.save();
-    window.guiders.hideAll();
-  }
   @action
   reloadPage() {
     window.location.reload();

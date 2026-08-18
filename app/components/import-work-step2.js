@@ -1,15 +1,17 @@
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-/*global _:false */
-import { equal } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { service } from '@ember/service';
 
-export default Component.extend({
-  elementId: 'import-work-step2',
-  utils: service('utility-methods'),
-  selectingClass: equal('selectedValue', true),
+export default class ImportWorkStep2Component extends Component {
+  @service store;
+  @service('utility-methods') utils;
 
-  useClass: {
+  @tracked selectedValue = false;
+  @tracked selectedSection = null;
+  @tracked missingSection = null;
+
+  useClassOptions = {
     groupName: 'useClass',
     required: true,
     inputs: [
@@ -22,59 +24,134 @@ export default Component.extend({
         label: 'No',
       },
     ],
-  },
+  };
 
-  willDestroyElement: function () {
-    this.set('selectedValue', this.selectedValue);
-  },
+  constructor(owner, args) {
+    super(owner, args);
+    this.selectedValue = args.selectedValue === true;
+    this.selectedSection = args.selectedSection || null;
+  }
 
-  initialSectionItem: computed('selectedSection', function () {
-    const selectedSection = this.selectedSection;
-    if (this.utils.isNonEmptyObject(selectedSection)) {
-      return [selectedSection.id];
+  get selectingClass() {
+    return this.selectedValue === true;
+  }
+
+  get initialSectionItem() {
+    if (this.utils.isNonEmptyObject(this.selectedSection)) {
+      return [this.selectedSection.id];
     }
     return [];
-  }),
+  }
 
-  actions: {
-    updateSelectedValue: function (val) {
-      this.set('selectedValue', val);
-    },
-    setSelectedSection(val, $item) {
-      if (!val) {
-        return;
-      }
+  getRecordId(record) {
+    if (!record) {
+      return null;
+    }
+    return (
+      record.id ||
+      record._id ||
+      (typeof record.get === 'function'
+        ? record.get('id') || record.get('_id')
+        : null)
+    );
+  }
 
-      const isRemoval = _.isNull($item);
-      if (isRemoval) {
-        this.set('selectedSection', null);
-        return;
-      }
+  isSameSection(left, right) {
+    const leftId = this.getRecordId(left);
+    const rightId = this.getRecordId(right);
+    if (leftId && rightId) {
+      return String(leftId) === String(rightId);
+    }
+    return left === right;
+  }
 
-      const section = this.store.peekRecord('section', val);
-      if (this.utils.isNullOrUndefined(section)) {
-        return;
-      }
+  notifySelectionChanged() {
+    if (typeof this.args.onSelectionChange === 'function') {
+      this.args.onSelectionChange({
+        selectedValue: this.selectedValue,
+        selectedSection: this.selectedSection,
+      });
+    }
+  }
 
-      this.set('selectedSection', section);
-      if (this.missingSection) {
-        this.set('missingSection', null);
+  @action
+  updateSelectedValue(val) {
+    this.selectedValue = val === true;
+    if (!this.selectedValue) {
+      this.selectedSection = null;
+      this.missingSection = null;
+    }
+    this.notifySelectionChanged();
+  }
+
+  @action
+  setSelectedSection(val, item) {
+    if (!val) {
+      return;
+    }
+
+    const isRemoval = this.utils.isNullOrUndefined(item);
+    if (isRemoval) {
+      this.selectedSection = null;
+      this.notifySelectionChanged();
+      return;
+    }
+
+    const section = this.store.peekRecord('section', val);
+    if (this.utils.isNullOrUndefined(section)) {
+      return;
+    }
+
+    if (this.isSameSection(this.selectedSection, section)) {
+      return;
+    }
+
+    this.selectedSection = section;
+    if (this.missingSection) {
+      this.missingSection = null;
+    }
+    this.notifySelectionChanged();
+  }
+
+  @action
+  resetMissingSection() {
+    this.missingSection = null;
+  }
+
+  @action
+  next() {
+    if (!this.selectedValue) {
+      this.selectedSection = null;
+      this.missingSection = null;
+      this.notifySelectionChanged();
+      if (typeof this.args.onProceed === 'function') {
+        this.args.onProceed({
+          selectedValue: this.selectedValue,
+          selectedSection: this.selectedSection,
+        });
       }
-    },
-    next() {
-      const selectedValue = this.selectedValue;
-      if (!selectedValue) {
-        this.set('selectedSection', null);
+      return;
+    }
+
+    if (this.utils.isNonEmptyObject(this.selectedSection)) {
+      this.notifySelectionChanged();
+      if (typeof this.args.onProceed === 'function') {
+        this.args.onProceed({
+          selectedValue: this.selectedValue,
+          selectedSection: this.selectedSection,
+        });
       }
-      const section = this.selectedSection;
-      if (this.utils.isNonEmptyObject(section) || !selectedValue) {
-        this.onProceed();
-        return;
-      }
-      this.set('missingSection', true);
-    },
-    back() {
-      this.onBack(-1);
-    },
-  },
-});
+      return;
+    }
+
+    this.missingSection = true;
+  }
+
+  @action
+  back() {
+    this.notifySelectionChanged();
+    if (typeof this.args.onBack === 'function') {
+      this.args.onBack(-1);
+    }
+  }
+}

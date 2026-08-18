@@ -1,27 +1,25 @@
 import { hash } from 'rsvp';
 import AuthenticatedRoute from '../_authenticated_route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 export default class SectionsNewRoute extends AuthenticatedRoute {
   @service store;
+  @service router;
+  @service currentUser;
   beforeModel() {
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
-
-    if (isStudent) {
-      this.transitionTo('sections');
+    if (this.currentUser.isStudent) {
+      this.router.transitionTo('sections');
     }
   }
 
   async model() {
     const users = await this.store.query('user', {});
-    const addableTeachers = users.rejectBy('accountType', 'S');
+    const addableTeachers = users.filter((user) => user.accountType !== 'S');
+    const organization = await this.currentUser.user.organization;
     return hash({
+      organization,
       users,
       addableTeachers,
-      organizations: await this.store.findAll('organization'),
-      user: await this.modelFor('application'),
-      sections: await this.store.findAll('section'),
     });
   }
 }

@@ -3,11 +3,6 @@ import { module } from 'qunit';
 import destroyApp from '../helpers/destroy-app';
 import startApp from '../helpers/start-app';
 
-
-
-
-
-
 export default function (name, options = {}) {
   module(name, {
     beforeEach() {
@@ -19,8 +14,9 @@ export default function (name, options = {}) {
     },
 
     afterEach() {
-      let afterEach = options.afterEach && options.afterEach.apply(this, arguments);
+      let afterEach =
+        options.afterEach && options.afterEach.apply(this, arguments);
       return resolve(afterEach).then(() => destroyApp(this.application));
-    }
+    },
   });
 }

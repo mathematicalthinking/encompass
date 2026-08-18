@@ -1,8 +1,7 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import $ from 'jquery';
 
-export default class ConfirmEmailComponent extends ErrorHandlingComponent {
+export default class ConfirmEmailComponent extends Component {
   @tracked confirmTokenErrors = [];
   @tracked isAlreadyConfirmed = false;
   @tracked invalidTokenError = null;
@@ -10,27 +9,27 @@ export default class ConfirmEmailComponent extends ErrorHandlingComponent {
 
   constructor() {
     super(...arguments);
-    const token = this.args.token;
-    if (token) {
-      $.get({
-        url: `/auth/confirm/${token}`,
-      })
-        .then((res) => {
-          if (res.isValid) {
-            this.isTokenValid = true;
-          } else {
-            let isAlreadyConfirmed =
-              res.info === 'Email has already been confirmed';
-            if (isAlreadyConfirmed) {
-              this.isAlreadyConfirmed = true;
-              return;
-            }
-            this.invalidTokenError = res.info;
-          }
-        })
-        .catch((err) => {
-          this[err] = 'confirmTokenErrors';
-        });
+    if (this.args.token) {
+      this.verifyToken(this.args.token);
+    }
+  }
+
+  async verifyToken(token) {
+    try {
+      const response = await fetch(`/auth/confirm/${token}`);
+      if (!response.ok) {
+        throw new Error(`Confirmation failed (${response.status})`);
+      }
+      const res = await response.json();
+      if (res.isValid) {
+        this.isTokenValid = true;
+      } else if (res.info === 'Email has already been confirmed') {
+        this.isAlreadyConfirmed = true;
+      } else {
+        this.invalidTokenError = res.info;
+      }
+    } catch (err) {
+      this.confirmTokenErrors = [err?.message || 'Unable to confirm email'];
     }
   }
 

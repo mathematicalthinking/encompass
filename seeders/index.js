@@ -18,7 +18,6 @@ const submissions = require('./submissions');
 const taggings = require('./taggings');
 const workspaces = require('./workspaces');
 
-
 module.exports = {
   users,
   answers,
@@ -38,5 +37,5 @@ module.exports = {
   selections,
   submissions,
   taggings,
-  workspaces
+  workspaces,
 };

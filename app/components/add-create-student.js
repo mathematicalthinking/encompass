@@ -1,185 +1,159 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import { isEmpty } from '@ember/utils';
-import $ from 'jquery';
+import { service } from '@ember/service';
 
-export default class AddCreateStudentComponent extends ErrorHandlingComponent {
+const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
+
+export default class AddCreateStudentComponent extends Component {
+  @service('sweet-alert') alert;
+  @service store;
+  @service currentUser;
+  @service('error-handling') errorHandling;
+
+  // Form fields
+  @tracked username = null;
+  @tracked firstName = null;
+  @tracked lastName = null;
+  @tracked password = null;
+
+  // UI state
   @tracked isUsingDefaultPassword = false;
+  @tracked isEditingSectionPassword = false;
   @tracked showingPassword = false;
   @tracked isShowingClassPassword = true;
-  @tracked createUserErrors = [];
-  @tracked findUserErrors = [];
-  @tracked updateSectionErrors = [];
+
+  // Error flags
   @tracked usernameAlreadyExists = false;
   @tracked userAlreadyInSection = false;
   @tracked isMissingCredentials = false;
   @tracked incorrectUsername = false;
-  @service('sweet-alert') alert;
-  @service store;
+
+  // Error message arrays (backed by the error-handling service)
+  get createUserErrors() {
+    return this.errorHandling.getErrors('createUserErrors') || [];
+  }
+  get findUserErrors() {
+    return this.errorHandling.getErrors('findUserErrors') || [];
+  }
+  get updateSectionErrors() {
+    return this.errorHandling.getErrors('updateSectionErrors') || [];
+  }
+
+  // Existing-user confirmation flow
+  @tracked canAddExistingUser = false;
+  @tracked existingUser = null;
+
+  // ── helpers ──────────────────────────────────────────────────────────────
 
   clearCreateInputs() {
-    let fields = ['username', 'firstName', 'lastName', 'password'];
-    for (let field of fields) {
-      this[field] = null;
-    }
+    this.username = null;
+    this.firstName = null;
+    this.lastName = null;
+    this.password = null;
   }
 
   clearAddExistingUser() {
-    let fields = ['canAddExistingUser', 'existingUser'];
-    for (let field of fields) {
-      this[field] = null;
-    }
-  }
-
-  get initialStudentOptions() {
-    let peeked = this.store.peekAll('user').toArray();
-    let currentStudents = this.args.students.toArray();
-    let filtered = [];
-
-    if (peeked && currentStudents) {
-      filtered = peeked.removeObjects(currentStudents);
-      return filtered.map((obj) => {
-        return {
-          id: obj.get('id'),
-          username: obj.get('username'),
-        };
-      });
-    }
-    return filtered;
-  }
-
-  createStudent(info) {
-    // info is object with username, password, name?
-    let { username, password, firstName, lastName } = info;
-
-    let organization = this.organization;
-    let sectionId = this.args.section.id;
-    let sectionRole = 'student';
-    let currentUser = this.args.currentUser;
-
-    let createUserData = {
-      firstName,
-      lastName,
-      username,
-      password,
-      sectionId,
-      sectionRole,
-      createdBy: currentUser.id,
-      isAuthorized: true,
-      accountType: 'S',
-      authorizedBy: currentUser.id,
-      isFromSectionPage: true,
-    };
-
-    if (organization) {
-      createUserData.organization = organization.id;
-    } else {
-      createUserData.organization = this.args.currentUser.get(
-        'organization.id'
-      );
-    }
-
-    return $.post({
-      url: '/auth/signup',
-      data: createUserData,
-    })
-      .then((res) => {
-        this.removeMessages('createUserErrors');
-        if (res.message) {
-          if (
-            res.message === 'There already exists a user with that username'
-          ) {
-            this.usernameAlreadyExists = true;
-          } else {
-            this.createUserErrors = [res.message];
-          }
-        } else if (res.user && res.canAddExistingUser === true) {
-          this.canAddExistingUser = true;
-          this.existingUser = res.user;
-        } else {
-          let userId = res._id;
-          let section = this.args.section;
-          let students = section.get('students');
-          return this.store
-            .findRecord('user', userId)
-            .then((user) => {
-              students.pushObject(user); //add student to students aray
-              section
-                .save()
-                .then(() => {
-                  this.clearCreateInputs();
-                  this.alert.showToast(
-                    'success',
-                    'Student Created',
-                    'bottom-end',
-                    3000,
-                    false,
-                    null
-                  );
-                })
-                .catch((err) => {
-                  this.handleErrors(err, 'updateSectionErrors', section);
-                });
-            })
-            .catch((err) => {
-              this.handleErrors(err, 'findUserErrors');
-            });
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'createUserErrors', createUserData);
-      });
+    this.canAddExistingUser = false;
+    this.existingUser = null;
   }
 
   clearSelectizeInput(id) {
-    if (!id) {
-      return;
+    const el = document.getElementById(id);
+    const selectize = el?.selectize;
+    if (selectize) {
+      selectize.clear();
     }
-    let selectize = $(`#${id}`)[0].selectize;
-    if (!selectize) {
-      return;
-    }
-    selectize.clear();
   }
 
-  @action showPassword() {
+  // ── computed ─────────────────────────────────────────────────────────────
+
+  get initialStudentOptions() {
+    const allUsers = this.store.peekAll('user').slice();
+    const currentStudentIds = new Set(this.args.students.map((s) => s.id));
+    return allUsers
+      .filter((u) => !currentStudentIds.has(u.id))
+      .map((u) => ({ id: u.id, username: u.username }));
+  }
+
+  // ── actions ──────────────────────────────────────────────────────────────
+
+  @action togglePassword() {
     this.showingPassword = !this.showingPassword;
   }
 
-  @action addExistingStudent() {
-    let student = this.existingUser;
+  @action startEditingSectionPassword() {
+    this.isEditingSectionPassword = true;
+  }
+
+  @action showClassPassword() {
+    this.isShowingClassPassword = true;
+  }
+
+  @action hideClassPassword() {
+    this.isShowingClassPassword = false;
+  }
+
+  @action async updateSectionPassword() {
+    this.isEditingSectionPassword = false;
+    const section = this.args.section;
+    if (!section.hasDirtyAttributes) {
+      return;
+    }
+    try {
+      await section.save();
+      this.alert.showToast('success', 'Class Password Updated');
+      this.errorHandling.removeMessages('updateSectionErrors');
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'updateSectionErrors');
+    }
+  }
+
+  @action async updateStudents(val) {
+    if (!val) {
+      return;
+    }
+    const user = this.store.peekRecord('user', val);
+    if (!user) {
+      return;
+    }
+    const students = await this.args.section.students;
+    if (students.includes(user)) {
+      this.userAlreadyInSection = true;
+      this.clearSelectizeInput('select-add-student');
+      return;
+    }
+    students.push(user);
+    try {
+      await this.args.section.save();
+      this.alert.showToast('success', 'Student Added');
+      this.clearSelectizeInput('select-add-student');
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'updateSectionErrors');
+    }
+  }
+
+  @action async addExistingStudent() {
+    const student = this.existingUser;
     if (!student) {
       return;
     }
-    let students = this.args.students;
-    this.store
-      .findRecord('user', student._id)
-      .then((user) => {
-        this.removeMessages('findUserErrors');
-        if (!students.includes(user)) {
-          students.pushObject(user);
-
-          this.clearAddExistingUser();
-          this.clearCreateInputs();
-          this.args.section.save().then(() => {
-            this.alert.showToast(
-              'success',
-              'Student added',
-              'bottom-end',
-              3000,
-              false,
-              null
-            );
-          });
-        } else {
-          this.userAlreadyInSection = true;
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'findUserErrors');
-      });
+    try {
+      const user = await this.store.findRecord('user', student._id);
+      this.errorHandling.removeMessages('findUserErrors');
+      const students = await this.args.section.students;
+      if (students.includes(user)) {
+        this.userAlreadyInSection = true;
+        return;
+      }
+      students.push(user);
+      this.clearAddExistingUser();
+      this.clearCreateInputs();
+      await this.args.section.save();
+      this.alert.showToast('success', 'Student added');
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'findUserErrors');
+    }
   }
 
   @action exitAddExistingUsername() {
@@ -187,26 +161,40 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
     this.clearCreateInputs();
   }
 
-  @action validateCreateStudent() {
+  @action usernameValidate() {
     const username = this.username;
-    let password;
-
-    const isUsingDefaultPassword = this.isUsingDefaultPassword;
-
-    if (isUsingDefaultPassword) {
-      password = this.args.sectionPassword;
-    } else {
-      password = this.password;
+    if (!username) {
+      return;
     }
+    if (!USERNAME_PATTERN.test(username)) {
+      this.incorrectUsername = true;
+    } else {
+      this.incorrectUsername = false;
+      this.isMissingCredentials = false;
+    }
+  }
+
+  @action checkError() {
+    this.usernameAlreadyExists = false;
+    this.userAlreadyInSection = false;
+    this.isMissingCredentials = false;
+  }
+
+  @action validateCreateStudent() {
+    const { username } = this;
+    const password = this.isUsingDefaultPassword
+      ? this.args.sectionPassword
+      : this.password;
 
     if (!username || !password) {
       this.isMissingCredentials = true;
       return;
     }
 
-    const students = this.args.students;
-
-    if (!isEmpty(students.findBy('username', username))) {
+    const alreadyInSection = this.args.students.find(
+      (s) => s.username === username
+    );
+    if (alreadyInSection) {
       this.userAlreadyInSection = true;
       return;
     }
@@ -215,108 +203,80 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       return;
     }
 
-    const firstName = this.firstName;
-    const lastName = this.lastName;
-
-    const ret = {
+    this.createStudent({
       username,
       password,
+      firstName: this.firstName,
+      lastName: this.lastName,
+    });
+  }
+
+  async createStudent({ username, password, firstName, lastName }) {
+    const currentUser = this.currentUser.user;
+    const org = await currentUser.organization;
+
+    const createUserData = {
       firstName,
       lastName,
+      username,
+      password,
+      sectionId: this.args.section.id,
+      sectionRole: 'student',
+      createdBy: currentUser.id,
+      isAuthorized: true,
+      accountType: 'S',
+      authorizedBy: currentUser.id,
+      isFromSectionPage: true,
+      organization: org?.id,
     };
-    this.createStudent(ret);
-  }
 
-  @action usernameValidate() {
-    var username = this.username;
-    if (username) {
-      var usernamePattern = new RegExp(/^[a-z0-9_]{3,30}$/);
-      var usernameTest = usernamePattern.test(username);
-
-      if (usernameTest === false) {
-        this.incorrectUsername = true;
-        return;
-      }
-
-      if (usernameTest === true) {
-        this.incorrectUsername = false;
-        this.isMissingCredentials = false;
-        return;
-      }
-    }
-  }
-
-  @action checkError() {
-    let errors = [
-      'usernameAlreadyExists',
-      'userAlreadyInSection',
-      'isMissingCredentials',
-    ];
-
-    for (let error of errors) {
-      if (this[error]) {
-        this[error] = false;
-      }
-    }
-  }
-
-  @action updateSectionPassword() {
-    this.isEditingSectionPassword = false;
-    let section = this.args.section;
-    if (section.get('hasDirtyAttributes')) {
-      section
-        .save()
-        .then(() => {
-          this.alert.showToast(
-            'success',
-            'Class Password Updated',
-            'bottom-end',
-            3000,
-            false,
-            null
-          );
-          this.removeMessages('updateSectionErrors');
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors');
-        });
-    }
-  }
-  @action updateStudents(val, $item) {
-    if (!val) {
-      return;
-    }
-    let user = this.store.peekRecord('user', val);
-    if (!user) {
-      return;
-    }
-
-    let students = this.args.students;
-
-    // adding
-    if (students.includes(user)) {
-      this.userAlreadyInSection = true;
-      this.clearSelectizeInput('select-add-student');
-      return;
-    }
-    students.addObject(user);
-
-    this.args.section
-      .save()
-      .then(() => {
-        this.alert.showToast(
-          'success',
-          'Student Added',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-        // clear selectize
-        this.clearSelectizeInput('select-add-student');
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors');
+    try {
+      const response = await fetch('/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(createUserData),
+        credentials: 'same-origin',
       });
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+      const res = await response.json();
+      this.errorHandling.removeMessages('createUserErrors');
+      if (res.message) {
+        if (res.message === 'There already exists a user with that username') {
+          this.usernameAlreadyExists = true;
+        } else {
+          this.errorHandling.handleErrors(
+            { message: res.message },
+            'createUserErrors'
+          );
+        }
+      } else if (res.user && res.canAddExistingUser === true) {
+        this.canAddExistingUser = true;
+        this.existingUser = res.user;
+      } else {
+        const section = this.args.section;
+        try {
+          const user = await this.store.findRecord('user', res._id);
+          const students = await section.students;
+          students.push(user);
+          try {
+            await section.save();
+            this.clearCreateInputs();
+            this.alert.showToast('success', 'Student Created');
+          } catch (err) {
+            this.errorHandling.handleErrors(
+              err,
+              'updateSectionErrors',
+              section
+            );
+          }
+        } catch (err) {
+          this.errorHandling.handleErrors(err, 'findUserErrors');
+        }
+      }
+    } catch (err) {
+      this.errorHandling.handleErrors(err, 'createUserErrors');
+    }
   }
 }

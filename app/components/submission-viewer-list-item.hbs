@@ -1,0 +1,91 @@
+<div
+  class="item-container"
+  {{did-insert this.setupClickOutsideHandler}}
+  {{will-destroy this.teardownClickOutsideHandler}}
+>
+  <div class="item-section toggle-all toggle-check">
+    <input
+      type="checkbox"
+      checked={{this.isChecked}}
+      name="customIds"
+      value={{@answer.id}}
+      {{on "click" this.onSelect}}
+    />
+  </div>
+  <div class="item-section student {{if @answer.isTrashed "trashed"}}">
+    {{@answer.student}}
+  </div>
+  <div class="item-section revisions">
+    {{this.revisionCount}}
+  </div>
+  <div class="item-section explanation">
+    {{#if this.isVmt}}
+      {{#let @answer.vmtRoomInfo as |room|}}
+        <p>Room Name: {{room.roomName}}</p>
+        <p>Activity Name:
+          {{#if room.activityName}}
+            {{room.activityName}}
+          {{else}}
+            N/A
+          {{/if}}
+        </p>
+        <p>Participants</p>
+        <ul>
+          {{#each room.participants as |username|}}
+            <li>{{username}}</li>
+          {{else}}
+            <li>N/A</li>
+          {{/each}}
+        </ul>
+        <p>Facilitators</p>
+        <ul>
+          {{#each room.facilitators as |username|}}
+            <li>{{username}}</li>
+          {{else}}
+            <li>N/A</li>
+          {{/each}}
+        </ul>
+      {{/let}}
+    {{else}}
+      {{make-html-safe @answer.explanation}}
+    {{/if}}
+  </div>
+  <div class="item-section section">
+    {{#if @answer.section.name}}
+      {{@answer.section.name}}
+    {{else}}
+      N/A
+    {{/if}}
+  </div>
+  <div class="item-section createDate">
+    <span>{{format-date @answer.createDate "L"}}</span>
+  </div>
+  <div
+    class="item-section more"
+    role="button"
+    {{on "click" this.toggleShowMoreMenu}}
+  >
+    <i class="fas fa-ellipsis-v more-menu"></i>
+    {{#if this.showMoreMenu}}
+      <span class="click-menu">
+        <ul>
+          {{#if this.ellipsisMenuOptions}}
+            {{#each this.ellipsisMenuOptions as |option|}}
+              <li
+                role="menuitem"
+                {{on "click" (fn this.handleMenuOption option.action)}}
+              >
+                <label>
+                  <span class="icon-text">{{option.label}}</span>
+                  <i class={{option.icon}}></i>
+                </label>
+              </li>
+            {{/each}}
+          {{else}}
+            <li>No options</li>
+          {{/if}}
+        </ul>
+      </span>
+    {{/if}}
+  </div>
+</div>

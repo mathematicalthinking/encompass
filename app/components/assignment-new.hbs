@@ -1,4 +1,4 @@
-<div id='assignment-new'>
+<div id='assignment-new' {{did-insert this.scrollIntoView}}>
   <header id='assignmentnewheader'>
     <h2>
       Enter assignment information below
@@ -31,8 +31,8 @@
                 <SelectizeInput
                   @inputId='assn-new-section-select'
                   @initialOptions={{this.sectionOptions}}
-                  @onItemAdd={{action 'updateSelectizeSingle'}}
-                  @onItemRemove={{action 'updateSelectizeSingle'}}
+                  @onItemAdd={{this.updateSelectizeSingle}}
+                  @onItemRemove={{this.updateSelectizeSingle}}
                   @maxItems={{1}}
                   @labelField='name'
                   @valueField='id'
@@ -40,24 +40,12 @@
                   @propToUpdate='selectedSection'
                   @placeholder='Search for a class by name'
                   @model='section'
-                  @store={{this.store}}
                 />
                 <Input
                   required={{true}}
                   @type='hidden'
                   @value={{this.selectedSection}}
                 />
-                {{#each this.sectionFormErrors as |error|}}
-                  <ErrorBox
-                    @error={{error}}
-                    @showDismiss={{true}}
-                    @resetError={{action
-                      'removeErrorFromArray'
-                      'sectionFormErrors'
-                      error
-                    }}
-                  />
-                {{/each}}
               {{/if}}
             </div>
           </li>
@@ -73,18 +61,17 @@
                 *
               </span>
             </label>
-            {{#if this.fromProblemInfo}}
+            {{#if @showTitle}}
               <p>
                 {{this.selectedProblem.title}}
               </p>
             {{else}}
               <div class='flex-input'>
                 <SelectizeInput
-                  @store={{this.store}}
                   @inputId='assn-new-problem-select'
                   @initialOptions={{this.problemOptions}}
-                  @onItemAdd={{action 'updateSelectizeSingle'}}
-                  @onItemRemove={{action 'updateSelectizeSingle'}}
+                  @onItemAdd={{this.updateSelectizeSingle}}
+                  @onItemRemove={{this.updateSelectizeSingle}}
                   @maxItems={{1}}
                   @labelField='title'
                   @valueField='id'
@@ -98,17 +85,6 @@
                   @topLevelQueryParams='searchBy'
                   @preload={{this.problemsPreloadValue}}
                 />
-                {{#each this.problemFormErrors as |error|}}
-                  <ErrorBox
-                    @error={{error}}
-                    @showDismiss={{true}}
-                    @resetError={{action
-                      'removeErrorFromArray'
-                      'problemFormErrors'
-                      error
-                    }}
-                  />
-                {{/each}}
               </div>
             {{/if}}
           </li>
@@ -124,17 +100,12 @@
               </label>
               <div class='flex-input'>
                 <Input
-                  @id='assignedDate'
-                  @name='daterange'
+                  id='assignedDate'
+                  name='daterange'
                   @type='date'
                   @value={{this.assignedDate}}
                   {{on 'input' this.cancelDateError}}
                 />
-                {{#each this.assignedDateFormErrors as |error|}}
-                  <p class='error-message'>
-                    {{error}}
-                  </p>
-                {{/each}}
               </div>
             </li>
             <li>
@@ -148,22 +119,17 @@
               </label>
               <div class='flex-input dueDate'>
                 <Input
-                  @id='dueDate'
-                  @name='daterange'
+                  id='dueDate'
+                  name='daterange'
                   @type='date'
                   @value={{this.dueDate}}
                   {{on 'input' this.cancelDateError}}
                 />
-                {{#each this.dueDateFormErrors as |error|}}
-                  <p class='error-message'>
-                    {{error}}
-                  </p>
-                {{/each}}
                 {{#if this.invalidDateRange}}
-                  <ErrorBox
+                  <Ui::ErrorBox
                     @error='Invalid Date Range'
                     @showDismiss={{true}}
-                    @resetError={{action (mut this.invalidDateRange) null}}
+                    @resetError={{this.cancelDateError}}
                   />
                 {{/if}}
               </div>
@@ -185,11 +151,6 @@
                 @value={{this.name}}
                 class='assignmentInput'
               />
-              {{#each this.nameFormErrors as |error|}}
-                <p class='error-message'>
-                  {{error}}
-                </p>
-              {{/each}}
             </div>
           </li>
           <li class='linked-ws'>
@@ -202,10 +163,10 @@
               </span>
             </label>
             <div class='choice-selection'>
-              <RadioGroup
+              <Ui::RadioGroup
                 @options={{this.linkedWsOptions}}
                 @selectedValue={{this.doCreateLinkedWorkspaces}}
-                @updateValue={{action 'updateDoCreateLinkedWorkspaces'}}
+                @updateValue={{this.updateDoCreateLinkedWorkspaces}}
               />
             </div>
             {{#if this.showLinkedWsForm}}
@@ -213,10 +174,10 @@
                 class='group-selection'
                 {{on 'click' this.updateSectionGroups}}
               >
-                <RadioGroup
+                <Ui::RadioGroup
                   @options={{this.groupWsOptions}}
                   @selectedValue={{this.linkedWorkspacesMode}}
-                  @updateValue={{action 'updateLinkedWorkspacesMode'}}
+                  @updateValue={{this.updateLinkedWorkspacesMode}}
                   @noWidth={{true}}
                 />
               </div>
@@ -244,10 +205,10 @@
                     Create Parent Workspace Now?
                   </span>
                 </label>
-                <RadioGroup
+                <Ui::RadioGroup
                   @options={{this.parentWsOptions}}
                   @selectedValue={{this.doCreateParentWorkspace}}
-                  @updateValue={{action 'updateDoCreateParentWorkspace'}}
+                  @updateValue={{this.updateDoCreateParentWorkspace}}
                 />
 
                 {{#if this.doCreateParentWorkspace}}
@@ -259,10 +220,10 @@
                       Share parent workspace with students?
                     </span>
                   </label>
-                  <RadioGroup
+                  <Ui::RadioGroup
                     @options={{this.parentWorkspaceAccessOptions}}
                     @selectedValue={{this.parentWorkspaceAccess}}
-                    @updateValue={{action 'updateParentWorkspaceAccess'}}
+                    @updateValue={{this.updateParentWorkspaceAccess}}
                     @noWidth={{true}}
                   />
                   <ParentWorkspaceNew
@@ -284,16 +245,21 @@
     </form>
   </section>
   <section class='submit button-row'>
-    <button class='createAssignment' data-test='create' {{action 'validate'}}>
+    <button
+      class='createAssignment'
+      data-test='create'
+      type='button'
+      {{on 'click' this.validate}}
+    >
       Create Assignment
       <i class='fas fa-plus-circle'></i>
     </button>
-    <button class='cancelBtn' {{action 'cancel'}}>
+    <button class='cancelBtn' type='button' {{on 'click' this.cancel}}>
       Cancel
       <i class='fas fa-times'></i>
     </button>
   </section>
-  {{#each this.createRecordErrors as |error|}}
+  {{#each this.errors as |error|}}
     <p class='error-message'>
       {{error}}
     </p>

@@ -1,0 +1,463 @@
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render, click } from '@ember/test-helpers';
+import { hbs } from 'ember-cli-htmlbars';
+import Service from '@ember/service';
+
+module('Integration | Component | workspace-comment', function (hooks) {
+  setupRenderingTest(hooks);
+
+  hooks.beforeEach(function () {
+    class UtilityMethodsService extends Service {
+      getBelongsToId(record, key) {
+        if (!record || !key) {
+          return null;
+        }
+
+        const value = record[key];
+        if (!value) {
+          return null;
+        }
+
+        if (typeof value === 'object') {
+          return value.id ?? null;
+        }
+
+        return value;
+      }
+      getHasManyIds(record, key) {
+        return record[key] || [];
+      }
+    }
+
+    class WorkspacePermissionsService extends Service {
+      canEdit() {
+        return true;
+      }
+    }
+
+    class CurrentUserService extends Service {
+      id = 'u1';
+      user = { id: 'u1', username: 'testuser' };
+      isAdmin = false;
+      isStudent = false;
+    }
+
+    class CurrentSelectionService extends Service {
+      selection = null;
+
+      get hasSelection() {
+        return !!this.selection;
+      }
+
+      isCurrentSelection(selectionId) {
+        return this.selection?.id === selectionId;
+      }
+
+      setSelection(selection) {
+        this.selection = selection;
+      }
+    }
+
+    this.owner.register('service:utility-methods', UtilityMethodsService);
+    this.owner.register(
+      'service:workspace-permissions',
+      WorkspacePermissionsService
+    );
+    this.owner.register('service:currentUser', CurrentUserService);
+    this.owner.register('service:currentSelection', CurrentSelectionService);
+  });
+
+  function createComment(overrides = {}) {
+    return {
+      id: 'c1',
+      text: 'Test comment text',
+      label: 'notice',
+      relevance: 'high',
+      inReuse: false,
+      selection: {
+        id: 's1',
+        link: 'http://example.com',
+        submission: { id: 'sub1' },
+      },
+      workspace: { id: 'w1', name: 'Test Workspace' },
+      createdBy: { id: 'u1', username: 'testuser' },
+      children: [],
+      ...overrides,
+    };
+  }
+
+  async function renderWorkspaceComment(context, props = {}) {
+    const {
+      comment = createComment(),
+      currentWorkspace = { id: 'w1' },
+      isParentWorkspace = false,
+    } = props;
+
+    // Set up currentSelection service if provided
+    const currentSelectionService = context.owner.lookup(
+      'service:currentSelection'
+    );
+    if (props.currentSelection !== undefined) {
+      currentSelectionService.selection = props.currentSelection;
+    } else {
+      // Default: set to match default comment selection
+      currentSelectionService.selection = { id: 's1' };
+    }
+
+    context.setProperties({
+      comment,
+      currentWorkspace,
+      isParentWorkspace,
+      deleteComment: props.deleteComment || (() => {}),
+      reuseComment: props.reuseComment || (() => {}),
+    });
+
+    await render(hbs`<WorkspaceComment
+      @comment={{this.comment}}
+      @currentWorkspace={{this.currentWorkspace}}
+      @isParentWorkspace={{this.isParentWorkspace}}
+      @deleteComment={{this.deleteComment}}
+      @reuseComment={{this.reuseComment}}
+    />`);
+  }
+
+  // --- Basic Rendering ---
+  test('renders comment with basic structure', async function (assert) {
+    await renderWorkspaceComment(this);
+    assert.dom('li.ws-comment-comp').exists();
+    assert.dom('.comment-flex-item.text').exists();
+    assert.dom('.comment-flex-item.actions').exists();
+  });
+
+  test('displays comment text', async function (assert) {
+    await renderWorkspaceComment(this);
+    assert.dom('.comment-text').hasText('Test comment text');
+  });
+
+  test('displays creator username', async function (assert) {
+    await renderWorkspaceComment(this);
+    assert.dom('.creator').hasText('testuser');
+  });
+
+  test('displays workspace name', async function (assert) {
+    await renderWorkspaceComment(this);
+    assert.dom('.workspace').hasText('Test Workspace');
+  });
+
+  // --- CSS Classes ---
+  test('adds label class to li element', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ label: 'wonder' }),
+    });
+    assert.dom('li').hasClass('wonder');
+  });
+
+  test('adds relevance class to li element', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ relevance: 'high' }),
+    });
+    assert.dom('li').hasClass('relevance-high');
+  });
+
+  test('adds inReuse class when comment is in reuse', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ inReuse: true }),
+    });
+    assert.dom('li').hasClass('inReuse');
+  });
+
+  test('adds is-for-cs class when comment is from current selection', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ selection: { id: 's1' } }),
+      currentSelection: { id: 's1' },
+    });
+    assert.dom('li').hasClass('is-for-cs');
+  });
+
+  // --- Permissions ---
+  test('shows delete button when user can delete', async function (assert) {
+    await renderWorkspaceComment(this);
+    assert.dom('.delete_button').exists();
+  });
+
+  test('hides delete button when user cannot delete', async function (assert) {
+    this.owner.unregister('service:workspace-permissions');
+    this.owner.register(
+      'service:workspace-permissions',
+      class extends Service {
+        canEdit() {
+          return false;
+        }
+      }
+    );
+    await renderWorkspaceComment(this);
+    assert.dom('.delete_button').doesNotExist();
+  });
+
+  test('hides delete button for non-admin user on another user comment', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ createdBy: { id: 'u2', username: 'other-user' } }),
+    });
+    assert.dom('.delete_button').doesNotExist();
+  });
+
+  test('shows delete button for admin on another user comment', async function (assert) {
+    this.owner.unregister('service:currentUser');
+    this.owner.register(
+      'service:currentUser',
+      class extends Service {
+        id = 'u1';
+        user = { id: 'u1', username: 'admin-user' };
+        isAdmin = true;
+        isStudent = false;
+      }
+    );
+
+    await renderWorkspaceComment(this, {
+      comment: createComment({ createdBy: { id: 'u2', username: 'other-user' } }),
+    });
+    assert.dom('.delete_button').exists();
+  });
+
+  test('shows reuse button when user can comment', async function (assert) {
+    await renderWorkspaceComment(this);
+    assert.dom('button[title="reuse this comment"]').exists();
+  });
+
+  test('hides reuse button when user cannot comment', async function (assert) {
+    this.owner.unregister('service:workspace-permissions');
+    this.owner.register(
+      'service:workspace-permissions',
+      class extends Service {
+        canEdit(ws, type, level) {
+          return level !== 2;
+        }
+      }
+    );
+    await renderWorkspaceComment(this);
+    assert.dom('button[title="reuse this comment"]').doesNotExist();
+  });
+
+  test('displays children count when comment has children', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ children: [{ id: 'c2' }, { id: 'c3' }] }),
+    });
+    assert.dom('button[title="reuse this comment"]').hasText('2');
+  });
+
+  test('displays plus icon when comment has no children', async function (assert) {
+    await renderWorkspaceComment(this);
+    assert.dom('button[title="reuse this comment"] .fa-plus').exists();
+  });
+
+  // --- Actions ---
+  test('calls deleteComment action when delete button clicked', async function (assert) {
+    let deletedComment = null;
+    await renderWorkspaceComment(this, {
+      deleteComment: (comment) => {
+        deletedComment = comment;
+      },
+    });
+    await click('.delete_button');
+    assert.strictEqual(deletedComment.id, 'c1');
+  });
+
+  test('calls reuseComment action when reuse button clicked', async function (assert) {
+    let reusedComment = null;
+    await renderWorkspaceComment(this, {
+      reuseComment: (comment) => {
+        reusedComment = comment;
+      },
+    });
+    await click('button[title="reuse this comment"]');
+    assert.strictEqual(reusedComment.id, 'c1');
+  });
+
+  // --- Parent Workspace Mode ---
+  test('displays original comment info in parent workspace', async function (assert) {
+    const comment = createComment({
+      originalComment: {
+        createdBy: { username: 'originaluser' },
+        workspace: { name: 'Original Workspace' },
+      },
+    });
+    await renderWorkspaceComment(this, { comment, isParentWorkspace: true });
+    assert.dom('.creator').hasText('originaluser');
+    assert.dom('.workspace').hasText('Original Workspace');
+  });
+
+  test('renders workspace route link when not for current workspace', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ workspace: { id: 'w2' } }),
+      currentWorkspace: { id: 'w1' },
+    });
+
+    assert.dom('a.comment-text').exists();
+  });
+
+  // --- Group Workspace Selection Matching ---
+  test('handles missing selection', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ selection: null }),
+    });
+    assert.dom('li.ws-comment-comp').exists();
+  });
+
+  test('handles group workspace with original selection', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({
+        selection: {
+          id: 's2',
+          submission: { id: 'sub1' },
+        },
+      }),
+      currentSelection: {
+        id: 's1',
+        originalSelection: { id: 's2' },
+      },
+      isParentWorkspace: false,
+    });
+    assert.dom('li').hasClass('is-for-cs');
+  });
+
+  test('does not add is-for-cs class in parent workspace when selections do not match', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({
+        selection: {
+          id: 's2',
+          submission: { id: 'sub1' },
+        },
+      }),
+      currentSelection: { id: 's1' },
+      isParentWorkspace: true,
+    });
+    assert.dom('li').doesNotHaveClass('is-for-cs');
+  });
+
+  // --- Edge Cases ---
+  test('handles missing workspace gracefully', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ workspace: null }),
+    });
+    assert.dom('li.ws-comment-comp').exists();
+  });
+
+  test('handles missing createdBy gracefully', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ createdBy: null }),
+    });
+    assert.dom('li.ws-comment-comp').exists();
+  });
+
+  test('renders with empty relevance', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ relevance: '' }),
+    });
+    assert.dom('li').hasClass('relevance-');
+  });
+
+  test('renders LinkTo when comment is for current workspace', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ workspace: { id: 'w1' } }),
+      currentWorkspace: { id: 'w1' },
+    });
+    assert.dom('a.comment-text').exists();
+  });
+
+  // --- CurrentSelection Service Integration ---
+  test('uses currentSelection service to determine is-for-cs class', async function (assert) {
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+
+    await renderWorkspaceComment(this, {
+      comment: createComment({ selection: { id: 's1' } }),
+      currentSelection: { id: 's1' },
+    });
+
+    assert.strictEqual(currentSelectionService.selection.id, 's1');
+    assert.dom('li').hasClass('is-for-cs');
+  });
+
+  test('uses isCurrentSelection method from service', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ selection: { id: 's1' } }),
+      currentSelection: { id: 's1' },
+    });
+
+    assert.dom('li').hasClass('is-for-cs');
+
+    // Change selection
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    currentSelectionService.setSelection({ id: 's2' });
+
+    // Re-render with different selection
+    await renderWorkspaceComment(this, {
+      comment: createComment({ selection: { id: 's1' } }),
+      currentSelection: { id: 's2' },
+    });
+
+    assert.dom('li').doesNotHaveClass('is-for-cs');
+  });
+
+  test('handles null currentSelection from service', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({ selection: { id: 's1' } }),
+      currentSelection: null,
+    });
+
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    assert.strictEqual(currentSelectionService.selection, null);
+    assert.dom('li').doesNotHaveClass('is-for-cs');
+  });
+
+  test('checks originalSelection for non-parent workspaces', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({
+        selection: {
+          id: 's2',
+          submission: { id: 'sub1' },
+        },
+      }),
+      currentSelection: {
+        id: 's1',
+        originalSelection: { id: 's2' },
+      },
+      isParentWorkspace: false,
+    });
+
+    const currentSelectionService = this.owner.lookup(
+      'service:currentSelection'
+    );
+    assert.strictEqual(
+      currentSelectionService.selection.originalSelection.id,
+      's2'
+    );
+    assert.dom('li').hasClass('is-for-cs');
+  });
+
+  test('skips originalSelection check for parent workspaces', async function (assert) {
+    await renderWorkspaceComment(this, {
+      comment: createComment({
+        selection: {
+          id: 's2',
+          submission: { id: 'sub1' },
+        },
+      }),
+      currentSelection: {
+        id: 's1',
+        originalSelection: { id: 's2' },
+      },
+      isParentWorkspace: true,
+    });
+
+    // In parent workspace, should use isCurrentSelection method which checks current selection id
+    // Since comment has s2 but current is s1, should not match
+    assert.dom('li').doesNotHaveClass('is-for-cs');
+  });
+});

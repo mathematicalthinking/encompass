@@ -1,4 +1,13 @@
 <div class="import-page">
-  <ImportWorkContainer @model={{model}} @users={{model.users}} @store={{this.store}} @toWorkspaces="toWorkspaces" @doConfirmLeaving="doConfirmLeaving" />
+  <ImportWorkContainer
+    @model={{this.model}}
+    @users={{this.model.users}}
+    @initialStep={{this.step}}
+    @initialProblemId={{this.problemId}}
+    @initialSectionId={{this.sectionId}}
+    @initialUseClass={{this.useClass}}
+    @store={{this.store}}
+    @toWorkspaces={{this.toWorkspaces}}
+    @doConfirmLeaving={{this.doConfirmLeaving}}
+  />
 </div>
-

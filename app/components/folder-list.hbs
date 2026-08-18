@@ -1,0 +1,54 @@
+<div
+  id='folder-list'
+  class='workspace-flex-item folders
+    {{if @isHidden "hidden"}}
+    {{if this.isBipaneled "bi-paneled"}}
+    {{if this.isTripaneled "tri-paneled"}}
+    {{if this.editFolderMode "is-editing"}}'
+>
+  <header>
+    <h2>Folders</h2>
+    <span {{on 'click' this.hideFolders}}>
+      <i title='Hide Folders' class='far fa-eye-slash'></i>
+    </span>
+  </header>
+
+  <WorkspaceFolderDrop @folders={{@folders}}>
+    <ul id='al_folders'>
+      {{#each this.sortedFolders as |folder|}}
+        <FolderElem
+          @model={{folder}}
+          @currentWorkspace={{@workspace}}
+          @folderList={{@folders}}
+          @editFolderMode={{this.editFolderMode}}
+          @dropped={{this.fileSelectionInFolder}}
+          @confirm={{this.askToDelete}}
+          @currentSubmission={{@currentSubmission}}
+          @canEditFolders={{this.canEdit}}
+          @canDeleteFolders={{this.canDelete}}
+          @wsTaggings={{@taggings}}
+          @moveOut={{this.moveOut}}
+          @moveUp={{this.moveUp}}
+          @moveDown={{this.moveDown}}
+        />
+      {{/each}}
+    </ul>
+  </WorkspaceFolderDrop>
+
+  {{#if this.canManageFolders}}
+    <div class='folders-modify'>
+      <div class='folders-modify-item add'>
+        <span {{on 'click' this.openModal}}>
+          Add
+          <i class='fas fa-plus'></i>
+        </span>
+      </div>
+      <div class='folders-modify-item edit'>
+        <span {{on 'click' this.toggleEditMode}} title={{this.toggleEditAlt}}>
+          {{this.editFolderText}}
+          <i class={{this.editFolderIcon}}></i>
+        </span>
+      </div>
+    </div>
+  {{/if}}
+</div>

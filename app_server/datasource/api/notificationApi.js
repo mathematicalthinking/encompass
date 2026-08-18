@@ -1,7 +1,7 @@
 /**
-  * # Notification API
-  * @description This is the API for notification based requests
-*/
+ * # Notification API
+ * @description This is the API for notification based requests
+ */
 
 //REQUIRE MODULES
 const _ = require('underscore');
@@ -9,14 +9,13 @@ const _ = require('underscore');
 //REQUIRE FILES
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
-const utils    = require('../../middleware/requestHandler');
+const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/notifications');
 
 const objectUtils = require('../../utils/objects');
 const { isNonEmptyObject } = objectUtils;
 
 const { isValidMongoId } = require('../../utils/mongoose');
-
 
 module.exports.get = {};
 module.exports.post = {};
@@ -35,7 +34,7 @@ const getNotifications = (req, res, next) => {
   return models.Notification.find(criteria)
     .then((notifications) => {
       return utils.sendResponse(res, {
-        notifications
+        notifications,
       });
     })
     .catch((err) => {
@@ -58,14 +57,13 @@ const getNotification = (req, res, next) => {
         return utils.sendError.NotAuthorizedError(null, res);
       }
       return utils.sendResponse(res, {
-        notification
+        notification,
       });
     })
     .catch((err) => {
       console.error(`Error getNotification: ${err}`);
       console.trace();
       return utils.sendError.InternalError(null, res);
-
     });
 };
 
@@ -86,10 +84,11 @@ const postNotification = (req, res, next) => {
 
   let newNotification = new models.Notification(req.body.notification);
 
-  return newNotification.save()
+  return newNotification
+    .save()
     .then((notification) => {
       return utils.sendResponse(res, {
-        notification
+        notification,
       });
     })
     .catch((err) => {
@@ -123,10 +122,9 @@ const putNotification = async (req, res, next) => {
 
     let savedNtf = await notification.save();
     return utils.sendResponse(res, {
-      notification: savedNtf
+      notification: savedNtf,
     });
-
-  }catch(err) {
+  } catch (err) {
     console.error(`Error putNotification: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);

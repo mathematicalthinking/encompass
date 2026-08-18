@@ -5,7 +5,7 @@
  * @description This is the API for assignment based requests
  * @author Daniel Kelly
  */
-const moment = require('moment');
+const { format, isValid } = require('date-fns');
 
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
@@ -258,22 +258,26 @@ const postAssignment = async (req, res, next) => {
     } = req.body.assignment;
 
     // assignedDate, dueDate should be isoDate strings
-    let assignedMoment = moment(assignedDate);
+    const assignedDateObj = new Date(assignedDate);
 
-    if (!assignedMoment.isValid()) {
+    if (!isValid(assignedDateObj)) {
       // invalid assigned Date
       // not required to have assigned date on creation
       delete req.body.assignment.assignedDate;
       delete req.body.assignment.dueDate;
     }
 
-    let dueMoment = moment(dueDate);
+    const dueDateObj = new Date(dueDate);
 
-    if (!dueMoment.isValid()) {
+    if (!isValid(dueDateObj)) {
       delete req.body.assignment.dueDate;
     }
 
-    if (dueMoment < assignedMoment) {
+    if (
+      isValid(dueDateObj) &&
+      isValid(assignedDateObj) &&
+      dueDateObj < assignedDateObj
+    ) {
       // due date before assigned date
       // set due data as undefined
       // can be edited later
@@ -299,9 +303,9 @@ const postAssignment = async (req, res, next) => {
         );
       }
       let formattedDate =
-        typeof assignedDate === 'string'
-          ? moment(assignedDate).format('MMM Do YYYY')
-          : moment(new Date()).format('MMM Do YYYY');
+        typeof assignedDate === 'string' && isValid(assignedDateObj)
+          ? format(assignedDateObj, 'MMM do yyyy')
+          : format(new Date(), 'MMM do yyyy');
       req.body.assignment.name = `${foundProblem.title} / ${formattedDate} `;
     }
 
@@ -321,17 +325,21 @@ const postAssignment = async (req, res, next) => {
     let linkedWorkspaces;
     let parentWorkspace;
     let parentWorkspaceError;
-
-    const [err, teacherWorkspaces] = await generateTeacherWorkspace(
-      assignment,
-      user
-    );
-
-    if (err) {
-      console.log(err);
-    }
+    let teacherWorkspaces = [];
 
     if (doCreateLinkedWorkspaces) {
+      const [teacherWorkspacesErr, createdTeacherWorkspaces] =
+        await generateTeacherWorkspace(assignment, user);
+
+      if (teacherWorkspacesErr) {
+        logger.error(
+          'generateTeacherWorkspaceErr: ',
+          teacherWorkspacesErr?.message || teacherWorkspacesErr
+        );
+      } else if (isNonEmptyArray(createdTeacherWorkspaces)) {
+        teacherWorkspaces = createdTeacherWorkspaces;
+      }
+
       // create a linked workspace for each student in assignment
       await assignment
         .populate('students')
@@ -339,14 +347,12 @@ const postAssignment = async (req, res, next) => {
         .populate({ path: 'section', select: 'name' })
         .execPopulate();
 
-      let [
-        err,
-        linkedWorkspaces,
-      ] = await generateLinkedWorkspacesFromAssignment(
-        assignment,
-        user,
-        linkedWorkspacesRequest
-      );
+      let [err, linkedWorkspaces] =
+        await generateLinkedWorkspacesFromAssignment(
+          assignment,
+          user,
+          linkedWorkspacesRequest
+        );
 
       if (err) {
         assignment.linkedWorkspacesRequest.error = err;
@@ -358,14 +364,12 @@ const postAssignment = async (req, res, next) => {
           ].map((ws) => ws._id);
 
           assignment.linkedWorkspaces = linkedWorkspacesIds;
-          assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
+          assignment.linkedWorkspacesRequest.createdWorkspaces =
+            linkedWorkspacesIds;
 
           if (doCreateParentWorkspace) {
-            let {
-              name,
-              doAutoUpdateFromChildren,
-              giveAccess,
-            } = parentWorkspaceRequest;
+            let { name, doAutoUpdateFromChildren, giveAccess } =
+              parentWorkspaceRequest;
 
             if (typeof doAutoUpdateFromChildren !== 'boolean') {
               doAutoUpdateFromChildren = true;
@@ -404,10 +408,8 @@ const postAssignment = async (req, res, next) => {
                 };
               });
             }
-            [
-              parentWorkspaceError,
-              parentWorkspace,
-            ] = await generateParentWorkspace(parentWsConfig);
+            [parentWorkspaceError, parentWorkspace] =
+              await generateParentWorkspace(parentWsConfig);
 
             if (parentWorkspaceError) {
               assignment.parentWorkspaceRequest.error = parentWorkspaceError;
@@ -477,10 +479,8 @@ const putAssignment = async (req, res, next) => {
     let assignment = await models.Assignment.findById(req.params.id).exec();
 
     // currently only support 1 request at a time for already existing assn
-    let {
-      linkedWorkspacesRequest,
-      parentWorkspaceRequest,
-    } = req.body.assignment;
+    let { linkedWorkspacesRequest, parentWorkspaceRequest } =
+      req.body.assignment;
 
     let doCreateLinkedWorkspaces =
       _.propertyOf(linkedWorkspacesRequest)('doCreate') === true;
@@ -500,14 +500,12 @@ const putAssignment = async (req, res, next) => {
         .populate({ path: 'section', select: 'name' })
         .populate('answers')
         .execPopulate();
-      [
-        linkedWorkspacesErr,
-        linkedWorkspaces,
-      ] = await generateLinkedWorkspacesFromAssignment(
-        assignment,
-        user,
-        linkedWorkspacesRequest
-      );
+      [linkedWorkspacesErr, linkedWorkspaces] =
+        await generateLinkedWorkspacesFromAssignment(
+          assignment,
+          user,
+          linkedWorkspacesRequest
+        );
 
       if (linkedWorkspacesErr) {
         assignment.linkedWorkspacesRequest.error = linkedWorkspacesErr;
@@ -515,10 +513,10 @@ const putAssignment = async (req, res, next) => {
         data.workspaces = linkedWorkspaces;
 
         let linkedWorkspacesIds = linkedWorkspaces.map((ws) => ws._id);
-        assignment.linkedWorkspaces = assignment.linkedWorkspaces.concat(
-          linkedWorkspacesIds
-        );
-        assignment.linkedWorkspacesRequest.createdWorkspaces = linkedWorkspacesIds;
+        assignment.linkedWorkspaces =
+          assignment.linkedWorkspaces.concat(linkedWorkspacesIds);
+        assignment.linkedWorkspacesRequest.createdWorkspaces =
+          linkedWorkspacesIds;
       }
       assignment
         .depopulate('students')
@@ -548,11 +546,8 @@ const putAssignment = async (req, res, next) => {
         data.assignment = assignment;
         return utils.sendResponse(res, data);
       }
-      let {
-        name,
-        doAutoUpdateFromChildren,
-        childWorkspaces,
-      } = parentWorkspaceRequest;
+      let { name, doAutoUpdateFromChildren, childWorkspaces } =
+        parentWorkspaceRequest;
 
       if (typeof doAutoUpdateFromChildren !== 'boolean') {
         doAutoUpdateFromChildren = true;
@@ -569,10 +564,8 @@ const putAssignment = async (req, res, next) => {
         doAutoUpdateFromChildren,
         linkedAssignment: assignment._id,
       };
-      let [
-        parentWorkspaceError,
-        parentWorkspace,
-      ] = await generateParentWorkspace(parentWsConfig);
+      let [parentWorkspaceError, parentWorkspace] =
+        await generateParentWorkspace(parentWsConfig);
 
       if (parentWorkspaceError) {
         assignment.parentWorkspaceRequest.error = parentWorkspaceError;

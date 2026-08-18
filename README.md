@@ -1,34 +1,37 @@
-# encompass 
- 
+# encompass
+
 EnCoMPASS is a project of the 21st Century Partnership for STEM Education, Mathematical Thinking, and Drexel University.
 
 ## Prerequisites:
 
-
 ### Install Single Signon App
+
 [MT-SSO](https://github.com/mathematicalthinking/mt-sso)
 
 Note: these procedures have the general prerequisites for all three apps required to run Encompass, as well as the specific installations to install the mt-sso Single Signon App.
 
 ### Install Virtual Math Teams
+
 [VMT](https://github.com/mathematicalthinking/vmt)
 
-
 ### Install Ember CLI
+
 [Ember CLI](https://ember-cli.com/)
-    npm install ember-cli # note if -g desired, may need sudo
+npm install ember-cli # note if -g desired, may need sudo
 
 ## Install Encompass
+
 ### set up ssh keys in github
-  [ssh access to github](https://github.com/settings/keys)
-  
+
+[ssh access to github](https://github.com/settings/keys)
+
     cd <code directory>
     git clone git@github.com:mathematicalthinking/encompass.git
 
-
-
 ## Running / Development
+
 Note: for troubleshooting MongoDB see mt-sso readme.md
+
 - On M1 Mac start MongoDB `mongod --config /opt/homebrew/etc/mongod.conf`
 - On Intel Mac start MongoDB `mongod --config /usr/local/etc/mongod.conf`
 - start mt-sso `npm run start` (in mt-sso directory)
@@ -73,7 +76,7 @@ If you run into the following error while running tests:
 
 ## Client `/app`
 
-EnCOMPASS uses Ember for the client and was recently migrated to Ember Octane from v2.14. Portions are not fully migrated.
+EnCOMPASS uses Ember for the client and was recently migrated to Ember Octane from v2.14. Portions are not fully migrated. See [UPGRADE_NOTES](./UPGRADE_NOTES.md) for more information.
 
 ### workflow
 
@@ -86,9 +89,6 @@ EnCOMPASS uses Ember for the client and was recently migrated to Ember Octane fr
 ### components
 
 Ember is switching to Glimmer for its component engine. Components that have their templates (.hbs files) in `app/components` have been migrated. Their classes (.js files) will look like native JS classes. Components with templates in `app/templates/components` have not been migrated and still use Classic Ember component classes. I tried to combine similar components when possible.
-
-- `admin-problem-filter` and `admin-workspace-filter` could be comined
-- `problem-filter` and `workspace-filter` could be combined
 
 ### mixins
 
@@ -119,9 +119,7 @@ Each route has a corresponding template that gets rendered. It should be in the 
 
 Libraries that are not managed by npm are added in the `/vendor` directory and configured into the bundle in `/ember-cli-build.js` including:
 
-1. selectize input library (see `app/components/selectize-input.js`)
-2. typeahead library (see `app/components/twitter-typeahead.js`)
-3. selection libraries (`vendor/image-tagging.js` and `vendor/selection-highlighting.js`) that are used in `app/components/workspace-submission.js`
+- selection libraries (`vendor/image-tagging.js` and `vendor/selection-highlighting.js`) that are used in `app/components/workspace-submission.js`
 
 ### `/helpers`
 

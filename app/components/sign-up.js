@@ -1,9 +1,10 @@
 import UserSignupComponent from './user-signup';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import _ from 'underscore';
-import $ from 'jquery';
+import { service } from '@ember/service';
+import isNull from 'lodash-es/isNull';
+import filter from 'lodash-es/filter';
+import map from 'lodash-es/map';
 
 export default class SignUpComponent extends UserSignupComponent {
   @tracked missingCredentials = false;
@@ -21,23 +22,20 @@ export default class SignUpComponent extends UserSignupComponent {
   didConfirmOrgRequest = false;
   @service('string-similarity') similarity;
   @service('sweet-alert') alert;
+  @service navigation;
 
-  createUser(data) {
-    return new Promise((resolve, reject) => {
-      if (!data) {
-        return reject('Invalid data');
-      }
-      $.post({
-        url: '/auth/signup',
-        data: data,
-      })
-        .then((res) => {
-          return resolve(res);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+  async createUser(data) {
+    if (!data) {
+      throw 'Invalid data';
+    }
+    const response = await fetch('/auth/signup', {
+      method: 'POST',
+      body: new URLSearchParams(data),
     });
+    if (!response.ok) {
+      throw new Error(`Signup failed (${response.status})`);
+    }
+    return response.json();
   }
   getSimilarOrgs(orgRequest) {
     let stopWords = [
@@ -57,14 +55,14 @@ export default class SignUpComponent extends UserSignupComponent {
       return [];
     }
 
-    let sliced = orgs.toArray().slice();
+    let sliced = orgs.slice();
 
     let requestCompare = this.similarity.convertStringForCompare(
       orgRequest,
       stopWords
     );
 
-    let similarOrgs = _.filter(sliced, (org) => {
+    let similarOrgs = filter(sliced, (org) => {
       let name = org.get('name');
       let compare = this.similarity.convertStringForCompare(name, stopWords);
       let score = this.similarity.compareTwoStrings(compare, requestCompare);
@@ -79,8 +77,8 @@ export default class SignUpComponent extends UserSignupComponent {
       return [];
     }
 
-    let toArray = orgs.toArray();
-    let mapped = _.map(toArray, (org) => {
+    let toArray = orgs.slice();
+    let mapped = map(toArray, (org) => {
       return {
         id: org.id,
         name: org.get('name'),
@@ -100,7 +98,7 @@ export default class SignUpComponent extends UserSignupComponent {
       return org.get('name').toLowerCase();
     });
     // don't let user create org request if it matches exactly an existing org name
-    return !_.contains(orgNamesLower, requestLower);
+    return !orgNamesLower.includes(requestLower);
   }
   @action signup() {
     var firstName = this.firstName;
@@ -187,7 +185,7 @@ export default class SignUpComponent extends UserSignupComponent {
               null,
               false
             );
-            window.location.href = '/';
+            this.navigation.toHome({ fullReload: true });
           } else if (
             res.message === 'There already exists a user with that username'
           ) {
@@ -217,7 +215,7 @@ export default class SignUpComponent extends UserSignupComponent {
               null,
               false
             );
-            window.location.href = '/';
+            this.navigation.toHome({ fullReload: true });
           } else if (
             res.message === 'There already exists a user with that username'
           ) {
@@ -243,7 +241,7 @@ export default class SignUpComponent extends UserSignupComponent {
       return;
     }
 
-    let isRemoval = _.isNull($item);
+    let isRemoval = isNull($item);
     if (isRemoval) {
       this.org = null;
       return;
@@ -279,6 +277,7 @@ export default class SignUpComponent extends UserSignupComponent {
           text
         )
         .then((result) => {
+          const selectize = document.querySelector('select')?.selectize;
           if (result.value) {
             // user confirmed org request
             if (result.value === input) {
@@ -291,13 +290,13 @@ export default class SignUpComponent extends UserSignupComponent {
               return callback(ret);
             }
             // user selected an existing org
-            this.$('select')[0].selectize.setValue(result.value, true);
-            this.$('select')[0].selectize.removeOption(input);
+            selectize?.setValue(result.value, true);
+            selectize?.removeOption(input);
             return callback(null);
           } else {
             // user hit cancel
             // remove option from dropdown
-            this.$('select')[0].selectize.removeOption(input);
+            selectize?.removeOption(input);
             return callback(null);
           }
         });

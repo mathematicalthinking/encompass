@@ -1,47 +1,51 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
-const WorkspacePermissionObject = require('./workspace').WorkspacePermissionObject;
+const WorkspacePermissionObject =
+  require('./workspace').WorkspacePermissionObject;
 
 /**
-  * @public
-  * @class EncWorkspaceRequest
-  * @description EncWorkspaceRequests are a student's response to a problem
-  */
-var EncWorkspaceRequestSchema = new Schema({
-  //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
-  createDate: { type: Date, 'default': Date.now() },
-  isTrashed: { type: Boolean, 'default': false },
-  lastModifiedBy: { type: ObjectId, ref: 'User' },
-  lastModifiedDate: { type: Date, 'default': Date.now() },
-  //====
-  //student: { type: ObjectId, ref: 'User' },
-  // studentName: { type: String },
-  problem: { type: ObjectId, ref: 'Problem' },
-  assignment: { type: ObjectId, ref: 'Assignment' },
-  answer: { type: String },
-  teacher: { type: ObjectId, ref: 'User' },
-  startDate: { type: Date },
-  endDate: { type: Date },
-  pdSetName: { type: String },
-  folderSetName: { type: String },
-  section: { type: ObjectId, ref: 'Section' },
-  createdWorkspace: { type: ObjectId, ref: 'Workspace' },
-  isEmptyAnswerSet: { type: Boolean },
-  createWorkspaceError: { type: String },
-  newAnswerSet: {
-    name: {type: String},
-    privacySetting: {type: 'String', enum: ['M', 'O', 'E']}
+ * @public
+ * @class EncWorkspaceRequest
+ * @description EncWorkspaceRequests are a student's response to a problem
+ */
+var EncWorkspaceRequestSchema = new Schema(
+  {
+    //== Shared properties (Because Mongoose doesn't support schema inheritance)
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, default: Date.now() },
+    isTrashed: { type: Boolean, default: false },
+    lastModifiedBy: { type: ObjectId, ref: 'User' },
+    lastModifiedDate: { type: Date, default: Date.now() },
+    //====
+    //student: { type: ObjectId, ref: 'User' },
+    // studentName: { type: String },
+    problem: { type: ObjectId, ref: 'Problem' },
+    assignment: { type: ObjectId, ref: 'Assignment' },
+    answer: { type: String },
+    teacher: { type: ObjectId, ref: 'User' },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    pdSetName: { type: String },
+    folderSetName: { type: String },
+    section: { type: ObjectId, ref: 'Section' },
+    createdWorkspace: { type: ObjectId, ref: 'Workspace' },
+    isEmptyAnswerSet: { type: Boolean },
+    createWorkspaceError: { type: String },
+    newAnswerSet: {
+      name: { type: String },
+      privacySetting: { type: 'String', enum: ['M', 'O', 'E'] },
+    },
+    answers: [{ type: ObjectId, ref: 'Answer' }],
+    permissionObjects: [WorkspacePermissionObject],
   },
-  answers: [{type: ObjectId, ref: 'Answer'}],
-  permissionObjects: [ WorkspacePermissionObject ]
-}, { versionKey: false });
+  { versionKey: false }
+);
 
 /**
-  * ## Pre-Validation
-  * Before saving we must verify (synchonously) that:
-  */
+ * ## Pre-Validation
+ * Before saving we must verify (synchonously) that:
+ */
 // EncWorkspaceRequestSchema.pre('save', function (next) {
 //   var toObjectId = function (elem, ind, arr) {
 //     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
@@ -64,9 +68,9 @@ var EncWorkspaceRequestSchema = new Schema({
 // });
 
 /**
-  * ## Post-Validation
-  * After saving we must ensure (synchonously) that:
-  */
+ * ## Post-Validation
+ * After saving we must ensure (synchonously) that:
+ */
 // EncWorkspaceRequestSchema.post('save', function (EncWorkspaceRequest) {
 //   var update = { $addToSet: { 'answers': EncWorkspaceRequest } };
 //   if (EncWorkspaceRequest.isTrashed) {
@@ -114,4 +118,7 @@ var EncWorkspaceRequestSchema = new Schema({
 
 // });
 
-module.exports.EncWorkspaceRequest = mongoose.model('EncWorkspaceRequest', EncWorkspaceRequestSchema);
+module.exports.EncWorkspaceRequest = mongoose.model(
+  'EncWorkspaceRequest',
+  EncWorkspaceRequestSchema
+);

@@ -103,6 +103,12 @@
     }
     .detail-header {
       font-weight: $bold-font-weight;
+      .detail-edit-button {
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+      }
       i {
         position: relative;
         left: 5px;
@@ -194,12 +200,46 @@
     @include flex-item(1, flex-start, .15 0 auto);
     .section-name {
       font-size: 1.2em;
-      margin-bottom: 10px;
+      margin: 0 0 6px;
       font-weight: $main-font-weight;
       color: $dark-font-color;
     }
+    .student-count {
+      margin: 0 0 10px;
+      font-size: 1em;
+      color: $primary-font-color;
+    }
+    .student-list-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      button {
+        margin: 0;
+      }
+    }
+    .roster-toggle {
+      margin: 0;
+    }
+    .student-roster-scroll {
+      margin-top: 0;
+      max-height: 45vh;
+      overflow-y: auto;
+      padding-right: 8px;
+      border: 1px solid $input-border;
+      border-radius: 4px;
+      background: white;
+      padding: 8px 10px;
+    }
+    .student-roster-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
     .student-name {
-      margin: 25px 0;
+      margin: 0;
+      padding: 3px 0;
+      line-height: 1.2;
     }
   }
   .matching-container {

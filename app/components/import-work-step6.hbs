@@ -1,0 +1,141 @@
+<div id='import-work-step6'>
+  <div class="import-review summary">
+    {{#if this.isUploadingAnswer}}
+      {{#if this.showLoadingMessage}}
+        <p>Please wait, creating {{this.submissionCount}} submissions</p>
+      {{/if}}
+    {{else}}
+      <p class="input-label">Import Summary</p>
+      {{#if this.uploadedAnswers}}
+        <p class="success-info animated fadeIn"><b>{{this.submissionCount}} submissions</b> have successfully been created as answers for <b>{{this.selectedProblem.title}}</b></p>
+        <p class="info animated fadeIn">You can create a workspace from these submissions <LinkTo @route="workspaces.new" target="_blank" rel="noopener noreferrer">here</LinkTo></p>
+      {{else}}
+        <p class="info"><b>{{this.submissionCount}} submissions</b> will be created in EnCoMPASS as answers for <b>{{this.selectedProblem.title}}</b></p>
+        <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
+      {{/if}}
+    {{/if}}
+  </div>
+
+  {{#if this.isCreatingWorkspace}}
+    {{#if this.showLoadingMessage}}
+      <p>Please wait, creating workspace</p>
+    {{/if}}
+  {{/if}}
+
+  {{#if this.workspaceName}}
+    <div class="import-review workspace">
+      {{#if this.createWorkspaceError}}
+        <div class='create-ws-error'>
+          <Ui::ErrorBox
+            @error={{this.createWorkspaceError}}
+            @showDismiss={{true}}
+            @resetError={{@onResetWorkspaceError}}
+          />
+        </div>
+      {{/if}}
+      {{#if this.createdWorkspace}}
+        <p class="input-label">Created Workspace</p>
+        <p class="success-info animated fadeIn"><b>{{this.workspaceName}}</b> was successfully created.
+          View it <a href={{this.workspaceLink}} target="_blank" rel="noopener noreferrer">here</a>
+        </p>
+      {{else}}
+        <p class="input-label">Workspace to be created</p>
+      {{/if}}
+      <div class="workspace-import-card">
+        <div class="item-card-container">
+          <div class="item-card row-1">
+            <div class="item-card privacy">
+              <span class="privacy-icon">
+                <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip={{this.workspaceMode}}>
+                  {{public-private this.workspaceMode}}
+                </span>
+              </span>
+              <span class="date">{{format-date this.createDate 'L'}}</span>
+            </div>
+          </div>
+          <div class="item-card row-2">
+            <div class="item-card name">
+              <span>{{this.workspaceName}}</span>
+            </div>
+          </div>
+          <div class="item-card row-3">
+            <div class="item-card description">
+              {{this.workspaceOwner.username}}
+            </div>
+          </div>
+          <div class="item-card row-4">
+            <div class="item-card status">
+              <ul class="workspace-stats">
+                <li>
+                  <p class="stat-header">Submissions</p>
+                  <p class="stat-number">{{this.submissionCount}}</p>
+                </li>
+                <li>
+                  <p class="stat-header">Selections</p>
+                  <p class="stat-number">0</p>
+                </li>
+                <li>
+                  <p class="stat-header">Comments</p>
+                  <p class="stat-number">0</p>
+                </li>
+                <li>
+                  <p class="stat-header">Responses</p>
+                  <p class="stat-number">0</p>
+                </li>
+                <li>
+                  <p class="stat-header">Folders</p>
+                  <p class="stat-number">
+                    {{#if this.folderSet}}
+                      {{this.folderSet.folders.length}}
+                    {{else}}
+                      0
+                    {{/if}}
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+
+  {{#if this.savingAssignment}}
+    {{#if this.showLoadingMessage}}
+    <p>Please wait, creating assignment</p>
+    {{/if}}
+  {{/if}}
+
+
+  {{#if this.assignmentName}}
+    <div class="import-review assignment">
+      {{#if this.createdAssignment}}
+        <p class="input-label">Created Assignment</p>
+        <p class="success-info animated fadeIn"><b>{{this.createdAssignment.name}}</b> was successfully created.
+          View it <LinkTo @route="assignments.assignment" @model={{this.createdAssignment}} target="_blank" rel="noopener noreferrer">here</LinkTo>
+        </p>
+      {{else}}
+        <p class="input-label">Assignment to be created</p>
+      {{/if}}
+      <div class="content-box">
+        <p class="content-line">
+          <span class="content-label">Name</span><span class="content-value">{{this.assignmentName}}</span>
+        </p>
+        <p class="content-line">
+          <span class="content-label">Problem</span><span class="content-value">{{this.selectedProblem.title}}</span>
+        </p>
+        <p class="content-line">
+          <span class="content-label">Class</span><span class="content-value">{{this.selectedSection.name}}</span>
+        </p>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#unless this.shouldHideButtons}}
+    <div class="nav-btn-container">
+      <button class="primary-button cancel-button" type="button" {{on "click" this.back}}>Back</button>
+      <button class="primary-button" type="button" {{on "click" this.next}}>Create</button>
+    </div>
+  {{/unless}}
+</div>

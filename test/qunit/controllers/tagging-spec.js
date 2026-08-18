@@ -4,18 +4,24 @@ emq.globalize();
 emq.setResolver(Ember.DefaultResolver.create({ namespace: Encompass }));
 
 moduleFor('controller:comments', 'Comments Controller Tagging', {
-  needs: ['controller:folders', 'controller:workspaceSubmissions', 'controller:workspaceSubmission', 'controller:workspace', 'controller:application', 'controller:comments']
+  needs: [
+    'controller:folders',
+    'controller:workspaceSubmissions',
+    'controller:workspaceSubmission',
+    'controller:workspace',
+    'controller:application',
+    'controller:comments',
+  ],
 });
 
-test('A plain comment', function() {
+test('A plain comment', function () {
   var controller = this.subject();
   controller.set('text', 'Good reasoning!');
 
   ok(!controller.get('textContainsTag'), 'does not contain a tag');
-
 });
 
-test('A comment ending in a tag', function() {
+test('A comment ending in a tag', function () {
   var controller = this.subject();
   controller.set('text', 'Good reasoning! #reasonable');
 
@@ -23,20 +29,21 @@ test('A comment ending in a tag', function() {
 
   var tags = controller.get('tags');
   ok(tags.contains('reasonable'), 'contains the tag');
-
 });
 
-test('Whitespace does not matter', function() {
+test('Whitespace does not matter', function () {
   var controller = this.subject();
-  controller.set('text', 'Good   reasoning!\nReally\tGood! :-) !  #reasonable #correct');
+  controller.set(
+    'text',
+    'Good   reasoning!\nReally\tGood! :-) !  #reasonable #correct'
+  );
 
   var tags = controller.get('tags');
   ok(tags.contains('reasonable'), 'contains the first tag');
   ok(tags.contains('correct'), 'contains the second tag');
-
 });
 
-test('A comment ending in several tags', function() {
+test('A comment ending in several tags', function () {
   var controller = this.subject();
   controller.set('text', 'Good reasoning! #reasonable #correct');
 
@@ -45,10 +52,9 @@ test('A comment ending in several tags', function() {
   var tags = controller.get('tags');
   ok(tags.contains('reasonable'), 'contains the first tag');
   ok(tags.contains('correct'), 'contains the second tag');
-
 });
 
-test('A comment of only tags', function() {
+test('A comment of only tags', function () {
   var controller = this.subject();
   controller.set('text', '#reasonable #correct');
 
@@ -57,10 +63,9 @@ test('A comment of only tags', function() {
   var tags = controller.get('tags');
   ok(tags.contains('reasonable'), 'contains the first tag');
   ok(tags.contains('correct'), 'contains the second tag');
-
 });
 
-test('A comment with in several tags embedded', function() {
+test('A comment with in several tags embedded', function () {
   var controller = this.subject();
   controller.set('text', 'Good reasoning! #reasonable hi #correct cool');
 
@@ -69,22 +74,23 @@ test('A comment with in several tags embedded', function() {
   var tags = controller.get('tags');
   ok(tags.contains('reasonable'), 'contains the first tag');
   ok(tags.contains('correct'), 'contains the second tag');
-
 });
 
-test('Tags are case-insensitive', function() {
+test('Tags are case-insensitive', function () {
   var controller = this.subject();
   controller.set('text', 'Good reasoning! #Reasonable #cORRect');
 
   var tags = controller.get('tags');
   ok(tags.contains('reasonable'), 'contains the first tag');
   ok(tags.contains('correct'), 'contains the second tag');
-
 });
 
-test('Tags keep special marks', function() {
+test('Tags keep special marks', function () {
   var controller = this.subject();
-  controller.set('text', 'Good reasoning! #reasonable! #correct? #use#ofthings #$100');
+  controller.set(
+    'text',
+    'Good reasoning! #reasonable! #correct? #use#ofthings #$100'
+  );
 
   var tags = controller.get('tags');
   ok(tags.contains('reasonable!'), 'contains the first tag');
@@ -128,5 +134,5 @@ test('Tags keep special marks', function() {
 //
 //  ok(controller.send.withArgs(args).calledOnce);
 //  controller.send.restore();
-//  
+//
 //});

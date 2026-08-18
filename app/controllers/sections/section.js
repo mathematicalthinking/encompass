@@ -1,7 +1,20 @@
 import Controller from '@ember/controller';
-import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+
 export default class SectionsSectionController extends Controller {
-  @action refresh() {
-    this.send('refreshModel');
-  }
+  queryParams = [
+    'returnTo',
+    'returnStep',
+    'importProblemId',
+    'importSectionId',
+    'importUseClass',
+    'importUploadedFileIds',
+  ];
+
+  @tracked returnTo = null;
+  @tracked returnStep = null;
+  @tracked importProblemId = null;
+  @tracked importSectionId = null;
+  @tracked importUseClass = null;
+  @tracked importUploadedFileIds = null;
 }

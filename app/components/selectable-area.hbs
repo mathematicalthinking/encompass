@@ -1,0 +1,15 @@
+<div
+  id='selectable-area'
+  {{selection-tools
+    submissionId=@model.id
+    makingSelection=@makingSelection
+    showingSelections=@showingSelections
+    selections=@sels
+    addSelection=@addSelection
+    setupResizeHandler=@setupResizeHandler
+    removeResizeHandler=@removeResizeHandler
+    handleTransition=@handleTransition
+  }}
+>
+  {{yield}}
+</div>
