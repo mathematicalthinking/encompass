@@ -1,12 +1,17 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 // Used for when a logged in user is resetting either their own password or another user's password
 
-export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
+export default class ResetPasswordUserComponent extends Component {
   @service('sweet-alert') alert;
-  @tracked postErrors = [];
+  @service('error-handling') errorHandling;
+
+  get postErrors() {
+    return this.errorHandling.getErrors('postErrors') || [];
+  }
+
   @tracked password = '';
   @tracked confirmPassword = '';
   @tracked showingPassword = false;
@@ -50,7 +55,7 @@ export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
         } catch (_parseErr) {
           // non-JSON error body
         }
-        this.handleErrors(
+        this.errorHandling.handleErrors(
           errorBody || {
             errors: [{ detail: `Reset failed with status ${response.status}` }],
           },
@@ -75,7 +80,7 @@ export default class ResetPasswordUserComponent extends ErrorHandlingComponent {
           res.info || 'Could not complete reset. Please try again.';
       }
     } catch (err) {
-      this.handleErrors(err, 'postErrors');
+      this.errorHandling.handleErrors(err, 'postErrors');
     }
   }
 

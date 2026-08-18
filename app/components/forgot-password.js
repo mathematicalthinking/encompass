@@ -1,9 +1,15 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { service } from '@ember/service';
 
-export default class ForgotPasswordComponent extends ErrorHandlingComponent {
-  @tracked postErrors = [];
+export default class ForgotPasswordComponent extends Component {
+  @service('error-handling') errorHandling;
+
+  get postErrors() {
+    return this.errorHandling.getErrors('postErrors') || [];
+  }
+
   @tracked username = '';
   @tracked email = '';
   @tracked tooMuchData = false;
@@ -73,7 +79,7 @@ export default class ForgotPasswordComponent extends ErrorHandlingComponent {
         this.forgotPasswordErr = res.info;
       }
     } catch (err) {
-      this.handleErrors(err, 'postErrors');
+      this.errorHandling.handleErrors(err, 'postErrors');
     }
   }
   @action resetMessages() {
