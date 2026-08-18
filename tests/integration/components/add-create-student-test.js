@@ -75,11 +75,9 @@ module('Integration | Component | add-create-student', function (hooks) {
 
     const mockStore = class extends Service {
       peekAll() {
-        return {
-          toArray: () => {
-            return [user1, user2, newStudent];
-          },
-        };
+        // Real store.peekAll returns an array-like that supports slice();
+        // return a plain array so the component's .slice() works.
+        return [user1, user2, newStudent];
       }
       peekRecord(modelName, id) {
         return this.userMap[id] || null;

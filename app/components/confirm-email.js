@@ -1,7 +1,7 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
-export default class ConfirmEmailComponent extends ErrorHandlingComponent {
+export default class ConfirmEmailComponent extends Component {
   @tracked confirmTokenErrors = [];
   @tracked isAlreadyConfirmed = false;
   @tracked invalidTokenError = null;

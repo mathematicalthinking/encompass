@@ -145,15 +145,12 @@ module('Integration | Component | section-info', function (hooks) {
       problems = A([EmberObject.create({ id: 'problem-1', name: 'Slope' })]);
 
       peekAll(modelName) {
+        // Real store.peekAll returns an array-like supporting slice().
         if (modelName === 'user') {
-          return {
-            toArray: () => A(this.users),
-          };
+          return A(this.users);
         }
 
-        return {
-          toArray: () => A([]),
-        };
+        return A([]);
       }
 
       findAll(modelName) {

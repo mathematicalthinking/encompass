@@ -41,19 +41,13 @@ module(
         'service:store',
         class extends Service {
           peekAll(modelName) {
+            // Real store.peekAll returns an array-like supporting slice();
+            // return plain arrays so the component's .slice() works.
             if (modelName === 'user') {
-              return {
-                toArray() {
-                  return [student1];
-                },
-              };
+              return [student1];
             }
 
-            return {
-              toArray() {
-                return [];
-              },
-            };
+            return [];
           }
 
           peekRecord(modelName, id) {

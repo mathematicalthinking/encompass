@@ -1,15 +1,16 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import each from 'lodash-es/each';
 import isNull from 'lodash-es/isNull';
-export default class WorkspaceInfoSettingsComponent extends ErrorHandlingComponent {
+export default class WorkspaceInfoSettingsComponent extends Component {
   @service('current-user') currentUser;
   @service('sweet-alert') alert;
   @service('workspace-permissions') permissions;
   @service('utility-methods') utils;
   @service store;
+  @service('error-handling') errorHandling;
   @tracked selectedMode = null;
   get workspacePermissions() {
     return this.args.workspace.permissions;
@@ -26,8 +27,12 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   @tracked isUpdateRequestInProgress = false;
   @tracked createdParentData = {};
   @tracked updatedParentData = {};
-  @tracked updateErrors = null;
-  @tracked serverErrors = null;
+  @tracked updateErrors = null; // set directly from results; kept local
+
+  // serverErrors is populated via the error-handling service
+  get serverErrors() {
+    return this.errorHandling.getErrors('serverErrors') || null;
+  }
   @tracked wereNoAnswersToUpdate = false;
   @tracked addedSubmissions = null;
 
@@ -98,6 +103,16 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
   }
   @action clearMissingChildWorkspaces() {
     this.missingChildWorkspaces = null;
+  }
+
+  // Dismiss a single error. serverErrors lives in the error-handling service;
+  // updateErrors is a local field set directly from the update results.
+  @action removeErrorFromArray(prop, err) {
+    if (prop === 'serverErrors') {
+      this.errorHandling.removeErrorFromArray(prop, err);
+    } else if (Array.isArray(this[prop])) {
+      this[prop] = this[prop].filter((e) => e !== err);
+    }
   }
 
   @action editWorkspaceInfo() {
@@ -263,7 +278,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
           this.didLinkedAssignmentChange = false;
         })
         .catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors', workspace);
+          this.errorHandling.handleErrors(err, 'updateRecordErrors', workspace);
         });
     } else {
       this.alert.showToast(
@@ -290,7 +305,6 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         'updateErrors',
         'addedSubmissions',
         'missingLinkedAssignment',
-        'serverErrors',
         'missingChildWorkspaces',
       ],
       (prop) => {
@@ -299,6 +313,8 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         }
       }
     );
+    // serverErrors lives in the error-handling service, not on the component
+    this.errorHandling.removeMessages('serverErrors');
 
     let isParentUpdate = this.isParentWs;
 
@@ -449,7 +465,7 @@ export default class WorkspaceInfoSettingsComponent extends ErrorHandlingCompone
         }
 
         // For other errors, use the standard error handling
-        this.handleErrors(err, 'serverErrors');
+        this.errorHandling.handleErrors(err, 'serverErrors');
       });
   }
 }
