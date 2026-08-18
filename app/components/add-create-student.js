@@ -1,14 +1,15 @@
-import ErrorHandlingComponent from './error-handling';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
 const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
 
-export default class AddCreateStudentComponent extends ErrorHandlingComponent {
+export default class AddCreateStudentComponent extends Component {
   @service('sweet-alert') alert;
   @service store;
   @service currentUser;
+  @service('error-handling') errorHandling;
 
   // Form fields
   @tracked username = null;
@@ -28,10 +29,16 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
   @tracked isMissingCredentials = false;
   @tracked incorrectUsername = false;
 
-  // Error message arrays
-  @tracked createUserErrors = [];
-  @tracked findUserErrors = [];
-  @tracked updateSectionErrors = [];
+  // Error message arrays (backed by the error-handling service)
+  get createUserErrors() {
+    return this.errorHandling.getErrors('createUserErrors') || [];
+  }
+  get findUserErrors() {
+    return this.errorHandling.getErrors('findUserErrors') || [];
+  }
+  get updateSectionErrors() {
+    return this.errorHandling.getErrors('updateSectionErrors') || [];
+  }
 
   // Existing-user confirmation flow
   @tracked canAddExistingUser = false;
@@ -96,9 +103,9 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
     try {
       await section.save();
       this.alert.showToast('success', 'Class Password Updated');
-      this.removeMessages('updateSectionErrors');
+      this.errorHandling.removeMessages('updateSectionErrors');
     } catch (err) {
-      this.handleErrors(err, 'updateSectionErrors');
+      this.errorHandling.handleErrors(err, 'updateSectionErrors');
     }
   }
 
@@ -122,7 +129,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       this.alert.showToast('success', 'Student Added');
       this.clearSelectizeInput('select-add-student');
     } catch (err) {
-      this.handleErrors(err, 'updateSectionErrors');
+      this.errorHandling.handleErrors(err, 'updateSectionErrors');
     }
   }
 
@@ -133,7 +140,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
     }
     try {
       const user = await this.store.findRecord('user', student._id);
-      this.removeMessages('findUserErrors');
+      this.errorHandling.removeMessages('findUserErrors');
       const students = await this.args.section.students;
       if (students.includes(user)) {
         this.userAlreadyInSection = true;
@@ -145,7 +152,7 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
       await this.args.section.save();
       this.alert.showToast('success', 'Student added');
     } catch (err) {
-      this.handleErrors(err, 'findUserErrors');
+      this.errorHandling.handleErrors(err, 'findUserErrors');
     }
   }
 
@@ -234,12 +241,15 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
         throw new Error(`Request failed: ${response.status}`);
       }
       const res = await response.json();
-      this.removeMessages('createUserErrors');
+      this.errorHandling.removeMessages('createUserErrors');
       if (res.message) {
         if (res.message === 'There already exists a user with that username') {
           this.usernameAlreadyExists = true;
         } else {
-          this.createUserErrors = [res.message];
+          this.errorHandling.handleErrors(
+            { message: res.message },
+            'createUserErrors'
+          );
         }
       } else if (res.user && res.canAddExistingUser === true) {
         this.canAddExistingUser = true;
@@ -255,14 +265,18 @@ export default class AddCreateStudentComponent extends ErrorHandlingComponent {
             this.clearCreateInputs();
             this.alert.showToast('success', 'Student Created');
           } catch (err) {
-            this.handleErrors(err, 'updateSectionErrors', section);
+            this.errorHandling.handleErrors(
+              err,
+              'updateSectionErrors',
+              section
+            );
           }
         } catch (err) {
-          this.handleErrors(err, 'findUserErrors');
+          this.errorHandling.handleErrors(err, 'findUserErrors');
         }
       }
     } catch (err) {
-      this.handleErrors(err, 'createUserErrors');
+      this.errorHandling.handleErrors(err, 'createUserErrors');
     }
   }
 }
