@@ -1,0 +1,135 @@
+name: Docker Image Build & Push & Deploy to TEST ENV
+
+on:
+  push:
+    branches: [ "develop" ]
+  workflow_dispatch:
+
+concurrency:
+  group: encompass-test-deploy
+  cancel-in-progress: false
+
+env:
+  REGISTRY_IMAGE: mathematicalthinking/encompass
+  STACK_NAME: mt-test
+  STACK_DIR: /mtdocker
+  STACK_FILE: docker-compose-mt-apps-test.yml
+  SERVICE: encompass
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  # via env: secrets aren't available in step-level `if`
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Notify Slack - build started
+      if: ${{ env.SLACK_WEBHOOK_URL != '' }}
+      continue-on-error: true
+      run: |
+        curl -sSf -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"Build started - ${{ github.repository }}@${{ github.ref_name }} -> ${{ env.STACK_NAME }}_${{ env.SERVICE }} (run #${{ github.run_number }}, <${{ env.RUN_URL }}|Open>)\"}" \
+          "$SLACK_WEBHOOK_URL"
+
+    - name: Checkout the Repo
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      id: build
+      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+      with:
+        context: .
+        file: ./Dockerfile-dev
+        push: true
+        tags: |
+          ${{ env.REGISTRY_IMAGE }}:dev-build-${{ github.run_number }}
+          ${{ env.REGISTRY_IMAGE }}:dev-latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Set up SSH key
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.VM_HOST }} > ~/.ssh/known_hosts
+
+    # Updates only the encompass service; /mtdocker is assumed already provisioned.
+    - name: Deploy to mt-test
+      run: |
+        timeout 900 ssh \
+          -o BatchMode=yes \
+          -o ConnectTimeout=15 \
+          -o ServerAliveInterval=30 \
+          -o ServerAliveCountMax=10 \
+          ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} bash -euo pipefail << 'EOF'
+          cd ${{ env.STACK_DIR }}
+          docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
+
+          # Digest-pinned so the update is a real spec change; keeps the live spec
+          # matching the dev-latest tag the stack file declares.
+          IMAGE='${{ env.REGISTRY_IMAGE }}:dev-latest@${{ steps.build.outputs.digest }}'
+          SVC='${{ env.STACK_NAME }}_${{ env.SERVICE }}'
+          docker pull "$IMAGE"
+
+          if docker service inspect "$SVC" >/dev/null 2>&1; then
+            docker service update --detach=true --image "$IMAGE" "$SVC"
+          else
+            # First run, or a previous run died mid-deploy.
+            echo "$SVC not found — bootstrapping via stack deploy"
+            docker stack deploy --detach=true --resolve-image=changed \
+              --compose-file ${{ env.STACK_FILE }} ${{ env.STACK_NAME }}
+          fi
+
+          # Exact service name; replica count read from the spec, never hardcoded.
+          # The per-iteration echo also keeps the ssh channel from idling out.
+          want=$(docker service inspect "$SVC" --format '{{.Spec.Mode.Replicated.Replicas}}')
+          deadline=$((SECONDS + 300))
+          while :; do
+            ok=$(docker service ps "$SVC" --filter desired-state=running \
+                   --format '{{.CurrentState}}' | grep -c '^Running' || true)
+            echo "[$(date -u +%H:%M:%S)] $SVC $ok/$want running"
+            [ "$ok" -ge "$want" ] && break
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "converge timeout — task history follows"
+              docker service ps --no-trunc "$SVC"
+              exit 1
+            fi
+            sleep 10
+          done
+
+          # prom can miss a recreated service; traefik re-discovers on its own
+          docker service update --detach=true --force monitoring_prom
+        EOF
+
+    - name: Cleanup
+      if: always()
+      run: rm -rf ~/.ssh
+
+    - name: Notify Slack - success
+      if: ${{ success() && env.SLACK_WEBHOOK_URL != '' }}
+      continue-on-error: true
+      run: |
+        curl -sSf -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"Deployed - ${{ github.repository }}@${{ github.ref_name }} -> ${{ env.STACK_NAME }}_${{ env.SERVICE }} (run #${{ github.run_number }}, <${{ env.RUN_URL }}|Open>)\"}" \
+          "$SLACK_WEBHOOK_URL"
+
+    - name: Notify Slack - failure
+      if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
+      continue-on-error: true
+      run: |
+        curl -sSf -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"FAILED - ${{ github.repository }}@${{ github.ref_name }} -> ${{ env.STACK_NAME }}_${{ env.SERVICE }} (run #${{ github.run_number }}, <${{ env.RUN_URL }}|Open>)\"}" \
+          "$SLACK_WEBHOOK_URL"
