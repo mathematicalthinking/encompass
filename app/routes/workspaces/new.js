@@ -9,7 +9,8 @@ export default class WorkspacesNewRoute extends AuthenticatedRoute {
   @service navigation;
   beforeModel() {
     if (this.currentUser.isStudent) {
-      this.navigation.toHome();
+      // Return the redirect so it aborts before model()'s student-forbidden findAlls run.
+      return this.navigation.toHome();
     }
   }
   model() {

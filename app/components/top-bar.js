@@ -36,6 +36,11 @@ export default class TopBarComponent extends Component {
     return this.currentUser && this.currentUser.accountType === 'S';
   }
 
+  // Effective role (respects "acting as student"), matching the route guards.
+  get isActingStudent() {
+    return this.currentUserService.isStudent;
+  }
+
   @action
   setDrawerElement(element) {
     this.drawerElement = element;
