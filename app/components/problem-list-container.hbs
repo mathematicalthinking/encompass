@@ -36,13 +36,15 @@
             @onCriterionChange={{this.onCriterionChange}}
           />
 
-          <LinkTo
-            @route='problems.new'
-            id='problem-new-link'
-            class='new-link-btn'
-          >
-            <i class='fas fa-plus'></i>
-          </LinkTo>
+          {{#unless this.user.isStudent}}
+            <LinkTo
+              @route='problems.new'
+              id='problem-new-link'
+              class='new-link-btn'
+            >
+              <i class='fas fa-plus'></i>
+            </LinkTo>
+          {{/unless}}
         </div>
       </div>
       <div class='results-list'>
