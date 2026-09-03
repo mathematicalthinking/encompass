@@ -89,7 +89,7 @@
 
             </LinkTo>
           </li>
-          {{#unless this.isStudentAccount}}
+          {{#unless this.isActingStudent}}
             <li {{on 'click' this.toggleDrawer}}>
               <LinkTo @route='users.user' @model={{this.currentUser.id}}>
                 <div class='testHome'><i class='fas fa-user-circle'></i>

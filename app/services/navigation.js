@@ -20,14 +20,13 @@ export default class NavigationService extends Service {
       return;
     }
     if (opts.replace) {
-      this.router.replaceWith(route.name, ...(route.models ?? []), {
-        queryParams: route.qp,
-      });
-    } else {
-      this.router.transitionTo(route.name, ...(route.models ?? []), {
+      return this.router.replaceWith(route.name, ...(route.models ?? []), {
         queryParams: route.qp,
       });
     }
+    return this.router.transitionTo(route.name, ...(route.models ?? []), {
+      queryParams: route.qp,
+    });
   }
 
   /**

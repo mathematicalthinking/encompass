@@ -1745,6 +1745,15 @@ async function getWorkspaces(req, res, next) {
   let user = userAuth.requireUser(req);
 
   let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
+
+  // A request for a specific set of ids is not a page of results; the client
+  // (ember data coalescing hasMany fetches) expects every workspace it asked
+  // for and rejects the whole relationship when one is missing. Paginating
+  // these would drop workspaces past the default page size.
+  if (isNonEmptyArray(ids)) {
+    req.query.limit = ids.length;
+    req.skip = 0;
+  }
   //if users hiddenWorkspaces is not an empty array add $nin
 
   if (filterBy) {

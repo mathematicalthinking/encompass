@@ -139,20 +139,9 @@ export default class FolderElemComponent extends Component {
         this.alert.showToast('info', 'Already filed', 'bottom-end');
         return;
       }
-      this.putSelectionInFolder(obj.id, this.args.model);
       this.args.dropped?.(obj.id, this.args.model);
     } else if (type === 'folder') {
       this.putFolderInFolder(obj, this.args.model);
-    }
-  }
-
-  putSelectionInFolder(selectionId, folder) {
-    try {
-      folder.selections.pushObject?.(selectionId);
-      folder.save?.();
-      this.alert.showToast('success', 'Selection filed', 'bottom-end');
-    } catch (err) {
-      this.errorHandling.handleErrors(err, 'updateRecordErrors', folder);
     }
   }
 

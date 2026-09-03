@@ -13,7 +13,6 @@ import { hash, resolve } from 'rsvp';
 import { service } from '@ember/service';
 import { action } from '@ember/object';
 export default class WorkspaceSubmissionRoute extends Route {
-  @service sweetAlert;
   @service('utility-methods') utils;
   @service currentUser;
   @service router;
@@ -143,60 +142,6 @@ export default class WorkspaceSubmissionRoute extends Route {
   @action
   reload() {
     this.refresh();
-  }
-
-  @action
-  addSelection(selection) {}
-
-  @action
-  tagSelection(selection, tags) {
-    let workspace = this.modelFor('workspace');
-    workspace.get('folders').then((folders) => {
-      let lcFolders = {};
-      folders.forEach((f) => {
-        lcFolders[f.get('name').toLowerCase().replace(/\s+/g, '')] = f;
-      });
-      tags.forEach((tag) => {
-        if (Object.keys(lcFolders).includes(tag)) {
-          this.send(
-            'fileSelectionInFolder',
-            selection.get('id'),
-            lcFolders[tag]
-          );
-        }
-      });
-    });
-  }
-
-  @action
-  fileSelectionInFolder(selectionId, folder) {
-    let selection = this.store.peekRecord('selection', selectionId);
-    let workspace = this.modelFor('workspace');
-
-    if (!selection) {
-      return;
-    }
-    let tagging = this.store.createRecord('tagging', {
-      workspace,
-      selection,
-      folder,
-      createdBy: this.currentUser.user,
-    });
-    tagging
-      .save()
-      .then(() => {
-        this.sweetAlert.showToast(
-          'success',
-          'Selection Filed',
-          'bottom-end',
-          3000,
-          false,
-          null
-        );
-      })
-      .catch((err) => {
-        console.log('err save tagging', err);
-      });
   }
 
   @action

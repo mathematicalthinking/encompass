@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click } from '@ember/test-helpers';
+import { render, click, triggerEvent } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 
@@ -263,5 +263,61 @@ module('Integration | Component | draggable-selection', function (hooks) {
 
     await click('.overlay button');
     assert.dom('.full-image img').hasAttribute('src', fallbackSrc);
+  });
+
+  test('the selection is draggable so it can be filed in a folder', async function (assert) {
+    await renderSelection(this);
+
+    assert.dom('.draggable-selection').hasAttribute('draggable', 'true');
+  });
+
+  test('dragging a selection puts its id and type on the dataTransfer', async function (assert) {
+    await renderSelection(this, {
+      selection: createSelection({ id: 'sel-42', text: 'a selection' }),
+    });
+
+    const written = {};
+    await triggerEvent('.draggable-selection', 'dragstart', {
+      dataTransfer: {
+        setData(key, value) {
+          written[key] = value;
+        },
+      },
+    });
+
+    assert.strictEqual(
+      written['text/plain'],
+      'selection',
+      'the drop target is told this is a selection'
+    );
+    assert.strictEqual(
+      JSON.parse(written['application/json']).id,
+      'sel-42',
+      'the selection id travels with the drag'
+    );
+  });
+
+  test('dragging works for a record that cannot be serialised whole', async function (assert) {
+    // An ember data model refers back to the store, so JSON.stringify on the
+    // record itself throws "Converting circular structure to JSON".
+    const selection = createSelection({ id: 'sel-7' });
+    selection.store = { records: [selection] };
+
+    await renderSelection(this, { selection });
+
+    const written = {};
+    await triggerEvent('.draggable-selection', 'dragstart', {
+      dataTransfer: {
+        setData(key, value) {
+          written[key] = value;
+        },
+      },
+    });
+
+    assert.deepEqual(
+      JSON.parse(written['application/json']),
+      { id: 'sel-7' },
+      'only the id is serialised, so the circular record never gets walked'
+    );
   });
 });
