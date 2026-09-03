@@ -1,4 +1,9 @@
-<div class='draggable-selection'>
+<div
+  class='draggable-selection'
+  draggable='true'
+  {{on 'dragstart' this.dragStart}}
+  {{on 'dragend' this.dragEnd}}
+>
   <div
     class='selectionLink selection-tooltip
       {{if this.isImage "image-tag"}}
