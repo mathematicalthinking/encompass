@@ -375,6 +375,76 @@ export default class WorkspaceSubmissionController extends Controller {
     this.router.replaceWith('workspace.submissions.submission');
   }
 
+  // Filing a selection in a folder means creating a tagging that ties the two
+  // together; folders do not hold selections directly.
+  @action
+  async fileSelectionInFolder(selectionId, folder) {
+    let selection = this.store.peekRecord('selection', selectionId);
+
+    if (!selection || !folder) {
+      return;
+    }
+
+    if (folder.hasSelection?.(selectionId)) {
+      return;
+    }
+
+    let tagging = this.store.createRecord('tagging', {
+      workspace: this.currentWorkspace,
+      selection,
+      folder,
+      createdBy: this.currentUser.user,
+    });
+
+    try {
+      await tagging.save();
+      this.alert.showToast(
+        'success',
+        'Selection Filed',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+    } catch (err) {
+      tagging.deleteRecord();
+      this.alert.showToast(
+        'error',
+        'Unable to file selection',
+        'bottom-end',
+        3000,
+        false,
+        null
+      );
+      console.error('err save tagging', err);
+    }
+  }
+
+  // A comment can file its selection by naming folders with #hashtags.
+  @action
+  async tagSelection(selection, tags) {
+    if (!selection || !tags?.length) {
+      return;
+    }
+
+    let folders = await this.currentWorkspace.folders;
+    let foldersByTag = {};
+
+    folders.forEach((folder) => {
+      let name = folder.name?.toLowerCase().replace(/\s+/g, '');
+      if (name) {
+        foldersByTag[name] = folder;
+      }
+    });
+
+    for (let tag of tags) {
+      let folder = foldersByTag[tag];
+      if (folder) {
+        await this.fileSelectionInFolder(selection.id, folder);
+      }
+    }
+  }
+
   @action
   addSelection(selection, isUpdateOnly) {
     var user = this.currentUser.user;
