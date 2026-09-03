@@ -171,11 +171,14 @@ export default class DraggableSelectionComponent extends Component {
   @action
   dragStart(event) {
     const dataTransfer = event.dataTransfer;
-    const data = JSON.stringify(this.args.selection);
-    const dataWithId = `{"id": "${this.args.selection.id}",${data.substring(
-      1
-    )}`;
-    dataTransfer.setData('application/json', dataWithId);
+    // Only the id travels with the drag; the drop targets look the record up
+    // themselves. Serialising the record itself throws now that ember data
+    // models no longer implement toJSON - JSON.stringify walks into the store
+    // and hits a circular reference.
+    dataTransfer.setData(
+      'application/json',
+      JSON.stringify({ id: this.args.selection.id })
+    );
     dataTransfer.setData('text/plain', 'selection');
     this.isDragging = true;
   }
@@ -214,16 +217,5 @@ export default class DraggableSelectionComponent extends Component {
     if (!this.isVmtClip) {
       this.isExpanded = !this.isExpanded;
     }
-  }
-
-  // Add the draggable attribute directly
-  get draggable() {
-    return 'true';
-  }
-
-  @action
-  setupDrag(event) {
-    const dataTransfer = event.dataTransfer;
-    dataTransfer.setData('text/plain', this.elementId);
   }
 }
